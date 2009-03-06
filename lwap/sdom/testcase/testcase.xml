@@ -1,0 +1,5 @@
+<root xmlns:my="my.dom.com" xmlns:test="www.sdom.org">
+  <node name="onenode"/>
+  <my:TestClass name="twonode" value="3"/>
+  <test:MyDOMNode Name="MyDOM"><my:TestClass name="child" value="2"/></test:MyDOMNode>
+</root>

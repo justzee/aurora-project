@@ -1,0 +1,42 @@
+	<class-registry>
+		<package-mapping packageName="org.lwap.action"/>		
+		<package-mapping packageName="org.lwap.application"/>
+		<package-mapping packageName="org.lwap.application.fnd"/>
+		<package-mapping packageName="org.lwap.controller"/>
+		<package-mapping packageName="org.lwap.feature"/>
+		<package-mapping packageName="org.lwap.init"/>
+		<package-mapping packageName="org.lwap.schema"/>
+		<package-mapping packageName="org.lwap.plugin"/>		
+		<class-mapping elementName="query" className="org.lwap.database.DatabaseEntry"/>
+		<class-mapping elementName="update" className="org.lwap.database.DatabaseEntry"/>
+		<class-mapping elementName="batch-parameter" className="org.lwap.database.DatabaseEntry"/>
+		<class-mapping elementName="bundle" className="org.lwap.database.DatabaseEntry"/>
+		<class-mapping elementName="batch" className="org.lwap.database.DatabaseEntry"/>		
+		<class-mapping elementName="db-procedure" className="org.lwap.database.DatabaseEntry"/>				
+		<class-mapping elementName="echo" className="uncertain.proc.Echo"/>						
+
+		<class-mapping elementName="session-write" className="org.lwap.action.SessionOperate"/>		
+		<class-mapping elementName="session-clear" className="org.lwap.action.SessionOperate"/>		
+		<class-mapping elementName="session-create" className="org.lwap.action.SessionOperate"/>				
+
+		<class-mapping elementName="service-listeners" className="org.lwap.application.event.ServiceListenerStore" />
+		
+		<feature-attach elementName="session-transfer" featureClass="org.lwap.feature.SessionTransfer"/>
+		<feature-attach elementName="static-model" featureClass="org.lwap.feature.StaticModel"/>
+		<feature-attach elementName="form" nameSpace="http://mvc.lwap.org/builder/jsp" featureClass="org.lwap.controller.FormController"/>
+		<feature-attach elementName="query-statement" featureClass="org.lwap.controller.QueryController"/>
+		<feature-attach elementName="config-condition" featureClass="org.lwap.controller.ConfigCondition"/>
+		<feature-attach elementName="xml-output" featureClass="org.lwap.feature.XmlOutput"/>
+		<feature-attach elementName="matrix-column" featureClass="org.lwap.feature.MatrixColumn"/>
+		<feature-attach elementName="excel-report" nameSpace="http://mvc.lwap.org/builder/jsp" featureClass="org.lwap.feature.ExcelReport"/>
+		<feature-attach elementName="flex-query" featureClass="org.lwap.feature.FlexQuery"/>
+
+		<feature-attach elementName="attachment" featureClass="org.lwap.feature.UploadFileHandle"/>
+<!--
+		<feature-attach elementName="service" featureClass="org.lwap.feature.SessionCopy"/>
+-->
+		<feature-attach elementName="query-statement" featureClass="org.lwap.feature.ModelCSVExport"/>
+		<feature-attach elementName="sql-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>
+		<feature-attach elementName="model-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>		
+	</class-registry>
+	
