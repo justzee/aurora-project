@@ -167,7 +167,7 @@ public class QueryController extends AbstractController  implements IFeature {
 					String count_field = query.getString("CountField", "TOTAL_COUNT");
 					String count_element = query.getString(KEY_COUNT_ELEMENT, "query-count");
                     StringBuffer count_sql = new StringBuffer();
-                    count_sql.append("select count(*) as ").append(count_field).append(" from ( ").append(sql).append(")");
+                    count_sql.append("select count(1) as ").append(count_field).append(" from ( ").append(sql).append(")");
                     DatabaseQuery count_query = DatabaseQuery.createQuery(count_sql.toString());
                     count_query.setPageResultset(false);
                     count_query.setElementName(count_element);
