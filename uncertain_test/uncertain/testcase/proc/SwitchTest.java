@@ -63,7 +63,7 @@ public class SwitchTest extends ProcedureRunnerTest {
     }
     
     public void onNormalMatch(ProcedureRunner runner){
-        oc_manager.getLogger().info("onNormalMatch called ");
+        oc_manager.getLogger().log("onNormalMatch called ");
         runner.getContext().put(KEY_RESULT, "Normal match");
     }
     

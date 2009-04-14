@@ -56,7 +56,7 @@ public class ViewFactoryConfig {
         builder_store.registerViewFactory( default_builder);
         builder_store.setDefaultFactory(default_builder);
         
-        uncertainEngine.getObjectSpace().registerParameter(builder_store);   
+        uncertainEngine.getObjectSpace().registerInstance(builder_store);   
         //System.out.println("ceated ViewFactoryStore from "+TemplatePath);
         
   }

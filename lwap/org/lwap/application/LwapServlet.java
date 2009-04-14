@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 import uncertain.event.Configuration;
 import uncertain.proc.Procedure;
 import uncertain.proc.ProcedureRunner;
@@ -49,10 +49,10 @@ public class LwapServlet  extends HttpServlet {
  */
         try{
 	        uncertainEngine = new UncertainEngine(new File(config_dir), config_file);
-	        ObjectSpace os = uncertainEngine.getObjectSpace();
-	        os.registerParameter(ServletConfig.class,servletConfig);
-	        os.registerParameter(ServletContext.class,servletContext);
-	        os.registerParameter(HttpServlet.class, this);
+	        IObjectRegistry os = uncertainEngine.getObjectSpace();
+	        os.registerInstance(ServletConfig.class,servletConfig);
+	        os.registerInstance(ServletContext.class,servletContext);
+	        os.registerInstance(HttpServlet.class, this);
 	        uncertainEngine.scanConfigFiles(pattern);
         }catch(Exception ex){
             throw new ServletException(ex);

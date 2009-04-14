@@ -6,12 +6,11 @@ package org.lwap.controller;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,6 +35,10 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
+import uncertain.event.RuntimeContext;
+import uncertain.logging.ILogger;
+import uncertain.logging.ILoggerProvider;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.IEntry;
 import uncertain.proc.IExceptionHandle;
 import uncertain.proc.Procedure;
@@ -73,6 +76,7 @@ implements Configuration.IParticipantListener
     ProcedureRunner		runner;
     LinkedList			controllerList = new LinkedList();
     Configuration       configuration;
+    ILogger             mLogger;
     
     public static MainService getServiceInstance(CompositeMap context){
         return (MainService)context.get(KEY_SERVICE_INSTANCE);
@@ -211,11 +215,11 @@ implements Configuration.IParticipantListener
         r.run();
         Throwable thr = r.getException();
 		if( thr != null ){
-            //System.out.println("Handle "+thr);
+            //mLogger.info("Handle "+thr);
             boolean is_self_handle = service_properties.getBoolean("exception-handle", false);
             if( !is_self_handle){
             ExceptionProcessor processor = 
-                (ExceptionProcessor)uncertainEngine.getObjectSpace().getParameterOfType(ExceptionProcessor.class);
+                (ExceptionProcessor)uncertainEngine.getObjectSpace().getInstanceOfType(ExceptionProcessor.class);
                 if(processor!=null){
                      try{
                          ExceptionProcessor.Processor ep = processor.getProcessor(thr.getClass().getName());
@@ -232,10 +236,10 @@ implements Configuration.IParticipantListener
                                  url = TextParser.parse(url, r.getContext());
                                  this.getResponse().sendRedirect(url);
                              }else
-                                 //System.out.println("No direct url defined for exception " + thr.getClass().getName());
+                                 //mLogger.info("No direct url defined for exception " + thr.getClass().getName());
                              return false;
                          }else{
-                             //System.out.println("Can't find exception handle for class " + thr.getClass().getName() );
+                             //mLogger.info("Can't find exception handle for class " + thr.getClass().getName() );
                          }
                     }catch(Exception ex){
                         ex.printStackTrace();
@@ -302,13 +306,13 @@ implements Configuration.IParticipantListener
             while(it.hasNext()){
                 CompositeMap item = (CompositeMap)it.next();                
                 if(dump){
-                    System.out.println("[DatabaseAccess] Inspecting "+item.toXML());
+                    mLogger.info("[DatabaseAccess] Inspecting "+item.toXML());
                 }
 
                 DatabaseAccess da = DatabaseAccess.getInstance(item);
                 if(da!=null){
                     if(dump){
-                        System.out.println("[DatabaseAccess] Got entry "+da.getClass().getName());
+                        mLogger.info("[DatabaseAccess] Got entry "+da.getClass().getName());
                     }
 
                     if(rp){ 
@@ -321,25 +325,25 @@ implements Configuration.IParticipantListener
                     Object inst = configuration.getInstance(item);
                     if(inst==null) {
                         if(dump){
-                            System.out.println("[DatabaseAccess] Adding component as child CompositeMap");
+                            mLogger.info("[DatabaseAccess] Adding component as child CompositeMap");
                         }
                         proc.addChild(item);
                     }
                     else{                        
                         if(inst instanceof IEntry) {
                             if(dump){
-                                System.out.println("[DatabaseAccess] Adding entry"+inst.getClass().getName());
+                                mLogger.info("[DatabaseAccess] Adding entry"+inst.getClass().getName());
                             }
                             proc.addEntry((IEntry)inst);
                         }
                         else 
-                            uncertainEngine.getLogger().warning("Unknown configuration: "+item.toXML());
+                            mLogger.warning("Unknown configuration: "+item.toXML());
                     }
                 }
             }
             runner.call(proc);
             if(runner.getLatestException()==null){
-                //System.out.println("commited trasaction");
+                //mLogger.info("commited trasaction");
                 conn.commit();
             }
         }catch(Throwable ex){
@@ -375,6 +379,7 @@ implements Configuration.IParticipantListener
     }
     
     public void prepare(){
+        uncertainEngine.initContext(service_context);
         // parse builtin parameters
         parseBuiltinParameters();       
         configuration = uncertainEngine.createConfig();
@@ -394,6 +399,10 @@ implements Configuration.IParticipantListener
             service_context.put(KEY_RESOURCE_BUNDLE, bundle);
         }
     }
+    
+    public String getLoggingTopic(){
+        return "page."+this.getServiceName();        
+    }
 
     /**
      * @see org.lwap.application.Service#service(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -401,34 +410,35 @@ implements Configuration.IParticipantListener
     public void service(HttpServlet servlet, HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
         
+        CompositeMap _context = getServiceContext();
+        RuntimeContext rtc = RuntimeContext.getInstance(_context);        
         try{
-        
             boolean trace = service_properties.getBoolean("trace", false);            
             doinit(servlet,request,response);
-    		Logger logger = uncertainEngine.getLogger();    		
             prepare();
+            ILoggerProvider provider = LoggingContext.getLoggerProvider(_context);
+    		mLogger = provider.getLogger(getLoggingTopic());
+    		rtc.setInstanceOfType(ILogger.class, mLogger);
+    		
             
             /* ------------- Modified on 29 Nov 2008 ------------------------*/
             /* ------------- Do pre-service check steps ---------------------*/
             
             //create procedure runner & add servie config
             runner = uncertainEngine.createProcedureRunner();
-            runner.setContext(getServiceContext());
+            runner.setContext(_context);
             runner.setConfiguration(configuration);
             runner.addFirstExceptionHandle(new ConnectionRollback());
-            if(trace){
-                logger.info("running " + this.getServiceName() + "\r\n===========================================");
-                runner.setTrace(true);
-            }            
+
             // get pre service proc name
             String pre_service_proc = ControllerProcedures.PRE_SERVICE;
             // do pre service check                        
             if(this.getCallingService()==null){
                 if(!runProcedure(runner, pre_service_proc)){
-                    logger.warning("error running "+pre_service_proc+" for "+this.getServiceName());                    
+                    mLogger.warning("error running "+pre_service_proc+" for "+this.getServiceName());                    
                     return;
                 }
-                SessionController state = SessionController.createSessionController(getServiceContext());
+                SessionController state = SessionController.createSessionController(_context);
                 if( !state.getContinueFlag() ){
                     String url = state.getDispatchUrl(); 
                     if( url!=null ){
@@ -440,12 +450,10 @@ implements Configuration.IParticipantListener
             }
             
             /* ------------- End Modify -------------------------------------*/
-            
-    		if(trace){
-        		logger.info("service name:"+this.getServiceName());
-        		logger.info("Participant list:"+configuration.getParticipantList().toString());
-            }
-    		// get procedure name to run
+       		mLogger.log("Enter Service:"+this.getServiceName());
+       		mLogger.log(Level.CONFIG, "Participant list:"+configuration.getParticipantList().toString());
+
+       		// get procedure name to run
     		String 			procedure_name = null;
     		if(controllerList.size()>0){
     		    Iterator it = controllerList.iterator();
@@ -465,7 +473,7 @@ implements Configuration.IParticipantListener
     		do{
     		    service_context.remove(KEY_NEXT_PROCEDURE);
                 if(trace){
-                    logger.info("service procedure set to "+procedure_name);
+                    mLogger.log(Level.CONFIG, "service procedure set to "+procedure_name);
                 }
     			if(!runProcedure(runner, procedure_name))
                     return;
@@ -477,8 +485,8 @@ implements Configuration.IParticipantListener
     		    return;
     		}
     		// create response
-    		if(getServiceContext().get(KEY_VIEW_OUTPUT)==null)
-    		    getServiceContext().put(KEY_VIEW_OUTPUT, new Boolean(hasViewOutput()));
+    		if(_context.get(KEY_VIEW_OUTPUT)==null)
+    		    _context.put(KEY_VIEW_OUTPUT, new Boolean(hasViewOutput()));
     
     		runProcedure(runner, ControllerProcedures.CREATE_RESPONSE);
         
@@ -488,7 +496,7 @@ implements Configuration.IParticipantListener
     }
     
     public void onInvalidState() throws ServletException {
-        System.out.println(getServiceContext().toXML());
+        mLogger.info(getServiceContext().toXML());
         throw new ServletException("Service internal error");
     }
     

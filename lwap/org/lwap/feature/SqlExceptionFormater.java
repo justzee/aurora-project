@@ -43,7 +43,7 @@ public class SqlExceptionFormater implements IExceptionFormater,
     }
     
     public void onInitialize(){
-        engine.getObjectSpace().registerParameter(IExceptionFormater.class, this);
+        engine.getObjectSpace().registerInstance(IExceptionFormater.class, this);
         if(MapPath!=null){
             CompositeMap map = (CompositeMap)engine.getGlobalContext().getObject(MapPath);
             if( map == null) 

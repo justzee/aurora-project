@@ -29,7 +29,7 @@ public class SmokingTest extends TestCase {
         FeatureAttach f3 = new FeatureAttach(null, name, "aurora.presentation.features.EventAware");
         ocManager.getClassRegistry().addFeatureAttach(f3);
         
-        FeatureAttach f4 = new FeatureAttach(null, name, "aurora.component.input.InputComponent");
+        FeatureAttach f4 = new FeatureAttach(null, name, "aurora.presentation.component.InputComponent");
         ocManager.getClassRegistry().addFeatureAttach(f4);
         
     }
@@ -44,15 +44,15 @@ public class SmokingTest extends TestCase {
         pm.setTemplateFactory(factory);
         
         setUpReg(ocManager, "textedit");
-        FeatureAttach f1 = new FeatureAttach(null, "textedit", "aurora.component.input.TextEditRenderer");
+        FeatureAttach f1 = new FeatureAttach(null, "textedit", "aurora.presentation.component.TextEditRenderer");
         ocManager.getClassRegistry().addFeatureAttach(f1);
         
         setUpReg(ocManager, "textarea");
-        f1 = new FeatureAttach(null, "textarea", "aurora.component.input.TextAreaRenderer");
+        f1 = new FeatureAttach(null, "textarea", "aurora.presentation.component.TextAreaRenderer");
         ocManager.getClassRegistry().addFeatureAttach(f1);
         
         setUpReg(ocManager, "select");
-        f1 = new FeatureAttach(null, "select", "aurora.component.input.SelectRenderer");
+        f1 = new FeatureAttach(null, "select", "aurora.presentation.component.SelectRenderer");
         ocManager.getClassRegistry().addFeatureAttach(f1);
         f1 = new FeatureAttach(null, "select", "aurora.presentation.features.OptionSelectOne");
         ocManager.getClassRegistry().addFeatureAttach(f1);

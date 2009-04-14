@@ -35,11 +35,15 @@ import org.lwap.mvc.ViewFactoryStore;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
-import uncertain.ocm.ObjectSpace;
+import uncertain.logging.DummyLogger;
+import uncertain.logging.ILogger;
+import uncertain.logging.ILoggerProvider;
+import uncertain.ocm.IObjectRegistry;
 
 public class WebApplication implements Application {
 	
-  public static final String APPLICATION_CONFIG_PATH = "application.xml";
+  public static final String LWAP_APPLICATION_LOGGING_TOPIC = "org.lwap.application";
+public static final String APPLICATION_CONFIG_PATH = "application.xml";
   public static final String DEFAULT_SERVICE_CLASS = "org.lwap.controller.MainService";
 
   public static final String KEY_APPLICATION_TITLE = "title";
@@ -118,7 +122,7 @@ public class WebApplication implements Application {
   ExceptionHandle			default_exception_handle = null;
   
   // logger
-  Logger					logger;
+  ILogger					logger;
   
   // sql performance recorder
   PerformanceRecorder       performance_recorder = null;
@@ -325,12 +329,12 @@ public class WebApplication implements Application {
   		object_pool.put(cls_name,obj);
   		return obj;
   	} catch( Throwable thr){
-  		logger.throwing(this.getClass().getName(), "getPooledObject", thr);
+  		logger.log(Level.SEVERE, "Can't get pooled object", thr);
   		return null;
   	}
   }
   
-  public Logger getLogger(){
+  public ILogger getLogger(){
   	return this.logger;
   }
   
@@ -443,9 +447,7 @@ public class WebApplication implements Application {
   				throw new ApplicationInitializeException(ex);
   			}
   		}
-  		
-  		logger.setLevel(Level.FINEST);
-  		
+
   		getCompositeLoader().setCacheEnabled(cacheEnable);
         
         setRecordRerformance(config.getBoolean( KEY_PERFORMANCE_RECORD, false));
@@ -519,7 +521,8 @@ public class WebApplication implements Application {
   	application_conf.put(KEY_APPLICATION_PATH, doc_path);
 
   	String title =  application_conf.getString(KEY_APPLICATION_TITLE, doc_path);
-  	logger = Logger.getLogger(title);
+  	//logger = Logger.getLogger(title);
+  	logger = DummyLogger.getInstance();
 
 	// init application
 	init(application_conf);
@@ -572,7 +575,7 @@ public class WebApplication implements Application {
   	if( handle != null){
   		handle.handleException(thr, this, svc, config);
   	} else{
-  		logger.warning(thr.getMessage());
+  	    logger.log(Level.WARNING, "Exception when executing service", thr);
   	}	 	
   	
   }
@@ -589,12 +592,18 @@ public class WebApplication implements Application {
 	 */
 	public void setUncertainEngine(UncertainEngine uncertainEngine) {
 	    this.uncertainEngine = uncertainEngine;
-        ObjectSpace space = uncertainEngine.getObjectSpace();
-        space.registerParameter(WebApplication.class, this);
-        space.registerParameter(IServiceListenerManager.class, serviceListenerManager);
+        IObjectRegistry space = uncertainEngine.getObjectSpace();
+        space.registerInstance(WebApplication.class, this);
+        space.registerInstance(IServiceListenerManager.class, serviceListenerManager);
         transaction_factory.setUncertainEngine(uncertainEngine);
         if(performance_recorder!=null)
-            space.registerParameter(PerformanceRecorder.class, performance_recorder);
+            space.registerInstance(PerformanceRecorder.class, performance_recorder);
+        // init logger
+        ILoggerProvider provider = (ILoggerProvider)space.getInstanceOfType(ILoggerProvider.class);
+        if(provider!=null){
+            logger = provider.getLogger(LWAP_APPLICATION_LOGGING_TOPIC);
+            logger.info("Logging service started");
+        }
 	}
     
     public IServiceListenerManager getServiceListenerManager(){

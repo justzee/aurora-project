@@ -26,7 +26,7 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.ClassRegistry;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 import uncertain.util.LoggingUtil;
 
 public class WebContextInit implements ServletContextListener {   
@@ -55,21 +55,21 @@ public class WebContextInit implements ServletContextListener {
         String pattern = ".*\\.config";
 
             uncertainEngine = new UncertainEngine(new File(config_dir), config_file);
-            ObjectSpace os = uncertainEngine.getObjectSpace();
+            IObjectRegistry os = uncertainEngine.getObjectSpace();
             //os.registerParameter(ServletConfig.class,config);
-            os.registerParameter(ServletContext.class,servletContext);
-            os.registerParameter(HttpServlet.class, this);
-              os.registerParameter(application);
+            os.registerInstance(ServletContext.class,servletContext);
+            os.registerInstance(HttpServlet.class, this);
+              os.registerInstance(application);
               CompositeLoader loader = uncertainEngine.getCompositeLoader();
               CompositeMap default_config = loader.loadFromClassPath("org.lwap.application.DefaultClassRegistry");
               ClassRegistry reg = (ClassRegistry)uncertainEngine.getOcManager().createObject(default_config);
               uncertainEngine.addClassRegistry(reg, false);
               //uncertainEngine.getOcManager().populateObject(default_config, uncertainEngine);
               if(application.data_source!=null){
-                  os.registerParameter(DataSource.class, application.data_source);
-                  os.registerParamOnce(TransactionFactory.class, application.transaction_factory);
+                  os.registerInstance(DataSource.class, application.data_source);
+                  os.registerInstanceOnce(TransactionFactory.class, application.transaction_factory);
               }            
-            LoggingUtil.setHandleLevels(uncertainEngine.getLogger().getParent(), Level.INFO);
+            //LoggingUtil.setHandleLevels(uncertainEngine.getLogger().getParent(), Level.INFO);
             //uncertainEngine.getLogger().setLevel(Level.INFO);
             //uncertainEngine.getCompositeLoader().setCaseInsensitive(true);
             

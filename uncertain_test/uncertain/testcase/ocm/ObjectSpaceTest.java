@@ -14,16 +14,16 @@ import uncertain.testcase.object.*;
  */
 public class ObjectSpaceTest extends TestCase {
     
-    ObjectSpace root;
-    ObjectSpace child;
+    ObjectRegistryImpl root;
+    ObjectRegistryImpl child;
 
     /*
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
         super.setUp();
-        root = new ObjectSpace();
-        child = new ObjectSpace(root);        
+        root = new ObjectRegistryImpl();
+        child = new ObjectRegistryImpl(root);        
     }
 
     /*
@@ -43,21 +43,21 @@ public class ObjectSpaceTest extends TestCase {
 
     public void testCreateInstance() throws Exception {
         // test for create simple instance
-        root.registerParameter(String.class, "seacat.zhou@hand-china.com");
-        root.registerParameter(int.class, new Integer(135014));
+        root.registerInstance(String.class, "seacat.zhou@hand-china.com");
+        root.registerInstance(int.class, new Integer(135014));
         ContactInfo2 c2 = (ContactInfo2)root.createInstance(ContactInfo2.class);
         assertNotNull(c2);
         assertEquals(c2.getEmail(),"seacat.zhou@hand-china.com");
         assertEquals(c2.getPhone(), 135014);
         // test for create instance from specified constructor
         Name n = new Name("Fan","Zhou");
-        root.registerParameter(Name.class, n);
+        root.registerInstance(Name.class, n);
         Person p1 = (Person)root.createInstance(Person.class);
         assertNotNull(p1);
         assertTrue(p1.getName().equals(n));
         // test for create instance from child ObjectSpace
-        child.registerParameter(ContactInfo2.class, c2);
-        root.registerParameter(boolean.class, new Boolean(true));
+        child.registerInstance(ContactInfo2.class, c2);
+        root.registerInstance(boolean.class, new Boolean(true));
         Person p2 = (Person)child.createInstance(Person.class);
         assertNotNull(p2);
         assertTrue(p2.getContactInfo().equals(c2));

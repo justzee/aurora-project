@@ -16,11 +16,13 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.lwap.database.datatype.DataTypeManager;
 import org.lwap.database.datatype.DatabaseTypeField;
 
 import uncertain.composite.CompositeMap;
+import uncertain.logging.ILogger;
 import uncertain.util.QuickTagParser;
 import uncertain.util.TagParseHandle;
 
@@ -37,6 +39,7 @@ public class JDBCStatement {
     QuickTagParser          parser   = new QuickTagParser(); 
     CompositeMap            context;
     long                    exec_time;
+    ILogger                 mLogger;
     
     /** Creates a new instance of JDBCStatement */
     public JDBCStatement(CompositeMap map) {
@@ -120,6 +123,9 @@ public class JDBCStatement {
 
    
    void setParam( PreparedStatement ps, int index, Object obj) throws SQLException {
+       if(mLogger!=null){
+           mLogger.log(Level.CONFIG, "Parameter No." + index + " -> " + obj);
+       }
        DatabaseTypeField fld = DataTypeManager.getType( obj);
        if(fld==null) throw new IllegalArgumentException("Can't get registered data type for object:"+obj);
        fld.setFieldObject( obj, ps, index);
@@ -246,5 +252,21 @@ public class JDBCStatement {
    
    public static int executeUpdate( Connection conn, String sql, CompositeMap context) throws SQLException{
        return new JDBCStatement(context).executeUpdate(conn,sql);
-   }    
+   }
+
+
+/**
+ * @return the logger
+ */
+public ILogger getLogger() {
+    return mLogger;
+}
+
+
+/**
+ * @param logger the logger to set
+ */
+public void setLogger(ILogger logger) {
+    this.mLogger = logger;
+}    
 }
