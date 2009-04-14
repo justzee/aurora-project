@@ -16,7 +16,7 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.ClassRegistry;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 import uncertain.util.LoggingUtil;
 
 public class EngineInitiator {
@@ -46,8 +46,8 @@ public class EngineInitiator {
 
         uncertainEngine = new UncertainEngine(new File(config_file_path), config_file_name);
         
-        ObjectSpace os = uncertainEngine.getObjectSpace();
-        os.registerParameter(application);
+        IObjectRegistry os = uncertainEngine.getObjectSpace();
+        os.registerInstance(application);
         CompositeLoader loader = uncertainEngine.getCompositeLoader();
         CompositeMap default_config = loader
                 .loadFromClassPath("org.lwap.application.DefaultClassRegistry");
@@ -55,8 +55,8 @@ public class EngineInitiator {
                 .createObject(default_config);
         uncertainEngine.addClassRegistry(reg, false);
         if (application.data_source != null) {
-            os.registerParameter(DataSource.class, application.data_source);
-            os.registerParamOnce(TransactionFactory.class,
+            os.registerInstance(DataSource.class, application.data_source);
+            os.registerInstanceOnce(TransactionFactory.class,
                     application.transaction_factory);
         }
         LoggingUtil.setHandleLevels(uncertainEngine.getLogger().getParent(),

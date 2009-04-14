@@ -128,6 +128,11 @@ public class DatabaseBatch extends DatabaseAccess implements IBatchExceptionHand
 				CompositeMap batch = (CompositeMap)parameter.getObject(batch_source);
 				if( batch != null) cl = batch.getChilds();
 			}
+			// modified to enable composite batch
+			if( cl == null) {
+			    if(parameter!=null) cl = parameter.getChilds();
+			}
+			// end modify
 			if( cl == null) return;
 			handle.batchBegin();
             int row=0;

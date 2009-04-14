@@ -16,7 +16,7 @@ import uncertain.core.IGlobalInstance;
 import uncertain.core.UncertainEngine;
 import uncertain.event.ISingleEventHandle;
 import uncertain.ocm.OCManager;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 
 public class ServiceListenerStore implements IGlobalInstance {
     
@@ -41,8 +41,8 @@ public class ServiceListenerStore implements IGlobalInstance {
     public void onInitialize(){
         Logger  logger = uncertainEngine.getLogger();
         OCManager ocManager = uncertainEngine.getOcManager();
-        ObjectSpace os = uncertainEngine.getObjectSpace();
-        WebApplication application = (WebApplication)os.getParameterOfType(WebApplication.class);
+        IObjectRegistry os = uncertainEngine.getObjectSpace();
+        WebApplication application = (WebApplication)os.getInstanceOfType(WebApplication.class);
         if(application==null) throw new ConfigurationError("Can't get WebApplication instance from UncertainEngine");
         IServiceListenerManager slm = application.getServiceListenerManager(); 
         

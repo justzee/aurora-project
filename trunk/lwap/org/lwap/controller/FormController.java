@@ -58,7 +58,7 @@ implements IFeature
      */
     public FormController(UncertainEngine engine) {
         super(engine);
-        exp_formater = (IExceptionFormater)engine.getObjectSpace().getParameterOfType(IExceptionFormater.class);
+        exp_formater = (IExceptionFormater)engine.getObjectSpace().getInstanceOfType(IExceptionFormater.class);
     }
 
     /* (non-Javadoc)

@@ -8,9 +8,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.transform.Transformer;
+import uncertain.logging.ILogger;
 
 /**
  * 
@@ -88,14 +90,18 @@ public class DatabaseQuery extends DatabaseAccess {
 	{
 		ResultSet rs = null;
 		String	  _sql = getSql();
+		ILogger logger = getLogger( parameter.getRoot() );
+		//System.out.println(logger.g)
 		if( _sql == null) throw new IllegalArgumentException("'Sql' missing for query statement");
 		try{
             long execTime = System.currentTimeMillis();
 			JDBCStatement stmt = new JDBCStatement(parameter);
+			stmt.setLogger(logger);
             rs = stmt.executeQuery(conn,_sql);
             rs.setFetchSize(50);
             String sql = stmt.getParsedSql();
-
+            logger.log(Level.CONFIG, "====================== Executing query sql ======================");
+            logger.log(Level.CONFIG, sql);
 			ResultSetLoader loader = new ResultSetLoader(rs);
             loader.setKeyCase(getKeyCase());
 			// create target map if "Target" attribute is set
@@ -114,7 +120,8 @@ public class DatabaseQuery extends DatabaseAccess {
 
 				long page_num  = this.getPageNum();
 				if( page_num<0) page_num  = getLong(parameter, this.getPageNumParamName(), 1);
-
+				
+				logger.log(Level.CONFIG, "page_size="+page_size+" page_num="+page_num);
 				loader.loadList(target_map,this.getElementName(),rs,page_size*(page_num-1), page_size);
 			
 			}else{
@@ -124,6 +131,7 @@ public class DatabaseQuery extends DatabaseAccess {
 			
             // record whole execution time, without transformation
             execTime = System.currentTimeMillis() - execTime;
+            logger.log(Level.CONFIG, "Total execute time:"+execTime);
             super.recordTime(sql, execTime);
             
 			CompositeMap transform_conf = getObjectContext().getChild(KEY_TRANSFORM_LIST);
@@ -131,15 +139,19 @@ public class DatabaseQuery extends DatabaseAccess {
 				target_map = Transformer.doBatchTransform(target_map,transform_conf.getChilds());
 				
 			if( getObjectContext().getString("Dump","").equalsIgnoreCase("true") && target_map != null) {
-				System.out.println("query sql:" + getSql());
+			    //logger.log(Level.CONFIG, "parameters:"+ parameter.toXML());
+			    logger.log(Level.CONFIG, "result:"+target_map.toXML());
+				/*
+			    System.out.println("query sql:" + getSql());
 				System.out.println("parameters:" + parameter.toXML());
 				System.out.println(target_map.toXML());
+				*/
 			}
 					
 			
 			 
 		}catch(SQLException ex){
-            dumpSql(ex,_sql);
+            dumpSql(logger, ex,_sql);
             throw ex;
         }
         finally{

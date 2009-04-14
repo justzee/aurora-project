@@ -32,7 +32,7 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.ClassRegistry;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 import uncertain.util.LoggingUtil;
 
 

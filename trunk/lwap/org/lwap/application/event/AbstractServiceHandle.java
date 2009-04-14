@@ -5,7 +5,7 @@ package org.lwap.application.event;
 
 import uncertain.composite.CompositeMap;
 import uncertain.event.AbstractEventHandle;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 
 public abstract class AbstractServiceHandle extends AbstractEventHandle {
     

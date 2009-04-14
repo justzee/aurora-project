@@ -47,7 +47,7 @@ public class SchemaFactory  {
     
     public SchemaFactory(UncertainEngine e){
         uncertainEngine = e;
-        uncertainEngine.getObjectSpace().registerParameter(SchemaFactory.class,this);
+        uncertainEngine.getObjectSpace().registerInstance(SchemaFactory.class,this);
         baseDirFile = uncertainEngine.getConfigDirectory();
     }
     
@@ -408,7 +408,7 @@ public class SchemaFactory  {
         	categoryMap.addChild(cm);
 		} 
         System.out.println("SchemaFactory inited "+this);
-        uncertainEngine.getObjectSpace().registerParameter(SchemaFactory.class, this);
+        uncertainEngine.getObjectSpace().registerInstance(SchemaFactory.class, this);
     }
  
     public static void main(String args[]) throws SAXException, IOException {

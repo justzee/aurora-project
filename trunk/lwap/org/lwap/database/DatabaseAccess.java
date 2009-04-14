@@ -16,6 +16,8 @@ import org.lwap.application.BaseService;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 
 /**
  * <database-access>
@@ -53,7 +55,8 @@ import uncertain.composite.DynamicObject;
  */
 public abstract class DatabaseAccess extends DynamicObject {
 	
-	BaseService	               service;
+	public static final String LOGGING_TOPIC = "org.lwap.database";
+    BaseService	               service;
     PerformanceRecorder        recorder;
     String                     owner;
     
@@ -64,6 +67,12 @@ public abstract class DatabaseAccess extends DynamicObject {
         System.err.println(sql);
     }
 	
+    public static void dumpSql( ILogger logger, SQLException ex, String sql ){
+        logger.warning("============ Error when executing SQL ===================");
+        logger.warning(ex.getMessage());
+        logger.warning(sql);
+    }    
+    
 	public void setService( BaseService s){
 		service = s;
 	}
@@ -235,5 +244,10 @@ public abstract class DatabaseAccess extends DynamicObject {
 	public void setAccessType(String type){
 		this.getObjectContext().setName(type);
 	}
+	
+	public ILogger getLogger( CompositeMap context ){
+	    return LoggingContext.getLogger(context, LOGGING_TOPIC); 
+	}
+
 
 }

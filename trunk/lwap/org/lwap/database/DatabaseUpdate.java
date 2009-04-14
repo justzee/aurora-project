@@ -7,8 +7,10 @@ package org.lwap.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import uncertain.composite.CompositeMap;
+import uncertain.logging.ILogger;
 
 /**
  * 
@@ -47,28 +49,25 @@ public class DatabaseUpdate extends DatabaseAccess {
 		CompositeMap parameter,
 		CompositeMap target)  throws SQLException
 	{
+	    ILogger logger = getLogger( parameter.getRoot() );
 		String	  _sql = getSql();
 		if( _sql == null) throw new IllegalArgumentException("'Sql' missing for update statement");
         boolean dump = false;
         Boolean d = getBoolean("Dump");
-        if(d!=null)
-            dump = d.booleanValue();
-        if( dump){
-            System.out.println("Update sql:"+_sql);
-            System.out.println("Parameter:"+parameter.toXML());
-        }
+        logger.log(Level.CONFIG, "====================== Executing update sql: ======================");
+        logger.log(Level.CONFIG, _sql);
+        //logger.log(Level.CONFIG, "Parameter:\r\n"+parameter.toXML());
 		try{
             JDBCStatement js = new JDBCStatement(parameter);
+            js.setLogger(logger);
     		long n = js.executeUpdate(conn, _sql);
             super.recordTime(js.getParsedSql(), js.getExecutionTime());
     		String target_key = getTarget();		
     		if( target_key == null) target_key = KEY_DEFAULT_RESULT;
     		target.putObject(target_key,new Long(n), true);
-            if( dump ){
-                System.out.println("Update finished, "+n+" records affected");
-            }
+    		logger.log(Level.CONFIG, "Update finished, "+n+" records affected");
         }catch(SQLException ex){
-            dumpSql(ex, _sql);
+            dumpSql(logger, ex, _sql);
             throw ex;
         }
 	}
