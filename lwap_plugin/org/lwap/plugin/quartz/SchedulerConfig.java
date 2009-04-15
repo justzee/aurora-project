@@ -15,7 +15,7 @@ import org.quartz.Trigger;
 
 import uncertain.core.IGlobalInstance;
 import uncertain.core.UncertainEngine;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 
 public class SchedulerConfig implements IGlobalInstance {
     
@@ -106,14 +106,14 @@ public class SchedulerConfig implements IGlobalInstance {
     }    
     
     public void onInitialize() throws Exception {
-        ObjectSpace os = uncertainEngine.getObjectSpace();
+        IObjectRegistry os = uncertainEngine.getObjectSpace();
         try{
             scheduler = schedulerFactory.getScheduler();
         }catch(Throwable er){
             er.printStackTrace();
         }
-        os.registerParameter(SchedulerFactory.class, schedulerFactory);
-        os.registerParameter(Scheduler.class, scheduler);
+        os.registerInstance(SchedulerFactory.class, schedulerFactory);
+        os.registerInstance(Scheduler.class, scheduler);
         int count=0;
         for(count=0; count<instances.length; count++){
             JobInstance ji = instances[count];
