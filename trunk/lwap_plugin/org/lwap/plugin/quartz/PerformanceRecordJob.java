@@ -9,7 +9,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import uncertain.core.UncertainEngine;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 
 public class PerformanceRecordJob implements Job {
 
@@ -19,9 +19,8 @@ public class PerformanceRecordJob implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         UncertainEngine engine = SchedulerConfig.getUncertainEngine(context.getJobDetail().getJobDataMap());
-        ObjectSpace os = engine.getObjectSpace();
         try{
-            PerformanceModel model = (PerformanceModel)os.createInstance(PerformanceModel.class);
+            PerformanceModel model = (PerformanceModel)engine.getObjectCreator().createInstance(PerformanceModel.class);
             model.save();
             System.out.println("records saved at "+ new java.util.Date());
         }catch(Exception ex){

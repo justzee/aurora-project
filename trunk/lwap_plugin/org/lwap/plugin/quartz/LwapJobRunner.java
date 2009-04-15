@@ -11,7 +11,7 @@ import org.quartz.JobExecutionException;
 
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.OCManager;
-import uncertain.ocm.ObjectSpace;
+import uncertain.ocm.IObjectRegistry;
 
 public class LwapJobRunner implements Job {
 
@@ -20,7 +20,7 @@ public class LwapJobRunner implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         UncertainEngine engine = SchedulerConfig.getUncertainEngine(context.getJobDetail().getJobDataMap());
-        ObjectSpace os = engine.getObjectSpace();
+        IObjectRegistry os = engine.getObjectSpace();
         LwapJobDetail detail = (LwapJobDetail) context.getJobDetail();
         Class cls_to_run = detail.getTargetJobClass();
         String method = detail.getMethod();
@@ -43,9 +43,9 @@ public class LwapJobRunner implements Job {
                 if(JobExecutionContext.class.equals(types[i]))
                     args[i] = context;
                 else    
-                    args[i] = os.getParameterOfType(types[i]);
+                    args[i] = os.getInstanceOfType(types[i]);
             }
-            Object instance = os.createInstance(cls_to_run);
+            Object instance = engine.getObjectCreator().createInstance(cls_to_run);
             OCManager om = engine.getOcManager();
             om.populateObject(detail.getConfig(), instance);
             job_method.invoke(instance, args);
