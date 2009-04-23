@@ -231,11 +231,17 @@ public class JDBCStatement {
    public ResultSet executeQuery( Connection conn, String sql) throws SQLException{
        exec_time = 0;
    	         
-        PreparedStatement ps = getStatement( conn, sql);
-        exec_time = System.currentTimeMillis();
-        ResultSet rs = ps.executeQuery();
-        exec_time = System.currentTimeMillis() - exec_time;
-        return rs;
+        PreparedStatement ps = null;
+        try{
+            ps = getStatement( conn, sql);
+            exec_time = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            exec_time = System.currentTimeMillis() - exec_time;
+            return rs;
+        }finally{
+            DBUtil.closeStatement(ps);
+                
+        }
       /*
        try{     
       } catch(SQLException ex){
