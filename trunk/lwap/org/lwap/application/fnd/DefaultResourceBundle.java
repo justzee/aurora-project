@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
  * @author Jian
  *
  */
-public class FSMSResourceBundle extends ResourceBundle {
+public class DefaultResourceBundle extends ResourceBundle {
     
     HashMap resources = new HashMap();
 

@@ -102,15 +102,11 @@ public class PolyStateService extends BaseService {
 	
 
 	/** override to call detectServiceState() prior to super.service() */
-	public void service(HttpServlet servlet, HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException
+	public void service(HttpServlet servlet, HttpServletRequest request,HttpServletResponse response) throws Exception
 	{
-		try{
-			super.initService(servlet, request,response);
-			initStateTable();
-			detectServiceState();			
-		} catch( InvalidInvokeException ex){
-			throw new ServletException(ex);
-		}
+		super.initService(servlet, request,response);
+		initStateTable();
+		detectServiceState();			
 			
 		CompositeMap state_config = (CompositeMap)this.existing_states.get(getState());
 		if( state_config != null)

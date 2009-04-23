@@ -30,6 +30,8 @@ public abstract class ServiceImpl implements Service {
 	
 	// result of service, used in service dispatch
 	String		ServiceResult;
+	
+	String      error_description;
 
 	public void setApplication( Application app ){
 		application = (WebApplication)app;
@@ -89,7 +91,7 @@ public abstract class ServiceImpl implements Service {
 			HttpServlet			servlet, 
 			HttpServletRequest  request,
 			HttpServletResponse response)
-		throws IOException, ServletException;
+		throws Exception;
 	/**
 	 * Returns the serviceName.
 	 * @return String
@@ -128,6 +130,14 @@ public abstract class ServiceImpl implements Service {
 		if( service_context != null ) service_context.clear();
 		servlet = null;
 		application = null;
+	}
+	
+	public String getErrorDescription(){
+	    return error_description;
+	}
+	
+	protected void setErrorDescription( String desc ){
+	    this.error_description = desc;
 	}
 
 }

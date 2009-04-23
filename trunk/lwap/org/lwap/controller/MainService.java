@@ -70,6 +70,8 @@ implements Configuration.IParticipantListener
     public static final String KEY_RESOURCE_BUNDLE = "_instance.java.util.ResourceBundle";    
     public static final String KEY_IMPORT_SUCCESS = "ImportSuccess";
     
+    static final String LINE_SEPARATOR = System.getProperty("line.separator");    
+    
     static HashMap	proc_map = new HashMap();
     
     UncertainEngine		uncertainEngine;
@@ -207,7 +209,7 @@ implements Configuration.IParticipantListener
         return proc;
     }
     
-    protected boolean runProcedure(ProcedureRunner r, String proc_name) throws ServletException {
+    protected boolean runProcedure(ProcedureRunner r, String proc_name) throws Throwable {
         //Procedure proc = uncertainEngine.loadProcedure(proc_name);
         Procedure proc = loadProcedure(proc_name);
         if(proc==null)  throw new ServletException("Can't load procedure "+proc_name);
@@ -246,7 +248,7 @@ implements Configuration.IParticipantListener
                     }
                 }
             }    
-		    throw new ServletException(r.getException());
+		    throw r.getException();
 		}
         return true;
     }
@@ -351,7 +353,7 @@ implements Configuration.IParticipantListener
                 try{
                     conn.rollback();
                 }catch(SQLException sex){
-                    sex.printStackTrace();
+                    uncertainEngine.logException("Error when closing connection", sex);
                 }
             }
             DBUtil.closeConnection(conn);
@@ -364,6 +366,14 @@ implements Configuration.IParticipantListener
                 proc.clear();
         }
 
+    }
+    
+    void createErrorDesc(){
+        StringBuffer msg = new StringBuffer();
+        msg.append("service name:").append(getServiceName()).append(LINE_SEPARATOR);
+        msg.append("context dump:").append(LINE_SEPARATOR);
+        msg.append(getServiceContext().toXML()).append(LINE_SEPARATOR);
+        super.setErrorDescription(msg.toString());
     }
     
     public void cleanUp(){
@@ -400,24 +410,29 @@ implements Configuration.IParticipantListener
         }
     }
     
-    public String getLoggingTopic(){
-        return "page."+this.getServiceName();        
+    String getLoggingTopic(){
+        return "org.lwap.service";      
+    }
+    
+    public boolean isTraceOn(){
+        return service_properties.getBoolean("trace", false);   
     }
 
     /**
      * @see org.lwap.application.Service#service(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     public void service(HttpServlet servlet, HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+            HttpServletResponse response) throws Exception {
         
         CompositeMap _context = getServiceContext();
         RuntimeContext rtc = RuntimeContext.getInstance(_context);        
         try{
-            boolean trace = service_properties.getBoolean("trace", false);            
+            boolean trace = isTraceOn();         
             doinit(servlet,request,response);
             prepare();
             ILoggerProvider provider = LoggingContext.getLoggerProvider(_context);
     		mLogger = provider.getLogger(getLoggingTopic());
+    		//System.out.println("Using logger:"+mLogger+" from "+provider);
     		rtc.setInstanceOfType(ILogger.class, mLogger);
     		
             
@@ -429,6 +444,8 @@ implements Configuration.IParticipantListener
             runner.setContext(_context);
             runner.setConfiguration(configuration);
             runner.addFirstExceptionHandle(new ConnectionRollback());
+            ILogger proc_logger = provider.getLogger(ProcedureRunner.LOGGING_TOPIC);
+            runner.setLogger(proc_logger);
 
             // get pre service proc name
             String pre_service_proc = ControllerProcedures.PRE_SERVICE;
@@ -489,7 +506,14 @@ implements Configuration.IParticipantListener
     		    _context.put(KEY_VIEW_OUTPUT, new Boolean(hasViewOutput()));
     
     		runProcedure(runner, ControllerProcedures.CREATE_RESPONSE);
-        
+        }catch(Exception ex){
+            createErrorDesc();
+            uncertainEngine.logException( getErrorDescription(), ex);
+            throw ex;
+        }catch(Throwable err){
+            createErrorDesc();
+            uncertainEngine.logException( getErrorDescription(), err);
+            throw new RuntimeException(err);
         }finally{
             cleanUp();
         }

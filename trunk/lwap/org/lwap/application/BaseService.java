@@ -639,7 +639,7 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 	 *  perform inter-service jump.
 	 */
 	public void service(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response )
-				  throws IOException, ServletException{
+				  throws Exception{
 	
 		initService(servlet, request,response);
 		parseParameter();

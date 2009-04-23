@@ -229,7 +229,9 @@ public class FacadeServlet extends HttpServlet {
          return;
   	 try{ 	 
   	 	service.service(this, request,response );
-  	 } finally {
+  	 }catch(Throwable thr){
+         throw new ServletException(thr);        
+     }finally {
   	 	service.finish();
   	 }
   	 

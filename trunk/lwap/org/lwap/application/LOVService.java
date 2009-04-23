@@ -258,25 +258,23 @@ public class LOVService extends MainService {
     /**
      * @see org.lwap.controller.MainService#service(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void service(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        try{
-            super.doinit(servlet, request, response);
-            String config_name = request.getParameter(KEY_LOV_CONFIG) ;
-            if(config_name==null) throw new IllegalArgumentException(KEY_LOV_CONFIG + " is null ");
-            initLovConfig(config_name);
-            /*
-            if(!checkLovAccess()){
-                String url = SessionInitializer.getNoAccessURL(this, "${/lov/@FunctionCode}" );
-                response.sendRedirect(url);
-                return;
-            }
-            */
-            createQueryStatement();
-            createQueryForm();
-            createTable();
-        }catch(org.xml.sax.SAXException ex){
-            throw new ServletException("Error parsing lov config file", ex);
-        }        
+    public void service(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response)
+        throws Exception 
+    {
+        super.doinit(servlet, request, response);
+        String config_name = request.getParameter(KEY_LOV_CONFIG) ;
+        if(config_name==null) throw new IllegalArgumentException(KEY_LOV_CONFIG + " is null ");
+        initLovConfig(config_name);
+        /*
+        if(!checkLovAccess()){
+            String url = SessionInitializer.getNoAccessURL(this, "${/lov/@FunctionCode}" );
+            response.sendRedirect(url);
+            return;
+        }
+        */
+        createQueryStatement();
+        createQueryForm();
+        createTable();
         super.service(servlet, request, response);
     }
     

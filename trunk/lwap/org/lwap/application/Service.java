@@ -37,8 +37,10 @@ public interface Service {
 	public void setServiceName(String name);
 	
 	public void service(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response )
-				  throws IOException, ServletException;
+				  throws Exception;
 				  
-	public void finish();			  
+	public void finish();			
+	
+	public String getErrorDescription();
 
 }

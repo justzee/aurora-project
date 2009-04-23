@@ -38,7 +38,7 @@ public class ApplicationInitializer implements
 			DataSource ds = webapp.getDataSource();
 			if( ds == null) throw new ApplicationInitializeException("FSMS ApplicationInitializer:Can't get DataSource from app");				
 			conn = ds.getConnection();
-			FSMSResourceBundleFactory fact = new FSMSResourceBundleFactory(conn);
+			DefaultResourceBundleFactory fact = new DefaultResourceBundleFactory(webapp.getApplicationConfig(),  conn);
 			webapp.setResourceBundleFactory(fact);
 			webapp.getApplicationConfig().put(SERVICE_MAP,fact.getServiceMap());
 		} catch(SQLException ex){

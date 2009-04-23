@@ -5,14 +5,16 @@ package org.lwap.action;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.lwap.application.WebApplication;
 import org.lwap.controller.MainService;
 
 import uncertain.composite.CompositeMap;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.ocm.IConfigurable;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
@@ -26,16 +28,12 @@ public class SessionOperate extends AbstractEntry implements IConfigurable {
     String  mOperationName;
     String  mSource;
     String  mTarget;
-    
-    Logger  mLogger;
-
 
     /**
      * @param logger
      */
-    public SessionOperate(Logger logger) {
+    public SessionOperate() {
         super();
-        mLogger = logger;
     }
 
     /**
@@ -89,6 +87,7 @@ public class SessionOperate extends AbstractEntry implements IConfigurable {
     }
     
     public void writeSession(HttpServletRequest request, CompositeMap context ){
+        ILogger mLogger = LoggingContext.getLogger(context, WebApplication.LWAP_APPLICATION_LOGGING_TOPIC);
         CompositeMap session_map = null;
         // Write all session fields
         if(mSource==null){

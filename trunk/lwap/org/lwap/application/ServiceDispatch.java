@@ -146,7 +146,7 @@ public class ServiceDispatch {
 
 					// put origin dispath
 					origin_service.setCallingService(caller);
-				} catch(ServiceInstantiationException ex){
+				} catch(Exception ex){
 					throw new ServletException( ex.getCause() );
 				}
 		}else{
