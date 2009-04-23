@@ -60,18 +60,20 @@ public abstract class DatabaseAccess extends DynamicObject {
     PerformanceRecorder        recorder;
     String                     owner;
     
-    public static void dumpSql( SQLException ex, String sql ){
-        System.err.println("============ Error when executing SQL ===================");
-        System.err.println(new Date());
-        System.err.println(ex.getMessage());
-        System.err.println(sql);
+    ILogger                    mLogger;
+    ILogger                    mErrorLogger;
+
+    public void dumpSql( SQLException ex, String sql ){
+        mErrorLogger.severe("============ Error when executing SQL ===================");
+        mErrorLogger.severe(sql);
+        mErrorLogger.severe(ex.getMessage());
     }
-	
-    public static void dumpSql( ILogger logger, SQLException ex, String sql ){
-        logger.warning("============ Error when executing SQL ===================");
-        logger.warning(ex.getMessage());
-        logger.warning(sql);
-    }    
+    
+    public void initLogger( CompositeMap context ){
+        CompositeMap m = context.getRoot();
+        mLogger = LoggingContext.getLogger(m, LOGGING_TOPIC); 
+        mErrorLogger = LoggingContext.getErrorLogger(m);
+    }
     
 	public void setService( BaseService s){
 		service = s;
@@ -245,9 +247,10 @@ public abstract class DatabaseAccess extends DynamicObject {
 		this.getObjectContext().setName(type);
 	}
 	
+	/*
 	public ILogger getLogger( CompositeMap context ){
 	    return LoggingContext.getLogger(context, LOGGING_TOPIC); 
 	}
-
+    */
 
 }

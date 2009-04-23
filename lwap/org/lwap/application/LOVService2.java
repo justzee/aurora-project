@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -223,18 +222,14 @@ public class LOVService2 extends MainService {
     /**
      * @see org.lwap.controller.MainService#service(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void service(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        try{
-            String config_name = request.getParameter(KEY_LOV_CONFIG) ;
-                //getParameters().getString(KEY_LOV_CONFIG);
-            
-            initLovConfig(config_name);
-            createQueryStatement();
-            createQueryForm();
-            createTable();
-        }catch(org.xml.sax.SAXException ex){
-            throw new ServletException("Error parsing lov config file", ex);
-        }        
+    public void service(HttpServlet servlet, HttpServletRequest request, HttpServletResponse response) 
+        throws Exception
+    {
+        String config_name = request.getParameter(KEY_LOV_CONFIG) ;
+        initLovConfig(config_name);
+        createQueryStatement();
+        createQueryForm();
+        createTable();
         super.service(servlet, request, response);
     }
     

@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.lwap.application.ResourceBundleFactory;
+import org.lwap.database.DBUtil;
 import org.lwap.database.ResultSetLoader;
 
 import uncertain.composite.CompositeMap;
@@ -22,13 +23,15 @@ import uncertain.composite.CompositeMap;
  * @author Jian
  *
  */
-public class FSMSResourceBundleFactory implements ResourceBundleFactory {
+public class DefaultResourceBundleFactory implements ResourceBundleFactory {
 
-    FSMSResourceBundle resourceBundle = new FSMSResourceBundle();
+    DefaultResourceBundle resourceBundle = new DefaultResourceBundle();
     CompositeMap service_map = new CompositeMap("service");
     
-    public FSMSResourceBundleFactory(Connection cn) {
-        loadResource(cn);
+    public DefaultResourceBundleFactory( CompositeMap cfg, Connection cn) 
+        throws SQLException
+    {
+        loadResource(cfg, cn);
     }
 
 
@@ -38,12 +41,18 @@ public class FSMSResourceBundleFactory implements ResourceBundleFactory {
      * @exception  ResourceNotFoundException
      * @param cn  Connection
     */
-    private void loadResource(Connection cn){
+    public void loadResource( CompositeMap cfg, Connection cn)
+        throws SQLException
+    {
         PreparedStatement      pst = null;
         ResultSet        rsContent = null;
         //int               localeId = 0;
-        String strSqlQueryContent  = "select t.code,t.prompt from  fnd_prompt t";
-        String strSqlService = "select * from fnd_service t ";
+        
+        String prompt_table_name = cfg.getString("prompt_table", "fnd_prompt");
+        String service_table_name = cfg.getString("service_table", "fnd_service");
+        
+        String strSqlQueryContent  = "select t.code,t.prompt from  " + prompt_table_name + " t";
+        String strSqlService = "select * from " + service_table_name + " t ";
         if (cn == null) {
             System.err.println("connection is null");
             return;
@@ -77,14 +86,9 @@ public class FSMSResourceBundleFactory implements ResourceBundleFactory {
                     key = key.toLowerCase();
                     service_map.put(key, config);
                 }
-        }catch(Exception e){
-            e.printStackTrace();
         }finally{
-            try{
-              if (rsContent != null) rsContent.close();
-              if (pst != null) pst.close();
-            }catch(SQLException e){
-            }
+              DBUtil.closeResultSet(rsContent);
+              DBUtil.closeStatement(pst);
         }
     }
 

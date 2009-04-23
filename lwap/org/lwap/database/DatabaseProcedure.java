@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import org.lwap.database.datatype.DataTypeManager;
 import org.lwap.database.datatype.DatabaseTypeField;
@@ -16,6 +17,7 @@ import org.lwap.database.datatype.DatabaseTypeField;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.core.ConfigurationError;
+import uncertain.logging.ILogger;
 
 /**
  * 
@@ -102,6 +104,7 @@ public class DatabaseProcedure extends DatabaseAccess {
 		CompositeMap target)
 		throws SQLException {
 		
+	    initLogger(parameter);
 		StringBuffer sql_stmt = new StringBuffer();
 		int 		 param_index = 1;
 		ArrayList	 params = null;
@@ -114,6 +117,7 @@ public class DatabaseProcedure extends DatabaseAccess {
 		String	 name = getString(KEY_NAME);
 		if( name == null) throw new IllegalArgumentException("DatabaseProcedure: must specify 'Name' for procedure to call");
 		name = TextParser.parse(name, parameter);
+		mLogger.log(Level.CONFIG, "Executing <procedure>, name="+name);
 		
 		// get target CompositeMap to hold return values
 		CompositeMap target_context = null;
@@ -186,13 +190,13 @@ public class DatabaseProcedure extends DatabaseAccess {
 		
         String sql = sql_stmt.toString();        
         /* for debug */
-        if( "true".equals(getString("Dump"))){
-            System.out.println("DatabaseProdecure:"+sql);
-            if( parameter == null)
-                System.out.println("Parameter is null");
-            else
-                System.out.println("Parameter:" + parameter.toXML());   
-        } 
+        mLogger.log(Level.CONFIG, "Sql statement="+sql);
+        /*
+        if( parameter == null)
+            mLogger.log(Level.CONFIG,"Parameter is null");
+        else
+            mLogger.log(Level.CONFIG,"Parameter:" + parameter.toXML());
+        */
         long execTime = System.currentTimeMillis();        
 		CallableStatement stmt = conn.prepareCall(sql);	
 		
@@ -200,19 +204,24 @@ public class DatabaseProcedure extends DatabaseAccess {
 			// set input value
 			for( int i=0; i<params.size(); i++){
 				Parameter pm = (Parameter)params.get(i);
+				StringBuffer info = new StringBuffer();
+				info.append("Parameter No.").append(i+1).append(" ->");
 				if( pm.data_value != null)	{
                     if(pm.dt==null) throw new ConfigurationError("Can't get DataType for parameter "+pm.toString());
 					pm.dt.setFieldObject(pm.data_value,stmt,i+1);
+					info.append(pm.data_value);					
 				}else{
-					if( pm.return_field == null){ 
-//						System.out.println("set null:"+pm);
+					if( pm.return_field == null){
 						stmt.setNull(i+1, pm.dt.getSQLType());
+						info.append("null");
 					}
 				}
                 // define output parameter
 				if( pm.return_field != null){
                     pm.registerOutParameter(stmt, i+1);
+                    info.append(" return to {"+pm.return_field+"}");
                 }
+				mLogger.log(Level.CONFIG, info.toString());
 			}
 			stmt.execute();
 
@@ -223,12 +232,18 @@ public class DatabaseProcedure extends DatabaseAccess {
 					if( pm.dt == null) throw new SQLException("DatabaseProcedure: can't decide DataType for output parameter No." + (i+1)+", maybe InputField is null");
 					Object obj = pm.dt.getObject(stmt,i+1);
 					target_context.putObject(pm.return_field,obj,true);
+					mLogger.log(Level.CONFIG, "returning {"+pm.return_field+"} -> " + obj==null?"null":obj.toString());
 				}
 			}
             
             // record execution time
-            super.recordTime(sql, System.currentTimeMillis()-execTime);
-		} finally{
+			long exec_time = System.currentTimeMillis()-execTime;
+            super.recordTime(sql, exec_time);
+            mLogger.log(Level.CONFIG, "Total time:"+exec_time);
+		}catch(SQLException ex){
+            dumpSql(ex,sql_stmt.toString());
+            throw ex;
+        }finally{
 			if( stmt != null) stmt.close();
 		}				
 		

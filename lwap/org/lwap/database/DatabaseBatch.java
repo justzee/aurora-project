@@ -8,8 +8,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import uncertain.composite.CompositeMap;
+import uncertain.logging.ILogger;
 
 /**
  * <batch BatchSource="/path/to/source" 
@@ -105,9 +107,14 @@ public class DatabaseBatch extends DatabaseAccess implements IBatchExceptionHand
 		CompositeMap parameter,
 		CompositeMap target)
 		throws SQLException {
-
+	        initLogger(parameter);
+	        mLogger.log(Level.CONFIG, "Executing <batch>");
+	        
 			Collection sub_stmts = getObjectContext().getChilds();
-			if( sub_stmts == null) return;
+			if( sub_stmts == null){
+			    mLogger.log(Level.CONFIG, "No sub statement defined, exiting");
+			    return;
+			}
             
             /*
 			String param_name  = getObjectContext().getString(KEY_PARAMETER_NAME);
@@ -138,6 +145,7 @@ public class DatabaseBatch extends DatabaseAccess implements IBatchExceptionHand
             int row=0;
 			Iterator it = cl.iterator();
 			while( it.hasNext()){
+			    mLogger.log(Level.CONFIG, "batch record No."+row);
 				CompositeMap  child_param = (CompositeMap) it.next();
 				try{
                     DatabaseAccess.execute(sub_stmts, conn, child_param, child_param);
@@ -150,6 +158,7 @@ public class DatabaseBatch extends DatabaseAccess implements IBatchExceptionHand
                 }
                 row++;
 			}
+			mLogger.log(Level.CONFIG, "Total "+row+" records in batch");
             if(failed_target!=null)parameter.putObject(getFailedRecordPath(), failed_target, true);
             String path = getSuccessFlagPath();
             if(path!=null) parameter.putObject(path, new Boolean(is_success), true);

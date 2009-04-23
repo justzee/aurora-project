@@ -49,25 +49,25 @@ public class DatabaseUpdate extends DatabaseAccess {
 		CompositeMap parameter,
 		CompositeMap target)  throws SQLException
 	{
-	    ILogger logger = getLogger( parameter.getRoot() );
+	    initLogger(parameter);
 		String	  _sql = getSql();
 		if( _sql == null) throw new IllegalArgumentException("'Sql' missing for update statement");
         boolean dump = false;
         Boolean d = getBoolean("Dump");
-        logger.log(Level.CONFIG, "====================== Executing update sql: ======================");
-        logger.log(Level.CONFIG, _sql);
-        //logger.log(Level.CONFIG, "Parameter:\r\n"+parameter.toXML());
+        mLogger.log(Level.CONFIG, "Executing <update>");
+        mLogger.log(Level.CONFIG, _sql);
+        //mLogger.log(Level.CONFIG, "Parameter:\r\n"+parameter.toXML());
 		try{
             JDBCStatement js = new JDBCStatement(parameter);
-            js.setLogger(logger);
+            js.setLogger(mLogger);
     		long n = js.executeUpdate(conn, _sql);
             super.recordTime(js.getParsedSql(), js.getExecutionTime());
     		String target_key = getTarget();		
     		if( target_key == null) target_key = KEY_DEFAULT_RESULT;
     		target.putObject(target_key,new Long(n), true);
-    		logger.log(Level.CONFIG, "Update finished, "+n+" records affected");
+    		mLogger.log(Level.CONFIG, "Update finished, "+n+" records affected");
         }catch(SQLException ex){
-            dumpSql(logger, ex, _sql);
+            dumpSql(ex, _sql);
             throw ex;
         }
 	}

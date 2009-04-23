@@ -20,6 +20,7 @@
 		<class-mapping elementName="session-create" className="org.lwap.action.SessionOperate"/>				
 
 		<class-mapping elementName="service-listeners" className="org.lwap.application.event.ServiceListenerStore" />
+		<class-mapping elementName="service-logging" className="org.lwap.application.ServiceLogging" />
 		
 		<feature-attach elementName="session-transfer" featureClass="org.lwap.feature.SessionTransfer"/>
 		<feature-attach elementName="static-model" featureClass="org.lwap.feature.StaticModel"/>
