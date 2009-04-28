@@ -93,9 +93,11 @@ public class DatabaseQuery extends DatabaseAccess {
 		initLogger( parameter );
 		mLogger.log(Level.CONFIG, "Executing <query>");
 		if( _sql == null) throw new IllegalArgumentException("'Sql' missing for query statement");
+		
+		JDBCStatement stmt = null;
 		try{
             long execTime = System.currentTimeMillis();
-			JDBCStatement stmt = new JDBCStatement(parameter);
+			stmt = new JDBCStatement(parameter);
 			stmt.setLogger(mLogger);
             rs = stmt.executeQuery(conn,_sql);
             rs.setFetchSize(50);
@@ -153,6 +155,7 @@ public class DatabaseQuery extends DatabaseAccess {
         }
         finally{
 			if( rs != null) rs.close();
+			if( stmt != null ) stmt.close();
 		}
 		
 	}
@@ -266,10 +269,9 @@ public class DatabaseQuery extends DatabaseAccess {
 	public static void main(String[] args) throws Exception {
 
 	   DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-       Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@hr:1521:orcl","hrms","hrms");
+       Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@192.168.11.242:1521:hrms","handhr","handhr");
 
 	   String sql = "select employee_code,name,email from hr_lbr_employee l where (l.email like ${@email} or l.work_date<>${@work_date}) ";       
-//	   String sql = "select employee_code,name,email from hr_lbr_employee l where  l.employee_code='109' ";       
        CompositeMap result = new CompositeMap("result");
        CompositeMap params = new CompositeMap("param");
        params.put("email", "%s%");
@@ -277,21 +279,12 @@ public class DatabaseQuery extends DatabaseAccess {
        params.put("pagenum", new Long(1));
        params.put("pagesize", new Long(50));
        
-//	   System.out.println("default:"+DatabaseQuery.KEY_PAGENUM_PARAM_NAME ) ;
-/*
-	   DatabaseQuery query = DatabaseQuery.createQuery(sql);       
-	   query.setElementName("employee");
-	   */
-
-//	   DatabaseQuery query = DatabaseQuery.createQuery(sql);
-
 	   DatabaseQuery query = DatabaseQuery.createPagedQuery(sql,"employee");       
 	   query.setTarget("/model/employee-list");
 		System.out.println(query.getObjectContext().toXML());
 
 	   query.execute(conn,params,result);
        System.out.println(result.toXML());
-//       conn.commit();
        conn.close();
 
 	}

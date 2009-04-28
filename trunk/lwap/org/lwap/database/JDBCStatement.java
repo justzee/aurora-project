@@ -40,18 +40,13 @@ public class JDBCStatement {
     CompositeMap            context;
     long                    exec_time;
     ILogger                 mLogger;
+    PreparedStatement       mStatement;
     
     /** Creates a new instance of JDBCStatement */
     public JDBCStatement(CompositeMap map) {
         context = map;
     }
-/*
-    void record(long prev_time){
-        if(recorder==null) return;
-        long execTime = System.currentTimeMillis()-prev_time;
-        recorder.addDetail(null,parsed_sql,execTime);
-    }
-  */  
+ 
    class ParameterWrapper implements TagParseHandle {
        
      boolean             save_value = true;
@@ -120,6 +115,10 @@ public class JDBCStatement {
    public long getExecutionTime(){
        return exec_time;
    }
+   
+   public void close(){
+       closeStatement();
+   }
 
    
    void setParam( PreparedStatement ps, int index, Object obj) throws SQLException {
@@ -134,7 +133,7 @@ public class JDBCStatement {
     PreparedStatement  getStatement( Connection conn, String sql) throws SQLException { 
         
           ParameterWrapper  wrapper = new ParameterWrapper();
-          parsed_sql = parser.parse( sql, wrapper);       
+          parsed_sql = parser.parse( sql, wrapper);   
           PreparedStatement ps = conn.prepareStatement(parsed_sql);
         
           int id = 1;
@@ -142,8 +141,13 @@ public class JDBCStatement {
           while( it.hasNext() )
               setParam( ps, id++, it.next());          
           return ps;          
-    
     }
+    
+    private void closeStatement(){
+        if(mStatement!=null)
+            DBUtil.closeStatement(mStatement);
+    }
+    
    /**
     * 
     * @param conn A database connection
@@ -229,26 +233,13 @@ public class JDBCStatement {
    }
    */
    public ResultSet executeQuery( Connection conn, String sql) throws SQLException{
-       exec_time = 0;
-   	         
-        PreparedStatement ps = null;
-        try{
-            ps = getStatement( conn, sql);
-            exec_time = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            exec_time = System.currentTimeMillis() - exec_time;
-            return rs;
-        }finally{
-            DBUtil.closeStatement(ps);
-                
-        }
-      /*
-       try{     
-      } catch(SQLException ex){
-        String msg = ex.getMessage() + " origin sql statement:" + parsed_sql;
-   	  	throw new SQLException( msg, ex.getSQLState(), ex.getErrorCode(), ex);        
-   	  }
-      */
+       exec_time = 0;   	         
+       closeStatement();
+       mStatement = getStatement( conn, sql);
+       exec_time = System.currentTimeMillis();
+       ResultSet rs = mStatement.executeQuery();
+       exec_time = System.currentTimeMillis() - exec_time;
+       return rs;
    }   
    
 
