@@ -376,9 +376,15 @@ implements Configuration.IParticipantListener
         super.setErrorDescription(msg.toString());
     }
     
-    public void cleanUp(){
-        if(service_context!=null)
+    public void cleanUp(){        
+        if(service_context!=null){
+            try{
+                uncertainEngine.destroyContext(service_context);
+            }catch(Throwable thr){
+                System.out.println(thr.getMessage());
+            }
             service_context.clear();
+        }
         if(configuration!=null)
             configuration.clear();
         if(service_properties!=null)
@@ -415,7 +421,13 @@ implements Configuration.IParticipantListener
     }
     
     public boolean isTraceOn(){
-        return service_properties.getBoolean("trace", false);   
+        Object is_trace = service_properties.get("trace");
+        if(is_trace==null)
+            is_trace = this.getApplicationConfig().get("trace");
+        if( is_trace==null) 
+            return false;
+        else
+            return "true".equalsIgnoreCase(is_trace.toString());
     }
 
     /**
@@ -467,7 +479,7 @@ implements Configuration.IParticipantListener
             }
             
             /* ------------- End Modify -------------------------------------*/
-       		mLogger.log("Enter Service:"+this.getServiceName());
+       		mLogger.log("============== ### Enter Service:"+this.getServiceName()+" ### ===================================================");
        		mLogger.log(Level.CONFIG, "Participant list:"+configuration.getParticipantList().toString());
 
        		// get procedure name to run
