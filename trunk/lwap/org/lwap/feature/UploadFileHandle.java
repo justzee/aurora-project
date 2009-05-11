@@ -17,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +28,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.lwap.application.WebApplication;
 import org.lwap.controller.ControllerProcedures;
 import org.lwap.controller.FormController;
 import org.lwap.controller.IController;
@@ -40,6 +40,8 @@ import uncertain.composite.CompositeUtil;
 import uncertain.core.ConfigurationError;
 import uncertain.event.Configuration;
 import uncertain.event.EventModel;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.IFeature;
 import uncertain.proc.ProcedureRunner;
 
@@ -79,12 +81,12 @@ public class UploadFileHandle implements IFeature, IController {
 
     CompositeMap model;
 
-    Logger logger;
+    //Logger logger;
 
     HttpServletRequest request;
 
-    public UploadFileHandle(Logger l) {
-        logger = l;
+    public UploadFileHandle() {
+        //logger = l;
     }
 
     public void setUsage(String u) {
@@ -311,6 +313,7 @@ public class UploadFileHandle implements IFeature, IController {
         if (isSave)
             return EventModel.HANDLE_NORMAL;
         CompositeMap context = runner.getContext();
+        ILogger logger = LoggingContext.getLogger(context, WebApplication.LWAP_APPLICATION_LOGGING_TOPIC);
         model = service.getModel();
 
         Connection conn = null;
