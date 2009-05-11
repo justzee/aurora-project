@@ -27,6 +27,8 @@ import org.lwap.database.DBUtil;
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
 import uncertain.event.EventModel;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.ProcedureRunner;
 
 public class FileBasedUpload extends UploadFileHandle {
@@ -35,8 +37,8 @@ public class FileBasedUpload extends UploadFileHandle {
     
     String upload_path;
     
-    public FileBasedUpload(Logger l, WebApplication app) {
-        super(l);
+    public FileBasedUpload(WebApplication app) {
+        super();
         upload_path = app.getApplicationConfig().getString(KEY_FILE_UPLOAD_PATH);
         if(upload_path==null) throw new ConfigurationError("[FileBasedUpload]:Must set 'file-upload-path' in application.xml");
         //System.out.println("upload to "+upload_path);
@@ -83,8 +85,9 @@ public class FileBasedUpload extends UploadFileHandle {
     
     public int onBuildOutputContent(ProcedureRunner runner) throws Exception{
         
-        if(isSave) return EventModel.HANDLE_NORMAL;
+       if(isSave) return EventModel.HANDLE_NORMAL;
         CompositeMap    context = runner.getContext();
+        ILogger logger = LoggingContext.getLogger(context, WebApplication.LWAP_APPLICATION_LOGGING_TOPIC);
         model = service.getModel();
 
         Connection conn = null;
