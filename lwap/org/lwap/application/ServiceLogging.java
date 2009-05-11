@@ -32,6 +32,7 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
     CompositeMap    mConfig;
     // file name -> BasicFileHandler
     HashMap         mHandlerMap;
+    boolean         mAppend;
     
     public ServiceLogging(OCManager oc_manager){
         super();
@@ -46,14 +47,24 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
         return prefix;
     }
     
+    BasicFileHandler createNewHandler( String name ){
+        BasicFileHandler handler = new BasicFileHandler();
+        mOcManager.populateObject(mConfig, handler);
+        handler.setLogFilePrefix(name);
+        handler.setBasePath(getLogPath());
+        return handler;
+    }
+    
     BasicFileHandler getLogHandler( String name ){
-        BasicFileHandler handler = (BasicFileHandler)mHandlerMap.get(name);
-        if(handler==null){
-            handler = new BasicFileHandler();
-            mOcManager.populateObject(mConfig, handler);
-            handler.setLogFilePrefix(name);
-            handler.setBasePath(getLogPath());
-            mHandlerMap.put(name, handler);
+        BasicFileHandler handler = null;
+        if(!mAppend){
+            handler = createNewHandler(name);
+        }else{
+            handler = (BasicFileHandler)mHandlerMap.get(name);
+            if(handler==null){
+                handler = createNewHandler(name);
+                mHandlerMap.put(name, handler);
+            }
         }
         return handler;
     }
@@ -64,9 +75,12 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
         ConfigurableLoggerProvider provider = new ConfigurableLoggerProvider(getTopicManager());
         //provider.setLogPath(getLogPath());
         String file_name = getLogFilePath(svc);
+        
         BasicFileHandler handler = getLogHandler(file_name);
-        provider.addHandles( new Handler[]{handler});
-        //mOcManager.populateObject();
+        //handler.setAppend(false);
+        //mOcManager.populateObject(mConfig,handler);
+        provider.addHandles( new Handler[]{handler});        
+        context.setInstanceOfType(BasicFileHandler.class, handler);
         
         ILoggerProvider lp = (ILoggerProvider)context.getInstanceOfType(ILoggerProvider.class);
         if(lp==null){
@@ -88,7 +102,13 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
     }
     
     public void onContextDestroy( RuntimeContext context ){
-        ;    
+        BasicFileHandler handler = (BasicFileHandler)context.getInstanceOfType(BasicFileHandler.class);
+        if(handler!=null){
+            handler.flush();
+            if(!handler.getAppend())
+                handler.close();
+            //System.out.println("end:append set to "+handler.getAppend());
+        }
     }
 
     /**
@@ -122,6 +142,20 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
            BasicFileHandler handler = (BasicFileHandler)it.next();
            handler.close();
         }
+    }
+
+    /**
+     * @return the append
+     */
+    public boolean getAppend() {
+        return mAppend;
+    }
+
+    /**
+     * @param append the append to set
+     */
+    public void setAppend(boolean append) {
+        mAppend = append;
     }
     
 }
