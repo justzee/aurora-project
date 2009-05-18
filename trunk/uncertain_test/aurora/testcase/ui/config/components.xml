@@ -1,0 +1,9 @@
+<package>
+	<components>
+		<view-component elementName="textedit" builder="aurora.presentation.TemplateBasedView" />
+		<view-component elementName="textarea" builder="aurora.presentation.TemplateBasedView" />		
+		<view-component elementName="select" builder="aurora.presentation.TemplateBasedView" />
+		<view-component elementName="template" builder="aurora.presentation.component.TemplateRenderer" />
+		<view-component elementName="html-page" builder="aurora.presentation.component.HtmlPage" />		 
+	</components>
+</package>
