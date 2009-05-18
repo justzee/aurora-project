@@ -4,9 +4,7 @@
 package org.lwap.application.event;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.lwap.application.WebApplication;
 
@@ -15,8 +13,10 @@ import uncertain.core.ConfigurationError;
 import uncertain.core.IGlobalInstance;
 import uncertain.core.UncertainEngine;
 import uncertain.event.ISingleEventHandle;
-import uncertain.ocm.OCManager;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.ocm.IObjectRegistry;
+import uncertain.ocm.OCManager;
 
 public class ServiceListenerStore implements IGlobalInstance {
     
@@ -38,10 +38,11 @@ public class ServiceListenerStore implements IGlobalInstance {
         return childs;
     }
     
-    public void onInitialize(){
-        Logger  logger = uncertainEngine.getLogger();
+    public void onInitialize(){        
         OCManager ocManager = uncertainEngine.getOcManager();
         IObjectRegistry os = uncertainEngine.getObjectSpace();
+        ILogger logger = LoggingContext.getLogger(WebApplication.LWAP_APPLICATION_LOGGING_TOPIC, os);
+        //os.getInstanceOfType(ILoggerProvider)
         WebApplication application = (WebApplication)os.getInstanceOfType(WebApplication.class);
         if(application==null) throw new ConfigurationError("Can't get WebApplication instance from UncertainEngine");
         IServiceListenerManager slm = application.getServiceListenerManager(); 

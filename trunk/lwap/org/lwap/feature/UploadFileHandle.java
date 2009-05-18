@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +53,8 @@ import uncertain.proc.ProcedureRunner;
  * 
  */
 public class UploadFileHandle implements IFeature, IController {
+    
+    public static final String LOGGING_TOPIC = "org.lwap.feature.upload";
 
     private static final String PROMPT_UPLOAD_FILE_SIZE_EXCEED = "prompt.upload.file_size_exceed";
 
@@ -81,7 +84,7 @@ public class UploadFileHandle implements IFeature, IController {
 
     CompositeMap model;
 
-    //Logger logger;
+    ILogger      mLogger;
 
     HttpServletRequest request;
 
@@ -112,10 +115,13 @@ public class UploadFileHandle implements IFeature, IController {
     }
 
     public int detectAction(HttpServletRequest request, CompositeMap context) {
+        mLogger = LoggingContext.getLogger(context, LOGGING_TOPIC);
         this.request = request;
         if (isSave && "post".equalsIgnoreCase(request.getMethod())) {
+            mLogger.log(Level.CONFIG, "Prepare to save file");
             return IController.ACTION_DETECTED;
         }
+        mLogger.log(Level.CONFIG, "Don't save file, finishing");
         return IController.ACTION_NOT_DETECTED;
     }
 
@@ -141,6 +147,7 @@ public class UploadFileHandle implements IFeature, IController {
 
     public void onValidateInput(ProcedureRunner runner) throws Exception {
         
+        mLogger = LoggingContext.getLogger(runner.getContext(), LOGGING_TOPIC);        
         // CompositeMap    params = runner.getContext().getChild("parameter");
         // Create a factory for disk-based file items
         FileItemFactory factory = new DiskFileItemFactory();
@@ -150,6 +157,8 @@ public class UploadFileHandle implements IFeature, IController {
         // FileUpload up = new FileUpload();
         up.setSizeMax(Max_upload_size);
         up.setHeaderEncoding(Encoding);
+        mLogger.log(Level.CONFIG, "Max upload size = " + Max_upload_size );
+        mLogger.log(Level.CONFIG, "Encoding = "+Encoding);
         // up.setHeaderEncoding(request.getCharacterEncoding());
         // up.setSizeMax(Max_memory_size);
         // up.setRepositoryPath(".");
@@ -169,6 +178,7 @@ public class UploadFileHandle implements IFeature, IController {
                     .setParameterValid(service.getServiceContext(), false);
             return;
         }
+        mLogger.log(Level.CONFIG,"Upload content contains "+items.size()+" items");
         Iterator i = items.iterator();
         while (i.hasNext()) {
             fileItem = (FileItem) i.next();
@@ -181,7 +191,7 @@ public class UploadFileHandle implements IFeature, IController {
                 params.put(name, value);
             } else {
                 File file = new File(fileItem.getName());
-                String file_name = file.getName();
+                String file_name = file.getName();                
                 // params.put("FILE_NAME",new
                 // String(file_name.getBytes(),"utf-8"));
                 params.put("FILE_NAME", file_name);
@@ -190,12 +200,15 @@ public class UploadFileHandle implements IFeature, IController {
                 // System.out.println("iso8859_1:"+new
                 // String(file_name.getBytes("iso8859_1"),"utf-8"));
                 params.put("size", new Long(fileItem.getSize()));
-                service.databaseAccess(this.SqlFile, params, model);                
+                mLogger.log(Level.CONFIG,"About to save file "+file_name+", size="+fileItem.getSize()+", invoking "+SqlFile);
+                service.databaseAccess(this.SqlFile, params, model);
+                mLogger.log(Level.CONFIG, "Database operation finish");
                 break;
             }
         }
         Object code = model.getObject("/model/FILEUPLOAD/@TYPE_CODE");
         if (code == null) {
+            mLogger.log(Level.CONFIG, "Unknow file type");
             formController
                     .getForm()
                     .setErrorPrompt(
@@ -264,18 +277,23 @@ public class UploadFileHandle implements IFeature, IController {
     public void postDoAction(ProcedureRunner runner) throws Exception {
         if (fileItem == null || !isSave)
             return;
+        mLogger.log("About to save file to database");
         CompositeMap context = runner.getContext();
         Object aid = service.getModel().getObject("/model/FILEUPLOAD/@RESULT");
-
         if (aid == null)
             throw new IllegalStateException("can't get attachment record id");
         Connection conn = null;
         try {
             conn = service.getConnection();
             InputStream in = fileItem.getInputStream();
-            long size = writeBLOB(conn, in, aid.toString());
+            String attach_id = aid.toString();
+            mLogger.log(Level.CONFIG, "attachment_id="+attach_id);
+            long size = writeBLOB(conn, in, attach_id);
+            mLogger.log(Level.CONFIG, "Database invoke finish");
             fileItem.delete();
+            mLogger.log(Level.CONFIG, "Temporary file deleted");
             params.put("success", "true");
+            
         } finally {
             if (conn != null)
                 conn.close();
