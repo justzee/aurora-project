@@ -1,0 +1,19 @@
+<class-registry>
+
+	<feature-attach elementName="textedit" featureClass="aurora.presentation.features.FieldBinding"/>
+	<feature-attach elementName="textedit" featureClass="aurora.presentation.features.EventAware"/>
+	<feature-attach elementName="textedit" featureClass="aurora.presentation.features.InputComponent"/>
+	<feature-attach elementName="textedit" featureClass="aurora.testcase.presentation.component.TextEditRenderer"/>
+	
+	<feature-attach elementName="textarea" featureClass="aurora.presentation.features.FieldBinding"/>
+	<feature-attach elementName="textarea" featureClass="aurora.presentation.features.EventAware"/>
+	<feature-attach elementName="textarea" featureClass="aurora.presentation.features.InputComponent"/>
+	<feature-attach elementName="textarea" featureClass="aurora.testcase.presentation.component.TextAreaRenderer"/>
+
+	<feature-attach elementName="select" featureClass="aurora.presentation.features.FieldBinding"/>
+	<feature-attach elementName="select" featureClass="aurora.presentation.features.EventAware"/>
+	<feature-attach elementName="select" featureClass="aurora.presentation.features.OptionSelectOne"/>
+	<feature-attach elementName="select" featureClass="aurora.presentation.features.InputComponent"/>
+	<feature-attach elementName="select" featureClass="aurora.testcase.presentation.component.SelectRenderer"/>	
+	
+</class-registry>
