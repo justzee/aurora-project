@@ -1,7 +1,7 @@
 <html>
-<head>${page:meta} ${page:css} </head>
+<head>${page:meta} ${page:css} ${page:script}</head>
 <body>
-${page:script}
+
 	<pre>Employee edit</pre>
 		<form>
 			Name: ${name}<br>
