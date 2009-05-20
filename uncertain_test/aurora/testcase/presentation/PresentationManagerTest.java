@@ -37,14 +37,14 @@ public class PresentationManagerTest extends TestCase {
     ViewComponentPackage mPackage;    
     
     static String[] required_content = {
-        "<input type=\"text\" name=\"name\"", 
+        "<input type=\"text\" id=\"name\" name=\"name\"", 
         
         "<select name=\"deptid\"",
         "<option value=\"0\" >All",
         "<option value=\"20\" selected >Development",
         "class=\"ui.input.textarea\"",
         "<script src='resource/aurora.testcase.ui/default/textedit.js'>",
-        "Name: <input type=\"text\" name=\"name\"",
+        //"Name: <input type=\"text\" name=\"name\"",
         "onclick=\"alert('test L.A.');\""
         };
 
