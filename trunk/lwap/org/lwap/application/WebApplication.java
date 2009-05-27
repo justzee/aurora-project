@@ -26,9 +26,11 @@ import javax.sql.DataSource;
 import org.lwap.application.event.BasicServiceListenerManager;
 import org.lwap.application.event.IServiceListenerManager;
 import org.lwap.controller.MainService;
+import org.lwap.database.DatabaseAccess;
 import org.lwap.database.PerformanceRecorder;
 import org.lwap.database.TransactionFactory;
 import org.lwap.database.datatype.DataTypeManager;
+import org.lwap.feature.UploadFileHandle;
 import org.lwap.mvc.DataBindingConvention;
 import org.lwap.mvc.ViewFactoryStore;
 
@@ -38,6 +40,7 @@ import uncertain.core.UncertainEngine;
 import uncertain.logging.DummyLogger;
 import uncertain.logging.ILogger;
 import uncertain.logging.ILoggerProvider;
+import uncertain.logging.ILoggingTopicRegistry;
 import uncertain.ocm.IObjectRegistry;
 
 public class WebApplication implements Application {
@@ -598,6 +601,10 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
         transaction_factory.setUncertainEngine(uncertainEngine);
         if(performance_recorder!=null)
             space.registerInstance(PerformanceRecorder.class, performance_recorder);
+        ILoggingTopicRegistry topics = uncertainEngine.getLoggingTopicRegistry();
+        topics.registerLoggingTopic(LWAP_APPLICATION_LOGGING_TOPIC);
+        topics.registerLoggingTopic(DatabaseAccess.LOGGING_TOPIC);
+        topics.registerLoggingTopic(UploadFileHandle.LOGGING_TOPIC);
         // init logger
         ILoggerProvider provider = (ILoggerProvider)space.getInstanceOfType(ILoggerProvider.class);
         if(provider!=null){
