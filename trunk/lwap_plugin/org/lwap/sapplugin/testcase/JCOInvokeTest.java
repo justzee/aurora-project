@@ -49,7 +49,7 @@ public class JCOInvokeTest extends TestCase {
 */    
     public void testJcoInvoke() throws Exception {
         //try{
-            jcoInvoke = new JcoInvoke(inst, logger);
+            jcoInvoke = new JcoInvoke(inst);
             jcoInvoke.Function = "ZCONVERT_TO_LOCAL_CURRENCY";
             jcoInvoke.Return_target = "result";
             jcoInvoke.Parameters = new Parameter[]{
@@ -81,7 +81,7 @@ public class JCOInvokeTest extends TestCase {
         om.getClassRegistry().addPackageMapping( new PackageMapping("org.lwap.sapplugin","org.lwap.sapplugin") );
         InputStream is = JCOInvokeTest.class.getClassLoader().getResourceAsStream("org/lwap/sapplugin/testcase/jco_sample.xml");
         CompositeMap map = CompositeMapParser.parse(is);
-        JcoInvoke ji = new JcoInvoke(null,null);
+        JcoInvoke ji = new JcoInvoke(null);
         om.populateObject(map, ji);
         System.out.println(ji.toString());
     }

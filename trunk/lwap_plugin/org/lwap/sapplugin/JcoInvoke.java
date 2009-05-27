@@ -5,15 +5,15 @@ package org.lwap.sapplugin;
 
 import java.sql.Array;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.lwap.controller.MainService;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.core.ConfigurationError;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 
@@ -25,7 +25,7 @@ import com.sap.mw.jco.JCO.ParameterList;
 public class JcoInvoke extends AbstractEntry {
     
     SapInstance         sapInstance;
-    Logger              logger;
+    ILogger              logger;
 
     public Parameter[]  Parameters;
     public Table[]      Tables;
@@ -33,9 +33,8 @@ public class JcoInvoke extends AbstractEntry {
     public String       Return_target;
     public boolean      Dump = false;
   
-    public JcoInvoke(SapInstance    si, Logger  l){
+    public JcoInvoke(SapInstance    si){
         sapInstance = si;
-        logger = l;
         //System.out.println(this+" constructed ");
     }
     
@@ -60,14 +59,11 @@ public class JcoInvoke extends AbstractEntry {
     }
     
     public void run(ProcedureRunner runner) throws Exception {
-        Level old_level = logger.getLevel();
-        if(Dump){    
-            logger.setLevel(Level.INFO);
-            logger.info("jco-invoke");
-            logger.info("===================================");
-            logger.info(toString());
-        }
         CompositeMap context = runner.getContext();
+        logger = LoggingContext.getLogger(context, "org.lwap.plugin.sap");
+        logger.config("jco-invoke");
+        logger.config("===================================");
+        logger.log(Level.CONFIG, "config:{0}", new Object[]{this} );
         MainService  service = MainService.getServiceInstance(context.getRoot());
         CompositeMap target = null;
         CompositeMap model = null;
@@ -79,34 +75,8 @@ public class JcoInvoke extends AbstractEntry {
             target = (CompositeMap)model.getObject(t);
             if(target==null) target = model.createChildByTag(t);            
         }
-
-        /*
-        String lang = sapInstance.DEFAULT_LANG; 
-        if(service!=null){
-            Locale l = service.getSessionLocale();
-            lang = l==null?sapInstance.DEFAULT_LANG:l.getLanguage();            
-        }
-        */
-            
-        //sapInstance.prepare();
-
-        /*
-        JCO.addClientPool(
-                            sapInstance.SID,          // Alias for this pool
-                            sapInstance.MAX_CONN,     // Max. number of connections
-                            sapInstance.SAP_CLIENT,   // SAP client
-                            sapInstance.USERID,       // userid
-                            sapInstance.PASSWORD,     // password
-                            lang,                     // language
-                            sapInstance.SERVER_IP,    // host name
-                           sapInstance.SYSTEM_NUMBER );
-        */        
         
         IRepository repository= sapInstance.getRepository();
-        /*
-        IRepository repository=null;
-        repository = JCO.createRepository("MYRepository", sapInstance.SID);
-         */
         JCO.Client client = null;
         try {
             // Get a function template from the repository
@@ -122,9 +92,7 @@ public class JcoInvoke extends AbstractEntry {
                 // client = JCO.getClient(sapInstance.SID);
                 client = sapInstance.getClient();
                 
-                if(Dump){ 
-                    logger.info("connected to "+sapInstance.SERVER_IP+":"+sapInstance.SID);
-                }
+                logger.config("connected to "+sapInstance.SERVER_IP+":"+sapInstance.SID);
                 
                 JCO.ParameterList input  = function.getImportParameterList();
                 JCO.ParameterList output = function.getExportParameterList();
@@ -139,9 +107,7 @@ public class JcoInvoke extends AbstractEntry {
                         Object o = param.Source_field==null ? param.Value : context.getObject(param.Source_field);
                         String value = o==null?"":o.toString();                                         
                         input.setValue(value,param.Name);
-                        if(Dump){ 
-                            logger.info("parameter "+param.Name+" -> "+ value);
-                        }
+                        logger.log(Level.CONFIG, "parameter {0} -> {1}", new Object[]{ param.Name, value});
                     }
                 }
                 // Set import table
@@ -150,23 +116,20 @@ public class JcoInvoke extends AbstractEntry {
                     for(int i=0; i<Tables.length; i++)
                     {
                         Table table = Tables[i];
+                        table.setLogger(logger);
                         if(table.isImport()){
                            JCO.Table tbl = table.getJCOTable(list);
                            Object o = context.getObject(table.Source_field);
                            if(!(o instanceof Array))
                                throw new IllegalArgumentException("Object from context path "+table.Source_field+" is should be of type java.sql.Array");
-                           if(Dump){
-                               logger.info("transfer import table "+table.Name+" from '"+table.Source_field+"':" + o);
-                           }
+                           logger.config("transfer import table "+table.Name+" from '"+table.Source_field+"':" + o);
                            table.fillJCOTable(tbl,(Array)o);
                         }                        
                     }
                 }
                 
                 // Call the remote system and retrieve return value
-                if(Dump){ 
-                    logger.info("call function " + Function);
-                }
+                logger.config("call function " + Function);
                 client.execute(function);
 
                 if(Parameters!=null)
@@ -178,9 +141,7 @@ public class JcoInvoke extends AbstractEntry {
                         if(vl==null && !param.Nullable) throw new IllegalArgumentException("jco-invoke: return field "+param.Name+" is null");
                         String f = TextParser.parse(param.Return_field,context);
                         target.putObject(f, vl);
-                        if(Dump){ 
-                            logger.info("return: "+param.Name+ "=" + vl + " -> "+f);
-                        }                        
+                            logger.config("return: "+param.Name+ "=" + vl + " -> "+f);
                     }
                 }
                 // Get export tables
@@ -191,53 +152,39 @@ public class JcoInvoke extends AbstractEntry {
                         Table table = Tables[i];
                         if(table.isImport()) continue;
                         if(table.Target==null) throw new ConfigurationError("Must set 'target' attribute for table "+table.Name);
+                        table.setLogger(logger);
                         JCO.Table records = table.getJCOTable(list);                        
                         // Fetch as CompositeMap
                         if(table.isFetchTypeMap()){
                             CompositeMap result = (CompositeMap)context.getObject(table.Target);
                             if(result==null) result = context.createChildByTag(table.Target);
                             table.fillCompositeMap(records, result);
-                            if(Dump){
                                 int rc = 0;
                                 if(result.getChilds()!=null) rc = result.getChilds().size();
-                                logger.info("loading export table "+table.Name+" into path '"+table.Target+"', total " + rc + " record(s)");
-                            }
+                                logger.config("loading export table "+table.Name+" into path '"+table.Target+"', total " + rc + " record(s)");
                         }
                         // Fetch as Array
                         else if(table.isFetchTypeArray()){
                             Connection conn = MainService.getConnection(context);
                             Array array = table.fillArray(records, conn);
                             context.putObject(table.Target, array, true);
-                            if(Dump){
+
                                 int rc = 0;                                
                                 Object[] r = (Object[])array.getArray();
                                 if(r!=null) rc = r.length;
-                                logger.info("loading export table "+table.Name+" as " + array +", total " + rc + " record(s)");
-                            }                            
+                                logger.config("loading export table "+table.Name+" as " + array +", total " + rc + " record(s)");
                         }
                         else throw new ConfigurationError("Unknown fetch_type for export table:"+table.Fetch_type);
                     }                        
                 } 
                 // finish
-                if(Dump){
-                    logger.info("jco invoke finished");
-                }
+                logger.config("jco invoke finished");
             }
             else {
                 throw new IllegalArgumentException("Function '"+Function+"' not found in SAP system.");
             }
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("error when jco invoke:"+ex.getMessage(), ex);
-        }
-        finally {
+        } finally {
             JCO.releaseClient(client);
-            if(Dump)
-                logger.setLevel(old_level);
-            //JCO.removeClientPool(sapInstance.SID);
-            // Release the client to the pool
-
         }
         
     }
