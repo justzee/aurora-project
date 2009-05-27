@@ -6,18 +6,21 @@ package org.lwap.feature;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.lwap.application.NoPrivilegeException;
+import org.lwap.application.WebApplication;
 import org.lwap.controller.MainService;
+import org.lwap.database.DBUtil;
 import org.lwap.database.oracle.BlobUtil;
 import org.lwap.mvc.excel.ExcelDataTable;
 
 import uncertain.composite.CompositeMap;
 import uncertain.event.Configuration;
 import uncertain.event.EventModel;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.IFeature;
 import uncertain.proc.ProcedureRunner;
 
@@ -27,6 +30,12 @@ import uncertain.proc.ProcedureRunner;
  * 
  */
 public class ExcelReport  implements IFeature{
+    
+    public static final String SQL_PREPARE_EXCEL_QUERY = "PrepareExcelQuery.data";
+    public static final String SQL_EXCEL_REPORT_PARAM_QUERY = "ExcelReportParamQuery.data";
+    public static final String SQL_GET_SID = "GetSessionIDFromESID.data";
+
+    public static final String KEY_LOGGING_TOPIC = "org.lwap.feature.excelreport";
 
 	public static final String KEY_IS_GENERATE_SCRIPT = "IS_GENERATE_SCRIPT";	
 
@@ -36,7 +45,7 @@ public class ExcelReport  implements IFeature{
 	public static final String KEY_SESSION_ID = "session_id";
 	public static final String KEY_URL_PARAM = "URL_PARAM";
 	
-	Logger			logger;
+	ILogger			logger;
 	
     Object			session_id;
     String  		session_id_str;
@@ -66,7 +75,7 @@ public class ExcelReport  implements IFeature{
         is_generate_script = view_id == null;
         
         CompositeMap    param_def = new CompositeMap();
-        service.databaseAccess("ExcelReportParamQuery.data", param, param_def);
+        service.databaseAccess(SQL_EXCEL_REPORT_PARAM_QUERY, param, param_def);
         
         CompositeMap tmpMap = param_def.getChild("SID");
         session_id =  tmpMap.get("SESSION_ID");
@@ -91,24 +100,36 @@ public class ExcelReport  implements IFeature{
     public void onBeginService(ProcedureRunner runner) 
     throws Exception {
 		context = runner.getContext();
+		logger = LoggingContext.getLogger(context, KEY_LOGGING_TOPIC);
+
 		service = MainService.getServiceInstance(context);
         session_id = context.getObject("/session/@session_id");
         session_id_str = service.getRequest().getParameter(KEY_SESSION_ID_STRING);
 		CompositeMap params = service.getParameters(), model = service.getModel();
         is_generate_script = !ExcelDataTable.isGenerateData(service.getRequest());        
         		
-		if(session_id==null){		     
-		    if(session_id_str==null) throw new NoPrivilegeException();
+		if(session_id==null){
+		    logger.config("${/session/@session_id} is null");
+		    if(session_id_str==null){
+		        logger.config(KEY_SESSION_ID_STRING+" from parameter is null, throwing exception");
+		        throw new NoPrivilegeException();
+		    }
             if(is_generate_script){
                 // requested from other source, parameters saved in database
+                logger.config("set to generate script mode");
                 is_called_external = true;
             }else{
                 // requested from excel, get session_id from request parameter
+                logger.config("set to generate report data mode");
     		    params = service.getParameters();
     		    params.put(KEY_SESSION_ID_STRING, session_id_str);
-    		    service.databaseAccess("GetSessionIDFromESID.data", params, model);
+    		    logger.config("to invoke "+SQL_GET_SID);
+    		    service.databaseAccess(SQL_GET_SID, params, model);
     		    session_id = model.getObject("EXCEL-REPORT-SESSION/@SESSION_ID");
-                if(session_id==null) throw new NoPrivilegeException();
+                if(session_id==null){
+                    logger.config("EXCEL-REPORT-SESSION/@SESSION_ID is null, can't get session_id, throwing exception");
+                    throw new NoPrivilegeException();
+                }
             }
             
 		}
@@ -118,10 +139,14 @@ public class ExcelReport  implements IFeature{
         }
         */
 		//  requested from browser, get session_id from session
-		else{		    
-		    service.databaseAccess("PrepareExcelQuery.data", params, model );
+		else{
+		    logger.config("request from browser, to invoke " + SQL_PREPARE_EXCEL_QUERY );
+		    service.databaseAccess(SQL_PREPARE_EXCEL_QUERY, params, model );
 		    Object o = model.getObject("EXCEL-REPORT-SESSION/@ENCODED_SESSION_ID");
-		    if(o==null) throw new IllegalStateException("Can't get encoded session id");
+		    if(o==null){
+		        logger.warning("Can't get session_id from EXCEL-REPORT-SESSION/@ENCODED_SESSION_ID, throwing exception");		        
+		        throw new IllegalStateException("Can't get encoded session id");
+		    }
 		    session_id_str = (String)o;	
 		}
 
@@ -154,10 +179,11 @@ public class ExcelReport  implements IFeature{
 		String method = request.getMethod();
 		try{
 			if( is_generate_script){
+			    logger.config("to save model data into database");
 				service.createModel();
 				CompositeMap model = service.getModel();
 				if( model == null) {
-				    logger.warning("[CreateModelFromQuery] model is null, no data generated");
+				    logger.warning("model is null, no data generated");
 				    return result;
 				}
 				CompositeMap parent = model.getParent();
@@ -166,38 +192,27 @@ public class ExcelReport  implements IFeature{
 				BlobUtil.saveObject(conn,"excel_report_session","report_data","session_id=" + session_id,model);
 				conn.commit();
 				model.setParent(parent);
-				
+				logger.config("model data saved in excel_report_session, session_id="+session_id);
 			} else{
-
-					conn = service.getConnection();
-					CompositeMap model = 
-					(CompositeMap)BlobUtil.loadObject(conn,"select report_data from excel_report_session s where s.session_id = " + session_id);
-					if( model != null){
-					    /*
-					    if(model.getChilds().size()==0){
-					        logger.warning("[LoadModelFromDB] model loaded from DB is of size 0");
-					    }
-					    */
-						CompositeMap context = service.getServiceContext();
-						CompositeMap m = service.getModel();
-						if(m==null)
-						    context.addChild( model);
-						else
-						    context.replaceChild(m,model);
-/*
-						logger.info("[LoadModelFromDB]");
-						logger.info(model.toXML());
-*/
-					}else{
-					    logger.warning("[LoadModelFromDB] model loaded from DB is null");					    
-					}
+			    logger.config("to fetch data from database and transport to client in CSV format");
+				conn = service.getConnection();
+				CompositeMap model = 
+				(CompositeMap)BlobUtil.loadObject(conn,"select report_data from excel_report_session s where s.session_id = " + session_id);
+				if( model != null){
+				    logger.config("data fetched from excel_report_session.report_data, session_id="+session_id);
+					CompositeMap context = service.getServiceContext();
+					CompositeMap m = service.getModel();
+					if(m==null)
+					    context.addChild( model);
+					else
+					    context.replaceChild(m,model);
+				}else{
+				    logger.warning("model loaded from DB is null");					    
+				}
 
 			}
 		} finally {
-			if( conn != null) try{
-				conn.close();
-			} catch(SQLException ex){
-			}
+			DBUtil.closeConnection(conn);
 		}
         return result;
 	}
@@ -218,8 +233,7 @@ public class ExcelReport  implements IFeature{
 			return "text/plain;charset=gbk";
 	}
 
-    public ExcelReport(Logger logger) {
-        this.logger = logger;
+    public ExcelReport() {
     }
 
 }

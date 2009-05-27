@@ -41,10 +41,13 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
         //System.out.println("creating service logging config");
     }
     
-    String getLogFilePath( MainService svc){
-        String prefix = svc.getServiceName();
-        if(mPattern!=null) prefix = prefix + TextParser.parse(mPattern, svc.getServiceContext());  
+    public String getLogFilePath( String prefix, CompositeMap context ){
+        if(mPattern!=null) prefix = prefix + TextParser.parse(mPattern, context);  
         return prefix;
+    }
+    
+    public String getLogFilePath(MainService svc){
+        return getLogFilePath(svc.getServiceName(), svc.getServiceContext());
     }
     
     BasicFileHandler createNewHandler( String name ){

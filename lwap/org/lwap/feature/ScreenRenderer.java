@@ -11,6 +11,8 @@ import org.lwap.controller.MainService;
 
 import uncertain.composite.CompositeMap;
 import uncertain.event.EventModel;
+import uncertain.event.RuntimeContext;
+import uncertain.logging.ILogger;
 import uncertain.proc.ProcedureRunner;
 import aurora.presentation.BuildSession;
 import aurora.presentation.PresentationManager;
@@ -53,6 +55,9 @@ public class ScreenRenderer {
         
         Writer out = response.getWriter();
         BuildSession session = mPrtManager.createSession(out);
+        RuntimeContext  rtc = RuntimeContext.getInstance(mContext);
+        ILogger logger = (ILogger)rtc.getInstanceOfType(ILogger.class);
+        session.setLogger(logger);
         session.buildView(mService.getModel(), mScreen);
         out.flush();
         

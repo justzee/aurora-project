@@ -190,7 +190,7 @@ implements Configuration.IParticipantListener
 		service_context.put(KEY_REQUEST, request);
 		service_context.put(KEY_RESPONSE, response);
 		service_context.put(KEY_SERVICE_INSTANCE, this);    
-        
+        uncertainEngine.initContext(service_context);        
     }
 /*    
     protected void checkException(ProcedureRunner r) throws ServletException {
@@ -217,7 +217,6 @@ implements Configuration.IParticipantListener
         r.run();
         Throwable thr = r.getException();
 		if( thr != null ){
-            //mLogger.info("Handle "+thr);
             boolean is_self_handle = service_properties.getBoolean("exception-handle", false);
             if( !is_self_handle){
             ExceptionProcessor processor = 
@@ -244,7 +243,7 @@ implements Configuration.IParticipantListener
                              //mLogger.info("Can't find exception handle for class " + thr.getClass().getName() );
                          }
                     }catch(Exception ex){
-                        ex.printStackTrace();
+                        mLogger.log(Level.SEVERE, "Error when processing exception", ex);
                     }
                 }
             }    
@@ -395,7 +394,6 @@ implements Configuration.IParticipantListener
     }
     
     public void prepare(){
-        uncertainEngine.initContext(service_context);
         // parse builtin parameters
         parseBuiltinParameters();       
         configuration = uncertainEngine.createConfig();
@@ -438,13 +436,16 @@ implements Configuration.IParticipantListener
         
         CompositeMap _context = getServiceContext();
         RuntimeContext rtc = RuntimeContext.getInstance(_context);        
+        doinit(servlet,request,response);
+        // Prepare logger
+        ILoggerProvider provider = LoggingContext.getLoggerProvider(_context);
+        mLogger = provider.getLogger(getLoggingTopic());
+        mLogger.config("============== ### Enter Service:"+request.getRequestURL().toString()+" ### ===================================================");
+
         try{
             boolean trace = isTraceOn();         
-            doinit(servlet,request,response);
             prepare();
-            ILoggerProvider provider = LoggingContext.getLoggerProvider(_context);
-    		mLogger = provider.getLogger(getLoggingTopic());
-    		//System.out.println("Using logger:"+mLogger+" from "+provider);
+
     		rtc.setInstanceOfType(ILogger.class, mLogger);
     		
             
@@ -479,7 +480,6 @@ implements Configuration.IParticipantListener
             }
             
             /* ------------- End Modify -------------------------------------*/
-       		mLogger.log("============== ### Enter Service:"+this.getServiceName()+" ### ===================================================");
        		mLogger.log(Level.CONFIG, "Participant list:"+configuration.getParticipantList().toString());
 
        		// get procedure name to run
@@ -520,10 +520,12 @@ implements Configuration.IParticipantListener
     		runProcedure(runner, ControllerProcedures.CREATE_RESPONSE);
         }catch(Exception ex){
             createErrorDesc();
+            mLogger.log(Level.SEVERE, getErrorDescription(), ex);
             uncertainEngine.logException( getErrorDescription(), ex);
             throw ex;
         }catch(Throwable err){
             createErrorDesc();
+            mLogger.log(Level.SEVERE, getErrorDescription(), err);
             uncertainEngine.logException( getErrorDescription(), err);
             throw new RuntimeException(err);
         }finally{
