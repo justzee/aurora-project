@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import oracle.sql.ARRAY;
@@ -16,6 +15,7 @@ import oracle.sql.STRUCT;
 import oracle.sql.StructDescriptor;
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
+import uncertain.logging.ILogger;
 
 import com.sap.mw.jco.IMetaData;
 import com.sap.mw.jco.JCO;
@@ -61,7 +61,7 @@ public class Table {
      */
     public String   Struct_type;
     
-    Logger              logger;    
+    ILogger              logger;    
     
     boolean Dump = false;
     
@@ -69,7 +69,10 @@ public class Table {
     HashMap         source_map;
     HashMap         name_map;
     
-    public Table( Logger logger ){
+    public Table(){
+    }
+    
+    public void setLogger( ILogger logger ){
         this.logger = logger;
     }
     
