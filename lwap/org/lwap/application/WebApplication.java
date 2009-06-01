@@ -611,6 +611,8 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
             logger = provider.getLogger(LWAP_APPLICATION_LOGGING_TOPIC);
             logger.info("Logging service started");
         }
+        
+        setResourceBundleFactory((ResourceBundleFactory)space.getInstanceOfType(ResourceBundleFactory.class));
 	}
     
     public IServiceListenerManager getServiceListenerManager(){
