@@ -284,9 +284,12 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 	/** get Locale for current session */
 	public Locale getSessionLocale(){
 	    Locale l = null;
-	    String locale_code = getSession().getString("locale_id");
-	    if(locale_code!=null)
-	        l = application.getResourceBundleFactory().getLocale(locale_code);
+	    l = (Locale)getSession().get(KEY_SESSION_LOCALE);
+	    if(l==null){
+    	    String locale_code = getSession().getString("locale_id");
+    	    if(locale_code!=null)
+    	        l = application.getResourceBundleFactory().getLocale(locale_code);
+	    }
 		if( l==null) 
 		    l = request.getLocale();
 		return l;		
