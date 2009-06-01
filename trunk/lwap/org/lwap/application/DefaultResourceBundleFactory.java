@@ -5,7 +5,9 @@
 package org.lwap.application;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -14,6 +16,9 @@ import java.util.ResourceBundle;
  * 
  */
 public class DefaultResourceBundleFactory implements ResourceBundleFactory {
+    
+    // String -> Locale
+    Map         mLocales = new HashMap();
 	
 	public static class DefaultResourceBundle extends ResourceBundle {
 		
@@ -95,6 +100,15 @@ public class DefaultResourceBundleFactory implements ResourceBundleFactory {
 			System.out.println("Can't get resource bundle for locale "+locale);
 			return ResourceBundle.getBundle(file_name,Locale.getDefault());
 		} 
+	}
+	
+	public Locale  getLocale( String code ){
+	    Locale l = (Locale)mLocales.get(code);
+	    if(l==null){
+	        l = new Locale(code);
+	        mLocales.put(code, l);
+	    }
+	    return l;
 	}
 	
 	public static void main(String[] args) throws Exception {
