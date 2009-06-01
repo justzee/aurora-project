@@ -20,5 +20,7 @@ public interface ResourceBundleFactory {
 	 * the default locale should be returned.
 	 */
 	public ResourceBundle getResourceBundle( Locale locale);
+	
+	public Locale getLocale( String locale_code );
 
 }
