@@ -3,6 +3,7 @@
  */
 package org.lwap.application.fnd;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,33 +65,33 @@ public class ResourceBundleStore implements ResourceBundleFactory, IGlobalInstan
 		dataSource = ds;
 	}
 
-	public void onInitialize() {
+	public void onInitialize() throws Exception {
 		mLogger = LoggingContext.getLogger(WebApplication.LWAP_APPLICATION_LOGGING_TOPIC, mRegistry);
 		mLogger.info("Loading prompt");
 		loadSysLanguage();
 		loadResoure();
 	}
 
-	private void loadSysLanguage() {
-		try {
-			SqlServiceContext sqlServiceContext = SqlServiceContext.createSqlServiceContext(dataSource.getConnection());
-			RawSqlService sqlService = mSvcFactory.getSqlService(FND_LANGUAGE_SERVICE);
-			CompositeMap resultMap = sqlService.queryAsMap(sqlServiceContext, FetchDescriptor.getDefaultInstance());
-			List list = resultMap.getChilds();
-			Iterator it = list.iterator();
-			while (it.hasNext()) {
-				CompositeMap cm = (CompositeMap) it.next();
-				String language_code = cm.getString("LANGUAGE_CODE").toUpperCase();
-				String locale_code = cm.getString("LOCALE_CODE");
-				if (localeCache.get(language_code) == null) {
-					String language = locale_code.substring(0, locale_code.indexOf("_"));
-					String country = locale_code.substring(locale_code.indexOf("_") + 1, locale_code.length());
-					Locale locale = new Locale(language, country);
-					localeCache.put(language_code, locale);
-				}
+	private void loadSysLanguage() throws Exception {
+		SqlServiceContext sqlServiceContext = SqlServiceContext.createSqlServiceContext(dataSource.getConnection());
+		RawSqlService sqlService = mSvcFactory.getSqlService(FND_LANGUAGE_SERVICE);
+		CompositeMap resultMap = sqlService.queryAsMap(sqlServiceContext, FetchDescriptor.getDefaultInstance());
+		List list = resultMap.getChilds();
+		Iterator it = list.iterator();
+		while (it.hasNext()) {
+			CompositeMap cm = (CompositeMap) it.next();
+			String language_code = cm.getString("LANGUAGE_CODE").toUpperCase();
+			String locale_code = cm.getString("LOCALE_CODE");
+			if(locale_code == null) {
+				mLogger.warning(language_code + "'s locale_code is null.");
+				continue;
 			}
-		} catch (Exception e) {
-			mLogger.warning(e.getMessage());
+			if (localeCache.get(language_code) == null) {
+				String language = locale_code.substring(0, locale_code.indexOf("_"));
+				String country = locale_code.substring(locale_code.indexOf("_") + 1, locale_code.length());
+				Locale locale = new Locale(language, country);
+				localeCache.put(language_code, locale);
+			}
 		}
 	}
 
