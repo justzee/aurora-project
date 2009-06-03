@@ -33,6 +33,7 @@ import org.lwap.mvc.ViewCreationException;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
+import uncertain.core.ConfigurationError;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.event.RuntimeContext;
@@ -282,7 +283,7 @@ implements Configuration.IParticipantListener
     public void databaseAccess(CompositeMap access_def, CompositeMap params, CompositeMap target) 
         throws ServletException 
     {
-        boolean dump = access_def.getBoolean("Dump", false);
+        boolean dump = isTraceOn();
         if(runner==null){
             super.databaseAccess(access_def,params,target);
             return;
@@ -307,13 +308,13 @@ implements Configuration.IParticipantListener
             while(it.hasNext()){
                 CompositeMap item = (CompositeMap)it.next();                
                 if(dump){
-                    mLogger.info("[DatabaseAccess] Inspecting "+item.toXML());
+                    mLogger.config("[DatabaseAccess] running "+item.toXML());
                 }
 
                 DatabaseAccess da = DatabaseAccess.getInstance(item);
                 if(da!=null){
                     if(dump){
-                        mLogger.info("[DatabaseAccess] Got entry "+da.getClass().getName());
+                        mLogger.config("[DatabaseAccess] to run as "+da.getClass().getName());
                     }
 
                     if(rp){ 
@@ -325,10 +326,7 @@ implements Configuration.IParticipantListener
                 }else{
                     Object inst = configuration.getInstance(item);
                     if(inst==null) {
-                        if(dump){
-                            mLogger.info("[DatabaseAccess] Adding component as child CompositeMap");
-                        }
-                        proc.addChild(item);
+                        throw new ConfigurationError("Unknown entry:"+item.getName());
                     }
                     else{                        
                         if(inst instanceof IEntry) {
@@ -338,7 +336,7 @@ implements Configuration.IParticipantListener
                             proc.addEntry((IEntry)inst);
                         }
                         else 
-                            mLogger.warning("Unknown configuration: "+item.toXML());
+                            mLogger.warning("Unknown entry:"+item.getName());
                     }
                 }
             }
