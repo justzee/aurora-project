@@ -55,7 +55,7 @@ public class ServiceRefresh extends AbstractController {
        }
        
        WebApplication app = (WebApplication)ServiceInstance.getApplication();
-       new ApplicationInitializer().initApplication(app,ServiceInstance.getApplication().getApplicationConfig());
+       //new ApplicationInitializer().initApplication(app,ServiceInstance.getApplication().getApplicationConfig());
        app.getCompositeLoader().clearCache();
        System.out.println("OK!");
        
