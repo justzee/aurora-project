@@ -326,7 +326,8 @@ implements Configuration.IParticipantListener
                 }else{
                     Object inst = configuration.getInstance(item);
                     if(inst==null) {
-                        throw new ConfigurationError("Unknown entry:"+item.getName());
+                        //throw new ConfigurationError("Unknown entry:"+item.getName());
+                        continue;
                     }
                     else{                        
                         if(inst instanceof IEntry) {
