@@ -4,9 +4,7 @@
  */
 package org.lwap.application;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +30,26 @@ public abstract class ServiceImpl implements Service {
 	String		ServiceResult;
 	
 	String      error_description;
+	
+	public static CompositeMap createCookieMap( Cookie cookie ){
+	    CompositeMap m = new CompositeMap("cookie");
+	    m.put("name", cookie.getName());
+	    m.put("value", cookie.getValue());
+	    m.put("domain", cookie.getDomain());
+	    m.put("path", cookie.getPath());
+	    m.putInt("maxage", cookie.getMaxAge());
+	    m.putBoolean("secure", cookie.getSecure());
+	    return m;
+	}
+	
+	public static void populateCookieMap( HttpServletRequest request, CompositeMap target ){
+	    Cookie[] cookies = request.getCookies();
+	    if(cookies!=null)
+    	    for(int i=0; i<cookies.length; i++){
+    	        CompositeMap m = createCookieMap(cookies[i]);
+    	        target.put(cookies[i].getName(), m);
+    	    }
+	}
 
 	public void setApplication( Application app ){
 		application = (WebApplication)app;
@@ -68,6 +86,9 @@ public abstract class ServiceImpl implements Service {
 		this.response = response;
         CompositeMap r = service_context.createChild(KEY_REQUEST);
         r.put(KEY_ADDRESS, request.getRemoteAddr());
+        r.put("url", getServiceName());
+        CompositeMap cookie = service_context.createChild("cookie");
+        populateCookieMap(request, cookie);
 	}
 	
 	public HttpServletRequest getRequest(){
