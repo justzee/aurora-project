@@ -31,6 +31,7 @@ import uncertain.proc.ProcedureRunner;
  */
 public class ExcelReport  implements IFeature{
     
+    public static final String EXCEL_REPORT_SESSION = "excel_report_session";
     public static final String SQL_PREPARE_EXCEL_QUERY = "PrepareExcelQuery.data";
     public static final String SQL_EXCEL_REPORT_PARAM_QUERY = "ExcelReportParamQuery.data";
     public static final String SQL_GET_SID = "GetSessionIDFromESID.data";
@@ -176,6 +177,8 @@ public class ExcelReport  implements IFeature{
         int result = EventModel.HANDLE_NO_SAME_SEQUENCE;
 	    Connection conn = null;
 		HttpServletRequest request = service.getRequest();
+		MainService svc = MainService.getServiceInstance(runner.getContext());
+		String excel_table = svc.getApplicationConfig().getString("excel-report-table", EXCEL_REPORT_SESSION);
 		String method = request.getMethod();
 		try{
 			if( is_generate_script){
@@ -189,17 +192,17 @@ public class ExcelReport  implements IFeature{
 				CompositeMap parent = model.getParent();
 				model.setParent(null);
 				conn = service.getConnection();
-				BlobUtil.saveObject(conn,"excel_report_session","report_data","session_id=" + session_id,model);
+				BlobUtil.saveObject(conn,excel_table,"report_data","session_id=" + session_id,model);
 				conn.commit();
 				model.setParent(parent);
-				logger.config("model data saved in excel_report_session, session_id="+session_id);
+				logger.config("model data saved in "+excel_table+", session_id="+session_id);
 			} else{
 			    logger.config("to fetch data from database and transport to client in CSV format");
 				conn = service.getConnection();
 				CompositeMap model = 
-				(CompositeMap)BlobUtil.loadObject(conn,"select report_data from excel_report_session s where s.session_id = " + session_id);
+				(CompositeMap)BlobUtil.loadObject(conn,"select report_data from " + excel_table  + " s where s.session_id = " + session_id);
 				if( model != null){
-				    logger.config("data fetched from excel_report_session.report_data, session_id="+session_id);
+				    logger.config("data fetched from "+excel_table+".report_data, session_id="+session_id);
 					CompositeMap context = service.getServiceContext();
 					CompositeMap m = service.getModel();
 					if(m==null)

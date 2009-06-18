@@ -107,27 +107,35 @@ public class DatabaseQuery extends DatabaseAccess {
             loader.setKeyCase(getKeyCase());
 			// create target map if "Target" attribute is set
 			CompositeMap target_map;
-			if(this.getTarget()==null) 
+			String target_path = this.getTarget();
+			if(target_path==null) 
 				target_map = target;
 			else{
-				target_map = target.createChildByTag(this.getTarget());
-				}
-			
-			if( isPageResultset()){
-				// Always get pagesize and pagenum from 'PageSize', 'PageNum' attribute first
-				// If not specified, see if can get pagesize & pagenum by alternaltive parameter name				
-				long page_size = this.getPagesize();
-				if( page_size<0) page_size = getLong(parameter, this.getPagesizeParamName(),1);
-
-				long page_num  = this.getPageNum();
-				if( page_num<0) page_num  = getLong(parameter, this.getPageNumParamName(), 1);
-				
-				mLogger.log(Level.CONFIG, "page_size="+page_size+" page_num="+page_num);
-				loader.loadList(target_map,this.getElementName(),rs,page_size*(page_num-1), page_size);
-			
+			    target_map = (CompositeMap)target.getObject(target_path);
+			    if(target_map==null)
+			        target_map = target.createChildByTag(target_path);
+			}
+			boolean fetch_one = getBoolean("FetchOneRecord", false);
+			if( fetch_one ){
+			    if(rs.next())
+			        loader.load(target_map, rs);
 			}else{
-				// load whole ResultSet
-				loader.loadList(target_map,this.getElementName(),rs);
+    			if( isPageResultset()){
+    				// Always get pagesize and pagenum from 'PageSize', 'PageNum' attribute first
+    				// If not specified, see if can get pagesize & pagenum by alternaltive parameter name				
+    				long page_size = this.getPagesize();
+    				if( page_size<0) page_size = getLong(parameter, this.getPagesizeParamName(),1);
+    
+    				long page_num  = this.getPageNum();
+    				if( page_num<0) page_num  = getLong(parameter, this.getPageNumParamName(), 1);
+    				
+    				mLogger.log(Level.CONFIG, "page_size="+page_size+" page_num="+page_num);
+    				loader.loadList(target_map,this.getElementName(),rs,page_size*(page_num-1), page_size);
+    			
+    			}else{
+    				// load whole ResultSet
+    				loader.loadList(target_map,this.getElementName(),rs);
+    			}
 			}
 			
             // record whole execution time, without transformation
