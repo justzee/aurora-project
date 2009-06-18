@@ -28,8 +28,6 @@ public class ServiceInfoLoader extends SessionPrepare {
         if(idx>0){
             service_name = service_name.substring(0,idx);
             service_name = service_name.toLowerCase();        
-        }else{
-            System.out.println("strange:"+service_name);
         }
         // load service config
         WebApplication app = (WebApplication)service.getApplication();

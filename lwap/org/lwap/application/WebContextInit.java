@@ -5,6 +5,7 @@ package org.lwap.application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -24,6 +25,8 @@ import org.lwap.mvc.servlet.JspViewFactory;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import uncertain.core.ConfigurationError;
+import uncertain.core.DirectoryConfig;
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.IObjectRegistry;
@@ -33,6 +36,7 @@ public class WebContextInit implements ServletContextListener {
     
     public static final String KEY_TEMPLATE_PATH = "template-path";    
     public static final String KEY_APPLICATION = "application-object";    
+    public static final String KEY_LOG_PATH = "log-path";
     
     UncertainEngine     uncertainEngine;
     WebApplication      application;
@@ -55,6 +59,18 @@ public class WebContextInit implements ServletContextListener {
         String pattern = ".*\\.config";
 
             uncertainEngine = new UncertainEngine(new File(config_dir), config_file);
+            uncertainEngine.setName(servletContext.getServletContextName());
+            DirectoryConfig dirConfig = uncertainEngine.getDirectoryConfig();
+            dirConfig.setBaseDirectory(servletContext.getRealPath("/"));
+            String log_path = servletContext.getInitParameter(KEY_LOG_PATH);
+            if(log_path!=null){
+                File file = new File(log_path);
+                if(!file.exists()||!file.isDirectory())
+                    throw new ConfigurationError("Invalid log path in web.xml:"+log_path);
+                dirConfig.setLogDirectory(log_path);
+            }
+            
+            //dirConfig.setLogDirectory(servletContext.log());
             IObjectRegistry os = uncertainEngine.getObjectSpace();
             //os.registerParameter(ServletConfig.class,config);
             os.registerInstance(ServletContext.class,servletContext);
