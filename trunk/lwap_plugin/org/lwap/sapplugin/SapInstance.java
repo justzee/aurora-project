@@ -13,6 +13,8 @@ import com.sap.mw.jco.JCO;
 
 public class SapInstance implements IGlobalInstance {
     
+    public static final String LOGGING_TOPIC = "org.lwap.pluin.sap";
+    
     public String SID;
     public String USERID;
     public String PASSWORD;
