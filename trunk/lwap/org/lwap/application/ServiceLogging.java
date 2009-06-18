@@ -12,7 +12,9 @@ import org.lwap.database.DatabaseAccess;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
+import uncertain.core.DirectoryConfig;
 import uncertain.core.IGlobalInstance;
+import uncertain.core.UncertainEngine;
 import uncertain.event.IContextListener;
 import uncertain.event.RuntimeContext;
 import uncertain.logging.BasicFileHandler;
@@ -27,6 +29,9 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
     IGlobalInstance, IContextListener, IConfigurable 
 {
     
+    private static final String SERVICE_LOGGING_FILE = "SERVICE_LOGGING_FILE";
+    UncertainEngine mEngine;
+    DirectoryConfig mDirConfig;
     OCManager       mOcManager;
     String          mPattern;
     CompositeMap    mConfig;
@@ -34,10 +39,12 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
     HashMap         mHandlerMap;
     boolean         mAppend;
     
-    public ServiceLogging(OCManager oc_manager){
+    public ServiceLogging(UncertainEngine   engine){
         super();
-        mOcManager = oc_manager;
+        mEngine = engine;
+        mOcManager = engine.getOcManager();
         mHandlerMap = new HashMap();
+        mDirConfig = engine.getDirectoryConfig();
         //System.out.println("creating service logging config");
     }
     
@@ -54,7 +61,7 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
         BasicFileHandler handler = new BasicFileHandler();
         mOcManager.populateObject(mConfig, handler);
         handler.setLogFilePrefix(name);
-        handler.setBasePath(getLogPath());
+        handler.setLogPath(getLogPath());
         return handler;
     }
     
@@ -102,6 +109,8 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
                 //System.out.println("Creating logger group "+group+" containing existing:"+lp+", service:"+provider);
             }
         }
+        
+        context.put(SERVICE_LOGGING_FILE, handler.getCurrentLogFile().getPath());
     }
     
     public void onContextDestroy( RuntimeContext context ){

@@ -277,7 +277,12 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   }
 	
   public void setResourceBundleFactory(ResourceBundleFactory resource_bundle_factory) {
-		this.resource_bundle_factory = resource_bundle_factory;
+      if(resource_bundle_factory==null)
+          throw new NullPointerException();
+		logger.info("ResourceBundleFactory set to "+resource_bundle_factory);
+		if(this.resource_bundle_factory!=null)
+		    logger.info("Old factory:"+this.resource_bundle_factory);
+        this.resource_bundle_factory = resource_bundle_factory;
   }
 
   public ResourceBundleFactory getResourceBundleFactory() {
@@ -612,7 +617,9 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
             logger.info("Logging service started");
         }
         
-        setResourceBundleFactory((ResourceBundleFactory)space.getInstanceOfType(ResourceBundleFactory.class));
+        ResourceBundleFactory fact = (ResourceBundleFactory)space.getInstanceOfType(ResourceBundleFactory.class);
+        if(fact!=null)
+            setResourceBundleFactory(fact);
 	}
     
     public IServiceListenerManager getServiceListenerManager(){

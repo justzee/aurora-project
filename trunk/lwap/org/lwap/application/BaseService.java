@@ -123,7 +123,10 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 	}
 	
 	public Connection getConnection() throws SQLException {
-		return getDataSource().getConnection();
+		Connection conn = getDataSource().getConnection();
+		if(conn==null)
+		    throw new SQLException("Can't get connection");
+	    return conn; 
 	}
 		
 	public ViewFactoryStore getViewBuilderStore(){

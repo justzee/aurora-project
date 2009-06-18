@@ -15,6 +15,7 @@
 		<class-mapping elementName="db-procedure" className="org.lwap.database.DatabaseEntry"/>				
 		<class-mapping elementName="echo" className="uncertain.proc.Echo"/>						
 
+		<class-mapping elementName="set-cookie" className="org.lwap.action.CookieOperate"/>
 		<class-mapping elementName="session-write" className="org.lwap.action.SessionOperate"/>		
 		<class-mapping elementName="session-clear" className="org.lwap.action.SessionOperate"/>		
 		<class-mapping elementName="session-create" className="org.lwap.action.SessionOperate"/>				
@@ -31,11 +32,7 @@
 		<feature-attach elementName="matrix-column" featureClass="org.lwap.feature.MatrixColumn"/>
 		<feature-attach elementName="excel-report" nameSpace="http://mvc.lwap.org/builder/jsp" featureClass="org.lwap.feature.ExcelReport"/>
 		<feature-attach elementName="flex-query" featureClass="org.lwap.feature.FlexQuery"/>
-
 		<feature-attach elementName="attachment" featureClass="org.lwap.feature.UploadFileHandle"/>
-<!--
-		<feature-attach elementName="service" featureClass="org.lwap.feature.SessionCopy"/>
--->
 		<feature-attach elementName="query-statement" featureClass="org.lwap.feature.ModelCSVExport"/>
 		<feature-attach elementName="sql-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>
 		<feature-attach elementName="model-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>		
