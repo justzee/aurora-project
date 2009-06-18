@@ -45,6 +45,7 @@ public class PerformanceModel extends AbstractEntry {
             if(model==null) model = runner.getContext().createChild("model");
             m.setName("PERFORMANCE-LIST");
             model.addChild(m);
+            System.out.println("performance show");
         }else if(SAVE.equals(Usage)){
             save();
         }
