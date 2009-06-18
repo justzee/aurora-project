@@ -101,7 +101,9 @@ implements IFeature
      * @see org.lwap.controller.IController#detectAction(javax.servlet.http.HttpServletRequest, uncertain.composite.CompositeMap)
      */
     public int detectAction(HttpServletRequest request, CompositeMap context) {
-        initRequestCount(request, context);
+        mApplicationAllowResubmit = ServiceInstance.getApplicationConfig().getBoolean(APP_ALLOW_FORM_REPEATED_SUBMIT, true);        
+        if(mApplicationAllowResubmit)
+            initRequestCount(request, context);
         form_name = formConfig.getString("Name", "MAIN_FORM"); 
         StateFlag flag = new StateFlag(request);
         if(form_name==null || form_name.equalsIgnoreCase(request.getParameter(KEY_FORM_NAME))){
@@ -173,7 +175,6 @@ implements IFeature
     }
     
     public void postPrepareService(){
-        mApplicationAllowResubmit = ServiceInstance.getApplicationConfig().getBoolean(APP_ALLOW_FORM_REPEATED_SUBMIT, true);
         createRequestCountParam();
     }
     
