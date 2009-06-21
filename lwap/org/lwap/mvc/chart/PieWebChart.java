@@ -39,6 +39,7 @@ public class PieWebChart extends AbstractWebChart {
     if (url != null) is_url = true;
     try {
       Iterator i = model.getChildIterator();
+      if(i!=null)
       while (i.hasNext()) {
         child = (CompositeMap) i.next();
         dataset.setValue(child.getString(param1) == null ? WebChart.SQL_XPARAMETER:child.getString(param1),child.getLong(data));
