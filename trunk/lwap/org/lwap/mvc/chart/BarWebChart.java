@@ -41,6 +41,7 @@ public class BarWebChart extends AbstractWebChart {
     // collect data
     try {
       Iterator i = model.getChildIterator();
+      if(i!=null)
       while (i.hasNext()) {
         child = (CompositeMap) i.next();
         if (child.getString(param1) == null)
