@@ -55,7 +55,8 @@ import uncertain.logging.LoggingContext;
  */
 public abstract class DatabaseAccess extends DynamicObject {
 	
-	public static final String LOGGING_TOPIC = "org.lwap.database";
+	public static final String KEY_DATA_SOURCE = "DataSource";
+    public static final String LOGGING_TOPIC = "org.lwap.database";
     BaseService	               service;
     PerformanceRecorder        recorder;
     String                     owner;
@@ -245,6 +246,14 @@ public abstract class DatabaseAccess extends DynamicObject {
 	
 	public void setAccessType(String type){
 		this.getObjectContext().setName(type);
+	}
+	
+	public String getDataSource(){
+	    return getString(KEY_DATA_SOURCE);
+	}
+	
+	public void setDataSource( String data_source ){
+	    putString(KEY_DATA_SOURCE, data_source);
 	}
 	
 	/*
