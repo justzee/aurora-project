@@ -6,9 +6,11 @@ package org.lwap.controller;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
@@ -31,9 +33,9 @@ import org.lwap.database.PerformanceRecorder;
 import org.lwap.feature.ExceptionProcessor;
 import org.lwap.mvc.ViewCreationException;
 
+import javax.sql.DataSource;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
-import uncertain.core.ConfigurationError;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.event.RuntimeContext;
@@ -69,6 +71,7 @@ implements Configuration.IParticipantListener
     public static final String KEY_SERVICE_INSTANCE = "serviceinstance";
     public static final String KEY_CURRENT_CONNECTION = "_instance.java.sql.Connection";
     public static final String KEY_RESOURCE_BUNDLE = "_instance.java.util.ResourceBundle";    
+    public static final String KEY_CONNECTION_SET  = "_collection.java.sql.connection";
     public static final String KEY_IMPORT_SUCCESS = "ImportSuccess";
     
     static final String LINE_SEPARATOR = System.getProperty("line.separator");    
@@ -321,7 +324,11 @@ implements Configuration.IParticipantListener
                         da.setOwner(getServiceName());
                         da.setPerformanceRecorder(recorder);
                     }
-                    DatabaseEntry entry = new DatabaseEntry(da,conn,params,target,this);
+                    Connection real_conn = conn;
+                    String data_source = da.getDataSource();
+                    if(data_source!=null)
+                        real_conn = getNamedConnection(data_source);
+                    DatabaseEntry entry = new DatabaseEntry(da,real_conn,params,target,this);
                     proc.addEntry(entry);
                 }else{
                     Object inst = configuration.getInstance(item);
@@ -359,9 +366,11 @@ implements Configuration.IParticipantListener
         }finally{
             //runner.fireEvent("ConnectionClose", new Object[]{conn} );
             DBUtil.closeConnection(conn);
+            closeConnectionSet();
             getServiceContext().remove(KEY_CURRENT_CONNECTION);
             if(proc!=null)
                 proc.clear();
+            
         }
 
     }
@@ -536,5 +545,50 @@ implements Configuration.IParticipantListener
         mLogger.info(getServiceContext().toXML());
         throw new ServletException("Service internal error");
     }
+    
+    /* --------- Added on 21, June --------------------------------------*/
+    /* --------- Operate on multiple database connection ----------------*/
+    public Connection getNamedConnection( String name )
+        throws SQLException
+    {
+        Map conn_set = (Map)service_context.get(KEY_CONNECTION_SET);
+        if( conn_set==null){
+            conn_set = new HashMap();
+            service_context.put(KEY_CONNECTION_SET, conn_set);            
+        }
+        Connection conn = (Connection)conn_set.get(name);
+        if(conn==null){
+            DataSource ds = (DataSource) getApplicationConfig().get(name);
+            if(ds==null)
+                throw new IllegalArgumentException("Can't find named DataSource:"+name);
+            conn = ds.getConnection();
+            mLogger.config("Creating named connection "+name);
+            conn_set.put(name, conn);
+        }else{
+            mLogger.config("Reusing named connection "+name);
+        }
+        return conn;
+    }
+
+    /** close all named connections created in databaseAccess */
+    protected void closeConnectionSet(){
+        Map conn_map = (Map)service_context.get(KEY_CONNECTION_SET);
+        if(conn_map!=null){
+            Collection c = conn_map.entrySet();
+            if(c!=null){
+                Iterator it = c.iterator();
+                while(it.hasNext()){
+                    Map.Entry entry = (Map.Entry)it.next();
+                    Connection conn = (Connection)entry.getValue();
+                    String name = (String)entry.getKey();
+                    mLogger.config("Closing db connection with name"+name);
+                    DBUtil.closeConnection(conn);                    
+                }
+            }
+            conn_map.clear();
+            getServiceContext().remove(KEY_CONNECTION_SET);
+        }        
+    }
+    
     
 }
