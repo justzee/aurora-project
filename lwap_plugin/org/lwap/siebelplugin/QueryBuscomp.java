@@ -141,7 +141,8 @@ public class QueryBuscomp extends AbstractEntry {
 		String USER_NAME = (String)siebel_login.getObject("siebel-login/@USER_NAME");
 		String PWD = (String)siebel_login.getObject("siebel-login/@PWD");
 		
-		SiebelDataBean siebelDataBean = siebelInstance.getClient(USER_NAME,PWD);
+		long time = System.currentTimeMillis();
+		SiebelDataBean siebelDataBean = siebelInstance.getClient(USER_NAME,PWD,time);
 		SiebelBusObject busObject = null;
 		SiebelBusComp busComp = null;
 		try {
@@ -226,7 +227,7 @@ public class QueryBuscomp extends AbstractEntry {
 			busComp.release();
 			busObject.release();
 			mLogger.log(Level.FINE, "Siebel instance is released.");
-			siebelInstance.release(USER_NAME);
+			siebelInstance.release(USER_NAME,time);
 
 		}
 
@@ -255,9 +256,8 @@ public class QueryBuscomp extends AbstractEntry {
 			if (hasRecord && ElementName != null) {
 				for (int i = 0; i < fieldSet.length; i++) {
 					String field = fieldSet[i];
-					String newfield = field.replaceAll(" ", "_");
 					try {
-						result.put(newfield, busComp.getFieldValue(field));
+						result.put(field, busComp.getFieldValue(field));
 					} catch (SiebelException ex) {
 						throw new Exception("error when query siebel buscomp:"
 								+ ex.getDetailedMessage(), ex);
@@ -274,9 +274,8 @@ public class QueryBuscomp extends AbstractEntry {
 				// put all fields in table into CompositeMap
 				for (int i = 0; i < fieldSet.length; i++) {
 					String field = fieldSet[i];
-					String newfield = field.replaceAll(" ", "_");
 					try {
-						item.put(newfield, busComp.getFieldValue(field));
+						item.put(field, busComp.getFieldValue(field));
 					} catch (SiebelException ex) {
 						throw new Exception("error when query siebel buscomp:"
 								+ ex.getDetailedMessage(), ex);

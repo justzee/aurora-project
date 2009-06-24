@@ -237,7 +237,8 @@ public class InvokeMethod implements IFeature, IController  {
 		String USER_NAME = (String)siebel_login.getObject("siebel-login/@USER_NAME");
 		String PWD = (String)siebel_login.getObject("siebel-login/@PWD");
 		
-		SiebelDataBean siebelDataBean = siebelInstance.getClient(USER_NAME,PWD);
+		long time = System.currentTimeMillis();
+		SiebelDataBean siebelDataBean = siebelInstance.getClient(USER_NAME,PWD,time);
 		SiebelBusObject busObject = null;
 		SiebelBusComp busComp = null;
 		try {
@@ -283,7 +284,7 @@ public class InvokeMethod implements IFeature, IController  {
 			busComp.release();
 			busObject.release();
 			mLogger.log(Level.FINE, "Siebel instance is released.");
-			siebelInstance.release(USER_NAME);
+			siebelInstance.release(USER_NAME,time);
 
 		}
 
