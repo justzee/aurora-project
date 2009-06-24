@@ -45,6 +45,15 @@ public class SiebelInstance implements IGlobalInstance {
         dataBeanMap.put(USER_NAME, siebelDataBean);
         return siebelDataBean;
     }
+    public SiebelDataBean prepare(long time) throws SiebelException{
+    	SiebelDataBean	siebelDataBean = new SiebelDataBean();
+
+            // login to the server
+    	siebelDataBean.login(CONNECTION_STRING, USER_NAME, PASSWORD,LANGUAGE);            
+        if(logger!=null) logger.info("Siebel connection  "+CONNECTION_STRING+" created");
+        dataBeanMap.put(USER_NAME+time, siebelDataBean);
+        return siebelDataBean;
+    }
     
     public void release() {
 		Iterator keySetIterator = dataBeanMap.keySet().iterator();
@@ -68,8 +77,8 @@ public class SiebelInstance implements IGlobalInstance {
 		}
 		dataBeanMap.clear();
 	}
-    public void release(String User){
-    	Object obj = dataBeanMap.get(User);
+    public void release(String User,long time){
+    	Object obj = dataBeanMap.get(User+time);
     	SiebelDataBean siebelDataBean = null;
     	if(obj == null){
     		return;
@@ -95,7 +104,7 @@ public class SiebelInstance implements IGlobalInstance {
     	dataBean = prepare();
         return dataBean;
     }
-    public SiebelDataBean getClient(String User,String Pwd) throws SiebelException {
+    public SiebelDataBean getClient(String User,String Pwd,long time) throws SiebelException {
     	//目前还没有好的方法可以测试是否已经断开连接
 //    	Object obj = dataBeanMap.get(User);
     	SiebelDataBean dataBean = null;
@@ -105,7 +114,7 @@ public class SiebelInstance implements IGlobalInstance {
 //    	}
     	USER_NAME = User;
     	PASSWORD = Pwd;
-    	dataBean = prepare();
+    	dataBean = prepare(time);
         return dataBean;
     }
     

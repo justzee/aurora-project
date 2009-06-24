@@ -85,7 +85,8 @@ public class DeleteBuscomp extends AbstractEntry {
 		String USER_NAME = (String)siebel_login.getObject("siebel-login/@USER_NAME");
 		String PWD = (String)siebel_login.getObject("siebel-login/@PWD");
 		
-		SiebelDataBean siebelDataBean = siebelInstance.getClient(USER_NAME,PWD);
+		long time = System.currentTimeMillis();
+		SiebelDataBean siebelDataBean = siebelInstance.getClient(USER_NAME,PWD,time);
 //		SiebelDataBean siebelDataBean = siebelInstance.getClient();
 		SiebelBusObject busObject = null;
 		SiebelBusComp busComp = null;
@@ -129,7 +130,7 @@ public class DeleteBuscomp extends AbstractEntry {
 			busComp.release();
 			busObject.release();
 			mLogger.log(Level.FINE, "Siebel instance is released.");
-			siebelInstance.release(USER_NAME);
+			siebelInstance.release(USER_NAME,time);
 		}
 
 	}
