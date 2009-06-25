@@ -24,16 +24,16 @@ Aurora Presentation框架的主要设计目标：
 
 == 第二阶段 ==
 
-=== 创建基础界面组件 === 
+创建基础界面组件，包括：
   * 控制类（repeater, selector等）
   * 布局类（vbox, hbox, template-layout等）
   * 基础表单组件（form, textedit, select, combobox, checkbox, multi-select, button等）
   * grid组件
   * 消息交互组件（msgbox, dialog, info, tip等）
 
-=== 建立界面处理的基础javascript API === 
+建立界面处理的基础javascript API；
 
-=== 初步实现可视化开发的IDE ===
+初步实现可视化开发的IDE；
 
 本阶段计划于2009年10月完成
 
