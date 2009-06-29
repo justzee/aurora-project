@@ -87,6 +87,8 @@ public abstract class ServiceImpl implements Service {
         CompositeMap r = service_context.createChild(KEY_REQUEST);
         r.put(KEY_ADDRESS, request.getRemoteAddr());
         r.put("url", getServiceName());
+        r.put("server_name", request.getServerName());
+        r.put("server_port", new Integer(request.getServerPort()));
         CompositeMap cookie = service_context.createChild("cookie");
         populateCookieMap(request, cookie);
 	}
