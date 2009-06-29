@@ -171,6 +171,7 @@ public class QueryController extends AbstractController  implements IFeature {
                     DatabaseQuery count_query = DatabaseQuery.createQuery(count_sql.toString());
                     count_query.setPageResultset(false);
                     count_query.setElementName(count_element);
+                    count_query.setDataSource(query.getDataSource());
                     ServiceInstance.getModelConfig().addChild(count_query.getObjectContext());
                     //System.out.println(ServiceInstance.getModelConfig().toXML());
 					/*
