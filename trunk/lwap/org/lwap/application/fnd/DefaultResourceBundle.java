@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 public class DefaultResourceBundle extends ResourceBundle {
     
     HashMap resources = new HashMap();
+    
 
     /* (non-Javadoc)
      * @see java.util.ResourceBundle#getKeys()
@@ -52,7 +53,7 @@ public class DefaultResourceBundle extends ResourceBundle {
      * @see java.util.ResourceBundle#handleGetObject(java.lang.String)
      */
     public Object handleGetObject(String key){    
-         		Object obj = resources.get(key);
+         		Object obj = resources.get(key.toUpperCase());
                 return obj==null? key:obj;
     }
     
