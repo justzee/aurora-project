@@ -17,6 +17,8 @@ import org.lwap.application.Application;
 import org.lwap.application.ApplicationInitializeException;
 import org.lwap.application.ApplicationInitializer;
 import org.lwap.application.WebApplication;
+import org.lwap.database.ConnectionInitializer;
+import org.lwap.database.IConnectionInitializer;
 
 import uncertain.composite.CompositeMap;
 
@@ -25,12 +27,13 @@ import uncertain.composite.CompositeMap;
  * should be put in <oracle-datasource> section
  * 
  * Sample configuration: <code>
-	<oracle-datasource				db-url="jdbc:oracle:thin:@hr:1521:ORCL"
+	<oracle-datasource				[name="named_connection"]
+	                                db-url="jdbc:oracle:thin:@hr:1521:ORCL"
 									db-user="hrms"
 									db-password="hrms"
 									max-conn="100"
 									min-conn="2"
-									name="named_connection">
+									init-sql="alter session set NLS_LANGUA=...">
 	</oracle-datasource>	
  * </code>
  * 
@@ -46,9 +49,11 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
     public static final String KEY_MIN_CONN = "min-conn";
     public static final String KEY_USE_POOL = "use-pool";
     public static final String KEY_NAME = "name";
+    public static final String KEY_INIT_SQL = "init-sql";
 
     OracleConnectionCacheImpl occi;
     SimpleDataSource simple_ds;
+    IConnectionInitializer connection_initializer;
 
     CompositeMap app_config;
     boolean use_pool;
@@ -98,6 +103,10 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
             System.out.println("Using physical connection:" + url + ":" + user);
             simple_ds = new SimpleDataSource(url, user, password);
         }
+        String init_sql = datasource_config.getString(KEY_INIT_SQL);
+        if(init_sql!=null){
+            connection_initializer = new ConnectionInitializer(init_sql);
+        }
     }
 
     protected void doApplicationInit() throws ApplicationInitializeException {
@@ -113,6 +122,12 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
                 if (name == null) {
                     createDataSource(item);
                     application.setDataSource(getDataSource());
+                    if(connection_initializer!=null){
+                        System.out.println("connection initializer:"+connection_initializer);
+                        application.setConnectionInitializer(connection_initializer);
+                    }else{
+                        System.out.println("No connection initializer configured");
+                    }
                     app_config.put(OracleDataSourceCreator.class.getName(),
                             this);
                 } else {
@@ -184,6 +199,11 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
         closeDataSource();
         createDataSource(app_config);
     }
+    
+    public IConnectionInitializer   getInitSql(){
+        return connection_initializer;
+    }
+    
     /*
      * public static void main(String[] args) throws Exception {
      * OracleConnectionCacheImpl occi; occi = new OracleConnectionCacheImpl();
