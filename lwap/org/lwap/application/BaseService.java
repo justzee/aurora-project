@@ -25,6 +25,8 @@ import javax.sql.DataSource;
 
 import org.lwap.controller.StateFlag;
 import org.lwap.database.DatabaseAccess;
+import org.lwap.database.IConnectionInitializer;
+import org.lwap.database.TransactionFactory;
 import org.lwap.mvc.ClassViewFactory;
 import org.lwap.mvc.Layout;
 import org.lwap.mvc.LocalizedStringProvider;
@@ -122,11 +124,14 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 		return this.application.getDataSource();
 	}
 	
-	public Connection getConnection() throws SQLException {
-		Connection conn = getDataSource().getConnection();
-		if(conn==null)
-		    throw new SQLException("Can't get connection");
-	    return conn; 
+	public Connection getConnection() throws SQLException {	    
+	    Connection conn = getDataSource().getConnection();
+        if(conn==null)
+            throw new SQLException("Can't get connection");
+        IConnectionInitializer ci = application.getConnectionInitializer();
+        if(ci!=null)
+            ci.initConnection(conn, this.service_context);
+	    return conn;
 	}
 		
 	public ViewFactoryStore getViewBuilderStore(){

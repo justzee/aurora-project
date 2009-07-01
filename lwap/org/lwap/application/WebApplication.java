@@ -27,6 +27,7 @@ import org.lwap.application.event.BasicServiceListenerManager;
 import org.lwap.application.event.IServiceListenerManager;
 import org.lwap.controller.MainService;
 import org.lwap.database.DatabaseAccess;
+import org.lwap.database.IConnectionInitializer;
 import org.lwap.database.PerformanceRecorder;
 import org.lwap.database.TransactionFactory;
 import org.lwap.database.datatype.DataTypeManager;
@@ -139,6 +140,9 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   
   // cache config file
   boolean	cacheEnable = false;
+  
+  // Connection initializer
+  IConnectionInitializer    connection_initializer;
   
   Service _get_service_instance(String service_name) throws Exception {
         if(service_name==null)
@@ -670,6 +674,15 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
         }else{
             performance_recorder = new PerformanceRecorder();
         }
+    }
+
+    public IConnectionInitializer getConnectionInitializer() {
+        return connection_initializer;
+    }
+
+    public void setConnectionInitializer(
+            IConnectionInitializer connection_initializer) {
+        this.connection_initializer = connection_initializer;
     }
 
 }
