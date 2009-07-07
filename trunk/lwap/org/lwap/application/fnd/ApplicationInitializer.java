@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import org.lwap.application.Application;
 import org.lwap.application.ApplicationInitializeException;
+import org.lwap.application.ResourceBundleFactory;
 import org.lwap.application.WebApplication;
 
 import uncertain.composite.CompositeMap;
@@ -39,8 +40,15 @@ public class ApplicationInitializer implements
 			if( ds == null) throw new ApplicationInitializeException("ApplicationInitializer:Can't get DataSource from app");				
 			conn = ds.getConnection();
 			DatabaseResourceBundleFactory fact = new DatabaseResourceBundleFactory(webapp.getApplicationConfig(),  conn);
-			webapp.setResourceBundleFactory(fact);
-			webapp.getApplicationConfig().put(SERVICE_MAP,fact.getServiceMap());
+            // set resource bundle factory
+			{
+    			ResourceBundleFactory existing_fact = webapp.getResourceBundleFactory();
+    			if( existing_fact==null || existing_fact instanceof DatabaseResourceBundleFactory){
+        			webapp.setResourceBundleFactory(fact);
+    			}
+			}
+			// reload service map
+            webapp.getApplicationConfig().put(SERVICE_MAP,fact.getServiceMap());
 		} catch(SQLException ex){
 			throw new ApplicationInitializeException(ex);
 		} finally{
