@@ -62,6 +62,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
         this.applyEmptyText();
         this.fireEvent("blur", this);
     },
+    
     setValue : function(v){
     	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
             this.el.removeClass('item-empty');
