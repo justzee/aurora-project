@@ -19,7 +19,7 @@
 	</TH>
 	<TD width="150">
 		<DIV class="item-wrap" id="textField">
-			<INPUT class="item-textField item-empty" style="width: 147px;" name="city" autocomplete="off" value="城市名(可不填)" />
+			<INPUT class="item-textField item-emptyText" style="width: 147px;" name="city" autocomplete="off" value="城市名(可不填)" />
 		</DIV>
 		<script>
 			new Aurora.TextField('textField',{
@@ -31,7 +31,7 @@
 		<SPAN class="item-label">必输:</SPAN>
 	</TH>
 	<TD width="150">
-		<DIV class="item-wrap item-notblank" id="textFieldNotBlank">
+		<DIV class="item-wrap item-notBlank" id="textFieldNotBlank">
 			<INPUT class="item-textField"  style="width: 147px;" name="hotal" autocomplete="off" value="" />
 		</DIV>
 		<script>
@@ -46,7 +46,7 @@
 		<SPAN class="item-label" style="float:right">只读:</SPAN>
 	</TH>
 	<TD width="150">
-		<DIV class="item-wrap item-readonly" id="textFieldReadOnly">
+		<DIV class="item-wrap item-readOnly" id="textFieldReadOnly">
 			<INPUT class="item-textField" style="width: 127px;" readonly="true" name="date" value="只读TextField" autocomplete="off"/>
 		</DIV>
 		<script>
@@ -64,6 +64,7 @@
 </TBODY>
 </TABLE>
 <br><br>
+<input type="button" value="验证" onclick="textFieldNotBlank.validate()">
 <input type="button" value="必输" onclick="textField.setNotBlank(true)">
 <input type="button" value="非必输" onclick="textField.setNotBlank(false)">
 <input type="button" value="只读" onclick="textField.setReadOnly(true)">

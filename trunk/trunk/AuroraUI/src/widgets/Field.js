@@ -1,6 +1,10 @@
 
 Aurora.Field = Ext.extend(Ext.util.Observable,{	
 	validators: [],
+	notBlankCss:'item-notBlank',
+	readOnlyCss:'item-readOnly',
+	emptyTextCss:'item-emptyText',
+	invalidCss:'item-invalid',
 	constructor: function(elId, config) {
         config = config || {};
         Ext.apply(this, config);
@@ -13,7 +17,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
         this.initEvents();
     },
     initComponent : function(){
-    	if(this.emptyText) this.el.addClass('item-empty');
+    	if(this.emptyText) this.el.addClass(this.emptyTextCss);
     	this.originalValue = this.getValue();
     },
     initEvents : function(){
@@ -48,7 +52,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
 	            if(this.el.dom.value == this.emptyText){
 	                this.setRawValue('');
 	            }
-	            this.el.removeClass('item-empty');
+	            this.el.removeClass(this.emptyTextCss);
 	        }
         }
     },
@@ -65,7 +69,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     
     setValue : function(v){
     	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
-            this.el.removeClass('item-empty');
+            this.el.removeClass(this.emptyTextCss);
         }
         this.value = v;
         this.el.dom.value = (v === null || v === undefined ? '' : v);
@@ -83,24 +87,24 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
 		this.clearInvalid();    	
     	this.notBlank = notBlank;
     	if(notBlank){
-    		this.wrap.addClass('item-notblank');
+    		this.wrap.addClass(this.notBlankCss);
     	}else{
-    		this.wrap.removeClass('item-notblank');
+    		this.wrap.removeClass(this.notBlankCss);
     	}
     },
     setReadOnly : function(readOnly){
     	this.readOnly = readOnly;
     	this.el.dom.readOnly = readOnly;
     	if(readOnly){
-    		this.wrap.addClass('item-readonly');
+    		this.wrap.addClass(this.readOnlyCss);
     	}else{
-    		this.wrap.removeClass('item-readonly');
+    		this.wrap.removeClass(this.readOnlyCss);
     	}
     },
     applyEmptyText : function(){
         if(this.emptyText && this.getValue().length < 1){
             this.setRawValue(this.emptyText);
-            this.el.addClass('item-empty');
+            this.el.addClass(this.emptyTextCss);
         }
     },
     validate : function(){
@@ -112,12 +116,12 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     },
     clearInvalid : function(){
     	this.invalidMsg = null;
-    	this.wrap.removeClass('item-invalid');
+    	this.wrap.removeClass(this.invalidCss);
     	this.fireEvent('valid', this);
     },
     markInvalid : function(msg){
     	this.invalidMsg = msg;
-    	this.wrap.addClass('item-invalid');
+    	this.wrap.addClass(this.invalidCss);
     	this.fireEvent('invalid', this);
     },
     validateValue : function(value){
@@ -126,7 +130,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
                 this.clearInvalid();
                 return true;
         	}else{
-                this.markInvalid('字段费控');
+                this.markInvalid('字段费控');//TODO:测试
         		return false;
         	}
         }
