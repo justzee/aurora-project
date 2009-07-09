@@ -1,0 +1,173 @@
+
+Aurora.Field = Ext.extend(Ext.util.Observable,{	
+	validators: [],
+	constructor: function(elId, config) {
+        config = config || {};
+        Ext.apply(this, config);
+        window[elId] = this;
+        Aurora.Field.superclass.constructor.call(this, config);
+        this.wrap = Ext.get(elId);
+        this.el = this.wrap.first('input.item-textField'); 
+        this.addEvents('focus','blur','keydown','change','invalid','valid');
+        this.initComponent();
+        this.initEvents();
+    },
+    initComponent : function(){
+    	if(this.emptyText) this.el.addClass('item-empty');
+    	this.originalValue = this.getValue();
+    },
+    initEvents : function(){
+    	this.el.on(Ext.isIE || Ext.isSafari3 ? "keydown" : "keypress", this.fireKey,  this);
+    	this.el.on("focus", this.onFocus,  this);
+    	this.el.on("blur", this.onBlur,  this);
+    	this.el.on("keyup", this.onKeyUp, this);
+        this.el.on("keydown", this.onKeyDown, this);
+        this.el.on("keypress", this.onKeyPress, this);
+    	
+    },
+    onKeyUp : function(e){
+        this.fireEvent('keyup', this, e);
+    },
+    onKeyDown : function(e){
+        this.fireEvent('keydown', this, e);
+    },
+    onKeyPress : function(e){
+        this.fireEvent('keypress', this, e);
+    },
+    fireKey : function(e){
+      this.fireEvent("keydown", this, e);
+    },
+    onFocus : function(){
+    	if(this.readOnly) return;
+        if(!this.hasFocus){
+            this.hasFocus = true;
+            this.startValue = this.getValue();
+            this.select.defer(10,this);
+            this.fireEvent("focus", this);
+            if(this.emptyText){
+	            if(this.el.dom.value == this.emptyText){
+	                this.setRawValue('');
+	            }
+	            this.el.removeClass('item-empty');
+	        }
+        }
+    },
+    onBlur : function(e){
+        this.hasFocus = false;
+        this.validate();
+        var v = this.getValue();
+        if(String(v) !== String(this.startValue)){
+            this.fireEvent('change', this, v, this.startValue);
+        }
+        this.applyEmptyText();
+        this.fireEvent("blur", this);
+    },
+    setValue : function(v){
+    	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
+            this.el.removeClass('item-empty');
+        }
+        this.value = v;
+        this.el.dom.value = (v === null || v === undefined ? '' : v);
+        this.validate();
+        this.applyEmptyText();
+    },
+    getValue : function(){
+        var v = this.el.getValue();
+        if(v === this.emptyText || v === undefined){
+            v = '';
+        }
+        return v;
+    },
+    setNotBlank : function(notBlank){
+		this.clearInvalid();    	
+    	this.notBlank = notBlank;
+    	if(notBlank){
+    		this.wrap.addClass('item-notblank');
+    	}else{
+    		this.wrap.removeClass('item-notblank');
+    	}
+    },
+    setReadOnly : function(readOnly){
+    	this.readOnly = readOnly;
+    	this.el.dom.readOnly = readOnly;
+    	if(readOnly){
+    		this.wrap.addClass('item-readonly');
+    	}else{
+    		this.wrap.removeClass('item-readonly');
+    	}
+    },
+    applyEmptyText : function(){
+        if(this.emptyText && this.getValue().length < 1){
+            this.setRawValue(this.emptyText);
+            this.el.addClass('item-empty');
+        }
+    },
+    validate : function(){
+        if(this.readOnly || this.validateValue(this.getValue())){
+            this.clearInvalid();
+            return true;
+        }
+        return false;
+    },
+    clearInvalid : function(){
+    	this.invalidMsg = null;
+    	this.wrap.removeClass('item-invalid');
+    	this.fireEvent('valid', this);
+    },
+    markInvalid : function(msg){
+    	this.invalidMsg = msg;
+    	this.wrap.addClass('item-invalid');
+    	this.fireEvent('invalid', this);
+    },
+    validateValue : function(value){
+    	if(value.length < 1 || value === this.emptyText){ // if it's blank
+        	if(!this.notBlank){
+                this.clearInvalid();
+                return true;
+        	}else{
+                this.markInvalid('字段费控');
+        		return false;
+        	}
+        }
+    	Ext.each(this.validators.each, function(validator){
+    		var vr = validator.validate(value)
+    		if(vr !== true){
+    			
+    			return false;
+    		}    		
+    	})
+        return true;
+    },
+    select : function(start, end){
+    	var v = this.getValue();
+        if(v.length > 0){
+            start = start === undefined ? 0 : start;
+            end = end === undefined ? v.length : end;
+            var d = this.el.dom;
+            if(d.setSelectionRange){  
+                d.setSelectionRange(start, end);
+            }else if(d.createTextRange){
+                var range = d.createTextRange();
+                range.moveStart("character", start);
+                range.moveEnd("character", end-v.length);
+                range.select();
+            }
+        }
+    },
+    setRawValue : function(v){
+        return this.el.dom.value = (v === null || v === undefined ? '' : v);
+    },
+    reset : function(){
+    	this.setValue(this.originalValue);
+        this.clearInvalid();
+        this.applyEmptyText();
+    },
+    focus : function(selectText, delay){
+    	if(this.readOnly) return;
+        this.el.dom.select();
+    },
+    blur : function(){
+    	if(this.readOnly) return;
+    	this.el.blur();
+    }
+})

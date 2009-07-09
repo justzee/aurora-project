@@ -1,0 +1,78 @@
+body { margin:0; padding:0; font:normal 12px/1.231 Arial, SimSun, sans-serif; color:#555; }
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, button, p, blockquote, th, td { margin:0; padding:0; }
+fieldset, img { border:0; }
+table { border-spacing:0; }
+ol, ul { list-style:none; }
+address, caption, cite, code, dfn, em, th, var { font-style:normal; font-weight:400; }
+strong { font-style:normal; font-weight:700; }
+caption, th { text-align:left; }
+h1, h2, h3, h4, h5, h6 { font-size:100%; font-weight:400; }
+q:before, q:after { content:""; }
+abbr, acronym { border:0; }
+a { color:#0069ca; text-decoration:none; }
+BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;	PADDING-TOP: 0px}
+
+.fieldWrap {
+	BORDER: #bababa 1px solid;	
+	FLOAT: left;	
+	POSITION: relative;
+	WIDTH: 150px;
+	HEIGHT: 20px;
+	
+}
+
+.item-textField {
+	float:left;  
+	border:0;  
+	height:19px; 
+	line-height:16px;
+	padding-top:1px;
+	padding-left:3px;
+	font-family:Tahoma,Geneva,sans-serif; 
+	font-size:12px;
+}
+.item-notblank, .item-notblank .item-textField{
+	background:#fff9c2;
+}
+.item-empty {
+	color:#bbb !important;
+}
+.item-readonly, .item-readonly .item-textField {
+	background:#DBDBDB;
+}
+.item-invalid, .item-invalid .item-textField{
+	background:#FFB9AC;
+}
+.item-label{ 
+	display:block; 
+	padding-left:5px; 
+	padding-right:5px;
+	overflow:hidden;
+}
+.item-lookup {
+	BORDER-RIGHT: #bababa 1px solid;	
+	BORDER-TOP: #bababa 1px solid;	
+	Z-INDEX: 10000;	
+	LEFT: 0px;	
+	width:100px;
+	height:100px;
+	FONT: 12px/1.231 Verdana,Arial,SimSun,Helvetica,sans-serif;	
+	MARGIN-LEFT: -1px;	
+	BORDER-LEFT: #bababa 1px solid;	
+	COLOR: #555;	
+	BORDER-BOTTOM: #bababa 1px solid;	
+	POSITION: absolute;	
+	TOP: 22px;	
+	BACKGROUND-COLOR: #fff
+}
+.item-dateButton {	
+	BORDER-TOP-WIDTH: 0px;	
+	BORDER-LEFT-WIDTH: 0px;	
+	BACKGROUND: url(../img/icon_sugg_date.gif) no-repeat 2px 0px;	
+	FLOAT: left;	
+	BORDER-BOTTOM-WIDTH: 0px;	
+	WIDTH: 20px;	
+	CURSOR: pointer;	
+	HEIGHT: 20px;
+	BORDER-RIGHT-WIDTH: 0px
+}
