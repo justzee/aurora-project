@@ -15,14 +15,14 @@
 <TBODY>
 <TR height="25">
 	<TH scope="row" width="75">
-		<SPAN class="item-label" id="city_label" style="float:right">输入框:</SPAN>
+		<SPAN class="item-label" style="float:right">输入框:</SPAN>
 	</TH>
 	<TD width="150">
-		<DIV class="item-wrap" id="cityInput">
+		<DIV class="item-wrap" id="textField">
 			<INPUT class="item-textField item-empty" style="width: 147px;" name="city" autocomplete="off" value="城市名(可不填)" />
 		</DIV>
 		<script>
-			new Aurora.TextField('cityInput',{
+			new Aurora.TextField('textField',{
 				emptyText : '城市名(可不填)'
 			});			
 		</script>
@@ -31,13 +31,11 @@
 		<SPAN class="item-label">必输:</SPAN>
 	</TH>
 	<TD width="150">
-		<DIV class="item-wrap item-notblank" id="hotalInput">
+		<DIV class="item-wrap item-notblank" id="textFieldNotBlank">
 			<INPUT class="item-textField"  style="width: 147px;" name="hotal" autocomplete="off" value="" />
-			<DIV class="item-lookup" style="width:250px;" >
-			</DIV>
 		</DIV>
 		<script>
-			new Aurora.TextField('hotalInput',{
+			new Aurora.TextField('textFieldNotBlank',{
 				notBlank : true
 			});
 		</script>
@@ -45,13 +43,17 @@
 </TR>
 <TR height="25">
 	<TH scope="row" width="75">
-		<SPAN class="item-label" id="date_label" style="float:right">日期:</SPAN>
+		<SPAN class="item-label" style="float:right">只读:</SPAN>
 	</TH>
 	<TD width="150">
-		<DIV class="item-wrap item-notblank" id="dateInput">
-			<INPUT class="item-textField" style="width: 127px;" name="date" autocomplete="off"/>
-			<BUTTON class="item-dateButton" id="himgArriDate" hideFocus title="选择日期"></BUTTON>
+		<DIV class="item-wrap item-readonly" id="textFieldReadOnly">
+			<INPUT class="item-textField" style="width: 127px;" readonly="true" name="date" value="只读TextField" autocomplete="off"/>
 		</DIV>
+		<script>
+			new Aurora.TextField('textFieldReadOnly',{
+				readOnly : true
+			});
+		</script>
 	</TD>
 	<TH scope="row" width="75">
 		<SPAN class="item-label">宾馆:</SPAN>
@@ -62,10 +64,10 @@
 </TBODY>
 </TABLE>
 <br><br>
-<input type="button" value="必输" onclick="cityInput.setNotBlank(true)">
-<input type="button" value="非必输" onclick="cityInput.setNotBlank(false)">
-<input type="button" value="只读" onclick="cityInput.setReadOnly(true)">
-<input type="button" value="非只读" onclick="cityInput.setReadOnly(false)">
+<input type="button" value="必输" onclick="textField.setNotBlank(true)">
+<input type="button" value="非必输" onclick="textField.setNotBlank(false)">
+<input type="button" value="只读" onclick="textField.setReadOnly(true)">
+<input type="button" value="非只读" onclick="textField.setReadOnly(false)">
 <div id='console'></div>
 
 
