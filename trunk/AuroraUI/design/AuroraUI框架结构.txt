@@ -7,19 +7,20 @@ String
 
 ------ 基础类 ------
 Aurora
-Aurora.Field
+Aurora.Field 具有可输入特性的基类
+Aurora.TriggerField 具有触发按钮的组件
 
 
 ------ 基础组件 -----
 Aurora.Button
 Aurora.CheckBox
-Aurora.ComboBox
+Aurora.ComboBox 继承TriggerField
 Aurora.ContextMenu
-Aurora.DatePicker
+Aurora.DatePicker 继承TriggerField
 Aurora.FileInput
 Aurora.Lov
 Aurora.Radio
-Aurora.TextField
+Aurora.TextField  继承Field
 Aurora.TextArea
 
 ------ 容器类 -----
