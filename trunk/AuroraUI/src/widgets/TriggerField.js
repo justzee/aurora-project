@@ -11,5 +11,16 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     	Aurora.TriggerField.superclass.initEvents.call(this);    
     	this.trigger.on('click',this.onTriggerClick, this, {preventDefault:true})
     },
-    onTriggerClick : Ext.emptyFn
+    isExpanded : function(){
+        return this.popup && this.popup.isVisible();
+    },
+    onBlur : function(e){
+    	if(this.isExpanded()){
+    		this.popup.hide();
+    	}
+    	Aurora.TriggerField.superclass.onBlur.call(this, e);
+    },
+    onTriggerClick : function(){
+    	this.el.focus();
+    }
 });
