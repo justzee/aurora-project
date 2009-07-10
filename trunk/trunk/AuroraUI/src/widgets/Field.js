@@ -12,7 +12,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
         Aurora.Field.superclass.constructor.call(this);       
         this.wrap = Ext.get(elId);
         this.el = this.wrap.first('input.item-textField'); 
-        this.addEvents('focus','blur','keydown','change','invalid','valid');
+        this.addEvents('focus','blur','keydown','change','invalid','valid','keyup','keypress');
         this.initComponent();
         this.initEvents();
     },
