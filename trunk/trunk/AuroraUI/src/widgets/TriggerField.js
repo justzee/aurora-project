@@ -14,11 +14,17 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     isExpanded : function(){    	
         return this.popup && this.popup.isVisible();
     },
-    onBlur : function(e){
-    	if(this.isExpanded()){
-    		this.popup.hide();
-    	}
-    	Aurora.TriggerField.superclass.onBlur.call(this, e);
+    onFocus : function(){
+        Ext.get(Ext.isIE ? document.body : document).on("mousedown", this.triggerBlur, this, {delay: 10});
+        Aurora.TriggerField.superclass.onFocus.call(this);
+    },
+    triggerBlur : function(e){
+    	if(!this.wrap.contains(e.target)){
+            if(this.isExpanded()){
+	    		this.popup.hide();
+	    	}
+	    	Ext.get(Ext.isIE ? document.body : document).un("mousedown", this.triggerBlur, this);
+        }
     },
     onTriggerClick : function(){
     	this.el.focus();
