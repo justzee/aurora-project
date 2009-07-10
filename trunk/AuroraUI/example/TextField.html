@@ -9,9 +9,9 @@
  <script language="javascript" type="text/javascript" src="../src/widgets/Field.js"></script>
  <script language="javascript" type="text/javascript" src="../src/widgets/TextField.js"></script>
  </HEAD>
- <BODY style="padding:15px">
+ <BODY>
  
-<TABLE cellSpacing="0" cellPadding="0">
+<TABLE cellSpacing="0" cellPadding="0" style="margin:15px">
 <TBODY>
 <TR height="25">
 	<TH scope="row" width="75">
@@ -64,7 +64,8 @@
 </TBODY>
 </TABLE>
 <br><br>
-<input type="button" value="验证" onclick="textFieldNotBlank.validate()">
+<input type="button" value="验证" onclick="textField.validate()">
+<input type="button" value="验证2" onclick="textFieldNotBlank.validate()">
 <input type="button" value="必输" onclick="textField.setNotBlank(true)">
 <input type="button" value="非必输" onclick="textField.setNotBlank(false)">
 <input type="button" value="只读" onclick="textField.setReadOnly(true)">
