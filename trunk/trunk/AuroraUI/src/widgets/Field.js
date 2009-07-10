@@ -5,19 +5,22 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
 	readOnlyCss:'item-readOnly',
 	emptyTextCss:'item-emptyText',
 	invalidCss:'item-invalid',
-	constructor: function(elId, config) {
+	constructor: function(elId, config) {	
         config = config || {};
         Ext.apply(this, config);
         window[elId] = this;
-        Aurora.Field.superclass.constructor.call(this, config);
+        Aurora.Field.superclass.constructor.call(this);       
         this.wrap = Ext.get(elId);
         this.el = this.wrap.first('input.item-textField'); 
         this.addEvents('focus','blur','keydown','change','invalid','valid');
         this.initComponent();
         this.initEvents();
     },
-    initComponent : function(){
-    	if(this.emptyText) this.el.addClass(this.emptyTextCss);
+    initComponent : function(){    	
+    	if(this.emptyText) {
+    		this.el.addClass(this.emptyTextCss);
+    		this.setValue(this.emptyText);
+    	}
     	this.originalValue = this.getValue();
     },
     initEvents : function(){
@@ -124,7 +127,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     	this.wrap.addClass(this.invalidCss);
     	this.fireEvent('invalid', this);
     },
-    validateValue : function(value){
+    validateValue : function(value){    
     	if(value.length < 1 || value === this.emptyText){ // if it's blank
         	if(!this.notBlank){
                 this.clearInvalid();
