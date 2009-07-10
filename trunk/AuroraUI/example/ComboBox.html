@@ -23,7 +23,7 @@
 		<DIV class="item-wrap item-notBlank" id="comboBox">
 			<INPUT class="item-textField" style="width: 126px;" name="city" autocomplete="off" value="选择城市名" />
 			<BUTTON class="item-trigger item-comboButton" hideFocus title="选择城市"></BUTTON>
-			<DIV class="item-comboList" style="display:none">
+			<DIV class="item-popup item-comboList" style="display:none;width:150px;height:200px;">
 				
 			</DIV>
 		</DIV>
@@ -32,7 +32,22 @@
 			});
 		</script>
 	</TD>
-	
+	<TH scope="row" width="75">
+		<SPAN class="item-label" id="city_label" style="float:right">选择框:</SPAN>
+	</TH>
+	<TD width="150">
+		<DIV class="item-wrap" id="comboBox2">
+			<INPUT class="item-textField" style="width: 126px;" name="city" autocomplete="off"/>
+			<BUTTON class="item-trigger item-comboButton" hideFocus title="选择城市"></BUTTON>
+			<DIV class="item-popup item-comboList" style="display:none;width:150px;height:200px;">
+				
+			</DIV>
+		</DIV>
+		<script>
+			new Aurora.ComboBox('comboBox2',{
+			});
+		</script>
+	</TD>
 </TR>
 </TBODY>
 </TABLE>
