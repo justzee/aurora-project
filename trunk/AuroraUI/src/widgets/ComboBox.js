@@ -4,16 +4,15 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField,{
     },
     initComponent : function(){
     	Aurora.ComboBox.superclass.initComponent.call(this);
-    	this.list = this.wrap.first('div.item-comboList'); 
     },
     isExpanded : function(){
-        return this.list && this.list.isVisible();
+        return this.popup && this.popup.isVisible();
     },
     onTriggerClick: function(){
     	if(this.isExpanded()){
-    		this.list.hide();
+    		this.popup.hide();
     	}else{
-    		this.list.show();
+    		this.popup.show();
     	}
     }
 });

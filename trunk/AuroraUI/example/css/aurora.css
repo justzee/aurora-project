@@ -81,13 +81,14 @@ BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;
 .item-comboButton {	
 	BACKGROUND: url(../img/combobtn.gif) no-repeat 2px 0px;	
 }
-.item-comboList {
+.item-popup {
 	POSITION: absolute;	
 	LEFT: 0px;
-	TOP: 22px;
+	TOP: 22px;	
 	MARGIN-LEFT: -1px;
 	Z-INDEX: 10000;
 	BORDER:#bababa 1px solid;
-	width:200px;
-	height:100px;
+}
+.item-dateList {
+	
 }
