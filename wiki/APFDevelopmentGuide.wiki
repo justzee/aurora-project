@@ -98,4 +98,4 @@ public class HelloWorld implements IViewBuilder{
  * 界面组件与Model层通过属性设置，进行运行时期绑定（本例中，通过field属性，告诉HelloWorld组件从model中取哪个字段进行显示），view与model层是完全分离的；
  * 所有的配置都可以在运行时期生成、修改。
 
- 
+[http://zj.hand-china.com/download/aurora/APFDG1.1.jpg]
