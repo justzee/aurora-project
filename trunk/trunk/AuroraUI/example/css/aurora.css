@@ -12,6 +12,16 @@ abbr, acronym { border:0; }
 a { color:#0069ca; text-decoration:none; }
 BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;	PADDING-TOP: 0px}
 
+.item-button1 {
+	FONT-SIZE: 12px;	
+	BACKGROUND: url(../img/button1.gif) no-repeat;		
+	WIDTH: 104px;	
+	CURSOR: pointer;	
+	COLOR: #555;
+	line-height:23px;
+	HEIGHT: 25px;	
+	BORDER: 0px
+}
 .item-wrap {
 	BORDER: #bababa 1px solid;	
 	FLOAT: left;	
@@ -20,7 +30,6 @@ BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;
 	HEIGHT: 20px;
 	
 }
-
 .item-textField {
 	float:left;  
 	border:0;  
