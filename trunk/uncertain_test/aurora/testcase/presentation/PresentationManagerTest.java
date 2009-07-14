@@ -57,8 +57,7 @@ public class PresentationManagerTest extends TestCase {
         
         URL url = Thread.currentThread().getContextClassLoader().getResource("aurora/testcase/ui");
         mBasePath = new File(url.getFile());
-        mEngine = new UncertainEngine();
-        mEngine.initialize( new CompositeMap());
+        mEngine = UncertainEngine.createInstance();
         mPrManager = new PresentationManager(mEngine);
         //mPkgManager = mPrManager.getPackageManager();
         mPackage = mPrManager.loadViewComponentPackage(mBasePath.getPath());        
