@@ -16,12 +16,9 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
         this.initComponent();
         this.initEvents();
     },
-    initComponent : function(){    	
-    	if(this.emptyText) {
-    		this.el.addClass(this.emptyTextCss);
-    		this.setValue(this.emptyText);
-    	}
+    initComponent : function(){
     	this.originalValue = this.getValue();
+    	this.applyEmptyText();
     },
     initEvents : function(){
     	this.el.on(Ext.isIE || Ext.isSafari3 ? "keydown" : "keypress", this.fireKey,  this);
@@ -125,7 +122,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     markInvalid : function(msg){
     	this.invalidMsg = msg;
     	this.wrap.addClass(this.invalidCss);
-    	this.fireEvent('invalid', this);
+    	this.fireEvent('invalid', this, msg);
     },
     validateValue : function(value){    
     	if(value.length < 1 || value === this.emptyText){ // if it's blank
@@ -140,7 +137,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     	Ext.each(this.validators.each, function(validator){
     		var vr = validator.validate(value)
     		if(vr !== true){
-    			
+    			//TODO:
     			return false;
     		}    		
     	})
