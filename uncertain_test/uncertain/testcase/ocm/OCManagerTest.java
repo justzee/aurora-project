@@ -79,7 +79,7 @@ public class OCManagerTest extends TestCase {
 		assertEquals(person.getName().toString(), "Frank,Lee");
 		assertEquals(person.getContactInfo().getEmail(), "frank.lee@msn.com");
 		assertEquals(person.getContactInfo().getPhone(), 16300);
-		assertEquals(person.getContactInfo().getIcq(), 0);		
+		assertEquals(person.getContactInfo().getIcq(), 12222);		
 		assertEquals(person.getContactInfo().getMobile(), new Integer(12345));
 		//System.out.println(person);
 	}

@@ -47,6 +47,20 @@ public class DynamicSqlTest extends TestCase {
         assertTrue(sql.indexOf("decode(deptno, null, get_session(?), deptno))")>=0);
         assertTrue(runner.getStatement().getBindParameters().size()==2);
         
+        //System.out.println(runner.getStatement().getParsedSQL());
+        
+    }
+    
+    public void testUpdateSql()
+        throws Exception
+    {
+        CompositeMap    map = new CompositeMap("root");
+        SqlServiceContext context = (SqlServiceContext)DynamicObject.cast(map, SqlServiceContext.class);               
+        RawSqlService service = factory.getSqlService("aurora.testcase.database.UpdateTest");
+        SqlRunner runner = service.createRunner(context);
+        runner.generateSQL(map);
+        
+        System.out.println(runner.getStatement().getParsedSQL());
     }
     
     public void testDynamicSqlHandle(){
