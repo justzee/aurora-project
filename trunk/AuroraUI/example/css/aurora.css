@@ -1,4 +1,4 @@
-body { margin:0; padding:0; font:normal 12px Arial, SimSun, sans-serif;height:100%}
+html, body { margin:0; padding:0;font-size:12px}
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, button, p, blockquote, th, td { margin:0; padding:0; }
 fieldset, img { border:0; }
 table { border-spacing:0; }
@@ -16,7 +16,7 @@ BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;
 	BORDER: #bababa 1px solid;	
 	FLOAT: left;	
 	POSITION: relative;
-	WIDTH: 150px;
+	WIDTH: 100%;
 	HEIGHT: 20px;
 	
 }
@@ -91,4 +91,71 @@ BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;
 }
 .item-dateList {
 	
+}
+
+
+
+
+.item-dateField {
+	font-family:Verdana;
+	font-size:12px;
+	padding:1px;
+	background-color:#fff;
+	float:left;
+	text-align:center;
+	width:100%;
+	line-height:1.5em;
+}
+.item-dateField-head {	
+	FONT-WEIGHT: bold;	
+	FONT-SIZE: 100%;
+	BACKGROUND: url(../img/bgCalendarV2.gif) #305ebc repeat-x;
+	COLOR: #fff;	
+	LINE-HEIGHT: 17px;	
+	HEIGHT: 18px;	
+	TEXT-ALIGN: center;
+}
+.item-dateField a{
+	color:#1e5494;
+}
+
+.item-dateField table{
+	width:100%;
+	border:0;
+}
+
+.item-dateField table thead{color:#acacac; height:20px;}
+
+.item-dateField table td {
+	font-size: 11px;
+	padding:1px;
+}
+.item-dateField-pre{
+	BACKGROUND: url(../img/prebtn.gif);
+	cursor:pointer;
+	float:left;
+	padding-right:5px;
+	width:17px;
+	height:17px;
+}
+.item-dateField-next{
+	BACKGROUND: url(../img/nextbtn.gif);
+	cursor:pointer;
+	float:right;
+	padding-right:5px;
+	width:17px;
+	height:17px;
+}
+.item-dateField td.onToday {
+	background-color:#FDAB00;
+	color:#fff;
+}
+.item-dateField td.dateover {
+	background-color:#039;
+	cursor:pointer;
+	color:#fff;
+}
+.item-dateField td.onSelect {
+	background-color:#6899FF;
+	color:#fff;
 }
