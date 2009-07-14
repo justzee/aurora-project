@@ -91,7 +91,7 @@ public class HelloWorldRenderer {
 
 {{{
 <class-registry>
-	<feature-attach elementName="hello" featureClass="aurora.testcase.presentation.HelloWorldRenderer"
+	<feature-attach elementName="hello" featureClass="aurora.testcase.presentation.HelloWorldRenderer" />
 </class-registry>
 }}} 
 
