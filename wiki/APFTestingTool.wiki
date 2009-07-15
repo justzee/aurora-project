@@ -21,7 +21,8 @@
 3. 在uncertain.xml中，添加
 
 {{{
-		<package-mapping packageName="aurora.presentation"/>
+   <package-mapping packageName="aurora.presentation"/>
+   <feature-attach elementName="service" featureClass="org.lwap.feature.ScreenRenderer"/>
 }}}
 
 4. 在WEB-INF目录创建presentation-manager.config文件
