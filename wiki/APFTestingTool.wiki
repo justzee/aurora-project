@@ -1,6 +1,6 @@
 ==APF测试工具安装==
 
-1. SVC checkout aurora.testcase.* 并打成jar包部署在web server中
+1. SVC checkout aurora.testcase.`*` 并打成jar包部署在web server中
 
 2. 在web.xml中增加以下配置：
 
