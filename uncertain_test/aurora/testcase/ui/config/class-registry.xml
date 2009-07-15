@@ -1,5 +1,7 @@
 <class-registry>
 
+	<feature-attach elementName="hello" featureClass="aurora.testcase.presentation.HelloWorldRenderer" />
+
 	<feature-attach elementName="textedit" featureClass="aurora.presentation.features.FieldBinding"/>
 	<feature-attach elementName="textedit" featureClass="aurora.presentation.features.EventAware"/>
 	<feature-attach elementName="textedit" featureClass="aurora.presentation.features.InputComponent"/>

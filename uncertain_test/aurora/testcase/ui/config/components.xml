@@ -1,9 +1,8 @@
 <package>
 	<components>
 		<!-- this is the example in APFDevelopmentGuide Step 2 -->
-		<view-component elementName="hello" builder="aurora.testcase.presentation.HelloWorld" />
-		
-		
+		<view-component elementName="hello" builder="aurora.presentation.TemplateBasedView" />
+				
 		<view-component elementName="textedit" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="textarea" builder="aurora.presentation.TemplateBasedView" />		
 		<view-component elementName="select" builder="aurora.presentation.TemplateBasedView" />
