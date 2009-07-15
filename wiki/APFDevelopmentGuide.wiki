@@ -7,4 +7,4 @@ APF是一个基于MVC模式的，以输出文本为目标的展示层框架。AP
 
 ===目录===
  * [APFDevelopmentGuideStep1 第1步：Hello, World]
- * [APFDevelopmentGuideStep1 第2步：使用Package进行配置]
+ * [APFDevelopmentGuideStep2 第2步：使用Package进行配置]
