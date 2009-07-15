@@ -26,7 +26,7 @@ BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;
 	BORDER: #bababa 1px solid;	
 	FLOAT: left;	
 	POSITION: relative;
-	WIDTH: 100%;
+	
 	HEIGHT: 20px;
 	
 }
@@ -167,4 +167,13 @@ BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;
 .item-dateField td.onSelect {
 	background-color:#6899FF;
 	color:#fff;
+}
+.item-comboBox-li-selected{
+background-color: highlight;
+}
+.item-comboBox-view{
+	overflow-x:hidden;	
+	overflow-y:auto;
+	cursor:pointer;
+	white-space:nowrap;
 }
