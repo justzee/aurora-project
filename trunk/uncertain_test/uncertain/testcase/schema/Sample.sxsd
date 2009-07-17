@@ -1,0 +1,64 @@
+<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" targetNamespace="a">
+
+	<namespaces>
+		<sc:namespace prefix="sc" url="http://www.uncertain-framework.org/schema/" />
+		<sc:namespace prefix="ar" url="http://www.aurora-application.com/schema/" />
+	</namespaces>
+
+	<types>
+		<sc:complextType name="mytype1">
+			<attributes/>
+			<elements/>
+			<validators/>
+			<collections/>
+			<features>
+				<feature class="uncertain.proc.Test" />
+			</features>
+		</sc:complextType>
+		<sc:simpleType name="" base="string">
+			<enumerations>
+				<sc:enumeration value="AK" prompt="" />
+				<sc:enumeration value="BC" prompt="" />
+				<sc:enumeration value="DK" prompt="" />
+			</enumerations>
+		</sc:simpleType>
+	</types>
+	
+	<attributes>
+		<attribute name="DataType" type="xs:string" />
+		<attribute name="Height" type="xs:string" >
+			<validators>
+				<sc:rangeValidator maxValue="1000" minValue="100"/>
+			</validators>			
+		</attribute>
+	</attributes>
+	
+	<elements>
+	
+		<element name="element" >
+			<attributes/>
+			<collections>
+				<collection name="childs" minOccur="1" maxOccur="unbound" type="a:mytype">
+					<types>
+						<element-ref name="" />
+					</types>
+				</collection>
+			</collections>
+			<elements>
+				<element ref="ar:collection" />
+				<element name="" type="" />				
+			</elements>
+			<validators/>
+			<extensions>
+			    <extension base="sx:namedElement" />
+			</extensions>
+		</element>
+	
+	</elements>
+	
+
+	<categories>
+		<sc:category name="" prompt="code" parent="" />
+	</categories>
+	
+</sc:schema>

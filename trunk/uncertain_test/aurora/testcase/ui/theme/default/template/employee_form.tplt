@@ -1,6 +1,4 @@
-<html>
-<head>${page:meta} ${page:css} ${page:script}</head>
-<body>
+	<span>中文内容</span>
 	<pre>Employee edit</pre>
 		<form>
 			Name: ${name}<br>
@@ -8,6 +6,3 @@
 			Department: ${deptid}<br>
 			Memo: ${memo}<br>
 		</form>
-	${content}	
-</body>
-</html>
