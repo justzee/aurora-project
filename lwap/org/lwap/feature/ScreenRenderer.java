@@ -52,7 +52,10 @@ public class ScreenRenderer {
         if( mScreen==null ) return EventModel.HANDLE_NORMAL;
         //HttpServletRequest request = mService.getRequest();
         HttpServletResponse response = mService.getResponse();
-        
+        response.setContentType("text/html;charset=utf-8");
+        //response.set
+        //OutputStream os = response.getOutputStream();
+        //OutputStreamWriter out = new OutputStreamWriter(os, "UTF8");
         Writer out = response.getWriter();
         BuildSession session = mPrtManager.createSession(out);
         RuntimeContext  rtc = RuntimeContext.getInstance(mContext);
