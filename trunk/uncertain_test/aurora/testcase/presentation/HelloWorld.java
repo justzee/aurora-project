@@ -20,55 +20,55 @@ import aurora.presentation.ViewCreationException;
  */
 public class HelloWorld implements IViewBuilder{
     
-    /** ÊµÏÖbuildView·½·¨£¬´´½¨½çÃæÄÚÈİ */
+    /** å®ç°buildViewæ–¹æ³•ï¼Œåˆ›å»ºç•Œé¢å†…å®¹ */
     public void buildView( BuildSession session,  ViewContext view_context ) 
         throws IOException, ViewCreationException
     {
-        // ´ÓviewÖĞ»ñÈ¡colorÊôĞÔ
+        // ä»viewä¸­è·å–colorå±æ€§
         CompositeMap view = view_context.getView();
         String color = view.getString("color");
 
-        // ´ÓmodelÖĞ»ñÈ¡ĞèÒªÏÔÊ¾µÄ×Ö¶Î
+        // ä»modelä¸­è·å–éœ€è¦æ˜¾ç¤ºçš„å­—æ®µ
         CompositeMap model = view_context.getModel();
         String field = view.getString("field");
         String greeting = model.getString(field);
         
-        // ´ÓBuildSessionÖĞ»ñµÃÓÃÓÚÊä³öµÄWriter
+        // ä»BuildSessionä¸­è·å¾—ç”¨äºè¾“å‡ºçš„Writer
         Writer out = session.getWriter();
         out.write("<span color='"+color+"'>Hello, " + greeting + "</span>");
     }
 
-    /** ´Ë·½·¨ÔÚ±¾ÀıÖĞÔİÎŞĞëÊµÏÖ */
+    /** æ­¤æ–¹æ³•åœ¨æœ¬ä¾‹ä¸­æš‚æ— é¡»å®ç° */
     public String[] getBuildSteps( ViewContext context ){
         return null;        
     }
     
     public static void main(String[] args) throws Exception {
-        /// ´´½¨PresentationManager¡ª¡ª½çÃæ×é¼şµÄ¹ÜÀíÕß
+        /// åˆ›å»ºPresentationManagerâ€”â€”ç•Œé¢ç»„ä»¶çš„ç®¡ç†è€…
         PresentationManager pm = new PresentationManager();
-        // ´´½¨Ò»¸öViewComponent£¬½«<hello>±ê¼ÇÓëHelloWorldÀà¹ØÁªÔÚÒ»Æğ
+        // åˆ›å»ºä¸€ä¸ªViewComponentï¼Œå°†<hello>æ ‡è®°ä¸HelloWorldç±»å…³è”åœ¨ä¸€èµ·
         ViewComponent component = new ViewComponent(null, "hello", HelloWorld.class);
-        // ViewComponentÍ¨¹ıViewComponentPackage×éÖ¯ÔÚÒ»Æğ
+        // ViewComponenté€šè¿‡ViewComponentPackageç»„ç»‡åœ¨ä¸€èµ·
         ViewComponentPackage pkg = new ViewComponentPackage();
         pkg.addComponent(component);
-        // ½«¸Õ¸Õ´´½¨µÄViewComponentPackage×¢²áµ½PresentationManagerÖĞ
+        // å°†åˆšåˆšåˆ›å»ºçš„ViewComponentPackageæ³¨å†Œåˆ°PresentationManagerä¸­
         pm.addPackage(pkg);
         
-        // ´´½¨°üº¬Êı¾İµÄmodel£¬ÉèÖÃgreetingÊôĞÔ
+        // åˆ›å»ºåŒ…å«æ•°æ®çš„modelï¼Œè®¾ç½®greetingå±æ€§
         CompositeMap model = new CompositeMap("data");
         model.put("greeting", "world");
-        // ´´½¨hello×é¼şµÄÅäÖÃ£¬ÉèÖÃcolorÊôĞÔ
+        // åˆ›å»ºhelloç»„ä»¶çš„é…ç½®ï¼Œè®¾ç½®colorå±æ€§
         CompositeMap view = new CompositeMap("hello");
         view.put("color", "red");
         view.put("field", "greeting");
 
-        // ´´½¨Ò»¸öWriterÊµÀı£¬ÓÃÓÚÊä³ö½çÃæÄÚÈİ
+        // åˆ›å»ºä¸€ä¸ªWriterå®ä¾‹ï¼Œç”¨äºè¾“å‡ºç•Œé¢å†…å®¹
         PrintWriter out = new PrintWriter(System.out);
         
-        // Í¨¹ıPresentationManager´´½¨BuildSession£¬ÕâÊÇÕû¸ö½çÃæ´´½¨
+        // é€šè¿‡PresentationManageråˆ›å»ºBuildSessionï¼Œè¿™æ˜¯æ•´ä¸ªç•Œé¢åˆ›å»º
         BuildSession session = pm.createSession( out );
 
-        // Íê³É½çÃæÄÚÈİµÄ´´½¨
+        // å®Œæˆç•Œé¢å†…å®¹çš„åˆ›å»º
         session.buildView(model, view);
         out.flush();
         

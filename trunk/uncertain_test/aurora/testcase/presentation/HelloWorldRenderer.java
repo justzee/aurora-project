@@ -17,16 +17,16 @@ public class HelloWorldRenderer {
     
     public void onCreateViewContent( BuildSession session, ViewContext view_context ){
         
-        // ´ÓviewÖĞ»ñÈ¡colorÊôĞÔ
+        // ä»viewä¸­è·å–colorå±æ€§
         CompositeMap view = view_context.getView();
         String color = view.getString("color");
 
-        // ´ÓmodelÖĞ»ñÈ¡ĞèÒªÏÔÊ¾µÄ×Ö¶Î
+        // ä»modelä¸­è·å–éœ€è¦æ˜¾ç¤ºçš„å­—æ®µ
         CompositeMap model = view_context.getModel();
         String field = view.getString("field");
         String greeting = model.getString(field); 
         
-        // ½«¶¯Ì¬ÄÚÈİ·ÅÈëViewContextµÄMapÖĞ£¬ºóÃæ½«ÓÃÓÚÌæ»»Ä£°æÖĞµÄÍ¬Ãû±ê¼Ç
+        // å°†åŠ¨æ€å†…å®¹æ”¾å…¥ViewContextçš„Mapä¸­ï¼Œåé¢å°†ç”¨äºæ›¿æ¢æ¨¡ç‰ˆä¸­çš„åŒåæ ‡è®°
         Map content_map = view_context.getMap();
         content_map.put("color", color);
         content_map.put("value", greeting);
