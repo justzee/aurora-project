@@ -20,35 +20,35 @@ public class TemplateTest {
     public static void main(String[] args) 
         throws Exception
     {
-        // APF³õÊ¼»¯
+        // APFåˆå§‹åŒ–
         UncertainEngine engine = UncertainEngine.createInstance();
         PresentationManager pm = new PresentationManager(engine);
         
-        // »ñÈ¡aurora/testcase/uiµÄµ±Ç°ÎïÀíÂ·¾¶
+        // è·å–aurora/testcase/uiçš„å½“å‰ç‰©ç†è·¯å¾„
         URL url = Thread.currentThread().getContextClassLoader().getResource("aurora/testcase/ui");
         if(url==null)
             throw new IOException("aurora/testcase/ui is not found in CLASSPATH");
         String path = url.getPath();
-        // ¸ù¾İ»ñÈ¡µÄÂ·¾¶£¬×°ÔØ×é¼şpackage
+        // æ ¹æ®è·å–çš„è·¯å¾„ï¼Œè£…è½½ç»„ä»¶package
         pm.loadViewComponentPackage(path);
         
-        /* ÒÔÏÂºÍ Step 1 ÀàËÆ */
+        /* ä»¥ä¸‹å’Œ Step 1 ç±»ä¼¼ */
         
-        // ´´½¨°üº¬Êı¾İµÄmodel£¬ÉèÖÃgreetingÊôĞÔ
+        // åˆ›å»ºåŒ…å«æ•°æ®çš„modelï¼Œè®¾ç½®greetingå±æ€§
         CompositeMap model = new CompositeMap("data");
         model.put("greeting", "world");
-        // ´´½¨hello×é¼şµÄÅäÖÃ£¬ÉèÖÃcolorÊôĞÔ
+        // åˆ›å»ºhelloç»„ä»¶çš„é…ç½®ï¼Œè®¾ç½®colorå±æ€§
         CompositeMap view = new CompositeMap("hello");
         view.put("color", "red");
         view.put("field", "greeting");
 
-        // ´´½¨Ò»¸öWriterÊµÀı£¬ÓÃÓÚÊä³ö½çÃæÄÚÈİ
+        // åˆ›å»ºä¸€ä¸ªWriterå®ä¾‹ï¼Œç”¨äºè¾“å‡ºç•Œé¢å†…å®¹
         PrintWriter out = new PrintWriter(System.out);
         
-        // Í¨¹ıPresentationManager´´½¨BuildSession
+        // é€šè¿‡PresentationManageråˆ›å»ºBuildSession
         BuildSession session = pm.createSession( out );
 
-        // Íê³É½çÃæÄÚÈİµÄ´´½¨
+        // å®Œæˆç•Œé¢å†…å®¹çš„åˆ›å»º
         session.buildView(model, view);
         out.flush();        
     }
