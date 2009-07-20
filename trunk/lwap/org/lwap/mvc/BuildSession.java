@@ -1,11 +1,12 @@
 /*
  * TransformSession.java
  *
- * Created on 2002Äê1ÔÂ12ÈÕ, ÏÂÎç10:41
+ * Created on 2002ï¿½ï¿½1ï¿½ï¿½12ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½10:41
  */
 
 package org.lwap.mvc;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -20,6 +21,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 import org.lwap.application.BaseService;
 
@@ -190,6 +194,20 @@ public class BuildSession {
     
     public void includeScript(String script_name) throws IOException {
     	includeScript(script_name,"javascript");
+    }
+    
+    public void includeScriptWithVersion(String script_name, ServletContext context, String filePath) throws IOException {
+    	String script_url = includeResource(script_name);
+    	File file = new File(context.getRealPath(filePath+script_name));
+    	if( script_url == null || file == null) return;    	
+        if(auto_flush) writer.flush();
+    	writer.write("<script language=\"");
+    	writer.write("javascript");
+    	writer.write("\" src=\"");
+    	writer.write(script_url + "?v="+file.lastModified());
+    	writer.write("\" ");
+    	writer.write("></script>\r\n");
+    	writer.flush();
     }
     
     public void includeScriptVariable(String var_name, String var_value ) throws IOException {
