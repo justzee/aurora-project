@@ -1,12 +1,12 @@
-<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" targetNamespace="a">
+<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" targetNamespace="http://www.aurora-application.com/schema/">
 
 	<namespaces>
-		<sc:namespace prefix="sc" url="http://www.uncertain-framework.org/schema/" />
+		<sc:namespace prefix="sc" url="http://www.uncertain-framework.org/schema/ocm" />
 		<sc:namespace prefix="ar" url="http://www.aurora-application.com/schema/" />
 	</namespaces>
 
 	<types>
-		<sc:complextType name="mytype1">
+		<sc:complexType name="mytype1">
 			<attributes/>
 			<elements/>
 			<validators/>
@@ -14,8 +14,8 @@
 			<features>
 				<feature class="uncertain.proc.Test" />
 			</features>
-		</sc:complextType>
-		<sc:simpleType name="" base="string">
+		</sc:complexType>
+		<sc:simpleType name="mytype2" base="string">
 			<enumerations>
 				<sc:enumeration value="AK" prompt="" />
 				<sc:enumeration value="BC" prompt="" />
@@ -25,24 +25,21 @@
 	</types>
 	
 	<attributes>
-		<attribute name="DataType" type="xs:string" />
-		<attribute name="Height" type="xs:string" >
+		<sc:attribute name="DataType" type="xs:string" />
+		<sc:attribute name="Height" type="xs:string" >
 			<validators>
 				<sc:rangeValidator maxValue="1000" minValue="100"/>
 			</validators>			
-		</attribute>
+		</sc:attribute>
 	</attributes>
 	
 	<elements>
 	
-		<element name="element" >
+		<sc:element name="element" >
 			<attributes/>
 			<collections>
-				<collection name="childs" minOccur="1" maxOccur="unbound" type="a:mytype">
-					<types>
-						<element-ref name="" />
-					</types>
-				</collection>
+				<sc:collection name="attributes" minOccur="0" maxOccur="unbound" type="sc:attribute" />
+				<sc:collection name="elements" minOccur="0" maxOccur="unbound" type="sc:element" />
 			</collections>
 			<elements>
 				<element ref="ar:collection" />
@@ -50,15 +47,16 @@
 			</elements>
 			<validators/>
 			<extensions>
-			    <extension base="sx:namedElement" />
+			    <sc:extension base="sc:complexType" />
 			</extensions>
-		</element>
+		</sc:element>
 	
 	</elements>
 	
 
 	<categories>
-		<sc:category name="" prompt="code" parent="" />
+		<sc:category name="sc:schema" prompt="Schema definition" />
+		<sc:category name="sc:basicType" prompt="Basic data type" parent="sc:schema" />
 	</categories>
 	
 </sc:schema>

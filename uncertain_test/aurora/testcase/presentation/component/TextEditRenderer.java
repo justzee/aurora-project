@@ -11,6 +11,7 @@ import uncertain.ocm.ISingleton;
 import aurora.presentation.BuildSession;
 import aurora.presentation.ViewContext;
 import aurora.presentation.markup.HTMLContent;
+import aurora.presentation.markup.HtmlPageContext;
 
 public class TextEditRenderer  implements ISingleton {
     
@@ -37,10 +38,8 @@ public class TextEditRenderer  implements ISingleton {
     public void onPreparePageContent( BuildSession session, ViewContext context )
         throws IOException
     {
-        boolean b = session.includeResource("textedit.js");
-        if(!b){
-            String js = session.getResourceUrl("textedit.js");
-            context.getContextMap().put("script", "<script src='"+js+"'></script>");
-        }
+        HtmlPageContext page = HtmlPageContext.getInstance(context);
+        String js = session.getResourceUrl("textedit.js");
+        page.addScript(js);
     }
 }

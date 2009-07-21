@@ -144,9 +144,14 @@ public class PresentationManagerTest extends TestCase {
         depts.addChild( createOption("20","Development") );
         depts.addChild( createOption("30","Finance") );
 
-        CompositeMap form = new CompositeMap("html-page");
-        form.put("name","employee_form");
+        CompositeMap form = new CompositeMap("template");
+        form.put("template","employee_form");
         form.put("package", AURORA_TESTCASE_UI);
+        
+        CompositeMap page = new CompositeMap("html-page");
+        page.put("template","default");
+        page.put("package", AURORA_TESTCASE_UI);
+        page.addChild(form);
         
         CompositeMap name = new CompositeMap("textedit");
         name.put("datafield", "@name");
@@ -198,7 +203,7 @@ public class PresentationManagerTest extends TestCase {
         b = session.includeResource(AURORA_TESTCASE_UI,"textedit.js");
         assertTrue(b);
         */
-        session.buildView(model, form);
+        session.buildView(model, page);
         session.getWriter().flush();
         String content = bos.toString();
         System.out.println(content);        
