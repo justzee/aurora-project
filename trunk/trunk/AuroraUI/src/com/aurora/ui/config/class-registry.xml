@@ -1,0 +1,5 @@
+<class-registry>
+
+	<feature-attach elementName="textField" featureClass="com.aurora.ui.TextField" />
+
+</class-registry>
