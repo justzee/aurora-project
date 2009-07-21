@@ -52,7 +52,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
 	            if(this.el.dom.value == this.emptyText){
 	                this.setRawValue('');
 	            }
-	            this.el.removeClass(this.emptyTextCss);
+	            this.wrap.removeClass(this.emptyTextCss);
 	        }
         }
     },
@@ -69,7 +69,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     
     setValue : function(v){
     	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
-            this.el.removeClass(this.emptyTextCss);
+            this.wrap.removeClass(this.emptyTextCss);
         }
         this.value = v;
         this.el.dom.value = (v === null || v === undefined ? '' : v);
@@ -104,7 +104,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     applyEmptyText : function(){
         if(this.emptyText && this.getValue().length < 1){
             this.setRawValue(this.emptyText);
-            this.el.addClass(this.emptyTextCss);
+            this.wrap.addClass(this.emptyTextCss);
         }
     },
     validate : function(){
