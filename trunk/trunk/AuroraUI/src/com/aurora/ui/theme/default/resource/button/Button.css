@@ -1,0 +1,11 @@
+BUTTON {PADDING-RIGHT: 0px;	PADDING-LEFT: 0px;	PADDING-BOTTOM: 0px;	MARGIN: 0px;	PADDING-TOP: 0px}
+.item-button1 {
+	FONT-SIZE: 12px;	
+	BACKGROUND: url(button1.gif) no-repeat;		
+	WIDTH: 104px;	
+	CURSOR: pointer;	
+	COLOR: #555;
+	line-height:23px;
+	HEIGHT: 25px;	
+	BORDER: 0px
+}
