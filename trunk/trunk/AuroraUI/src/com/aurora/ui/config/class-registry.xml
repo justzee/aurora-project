@@ -1,5 +1,5 @@
 <class-registry>
 
-	<feature-attach elementName="textField" featureClass="com.aurora.ui.TextField" />
+	<feature-attach elementName="textField" featureClass="aurora.presentation.component.std.TextField" />
 
 </class-registry>
