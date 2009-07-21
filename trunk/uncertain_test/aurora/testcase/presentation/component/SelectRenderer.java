@@ -3,11 +3,14 @@
  */
 package aurora.testcase.presentation.component;
 
+import java.io.IOException;
+
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.ISingleton;
 import aurora.presentation.BuildSession;
 import aurora.presentation.ViewContext;
 import aurora.presentation.features.IOptionBuilder;
+import aurora.presentation.markup.HtmlPageContext;
 
 public class SelectRenderer   implements ISingleton {
     
@@ -29,6 +32,16 @@ public class SelectRenderer   implements ISingleton {
     
     public void onCreateOptionBuilder( BuildSession session, ViewContext context ){
         context.setInstance(IOptionBuilder.class, new SelectOptionRenderer() );
+    }
+    
+    public void onPreparePageContent( BuildSession session, ViewContext context )
+        throws IOException
+    {
+        HtmlPageContext page = HtmlPageContext.getInstance(context);
+        //String js = session.getResourceUrl("select.js");
+        page.addScript("select.js");
+        page.addStyleSheet("select.css");
+        page.addStyleSheet("select_firefox.css");
     }
 
 }
