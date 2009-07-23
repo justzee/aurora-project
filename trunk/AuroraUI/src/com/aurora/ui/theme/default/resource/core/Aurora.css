@@ -10,11 +10,13 @@ h1, h2, h3, h4, h5, h6 { font-size:100%; font-weight:400; }
 q:before, q:after { content:""; }
 abbr, acronym { border:0; }
 a { color:#0069ca; text-decoration:none; }
+
 .item-wrap {
-	BORDER: #bababa 1px solid;	
+	BORDER: #bababa 1px solid;
 	FLOAT: left;	
-	POSITION: relative;
 	WIDTH: 100%;
+	position: relative;
+	Z-INDEX: 20;
 	HEIGHT: 20px;
 	
 }
@@ -51,10 +53,10 @@ a { color:#0069ca; text-decoration:none; }
 	BORDER-RIGHT-WIDTH: 0px
 }
 .item-popup {
-	POSITION: absolute;	
 	LEFT: 0px;
 	TOP: 22px;	
+	float:left;
 	MARGIN-LEFT: -1px;
-	Z-INDEX: 10000;
+	POSITION: absolute;	
 	BORDER:#bababa 1px solid;
 }
