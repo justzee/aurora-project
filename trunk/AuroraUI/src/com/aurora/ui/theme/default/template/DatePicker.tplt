@@ -1,0 +1,31 @@
+<DIV class="${wrapClass}"  id="${id}">
+	<INPUT class="item-textField" style="width: 126px;" name="${name}" ${style} ${readOnly} autocomplete="off" value="${value}" />
+	<BUTTON class="item-trigger item-dateButton" hideFocus></BUTTON>
+	<DIV class="item-popup item-dateList" style="display:none;width:150px;">
+		<DIV class="item-dateField" style="width:148px">
+			<DIV class="item-dateField-head">
+				<DIV class="item-dateField-pre"></DIV>
+				<DIV class="item-dateField-next"></DIV>
+				<SPAN class="item-dateField-year"></SPAN>年 <SPAN class="item-dateField-month"></SPAN>月
+			</DIV>
+			<TABLE cellspacing="0">
+			<THEAD>
+			  <TR>
+				<TD>日</TD>
+				<TD>一</TD>
+				<TD>二</TD>
+				<TD>三</TD>
+				<TD>四</TD>
+				<TD>五</TD>
+				<TD>六</TD>
+			  </TR>
+			</THEAD>
+			<TBODY>
+			</TBODY>
+			</TABLE>
+		</DIV>				
+	</DIV>
+</DIV>
+<script>
+	new Aurora.DatePicker('${id}',${config});
+</script>
