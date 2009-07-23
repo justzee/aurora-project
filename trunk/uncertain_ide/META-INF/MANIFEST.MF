@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Configuration Editor Plug-in
+Bundle-SymbolicName: uncertain_ide; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: uncertain.ide.Activator
+Bundle-Vendor: Uncertain Framework
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.core.resources,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-ActivationPolicy: lazy
