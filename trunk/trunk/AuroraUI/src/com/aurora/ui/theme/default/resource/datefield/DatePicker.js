@@ -11,6 +11,6 @@ Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
     },
     onSelect: function(dateField, date){
     	this.setValue(date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate())
-    	this.popup.hide();
+    	this.collapse();
     }
 });
