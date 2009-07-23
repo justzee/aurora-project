@@ -1,7 +1,7 @@
 <DIV class="${wrapClass}"  id="${id}">
-	<INPUT class="item-textField" style="width: 126px;" name="${name}" ${style} ${readOnly} autocomplete="off" value="${value}" />
-	<BUTTON class="item-trigger item-dateButton" hideFocus></BUTTON>
-	<DIV class="item-popup item-dateList" style="display:none;width:150px;">
+	<INPUT class="item-textField" atype="field.input" style="width: 126px;" name="${name}" ${style} ${readOnly} autocomplete="off" value="${value}" />
+	<BUTTON class="item-trigger item-dateButton" atype="triggerfield.trigger" hideFocus></BUTTON>
+	<DIV class="item-popup item-dateList" atype="triggerfield.popup" style="display:none;width:150px;">
 		<DIV class="item-dateField" style="width:148px">
 			<DIV class="item-dateField-head">
 				<DIV class="item-dateField-pre"></DIV>
