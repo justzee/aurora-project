@@ -1,6 +1,7 @@
-<DIV class="${wrapClass}" id="${id}" style="width:150px">
+<DIV class="${wrapClass}" id="${id}" >
 	<INPUT class="item-textField" style="width: 147px;" name="${name}" ${style} ${readOnly} autocomplete="off" value="${value}" />
 </DIV>
 <script>
 	new Aurora.TextField('${id}',${config});
+	${events}
 </script>
