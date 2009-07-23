@@ -11,7 +11,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
         window[elId] = this;
         Aurora.Field.superclass.constructor.call(this);       
         this.wrap = Ext.get(elId);
-        this.el = this.wrap.first('input.item-textField'); 
+        this.el = this.wrap.child('input[atype=field.input]'); 
         this.addEvents('focus','blur','keydown','change','invalid','valid','keyup','keypress');
         this.initComponent();
         this.initEvents();

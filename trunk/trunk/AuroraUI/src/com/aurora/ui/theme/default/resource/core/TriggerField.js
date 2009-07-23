@@ -4,8 +4,8 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     },
     initComponent : function(){
     	Aurora.TriggerField.superclass.initComponent.call(this);
-    	this.trigger = this.wrap.first('button.item-trigger'); 
-    	this.popup = this.wrap.first('div.item-popup'); 
+    	this.trigger = this.wrap.child('button[atype=triggerfield.trigger]'); 
+    	this.popup = this.wrap.child('div[atype=triggerfield.popup]'); 
     },
     initEvents : function(){
     	Aurora.TriggerField.superclass.initEvents.call(this);    
@@ -21,17 +21,25 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     triggerBlur : function(e){
     	if(!this.wrap.contains(e.target)){
             if(this.isExpanded()){
-	    		this.popup.hide();
+	    		this.collapse();
 	    	}
 	    	Ext.get(Ext.isIE ? document.body : document).un("mousedown", this.triggerBlur, this);
         }
     },
+    collapse : function(){
+    	this.wrap.setStyle("z-index",20);
+    	this.popup.hide();
+    },
+    expand : function(){
+    	this.wrap.setStyle("z-index",10000);
+    	this.popup.show();
+    },
     onTriggerClick : function(){
     	this.el.focus();
     	if(this.isExpanded()){
-    		this.popup.hide();
+    		this.collapse();
     	}else{
-    		this.popup.show();
+    		this.expand();
     	}
     }
 });
