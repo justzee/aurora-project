@@ -27,6 +27,14 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     	this.el.on("keyup", this.onKeyUp, this);
         this.el.on("keydown", this.onKeyDown, this);
         this.el.on("keypress", this.onKeyPress, this);
+        this.el.on("mouseover", this.onMouseOver, this);
+        this.el.on("mouseout", this.onMouseOut, this);
+    	
+    },
+    onMouseOver : function(e){
+    	
+    },
+    onMouseOut : function(e){
     	
     },
     onKeyUp : function(e){
