@@ -1,6 +1,6 @@
 <package>
 	<components>
-		<!-- this is the example in APFDevelopmentGuide Step 2 -->
+		<view-component elementName="combo" builder="aurora.presentation.TemplateBasedView" />	
 		<view-component elementName="textField" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="datePicker" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="template" builder="aurora.presentation.component.TemplateRenderer" />
