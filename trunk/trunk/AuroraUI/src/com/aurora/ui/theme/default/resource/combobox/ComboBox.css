@@ -1,3 +1,14 @@
 .item-comboButton {	
-	BACKGROUND: url(../img/combobtn.gif) no-repeat 2px 0px;	
+	BACKGROUND: url(combobtn.gif) no-repeat 2px 0px;	
+}
+.item-comboBox-li-selected{
+background-color: highlight;
+}
+.item-comboBox-view{	
+	overflow-x:hidden;	
+	overflow-y:auto;
+	cursor:pointer;
+	white-space:nowrap;
+	text-align: left;
+	background-color: #FFF;
 }
