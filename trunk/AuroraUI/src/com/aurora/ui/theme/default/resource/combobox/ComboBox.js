@@ -1,69 +1,43 @@
 Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {	
 	maxHeight:300,
-	miniHeight:30,	
+	miniHeight:20,
+	blankOption:true,
 	selectedClass:'item-comboBox-li-selected',	
 	constructor : function(elId, config) {	
 		Aurora.ComboBox.superclass.constructor.call(this, elId, config);		
 		this.valueField=config.valueField;
 		this.displayField=config.displayField;
-		this.data=Aurora.decode(config.dataModel)||[];				
-	},
-	initComponent : function() {					
-		Aurora.ComboBox.superclass.initComponent.call(this);		
-	},
-	getText : function() {		
-		return this.text;
-	},
-	setText:function(v){
-		var v=(v === null || v === undefined ? '' : v);
-		if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
-            this.el.removeClass(this.emptyTextCss);
-        }
-        this.text = v;
-        this.el.dom.value = v;        
-        this.applyEmptyText();
-	},
-	getValue : function() {
-		var v=this.value;
-		v=(v === null || v === undefined ? '' : v);
-		return v;
-	},
-	setValue:function(v){		
-		v=(v === null || v === undefined ? '' : v);
-        this.wrap.child('input[type=hidden]').dom.value = v;
-        this.value=v;
-	},
+		this.dataModel=Aurora.decode(config.dataModel)||[];		
+	},	
 	onTriggerClick : function() {
-		Aurora.ComboBox.superclass.onTriggerClick.call(this);
-		this.doQuery('',true);				
+		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
+		this.doQuery('',true);		
 	},
-	onRender:function(){				
+	onRender:function(){			
         if(!this.view){
 			this.initView();			
 			this.view.on('click', this.onViewClick,this);
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
-			for(var i=0,widthArray=[],l=this.data.length;i<l;i++){
+			for(var i=0,widthArray=[],l=this.dataModel.length;i<l;i++){
 				var li=this.view.dom.childNodes[i];
 				var width=Aurora.TextMetrics.measure(li,li.innerHTML).width;
 				widthArray.push(width);
-			}			
-			//debugger;
-			widthArray=widthArray.sort(function(a,b){return a-b});
-			var maxWdith=widthArray[l-1]+30;			
-			this.popup.setWidth(Math.max(this.wrap.getWidth(),maxWdith));
-			//设置高度限制
-			if(l==0){
-				this.view.setHeight(this.miniHeight);
+			}		
+			if(l==0){				
+//				this.popup.setHeight(this.miniHeight);
+//				this.popup.setWidth(this.wrap.getWidth());
 			}else{
+				widthArray=widthArray.sort(function(a,b){return a-b});
+				var maxWdith=widthArray[l-1]+30;			
+				this.popup.setWidth(Math.max(this.wrap.getWidth(),maxWdith));
 				if(this.popup.getHeight()>this.maxHeight){				
 					this.popup.setHeight(this.maxHeight);
 				}
 			}	
 		}       
 	},
-	onViewClick:function(e,t){
-		debugger;
+	onViewClick:function(e,t){		
 		if(t.tagName!='LI'){
 		    return;
 		}		
@@ -93,7 +67,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	doQuery : function(q,forceAll) {		
 		if(q === undefined || q === null){
 			q = '';
-	    }
+	    }		
 //		if(forceAll){
 //            this.store.clearFilter();
 //        }else{
@@ -101,20 +75,22 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 //        }
         
 		//值过滤先不添加
-		this.onRender();		
+		this.onRender();	
 	},
 	initView: function(){		
 		this.view=new Aurora.Element(document.createElement('ul'));		
 		this.litp=new Aurora.Template('<li tabIndex="{index}" value="{'+this.valueField+'}">{'+this.displayField+'}</li>');
-		var l=this.data.length;
+		var l=this.dataModel.length;
 		for(var i=0;i<l;i++){			
-			var d = Aurora.apply(this.data[i], {index:i})
+			var d = Aurora.apply(this.dataModel[i], {index:i})
 			this.litp.append(this.view,d);	//等数据源明确以后再修改		
 		}
-		this.view.appendTo(this.popup);						
+		if(l!=0){
+			this.view.appendTo(this.popup);	
+		}
 	},
 	refresh:function(){//dataModel中触发		
-		this.popup.update('');
+		this.view.update('');
 		this.view=null;		
 	},
 	select:function(index){
@@ -137,5 +113,27 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(this.view){
 			Aurora.destroy(this.view);			     
 		}		
+	},
+	getText : function() {		
+		return this.text;
+	},
+	setText:function(v){
+		var v=(v === null || v === undefined ? '' : v);
+		if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
+            this.el.removeClass(this.emptyTextCss);
+        }
+        this.text = v;
+        this.el.dom.value = v;        
+        this.applyEmptyText();
+	},
+	getValue : function() {
+		var v=this.value;
+		v=(v === null || v === undefined ? '' : v);
+		return v;
+	},
+	setValue:function(v){		
+		v=(v === null || v === undefined ? '' : v);
+        this.wrap.child('input[type=hidden]').dom.value = v;
+        this.value=v;
 	}
 });
