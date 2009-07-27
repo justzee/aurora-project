@@ -109,11 +109,11 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	getNode:function(index){		
 		return this.view.dom.childNodes[index];
 	},	
-	onDestroy:function(){
-		if(this.view){
-			Aurora.destroy(this.view);			     
-		}		
-	},
+//	onDestroy:function(){
+//		if(this.view){
+//			Aurora.destroy(this.view);			     
+//		}		
+//	},
 	getText : function() {		
 		return this.text;
 	},
