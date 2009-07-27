@@ -1,5 +1,7 @@
-Aurora=Ext;
 Aurora.version='3.0';
+
+Aurora.onReady = Ext.onReady;
+
 Aurora.TextMetrics = function(){
     var shared;
     return {     
@@ -47,3 +49,50 @@ Aurora.TextMetrics.Instance = function(bindTo, fixedWidth){
     instance.bind(bindTo);
     return instance;
 };
+Aurora.ToolTip = function(){
+	q = {
+		init: function(){
+			var qdom = Ext.DomHelper.append(
+			    Ext.getBody(),
+			    {
+				    tag: 'div',
+				    cls: 'tip-wrap',
+				    children: [{tag: 'div', cls:'tip-header', html:'<strong>提示信息</strong>'},
+				    		   {tag: 'div', cls:'tip-body'},
+				    		   {tag: 'div', cls:'tip-arrow'}]
+			    }
+			);
+			this.tip = Ext.get(qdom);
+			this.header = this.tip.first("div.tip-header");
+			this.body = this.tip.first("div.tip-body");
+		},
+		show: function(el, text){
+			if(this.tip == null){
+				this.init();
+			}
+			this.tip.show();
+			this.body.update(text)
+			var ele;
+			if(typeof(el)=="string"){
+				if(window[el]){
+					if(window[el].wrap){
+						ele = window[el].wrap;
+					}else{
+						
+					}
+				}else{
+					ele = Ext.get(el);
+				}				
+			}
+			this.tip.setWidth(ele.getWidth());
+			this.header.setWidth(ele.getWidth());
+			this.body.setWidth(ele.getWidth());
+			this.tip.setX(ele.getX());
+			this.tip.setY(ele.getY()-this.tip.getHeight());
+		},
+		hide: function(){
+			this.tip.hide();
+		}
+	}
+	return q
+}();
