@@ -5,12 +5,13 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
 	readOnlyCss:'item-readOnly',
 	emptyTextCss:'item-emptyText',
 	invalidCss:'item-invalid',
-	constructor: function(elId, config) {	
+	constructor: function(id, config) {	
         config = config || {};
         Ext.apply(this, config);
-        window[elId] = this;
+        window[id] = this;
+        this.id = id;
         Aurora.Field.superclass.constructor.call(this);       
-        this.wrap = Ext.get(elId);
+        this.wrap = Ext.get(id);
         this.el = this.wrap.child('input[atype=field.input]'); 
         this.addEvents('focus','blur','keydown','change','invalid','valid','keyup','keypress');
         this.initComponent();
@@ -32,10 +33,10 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     	
     },
     onMouseOver : function(e){
-    	
+    	Aurora.ToolTip.show(this.id, "测试");
     },
     onMouseOut : function(e){
-    	
+    	Aurora.ToolTip.hide();
     },
     onKeyUp : function(e){
         this.fireEvent('keyup', this, e);
