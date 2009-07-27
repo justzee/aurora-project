@@ -1,4 +1,5 @@
-Aurora.version='3.0';
+Aurora = {version: '3.0'};
+
 Aurora.onReady = Ext.onReady;
 Aurora.decode = Ext.decode;
 Aurora.Element = Ext.Element;
