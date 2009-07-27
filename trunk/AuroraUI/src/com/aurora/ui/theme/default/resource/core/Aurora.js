@@ -1,10 +1,15 @@
 Aurora.version='3.0';
-
 Aurora.onReady = Ext.onReady;
+Aurora.decode = Ext.decode;
+Aurora.Element = Ext.Element;
+Aurora.Template = Ext.Template
+Aurora.apply = Ext.apply;
+Aurora.isEmpty = Ext.isEmpty;
+Aurora.fly = Ext.fly;
 
 Aurora.TextMetrics = function(){
     var shared;
-    return {     
+    return {
         measure : function(el, text, fixedWidth){
             if(!shared){
                 shared = Aurora.TextMetrics.Instance(el, fixedWidth);
