@@ -60,3 +60,30 @@ a { color:#0069ca; text-decoration:none; }
 	POSITION: absolute;	
 	BORDER:#bababa 1px solid;
 }
+.tip-wrap {
+	padding:0px;
+	position:absolute;
+	z-index:20000;
+}
+.tip-header {
+	border:1px solid #116497;
+	background-color:#888888;
+	font-weight:700;
+	height:14px;
+	color:#fff;
+	padding:3px;
+}
+.tip-body {
+	border-bottom:1px solid #116497;
+	border-right:1px solid #116497;
+	border-left:1px solid #116497;
+	background-color:#fff;
+	padding:3px;
+}
+.tip-arrow {
+	FILTER: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../src/com/aurora/ui/theme/default/resource/core/arrow.png', sizingMethod='scale'); 
+	FLOAT: none; 
+	MARGIN: 0px auto; 
+	WIDTH: 15px; 
+	HEIGHT: 12px
+}
