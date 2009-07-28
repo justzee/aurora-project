@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -31,6 +30,7 @@ import org.lwap.database.IConnectionInitializer;
 import org.lwap.database.PerformanceRecorder;
 import org.lwap.database.TransactionFactory;
 import org.lwap.database.datatype.DataTypeManager;
+import org.lwap.feature.IFileSubstitute;
 import org.lwap.feature.UploadFileHandle;
 import org.lwap.mvc.DataBindingConvention;
 import org.lwap.mvc.ViewFactoryStore;
@@ -144,6 +144,9 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   // Connection initializer
   IConnectionInitializer    connection_initializer;
   
+  // IFileSubstitute instance;
+  IFileSubstitute   file_substitute;     
+  
   Service _get_service_instance(String service_name) throws Exception {
         if(service_name==null)
             return new MainService();
@@ -189,7 +192,10 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   Service _create_service( String service_name) throws ServiceInstantiationException{
 		// load service config, create new service instance specified 
 		// by 'class' attribute of service config
+        
 		CompositeMap service_conf = null;
+		if(file_substitute!=null)
+		    service_name = file_substitute.getRealFile(service_name);
 		try{
 			
 			if( service_name.indexOf(File.separatorChar)<0){ 
@@ -624,6 +630,8 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
         ResourceBundleFactory fact = (ResourceBundleFactory)space.getInstanceOfType(ResourceBundleFactory.class);
         if(fact!=null)
             setResourceBundleFactory(fact);
+        
+        file_substitute = (IFileSubstitute)space.getInstanceOfType(IFileSubstitute.class);
 	}
     
     public IServiceListenerManager getServiceListenerManager(){
