@@ -1,0 +1,66 @@
+<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema">
+
+	<namespaces>
+		<sc:namespace prefix="my" url="http://myobjects.com/schema" />
+		<sc:namespace prefix="s" url="http://yet-another.schema.com/schema/" />
+	</namespaces>
+
+	<types>
+		<sc:complexType name="s:TestDuplicate">
+			<classes>
+				<sc:feature-class name="java.lang.Byte" />
+			</classes>
+		</sc:complexType>
+		<sc:complexType name="s:NamedObject">
+			<attributes>
+				<sc:attribute name="name" type="sc:string" />
+			</attributes>
+		</sc:complexType>
+
+		<sc:complexType name="s:Square">
+			<attributes>
+				<sc:attribute name="Width" type="sc:int" />
+				<sc:attribute name="Height" type="sc:int" />				
+			</attributes>
+			<classes>
+				<sc:feature-class name="java.lang.Float" />
+				<sc:feature-class name="java.lang.Double" />				
+			</classes>			
+		</sc:complexType>
+		
+		<sc:complexType name="s:BaseButton">
+			<extensions>
+				<sc:extension base="s:NamedObject" />
+				<sc:extension base="s:Square" />
+				<sc:extension base="s:TestDuplicate" />				
+			</extensions>
+			<attributes>
+				<sc:attribute name="Text" type="sc:String" />
+			</attributes>
+			<classes>
+				<sc:feature-class name="java.lang.String" />
+				<sc:feature-class name="java.lang.StringBuffer" />				
+			</classes>				
+		</sc:complexType>
+	</types>
+	
+	
+	<elements>
+	
+		<sc:element name="my:BaseControl">
+			<attributes>
+				<sc:attribute name="controlID" type="sc:string" />
+				<sc:extension base="s:TestDuplicate" />
+			</attributes>		
+		</sc:element>
+		<sc:element name="my:Button" >
+			<extensions>
+				<sc:extension base="s:BaseButton" />
+				<sc:extension base="my:BaseControl" />
+				<sc:extension base="s:TestDuplicate" />
+			</extensions>
+		</sc:element>
+	
+	</elements>
+	
+</sc:schema>

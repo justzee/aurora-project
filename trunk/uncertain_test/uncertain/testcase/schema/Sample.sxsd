@@ -1,12 +1,12 @@
 <sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" targetNamespace="http://www.aurora-application.com/schema/">
 
 	<namespaces>
-		<sc:namespace prefix="sc" url="http://www.uncertain-framework.org/schema/ocm" />
+		<sc:namespace prefix="sc" url="http://www.uncertain-framework.org/schema/simple-schema" />
 		<sc:namespace prefix="ar" url="http://www.aurora-application.com/schema/" />
 	</namespaces>
 
 	<types>
-		<sc:complexType name="mytype1">
+		<sc:complexType name="ar:mytype1">
 			<attributes/>
 			<elements/>
 			<validators/>
@@ -15,13 +15,15 @@
 				<feature class="uncertain.proc.Test" />
 			</features>
 		</sc:complexType>
-		<sc:simpleType name="mytype2" base="string">
+		<sc:simpleType name="ar:mytype2" base="string">
 			<enumerations>
 				<sc:enumeration value="AK" prompt="" />
 				<sc:enumeration value="BC" prompt="" />
 				<sc:enumeration value="DK" prompt="" />
 			</enumerations>
 		</sc:simpleType>
+		<sc:complexType name="sc:complexType">
+		</sc:complexType>
 	</types>
 	
 	<attributes>
@@ -36,10 +38,16 @@
 	<elements>
 	
 		<sc:element name="element" >
-			<attributes/>
+			<attributes>
+				<sc:attribute name="name" type="sc:string" />
+				<sc:attribute name="ref" type="sc:string" />
+				<sc:attribute name="maxOccur" type="sc:string" />
+				<sc:attribute name="minOccur" type="sc:string" />
+				<sc:attribute name="use" type="sc:string" />
+			</attributes>
 			<collections>
-				<sc:collection name="attributes" minOccur="0" maxOccur="unbound" type="sc:attribute" />
-				<sc:collection name="elements" minOccur="0" maxOccur="unbound" type="sc:element" />
+				<sc:collection-ref name="attributes" minOccur="0" maxOccur="unbound" type="sc:attribute" />
+				<sc:collection-ref name="elements" minOccur="0" maxOccur="unbound" type="sc:element" />
 			</collections>
 			<elements>
 				<element ref="ar:collection" />
@@ -56,7 +64,7 @@
 
 	<categories>
 		<sc:category name="sc:schema" prompt="Schema definition" />
-		<sc:category name="sc:basicType" prompt="Basic data type" parent="sc:schema" />
+		<sc:category name="sc:basicType" prompt="Basic data type" parentCategory="sc:schema" />
 	</categories>
 	
 </sc:schema>
