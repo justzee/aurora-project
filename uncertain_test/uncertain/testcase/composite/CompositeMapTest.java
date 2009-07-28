@@ -28,8 +28,8 @@ public class CompositeMapTest extends TestCase {
     public void testGetText() throws Exception {
         CompositeMap m = loader.loadFromClassPath("uncertain.testcase.composite.TextTest");
         assertNotNull(m);
-        //assertEquals("success",m.getText());
-        System.out.println(m.toXML());
+        assertEquals("success",m.getText());
+        //System.out.println(m.toXML());
     }
 
 }
