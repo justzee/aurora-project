@@ -1,0 +1,51 @@
+.window-body{
+	overflow:hidden;
+	border:#99bbe8 1px solid;
+	background-color:#dfe8f6;
+	padding:0px;
+	margin:0px;
+}
+.window-wrap{
+	z-index:1;
+	zoom:1;
+	position:relative;
+	top:0px;
+	left:0px;	
+}
+.window{
+	zoom:1;
+	z-index:9000;
+	position:absolute;		
+}
+.window-header-text{
+	font:bold 11px tahoma,arial,verdana,sans-serif;
+	color:#15428b;
+}
+.window-header{
+	background:url(../img/window/white-top-bottom.gif) repeat-x;
+	zoom: 1;
+	overflow: hidden;
+	padding:5px 3px 4px 5px;
+	border-left:1px solid #99bbe8;
+	border-right:1px solid #99bbe8;
+	cursor:move;	   
+}
+
+.window-header-tool {
+    background: url(../img/window/tool-sprites.gif) no-repeat;
+    cursor: pointer;
+    float: right;
+    width: 15px;
+    height: 15px;
+    overflow: hidden;
+    margin-left: 2px;
+}
+.window-header-tool-close{
+	background-position: 0px 0px;
+}
+.window-header-tool-max{
+	background-position: 0px -30px;
+}
+.window-header-tool-restore{
+	background-position: 0px -45px;
+}
