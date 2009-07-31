@@ -1,0 +1,7 @@
+#summary CompositeMap
+
+== CompositeMap ==
+
+CompositeMap是整个框架的核心数据结构。
+
+=== 作为数据容器的CompositeMap ===
