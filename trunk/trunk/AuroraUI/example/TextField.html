@@ -11,7 +11,7 @@
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
  </HEAD>
  <BODY style="padding:15px">
- 
+ <br><br><br><br>
 <TABLE cellSpacing="0" cellPadding="0" >
 <TBODY>
 <TR height="25">
@@ -74,8 +74,15 @@
 <input type="button" value="非必输" onclick="textField.setNotBlank(false)">
 <input type="button" value="只读" onclick="textField.setReadOnly(true)">
 <input type="button" value="非只读" onclick="textField.setReadOnly(false)">
+<input type="button" value="ToolTip" onclick="Aurora.ToolTip.show('textFieldReadOnly', 'test')">
+<input type="button" value="ToolTip" onclick="Aurora.ToolTip.hide()">
 <div id='console'></div>
 
-
+<ul id="d" style=""><li style="width:100px;height:100px;;background-color:red"></li></ul>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	Ext.get('d').on('click', function(){alert(2)})
+//-->
+</SCRIPT>
  </BODY>
 </HTML>
