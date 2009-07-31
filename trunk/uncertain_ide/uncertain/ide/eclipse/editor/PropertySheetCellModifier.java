@@ -30,15 +30,16 @@ public class PropertySheetCellModifier implements ICellModifier {
     public Object getValue(Object element, String property) {
         AttributeValue  av = (AttributeValue)element;
         if( PropertySheetEditor.COLUMN_VALUE.equals(property) )
-            return av.getValue();
-        else
-            return av.getAttribute().getName();
+            return av.getValueString();
+        else{
+            return av.getAttribute().getLocalName();
+        }
     }
 
     public void modify(Object element, String property, Object value) {
         TableItem item = (TableItem)element;        
         AttributeValue  av = (AttributeValue)item.getData();
-        av.getContainer().put(av.getAttribute().getName(), value);  
+        av.getContainer().put(av.getAttribute().getLocalName(), value);  
         //mViewer.update( item.getData(), null);
         mViewer.refresh();
     }

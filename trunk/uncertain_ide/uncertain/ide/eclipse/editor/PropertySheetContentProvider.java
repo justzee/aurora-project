@@ -18,6 +18,9 @@ import uncertain.schema.editor.CompositeMapEditor;
  *
  */
 public class PropertySheetContentProvider implements IStructuredContentProvider {
+    
+    /** @todo add attributes cache
+    // Map<QName, Attribute[]>
 
     /**
      * @param schemaManager
