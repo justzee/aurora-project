@@ -1,5 +1,5 @@
-<DIV class="${wrapClass}" id="${id}" >
-	<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="${name}" ${style} ${readOnly} autocomplete="off" value="${value}" />
+<DIV class="${wrapClass}" style="width:${width}px" id="${id}" >
+	<INPUT class="item-textField" atype="field.input" style="width:${inputWidth}px;${style}" name="${name}" ${readOnly} autocomplete="off" value="${value}" />
 </DIV>
 <script>
 Aurora.onReady(function(){

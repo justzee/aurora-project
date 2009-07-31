@@ -10,7 +10,6 @@ h1, h2, h3, h4, h5, h6 { font-size:100%; font-weight:400; }
 q:before, q:after { content:""; }
 abbr, acronym { border:0; }
 a { color:#0069ca; text-decoration:none; }
-
 .item-wrap {
 	BORDER: #bababa 1px solid;
 	FLOAT: left;	
@@ -20,12 +19,7 @@ a { color:#0069ca; text-decoration:none; }
 	HEIGHT: 20px;
 	
 }
-.item-label{ 
-	display:block; 
-	padding-left:5px; 
-	padding-right:5px;
-	overflow:hidden;
-}
+
 .item-lookup {
 	BORDER-RIGHT: #bababa 1px solid;	
 	BORDER-TOP: #bababa 1px solid;	
@@ -86,4 +80,33 @@ a { color:#0069ca; text-decoration:none; }
 	MARGIN: 0px auto; 
 	WIDTH: 15px; 
 	HEIGHT: 12px
+}
+
+/** 布局 **/
+.layout-table {
+	
+}
+.layout-td-cell {
+	padding:3px;
+	vertical-align:top;
+	padding:5px;
+}
+.layout-td-con {
+	vertical-align:top;
+}
+.layout-th {
+	vertical-align:top;
+	padding-top:5px;
+}
+.layout-th div { 
+	text-align:right;
+	padding-top:3px;
+	padding-left:5px; 
+	padding-right:5px;
+}
+.layout-head {
+	border-bottom:1px solid #bbbbbb;
+	background-color:#8FC629;
+	color:#fff;
+	padding:5px 0px;
 }

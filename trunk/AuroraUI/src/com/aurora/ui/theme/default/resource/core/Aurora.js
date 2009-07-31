@@ -97,7 +97,7 @@ Aurora.ToolTip = function(){
 			this.tip.setY(ele.getY()-this.tip.getHeight());
 		},
 		hide: function(){
-			this.tip.hide();
+			if(this.tip != null) this.tip.hide();
 		}
 	}
 	return q
