@@ -29,7 +29,7 @@ public class PropertySheetLabelProvider extends BaseLabelProvider implements ITa
 
     public String getText(Object element) {
         if( element instanceof Attribute )
-            return ((Attribute)element).getName();
+            return ((Attribute)element).getLocalName();
         else
             return element.toString();
     }
@@ -47,10 +47,11 @@ public class PropertySheetLabelProvider extends BaseLabelProvider implements ITa
         AttributeValue av = (AttributeValue)element;
         if( columnIndex == 0 )
             return av.getAttribute().getName();
-        else if( columnIndex == 1 )
-            return av.getValue().toString();
+        else if( columnIndex == 1 ){
+            return av.getValueString();
+        }
         else
-            return null;
+            return "";
     }
 
 
