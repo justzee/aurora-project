@@ -1,4 +1,4 @@
-html, body { margin:0; padding:0;font-size:12px}
+html, body { margin:0; padding:0;font-size:12px;width:100%;height:100%}
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, button, p, blockquote, th, td { margin:0; padding:0; }
 fieldset, img { border:0; }
 table { border-spacing:0; }
@@ -19,7 +19,9 @@ a { color:#0069ca; text-decoration:none; }
 	HEIGHT: 20px;
 	
 }
-
+.item-draggable {
+	cursor:move;
+}
 .item-lookup {
 	BORDER-RIGHT: #bababa 1px solid;	
 	BORDER-TOP: #bababa 1px solid;	
@@ -106,7 +108,15 @@ a { color:#0069ca; text-decoration:none; }
 }
 .layout-head {
 	border-bottom:1px solid #bbbbbb;
-	background-color:#8FC629;
-	color:#fff;
-	padding:5px 0px;
+	height:20px;
+	COLOR: #055a78;	
+	background:url(../window/window-header.gif) repeat-x;
+	padding-left:5px;
+}
+.item-focus {
+	border:1px solid blue;
+	background-color:#e2f7ff;
+}
+.item-focus input {
+	background-color:#e2f7ff;
 }

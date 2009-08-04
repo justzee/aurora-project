@@ -2,6 +2,7 @@
 Aurora.Field = Ext.extend(Ext.util.Observable,{	
 	validators: [],
 	notBlankCss:'item-notBlank',
+	focusCss:'item-focus',
 	readOnlyCss:'item-readOnly',
 	emptyTextCss:'item-emptyText',
 	invalidCss:'item-invalid',
@@ -43,6 +44,10 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     },
     onKeyDown : function(e){
         this.fireEvent('keydown', this, e);
+        if(e.keyCode == 13) {
+        	e.keyCode = 9;
+        	e.browserEvent.keyCode = 9;
+        }
     },
     onKeyPress : function(e){
         this.fireEvent('keypress', this, e);
@@ -50,7 +55,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     fireKey : function(e){
       this.fireEvent("keydown", this, e);
     },
-    onFocus : function(){
+    onFocus : function(e){
     	if(this.readOnly) return;
         if(!this.hasFocus){
             this.hasFocus = true;
@@ -63,6 +68,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
 	            }
 	            this.wrap.removeClass(this.emptyTextCss);
 	        }
+	        this.wrap.addClass(this.focusCss);
         }
     },
     onBlur : function(e){
@@ -73,6 +79,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
             this.fireEvent('change', this, v, this.startValue);
         }
         this.applyEmptyText();
+        this.wrap.removeClass(this.focusCss);
         this.fireEvent("blur", this);
     },
     
@@ -178,6 +185,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     },
     focus : function(selectText, delay){
     	if(this.readOnly) return;
+    	this.el.dom.focus();
         this.el.dom.select();
     },
     blur : function(){

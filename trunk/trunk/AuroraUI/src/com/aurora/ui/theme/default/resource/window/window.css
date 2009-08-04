@@ -1,0 +1,34 @@
+.window-wrap {
+	border:1px solid #c2d5dc; 
+	TABLE-LAYOUT: fixed; 
+	Z-INDEX: 20; 
+	POSITION: absolute; 
+}
+.window-caption {
+	height: 21px;
+	background:url(window-header.gif) repeat-x;
+}
+.window-caption-label div {
+	FONT-WEIGHT: bold; 
+	padding-left:5px;
+	FONT-SIZE: 12px; 
+	FLOAT: left; 
+	COLOR: #055a78; 
+	HEIGHT: 14px
+}
+.window-caption-button .window-close{
+	BACKGROUND-IMAGE: url(btn_close.gif); 
+	WIDTH: 17px; 
+	CURSOR: pointer; 
+	BACKGROUND-REPEAT: no-repeat; 
+	HEIGHT: 17px; 
+	BACKGROUND-COLOR: transparent;
+}
+.window-body {
+	BACKGROUND-COLOR: #f2f9fe;
+}
+.window-content{
+	width:100%;
+	height:100%;
+	
+}
