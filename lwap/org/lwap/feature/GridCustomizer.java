@@ -7,6 +7,7 @@
 package org.lwap.feature;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -29,6 +30,11 @@ import aurora.database.service.SqlServiceContext;
 public class GridCustomizer {
 
 	private static final String GRID_CUSTOMIZER_SERVICE = "sys.load_custom_grid";
+	
+	private static final String COLUMN_VISIABLE = "VISIABLE";
+	private static final String COLUMN_DATA_INDEX = "DATA_INDEX";
+	private static final String COLUMN_ORDER = "ORDER_NUM";
+	private static final String COLUMN_WIDTH = "WIDTH";
 
 	private IObjectRegistry mRegistry;
 
@@ -73,9 +79,39 @@ public class GridCustomizer {
 					sqlServiceContext.getParameter().put("service", serviceName.toUpperCase());
 					RawSqlService sqlService = mSvcFactory.getSqlService(GRID_CUSTOMIZER_SERVICE);
 					CompositeMap resultMap = sqlService.queryAsMap(sqlServiceContext, FetchDescriptor.getDefaultInstance());
-					if (resultMap == null || resultMap.getChilds() == null)
-						continue;
-					configGrid(grid, resultMap.getChilds());
+					List childs = new ArrayList();
+					if (resultMap != null && resultMap.getChilds() != null)
+					childs = resultMap.getChilds();
+					
+					String columnConfig = grid.getString("ColumnConfig");
+					if(!"".equals(columnConfig)) {
+						CompositeMap cols = (CompositeMap)context.getObject(columnConfig);
+						List list = cols.getChilds();
+						if(list != null){
+							Iterator sit = list.iterator();
+							while(sit.hasNext()){
+								CompositeMap scol = (CompositeMap) sit.next();
+								String serviceDataIndex = scol.getString(COLUMN_DATA_INDEX);
+								if(childs != null && childs.size() >0){
+									Iterator pit = childs.iterator();
+									while(pit.hasNext()){
+										CompositeMap col = (CompositeMap) pit.next();
+										String dataIndex = col.getString(COLUMN_DATA_INDEX);
+										if(serviceDataIndex.equalsIgnoreCase(dataIndex)) {
+											col.put(COLUMN_VISIABLE, scol.getString(COLUMN_VISIABLE));
+											col.put(COLUMN_ORDER, scol.getInt(COLUMN_ORDER));
+											col.put(COLUMN_WIDTH, scol.getInt(COLUMN_WIDTH));											
+											break;
+										}
+									}
+								}else{
+									childs.addAll(list);									
+								}								
+							}							
+						}
+					}
+					
+					configGrid(grid, childs);
 				}
 			}
 		} finally {
@@ -89,7 +125,7 @@ public class GridCustomizer {
 		Iterator cit = cfgs.iterator();
 		while (cit.hasNext()) {
 			CompositeMap col = (CompositeMap) cit.next();
-			String dataIndex = col.getString("DATA_INDEX");
+			String dataIndex = col.getString(COLUMN_DATA_INDEX);
 			Iterator it = columns.iterator();
 			while (it.hasNext()) {
 				CompositeMap column = (CompositeMap) it.next();
@@ -122,14 +158,14 @@ public class GridCustomizer {
 	}
 
 	private void configGridColumn(CompositeMap column, CompositeMap cfg) {
-		String visiable = cfg.getString("VISIABLE").toUpperCase();
-		Integer order = cfg.getInt("ORDER_NUM");
+		String visiable = cfg.getString(COLUMN_VISIABLE).toUpperCase();
+		Integer order = cfg.getInt(COLUMN_ORDER);
 		column.put("Order", order);
 		if (!"Y".equals(visiable)) {
 			column.put("Hidden", "true");
 		} else {
 			column.put("Hidden", "false");
-			Integer width = cfg.getInt("WIDTH");
+			Integer width = cfg.getInt(COLUMN_WIDTH);
 			column.put("Width", width);
 		}
 	}
