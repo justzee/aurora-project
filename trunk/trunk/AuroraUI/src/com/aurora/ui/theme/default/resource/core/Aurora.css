@@ -59,7 +59,7 @@ a { color:#0069ca; text-decoration:none; }
 .tip-wrap {
 	padding:0px;
 	position:absolute;
-	z-index:20000;
+	z-index:40;
 }
 .tip-header {
 	border:1px solid #116497;
