@@ -4,7 +4,7 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     },
     initComponent : function(){
     	Aurora.TriggerField.superclass.initComponent.call(this);
-    	this.trigger = this.wrap.child('button[atype=triggerfield.trigger]'); 
+    	this.trigger = this.wrap.child('div[atype=triggerfield.trigger]'); 
     	this.popup = this.wrap.child('div[atype=triggerfield.popup]'); 
     },
     initEvents : function(){
@@ -15,15 +15,18 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
         return this.popup && this.popup.isVisible();
     },
     onFocus : function(){
-        Ext.get(Ext.isIE ? document.body : document).on("mousedown", this.triggerBlur, this, {delay: 10});
+        Ext.get(document.documentElement).on("mousedown", this.triggerBlur, this, {delay: 10});
         Aurora.TriggerField.superclass.onFocus.call(this);
+    },
+    onBlur : function(){
+    	Ext.get(document.documentElement).un("mousedown", this.triggerBlur, this);
+    	Aurora.TriggerField.superclass.onBlur.call(this);
     },
     triggerBlur : function(e){
     	if(!this.wrap.contains(e.target)){
             if(this.isExpanded()){
 	    		this.collapse();
-	    	}
-	    	Ext.get(Ext.isIE ? document.body : document).un("mousedown", this.triggerBlur, this);
+	    	}	    	
         }
     },
     collapse : function(){

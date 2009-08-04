@@ -5,8 +5,8 @@ Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
     },
     initComponent : function(){
     	Aurora.DatePicker.superclass.initComponent.call(this);
-    	this.fieldEl = this.wrap.first("div");
-    	this.dateField = new Aurora.DateField(this.fieldEl, this.config);
+//    	this.fieldEl = this.wrap.first("div");
+    	this.dateField = new Aurora.DateField(this.popup, this.config);
     	this.dateField.on("select", this.onSelect, this);
     },
     onSelect: function(dateField, date){
