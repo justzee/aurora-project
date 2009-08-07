@@ -1,7 +1,7 @@
 .window-wrap {
 	border:1px solid #c2d5dc; 
 	TABLE-LAYOUT: fixed; 
-	Z-INDEX: 20; 
+	z-index: 40; 
 	POSITION: absolute; 
 }
 .window-caption {
@@ -9,12 +9,15 @@
 	background:url(window-header.gif) repeat-x;
 }
 .window-caption-label div {
+	width:100%;
 	FONT-WEIGHT: bold; 
 	padding-left:5px;
 	FONT-SIZE: 12px; 
 	FLOAT: left; 
-	COLOR: #055a78; 
+	COLOR: #055a78;
+	overflow:hidden; 
 	HEIGHT: 14px
+	
 }
 .window-caption-button .window-close{
 	BACKGROUND-IMAGE: url(btn_close.gif); 

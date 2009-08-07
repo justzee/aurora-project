@@ -1,5 +1,4 @@
 Aurora = {version: '3.0'};
-
 Aurora.onReady = Ext.onReady;
 Aurora.decode = Ext.decode;
 Aurora.Element = Ext.Element;
@@ -7,6 +6,8 @@ Aurora.Template = Ext.Template
 Aurora.apply = Ext.apply;
 Aurora.isEmpty = Ext.isEmpty;
 Aurora.fly = Ext.fly;
+
+Aurora.winContainers = [];
 
 Aurora.TextMetrics = function(){
     var shared;
@@ -102,3 +103,146 @@ Aurora.ToolTip = function(){
 	}
 	return q
 }();
+Aurora.Mask = function(){
+	var m = {
+		container: {},
+		mask : function(el){
+			if(!window._mask) {
+				var p = '<DIV style="left:0px;top:0px;width:100%;height:100%;POSITION: absolute;FILTER: alpha(opacity=50);BACKGROUND-COLOR: #cccccc; opacity: 0.5; MozOpacity: 0.5" unselectable="on"></DIV>';
+				window._mask = Ext.get(Ext.DomHelper.append(Ext.getBody(),p));
+			}
+	    	window._mask.setStyle('z-index', Ext.fly(el).getStyle('z-index') - 1);
+		},
+		unmask : function(el){
+			if(window._mask) {
+				Ext.fly(window._mask).remove();
+				window._mask = null;
+			}
+		}
+	}
+	return m;
+}();
+Ext.Element.prototype.update = function(html, loadScripts, callback){
+    if(typeof html == "undefined"){
+        html = "";
+    }
+    if(loadScripts !== true){
+        this.dom.innerHTML = html;
+        if(typeof callback == "function"){
+            callback();
+        }
+        return this;
+    }
+    var id = Ext.id();
+    var dom = this.dom;
+
+    html += '<span id="' + id + '"></span>';
+    Ext.lib.Event.onAvailable(id, function(){
+    	var links = [];
+    	var scripts = [];
+        var hd = document.getElementsByTagName("head")[0];
+        for(var i=0;i<hd.childNodes.length;i++){
+        	var he = hd.childNodes[i];
+        	if(he.tagName == 'LINK') {
+        		links.push(he.href);
+        	}else if(he.tagName == 'SCRIPT'){
+        		scripts.push(he.src);
+        	}
+        }
+        var jsre = /(?:<script([^>]*)?>)((\n|\r|.)*?)(?:<\/script>)/ig;
+        var jsSrcRe = /\ssrc=([\'\"])(.*?)\1/i;
+        
+        var cssre = /(?:<link([^>]*)?>)((\n|\r|.)*?)/ig;
+        var cssHreRe = /\shref=([\'\"])(.*?)\1/i;
+		
+		var cssm;
+		while(cssm = cssre.exec(html)){
+			var attrs = cssm[1];
+			var srcMatch = attrs ? attrs.match(cssHreRe) : false;
+			if(srcMatch && srcMatch[2]){
+				var included = false;
+				for(var i=0;i<links.length;i++){
+					var link = links[i];
+					if(link.indexOf(srcMatch[2]) != -1){
+						included = true;
+						break;
+					}
+				}
+				if(!included) {
+                	var s = document.createElement("link");
+					s.type = 'text/css';
+					s.rel = 'stylesheet';
+                   	s.href = srcMatch[2];
+                   	hd.appendChild(s);
+                }
+			}
+		}
+        var match;
+        var jslink = [];
+        var jsscript = [];
+        while(match = jsre.exec(html)){
+            var attrs = match[1];
+            var srcMatch = attrs ? attrs.match(jsSrcRe) : false;
+            if(srcMatch && srcMatch[2]){
+            	var included = false;
+				for(var i=0;i<scripts.length;i++){
+					var script = scripts[i];
+					if(script.indexOf(srcMatch[2]) != -1){
+						included = true;
+						break;
+					}
+				}
+               	if(!included) {
+               		jslink[jslink.length] = {
+               			src:srcMatch[2],
+               			type:'text/javascript'
+               		}
+               	} 
+            }else if(match[2] && match[2].length > 0){
+            	jsscript[jsscript.length] = match[2];
+            }
+        }
+        var loaded = 0;
+        for(var i = 0,l=jslink.length;i<l;i++){
+        	var js = jslink[i];
+        	var s = document.createElement("script");
+            s.src = js.src;
+            s.type = js.type;
+            s[Ext.isIE ? "onreadystatechange" : "onload"] = function(){ 
+            	if(this.readyState && this.readyState == "loading") return; 
+            	loaded ++;
+            	if(loaded==jslink.length) {
+                    for(j=0,k=jsscript.length;j<k;j++){
+	                	var jst = jsscript[j];
+	                	if(window.execScript) {
+	                    	window.execScript(jst);
+	                    } else {
+	                    	window.eval(jst);
+	                    }
+	                }
+            	}
+            };
+			hd.appendChild(s);
+        }
+        if(jslink.length ==0) {
+        	for(j=0,k=jsscript.length;j<k;j++){
+            	var jst = jsscript[j];
+            	if(window.execScript) {
+                   window.execScript(jst);
+                } else {
+                   window.eval(jst);
+                }
+            }
+        }
+        
+        var el = document.getElementById(id);
+        if(el){Ext.removeNode(el);}
+        if(typeof callback == "function"){
+            callback();
+        }
+        Ext.fly(dom).setStyle('display', '');
+    });
+    Ext.fly(dom).setStyle('display', 'none');
+    dom.innerHTML = html.replace(/(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)/ig, "").replace(/(?:<link.*?>)((\n|\r|.)*?)/ig, "");
+    return this;
+}

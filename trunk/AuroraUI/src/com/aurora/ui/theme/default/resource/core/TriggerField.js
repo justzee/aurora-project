@@ -34,7 +34,7 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     	this.popup.hide();
     },
     expand : function(){
-    	this.wrap.setStyle("z-index",30);
+    	this.wrap.setStyle("z-index",25);
     	this.popup.show();
     },
     onTriggerClick : function(){

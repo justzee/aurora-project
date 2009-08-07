@@ -22,22 +22,7 @@ a { color:#0069ca; text-decoration:none; }
 .item-draggable {
 	cursor:move;
 }
-.item-lookup {
-	BORDER-RIGHT: #bababa 1px solid;	
-	BORDER-TOP: #bababa 1px solid;	
-	Z-INDEX: 10000;	
-	LEFT: 0px;	
-	width:100px;
-	height:100px;
-	FONT: 12px/1.231 Verdana,Arial,SimSun,Helvetica,sans-serif;	
-	MARGIN-LEFT: -1px;	
-	BORDER-LEFT: #bababa 1px solid;	
-	COLOR: #555;	
-	BORDER-BOTTOM: #bababa 1px solid;	
-	POSITION: absolute;	
-	TOP: 22px;	
-	BACKGROUND-COLOR: #fff
-}
+
 .item-trigger {
 	BORDER-TOP-WIDTH: 0px;	
 	BORDER-LEFT-WIDTH: 0px;	
@@ -59,7 +44,7 @@ a { color:#0069ca; text-decoration:none; }
 .tip-wrap {
 	padding:0px;
 	position:absolute;
-	z-index:40;
+	z-index:30;
 }
 .tip-header {
 	border:1px solid #116497;
@@ -86,7 +71,7 @@ a { color:#0069ca; text-decoration:none; }
 
 /** 布局 **/
 .layout-table {
-	
+	background-color:#ffffff;
 }
 .layout-td-cell {
 	padding:3px;

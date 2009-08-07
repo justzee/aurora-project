@@ -2,8 +2,6 @@
 	<INPUT class="item-textField" atype="field.input" style="width:${inputWidth}px;${style}" name="${name}" ${readOnly} autocomplete="off" value="${value}" />
 </DIV>
 <script>
-Aurora.onReady(function(){
 	new Aurora.TextField('${id}',${config});
 	${events}
-})
 </script>

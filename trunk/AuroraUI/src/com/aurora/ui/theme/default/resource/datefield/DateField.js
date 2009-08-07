@@ -3,11 +3,13 @@ Aurora.DateField = Ext.extend(Ext.util.Observable, {
         config = config || {};
         Ext.apply(this, config);
         if(typeof(elId) == "string") window[elId] = this;
-        Aurora.DateField.superclass.constructor.call(this);       
-        this.wrap = Ext.get(elId);
-        this.table = this.wrap.child("table");
-        this.tbody = document.createElement("TBODY");
-        this.table.dom.appendChild(this.tbody);
+        Aurora.DateField.superclass.constructor.call(this);     
+
+        this.wrap = typeof(elId) == "string" ? Ext.get(elId) : elId;
+        this.table = this.wrap.child("table");        
+        this.tbody = this.wrap.child("tbody").dom;
+//        this.tbody = document.createElement("TBODY");
+//        this.table.dom.appendChild(this.tbody);
         this.initComponent();
         this.initEvents();	
 		
