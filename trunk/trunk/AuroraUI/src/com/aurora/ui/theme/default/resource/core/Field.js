@@ -34,10 +34,10 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     	
     },
     onMouseOver : function(e){
-    	Aurora.ToolTip.show(this.id, "测试");
+    	//Aurora.ToolTip.show(this.id, "测试");
     },
     onMouseOut : function(e){
-    	Aurora.ToolTip.hide();
+    	//Aurora.ToolTip.hide();
     },
     onKeyUp : function(e){
         this.fireEvent('keyup', this, e);
