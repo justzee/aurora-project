@@ -4,10 +4,17 @@
  */
 package org.lwap.application;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uncertain.composite.CompositeMap;
 
@@ -84,15 +91,50 @@ public abstract class ServiceImpl implements Service {
 	public void setHttpObject(HttpServletRequest request,	HttpServletResponse response ){
 		this.request = request;
 		this.response = response;
+		JSONObject dm=getParameterString(request);
         CompositeMap r = service_context.createChild(KEY_REQUEST);
         r.put(KEY_ADDRESS, request.getRemoteAddr());
         r.put("url", getServiceName());
+        if(dm.length()!=0){
+        	r.put("params", dm);
+        }
         r.put("server_name", request.getServerName());
         r.put("server_port", new Integer(request.getServerPort()));
         CompositeMap cookie = service_context.createChild("cookie");
         populateCookieMap(request, cookie);
 	}
-	
+	public JSONObject getParameterString(HttpServletRequest request){		 
+		Map params = request.getParameterMap();
+		JSONObject ps=new JSONObject();
+		if(params.size()>0){
+			Iterator it=params.entrySet().iterator();
+			String[] valueHolder = new String[1];
+			while(it.hasNext()){
+				Map.Entry entry=(Map.Entry)it.next();
+				String name=entry.getKey().toString();
+				Object value=entry.getValue();
+				String[] values;
+				if(value instanceof String[]){
+					values=(String[])value;
+				}else{
+					valueHolder[0]=value.toString();
+					values=valueHolder;
+				}
+				try{
+					ArrayList al=new ArrayList();			
+					for(int i=0;i<values.length; i++){						
+						if (values[i] != null) {							
+							al.add(values[i]);
+						}
+					}
+					ps.put(name,al);
+				}catch(Exception e){
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return ps;
+	}
 	public HttpServletRequest getRequest(){
 		return this.request;
 	}
