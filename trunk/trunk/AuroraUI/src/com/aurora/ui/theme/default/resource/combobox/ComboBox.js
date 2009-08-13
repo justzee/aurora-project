@@ -7,7 +7,8 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		Aurora.ComboBox.superclass.constructor.call(this, elId, config);		
 		this.valueField=config.valueField;
 		this.displayField=config.displayField;
-		this.dataModel=Aurora.decode(config.dataModel)||[];		
+		//debugger;
+		this.dataModel=config.dataModel||[];		
 	},	
 	onTriggerClick : function() {
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
