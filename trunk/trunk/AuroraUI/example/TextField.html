@@ -7,6 +7,7 @@
  <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/textfield/TextField.css" />
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script>
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Aurora.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Component.js"></script>
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
  </HEAD>
@@ -21,7 +22,7 @@
 	<TD width="150">
 
 		<DIV class="item-wrap" id="textField">
-			<INPUT class="item-textField" atype="field.input" style="width: 147px;" readonly="" name="city" autocomplete="off" value="" />
+			<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
 		</DIV>
 		<script>
 			new Aurora.TextField('textField',{
@@ -70,19 +71,12 @@
 <br><br>
 <input type="button" value="验证" onclick="textField.validate()">
 <input type="button" value="验证2" onclick="textFieldNotBlank.validate()">
-<input type="button" value="必输" onclick="textField.setNotBlank(true)">
-<input type="button" value="非必输" onclick="textField.setNotBlank(false)">
+<input type="button" value="必输" onclick="textField.setRequired(true)">
+<input type="button" value="非必输" onclick="textField.setRequired(false)">
 <input type="button" value="只读" onclick="textField.setReadOnly(true)">
 <input type="button" value="非只读" onclick="textField.setReadOnly(false)">
 <input type="button" value="ToolTip" onclick="Aurora.ToolTip.show('textFieldReadOnly', 'test')">
 <input type="button" value="ToolTip" onclick="Aurora.ToolTip.hide()">
 <div id='console'></div>
-
-<ul id="d" style=""><li style="width:100px;height:100px;;background-color:red"></li></ul>
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-	Ext.get('d').on('click', function(){alert(2)})
-//-->
-</SCRIPT>
  </BODY>
 </HTML>
