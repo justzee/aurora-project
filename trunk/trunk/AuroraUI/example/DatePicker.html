@@ -1,22 +1,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <HTML>
- <HEAD>
- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
- <TITLE>DatePicker</TITLE>
- <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/core/Aurora.css" />
- <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/textfield/TextField.css" />
- <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/datefield/DateField.css" />
- <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/button/Button.css" />
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Aurora.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/button/Button.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/TriggerField.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DateField.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DatePicker.js"></script>
- <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/button/Button.js"></script>
- </HEAD>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<TITLE>DatePicker</TITLE>
+<link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/core/Aurora.css" />
+<link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/textfield/TextField.css" />
+<link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/datefield/DateField.css" />
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script> 
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Aurora.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Component.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/TriggerField.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DateField.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DatePicker.js"></script>
+</HEAD>
  <BODY>
  <br> <br> <br> <br> <br> <br>
 <TABLE cellSpacing="0" cellPadding="0" style="margin:15px">
@@ -26,9 +24,9 @@
 		<SPAN class="item-label" id="date_label" style="float:right">日历:</SPAN>
 	</TH>
 	<TD width="170">
-		<DIV class="item-wrap" id="datePicker">
-			<INPUT class="item-textField item-emptyText" atype="field.input" style="width: 146px;" name="city" autocomplete="off" value="选择日期" />
-			<BUTTON class="item-trigger item-dateButton" atype="triggerfield.trigger" hideFocus title="选择日期"></BUTTON>
+		<DIV class="item-wrap item-emptyText" id="datePicker">
+			<INPUT class="item-textField " atype="field.input" style="width: 146px;" name="city" autocomplete="off" value="选择日期" />
+			<DIV class="item-trigger item-dateButton" atype="triggerfield.trigger" hideFocus title="选择日期"></DIV>
 			<DIV class="item-popup item-dateList" atype="triggerfield.popup" style="display:none;width:170px;">
 				<DIV class="item-dateField" style="width:168px">
 					<DIV class="item-dateField-head">
@@ -70,7 +68,7 @@
 	<TD width="170">
 		<DIV class="item-wrap item-notBlank" id="datePicker2">
 			<INPUT class="item-textField item-emptyText" atype="field.input" style="width: 146px;" name="city" autocomplete="off" value="选择日期" />
-			<BUTTON class="item-trigger item-dateButton" atype="triggerfield.trigger" hideFocus title="选择日期"></BUTTON>
+			<DIV class="item-trigger item-dateButton" atype="triggerfield.trigger" hideFocus title="选择日期"></DIV>
 			<DIV class="item-popup item-dateList" atype="triggerfield.popup" style="display:none;width:170px;">
 				<DIV class="item-dateField" style="width:168px">
 					<DIV class="item-dateField-head">
