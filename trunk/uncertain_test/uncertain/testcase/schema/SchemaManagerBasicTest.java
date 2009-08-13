@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
+import uncertain.schema.Array;
 import uncertain.schema.Attribute;
-import uncertain.schema.CollectionRef;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
@@ -39,12 +40,17 @@ public class SchemaManagerBasicTest extends TestCase {
         assertEquals(schema.getAttributes().length,2);
         assertEquals(schema.getTypes().length, 3);
         assertEquals(schema.getNameSpaces().length, 2);
-        assertEquals(schema.getElements().length, 1);
-        Element elm = schema.getElements()[0];
-        assertEquals(elm.getCollections().length, 2);
-        CollectionRef col = elm.getCollections()[0];
-        assertEquals(col.getMinOccur(), "0");
-        assertEquals(col.getName(), "attributes");
+        assertEquals(schema.getElements().length, 2);
+        Element elm = schema.getElement( new QualifiedName("http://www.uncertain-framework.org/schema/simple-schema", "element"));
+        assertNotNull(elm);
+
+        assertEquals(elm.getArrays().length, 1);
+        Array array = elm.getArray( new QualifiedName(null,"attributes"));
+        assertNotNull(array);
+        assertNotNull(array.getType());
+        //IType type = array.getElementType();
+        //assertNotNull(type);
+
         assertEquals(elm.getExtensions().length, 1);
         assertEquals(elm.getExtensions()[0].getBase(), "sc:complexType");
         QualifiedName qn = schema.getQualifiedName("ar:element");
@@ -93,6 +99,29 @@ public class SchemaManagerBasicTest extends TestCase {
         assertEquals(cls_list.size(), 5);
         
         assertEquals(schemaManager.getAllTypes().size(), 6);
+    }
+    
+    public void testComponents()
+        throws Exception
+    {
+        Schema schema = schemaManager.loadSchemaByClassPath("aurora.testcase.ui.config.components", "sxsd");
+        assertNotNull(schema);
+        Element element = schemaManager.getElement( new QualifiedName(null,"select") );
+        assertNotNull(element);
+        List cls_list = element.getAllAttachedClasses();
+        assertEquals(cls_list.size(), 5);
+    }
+    
+    public void testElementContain()
+        throws Exception
+    {
+        Schema schema = schemaManager.loadSchemaByClassPath("uncertain.testcase.schema.element_test", "sxsd");
+        assertNotNull(schema);
+        CompositeMap a= new CompositeMap("A");        
+        CompositeMap c = a.createChild("B").createChild("C");
+        Element element = schemaManager.getElement(c);
+        assertNotNull(element);
+        assertEquals(element.getAttributes().length, 2);
     }
 
 }

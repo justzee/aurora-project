@@ -55,7 +55,7 @@ public class CompositeMapTreeEditor extends AbstractCompositeMapEditor {
     
     protected void createTreeEditor( ){
         mTreeViewer = new TreeViewer(mContent);
-        mTreeViewer.setLabelProvider(new CompositeMapLabelProvider());
+        mTreeViewer.setLabelProvider(new CompositeMapLabelProvider(mSchemaManager));
         mTreeViewer.setContentProvider(new CompositeTreeContentProvider());
         mTreeViewer.addSelectionChangedListener( new ElementSelectionListener() );
         mTreeViewer.getTree().setSize(200, 400);
