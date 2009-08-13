@@ -9,6 +9,12 @@ Aurora.fly = Ext.fly;
 
 Aurora.winContainers = [];
 
+Ext.applyIf(Array.prototype, {
+	add : function(o){
+		this[this.length] = o;
+	}
+});
+
 Aurora.TextMetrics = function(){
     var shared;
     return {

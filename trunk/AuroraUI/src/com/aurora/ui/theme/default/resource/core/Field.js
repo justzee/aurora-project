@@ -1,28 +1,28 @@
 
-Aurora.Field = Ext.extend(Ext.util.Observable,{	
+Aurora.Field = Ext.extend(Aurora.Component,{	
 	validators: [],
-	notBlankCss:'item-notBlank',
+	requiredCss:'item-notBlank',
 	focusCss:'item-focus',
 	readOnlyCss:'item-readOnly',
 	emptyTextCss:'item-emptyText',
 	invalidCss:'item-invalid',
-	constructor: function(id, config) {	
-        config = config || {};
-        Ext.apply(this, config);
-        window[id] = this;
-        this.id = id;
-        Aurora.Field.superclass.constructor.call(this);       
-        this.wrap = Ext.get(id);
-        this.el = this.wrap.child('input[atype=field.input]'); 
-        this.addEvents('focus','blur','keydown','change','invalid','valid','keyup','keypress');
+	constructor: function(id, config) {
+		this.oldRequired = config.required || false;
+		this.oldReadOnly = config.readOnly || false;
+        Aurora.Field.superclass.constructor.call(this, id, config);       
         this.initComponent();
         this.initEvents();
     },
     initComponent : function(){
+    	Aurora.Field.superclass.initComponent.call(this);
+        this.wrap = Ext.get(this.id);
+        this.el = this.wrap.child('input[atype=field.input]'); 
     	this.originalValue = this.getValue();
     	this.applyEmptyText();
     },
     initEvents : function(){
+    	Aurora.Field.superclass.initEvents.call(this);
+        this.addEvents('keydown','keyup','keypress');
     	this.el.on(Ext.isIE || Ext.isSafari3 ? "keydown" : "keypress", this.fireKey,  this);
     	this.el.on("focus", this.onFocus,  this);
     	this.el.on("blur", this.onBlur,  this);
@@ -99,16 +99,18 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
         }
         return v;
     },
-    setNotBlank : function(notBlank){
+    setRequired : function(required){
+    	if(this.required == required)return;
 		this.clearInvalid();    	
-    	this.notBlank = notBlank;
-    	if(notBlank){
-    		this.wrap.addClass(this.notBlankCss);
+    	this.required = required;
+    	if(required){
+    		this.wrap.addClass(this.requiredCss);
     	}else{
-    		this.wrap.removeClass(this.notBlankCss);
+    		this.wrap.removeClass(this.requiredCss);
     	}
     },
     setReadOnly : function(readOnly){
+    	if(this.readOnly == readOnly)return;
     	this.readOnly = readOnly;
     	this.el.dom.readOnly = readOnly;
     	if(readOnly){
@@ -142,7 +144,7 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     },
     validateValue : function(value){    
     	if(value.length < 1 || value === this.emptyText){ // if it's blank
-        	if(!this.notBlank){
+        	if(!this.required){
                 this.clearInvalid();
                 return true;
         	}else{
@@ -191,5 +193,23 @@ Aurora.Field = Ext.extend(Ext.util.Observable,{
     blur : function(){
     	if(this.readOnly) return;
     	this.el.blur();
+    },
+    setDefault : function(){
+    	this.setRequired(this.oldRequired);
+    	this.setReadOnly(this.oldReadOnly);
+    },
+    initMeta : function(ds, field){
+		var p = field.snap;
+		for(var k in p){
+			var v = p[k];
+			switch(k){
+				case 'required':
+					this.setRequired(v);
+					break;
+				case 'readonly':
+					this.setReadOnly(v);
+					break;
+			}
+		}    	
     }
 })
