@@ -7,10 +7,6 @@
 
 	<types>
 		<sc:complexType name="ar:mytype1">
-			<attributes/>
-			<elements/>
-			<validators/>
-			<collections/>
 			<features>
 				<feature class="uncertain.proc.Test" />
 			</features>
@@ -36,8 +32,13 @@
 	</attributes>
 	
 	<elements>
-	
-		<sc:element name="element" >
+		<sc:element name="sc:attribute" >
+			<attributes>
+				<sc:attribute name="name" type="sc:string" />
+				<sc:attribute name="type" type="sc:string" />
+			</attributes>
+		</sc:element>
+		<sc:element name="sc:element" >
 			<attributes>
 				<sc:attribute name="name" type="sc:string" />
 				<sc:attribute name="ref" type="sc:string" />
@@ -45,15 +46,12 @@
 				<sc:attribute name="minOccur" type="sc:string" />
 				<sc:attribute name="use" type="sc:string" />
 			</attributes>
-			<collections>
-				<sc:collection-ref name="attributes" minOccur="0" maxOccur="unbound" type="sc:attribute" />
-				<sc:collection-ref name="elements" minOccur="0" maxOccur="unbound" type="sc:element" />
-			</collections>
+			<arrays>
+				<sc:array name="attributes" minOccur="0" maxOccur="unbound" type="sc:attribute" />
+			</arrays>
 			<elements>
 				<element ref="ar:collection" />
-				<element name="" type="" />				
 			</elements>
-			<validators/>
 			<extensions>
 			    <sc:extension base="sc:complexType" />
 			</extensions>

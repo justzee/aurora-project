@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path=""/>
 	<classpathentry combineaccessrules="false" kind="src" path="/uncertain"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uncertain_test"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

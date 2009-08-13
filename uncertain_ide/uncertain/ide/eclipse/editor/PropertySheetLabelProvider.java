@@ -11,7 +11,8 @@ import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 
 public class PropertySheetLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
-/*    
+
+    /*    
     public static final int TYPE_ATTRIBUTE = 0;
     public static final int TYPE_VALUE = 1;
     
