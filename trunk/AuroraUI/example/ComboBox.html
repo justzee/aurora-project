@@ -3,14 +3,17 @@
  <HEAD>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <TITLE>ComboBox</TITLE>
- <link type="text/css" rel="stylesheet" href="css/aurora.css" />
- <script language="javascript" type="text/javascript" src="../src/core/ext-core-debug.js"></script>
- <script language="javascript" type="text/javascript" src="../src/core/aurora.js"></script>
- <script language="javascript" type="text/javascript" src="../src/widgets/Field.js"></script>
- <script language="javascript" type="text/javascript" src="../src/widgets/TextField.js"></script>
- <script language="javascript" type="text/javascript" src="../src/widgets/TriggerField.js"></script>
- <script language="javascript" type="text/javascript" src="../src/widgets/ComboBox.js"></script>
- </HEAD>
+ <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/core/Aurora.css" />
+<link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/textfield/TextField.css" />
+<link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.css" />
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script> 
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Aurora.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Component.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/TriggerField.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.js"></script>
+</HEAD>
  <BODY>
 <!--  -->
 <TABLE cellSpacing="0" cellPadding="0" style="margin:15px">
@@ -19,13 +22,12 @@
 	<TH scope="row" width="75">
 		<SPAN class="item-label" id="city_label" style="float:right">选择框:</SPAN>
 	</TH>
-	<TD width="250">
-	<div>
+	<TD width="170">
 		<DIV class="item-wrap item-notBlank" id="comboBox">
-			<input type="hidden">
-			<INPUT class="item-textField" style="width: 126px;" name="city" autocomplete="off" value="选择城市名" />
-			<BUTTON class="item-trigger item-comboButton" hideFocus title="选择城市"></BUTTON>
-			<DIV class="item-popup item-comboBox-view" style="visibility:hidden">
+			<INPUT type="hidden"/>
+			<INPUT class="item-textField" atype="field.input" style="width: 146px;" name="city" autocomplete="off" value="选择城市名" />
+			<DIV class="item-trigger item-comboButton" atype="triggerfield.trigger" hideFocus title="选择城市"></DIV>
+			<DIV class="item-popup item-comboBox-view" atype="triggerfield.popup" style="display:none;width:170px;">
 				
 			</DIV>
 		</DIV>
@@ -33,7 +35,6 @@
 			new Aurora.ComboBox('comboBox',{
 				valueField:'value',
 				displayField:'code',
-				//本地数据源
 				data:[{code:'北京',value:1},
 			          {code:'上海',value:2},
 			          {code:'天津',value:3},
@@ -44,8 +45,7 @@
 			          {code:'深圳深圳深圳深圳深圳深圳深圳深圳深圳深圳',value:8}
 					 ]
 			});
-		</script>
-	</div>	
+		</script>	
 	</TD>	
 </TR>
 </TBODY>

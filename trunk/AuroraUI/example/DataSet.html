@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Panel</title>
+ <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/core/Aurora.css" />
+ <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/textfield/TextField.css" />
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Aurora.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Component.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/DataSet.js"></script>
+    </head>
+    <body >
+	<script>
+		var a = [{data:{name:'张A',age:15},field:[{name:'name',type:'string',readonly:true}]},{data:{name:'张B',age:16}},{data:{name:'张C',age:17}},{data:{name:'张D',age:18}}]
+
+		var f = [{name:'name', type:'string',required:true}]
+		var ds = new Aurora.DataSet(a,f);
+	</script>
+	<br/><br/>
+	<TABLE cellSpacing="0" cellPadding="0">
+	<TBODY>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">姓名:</SPAN>
+		</TH>
+		<TD width="150">
+
+			<DIV class="item-wrap" id="name">
+				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var name = new Aurora.TextField('name',{
+				});	
+				name.bind(ds,'name');
+			</script>
+		</TD>
+	</TR>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">年龄:</SPAN>
+		</TH>
+		<TD width="150">
+
+			<DIV class="item-wrap" id="age">
+				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var age = new Aurora.TextField('age',{
+				});	
+				age.bind(ds,'age');
+			</script>
+		</TD>
+	</TR>
+	</TBODY>
+	</TABLE>
+	<TABLE cellSpacing="0" cellPadding="0">
+	<TBODY>
+	<TR height="25">
+		<TH scope="row" width="75">
+			
+		</TH>
+		<TD>
+			<input type="button" value="第一条" onclick="ds.locate(0)">
+			<input type="button" value="上一条" onclick="ds.pre()">
+			<input type="button" value="下一条" onclick="ds.next()">
+			<input type="button" value="年龄必输" onclick="setRequired(true)">
+			<input type="button" value="年龄非必输" onclick="setRequired(false)">
+			<input type="button" value="姓名只读" onclick="setReadOnly(true)">
+			<input type="button" value="姓名非只读" onclick="setReadOnly(false)">
+			<input type="button" value="只读" onclick="setRecordReadOnly(true)">
+			<input type="button" value="非只读" onclick="setRecordReadOnly(false)">
+		</TD>
+	</TR>
+	</TBODY>
+	</TABLE>
+	
+	<script>
+		function setRequired(required){
+			var r = ds.getCurrentRecord();
+			r.getMeta().getField('age').setRequired(required);			
+			
+		}
+		
+		function setRecordReadOnly(readonly){
+			var r = ds.getCurrentRecord();
+			r.getMeta().setReadOnly(readonly);
+		}
+
+		function setReadOnly(readonly){
+			var r = ds.getCurrentRecord();
+			var field = r.getMeta().getField('name');
+			field.setReadOnly(readonly);
+		}
+	</script>
+</body>
+</html>
