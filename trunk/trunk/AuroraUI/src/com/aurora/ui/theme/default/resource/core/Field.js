@@ -6,10 +6,10 @@ Aurora.Field = Ext.extend(Aurora.Component,{
 	readOnlyCss:'item-readOnly',
 	emptyTextCss:'item-emptyText',
 	invalidCss:'item-invalid',
-	constructor: function(id, config) {
+	constructor: function(config) {
 		this.oldRequired = config.required || false;
 		this.oldReadOnly = config.readOnly || false;
-        Aurora.Field.superclass.constructor.call(this, id, config);       
+        Aurora.Field.superclass.constructor.call(this, config);       
         this.initComponent();
         this.initEvents();
     },

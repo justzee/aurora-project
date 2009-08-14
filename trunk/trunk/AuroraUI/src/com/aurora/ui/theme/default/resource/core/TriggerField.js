@@ -1,6 +1,6 @@
 Aurora.TriggerField = Ext.extend(Aurora.TextField,{
-	constructor: function(elId, config) {
-        Aurora.TriggerField.superclass.constructor.call(this, elId, config);
+	constructor: function(config) {
+        Aurora.TriggerField.superclass.constructor.call(this, config);
     },
     initComponent : function(){
     	Aurora.TriggerField.superclass.initComponent.call(this);

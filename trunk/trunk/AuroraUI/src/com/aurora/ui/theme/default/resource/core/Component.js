@@ -1,9 +1,9 @@
 Aurora.Component = Ext.extend(Ext.util.Observable,{
-	constructor: function(id, config) {
+	constructor: function(config) {
         config = config || {};
         Ext.apply(this, config);
-        window[id] = this;
-        this.id = id;
+        this.id = config.id;
+        window[this.id] = this;
         Aurora.Component.superclass.constructor.call(this);
     },
     initComponent : function(){    	

@@ -32,7 +32,8 @@
 				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
 			</DIV>
 			<script>
-				var name = new Aurora.TextField('name',{
+				var name = new Aurora.TextField({
+					id:'name'
 				});	
 				name.bind(ds,'name');
 			</script>
@@ -48,7 +49,8 @@
 				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
 			</DIV>
 			<script>
-				var age = new Aurora.TextField('age',{
+				var age = new Aurora.TextField({
+					id:'age'
 				});	
 				age.bind(ds,'age');
 			</script>
@@ -94,6 +96,63 @@
 			var field = r.getMeta().getField('name');
 			field.setReadOnly(readonly);
 		}
+
+		var ds2 = new Aurora.DataSet();
 	</script>
+
+	<br/><br/><br/><br/>
+	<TABLE cellSpacing="0" cellPadding="0">
+	<TBODY>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">姓名:</SPAN>
+		</TH>
+		<TD width="150">
+
+			<DIV class="item-wrap" id="name2">
+				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var name = new Aurora.TextField({
+					id:'name2'
+				});	
+				name.bind(ds2,'name');
+			</script>
+		</TD>
+	</TR>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">年龄:</SPAN>
+		</TH>
+		<TD width="150">
+
+			<DIV class="item-wrap" id="age2">
+				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var age = new Aurora.TextField({
+					id:'age2'
+				});	
+				age.bind(ds2,'age');
+			</script>
+		</TD>
+	</TR>
+	</TBODY>
+	</TABLE>
+	<TABLE cellSpacing="0" cellPadding="0">
+	<TBODY>
+	<TR height="25">
+		<TH scope="row" width="75">
+			
+		</TH>
+		<TD>
+			<input type="button" value="加载数据" onclick="ds2.query('data.txt')">
+			<input type="button" value="第一条" onclick="ds2.locate(0)">
+			<input type="button" value="上一条" onclick="ds2.pre()">
+			<input type="button" value="下一条" onclick="ds2.next()">
+		</TD>
+	</TR>
+	</TBODY>
+	</TABLE>
 </body>
 </html>

@@ -54,7 +54,8 @@
 		</DIV>
 		<script>
 			var date = new Date();
-			new Aurora.DatePicker("datePicker", {
+			new Aurora.DatePicker({
+				id:"datePicker",
 				date:date,
 				emptyText:'选择日期'
 			});
@@ -99,7 +100,8 @@
 			date2.setDate(25);
 
 
-			new Aurora.DatePicker("datePicker2", {
+			new Aurora.DatePicker({
+				id:"datePicker2", 
 				date:date,
 				notBlank : true,
 				emptyText:'选择日期'

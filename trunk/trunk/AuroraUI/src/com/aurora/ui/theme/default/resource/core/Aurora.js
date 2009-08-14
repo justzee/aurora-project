@@ -1,4 +1,5 @@
 Aurora = {version: '3.0'};
+
 Aurora.onReady = Ext.onReady;
 Aurora.decode = Ext.decode;
 Aurora.Element = Ext.Element;
@@ -8,6 +9,35 @@ Aurora.isEmpty = Ext.isEmpty;
 Aurora.fly = Ext.fly;
 
 Aurora.winContainers = [];
+
+Ext.Ajax.on("requestexception", function(conn, response, options){
+	alert('服务器端错误!');
+}, this);
+Aurora.request = function(url, para, success, failed, scope){
+	Ext.Ajax.request({
+			url: url,
+			method: 'POST',
+			params:{_request_data:Ext.util.JSON.encode({parameter:para})},
+			success: function(response){
+				if(response && response.responseText){
+					var res = null;
+					try {
+						res = Ext.decode(response.responseText);
+					}catch(e){
+						alert('返回格式不正确!')
+					}
+					if(res && !res.success){							
+						if(res.error){//								
+							if(failed)failed.call(scope, res);
+						}								    						    
+					} else {
+						if(success)success.call(scope,res);
+					}
+				}
+			},
+			scope: scope
+		});
+}
 
 Ext.applyIf(Array.prototype, {
 	add : function(o){

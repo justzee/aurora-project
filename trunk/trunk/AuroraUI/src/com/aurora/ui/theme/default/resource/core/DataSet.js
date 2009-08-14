@@ -29,6 +29,9 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	        this.fields[field.name] = field;
         }
     },
+    getField : function(name){
+    	return this.fields[field.name];
+    },
     loadData : function(datas){
         this.currentIndex = 0;
         this.data = [];
@@ -39,7 +42,10 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	        this.data.add(record);
         }
         this.fireEvent("load", this, datas);
+        this.locate(0)
     },
+    
+    /** ------------------数据操作------------------ **/    
     add : function(records){
         records = [].concat(records);
         if(records.length < 1){
@@ -85,16 +91,17 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     getAt : function(index){
         return this.data[index];
     },
-    afterEdit : function(record) {
-    	if(this.modified.indexOf(record) == -1){
-            this.modified.push(record);
+    each : function(fn, scope){
+        var items = [].concat(this.data); // each safe for removal
+        for(var i = 0, len = items.length; i < len; i++){
+            if(fn.call(scope || items[i], items[i], i, len) === false){
+                break;
+            }
         }
-        this.fireEvent("update", this, record);
     },
-    afterReject : function(record){
-    	this.modified.remove(record);
-    	this.fireEvent("reject", this, record);
-    },
+
+    
+    /** ------------------导航函数------------------ **/
     locate : function(index){
     	if(index != -1 && index < this.data.length) {
     		this.currentIndex = index;
@@ -107,13 +114,37 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     next : function(){
     	this.locate(this.currentIndex+1);
     },
-    each : function(fn, scope){
-        var items = [].concat(this.data); // each safe for removal
-        for(var i = 0, len = items.length; i < len; i++){
-            if(fn.call(scope || items[i], items[i], i, len) === false){
-                break;
-            }
+    
+    /** ------------------ajax函数------------------ **/
+    query : function(url,para){
+    	Aurora.request(url, para, this.onLoadSuccess, this.onLoadFailed, this);
+    },
+    submit : function(url,para){
+    	Aurora.request(url, para, this.onSubmitSuccess, this.onSubmitFailed, this);
+    },
+    
+    /** ------------------事件函数------------------ **/
+    afterEdit : function(record) {
+    	if(this.modified.indexOf(record) == -1){
+            this.modified.push(record);
         }
+        this.fireEvent("update", this, record);
+    },
+    afterReject : function(record){
+    	this.modified.remove(record);
+    	this.fireEvent("reject", this, record);
+    },
+    onSubmitSuccess : function(res){    
+    
+    },
+    onSubmitFailed : function(res){
+    
+    },
+    onLoadSuccess : function(res){
+    	this.loadData(res.result.list.record)
+    },
+    onLoadFailed : function(res){
+    	alert(res);
     },
     onFieldChange : function(record,field,type,value) {
     	this.fireEvent('fieldchange', this, record, field, type, value)
@@ -209,6 +240,9 @@ Aurora.Record.Meta = function(r){
 	this.pro = {};
 }
 Aurora.Record.Meta.prototype = {
+	clear : function(){
+		this.pro = {};
+	},
 	getField : function(name){
     	var f = this.record.fields[name];
 		var df = this.record.ds.fields[name];
@@ -253,6 +287,9 @@ Aurora.Record.Field = function(c){
     this.record;
 };
 Aurora.Record.Field.prototype = {
+	clear : function(){
+		this.pro = {};	
+	},
 	setRequired : function(r){
 		var op = this.pro['required'];
 		if(op !== r){
@@ -266,5 +303,8 @@ Aurora.Record.Field.prototype = {
 			this.pro['readonly'] = r;
 			this.record.onFieldChange(this.name,'readonly', r);
 		}
+	},
+	setOptions : function(ds){
+		
 	}
 }

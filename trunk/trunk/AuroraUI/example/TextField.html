@@ -25,7 +25,8 @@
 			<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
 		</DIV>
 		<script>
-			new Aurora.TextField('textField',{
+			new Aurora.TextField({
+				id:'textField',
 				emptyText : '城市名(可不填)'
 			});			
 		</script>
@@ -40,7 +41,8 @@
 			<INPUT class="item-textField" atype="field.input"  style="width: 147px;" name="hotal" autocomplete="off" value="" />
 		</DIV>
 		<script>
-			new Aurora.TextField('textFieldNotBlank',{
+			new Aurora.TextField({
+				id : 'textFieldNotBlank',
 				notBlank : true
 			});
 		</script>
@@ -55,7 +57,8 @@
 			<INPUT class="item-textField" atype="field.input" style="width: 127px;" readonly="true" name="date" value="只读TextField" autocomplete="off"/>
 		</DIV>
 		<script>
-			new Aurora.TextField('textFieldReadOnly',{
+			new Aurora.TextField({
+				id:'textFieldReadOnly',
 				readOnly : true
 			});
 		</script>
