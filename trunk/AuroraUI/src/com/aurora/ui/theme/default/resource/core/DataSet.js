@@ -290,21 +290,20 @@ Aurora.Record.Field.prototype = {
 	clear : function(){
 		this.pro = {};	
 	},
+	setPropertity : function(value,type){
+		var op = this.pro[type];
+		if(op !== value){
+			this.pro[type] = value;
+			this.record.onFieldChange(this.name, type, value);
+		}
+	},
 	setRequired : function(r){
-		var op = this.pro['required'];
-		if(op !== r){
-			this.pro['required'] = r;
-			this.record.onFieldChange(this.name, 'required', r);
-		}
+		this.setPropertity(r, 'required');
 	},
-	setReadOnly : function(r){		
-		var op = this.pro['readonly'];
-		if(op !== r){
-			this.pro['readonly'] = r;
-			this.record.onFieldChange(this.name,'readonly', r);
-		}
+	setReadOnly : function(r){	
+		this.setPropertity(r, 'readonly');
 	},
-	setOptions : function(ds){
-		
+	setOptions : function(r){
+		this.setPropertity(r, 'options');
 	}
 }
