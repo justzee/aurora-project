@@ -7,7 +7,7 @@ Aurora.Window = Ext.extend(Ext.util.Observable,{
         config = config || {};
         Ext.apply(this, config);
         sf.id = Ext.id();
-        Aurora.Field.superclass.constructor.call(sf);
+        Aurora.Window.superclass.constructor.call(sf);
         sf.initComponent();
         sf.initEvents();
     },

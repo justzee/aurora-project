@@ -1,7 +1,7 @@
 Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
-	constructor: function(elId, config) {
+	constructor: function(config) {
 		this.config = config;
-        Aurora.DatePicker.superclass.constructor.call(this, elId, config);        
+        Aurora.DatePicker.superclass.constructor.call(this, config);        
     },
     initComponent : function(){
     	Aurora.DatePicker.superclass.initComponent.call(this);
