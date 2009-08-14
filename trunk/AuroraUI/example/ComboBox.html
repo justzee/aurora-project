@@ -8,6 +8,7 @@
 <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.css" />
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script> 
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Aurora.js"></script>
+<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/DataSet.js"></script>
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Component.js"></script>
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
@@ -23,31 +24,47 @@
 		<SPAN class="item-label" id="city_label" style="float:right">选择框:</SPAN>
 	</TH>
 	<TD width="170">
-		<DIV class="item-wrap item-notBlank" id="comboBox">	
+		<DIV class="item-wrap" id="comboBox">
 			<INPUT class="item-textField" atype="field.input" style="width: 146px;" name="city" autocomplete="off" value="选择城市名" />
 			<DIV class="item-trigger item-comboButton" atype="triggerfield.trigger" hideFocus title="选择城市"></DIV>
+			
 			<DIV class="item-popup item-comboBox-view" atype="triggerfield.popup" style="display:none;width:170px;">
 				
 			</DIV>
 			<INPUT type="hidden"/>
 		</DIV>
 		<script>
-			new Aurora.ComboBox('comboBox',{
+			var data = [
+				{data:{code:'北京',value:1}},
+				{data:{code:'上海',value:2}},
+				{data:{code:'天津',value:3}},
+				{data:{code:'广州',value:4}},
+				{data:{code:'重庆',value:5}},
+				{data:{code:'沈阳',value:7}},
+				{data:{code:'深圳深圳深圳深圳深圳深圳深圳深圳深圳深圳1',value:8}}
+			]
+			var dataset = new Aurora.DataSet(data);
+
+			var data2 = [
+				{data:{code:'北京',value:1}},
+				{data:{code:'上海',value:2}},
+				{data:{code:'天津',value:3}},
+				{data:{code:'广州',value:4}}
+			]
+			var dataset2 = new Aurora.DataSet(data2);
+
+			new Aurora.ComboBox({
+				id:'comboBox',
 				valueField:'value',
 				displayField:'code',
-				dataModel:[{code:'北京',value:1},
-				          {code:'上海',value:2},
-				          {code:'天津',value:3},
-				          {code:'广州',value:4},
-				          {code:'重庆',value:5},
-				          {code:'武汉',value:6},
-				          {code:'沈阳',value:7},
-				          {code:'深圳深圳深圳深圳深圳深圳深圳深圳深圳深圳',value:8}]
+				options:dataset
 			});
 		</script>	
 	</TD>	
 </TR>
 </TBODY>
 </TABLE> 
+ <input type="button" value="dataset2" onclick="comboBox.setOptions(dataset2)">
+ <input type="button" value="dataset" onclick="comboBox.setOptions(dataset)">
  </BODY>
 </HTML>
