@@ -79,6 +79,9 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         }
         this.fireEvent("remove", this, record, index);
     },
+    getAll : function(){
+    	return this.data;    	
+    },
     removeAll : function(){
     	this.currentIndex = 0;
         this.data = [];

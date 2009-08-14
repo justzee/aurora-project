@@ -1,26 +1,35 @@
 Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {	
-	maxHeight:300,
-	miniHeight:20,
+	maxHeight:200,
 	blankOption:true,
-	selectedClass:'item-comboBox-li-selected',	
-	constructor : function(elId, config) {	
-		Aurora.ComboBox.superclass.constructor.call(this, elId, config);		
-		this.valueField=config.valueField;
-		this.displayField=config.displayField;
-		//debugger;
-		this.dataModel=config.dataModel||[];		
+	rendered:false,
+	selectedClass:'item-comboBox-selected',	
+	constructor : function(config) {	
+		Aurora.ComboBox.superclass.constructor.call(this, config);
+		this.initOptions = this.options;
+		//if(this.options) this.setOptions(this.options);
 	},	
 	onTriggerClick : function() {
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
 		this.doQuery('',true);		
 	},
+	setOptions : function(ds){
+		if(this.options != ds){
+			this.rendered = false;
+			this.options = ds;
+		}
+	},
 	onRender:function(){			
         if(!this.view){
-			this.initView();			
+        	this.view=new Aurora.Element(document.createElement('ul'));
 			this.view.on('click', this.onViewClick,this);
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
-			for(var i=0,widthArray=[],l=this.dataModel.length;i<l;i++){
+        }
+        if(!this.rendered && this.options){        	
+			this.initList();
+			var l = this.options.getAll().length;
+			var widthArray = [];
+			for(var i=0;i<l;i++){
 				var li=this.view.dom.childNodes[i];
 				var width=Aurora.TextMetrics.measure(li,li.innerHTML).width;
 				widthArray.push(width);
@@ -30,12 +39,13 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 //				this.popup.setWidth(this.wrap.getWidth());
 			}else{
 				widthArray=widthArray.sort(function(a,b){return a-b});
-				var maxWdith=widthArray[l-1]+30;			
+				var maxWdith=widthArray[l-1]+20;			
 				this.popup.setWidth(Math.max(this.wrap.getWidth(),maxWdith));
 				if(this.popup.getHeight()>this.maxHeight){				
 					this.popup.setHeight(this.maxHeight);
 				}
-			}	
+			}
+			this.rendered = true;
 		}       
 	},
 	onViewClick:function(e,t){		
@@ -78,21 +88,22 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		//值过滤先不添加
 		this.onRender();	
 	},
-	initView: function(){		
-		this.view=new Aurora.Element(document.createElement('ul'));		
+	initList: function(){	
+		this.refresh();
 		this.litp=new Aurora.Template('<li tabIndex="{index}" value="{'+this.valueField+'}">{'+this.displayField+'}</li>');
-		var l=this.dataModel.length;
+		var datas = this.options.getAll();
+		var l=datas.length;
 		for(var i=0;i<l;i++){			
-			var d = Aurora.apply(this.dataModel[i], {index:i})
+			var d = Aurora.apply(datas[i].data, {index:i})
 			this.litp.append(this.view,d);	//等数据源明确以后再修改		
 		}
 		if(l!=0){
 			this.view.appendTo(this.popup);	
 		}
 	},
-	refresh:function(){//dataModel中触发		
+	refresh:function(){
 		this.view.update('');
-		this.view=null;		
+		this.selectedIndex = null;
 	},
 	select:function(index){
 		if(Aurora.isEmpty(index)){
@@ -132,9 +143,24 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		v=(v === null || v === undefined ? '' : v);
 		return v;
 	},
-	setValue:function(v){		
+	setValue:function(v){
+		Aurora.ComboBox.superclass.setValue.call(this, v);
 		v=(v === null || v === undefined ? '' : v);
         this.wrap.child('input[type=hidden]').dom.value = v;
         this.value=v;
-	}
+	},
+	setDefault : function(){
+    	Aurora.ComboBox.superclass.setDefault.call(this);
+    	if(this.initOptions) {
+    		this.setOptions(this.initOptions)
+    	}
+    },
+	initMeta : function(ds, field){
+		Aurora.ComboBox.superclass.initMeta.call(this, ds, field);
+		var p = field.snap;
+		var options = p['options'];
+		if(options) {
+			this.setOptions(options);			
+		}  	
+    }
 });
