@@ -38,6 +38,7 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     	this.popup.show();
     },
     onTriggerClick : function(){
+    	if(this.readOnly) return;
     	this.el.focus();
     	if(this.isExpanded()){
     		this.collapse();

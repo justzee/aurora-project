@@ -9,7 +9,10 @@ Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
     	this.dateField.on("select", this.onSelect, this);
     },
     onSelect: function(dateField, date){
-    	this.setValue(date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate())
+    	this.setValue(date)
     	this.collapse();
+    },
+    formatValue : function(date){
+    	return date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()
     }
 });
