@@ -2,6 +2,8 @@ Aurora.AUTO_ID = 1000;
 Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	constructor: function(datas,fields) {
     	this.data = [];
+    	this.qpara = {};
+    	this.spara = {};
     	this.fields = {};
     	this.currentIndex = 0;
     	this.modified = [];
@@ -119,11 +121,23 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     
     /** ------------------ajax函数------------------ **/
-    query : function(url,para){
-    	Aurora.request(url, para, this.onLoadSuccess, this.onLoadFailed, this);
+    setQueryParameter : function(para, value){
+        this.qpara[para] = value;
     },
-    submit : function(url,para){
-    	Aurora.request(url, para, this.onSubmitSuccess, this.onSubmitFailed, this);
+    setSubmitParameter : function(para, value){
+        this.spara[para] = value;
+    },
+    query : function(url){
+    	Aurora.request(url, this.qpara, this.onLoadSuccess, this.onLoadFailed, this);
+    },
+    submit : function(url){
+    	var datas = [];
+    	for(var i=0,l=this.data.length;i<l;i++){
+    		var r = this.data[i];
+	    	datas.push(r.data);
+    	}
+    	alert(Ext.util.JSON.encode(datas));
+    	//Aurora.request(url, this.spara, this.onSubmitSuccess, this.onSubmitFailed, this);
     },
     
     /** ------------------事件函数------------------ **/
@@ -147,7 +161,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.loadData(res.result.list.record)
     },
     onLoadFailed : function(res){
-    	alert(res);
+    	
     },
     onFieldChange : function(record,field,type,value) {
     	this.fireEvent('fieldchange', this, record, field, type, value)
@@ -234,7 +248,13 @@ Aurora.Record.prototype = {
     	var field = this.getMeta().getField(name);
     	this.ds.onFieldChange(this, field, type, value);
     },
+    onFieldClear : function(name){
+    	this.ds.onMetaChange(this,meta, type, value);
+    },
     onMetaChange : function(meta, type, value){
+    	this.ds.onMetaChange(this,meta, type, value);
+    },
+    onMetaClear : function(){
     	this.ds.onMetaChange(this,meta, type, value);
     }
 }
@@ -291,7 +311,8 @@ Aurora.Record.Field = function(c){
 };
 Aurora.Record.Field.prototype = {
 	clear : function(){
-		this.pro = {};	
+		this.pro = {};
+		this.record.onFieldClear(this.name);
 	},
 	setPropertity : function(value,type){
 		var op = this.pro[type];
