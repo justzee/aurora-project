@@ -17,6 +17,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.rendered = false;
 			this.options = ds;
 		}
+		this.setValue(this.value, false)
 	},
 	onRender:function(){			
         if(!this.view){
@@ -143,11 +144,17 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		v=(v === null || v === undefined ? '' : v);
 		return v;
 	},
-	setValue:function(v){
-		Aurora.ComboBox.superclass.setValue.call(this, v);
-		v=(v === null || v === undefined ? '' : v);
+	setValue:function(v, silent){
+		var r = this.options.find(this.valueField, v);
+		var dis = '';
+		if(r != null){
+			dis = r.get(this.displayField);
+		}else{
+			v = ''
+		}
         this.wrap.child('input[type=hidden]').dom.value = v;
-        this.value=v;
+        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
+		this.setRawValue(dis);
 	},
 	setDefault : function(){
     	Aurora.ComboBox.superclass.setDefault.call(this);
@@ -160,7 +167,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		var p = field.snap;
 		var options = p['options'];
 		if(options) {
-			this.setOptions(options);			
+			this.setOptions(options);
 		}  	
     }
 });

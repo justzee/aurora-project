@@ -70,7 +70,7 @@
 		<TD width="170">
 
 			<DIV class="item-wrap" id="name">
-				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
 			</DIV>
 			<script>
 				var name = new Aurora.TextField({
@@ -87,7 +87,7 @@
 		<TD width="170">
 
 			<DIV class="item-wrap" id="age">
-				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
 			</DIV>
 			<script>
 				var age = new Aurora.TextField({
@@ -179,7 +179,9 @@
 			<input type="button" value="姓名非只读" onclick="setReadOnly(false)">
 			<input type="button" value="只读" onclick="setRecordReadOnly(true)">
 			<input type="button" value="非只读" onclick="setRecordReadOnly(false)">
-			<input type="button" value="城市1" onclick="setOptions1()">
+			<input type="button" value="城市" onclick="setOptions1()">
+			<input type="button" value="清除" onclick="ds.getCurrentRecord().getMeta().clear();ds.getCurrentRecord().getMeta().getField('city').clear();">
+			<input type="button" value="提交" onclick="ds.submit('test')">
 		</TD>
 	</TR>
 	</TBODY>
@@ -221,7 +223,7 @@
 		<TD width="170">
 
 			<DIV class="item-wrap" id="name2">
-				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
 			</DIV>
 			<script>
 				var name = new Aurora.TextField({
@@ -238,7 +240,7 @@
 		<TD width="170">
 
 			<DIV class="item-wrap" id="age2">
-				<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
 			</DIV>
 			<script>
 				var age = new Aurora.TextField({

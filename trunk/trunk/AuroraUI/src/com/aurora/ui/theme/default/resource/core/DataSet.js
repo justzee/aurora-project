@@ -84,6 +84,17 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     getAll : function(){
     	return this.data;    	
     },
+    find : function(property, value){
+    	var r = null;
+    	this.each(function(record){
+    		var v = record.get(property);
+    		if(v ==value){
+    			r = record;
+    			return false;    			
+    		}
+    	}, this)
+    	return r;
+    },
     removeAll : function(){
     	this.currentIndex = 0;
         this.data = [];
@@ -249,13 +260,14 @@ Aurora.Record.prototype = {
     	this.ds.onFieldChange(this, field, type, value);
     },
     onFieldClear : function(name){
-    	this.ds.onMetaChange(this,meta, type, value);
+    	var field = this.getMeta().getField(name);
+    	this.ds.onFieldChange(this, field);
     },
     onMetaChange : function(meta, type, value){
     	this.ds.onMetaChange(this,meta, type, value);
     },
-    onMetaClear : function(){
-    	this.ds.onMetaChange(this,meta, type, value);
+    onMetaClear : function(meta){
+    	this.ds.onMetaChange(this,meta);
     }
 }
 Aurora.Record.Meta = function(r){
@@ -265,6 +277,7 @@ Aurora.Record.Meta = function(r){
 Aurora.Record.Meta.prototype = {
 	clear : function(){
 		this.pro = {};
+		this.record.onMetaClear(this);
 	},
 	getField : function(name){
     	var f = this.record.fields[name];
