@@ -83,7 +83,8 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.fireEvent("blur", this);
     },
     
-    setValue : function(v){
+    setValue : function(v,silent){
+    	Aurora.Field.superclass.setValue.call(this,v ,silent);
     	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
             this.wrap.removeClass(this.emptyTextCss);
         }
