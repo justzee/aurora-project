@@ -1,12 +1,12 @@
 Aurora.Component = Ext.extend(Ext.util.Observable,{
 	constructor: function(config) {
-        config = config || {};
-        Ext.apply(this, config);
         this.id = config.id;
         window[this.id] = this;
         Aurora.Component.superclass.constructor.call(this);
     },
-    initComponent : function(){    	
+    initComponent : function(config){ 
+		config = config || {};
+        Ext.apply(this, config);
     },
     initEvents : function(){
     	this.addEvents('focus','blur','change','invalid','valid');    	
@@ -17,7 +17,7 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     		name:name
     	}
     	ds.on('metachange', this.onRefresh, this);
-    	ds.on('fieldchange', this.onFieldChange, this)
+    	ds.on('fieldchange', this.onFieldChange, this);
     	ds.on('indexchange', this.onRefresh, this);
     },
     onRefresh : function(ds){
