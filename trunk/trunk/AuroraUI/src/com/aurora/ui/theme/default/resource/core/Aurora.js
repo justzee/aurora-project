@@ -7,6 +7,7 @@ Aurora.Template = Ext.Template
 Aurora.apply = Ext.apply;
 Aurora.isEmpty = Ext.isEmpty;
 Aurora.fly = Ext.fly;
+Aurora.get= Ext.get;
 
 Aurora.winContainers = [];
 
