@@ -2,8 +2,7 @@ Aurora.CheckBox = Ext.extend(Aurora.Component,{
 	readOnly:false,	
 	checked:false,
 	constructor: function(config){
-		Aurora.CheckBox.superclass.constructor.call(this,config);	
-	    this.initConfig=config;
+		Aurora.CheckBox.superclass.constructor.call(this,config);	    
 		this.initComponent(config);
 		this.initEvents();
 	},
@@ -18,15 +17,8 @@ Aurora.CheckBox = Ext.extend(Aurora.Component,{
 		Aurora.CheckBox.superclass.initEvents.call(this);
 		if (!this.readOnly) {
 			this.el.on('click',function(){
-				if(this.checked){
-					this.el.removeClass('item-checkbox-c');
-					this.el.addClass('item-checkbox-u');
-					this.checked=false;			
-				}else{
-					this.el.removeClass('item-checkbox-u');	
-					this.el.addClass('item-checkbox-c');
-					this.checked=true;							
-				}
+				this.checked=this.checked?false:true;				
+				this.setClass();
 				this.fireEvent('click',this,this.checked);
 			},this);
 		}    	
@@ -34,17 +26,9 @@ Aurora.CheckBox = Ext.extend(Aurora.Component,{
 	},
 	setValue:function(v){	
 		if(typeof(v)==='boolean'){
-			if(v){
-				this.checked=true;
-			}else{
-				this.checked=false;
-			}
-		}else{					
-			if(v===this.checkValue){
-				this.checked=true;
-			}else{
-				this.checked=false;
-			}
+			this.checked=v?true:false;			
+		}else{
+			this.checked=v===this.checkValue?true:false;
 		}
 		this.setClass();
 		this.value=this.checked==true?this.checkValue:this.unCheckValue;
@@ -55,11 +39,7 @@ Aurora.CheckBox = Ext.extend(Aurora.Component,{
 	},
 	setReadOnly:function(b){
 		if(typeof(b)==='boolean'){
-			if(b){
-				this.readOnly=true;
-			}else{
-				this.readOnly=false;	
-			}
+			this.readOnly=b?true:false;			
 		}
 		this.setClass();
 	},
