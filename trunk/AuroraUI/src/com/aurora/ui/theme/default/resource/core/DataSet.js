@@ -297,6 +297,8 @@ Aurora.Record.Meta.prototype = {
     	if(df) pro = Ext.apply(pro, df.pro);
     	pro = Ext.apply(pro, this.pro);
     	pro = Ext.apply(pro, f.pro);
+    	delete pro.name;
+		delete pro.type;
     	f.snap = pro;
     	return f;
     },

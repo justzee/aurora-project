@@ -1,8 +1,7 @@
-
-
 .item-checkbox {
 	width:13px;
-	height:13px;	
+	height:13px;
+	font-size:0pt;
     background-image: url('checkbox.gif');
 }
 
@@ -11,7 +10,7 @@
 }
 
 .item-checkbox-c {
-	background-position:0px -13px;	
+	background-position:0px -13px;
 }
 
 .item-checkbox-readonly-u {

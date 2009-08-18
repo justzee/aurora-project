@@ -1,11 +1,10 @@
 Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
 	constructor: function(config) {
-		this.config = config;
         Aurora.DatePicker.superclass.constructor.call(this, config);        
     },
-    initComponent : function(){
-    	Aurora.DatePicker.superclass.initComponent.call(this);
-    	this.dateField = new Aurora.DateField(this.popup, this.config);
+    initComponent : function(config){
+    	Aurora.DatePicker.superclass.initComponent.call(this,config);
+    	this.dateField = new Aurora.DateField(this.popup, config);
     	this.dateField.on("select", this.onSelect, this);
     },
     onSelect: function(dateField, date){

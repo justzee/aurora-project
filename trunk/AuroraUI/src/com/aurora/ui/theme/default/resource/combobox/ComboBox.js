@@ -3,21 +3,27 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	blankOption:true,
 	rendered:false,
 	selectedClass:'item-comboBox-selected',	
-	constructor : function(config) {	
-		Aurora.ComboBox.superclass.constructor.call(this, config);
-		this.initOptions = this.options;
-		//if(this.options) this.setOptions(this.options);
-	},	
+	constructor : function(config) {
+		Aurora.ComboBox.superclass.constructor.call(this, config);		
+	},
+	initComponent:function(config){
+		Aurora.ComboBox.superclass.initComponent.call(this, config);
+		if(config.options) this.setOptions(config.options);
+	},
+	initEvents:function(){
+		Aurora.ComboBox.superclass.initEvents.call(this);  
+	},
 	onTriggerClick : function() {
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
-		this.doQuery('',true);		
+		this.doQuery('',true);
 	},
 	setOptions : function(ds){
-		if(this.options != ds){
-			this.rendered = false;
+		if(this.currentOptions != ds){
 			this.options = ds;
+			this.rendered = false;
+			this.currentOptions = ds;
 		}
-		this.setValue(this.value, false)
+		if(this.value)this.setValue(this.value, true)
 	},
 	onRender:function(){			
         if(!this.view){
@@ -26,7 +32,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
         }
-        if(!this.rendered && this.options){        	
+        if(!this.rendered && this.options){
 			this.initList();
 			var l = this.options.getAll().length;
 			var widthArray = [];
@@ -94,7 +100,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.litp=new Aurora.Template('<li tabIndex="{index}" value="{'+this.valueField+'}">{'+this.displayField+'}</li>');
 		var datas = this.options.getAll();
 		var l=datas.length;
-		for(var i=0;i<l;i++){			
+		for(var i=0;i<l;i++){
 			var d = Aurora.apply(datas[i].data, {index:i})
 			this.litp.append(this.view,d);	//等数据源明确以后再修改		
 		}
@@ -144,7 +150,8 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		v=(v === null || v === undefined ? '' : v);
 		return v;
 	},
-	setValue:function(v, silent){
+	initDisplay : function(){
+		var v = this.getValue();
 		var r = this.options.find(this.valueField, v);
 		var dis = '';
 		if(r != null){
@@ -152,22 +159,11 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		}else{
 			v = ''
 		}
-        this.wrap.child('input[type=hidden]').dom.value = v;
-        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
 		this.setRawValue(dis);
 	},
-	setDefault : function(){
-    	Aurora.ComboBox.superclass.setDefault.call(this);
-    	if(this.initOptions) {
-    		this.setOptions(this.initOptions)
-    	}
-    },
-	initMeta : function(ds, field){
-		Aurora.ComboBox.superclass.initMeta.call(this, ds, field);
-		var p = field.snap;
-		var options = p['options'];
-		if(options) {
-			this.setOptions(options);
-		}  	
-    }
+	setValue:function(v,silent){
+        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
+//        this.wrap.child('input[type=hidden]').dom.value = v;
+		this.initDisplay();
+	}
 });
