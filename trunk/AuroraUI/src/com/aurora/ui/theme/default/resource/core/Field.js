@@ -91,7 +91,6 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
             this.wrap.removeClass(this.emptyTextCss);
         }
-        this.value = v;
         this.el.dom.value = this.formatValue((v === null || v === undefined ? '' : v));
         this.validate();
         this.applyEmptyText();
