@@ -5,6 +5,7 @@
 	<title>Panel</title>
  <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/core/Aurora.css" />
  <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/textfield/TextField.css" /> 
+ <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/checkbox/CheckBox.css" />
 <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.css" />
 <link type="text/css" rel="stylesheet" href="../src/com/aurora/ui/theme/default/resource/datefield/DateField.css" />
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/ext-core.js"></script>
@@ -17,6 +18,7 @@
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.js"></script>
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DateField.js"></script>
 <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DatePicker.js"></script>
+ <script type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/checkbox/CheckBox.js"></script>
     </head>
     <body >
 	<script>
@@ -45,17 +47,16 @@
 			]
 		var cds3 = new Aurora.DataSet(cdata3);
 
-
 		var data = [
-			{data:{name:'张A',age:15, city:1, birth:new Date()},field:[{name:'name',type:'string',readonly:true}]},
-			{data:{name:'张B',age:16, city:2, birth:new Date()}},
-			{data:{name:'张C',age:17, city:3, birth:new Date()}},
-			{data:{name:'张D',age:18, city:4, birth:new Date()},field:[{name:'city',type:'int',options:cds2}]}
+			{data:{name:'张A',age:15, city:1, birth:new Date(),flag:'Y'},field:[{name:'flag',readonly:true},{name:'name',type:'string',readonly:true}]},
+			{data:{name:'张B',age:16, city:2, birth:new Date(),flag:'N'}},
+			{data:{name:'张C',age:17, city:3, birth:new Date(),flag:'N'}},
+			{data:{name:'张D',age:18, city:4, birth:new Date(),flag:'Y'},field:[{name:'city',type:'int',required:true,options:cds2}]}
 		]
 
 		var field = [
 			{name:'name', type:'string',required:true},
-			{name:'birth', type:'date',readonly:true}
+			{name:'birth', type:'date'}
 		]
 		var ds = new Aurora.DataSet(data,field);
 
@@ -97,6 +98,7 @@
 			</script>
 		</TD>
 	</TR>
+	
 	<TR height="25">
 		<TH scope="row" width="75">
 			<SPAN class="item-label" style="float:right">城市:</SPAN>
@@ -161,6 +163,26 @@
 			</script>
 		</TD>
 	</TR>
+	<tr>
+		<TH scope="row" width="75">
+			<SPAN class="item-label" id="date_label" style="float:right">是否校验</SPAN>
+		</TH>
+		<td>
+			<DIV class="" id="checkBox">
+				<DIV class="item-checkbox" atype="checkbox">
+				</DIV>
+				<INPUT type="hidden"/>
+			</DIV>
+			<script type="text/javascript">                    	              
+				new Aurora.CheckBox({
+					id: 'checkBox',
+					checkValue:'Y',
+					unCheckValue:'N'					
+				});
+				checkBox.bind(ds,'flag');								
+			</script>
+		</td>
+	</tr>
 	</TBODY>
 	</TABLE>
 	<TABLE cellSpacing="0" cellPadding="0">
