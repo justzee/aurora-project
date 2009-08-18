@@ -1,80 +1,59 @@
 Aurora.CheckBox = Ext.extend(Aurora.Component,{
 	readOnly:false,	
-	checked:false,
+	checkedCss:'item-checkbox-c',
+	uncheckedCss:'item-checkbox-u',
+	readonyCheckedCss:'item-checkbox-readonly-c',
+	readonlyUncheckedCss:'item-checkbox-readonly-u',
 	constructor: function(config){
-		Aurora.CheckBox.superclass.constructor.call(this,config);	    
-		this.initComponent(config);
-		this.initEvents();
+		config.checked = config.checked || false;
+		config.readonly = config.readonly || false;
+		Aurora.CheckBox.superclass.constructor.call(this,config);
 	},
 	initComponent:function(config){
-		Aurora.CheckBox.superclass.initComponent.call(this, config);	
-		this.checked=config.value==this.checkValue?true:false;		
+		Aurora.CheckBox.superclass.initComponent.call(this, config);
 		this.wrap=Aurora.get(this.id);
-		this.el=this.wrap.child('div[atype=checkbox]');	
-		this.setClass();
+		this.el=this.wrap.child('div[atype=checkbox]');
 	},
 	initEvents:function(){
 		Aurora.CheckBox.superclass.initEvents.call(this);
-		if (!this.readOnly) {
-			this.el.on('click',function(){
+		this.el.on('click',function(){
+			if(!this.readonly){
 				this.checked=this.checked?false:true;				
-				this.setClass();
+				this.setValue(this.checked);
 				this.fireEvent('click',this,this.checked);
-			},this);
-		}    	
+			}
+		},this);  	
 		this.addEvents('click');    
 	},
-	setValue:function(v){	
+	setValue:function(v, silent){
 		if(typeof(v)==='boolean'){
 			this.checked=v?true:false;			
 		}else{
-			this.checked=v===this.checkValue?true:false;
+			this.checked= v===this.checkValue ? true: false;
 		}
-		this.setClass();
-		this.value=this.checked==true?this.checkValue:this.unCheckValue;
+		this.initStatus();
+		var value =this.checked==true?this.checkValue:this.unCheckValue;
 		this.wrap.child('input[type=hidden]').dom.value=this.value;
+		Aurora.CheckBox.superclass.setValue.call(this,value, silent);
 	},
 	getValue:function(){
 		return this.value;
 	},
 	setReadOnly:function(b){
 		if(typeof(b)==='boolean'){
-			this.readOnly=b?true:false;			
+			this.readonly=b?true:false;			
 		}
-		this.setClass();
+		this.initStatus();
 	},
-	onRefresh:function(ds){
-		var record = ds.getCurrentRecord();
-		var value = record.get(this.bind.name);
-		var field = record.getMeta().getField(this.bind.name);
-		var config={};
-		Ext.apply(field.snap,{value:value});
-		Ext.apply(config,this.initConfig);		
-		Ext.apply(config, field.snap);			
-		this.initComponent(config);
-	},	
-	/*
-	 * private
-	 */
-	setClass:function(){
-		this.el.removeClass('item-checkbox-c');
-		this.el.removeClass('item-checkbox-u');
-		this.el.removeClass('item-checkbox-readonly-c');
-		this.el.removeClass('item-checkbox-readonly-u');
-		if (this.readOnly) {
-			if (this.checked) {				
-				this.el.addClass('item-checkbox-readonly-c');
-			}
-			else {			
-				this.el.addClass('item-checkbox-readonly-u');
-			}
+	initStatus:function(){
+		this.el.removeClass(this.checkedCss);
+		this.el.removeClass(this.uncheckedCss);
+		this.el.removeClass(this.readonyCheckedCss);
+		this.el.removeClass(this.readonlyUncheckedCss);
+		if (this.readonly) {				
+			this.el.addClass(this.checked ? this.readonyCheckedCss : this.readonlyUncheckedCss);			
 		}else{
-			if (this.checked) {				
-				this.el.addClass('item-checkbox-c');
-			}
-			else {			
-				this.el.addClass('item-checkbox-u');
-			}
+			this.el.addClass(this.checked ? this.checkedCss : this.uncheckedCss);
 		}		
 	}			
 });

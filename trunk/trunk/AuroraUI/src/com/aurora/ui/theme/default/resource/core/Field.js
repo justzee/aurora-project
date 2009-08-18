@@ -7,18 +7,17 @@ Aurora.Field = Ext.extend(Aurora.Component,{
 	emptyTextCss:'item-emptyText',
 	invalidCss:'item-invalid',
 	constructor: function(config) {
-		this.oldRequired = config.required || false;
-		this.oldReadOnly = config.readOnly || false;
-        Aurora.Field.superclass.constructor.call(this, config);       
-        this.initComponent();
-        this.initEvents();
+		config.required = config.required || false;
+		config.readonly = config.readonly || false;
+        Aurora.Field.superclass.constructor.call(this, config);
     },
-    initComponent : function(){
-    	Aurora.Field.superclass.initComponent.call(this);
+    initComponent : function(config){
+    	Aurora.Field.superclass.initComponent.call(this, config);
         this.wrap = Ext.get(this.id);
         this.el = this.wrap.child('input[atype=field.input]'); 
     	this.originalValue = this.getValue();
     	this.applyEmptyText();
+    	this.initStatus();
     },
     initEvents : function(){
     	Aurora.Field.superclass.initEvents.call(this);
@@ -32,6 +31,10 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.el.on("mouseover", this.onMouseOver, this);
         this.el.on("mouseout", this.onMouseOut, this);
     	
+    },
+    initStatus : function(){
+    	this.setRequired(this.required);
+    	this.setReadOnly(this.readonly);
     },
     onMouseOver : function(e){
     	//Aurora.ToolTip.show(this.id, "测试");
@@ -56,7 +59,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
       this.fireEvent("keydown", this, e);
     },
     onFocus : function(e){
-    	if(this.readOnly) return;
+    	if(this.readonly) return;
         if(!this.hasFocus){
             this.hasFocus = true;
             this.startValue = this.getValue();
@@ -83,8 +86,8 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.fireEvent("blur", this);
     },
     
-    setValue : function(v,silent){
-    	Aurora.Field.superclass.setValue.call(this,v ,silent);
+    setValue : function(v, silent){
+    	Aurora.Field.superclass.setValue.call(this,v, silent);
     	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
             this.wrap.removeClass(this.emptyTextCss);
         }
@@ -104,20 +107,20 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         return v;
     },
     setRequired : function(required){
-    	if(this.required == required)return;
+    	if(this.crrentRequired == required)return;
 		this.clearInvalid();    	
-    	this.required = required;
+    	this.crrentRequired = required;
     	if(required){
     		this.wrap.addClass(this.requiredCss);
     	}else{
     		this.wrap.removeClass(this.requiredCss);
     	}
     },
-    setReadOnly : function(readOnly){
-    	if(this.readOnly == readOnly)return;
-    	this.readOnly = readOnly;
-    	this.el.dom.readOnly = readOnly;
-    	if(readOnly){
+    setReadOnly : function(readonly){ 
+    	if(this.currentReadOnly == readonly)return;
+    	this.currentReadOnly = readonly;
+    	this.el.dom.readonly = readonly;
+    	if(readonly){
     		this.wrap.addClass(this.readOnlyCss);
     	}else{
     		this.wrap.removeClass(this.readOnlyCss);
@@ -130,7 +133,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         }
     },
     validate : function(){
-        if(this.readOnly || this.validateValue(this.getValue())){
+        if(this.readonly || this.validateValue(this.getValue())){
             this.clearInvalid();
             return true;
         }
@@ -190,30 +193,30 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.applyEmptyText();
     },
     focus : function(selectText, delay){
-    	if(this.readOnly) return;
+    	if(this.readonly) return;
     	this.el.dom.focus();
         this.el.dom.select();
     },
     blur : function(){
-    	if(this.readOnly) return;
+    	if(this.readonly) return;
     	this.el.blur();
-    },
-    setDefault : function(){
-    	this.setRequired(this.oldRequired);
-    	this.setReadOnly(this.oldReadOnly);
-    },
-    initMeta : function(ds, field){
-		var p = field.snap;
-		for(var k in p){
-			var v = p[k];
-			switch(k){
-				case 'required':
-					this.setRequired(v);
-					break;
-				case 'readonly':
-					this.setReadOnly(v);
-					break;
-			}
-		}    	
     }
+//    setDefault : function(){
+//    	this.setRequired(this.oldRequired);
+//    	this.setReadOnly(this.oldReadOnly);
+//    },
+//    initMeta : function(ds, field){
+//		var p = field.snap;
+//		for(var k in p){
+//			var v = p[k];
+//			switch(k){
+//				case 'required':
+//					this.setRequired(v);
+//					break;
+//				case 'readonly':
+//					this.setReadOnly(v);
+//					break;
+//			}
+//		}    	
+//    }
 })

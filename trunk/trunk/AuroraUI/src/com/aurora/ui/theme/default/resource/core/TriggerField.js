@@ -2,8 +2,8 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
 	constructor: function(config) {
         Aurora.TriggerField.superclass.constructor.call(this, config);
     },
-    initComponent : function(){
-    	Aurora.TriggerField.superclass.initComponent.call(this);
+    initComponent : function(config){
+    	Aurora.TriggerField.superclass.initComponent.call(this, config);
     	this.trigger = this.wrap.child('div[atype=triggerfield.trigger]'); 
     	this.popup = this.wrap.child('div[atype=triggerfield.popup]'); 
     },
@@ -38,7 +38,7 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     	this.popup.show();
     },
     onTriggerClick : function(){
-    	if(this.readOnly) return;
+    	if(this.readonly) return;
     	this.el.focus();
     	if(this.isExpanded()){
     		this.collapse();
