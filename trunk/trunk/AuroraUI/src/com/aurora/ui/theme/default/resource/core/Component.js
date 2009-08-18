@@ -39,6 +39,7 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     	}
     },
     setValue : function(v, silent){
+    	this.value = v;
     	if(silent === true)return;
     	if(this.binder){
     		this.binder.ds.getCurrentRecord().set(this.binder.name,v);
