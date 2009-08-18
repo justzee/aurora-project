@@ -11,3 +11,6 @@
 	white-space:nowrap;	
 	background-color: #FFF;
 }
+.item-comboBox-current{
+	background-color: #b391db;
+}

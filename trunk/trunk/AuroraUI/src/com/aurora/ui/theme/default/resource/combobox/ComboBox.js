@@ -3,6 +3,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	blankOption:true,
 	rendered:false,
 	selectedClass:'item-comboBox-selected',	
+	currentNodeClass:'item-comboBox-current',
 	constructor : function(config) {
 		Aurora.ComboBox.superclass.constructor.call(this, config);		
 	},
@@ -14,8 +15,19 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		Aurora.ComboBox.superclass.initEvents.call(this);  
 	},
 	onTriggerClick : function() {
-		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
 		this.doQuery('',true);
+		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
+		
+	},
+	expand:function(){
+		Aurora.ComboBox.superclass.expand.call(this);
+		var v=this.getValue();		
+		if (v) {
+			this.currentIndex = this.getIndex(v);			
+			if(this.selectedIndex)Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
+			Ext.fly(this.getNode(this.currentIndex)).addClass(this.currentNodeClass);
+			this.selectedIndex = this.currentIndex;
+		}		
 	},
 	setOptions : function(ds){
 		if(this.currentOptions != ds){
@@ -77,7 +89,9 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.setText(this.text);
 		this.value=target.value;	
 		this.setValue(this.value);		
-		this.el.dom.select();
+		this.el.dom.select();		
+		if(this.currentIndex)
+		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
 	},
 	initQuery:function(){//事件定义中调用
 		this.doQuery(this.getText());
@@ -121,8 +135,8 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			if(!Aurora.isEmpty(this.selectedIndex)){							
 				Aurora.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
 			}
-			this.selectedIndex=node.tabIndex;
-			Aurora.fly(node).addClass(this.selectedClass);		
+			this.selectedIndex=node.tabIndex;			
+			Aurora.fly(node).addClass(this.selectedClass);					
 		}			
 	},
 	getNode:function(index){		
@@ -165,5 +179,14 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
         Aurora.ComboBox.superclass.setValue.call(this, v, silent);
 //        this.wrap.child('input[type=hidden]').dom.value = v;
 		this.initDisplay();
+	},
+	getIndex:function(v){
+		var datas = this.options.getAll();		
+		var l=datas.length;
+		for(var i=0;i<l;i++){
+			if(datas[i].data[this.valueField]===v){				
+				return i;
+			}
+		}		
 	}
 });
