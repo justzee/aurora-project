@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeMapParser;
 import uncertain.composite.DynamicObject;
@@ -39,6 +40,7 @@ public class SchemaFactory  {
 
     public Category[]   CategoryList;
     public CompositeMap	categoryMap ;
+    CompositeLoader     loader = new CompositeLoader();
     //HashMap	 = new HashMap();
     
     public SchemaFactory(String baseDir) { 
@@ -285,7 +287,7 @@ public class SchemaFactory  {
 
 		try{
 	        fis=new FileInputStream(file);
-	        fileMap=CompositeMapParser.parse(fis);
+	        fileMap=loader.loadFromStream(fis);
 	    }catch (Exception e) {
 	        System.out.println("parse file failed : "+file.getName());
 	        return null;
@@ -339,7 +341,7 @@ public class SchemaFactory  {
         File file=getElementFile(prefix,elementName);
         try{
         	fis=new FileInputStream(file);
-        	cm=CompositeMapParser.parse(fis);
+        	cm= loader.loadFromStream(fis);
         }   catch (Exception e){
         	return null;
     	}	finally {
@@ -409,6 +411,10 @@ public class SchemaFactory  {
 		} 
         System.out.println("SchemaFactory inited "+this);
         uncertainEngine.getObjectSpace().registerInstance(SchemaFactory.class, this);
+    }
+    
+    public CompositeLoader getCompositeLoader(){
+        return loader;
     }
  
     public static void main(String args[]) throws SAXException, IOException {

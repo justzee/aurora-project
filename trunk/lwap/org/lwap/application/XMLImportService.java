@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import org.lwap.mvc.ViewCreationException;
 import org.xml.sax.SAXParseException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeMapParser;
 
@@ -21,6 +22,8 @@ import uncertain.composite.CompositeMapParser;
  * 
  */
 public class XMLImportService extends XMLCheckedService {
+    
+    CompositeLoader loader = new CompositeLoader();
 	
 	void printErrorResponse( CompositeMap error) throws IOException {
 		response.setContentType("text/xml");
@@ -42,7 +45,7 @@ public class XMLImportService extends XMLCheckedService {
 
 		try{
 			stream = request.getInputStream();
-			CompositeMap content = CompositeMapParser.parse(stream);			
+			CompositeMap content = loader.loadFromStream(stream);			
 			if( content != null){
 				//System.out.println(content.toXML());
 				//Iterator it = content.getChildIterator();

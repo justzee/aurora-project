@@ -1,7 +1,7 @@
 /*
  * DefaultDOMNodeBuilderTest.java
  *
- * Created on 2001Äê9ÔÂ19ÈÕ, ÉÏÎç3:32
+ * Created on 2001ï¿½ï¿½9ï¿½ï¿½19ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½3:32
  */
 
 package sdom.testcase;
@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import sdom.DOMNode;
 import sdom.DefaultDOMNodeBuilder;
+
 
 /**
  *
