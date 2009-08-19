@@ -24,7 +24,6 @@ public class FileSubstitute implements IFileSubstitute, IGlobalInstance {
     public void addFiles( CompositeMap files ){
         this.mFiles = files;
         CompositeUtil.fillMap(mFileMap, mFiles, "origin_file", "new_file");
-        System.out.println(mFileMap.toString());
     }
     
     public CompositeMap getFiles(){

@@ -46,7 +46,7 @@ public class SchemaModel {
         CompositeMap refElements = new CompositeMap("element-list");
         try{
             fis = new FileInputStream(f);
-            m = CompositeMapParser.parse(fis); 
+            m = fact.getCompositeLoader().loadFromStream(fis);
             m = m.getChild("complexType");
             if(m!=null){
 	            Iterator it = m.getChildIterator();
