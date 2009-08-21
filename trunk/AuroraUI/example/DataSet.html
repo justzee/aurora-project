@@ -59,7 +59,7 @@
 			{name:'birth', type:'date'}
 		]
 		var ds = new Aurora.DataSet(data,field);
-
+		ds.addValidator
 	</script>
 	<br/><br/>
 	<TABLE cellSpacing="0" cellPadding="0">
@@ -192,7 +192,7 @@
 			
 		</TH>
 		<TD>
-			<input type="button" value="第一条" onclick="ds.locate(0)">
+			<input type="button" value="第一条" onclick="ds.locate(1)">
 			<input type="button" value="上一条" onclick="ds.pre()">
 			<input type="button" value="下一条" onclick="ds.next()">
 			<input type="button" value="年龄必输" onclick="setRequired(true)">
@@ -233,6 +233,7 @@
 		}
 
 		var ds2 = new Aurora.DataSet();
+		ds2.setQueryUrl('http://localhost:8080/hec/fnd_prv_login_account_query_control.service')
 	</script>
 
 	<br/><br/><br/><br/>
@@ -240,24 +241,7 @@
 	<TBODY>
 	<TR height="25">
 		<TH scope="row" width="75">
-			<SPAN class="item-label" style="float:right">姓名:</SPAN>
-		</TH>
-		<TD width="170">
-
-			<DIV class="item-wrap" id="name2">
-				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
-			</DIV>
-			<script>
-				var name = new Aurora.TextField({
-					id:'name2'
-				});	
-				name.bind(ds2,'name');
-			</script>
-		</TD>
-	</TR>
-	<TR height="25">
-		<TH scope="row" width="75">
-			<SPAN class="item-label" style="float:right">年龄:</SPAN>
+			<SPAN class="item-label" style="float:right">用户名:</SPAN>
 		</TH>
 		<TD width="170">
 
@@ -268,7 +252,58 @@
 				var age = new Aurora.TextField({
 					id:'age2'
 				});	
-				age.bind(ds2,'age');
+				age.bind(ds2,'USER_NAME');
+			</script>
+		</TD>
+	</TR>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">描述:</SPAN>
+		</TH>
+		<TD width="170">
+
+			<DIV class="item-wrap" id="name2">
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var name = new Aurora.TextField({
+					id:'name2'
+				});	
+				name.bind(ds2,'DESCRIPTION');
+			</script>
+		</TD>
+	</TR>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">工号:</SPAN>
+		</TH>
+		<TD width="170">
+
+			<DIV class="item-wrap" id="USER_ID">
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var name = new Aurora.TextField({
+					id:'USER_ID'
+				});	
+				name.bind(ds2,'USER_ID');
+			</script>
+		</TD>
+	</TR>
+	<TR height="25">
+		<TH scope="row" width="75">
+			<SPAN class="item-label" style="float:right">姓名:</SPAN>
+		</TH>
+		<TD width="170">
+
+			<DIV class="item-wrap" id="EMPLOYEE_NAME">
+				<INPUT class="item-textField" atype="field.input" style="width: 167px;" name="city" autocomplete="off" value="" />
+			</DIV>
+			<script>
+				var name = new Aurora.TextField({
+					id:'EMPLOYEE_NAME'
+				});	
+				name.bind(ds2,'EMPLOYEE_NAME');
 			</script>
 		</TD>
 	</TR>
@@ -281,13 +316,22 @@
 			
 		</TH>
 		<TD>
-			<input type="button" value="加载数据" onclick="ds2.query('data.txt')">
-			<input type="button" value="第一条" onclick="ds2.locate(0)">
+			<input type="button" value="加载数据" onclick="ds2.query()">
+			<input type="button" value="第一条" onclick="ds2.first()">
 			<input type="button" value="上一条" onclick="ds2.pre()">
 			<input type="button" value="下一条" onclick="ds2.next()">
+			<input type="button" value="指定页" onclick="gopage()">
+			<input type="button" value="上一页" onclick="ds2.prePage()">
+			<input type="button" value="下一页" onclick="ds2.nextPage()">
 		</TD>
 	</TR>
 	</TBODY>
 	</TABLE>
+	<script>
+		function gopage(){
+			page=prompt('输入页数:',1);
+			ds2.goPage(page)
+		}
+	</script>
 </body>
 </html>

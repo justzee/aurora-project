@@ -25,6 +25,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	this.el.on(Ext.isIE || Ext.isSafari3 ? "keydown" : "keypress", this.fireKey,  this);
     	this.el.on("focus", this.onFocus,  this);
     	this.el.on("blur", this.onBlur,  this);
+    	this.el.on("change", this.onChange, this);
     	this.el.on("keyup", this.onKeyUp, this);
         this.el.on("keydown", this.onKeyDown, this);
         this.el.on("keypress", this.onKeyPress, this);
@@ -41,6 +42,9 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     },
     onMouseOut : function(e){
     	//Aurora.ToolTip.hide();
+    },
+    onChange : function(e){
+    	    
     },
     onKeyUp : function(e){
         this.fireEvent('keyup', this, e);
@@ -125,7 +129,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     		this.wrap.removeClass(this.readOnlyCss);
     	}
     },
-    applyEmptyText : function(){
+    applyEmptyText : function(){    	
         if(this.emptyText && this.getValue().length < 1){
             this.setRawValue(this.emptyText);
             this.wrap.addClass(this.emptyTextCss);
@@ -199,23 +203,10 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     blur : function(){
     	if(this.readonly) return;
     	this.el.blur();
+    },
+    clearValue : function(){
+    	this.setValue('');
+    	this.clearInvalid();
+        this.applyEmptyText();
     }
-//    setDefault : function(){
-//    	this.setRequired(this.oldRequired);
-//    	this.setReadOnly(this.oldReadOnly);
-//    },
-//    initMeta : function(ds, field){
-//		var p = field.snap;
-//		for(var k in p){
-//			var v = p[k];
-//			switch(k){
-//				case 'required':
-//					this.setRequired(v);
-//					break;
-//				case 'readonly':
-//					this.setReadOnly(v);
-//					break;
-//			}
-//		}    	
-//    }
 })
