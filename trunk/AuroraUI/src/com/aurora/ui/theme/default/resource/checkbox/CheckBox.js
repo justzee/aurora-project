@@ -32,18 +32,15 @@ Aurora.CheckBox = Ext.extend(Aurora.Component,{
 			this.checked= v===this.checkValue ? true: false;
 		}
 		this.initStatus();
-		var value =this.checked==true?this.checkValue:this.unCheckValue;
-		this.wrap.child('input[type=hidden]').dom.value=this.value;
+		var value =this.checked==true?this.checkValue:this.unCheckValue;		
 		Aurora.CheckBox.superclass.setValue.call(this,value, silent);
-	},
-	getValue:function(){
-		return this.value;
+		this.wrap.child('input[type=hidden]').dom.value=this.value;
 	},
 	setReadOnly:function(b){
 		if(typeof(b)==='boolean'){
-			this.readonly=b?true:false;			
-		}
-		this.initStatus();
+			this.readonly=b?true:false;	
+			this.initStatus();		
+		}		
 	},
 	initStatus:function(){
 		this.el.removeClass(this.checkedCss);
