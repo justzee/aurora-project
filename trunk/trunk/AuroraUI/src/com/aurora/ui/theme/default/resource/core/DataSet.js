@@ -3,9 +3,14 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	constructor: function(datas,fields) {
     	this.data = [];
     	this.qpara = {};
+    	this.qds = null;
     	this.spara = {};
+    	this.pageSize = 10;
     	this.fields = {};
-    	this.currentIndex = 0;
+    	this.currentPage = 1;
+    	this.currentIndex = 1;
+    	this.totalCount = 0;
+    	this.totalPage = 0;
     	this.modified = [];
     	this.initEvents();
     	if(fields)this.initFields(fields)
@@ -13,9 +18,9 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     initEvents : function(){
     	this.addEvents(
-	        'datachanged',
 	        'metachange',
 	        'fieldchange',
+	        'new',
 	        'add',
 	        'remove',
 	        'update',
@@ -34,20 +39,31 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     getField : function(name){
     	return this.fields[field.name];
     },
-    loadData : function(datas){
-        this.currentIndex = 0;
+    loadData : function(datas, num){
         this.data = [];
         this.modified = [];
+        if(num) {
+        	this.totalCount = num;
+        }else{
+        	this.totalCount = datas.length;
+        }
+    	this.totalPage = Math.ceil(this.totalCount/this.pageSize)
     	for(var i = 0, len = datas.length; i < len; i++){
     		var record = new Aurora.Record(datas[i].data,datas[i].field);
             record.setDataSet(this);
 	        this.data.add(record);
         }
         this.fireEvent("load", this, datas);
-        this.locate(0)
     },
     
-    /** ------------------数据操作------------------ **/    
+    /** ------------------数据操作------------------ **/ 
+    newRecord : function(){
+    	var record = new Aurora.Record({});
+        record.setDataSet(this);
+        this.data.add(record); 
+        this.fireEvent("load", this, record);
+        return record;
+    },
     add : function(records){
         records = [].concat(records);
         if(records.length < 1){
@@ -61,7 +77,8 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         this.fireEvent("add", this, records, index);
     },
     getCurrentRecord : function(){
-    	return this.data[this.currentIndex];
+    	if(this.data.length ==0) return null;
+    	return this.data[this.currentIndex - (this.currentPage-1)*this.pageSize -1];
     },
     insert : function(index, records){
         records = [].concat(records);
@@ -96,7 +113,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	return r;
     },
     removeAll : function(){
-    	this.currentIndex = 0;
+    	this.currentIndex = 1;
         this.data = [];
         this.modified = [];
         this.fireEvent("clear", this);
@@ -119,10 +136,35 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     
     /** ------------------导航函数------------------ **/
     locate : function(index){
-    	if(index != -1 && index < this.data.length) {
-    		this.currentIndex = index;
-    		this.fireEvent("indexchange", this, index);
+    	if(index <=0)return;
+    	if(this.queryUrl){
+    		if(index >(this.currentPage-1)*this.pageSize && index <= Math.min(this.totalCount,this.currentPage*this.pageSize)) {
+	    		this.currentIndex = index;
+	    		this.fireEvent("indexchange", this, index);
+    		}else{
+    			if(index > this.totalCount && this.totalCount != 0) {
+    				index = this.totalCount;
+    			}
+    			this.currentIndex = index;
+    			this.currentPage =  Math.ceil(index/this.pageSize);
+    			this.query(this.url);
+    		}
+    	}else{
+    		if(index >0 && index <= this.data.length) {
+    			this.currentPage =  Math.ceil(index/this.pageSize);
+	    		this.currentIndex = index;    		
+	    		this.fireEvent("indexchange", this, index);
+    		}
     	}
+    },
+    goPage : function(page){
+    	if(page >0) {
+	    	var go = (page-1)*this.pageSize+1;
+	    	this.locate(go);
+    	}
+    },
+    first : function(){
+    	this.locate(1);
     },
     pre : function(){
     	this.locate(this.currentIndex-1);    	
@@ -130,18 +172,48 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     next : function(){
     	this.locate(this.currentIndex+1);
     },
-    
+    prePage : function(){
+    	this.goPage(this.currentPage -1);
+    },
+    nextPage : function(){
+    	this.goPage(this.currentPage +1);
+    },
     /** ------------------ajax函数------------------ **/
+    setQueryUrl : function(url){
+    	this.queryUrl = url;
+    },
     setQueryParameter : function(para, value){
         this.qpara[para] = value;
+    },
+    setQueryDataSet : function(ds){ 
+    	this.qds = ds;
+    },
+    setSubmitUrl : function(url){
+    	this.submitUrl = url;
     },
     setSubmitParameter : function(para, value){
         this.spara[para] = value;
     },
-    query : function(url){
-    	Aurora.request(url, this.qpara, this.onLoadSuccess, this.onLoadFailed, this);
+    query : function(page){
+    	if(!this.queryUrl) return;
+    	if(page){
+    		this.currentPage = page;
+    		this.currentIndex = (page-1)*this.pageSize+1;
+    	}
+    	var q = {};
+    	if(this.qds) {
+	    	var r = this.qds.getCurrentRecord();
+	    	if(r != null)
+	    	Ext.apply(q, r.data);
+    	}
+    	Ext.apply(q, this.qpara);
+    	q['pagesize']= this.pageSize;
+    	q['pagenum']=this.currentPage;
+    	
+    	Aurora.request(this.queryUrl, q, this.onLoadSuccess, this.onLoadFailed, this);
     },
     submit : function(url){
+    	this.submitUrl = url||this.submitUrl;
     	var datas = [];
     	for(var i=0,l=this.data.length;i<l;i++){
     		var r = this.data[i];
@@ -169,10 +241,24 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     
     },
     onLoadSuccess : function(res){
-    	this.loadData(res.result.list.record)
+    	var records = res.result.list.record;
+    	var total = res.result.list.totalCount;
+    	var datas = [];
+    	if(records.length > 0){
+    		for(var i=0,l=records.length;i<l;i++){
+	    		var item = {
+	    			data:records[i]	    		
+	    		}
+    			datas.push(item);
+    		}
+	    	this.loadData(datas, total);
+	    	this.locate(this.currentIndex);
+    	}else if(records.length == 0){
+    		this.removeAll();
+    	}
     },
     onLoadFailed : function(res){
-    	
+    	alert(res.error.message)
     },
     onFieldChange : function(record,field,type,value) {
     	this.fireEvent('fieldchange', this, record, field, type, value)

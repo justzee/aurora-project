@@ -87,8 +87,8 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	onSelect:function(target){
 		this.text=target.innerHTML;			
 		this.setText(this.text);
-		this.value=target.value;	
-		this.setValue(this.value);		
+		this.value=target.val;
+		this.setValue(this.value);	
 		this.el.dom.select();		
 		if(this.currentIndex)
 		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
@@ -111,10 +111,11 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initList: function(){	
 		this.refresh();
-		this.litp=new Aurora.Template('<li tabIndex="{index}" value="{'+this.valueField+'}">{'+this.displayField+'}</li>');
+		this.litp=new Aurora.Template('<li tabIndex="{index}" val="{'+this.valueField+'}">{'+this.displayField+'}</li>');
 		var datas = this.options.getAll();
 		var l=datas.length;
 		for(var i=0;i<l;i++){
+//			debugger
 			var d = Aurora.apply(datas[i].data, {index:i})
 			this.litp.append(this.view,d);	//等数据源明确以后再修改		
 		}
@@ -156,7 +157,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
             this.el.removeClass(this.emptyTextCss);
         }
         this.text = v;
-        this.el.dom.value = v;        
+        this.el.dom.value = v;
         this.applyEmptyText();
 	},
 	getValue : function() {
