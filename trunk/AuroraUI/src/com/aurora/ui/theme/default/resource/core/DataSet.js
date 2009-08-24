@@ -59,8 +59,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     /** ------------------数据操作------------------ **/ 
     newRecord : function(){
     	var record = new Aurora.Record({});
-        record.setDataSet(this);
-        this.data.add(record); 
+        this.add(record); 
         this.fireEvent("load", this, record);
         return record;
     },
@@ -70,6 +69,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
             return;
         }
         for(var i = 0, len = records.length; i < len; i++){
+        	records[i].isNew = true;
             records[i].setDataSet(this);
         }
         var index = this.data.length;
@@ -217,7 +217,9 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	var datas = [];
     	for(var i=0,l=this.data.length;i<l;i++){
     		var r = this.data[i];
-	    	datas.push(r.data);
+    		if(r.dirty || r.isNew){
+		    	datas.push(r.data);    			
+    		}
     	}
     	alert(Ext.util.JSON.encode(datas));
     	//Aurora.request(url, this.spara, this.onSubmitSuccess, this.onSubmitFailed, this);
@@ -277,6 +279,7 @@ Aurora.Record = function(data, fields){
     if(fields)this.initFields(fields);
 };
 Aurora.Record.prototype = {
+	isNew : false,
 	dirty : false,
 	editing : false,
 	modified: null,

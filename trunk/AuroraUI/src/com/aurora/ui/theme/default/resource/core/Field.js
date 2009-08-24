@@ -195,10 +195,13 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.clearInvalid();
         this.applyEmptyText();
     },
-    focus : function(selectText, delay){
+    focus : function(){
     	if(this.readonly) return;
     	this.el.dom.focus();
-        this.el.dom.select();
+    	var sf = this;
+        setTimeout(function(){
+        	sf.el.dom.select();
+        },10)
     },
     blur : function(){
     	if(this.readonly) return;
