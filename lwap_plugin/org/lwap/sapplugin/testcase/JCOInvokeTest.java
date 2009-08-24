@@ -13,6 +13,7 @@ import org.lwap.sapplugin.JcoInvoke;
 import org.lwap.sapplugin.Parameter;
 import org.lwap.sapplugin.SapInstance;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeMapParser;
 import uncertain.ocm.OCManager;
@@ -80,7 +81,8 @@ public class JCOInvokeTest extends TestCase {
         OCManager om = new OCManager();
         om.getClassRegistry().addPackageMapping( new PackageMapping("org.lwap.sapplugin","org.lwap.sapplugin") );
         InputStream is = JCOInvokeTest.class.getClassLoader().getResourceAsStream("org/lwap/sapplugin/testcase/jco_sample.xml");
-        CompositeMap map = CompositeMapParser.parse(is);
+        CompositeLoader loader = new CompositeLoader();
+        CompositeMap map = loader.loadFromStream(is);
         JcoInvoke ji = new JcoInvoke(null);
         om.populateObject(map, ji);
         System.out.println(ji.toString());

@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.lwap.controller.MainService;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeMapParser;
 import uncertain.proc.ProcedureRunner;
 
 /** Parse input stream in JSON format and put into parameter */
@@ -26,8 +26,8 @@ public class XmlInput {
         MainService svc = MainService.getServiceInstance(context);
         HttpServletRequest  request = svc.getRequest();
         InputStream is = request.getInputStream();
-        CompositeMapParser parser = new CompositeMapParser();        
-        CompositeMap map = parser.parseStream(is);
+        CompositeLoader loader = new CompositeLoader();
+        CompositeMap map = loader.loadFromStream(is);
         CompositeMap params = svc.getParameters();
         params.addChild(map);     
     }
