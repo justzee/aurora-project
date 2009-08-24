@@ -22,7 +22,7 @@ public class CompositeMapTest extends TestCase {
      */
     public CompositeMapTest(String arg0) {
         super(arg0);
-        loader = new CompositeLoader(".");
+        loader = new CompositeLoader();
     }
 
     public void testGetText() throws Exception {

@@ -38,7 +38,7 @@ public class UncertainEngineTest extends TestCase {
         
         // Iterate throughout config and replace 'basedir' property with real path
         dir = cls_loader.getResource("uncertain/testcase/core/").getFile();        
-        config = OCManager.defaultParser().parseStream(is);
+        config = OCManager.getDefaultCompositeLoader().loadFromStream(is);
         assertNotNull(config);
         IterationHandle handle = new IterationHandle(){
             

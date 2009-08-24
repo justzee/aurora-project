@@ -46,12 +46,12 @@ public class OCManagerTest extends TestCase {
 		super.setUp();
 		
         InputStream stream = Person.class.getClassLoader().getResourceAsStream("uncertain/testcase/object/PersonTest.xml");
-		person_map = OCManager.defaultParser().parseStream(stream);
+		person_map = OCManager.getDefaultCompositeLoader().loadFromStream(stream);
         System.out.println(person_map.toXML());
 		stream.close();
         
         stream = Database.class.getClassLoader().getResourceAsStream("uncertain/testcase/dbsample/dbschema.xml");
-        database_map = OCManager.defaultParser().parseStream(stream);
+        database_map = OCManager.getDefaultCompositeLoader().loadFromStream(stream);
         stream.close();
 
     }

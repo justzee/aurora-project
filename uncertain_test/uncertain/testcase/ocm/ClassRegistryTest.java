@@ -53,7 +53,7 @@ public class ClassRegistryTest extends TestCase {
 		logger.info("setUp called");
         */
         if(config==null){
-	        config = OCManager.defaultParser().parseStream(getClass().getClassLoader().getResourceAsStream("uncertain/testcase/ocm/ClassRegistryTest.xml"));
+	        config = OCManager.getDefaultCompositeLoader().loadFromStream(getClass().getClassLoader().getResourceAsStream("uncertain/testcase/ocm/ClassRegistryTest.xml"));
 	        assertNotNull(config);
 	        registry = (ClassRegistry)ocManager.createObject(config);	
 	        assertNotNull(registry);

@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeMapParser;
 import uncertain.composite.CompositeUtil;
 
 public class CompositeUtilTest extends TestCase {
@@ -26,7 +26,8 @@ public class CompositeUtilTest extends TestCase {
     
     public void testJoin() throws Exception {
         InputStream is = CompositeUtilTest.class.getClassLoader().getResourceAsStream("uncertain/testcase/composite/join_test.xml");
-        CompositeMap root = CompositeMapParser.parse(is);
+        CompositeLoader loader = new CompositeLoader();
+        CompositeMap root = loader.loadFromStream(is);
         CompositeMap m1 = root.getChild("list1");
         CompositeMap m2 = root.getChild("list2");
         assertNotNull(m1);

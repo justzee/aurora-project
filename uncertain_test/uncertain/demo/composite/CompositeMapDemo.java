@@ -72,7 +72,7 @@ public class CompositeMapDemo {
         URL url = Thread.currentThread().getContextClassLoader().getResource("uncertain/demo/composite");
         if(url==null) throw new IOException();
         String base_path = url.getFile();
-        CompositeLoader loader2 = new CompositeLoader(base_path);
+        CompositeLoader loader2 = CompositeLoader.createInstanceWithBaseDir(base_path);
         CompositeMap mail2 = loader2.loadByFile("MailDemo.xml");
         System.out.println("Load by file:");
         System.out.println(mail2.toXML());
