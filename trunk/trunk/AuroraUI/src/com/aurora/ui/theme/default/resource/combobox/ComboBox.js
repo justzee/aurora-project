@@ -84,9 +84,9 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	onViewMove:function(e,t){	
 		if(this.inKeyMode){ // prevent key nav and mouse over conflicts
             return;
-        }		
+        }
         var index = t.tabIndex;        
-        this.select(index);        
+        this.selectItem(index);        
 	},
 	onSelect:function(target){
 		this.text=target.innerHTML;			
@@ -113,7 +113,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initList: function(){	
 		this.refresh();
-		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valueField+'}">{'+this.displayField+'}</li>');
+		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valueField+'}">&#160;{'+this.displayField+'}</li>');
 		var datas = this.options.getAll();
 		var l=datas.length;
 		for(var i=0;i<l;i++){
@@ -129,7 +129,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.view.update('');
 		this.selectedIndex = null;
 	},
-	select:function(index){
+	selectItem:function(index){
 		if(Aurora.isEmpty(index)){
 			return;
 		}	
