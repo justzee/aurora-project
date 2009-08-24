@@ -9,7 +9,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initComponent:function(config){
 		Aurora.ComboBox.superclass.initComponent.call(this, config);
-		if(config.options!==undefined) this.setOptions(config.options);		
+		if(config.options) this.setOptions(config.options);		
 	},
 	initEvents:function(){
 		Aurora.ComboBox.superclass.initEvents.call(this);  
@@ -37,13 +37,13 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(!Ext.isEmpty(this.value))this.setValue(this.value, true)
 	},
 	onRender:function(){			
-        if(!Ext.isEmpty(this.view)){
+        if(!this.view){
         	this.view=new Aurora.Element(document.createElement('ul'));
 			this.view.on('click', this.onViewClick,this);
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
         }
-        if(this.rendered===false && Ext.isEmpty(this.options)){
+        if(this.rendered===false &&this.options){
 			this.initList();
 			var l = this.options.getAll().length;
 			var widthArray = [];
