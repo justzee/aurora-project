@@ -11,6 +11,9 @@
 	white-space:nowrap;	
 	background-color: #FFF;
 }
+..item-comboBox-view li {
+	height:18px;
+}
 .item-comboBox-current{
 	background-color: #b391db;
 }
