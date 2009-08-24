@@ -28,6 +28,11 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.selectedIndex = this.currentIndex;
 		}		
 	},
+	collapse:function(){
+		Aurora.ComboBox.superclass.collapse.call(this);
+		if(this.currentIndex!==undefined)
+		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
+	},
 	setOptions : function(ds){
 		if(this.currentOptions != ds){
 			this.options = ds;
@@ -71,7 +76,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		    return;
 		}		
 		this.onSelect(t);
-		this.popup.hide();		
+		this.collapse();		
 	},	
 	onViewOver:function(e,t){
 		this.inKeyMode = false;
@@ -89,8 +94,6 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.value=target.itemValue;	
 		this.setValue(this.value);	
 		this.el.dom.select();		
-		if(this.currentIndex!==undefined)
-		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
 	},
 	initQuery:function(){//事件定义中调用
 		this.doQuery(this.getText());
@@ -183,7 +186,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		var datas = this.options.getAll();		
 		var l=datas.length;
 		for(var i=0;i<l;i++){
-			if(datas[i].data[this.valueField]===v){				
+			if(datas[i].data[this.valueField]==v){				
 				return i;
 			}
 		}		
