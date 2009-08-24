@@ -71,7 +71,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.rendered = true;
 		}       
 	},
-	onViewClick:function(e,t){		
+	onViewClick:function(e,t){	
 		if(t.tagName!='LI'){
 		    return;
 		}		
@@ -89,9 +89,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
         this.selectItem(index);        
 	},
 	onSelect:function(target){
-		this.text=target.innerHTML;			
-		this.setText(this.text);
-		this.value=target.itemValue;	
+		this.value=target.attributes['itemValue'].value;	
 		this.setValue(this.value);	
 		this.el.dom.select();		
 	},
@@ -113,11 +111,10 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initList: function(){	
 		this.refresh();
-		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valueField+'}">&#160;{'+this.displayField+'}</li>');
+		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valueField+'}">{'+this.displayField+'}&#160;</li>');
 		var datas = this.options.getAll();
 		var l=datas.length;
 		for(var i=0;i<l;i++){
-//			debugger
 			var d = Aurora.apply(datas[i].data, {index:i})
 			this.litp.append(this.view,d);	//等数据源明确以后再修改		
 		}
@@ -152,16 +149,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 //	},
 	getText : function() {		
 		return this.text;
-	},
-	setText:function(v){
-		var v=(v === null || v === undefined ? '' : v);
-		if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
-            this.el.removeClass(this.emptyTextCss);
-        }
-        this.text = v;
-        this.el.dom.value = v;
-        this.applyEmptyText();
-	},
+	},	
 	getValue : function() {
 		var v=this.value;
 		v=(v === null || v === undefined ? '' : v);
@@ -170,13 +158,13 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	initDisplay : function(){
 		var v = this.getValue();
 		var r = this.options.find(this.valueField, v);
-		var dis = '';
+		this.text = '';
 		if(r != null){
-			dis = r.get(this.displayField);
+			this.text = r.get(this.displayField);
 		}else{
 			this.value = ''
 		}
-		this.setRawValue(dis);
+		this.setRawValue(this.text);
 	},
 	setValue:function(v,silent){
         Aurora.ComboBox.superclass.setValue.call(this, v, silent);		
