@@ -9,7 +9,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initComponent:function(config){
 		Aurora.ComboBox.superclass.initComponent.call(this, config);
-		if(config.options) this.setOptions(config.options);
+		if(config.options!==undefined) this.setOptions(config.options);		
 	},
 	initEvents:function(){
 		Aurora.ComboBox.superclass.initEvents.call(this);  
@@ -17,13 +17,12 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	onTriggerClick : function() {
 		this.doQuery('',true);
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
-		
 	},
 	expand:function(){
 		Aurora.ComboBox.superclass.expand.call(this);
-		var v=this.getValue();		
-		if (v) {
-			this.currentIndex = this.getIndex(v);			
+		var v=this.getValue();
+		this.currentIndex = this.getIndex(v);		
+		if (!Ext.isEmpty(v)) {				
 			if(this.selectedIndex)Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
 			Ext.fly(this.getNode(this.currentIndex)).addClass(this.currentNodeClass);
 			this.selectedIndex = this.currentIndex;
@@ -35,16 +34,16 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.rendered = false;
 			this.currentOptions = ds;
 		}
-		if(this.value)this.setValue(this.value, true)
+		if(!Ext.isEmpty(this.value))this.setValue(this.value, true)
 	},
 	onRender:function(){			
-        if(!this.view){
+        if(!Ext.isEmpty(this.view)){
         	this.view=new Aurora.Element(document.createElement('ul'));
 			this.view.on('click', this.onViewClick,this);
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
         }
-        if(!this.rendered && this.options){
+        if(this.rendered===false && Ext.isEmpty(this.options)){
 			this.initList();
 			var l = this.options.getAll().length;
 			var widthArray = [];
@@ -87,10 +86,10 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	onSelect:function(target){
 		this.text=target.innerHTML;			
 		this.setText(this.text);
-		this.value=target.val;
+		this.value=target.itemValue;	
 		this.setValue(this.value);	
 		this.el.dom.select();		
-		if(this.currentIndex)
+		if(this.currentIndex!==undefined)
 		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
 	},
 	initQuery:function(){//事件定义中调用
@@ -111,7 +110,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initList: function(){	
 		this.refresh();
-		this.litp=new Aurora.Template('<li tabIndex="{index}" val="{'+this.valueField+'}">{'+this.displayField+'}</li>');
+		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valueField+'}">{'+this.displayField+'}</li>');
 		var datas = this.options.getAll();
 		var l=datas.length;
 		for(var i=0;i<l;i++){
@@ -172,13 +171,12 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(r != null){
 			dis = r.get(this.displayField);
 		}else{
-			v = ''
+			this.value = ''
 		}
 		this.setRawValue(dis);
 	},
 	setValue:function(v,silent){
-        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
-//        this.wrap.child('input[type=hidden]').dom.value = v;
+        Aurora.ComboBox.superclass.setValue.call(this, v, silent);		
 		this.initDisplay();
 	},
 	getIndex:function(v){
