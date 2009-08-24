@@ -36,7 +36,7 @@ Aurora.ChexkBoxGroup=Ext.extend(Aurora.Radio, {
 	onClick:function(e){
 		var r=this.options.getAll()[e.target.parentNode.index].data.readonly;
 		if(r===undefined)r=this.readonly;	
-		if(!r){
+		if(r===false){
 			var v=e.target.parentNode.value;						
 			if (this.value.indexOf(v)!=-1) {	
 				for(var i=0,l=this.value.length;i<l;i++){
