@@ -90,8 +90,8 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	onSelect:function(target){
 		this.value=target.attributes['itemValue'].value;	
-		this.setValue(this.value);	
-		this.el.dom.select();		
+		this.setValue(this.value);
+		this.focus()
 	},
 	initQuery:function(){//事件定义中调用
 		this.doQuery(this.getText());
