@@ -9,14 +9,15 @@ import junit.framework.TestCase;
 
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.document.DocumentFactory;
 import uncertain.ocm.OCManager;
 
 public class BaseOCMTestCase extends TestCase {
     
     protected OCManager         mOcManager;
-    protected DocumentFactory   mDocFactory;
+    //protected DocumentFactory   mDocFactory;
+    protected CompositeLoader   mCompositeLoader;
 
     public BaseOCMTestCase(String name) {
         super(name);
@@ -25,7 +26,7 @@ public class BaseOCMTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mOcManager = OCManager.getInstance();
-        mDocFactory = new DocumentFactory();
+        mCompositeLoader = new CompositeLoader();
     }
     
     public OCManager getOCManager(){
@@ -35,7 +36,7 @@ public class BaseOCMTestCase extends TestCase {
     public CompositeMap loadDocument( String name )
         throws IOException, SAXException
     {
-        return mDocFactory.loadCompositeMap(name);
+        return mCompositeLoader.loadFromClassPath(name);
     }
 
 }

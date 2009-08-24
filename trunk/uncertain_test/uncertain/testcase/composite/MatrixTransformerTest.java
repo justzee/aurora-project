@@ -14,7 +14,7 @@ import uncertain.composite.transform.*;
  */
 public class MatrixTransformerTest extends TestCase {
 
-    CompositeLoader loader = new CompositeLoader(".");
+    CompositeLoader loader = new CompositeLoader();
     /*
      * @see TestCase#setUp()
      */

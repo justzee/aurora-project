@@ -39,7 +39,7 @@ public class ProcedureRunnerTest extends TestCase {
     public void loadProcedure(String procName) throws Exception {
         InputStream is = getClass().getClassLoader().getResourceAsStream("uncertain/testcase/proc/"+procName);
         assertNotNull(is);
-        proc_config = OCManager.defaultParser().parseStream(is);
+        proc_config = OCManager.getDefaultCompositeLoader().loadFromStream(is);
         assertNotNull(proc_config);
         test_proc = (Procedure)oc_manager.createObject(proc_config);
         
