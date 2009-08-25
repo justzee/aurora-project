@@ -165,16 +165,19 @@ public class SchemaManagerBasicTest extends TestCase {
         Attribute ref_width = width.getRefAttribute();
         assertNotNull(ref_width);
         assertTrue(ref_width.getQName().equals(width.getQName()));
-        Category category = ref_width.getCategory();
+        Category category = ref_width.getCategoryInstance();
         assertNotNull(category);
         
         // test element ref
         Element to_ref = child.getElement( new QualifiedName("ToRef"));
         assertNotNull(to_ref);
         assertTrue(to_ref.isRef());
-        assertNotNull(to_ref.getRefType());
-        assertEquals(to_ref.getRefType().getQName(), to_ref.getQName());
-
+        Element real_to_ref = (Element)to_ref.getRefType(); 
+        assertNotNull(real_to_ref);
+        assertEquals(real_to_ref.getQName(), to_ref.getQName());
+        Category cr = real_to_ref.getCategoryInstance();
+        assertNotNull(cr);
+        assertEquals(cr.getQName().getLocalName(), "BasicControl");
         
     }
 

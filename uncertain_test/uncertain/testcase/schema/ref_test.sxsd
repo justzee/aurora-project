@@ -1,15 +1,15 @@
 <ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema">
 	<ss:attributes>
-		<ss:attribute name="Width" type="string" categoryName="BasicControl" />
-		<ss:attribute name="Height" type="string"  categoryName="BasicControl" />
+		<ss:attribute name="Width" type="string" category="BasicControl" />
+		<ss:attribute name="Height" type="string"  category="BasicControl" />
 	</ss:attributes>
 	<ss:categories>
 		<ss:category name="Controls" title="Screen Controls" />
 		<ss:category name="BasicControl" title="Basic Controls" parentName="Controls"/>
 	</ss:categories>
 	<ss:elements>
-		<ss:element name="ToRef"/>
-		<ss:element name="ToRef2"/>
+		<ss:element name="ToRef" category="BasicControl" />
+		<ss:element name="ToRef2" category="Controls"  />
 		<ss:element name="parent">
 			<ss:attributes>
 				<ss:attribute ref="Width" />
