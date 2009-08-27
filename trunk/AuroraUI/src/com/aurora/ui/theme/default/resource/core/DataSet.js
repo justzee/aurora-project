@@ -7,6 +7,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.spara = {};
     	this.pageSize = 10;
     	this.fields = {};
+    	this.goPage = 1;
     	this.currentPage = 1;
     	this.currentIndex = 1;
     	this.totalCount = 0;
@@ -49,7 +50,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         }
     	this.totalPage = Math.ceil(this.totalCount/this.pageSize)
     	for(var i = 0, len = datas.length; i < len; i++){
-    		var record = new Aurora.Record(datas[i].data,datas[i].field);
+    		var record = new Aurora.Record(datas[i].data||datas[i],datas[i].field);
             record.setDataSet(this);
 	        this.data.add(record);
         }
@@ -138,6 +139,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     locate : function(index){
     	if(index <=0)return;
     	if(this.queryUrl){
+    		//this.data[index-1] && this.goPage == this.currentPage){
     		if(index >(this.currentPage-1)*this.pageSize && index <= Math.min(this.totalCount,this.currentPage*this.pageSize)) {
 	    		this.currentIndex = index;
 	    		this.fireEvent("indexchange", this, index);
@@ -159,6 +161,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     goPage : function(page){
     	if(page >0) {
+    		this.goPage = page;
 	    	var go = (page-1)*this.pageSize+1;
 	    	this.locate(go);
     	}

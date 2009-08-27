@@ -1,5 +1,6 @@
 <class-registry>
-	<feature-attach elementName="combo" featureClass="aurora.presentation.component.std.ComboBox" />
+	<feature-attach elementName="comboBox" featureClass="aurora.presentation.component.std.ComboBox" />
 	<feature-attach elementName="textField" featureClass="aurora.presentation.component.std.TextField" />
 	<feature-attach elementName="datePicker" featureClass="aurora.presentation.component.std.DatePicker" />
+	<feature-attach elementName="dataSet" featureClass="aurora.presentation.component.std.DataSet" />
 </class-registry>

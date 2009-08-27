@@ -1,6 +1,6 @@
 <package>
 	<components>
-		<view-component elementName="combo" builder="aurora.presentation.TemplateBasedView" />
+		<view-component elementName="comboBox" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="textField" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="datePicker" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="template" builder="aurora.presentation.component.TemplateRenderer" />
@@ -8,5 +8,6 @@
 		<view-component elementName="box" builder="aurora.presentation.component.std.Box" />
 		<view-component elementName="vBox" builder="aurora.presentation.component.std.VBox" />
 		<view-component elementName="hBox" builder="aurora.presentation.component.std.HBox" />
+		<view-component elementName="dataSet" builder="aurora.presentation.TemplateBasedView" />
 	</components>
 </package>

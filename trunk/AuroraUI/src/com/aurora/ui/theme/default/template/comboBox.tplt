@@ -1,0 +1,11 @@
+<DIV class="${wrapClass}" style="width:${width}px;${style}" id="${id}">
+	<INPUT class="item-textField" atype="field.input" style="width: ${inputWidth}px;" name="city" autocomplete="off" value="${value}"/>
+	<DIV class="item-trigger item-comboButton" atype="triggerfield.trigger" hideFocus></DIV>
+	<DIV class="item-popup item-comboBox-view" atype="triggerfield.popup" style="display:none;width:170px;">				
+	</DIV>
+</DIV>
+<script>
+    	new Aurora.ComboBox(${config});
+    	${events}
+		${binding}
+</script>
