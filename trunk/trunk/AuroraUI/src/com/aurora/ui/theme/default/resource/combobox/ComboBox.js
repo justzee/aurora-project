@@ -19,6 +19,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
 	},
 	expand:function(){
+		if(!this.options)return;
 		Aurora.ComboBox.superclass.expand.call(this);
 		var v=this.getValue();
 		this.currentIndex = this.getIndex(v);		
@@ -33,7 +34,8 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(this.currentIndex!==undefined)
 		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
 	},
-	setOptions : function(ds){
+	setOptions : function(name){
+		var ds = window[name];
 		if(this.currentOptions != ds){
 			this.options = ds;
 			this.rendered = false;
@@ -48,7 +50,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
         }
-        if(this.rendered===false &&this.options){
+        if(this.rendered===false && this.options){
 			this.initList();
 			var l = this.options.getAll().length;
 			var widthArray = [];
