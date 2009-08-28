@@ -6,7 +6,7 @@
 	<types>
 		<ss:complexType name="s:TestDuplicate">
 			<classes>
-				<ss:feature-class name="java.lang.Byte"/>
+				<ss:featureClass name="java.lang.Byte"/>
 			</classes>
 		</ss:complexType>
 		<ss:complexType name="s:NamedObject">
@@ -23,8 +23,8 @@
 				<ss:element name="option" />
 			</elements>
 			<classes>
-				<ss:feature-class name="java.lang.Float"/>
-				<ss:feature-class name="java.lang.Double"/>
+				<ss:featureClass name="java.lang.Float"/>
+				<ss:featureClass name="java.lang.Double"/>
 			</classes>
 		</ss:complexType>
 		<ss:complexType name="s:BaseButton">
@@ -37,8 +37,8 @@
 				<ss:attribute name="Text" type="ss:String"/>
 			</attributes>
 			<classes>
-				<ss:feature-class name="java.lang.String"/>
-				<ss:feature-class name="java.lang.StringBuffer"/>
+				<ss:featureClass name="java.lang.String"/>
+				<ss:featureClass name="java.lang.StringBuffer"/>
 			</classes>
 			<elements>
 				<ss:element name="action" />
