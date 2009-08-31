@@ -8,8 +8,6 @@ Aurora.DateField = Ext.extend(Ext.util.Observable, {
         this.wrap = typeof(elId) == "string" ? Ext.get(elId) : elId;
         this.table = this.wrap.child("table");        
         this.tbody = this.wrap.child("tbody").dom;
-//        this.tbody = document.createElement("TBODY");
-//        this.table.dom.appendChild(this.tbody);
         this.initComponent();
         this.initEvents();	
 		

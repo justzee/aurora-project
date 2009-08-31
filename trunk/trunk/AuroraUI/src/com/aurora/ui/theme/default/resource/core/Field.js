@@ -80,12 +80,13 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     },
     onBlur : function(e){
         this.hasFocus = false;
-        this.validate();
+//        this.validate();
         var v = this.getValue();
         if(String(v) !== String(this.startValue)){
             this.fireEvent('change', this, v, this.startValue);
         }
-        this.applyEmptyText();
+//        this.applyEmptyText();
+        this.setValue(v)
         this.wrap.removeClass(this.focusCss);
         this.fireEvent("blur", this);
     },
@@ -96,7 +97,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
             this.wrap.removeClass(this.emptyTextCss);
         }
         this.el.dom.value = this.formatValue((v === null || v === undefined ? '' : v));
-        this.validate();
+//        this.validate();
         this.applyEmptyText();
     },
     formatValue : function(v){
@@ -119,10 +120,10 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     		this.wrap.removeClass(this.requiredCss);
     	}
     },
-    setReadOnly : function(readonly){ 
+    setReadOnly : function(readonly){
     	if(this.currentReadOnly == readonly)return;
     	this.currentReadOnly = readonly;
-    	this.el.dom.readonly = readonly;
+    	this.el.dom.readOnly = readonly;
     	if(readonly){
     		this.wrap.addClass(this.readOnlyCss);
     	}else{
@@ -135,13 +136,13 @@ Aurora.Field = Ext.extend(Aurora.Component,{
             this.wrap.addClass(this.emptyTextCss);
         }
     },
-    validate : function(){
-        if(this.readonly || this.validateValue(this.getValue())){
-            this.clearInvalid();
-            return true;
-        }
-        return false;
-    },
+//    validate : function(){
+//        if(this.readonly || this.validateValue(this.getValue())){
+//            this.clearInvalid();
+//            return true;
+//        }
+//        return false;
+//    },
     clearInvalid : function(){
     	this.invalidMsg = null;
     	this.wrap.removeClass(this.invalidCss);
@@ -152,25 +153,25 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	this.wrap.addClass(this.invalidCss);
     	this.fireEvent('invalid', this, msg);
     },
-    validateValue : function(value){    
-    	if(value.length < 1 || value === this.emptyText){ // if it's blank
-        	if(!this.required){
-                this.clearInvalid();
-                return true;
-        	}else{
-                this.markInvalid('字段费控');//TODO:测试
-        		return false;
-        	}
-        }
-    	Ext.each(this.validators.each, function(validator){
-    		var vr = validator.validate(value)
-    		if(vr !== true){
-    			//TODO:
-    			return false;
-    		}    		
-    	})
-        return true;
-    },
+//    validateValue : function(value){    
+//    	if(value.length < 1 || value === this.emptyText){ // if it's blank
+//        	if(!this.required){
+//                this.clearInvalid();
+//                return true;
+//        	}else{
+//                this.markInvalid('字段费控');//TODO:测试
+//        		return false;
+//        	}
+//        }
+//    	Ext.each(this.validators.each, function(validator){
+//    		var vr = validator.validate(value)
+//    		if(vr !== true){
+//    			//TODO:
+//    			return false;
+//    		}    		
+//    	})
+//        return true;
+//    },
     select : function(start, end){
     	var v = this.getValue();
         if(v.length > 0){
