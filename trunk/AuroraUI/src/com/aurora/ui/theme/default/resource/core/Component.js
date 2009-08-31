@@ -19,23 +19,43 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     		ds: ds,
     		name:name
     	}
+    	var field =  ds.fields[this.binder.name];
+    	if(field) {
+			var config={};
+			Ext.apply(config,this.initConfig);
+			Ext.apply(config, field.pro);
+			delete config.name;
+			delete config.type;
+			this.initComponent(config);
+			
+    	}
     	ds.on('metachange', this.onRefresh, this);
+    	ds.on('valid', this.onValid, this);
 //    	ds.on('update', this.onUpdate, this);
     	ds.on('clear', this.onClear, this);
     	ds.on('fieldchange', this.onFieldChange, this);
     	ds.on('indexchange', this.onRefresh, this);
     },
     onRefresh : function(ds){
-		var record = ds.getCurrentRecord();
-		if(record) {
-			var value = record.get(this.binder.name);
-			var field = record.getMeta().getField(this.binder.name);		
+		this.record = ds.getCurrentRecord();
+		if(this.record) {
+			var value = this.record.get(this.binder.name);
+			var field = this.record.getMeta().getField(this.binder.name);		
 			var config={};
 			Ext.apply(config,this.initConfig);		
 			Ext.apply(config, field.snap);		
 			this.initComponent(config);
 			this.setValue(value,true);
 		}
+    },
+    onValid : function(ds, record, name, valid){
+    	if(this.binder.ds == ds && this.binder.name == name || this.record == record){
+	    	if(valid){
+    			this.clearInvalid();
+	    	}else{
+	    		this.markInvalid();
+	    	}
+    	}    	
     },
 //    onUpdate : function(ds, record, name){
 //    	if(this.binder.ds == ds && this.binder.name == name){

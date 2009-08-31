@@ -283,3 +283,25 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
     dom.innerHTML = html.replace(/(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)/ig, "").replace(/(?:<link.*?>)((\n|\r|.)*?)/ig, "");
     return this;
 }
+Aurora.DataSetManager = function(){
+    return {
+        reg : function(ds){
+        	if(!this.cache) this.cache = [];
+        	this.cache.add(ds)
+        },
+        getAll : function(){
+        	return this.cache;
+        },
+        isModified : function(){
+        	var modified = false;
+        	for(var i = 0;i<this.cache.length;i++){
+        		var ds = this.cache[i];
+    			if(ds.modified) {
+    				modified = true;
+    				break;      			
+        		}
+        	}
+        	return modified;
+        }
+    };
+}();

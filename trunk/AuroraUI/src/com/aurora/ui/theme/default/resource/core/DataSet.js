@@ -1,6 +1,6 @@
 Aurora.AUTO_ID = 1000;
 Aurora.DataSet = Ext.extend(Ext.util.Observable,{
-	constructor: function(datas,fields) {
+	constructor: function(datas,fields, type) {
     	this.data = [];
     	this.qpara = {};
     	this.qds = null;
@@ -15,7 +15,9 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.modified = [];
     	this.initEvents();
     	if(fields)this.initFields(fields)
-    	if(datas)this.loadData(datas)
+    	if(datas)this.loadData(datas);
+    	Aurora.DataSetManager.reg(this);
+    	if(type =='query') this.newRecord();
     },
     initEvents : function(){
     	this.addEvents(
@@ -27,6 +29,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	        'update',
 	        'clear',
 	        'load',
+	        'valid',
 	        'indexchange',
 	        'reject'
 		);    	
@@ -61,7 +64,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     newRecord : function(){
     	var record = new Aurora.Record({});
         this.add(record); 
-        this.fireEvent("load", this, record);
+//        this.fireEvent("load", this, record);
         return record;
     },
     add : function(records){
@@ -181,6 +184,19 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     nextPage : function(){
     	this.goPage(this.currentPage +1);
     },
+    
+    validate : function(){
+    	var valid = true;
+    	var records = this.getAll();
+		for(var k = 0,l=records.length;k<l;k++){
+			var record = records[k];
+			record.validateRecord();
+			if(valid == true){
+				valid = record.valid;
+			}
+		}
+		return valid;
+    },
     /** ------------------ajax函数------------------ **/
     setQueryUrl : function(url){
     	this.queryUrl = url;
@@ -198,6 +214,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         this.spara[para] = value;
     },
     query : function(page){
+    	if(!this.qds.validate()) return;
     	if(!this.queryUrl) return;
     	if(page){
     		this.currentPage = page;
@@ -215,16 +232,45 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	
     	Aurora.request(this.queryUrl, q, this.onLoadSuccess, this.onLoadFailed, this);
     },
+    isModified : function(){
+    	var modified = false;
+    	var records = this.getAll();
+		for(var k = 0,l=records.length;k<l;k++){
+			var record = records[k];
+			if(record.modified) {
+				modified = true;
+				break;
+			}       			
+		}
+		return modified;
+    },
+    getJsonData : function(){
+    	var datas = [];
+    	for(var i=0,l=this.data.length;i<l;i++){
+    		var r = this.data[i];    		
+    		if(r.dirty || r.isNew){
+    			var d = r.data;
+    			for(var k in d){
+    				var item = d[k]; 
+    				if(item instanceof Aurora.DataSet){
+    					d[k] = item.getJsonData();
+    				}
+    			}
+		    	datas.push(d);    			
+    		}
+    	}
+    	return datas;
+    },
     submit : function(url){
     	this.submitUrl = url||this.submitUrl;
     	var datas = [];
-    	for(var i=0,l=this.data.length;i<l;i++){
-    		var r = this.data[i];
-    		if(r.dirty || r.isNew){
-		    	datas.push(r.data);    			
-    		}
-    	}
-    	alert(Ext.util.JSON.encode(datas));
+//    	for(var i=0,l=this.data.length;i<l;i++){
+//    		var r = this.data[i];
+//    		if(r.dirty || r.isNew){
+//		    	datas.push(r.data);    			
+//    		}
+//    	}
+    	alert(Ext.util.JSON.encode(this.getJsonData()));
     	//Aurora.request(url, this.spara, this.onSubmitSuccess, this.onSubmitFailed, this);
     },
     
@@ -270,6 +316,9 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     onMetaChange : function(record,meta,type,value) {
     	this.fireEvent('metachange', this, record, meta, type, value)
+    },
+    onRecordValid : function(record, name, valid){
+    	this.fireEvent('valid', this, record, name, valid)
     }
 });
 
@@ -284,6 +333,7 @@ Aurora.Record = function(data, fields){
 Aurora.Record.prototype = {
 	isNew : false,
 	dirty : false,
+	valid : true,
 	editing : false,
 	modified: null,
 	initFields : function(fields){
@@ -292,6 +342,40 @@ Aurora.Record.prototype = {
 			f.record = this;
 			this.fields[f.name] = f;
 		}
+	},
+	validateRecord : function(){
+		this.valid = true;
+		var df = this.ds.fields;
+		var rf = this.fields;
+		var names = [];
+		for(var k in df){
+			names.add(k);
+		}
+		for(var k in rf){
+			if(names.indexOf(k) == -1){
+				names.add(k);
+			}
+		}
+		for(var i=0,l=names.length;i<l;i++){
+			if(this.valid == true){
+				this.valid = this.validate(names[i]);
+			}else{
+				this.validate(names[i]);		
+			}			
+		}
+	},
+	validate : function(name){
+		var v = this.get(name);
+		var field = this.getMeta().getField(name)
+		if(!v && field.snap.required == true){
+			//在record中加入验证信息
+			this.ds.onRecordValid(this,name,false);
+			return false;
+		}else{
+			this.ds.onRecordValid(this,name,true)
+			return true;
+		}
+		
 	},
     setDataSet : function(ds){
         this.ds = ds;
@@ -314,6 +398,8 @@ Aurora.Record.prototype = {
         if(!this.editing && this.ds){
            this.ds.afterEdit(this);
         }
+        
+        this.validate(name)
     },
     get : function(name){
         return this.data[name];

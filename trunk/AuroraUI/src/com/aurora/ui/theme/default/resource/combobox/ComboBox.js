@@ -19,7 +19,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
 	},
 	expand:function(){
-		if(!this.options)return;
+		if(!this.optionDataSet)return;
 		Aurora.ComboBox.superclass.expand.call(this);
 		var v=this.getValue();
 		this.currentIndex = this.getIndex(v);		
@@ -35,9 +35,12 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
 	},
 	setOptions : function(name){
-		var ds = window[name];
+		var ds = name
+		if(typeof(name)==='string'){
+			ds = window[name];
+		}
 		if(this.currentOptions != ds){
-			this.options = ds;
+			this.optionDataSet = ds;
 			this.rendered = false;
 			this.currentOptions = ds;
 		}
@@ -50,9 +53,9 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
         }
-        if(this.rendered===false && this.options){
+        if(this.rendered===false && this.optionDataSet){
 			this.initList();
-			var l = this.options.getAll().length;
+			var l = this.optionDataSet.getAll().length;
 			var widthArray = [];
 			for(var i=0;i<l;i++){
 				var li=this.view.dom.childNodes[i];
@@ -114,7 +117,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	initList: function(){	
 		this.refresh();
 		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valueField+'}">{'+this.displayField+'}&#160;</li>');
-		var datas = this.options.getAll();
+		var datas = this.optionDataSet.getAll();
 		var l=datas.length;
 		for(var i=0;i<l;i++){
 			var d = Aurora.apply(datas[i].data, {index:i})
@@ -159,7 +162,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initDisplay : function(){
 		var v = this.getValue();
-		var r = this.options.find(this.valueField, v);
+		var r = this.optionDataSet.find(this.valueField, v);
 		this.text = '';
 		if(r != null){
 			this.text = r.get(this.displayField);
@@ -173,7 +176,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.initDisplay();
 	},
 	getIndex:function(v){
-		var datas = this.options.getAll();		
+		var datas = this.optionDataSet.getAll();		
 		var l=datas.length;
 		for(var i=0;i<l;i++){
 			if(datas[i].data[this.valueField]==v){				
