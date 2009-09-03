@@ -5,7 +5,9 @@
 == Page ==
 
 用途：输出HTML内容
+
 扩展名：.page
+
 样例：
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
@@ -50,7 +52,9 @@
 == Service ==
 
 用途：执行数据存取操作，并将结果以JSON/XML等格式输出
+
 扩展名：.svc
+
 样例：
 {{{
 <service>
@@ -62,4 +66,21 @@
 	<sql-execute name="hr.update_access_acount" /> 
 </procedure>
 </service>
+}}}
+
+处理流程：
+
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<procedure xmlns="uncertain.proc">
+	<action name="ParseParameter" />
+	<action name="ValidateInput" />
+	<action name="InvokeService"/>
+	<action name="CreateSuccessResponse"/>
+	<exception-handles>
+		<catch Exception="*">
+			<action name="CreateFailResponse">
+		</catch>
+	</exception-handles>
+</procedure>
 }}}
