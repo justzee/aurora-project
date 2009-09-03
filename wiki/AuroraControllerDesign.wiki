@@ -5,9 +5,7 @@
 == Page ==
 
 用途：输出HTML内容
-
 扩展名：.page
-
 样例：
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
