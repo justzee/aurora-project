@@ -224,7 +224,7 @@ implements Configuration.IParticipantListener
             boolean is_self_handle = service_properties.getBoolean("exception-handle", false);
             if( !is_self_handle){
             ExceptionProcessor processor = 
-                (ExceptionProcessor)uncertainEngine.getObjectSpace().getInstanceOfType(ExceptionProcessor.class);
+                (ExceptionProcessor)uncertainEngine.getObjectRegistry().getInstanceOfType(ExceptionProcessor.class);
                 if(processor!=null){
                      try{
                          ExceptionProcessor.Processor ep = processor.getProcessor(thr.getClass().getName());

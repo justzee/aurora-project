@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.logging.Handler;
 
 import org.lwap.controller.MainService;
-import org.lwap.database.DatabaseAccess;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;

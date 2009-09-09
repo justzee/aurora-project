@@ -610,7 +610,7 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
 	 */
 	public void setUncertainEngine(UncertainEngine uncertainEngine) {
 	    this.uncertainEngine = uncertainEngine;
-        IObjectRegistry space = uncertainEngine.getObjectSpace();
+        IObjectRegistry space = uncertainEngine.getObjectRegistry();
         space.registerInstance(WebApplication.class, this);
         space.registerInstance(IServiceListenerManager.class, serviceListenerManager);
         transaction_factory.setUncertainEngine(uncertainEngine);
