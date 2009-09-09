@@ -40,7 +40,7 @@ public class ServiceListenerStore implements IGlobalInstance {
     
     public void onInitialize(){        
         OCManager ocManager = uncertainEngine.getOcManager();
-        IObjectRegistry os = uncertainEngine.getObjectSpace();
+        IObjectRegistry os = uncertainEngine.getObjectRegistry();
         ILogger logger = LoggingContext.getLogger(WebApplication.LWAP_APPLICATION_LOGGING_TOPIC, os);
         //os.getInstanceOfType(ILoggerProvider)
         WebApplication application = (WebApplication)os.getInstanceOfType(WebApplication.class);

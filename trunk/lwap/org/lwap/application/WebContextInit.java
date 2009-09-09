@@ -71,7 +71,7 @@ public class WebContextInit implements ServletContextListener {
             }
             
             //dirConfig.setLogDirectory(servletContext.log());
-            IObjectRegistry os = uncertainEngine.getObjectSpace();
+            IObjectRegistry os = uncertainEngine.getObjectRegistry();
             //os.registerParameter(ServletConfig.class,config);
             os.registerInstance(ServletContext.class,servletContext);
             os.registerInstance(HttpServlet.class, this);

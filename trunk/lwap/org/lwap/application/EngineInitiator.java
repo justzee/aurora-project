@@ -46,7 +46,7 @@ public class EngineInitiator {
 
         uncertainEngine = new UncertainEngine(new File(config_file_path), config_file_name);
         
-        IObjectRegistry os = uncertainEngine.getObjectSpace();
+        IObjectRegistry os = uncertainEngine.getObjectRegistry();
         os.registerInstance(application);
         CompositeLoader loader = uncertainEngine.getCompositeLoader();
         CompositeMap default_config = loader

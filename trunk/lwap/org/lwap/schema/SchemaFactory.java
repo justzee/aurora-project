@@ -49,7 +49,7 @@ public class SchemaFactory  {
     
     public SchemaFactory(UncertainEngine e){
         uncertainEngine = e;
-        uncertainEngine.getObjectSpace().registerInstance(SchemaFactory.class,this);
+        uncertainEngine.getObjectRegistry().registerInstance(SchemaFactory.class,this);
         baseDirFile = uncertainEngine.getConfigDirectory();
     }
     
@@ -410,7 +410,7 @@ public class SchemaFactory  {
         	categoryMap.addChild(cm);
 		} 
         System.out.println("SchemaFactory inited "+this);
-        uncertainEngine.getObjectSpace().registerInstance(SchemaFactory.class, this);
+        uncertainEngine.getObjectRegistry().registerInstance(SchemaFactory.class, this);
     }
     
     public CompositeLoader getCompositeLoader(){

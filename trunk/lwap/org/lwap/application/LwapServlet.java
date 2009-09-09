@@ -49,7 +49,7 @@ public class LwapServlet  extends HttpServlet {
  */
         try{
 	        uncertainEngine = new UncertainEngine(new File(config_dir), config_file);
-	        IObjectRegistry os = uncertainEngine.getObjectSpace();
+	        IObjectRegistry os = uncertainEngine.getObjectRegistry();
 	        os.registerInstance(ServletConfig.class,servletConfig);
 	        os.registerInstance(ServletContext.class,servletContext);
 	        os.registerInstance(HttpServlet.class, this);
