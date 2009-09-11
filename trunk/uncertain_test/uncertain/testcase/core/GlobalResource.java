@@ -23,6 +23,6 @@ public class GlobalResource implements IGlobalInstance {
     }
 
     public void onInitialize(){
-        uncertainEngine.getObjectSpace().registerInstance(this);
+        uncertainEngine.getObjectRegistry().registerInstance(this);
     }
 }
