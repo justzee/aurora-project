@@ -12,6 +12,7 @@ import java.util.Set;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Element;
 import uncertain.schema.IQualifiedNamed;
@@ -66,6 +67,26 @@ public class SchemaForSchemaTest extends TestCase {
         
     }
 
+    public void testAttribute(){
+    	
+		CompositeMap schemaCm = new CompositeMap(null,SchemaConstant.SCHEMA_NAMESPACE,"schema");
+		CompositeMap attributes = new CompositeMap(null,SchemaConstant.SCHEMA_NAMESPACE,"attributes");
+		schemaCm.addChild(attributes);
+		System.out.println("schemaCm:\n"+schemaCm.toXML());
+		
+        Element element = schema.getSchemaManager().getElement(attributes);
+        assertNotNull(element);
+        
+        CompositeMap elementCm = new CompositeMap(null,SchemaConstant.SCHEMA_NAMESPACE,"element");
+        CompositeMap newAttributes = new CompositeMap(null,SchemaConstant.SCHEMA_NAMESPACE,"attributes");
+        elementCm.addChild(newAttributes);
+        System.out.println("elementCm:\n"+elementCm.toXML());
+        
+        Element newElement = schema.getSchemaManager().getElement(newAttributes);
+//        assertNull(newElement);
+        assertNotNull(newElement);
+    }
+    
     protected void setUp() throws Exception {
         schema = SchemaManager.getSchemaForSchema();
         assertNotNull(schema);
