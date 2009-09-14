@@ -33,12 +33,12 @@ import uncertain.proc.ProcedureRunner;
  */
 public class ModelCSVExportByClient extends AbstractController implements IFeature {
     
-    public static final String KEY_PROMPT = "Prompt";
-    public static final String KEY_DATA_INDEX = "DataIndex";
-    
-    String  Parameter_name = "generate_csv"; 
-    String  Column_config = "_column_config_";
-    String  Charset = "gbk";
+	public static final String KEY_PROMPT = "Prompt";
+	public static final String KEY_DATA_INDEX = "DataIndex";
+	final String KEY_FILE_NAME = "file_name";
+	String Parameter_name = "generate_csv";
+	String Column_config = "_column_config_";
+	String Charset = "gbk";
     
     String	        mRootPath;
     CompositeMap	mQueryActionConfig;
@@ -126,35 +126,32 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
         if(column_config==null) throw new IllegalArgumentException("Must pass "+column_config+" property to export CSV data");
         
         //print csv content to response
-        HttpServletResponse response = ServiceInstance.getResponse();
+        HttpServletResponse response = ServiceInstance.getResponse();    
         response.setContentType("application/vnd.ms-excel;charset="+Charset);
+        String fileName=ServiceInstance.getParameters().getString(KEY_FILE_NAME);        
+        response.setHeader("Content-Disposition","attachment; filename=\"" + java.net.URLEncoder.encode(fileName, "UTF-8") + ".xls\"");        
+        Writer out = response.getWriter();        
+        Iterator it = column_config.getChildIterator();
+        if( it==null ) throw new IllegalArgumentException("No columns defined in "+column_config);
+        while(it.hasNext()){                
+            CompositeMap item = (CompositeMap)it.next();
+            String dataIndex = item.getString(KEY_DATA_INDEX);
+            String prompt = item.getString(KEY_PROMPT);
+            if(prompt!=null) prompt = ServiceInstance.getLocalizedString(prompt);
+            if(dataIndex==null) 
+                throw new IllegalArgumentException("Must specify '"+KEY_DATA_INDEX+"' property in column config "+item.toXML());
+            if(dataIndex.indexOf('@')>=0)
+                item.put(DataBindingConvention.KEY_DATAFIELD, dataIndex);
+            else
+                item.put(DataBindingConvention.KEY_DATAFIELD, "@"+dataIndex);
+            item.put(KEY_PROMPT, prompt);
+        }
+        ExcelDataTable dataTable = (ExcelDataTable)DynamicObject.cast(column_config, ExcelDataTable.class);
+        dataTable.setModel(model);
+        dataTable.setWriter(out);
+        dataTable.setCreateTableHead(true);
+        dataTable.printTable();
         
-        Writer out = response.getWriter();
-        if(model.getChildIterator() ==null){
-            out.write("Empty model");
-        }
-        else{
-            Iterator it = column_config.getChildIterator();
-            if( it==null ) throw new IllegalArgumentException("No columns defined in "+column_config);
-            while(it.hasNext()){                
-                CompositeMap item = (CompositeMap)it.next();
-                String dataIndex = item.getString(KEY_DATA_INDEX);
-                String prompt = item.getString(KEY_PROMPT);
-                if(prompt!=null) prompt = ServiceInstance.getLocalizedString(prompt);
-                if(dataIndex==null) 
-                    throw new IllegalArgumentException("Must specify '"+KEY_DATA_INDEX+"' property in column config "+item.toXML());
-                if(dataIndex.indexOf('@')>=0)
-                    item.put(DataBindingConvention.KEY_DATAFIELD, dataIndex);
-                else
-                    item.put(DataBindingConvention.KEY_DATAFIELD, "@"+dataIndex);
-                item.put(KEY_PROMPT, prompt);
-            }
-            ExcelDataTable dataTable = (ExcelDataTable)DynamicObject.cast(column_config, ExcelDataTable.class);
-            dataTable.setModel(model);
-            dataTable.setWriter(out);
-            dataTable.setCreateTableHead(true);
-            dataTable.printTable();
-        }
         return EventModel.HANDLE_STOP;
     }
 
