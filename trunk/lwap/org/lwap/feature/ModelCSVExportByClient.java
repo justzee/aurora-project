@@ -129,7 +129,7 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
         HttpServletResponse response = ServiceInstance.getResponse();    
         response.setContentType("application/vnd.ms-excel;charset="+Charset);
         String fileName=ServiceInstance.getParameters().getString(KEY_FILE_NAME);        
-        response.setHeader("Content-Disposition","attachment; filename=\"" + java.net.URLEncoder.encode(fileName, "UTF-8") + ".xls\"");        
+        response.setHeader("Content-Disposition","attachment; filename=\"" + new String(fileName.getBytes("gb2312"),"ISO8859-1" )+ ".xls\"");        
         Writer out = response.getWriter();        
         Iterator it = column_config.getChildIterator();
         if( it==null ) throw new IllegalArgumentException("No columns defined in "+column_config);
