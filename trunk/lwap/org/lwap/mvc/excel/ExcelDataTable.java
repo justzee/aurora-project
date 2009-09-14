@@ -252,22 +252,19 @@ public class ExcelDataTable extends DynamicObject {
 	public void printTable( CompositeMap model )
 	throws IOException
 	{
-		if( model.getChilds() == null ){ 
-			System.out.println("[ExcelDataTable] warning: model is empty");
-			return;
-		}
-		total_record_count = model.getChilds().size();
-		
 		if(CreateTableHead) printTableHead();
-		Iterator it = model.getChildIterator();
-		if( it == null) return;
-		int row=0;
-		while( it.hasNext()){
-			if( row>0 && TableHeadEachRow && it.hasNext()) {
-				printTableHead();
+		if( model.getChilds() != null ){ 
+			total_record_count = model.getChilds().size();		
+			Iterator it = model.getChildIterator();
+			if( it == null) return;
+			int row=0;
+			while( it.hasNext()){
+				if( row>0 && TableHeadEachRow && it.hasNext()) {
+					printTableHead();
+				}
+				printTableData( it, row+1);
+				row++;
 			}
-			printTableData( it, row+1);
-			row++;
 		}
 	}
 	
