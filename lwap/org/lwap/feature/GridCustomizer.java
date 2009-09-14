@@ -83,7 +83,7 @@ public class GridCustomizer {
 					if (resultMap != null && resultMap.getChilds() != null)
 					childs = resultMap.getChilds();
 					
-					String columnConfig = grid.getString("ColumnConfig");
+					String columnConfig = grid.getString("ColumnConfig", "");
 					if(!"".equals(columnConfig)) {
 						CompositeMap cols = (CompositeMap)context.getObject(columnConfig);
 						List list = cols.getChilds();
@@ -91,7 +91,7 @@ public class GridCustomizer {
 							Iterator sit = list.iterator();
 							while(sit.hasNext()){
 								CompositeMap scol = (CompositeMap) sit.next();
-								String serviceDataIndex = scol.getString(COLUMN_DATA_INDEX);
+								String serviceDataIndex = scol.getString(COLUMN_DATA_INDEX, "");
 								if(childs != null && childs.size() >0){
 									Iterator pit = childs.iterator();
 									while(pit.hasNext()){
