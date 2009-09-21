@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
+import uncertain.composite.DynamicObject;
 import uncertain.composite.decorate.AttributeModify;
 import uncertain.composite.decorate.ElementModifier;
 
@@ -41,20 +42,29 @@ public class CompositeMergeTest extends TestCase {
         t.getObjectContext().addChild(f1);
         t.getObjectContext().addChild(f2);
         
+        doInsertTest(t);
+        
+        CompositeMap map = loader.loadFromClassPath("uncertain.testcase.composite.InsertTest");
+        ElementModifier m = (ElementModifier)DynamicObject.cast(map, ElementModifier.class);
+    }
+    
+    public void doInsertTest( ElementModifier t )
+        throws Exception
+    {
         CompositeMap source = getSource();
         assertNotNull(source);
         
         t.process(source);
         List childs = source.getChild("fields").getChilds();
         assertNotNull(childs);
-        assertEquals(childs.get(0), f1);
-        assertEquals(childs.get(1), f2);
+        assertEquals(  ((CompositeMap)childs.get(0)).get("name"), "NEW_FIELD1");
+        assertEquals(  ((CompositeMap)childs.get(1)).get("name"), "NEW_FIELD2");
+
         int size = source.getChilds().size();
         
         ElementModifier t1 = ElementModifier.createElementInsert();
         t1.process(source);
-        assertEquals(size, source.getChilds().size());        
-        
+        assertEquals(size, source.getChilds().size());               
     }
 
     public void testAppend()
