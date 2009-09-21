@@ -187,7 +187,14 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   	 	
   }
   
-  
+  /*
+  void _merge_base_file( CompositeMap service_conf){
+      String _base_file = service_conf.getString("_base_file");
+      if(_base_file!=null){
+          CompositeMap base_config = 
+      }
+  }
+  */
 
   Service _create_service( String service_name) throws ServiceInstantiationException{
 		// load service config, create new service instance specified 
@@ -205,7 +212,7 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   	 		    //logger.info("requesting "+service_name);
   	 		    service_conf = getCompositeLoader().loadByFullFilePath(service_name);
   	 		}
-			
+
 			//service_conf = this.getCompositeLoader().load(service_name);  	 			
 		} catch(IOException ex){
 			throw new ServiceInstantiationException("IO Error when loading service config",ex);
@@ -528,6 +535,7 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   		// load application config
   		composite_loader = new CompositeLoader(doc_path, DEFAULT_SERVICE_EXT);
   		composite_loader.setSupportXInclude(true);
+  		composite_loader.setSupportFileMerge(true);
   		this.application_conf = composite_loader.load(config_file_name);
   		
   	} catch( IOException ioex){
