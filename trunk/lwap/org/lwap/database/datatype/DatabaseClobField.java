@@ -50,7 +50,7 @@ public Object getObject(java.sql.CallableStatement aCallableStatement, int anInd
  * getObject method comment.
  */
 public Object getObject(java.sql.ResultSet aResultSet, int anIndex) throws java.sql.SQLException {
-/*
+
 	Clob aClob = aResultSet.getClob(anIndex);
 	if( aClob == null) return null;
 	try{
@@ -64,8 +64,8 @@ public Object getObject(java.sql.ResultSet aResultSet, int anIndex) throws java.
         ex.printStackTrace();
 		return null;
 	}
-*/
-    return aResultSet.getClob(anIndex);
+	/**/
+    //return aResultSet.getClob(anIndex);
 }
 /**
  * getSQLType method comment.
