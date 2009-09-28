@@ -1,3 +1,13 @@
 <script>
-var ${name} = new Aurora.DataSet(${datas},${fields});
+var ${name} = new Aurora.DataSet({
+	id:'${name}', 
+	datas:${datas}, 
+	fields:${fields},
+	queryDataSet:'${querydataset}', 
+	queryUrl:'${queryurl}', 
+	submitUrl:'${submiturl}',
+	fetchAll:${fecthall},
+	pageSize:${pagesize},
+	autoCount:${autocount}
+});
 </script>

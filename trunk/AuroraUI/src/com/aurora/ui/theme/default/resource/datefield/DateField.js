@@ -2,7 +2,7 @@ Aurora.DateField = Ext.extend(Ext.util.Observable, {
 	constructor: function(elId, config) {	
         config = config || {};
         Ext.apply(this, config);
-        if(typeof(elId) == "string") window[elId] = this;
+        if(typeof(elId) == "string") Aurora.cmps[elId] = this;
         Aurora.DateField.superclass.constructor.call(this);     
 
         this.wrap = typeof(elId) == "string" ? Ext.get(elId) : elId;

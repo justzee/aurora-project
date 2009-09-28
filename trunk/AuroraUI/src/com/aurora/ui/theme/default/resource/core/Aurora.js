@@ -10,10 +10,18 @@ Aurora.fly = Ext.fly;
 Aurora.get= Ext.get;
 
 Aurora.winContainers = [];
+Aurora.cmps = {};
 
 Ext.Ajax.on("requestexception", function(conn, response, options){
 	alert('服务器端错误!');
 }, this);
+$ = Aurora.getCmp = function(name){
+	var cmp = Aurora.cmps[name]
+	if(!cmp){
+		cmp = Aurora.DataSetManager.get(name)
+	}
+	return cmp;
+}
 Aurora.request = function(url, para, success, failed, scope){
 	Ext.Ajax.request({
 			url: url,
@@ -118,9 +126,9 @@ Aurora.ToolTip = function(){
 			this.body.update(text)
 			var ele;
 			if(typeof(el)=="string"){
-				if(window[el]){
-					if(window[el].wrap){
-						ele = window[el].wrap;
+				if($(el)){
+					if($(el).wrap){
+						ele = $(el).wrap;
 					}else{
 						
 					}
@@ -291,6 +299,17 @@ Aurora.DataSetManager = function(){
         },
         getAll : function(){
         	return this.cache;
+        },
+        get : function(name){
+        	if(!this.cache) return null;
+        	var ds = null;
+        	for(var i = 0;i<this.cache.length;i++){
+    			if(this.cache[i].id == name) {
+	        		ds = this.cache[i];
+    				break;      			
+        		}
+        	}
+        	return ds;
         },
         isModified : function(){
         	var modified = false;
