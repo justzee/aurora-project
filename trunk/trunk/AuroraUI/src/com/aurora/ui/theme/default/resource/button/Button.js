@@ -2,7 +2,7 @@ Aurora.Button = Ext.extend(Ext.util.Observable,{
 	constructor: function(config) {	
         config = config || {};
         Ext.apply(this, config);
-        window[this.id] = this;
+        Aurora.cmps[this.id] = this;
         Aurora.Button.superclass.constructor.call(this);       
         this.el = Ext.get(this.id);
         this.addEvents('click','mouseout','mouseover');

@@ -44,7 +44,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	//Aurora.ToolTip.hide();
     },
     onChange : function(e){
-    	    
+//    	this.setValue(this.getValue());    
     },
     onKeyUp : function(e){
         this.fireEvent('keyup', this, e);
@@ -86,7 +86,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
             this.fireEvent('change', this, v, this.startValue);
         }
 //        this.applyEmptyText();
-        this.setValue(v)
+        this.setValue(v);
         this.wrap.removeClass(this.focusCss);
         this.fireEvent("blur", this);
     },
@@ -97,7 +97,6 @@ Aurora.Field = Ext.extend(Aurora.Component,{
             this.wrap.removeClass(this.emptyTextCss);
         }
         this.el.dom.value = this.formatValue((v === null || v === undefined ? '' : v));
-//        this.validate();
         this.applyEmptyText();
     },
     formatValue : function(v){
@@ -130,7 +129,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     		this.wrap.removeClass(this.readOnlyCss);
     	}
     },
-    applyEmptyText : function(){    	
+    applyEmptyText : function(){
         if(this.emptyText && this.getValue().length < 1){
             this.setRawValue(this.emptyText);
             this.wrap.addClass(this.emptyTextCss);
@@ -146,12 +145,12 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     clearInvalid : function(){
     	this.invalidMsg = null;
     	this.wrap.removeClass(this.invalidCss);
-    	this.fireEvent('valid', this);
+//    	this.fireEvent('valid', this);
     },
     markInvalid : function(msg){
     	this.invalidMsg = msg;
     	this.wrap.addClass(this.invalidCss);
-    	this.fireEvent('invalid', this, msg);
+//    	this.fireEvent('invalid', this, msg);
     },
 //    validateValue : function(value){    
 //    	if(value.length < 1 || value === this.emptyText){ // if it's blank
@@ -209,7 +208,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	this.el.blur();
     },
     clearValue : function(){
-    	this.setValue('');
+    	this.setValue('', true);
     	this.clearInvalid();
         this.applyEmptyText();
     }

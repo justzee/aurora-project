@@ -12,6 +12,10 @@ Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
     	this.collapse();
     },
     formatValue : function(date){
-    	return date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()
+    	if(date instanceof Date) {
+    		return date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()
+    	}else{
+    		return date;
+    	}
     }
 });
