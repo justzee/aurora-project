@@ -1,20 +1,37 @@
 Aurora.Component = Ext.extend(Ext.util.Observable,{
 	constructor: function(config) {
         Aurora.Component.superclass.constructor.call(this);
-        this.id = config.id || Ext.id();		
+        this.id = config.id || Ext.id();
+        if(Aurora.cmps[this.id] != null) {
+        	alert("错误: ID为' " + this.id +" '的组件已经存在!");
+        	return;
+        }
         Aurora.cmps[this.id] = this;		
 		this.initConfig=config;
 		this.initComponent(config);
         this.initEvents();
-    },
+    }, 
     initComponent : function(config){ 
 		config = config || {};
         Ext.apply(this, config);
+        this.wrap = Ext.get(this.id);
     },
     initEvents : function(){
     	this.addEvents('focus','blur','change','invalid','valid');    	
     },
     bind : function(ds, name){
+    	if(this.binder) {
+    		var bds = this.binder.ds;
+    		bds.un('metachange', this.onRefresh, this);
+	    	bds.un('create', this.onCreate, this);
+	    	bds.un('load', this.onRefresh, this);
+	    	bds.un('valid', this.onValid, this);
+	    	bds.un('remove', this.onRemove, this);
+	    	bds.un('clear', this.onClear, this);
+	    	bds.un('update', this.onUpdate, this);
+	    	bds.un('fieldchange', this.onFieldChange, this);
+	    	bds.un('indexchange', this.onRefresh, this);
+    	}
     	this.binder = {
     		ds: ds,
     		name:name
@@ -36,6 +53,7 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     	ds.on('valid', this.onValid, this);
     	ds.on('remove', this.onRemove, this);
     	ds.on('clear', this.onClear, this);
+    	ds.on('update', this.onUpdate, this);
     	ds.on('fieldchange', this.onFieldChange, this);
     	ds.on('indexchange', this.onRefresh, this);
     },
@@ -80,13 +98,11 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
 	    	}
     	}    	
     },
-//    onUpdate : function(ds, record, name){
-//    	if(this.binder.ds == ds && this.binder.name == name){
-//    		var record = ds.getCurrentRecord();
-//			var value = record.get(this.binder.name);
-//	    	this.setValue(value);
-//    	}
-//    },
+    onUpdate : function(ds, record, name,value){
+    	if(this.binder.ds == ds && this.binder.name == name){
+	    	this.setValue(value, true);
+    	}
+    },
     onFieldChange : function(ds, record, field){
     	if(this.binder.ds == ds && this.binder.name == field.name){
 	    	this.onRefresh(ds);   	

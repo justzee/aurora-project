@@ -13,11 +13,13 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     },
     initComponent : function(config){
     	Aurora.Field.superclass.initComponent.call(this, config);
-        this.wrap = Ext.get(this.id);
         this.el = this.wrap.child('input[atype=field.input]'); 
     	this.originalValue = this.getValue();
     	this.applyEmptyText();
     	this.initStatus();
+    	if(this.hidden == true){
+    		this.setVisible(false)
+    	}
     },
     initEvents : function(){
     	Aurora.Field.superclass.initEvents.call(this);
@@ -33,6 +35,24 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.el.on("mouseout", this.onMouseOut, this);
     	
     },
+	setWidth: function(w){
+		this.wrap.setStyle("width",(w+3)+"px");
+		this.el.setStyle("width",w+"px");
+	},
+	setHeight: function(h){
+		this.wrap.setStyle("height",h+"px");
+		this.el.setStyle("height",(h-1)+"px");
+	},
+	move: function(x,y){
+		this.wrap.setX(x);
+		this.wrap.setY(y);
+	},
+	setVisible: function(v){
+		if(v==true)
+			this.wrap.show();
+		else
+			this.wrap.hide();
+	},
     initStatus : function(){
     	this.setRequired(this.required);
     	this.setReadOnly(this.readonly);
@@ -78,15 +98,19 @@ Aurora.Field = Ext.extend(Aurora.Component,{
 	        this.wrap.addClass(this.focusCss);
         }
     },
+    processValue : function(v){
+    	return v;
+    },
     onBlur : function(e){
         this.hasFocus = false;
 //        this.validate();
-        var v = this.getValue();
-        if(String(v) !== String(this.startValue)){
-            this.fireEvent('change', this, v, this.startValue);
+        var rv = this.getRawValue();
+        rv = this.processValue(rv);
+        if(String(rv) !== String(this.startValue)){
+            this.fireEvent('change', this, rv, this.startValue);
         }
 //        this.applyEmptyText();
-        this.setValue(v);
+        this.setValue(rv);
         this.wrap.removeClass(this.focusCss);
         this.fireEvent("blur", this);
     },
@@ -102,12 +126,15 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     formatValue : function(v){
     	return v;
     },
-    getValue : function(){
+    getRawValue : function(){
         var v = this.el.getValue();
         if(v === this.emptyText || v === undefined){
             v = '';
         }
         return v;
+    },
+    getValue : function(){
+    	return this.value;
     },
     setRequired : function(required){
     	if(this.crrentRequired == required)return;
@@ -130,7 +157,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	}
     },
     applyEmptyText : function(){
-        if(this.emptyText && this.getValue().length < 1){
+        if(this.emptyText && this.getRawValue().length < 1){
             this.setRawValue(this.emptyText);
             this.wrap.addClass(this.emptyTextCss);
         }
@@ -172,7 +199,7 @@ Aurora.Field = Ext.extend(Aurora.Component,{
 //        return true;
 //    },
     select : function(start, end){
-    	var v = this.getValue();
+    	var v = this.getRawValue();
         if(v.length > 0){
             start = start === undefined ? 0 : start;
             end = end === undefined ? v.length : end;
