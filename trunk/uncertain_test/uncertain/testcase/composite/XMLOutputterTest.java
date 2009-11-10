@@ -46,7 +46,9 @@ public class XMLOutputterTest extends TestCase {
                     "child_with_diff_ns1").put("K1", "V1");
 
             xml = root.toXML();
+            //System.out.println(xml);
             xml2 = XMLOutputter.defaultInstance().toXML(root, true);
+            //System.out.println(xml2);
         }
         assertTrue(xml.indexOf("r:root xmlns:r=\"http://somesite.com\"") > 0);
         for (int i = 1; i < 10; i++) {
