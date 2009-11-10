@@ -9,7 +9,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.id = config.id || Ext.id();		
     	this.qds = $(config.queryDataSet) || null;
     	this.spara = {};
-    	this.pageSize = config.pageSize;
+    	this.pageSize = config.pageSize || 10;
     	this.fields = {};
     	this.gotoPage = 1;
     	this.currentPage = 1;
@@ -24,7 +24,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.autoCount = config.autoCount;
     	if(config.datas && config.datas.length != 0) {
     		this.loadData(config.datas);
-    		this.locate(this.currentIndex);
+    		//this.locate(this.currentIndex); //不确定有没有影响
     	}
     },
     reConfig : function(config){
@@ -81,7 +81,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         }
     },
     getField : function(name){
-    	return this.fields[field.name];
+    	return this.fields[name];
     },
     loadData : function(datas, num){
         this.data = [];
@@ -222,17 +222,17 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 //    	if(index == this.currentIndex) return;
     	if(valid !== false) if(!this.validCurrent())return;
     	
-    	if(index <=0)return;
+    	if(index <=0 || (index > this.totalCount))return;
     	
     	var lindex = index - (this.currentPage-1)*this.pageSize;
     	if(this.data[lindex - 1]){
 //    		this.currentPage =  Math.ceil(index/this.pageSize);
 	    	this.currentIndex = index;
     	}else{
-    		if(index > this.totalCount && this.totalCount != 0) {
-				return;
-//    			index = this.totalCount;
-			}
+//    		if(index > this.totalCount && this.totalCount != 0) {
+//				return;
+////    			index = this.totalCount;
+//			}
 			this.currentIndex = index;
 			this.currentPage =  Math.ceil(index/this.pageSize);
 			this.query(this.currentPage);
@@ -392,8 +392,8 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     
     /** ------------------事件函数------------------ **/
-    afterEdit : function(record) {
-        this.fireEvent("update", this, record);
+    afterEdit : function(record, name, value) {
+        this.fireEvent("update", this, record, name, value);
     },
     afterReject : function(record){
     	this.fireEvent("reject", this, record);
@@ -440,11 +440,12 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	    		}
     			datas.push(item);
     		}
-	    	this.loadData(datas, total);
-	    	this.locate(this.currentIndex);
     	}else if(records.length == 0){
-    		this.removeAll();
+//    		this.removeAll();
+    		this.currentIndex  = 1
     	}
+    	this.loadData(datas, total);
+	    this.locate(this.currentIndex);
     },
     onLoadFailed : function(res){
     	alert(res.error.message)
@@ -550,7 +551,7 @@ Aurora.Record.prototype = {
         }
         this.data[name] = value;
         if(!this.editing && this.ds){
-           this.ds.afterEdit(this);
+           this.ds.afterEdit(this, name, value);
         }
         
         this.validate(name)
@@ -572,21 +573,21 @@ Aurora.Record.prototype = {
         }
         this.dirty = false;
     },
-    beginEdit : function(){
-        this.editing = true;
-        this.modified = {};
-    },
-    cancelEdit : function(){
-        this.editing = false;
-        delete this.modified;
-    },
-    endEdit : function(){
-        delete this.modified;
-        this.editing = false;
-        if(this.dirty && this.ds){
-            this.ds.afterEdit(this);
-        }        
-    },
+//    beginEdit : function(){
+//        this.editing = true;
+//        this.modified = {};
+//    },
+//    cancelEdit : function(){
+//        this.editing = false;
+//        delete this.modified;
+//    },
+//    endEdit : function(){
+//        delete this.modified;
+//        this.editing = false;
+//        if(this.dirty && this.ds){
+//            this.ds.afterEdit(this);//name,value怎么处理?
+//        }        
+//    },
     onFieldChange : function(name, type, value){
     	var field = this.getMeta().getField(name);
     	this.ds.onFieldChange(this, field, type, value);
@@ -668,6 +669,9 @@ Aurora.Record.Field.prototype = {
 			this.record.onFieldChange(this.name, type, value);
 		}
 	},
+	getPropertity : function(name){
+		return this.pro[name]
+	},
 	setRequired : function(r){
 		this.setPropertity(r, 'required');
 	},
@@ -676,5 +680,8 @@ Aurora.Record.Field.prototype = {
 	},
 	setOptions : function(r){
 		this.setPropertity(r, 'options');
+	},
+	getOptions : function(){
+		return this.getPropertity('options');
 	}
 }

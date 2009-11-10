@@ -14,9 +14,19 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     isExpanded : function(){    	
         return this.popup && this.popup.isVisible();
     },
+    setWidth: function(w){
+		this.wrap.setStyle("width",(w+3)+"px");
+		this.el.setStyle("width",(w-20)+"px");
+	},
     onFocus : function(){
         Ext.get(document.documentElement).on("mousedown", this.triggerBlur, this, {delay: 10});
         Aurora.TriggerField.superclass.onFocus.call(this);
+        if(!this.isExpanded())this.expand();
+    },
+    onBlur : function(){
+    	this.hasFocus = false;
+        this.wrap.removeClass(this.focusCss);
+        this.fireEvent("blur", this);
     },
 //    onBlur : function(){
 ////    	Ext.get(document.documentElement).un("mousedown", this.triggerBlur, this);
@@ -30,6 +40,12 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
 	    	}	    	
         }
     },
+    setVisible : function(v){
+    	Aurora.TriggerField.superclass.setVisible.call(this,v);
+    	if(v == false && this.isExpanded()){
+    		this.collapse();
+    	}
+    },
     collapse : function(){
     	this.wrap.setStyle("z-index",20);
     	this.popup.hide();
@@ -40,10 +56,10 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     },
     onTriggerClick : function(){
     	if(this.readonly) return;
-    	this.el.focus();
     	if(this.isExpanded()){
     		this.collapse();
     	}else{
+	    	this.el.focus();
     		this.expand();
     	}
     }

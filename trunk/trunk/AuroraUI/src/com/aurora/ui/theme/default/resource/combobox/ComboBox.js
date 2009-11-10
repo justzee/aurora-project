@@ -20,6 +20,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	expand:function(){
 		if(!this.optionDataSet)return;
+		if(this.rendered===false)this.initQuery();
 		Aurora.ComboBox.superclass.expand.call(this);
 		var v=this.getValue();
 		this.currentIndex = this.getIndex(v);
@@ -53,6 +54,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);			
         }
+        
         if(this.rendered===false && this.optionDataSet){
 			this.initList();
 			var l = this.optionDataSet.getAll().length;
@@ -96,7 +98,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	onSelect:function(target){
 		var value =target.attributes['itemValue'].value;
 		this.setValue(value);
-		this.focus()
+//		this.focus()
 	},
 	initQuery:function(){//事件定义中调用
 		this.doQuery(this.getText());
@@ -160,6 +162,14 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		v=(v === null || v === undefined ? '' : v);
 		return v;
 	},
+	processValue : function(rv){
+		var r = this.optionDataSet == null ? null : this.optionDataSet.find(this.displayfield, rv);
+		if(r != null){
+			return r.get(this.valuefield);
+		}else{
+			return this.value;
+		}
+	},
 	formatValue : function(){
 		var v = this.getValue();
 		var r = this.optionDataSet == null ? null : this.optionDataSet.find(this.valuefield, v);
@@ -167,14 +177,13 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(r != null){
 			this.text = r.get(this.displayfield);
 		}else{
-			this.value = ''
+//			this.value = ''
 		}
 		return this.text;
 	},
-	
-	setValue:function(v,silent){
-        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
-	},
+//	setValue:function(v,silent){
+//        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
+//	},
 	getIndex:function(v){
 		var datas = this.optionDataSet.getAll();		
 		var l=datas.length;
