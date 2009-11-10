@@ -43,7 +43,7 @@
 				{data:{code:'沈阳',value:'F'}},
 				{data:{code:'深圳深圳深圳深圳深圳深圳深圳深圳深圳深圳1',value:'G'}}
 			]
-			var dataset = new Aurora.DataSet(data);
+			var dataset = new Aurora.DataSet({datas:data});
 
 			var data2 = [
 				{data:{code:'北京',value:'A'}},
@@ -51,13 +51,14 @@
 				{data:{code:'天津',value:'C'}},
 				{data:{code:'广州',value:'D'}}
 			]
-			var dataset2 = new Aurora.DataSet(data2);
+			var dataset2 = new Aurora.DataSet({datas:data2});
 
-			new Aurora.ComboBox({
+			var comboBox = new Aurora.ComboBox({
 				id:'comboBox',
-				valueField:'value',
-				displayField:'code',
-				options:dataset
+				valuefield:'value',
+				emptytext:'选择城市',
+				displayfield:'code',
+				options: dataset2
 			});
 		</script>	
 	</TD>	

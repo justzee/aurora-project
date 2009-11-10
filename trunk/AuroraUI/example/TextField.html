@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <HTML>
  <HEAD>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -25,7 +25,7 @@
 			<INPUT class="item-textField" atype="field.input" style="width: 147px;" name="city" autocomplete="off" value="" />
 		</DIV>
 		<script>
-			new Aurora.TextField({
+			var textField = new Aurora.TextField({
 				id:'textField',
 				emptyText : '城市名(可不填)'
 			});			
@@ -37,13 +37,13 @@
 		<SPAN class="item-label">必输:</SPAN>
 	</TH>
 	<TD width="150">
-		<DIV class="item-wrap item-notBlank" id="textFieldNotBlank">
+		<DIV class="item-wrap item-required" id="textFieldrequired">
 			<INPUT class="item-textField" atype="field.input"  style="width: 147px;" name="hotal" autocomplete="off" value="" />
 		</DIV>
 		<script>
-			new Aurora.TextField({
-				id : 'textFieldNotBlank',
-				notBlank : true
+			var textFieldrequired =new Aurora.TextField({
+				id : 'textFieldrequired',
+				required : true
 			});
 		</script>
 	</TD>
@@ -57,9 +57,9 @@
 			<INPUT class="item-textField" atype="field.input" style="width: 127px;" readonly="true" name="date" value="只读TextField" autocomplete="off"/>
 		</DIV>
 		<script>
-			new Aurora.TextField({
+			var textFieldReadOnly =new Aurora.TextField({
 				id:'textFieldReadOnly',
-				readOnly : true
+				readonly : true
 			});
 		</script>
 	</TD>
@@ -72,14 +72,10 @@
 </TBODY>
 </TABLE>
 <br><br>
-<input type="button" value="验证" onclick="textField.validate()">
-<input type="button" value="验证2" onclick="textFieldNotBlank.validate()">
 <input type="button" value="必输" onclick="textField.setRequired(true)">
 <input type="button" value="非必输" onclick="textField.setRequired(false)">
 <input type="button" value="只读" onclick="textField.setReadOnly(true)">
 <input type="button" value="非只读" onclick="textField.setReadOnly(false)">
-<input type="button" value="ToolTip" onclick="Aurora.ToolTip.show('textFieldReadOnly', 'test')">
-<input type="button" value="ToolTip" onclick="Aurora.ToolTip.hide()">
 <div id='console'></div>
  </BODY>
 </HTML>
