@@ -9,6 +9,7 @@
 		<view-component elementName="vBox" builder="aurora.presentation.component.std.VBox" />
 		<view-component elementName="hBox" builder="aurora.presentation.component.std.HBox" />
 		<view-component elementName="dataSet" builder="aurora.presentation.TemplateBasedView" />
+		<view-component elementName="grid" builder="aurora.presentation.TemplateBasedView"/>
 		<view-component elementName="dataSets" builder="aurora.application.features.DataSetInit" />
 	</components>
 </package>
