@@ -7,5 +7,8 @@ Aurora.TextField = Ext.extend(Aurora.Field,{
     },
     initEvents : function(){
     	Aurora.TextField.superclass.initEvents.call(this);    	
+    },
+    getValue : function(){
+    	return this.getRawValue();
     }
 })

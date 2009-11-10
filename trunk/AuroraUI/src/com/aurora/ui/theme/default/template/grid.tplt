@@ -1,0 +1,25 @@
+<DIV class="item-grid" id="${id}" style="width:${width}px;height:${height}px;${style}">
+	${lockarea}
+	<DIV class="grid-ua" atype="grid.uc" style="width:${unlockwidth}px;">
+		<DIV class="grid-uh" atype="grid.uh" style="height:${headHeight}px;">
+			${unlockarea}
+		</DIV>
+		<DIV class="grid-ub"  atype="grid.ub" style="height:${bodyHeight}px">
+		</DIV>
+	</DIV>
+	<DIV style="clear:both"></DIV>
+	<DIV atype="grid.spliter" class="grid-sp" style="display:none;"></DIV>
+</DIV>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	var grid = new Aurora.Grid({
+		id:'${id}',
+		width:${width},
+		height:${height},
+		columns:${columns}
+	});
+	grid.bind('${dataset}');
+
+//-->
+</SCRIPT>
+${editors}
