@@ -14,10 +14,10 @@
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/Field.js"></script>
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/textfield/TextField.js"></script>
  <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/DataSet.js"></script>
-<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/TriggerField.js"></script> 
-<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.js"></script>
-<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DateField.js"></script>
-<script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DatePicker.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/core/TriggerField.js"></script> 
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/combobox/ComboBox.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DateField.js"></script>
+ <script language="javascript" type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/datefield/DatePicker.js"></script>
  <script type="text/javascript" src="../src/com/aurora/ui/theme/default/resource/checkbox/CheckBox.js"></script>
     </head>
     <body >
@@ -31,7 +31,7 @@
 			{data:{code:'沈阳',value:7}},
 			{data:{code:'深圳深圳深圳深圳深圳深圳深圳深圳深圳深圳1',value:8}}
 		]
-		var cds = new Aurora.DataSet(cdata);
+		var cds = new Aurora.DataSet({datas:cdata});
 
 		var cdata2 = [
 				{data:{code:'北京',value:1}},
@@ -39,13 +39,13 @@
 				{data:{code:'天津',value:3}},
 				{data:{code:'广州',value:4}}
 			]
-		var cds2 = new Aurora.DataSet(cdata2);
+		var cds2 = new Aurora.DataSet({datas:cdata2});
 
 		var cdata3 = [
 				{data:{code:'北京',value:1}},
 				{data:{code:'上海',value:2}}
 			]
-		var cds3 = new Aurora.DataSet(cdata3);
+		var cds3 = new Aurora.DataSet({datas:cdata3});
 
 		var data = [
 			{data:{name:'张A',age:15, city:1, birth:new Date(),flag:'Y'},field:[{name:'flag',readonly:true},{name:'name',type:'string',readonly:true}]},
@@ -58,8 +58,8 @@
 			{name:'name', type:'string',required:true},
 			{name:'birth', type:'date'}
 		]
-		var ds = new Aurora.DataSet(data,field);
-		ds.addValidator
+		var ds = new Aurora.DataSet({datas:data,fields:field});
+		
 	</script>
 	<br/><br/>
 	<TABLE cellSpacing="0" cellPadding="0">
@@ -111,7 +111,7 @@
 				<INPUT type="hidden"/>
 			</DIV>
 			<script>
-				new Aurora.ComboBox({
+				var comboBox = new Aurora.ComboBox({
 					id:'comboBox',
 					valueField:'value',
 					displayField:'code',
@@ -155,7 +155,7 @@
 				</DIV>
 			</DIV>
 			<script>
-				new Aurora.DatePicker({
+				var datePicker =new Aurora.DatePicker({
 					id:"datePicker",
 					emptyText:'选择日期'
 				});
@@ -174,7 +174,7 @@
 				<INPUT type="hidden"/>
 			</DIV>
 			<script type="text/javascript">                    	              
-				new Aurora.CheckBox({
+				var checkBox = new Aurora.CheckBox({
 					id: 'checkBox',
 					checkValue:'Y',
 					unCheckValue:'N'					
