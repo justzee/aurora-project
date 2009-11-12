@@ -5,8 +5,17 @@ package uncertain.testcase.core;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import uncertain.testcase.ocm.*;
-import uncertain.testcase.proc.*;
+import uncertain.testcase.composite.XMLOutputterTest;
+import uncertain.testcase.ocm.ClassAnalyzerTest;
+import uncertain.testcase.ocm.ClassRegistryTest;
+import uncertain.testcase.ocm.NamingUtilTest;
+import uncertain.testcase.ocm.OCManagerTest;
+import uncertain.testcase.ocm.ObjectSpaceTest;
+import uncertain.testcase.proc.AssertTest;
+import uncertain.testcase.proc.ContextFieldTest;
+import uncertain.testcase.proc.ParticipantRegistryTest;
+import uncertain.testcase.proc.ProcedureRunnerTest;
+import uncertain.testcase.proc.SwitchTest;
 
 
 public class AllTests {
@@ -27,6 +36,7 @@ public class AllTests {
         suite.addTestSuite(SwitchTest.class);
         suite.addTestSuite(AssertTest.class);
         suite.addTestSuite(ContextFieldTest.class);
+        suite.addTestSuite(XMLOutputterTest.class);
         //$JUnit-END$
         return suite;
     }
