@@ -1,10 +1,11 @@
-<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" targetNamespace="http://www.aurora-application.com/schema/">
-
+<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" 
+		   xmlns:ar="http://www.aurora-application.com/schema/">
+<!--
 	<namespaces>
 		<sc:namespace prefix="sc" url="http://www.uncertain-framework.org/schema/simple-schema" />
 		<sc:namespace prefix="ar" url="http://www.aurora-application.com/schema/" />
 	</namespaces>
-
+-->
 	<types>
 		<sc:complexType name="ar:mytype1">
 			<features>
