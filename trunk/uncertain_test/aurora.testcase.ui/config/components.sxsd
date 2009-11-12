@@ -1,7 +1,9 @@
-<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema">
+<sc:schema xmlns:sc="http://www.uncertain-framework.org/schema/simple-schema" xmlns:ar="http://www.aurora-framework.org/apf/schema" >
+<!--
 	<sc:namespaces>
 		<sc:namespace prefix="ar" url="http://www.aurora-framework.org/apf/schema"/>
 	</sc:namespaces>
+-->	
 	<sc:types>
 		<sc:complexType name="ar:FieldBinding">
 			<sc:classes>
