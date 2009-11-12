@@ -1,6 +1,6 @@
 <package>
 	<components>
-		<view-component elementName="model-metadata" builder="aurora.presentation.component.ModelMetaData" />
+		<view-component elementName="dataset" builder="aurora.presentation.component.ModelMetaData" />
 		<!-- this is the example in APFDevelopmentGuide Step 2 -->
 		<view-component elementName="hello" builder="aurora.presentation.TemplateBasedView" />
 				
