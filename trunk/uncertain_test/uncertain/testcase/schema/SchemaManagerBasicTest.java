@@ -100,7 +100,7 @@ public class SchemaManagerBasicTest extends TestCase {
     public void testComponents()
         throws Exception
     {
-        Schema schema = schemaManager.loadSchemaFromClassPath("aurora.testcase.ui.config.components");
+        Schema schema = schemaManager.loadSchemaFromClassPath("uncertain.testcase.schema.components");
         assertNotNull(schema);
         Element element = schemaManager.getElement( new QualifiedName(null,"select") );
         assertNotNull(element);
