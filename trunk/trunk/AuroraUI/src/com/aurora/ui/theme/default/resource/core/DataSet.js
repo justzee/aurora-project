@@ -92,7 +92,16 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         }
     	this.totalPage = Math.ceil(this.totalCount/this.pageSize)
     	for(var i = 0, len = datas.length; i < len; i++){
-    		var record = new Aurora.Record(datas[i].data||datas[i],datas[i].field);
+    		var data = datas[i].data||datas[i];
+    		for(var key in this.fields){
+    			var field = this.fields[key];
+    			var datatype = field.getPropertity('datatype');
+    			if(datatype == 'date'){
+    				var d = Aurora.parseDate(data[key])
+    				data[key] = d;
+    			}
+    		}
+    		var record = new Aurora.Record(data,datas[i].field);
             record.setDataSet(this);
 	        this.data.add(record);
         }
@@ -653,7 +662,7 @@ Aurora.Record.Meta.prototype = {
 
 Aurora.Record.Field = function(c){
     this.name = c.name;
-    this.type = c.type;
+//    this.type = c.type;
     this.pro = c||{};
     this.record;
 };

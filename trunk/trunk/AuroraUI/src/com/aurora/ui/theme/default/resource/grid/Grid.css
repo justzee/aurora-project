@@ -5,6 +5,7 @@
 }
 .grid-lh, .grid-uh {
 	cursor: default;
+	-moz-user-select:none;
 	width:100%;
 	overflow: hidden;
 	background: url(sky_blue_grid.gif) repeat-x;

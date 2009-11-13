@@ -2,11 +2,7 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
 	constructor: function(config) {
         Aurora.Component.superclass.constructor.call(this);
         this.id = config.id || Ext.id();
-        if(Aurora.cmps[this.id] != null) {
-        	alert("错误: ID为' " + this.id +" '的组件已经存在!");
-        	return;
-        }
-        Aurora.cmps[this.id] = this;		
+        Aurora.CmpManager.put(this.id,this)
 		this.initConfig=config;
 		this.initComponent(config);
         this.initEvents();
@@ -20,18 +16,7 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     	this.addEvents('focus','blur','change','invalid','valid');    	
     },
     bind : function(ds, name){
-    	if(this.binder) {
-    		var bds = this.binder.ds;
-    		bds.un('metachange', this.onRefresh, this);
-	    	bds.un('create', this.onCreate, this);
-	    	bds.un('load', this.onRefresh, this);
-	    	bds.un('valid', this.onValid, this);
-	    	bds.un('remove', this.onRemove, this);
-	    	bds.un('clear', this.onClear, this);
-	    	bds.un('update', this.onUpdate, this);
-	    	bds.un('fieldchange', this.onFieldChange, this);
-	    	bds.un('indexchange', this.onRefresh, this);
-    	}
+    	this.removeDataSetListener();
     	this.binder = {
     		ds: ds,
     		name:name
@@ -56,6 +41,26 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     	ds.on('update', this.onUpdate, this);
     	ds.on('fieldchange', this.onFieldChange, this);
     	ds.on('indexchange', this.onRefresh, this);
+    },
+    removeDataSetListener : function(){
+    	if(this.binder) {
+    		var bds = this.binder.ds;
+    		bds.un('metachange', this.onRefresh, this);
+	    	bds.un('create', this.onCreate, this);
+	    	bds.un('load', this.onRefresh, this);
+	    	bds.un('valid', this.onValid, this);
+	    	bds.un('remove', this.onRemove, this);
+	    	bds.un('clear', this.onClear, this);
+	    	bds.un('update', this.onUpdate, this);
+	    	bds.un('fieldchange', this.onFieldChange, this);
+	    	bds.un('indexchange', this.onRefresh, this);
+    	}    	
+    },
+    destroy : function(){
+//    	alert('destroy ' + this.id)
+    	Aurora.CmpManager.remove(this.id);
+    	this.removeDataSetListener();
+    	delete this.wrap;
     },
     onRemove : function(ds, record){
     	if(this.binder.ds == ds && this.record == record){

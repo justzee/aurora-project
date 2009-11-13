@@ -28,10 +28,15 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
         this.wrap.removeClass(this.focusCss);
         this.fireEvent("blur", this);
     },
-//    onBlur : function(){
-////    	Ext.get(document.documentElement).un("mousedown", this.triggerBlur, this);
-////    	Aurora.TriggerField.superclass.onBlur.call(this);
-//    },
+	destroy : function(){
+		if(this.isExpanded()){
+    		this.collapse();
+    	}
+    	this.trigger.un('click',this.onTriggerClick, this)
+    	delete this.trigger;
+    	delete this.popup;
+    	Aurora.TriggerField.superclass.destroy.call(this);
+	},
     triggerBlur : function(e){
     	if(!this.wrap.contains(e.target)){
     		Ext.get(document.documentElement).un("mousedown", this.triggerBlur, this);

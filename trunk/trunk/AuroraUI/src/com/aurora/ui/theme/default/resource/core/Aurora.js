@@ -9,18 +9,68 @@ Aurora.isEmpty = Ext.isEmpty;
 Aurora.fly = Ext.fly;
 Aurora.get= Ext.get;
 
-Aurora.winContainers = [];
+Aurora.fireWindowResize = function(){
+	Aurora.Mask.resizeMask();
+}
+Ext.fly(window).on("resize", Aurora.fireWindowResize, this);
+
 Aurora.cmps = {};
+Aurora.CmpManager = function(){
+    return {
+        put : function(id, cmp){
+        	if(!this.cache) this.cache = {};
+        	if(this.cache[id] != null) {
+	        	alert("错误: ID为' " + id +" '的组件已经存在!");
+	        	return;
+	        }
+        	this.cache[id]=cmp;
+        },
+        getAll : function(){
+        	return this.cache;
+        },
+        remove : function(id){
+        	delete this.cache[id];
+        },
+        get : function(id){
+        	if(!this.cache) return null;
+        	return this.cache[id];
+        }
+    };
+}();
+
 
 Ext.Ajax.on("requestexception", function(conn, response, options){
-	alert('服务器端错误!');
+	switch(response.status){
+		case 404:
+			alert('状态 404: 未找到"'+ response.statusText+'"');
+			break;
+		default:
+			alert('状态 '+ response.status + ' 服务器端错误!');
+			break;
+	}	
 }, this);
-$ = Aurora.getCmp = function(name){
-	var cmp = Aurora.cmps[name]
+$ = Aurora.getCmp = function(id){
+	var cmp = Aurora.CmpManager.get(id)
 	if(!cmp){
-		cmp = Aurora.DataSetManager.get(name)
+		cmp = Aurora.DataSetManager.get(id)
 	}
 	return cmp;
+}
+Aurora.getViewportHeight = function(){
+    if(Ext.isIE){
+        return Ext.isStrict ? document.documentElement.clientHeight :
+                 document.body.clientHeight;
+    }else{
+        return self.innerHeight;
+    }
+}
+Aurora.getViewportWidth = function() {
+    if(Ext.isIE){
+        return Ext.isStrict ? document.documentElement.clientWidth :
+                 document.body.clientWidth;
+    }else{
+        return self.innerWidth;
+    }
 }
 Aurora.request = function(url, para, success, failed, scope){
 	Ext.Ajax.request({
@@ -152,8 +202,10 @@ Aurora.Mask = function(){
 	var m = {
 		container: {},
 		mask : function(el){
+			var screenWidth = Aurora.getViewportWidth();
+    		var screenHeight = Aurora.getViewportHeight();
 			if(!window._mask) {
-				var p = '<DIV style="left:0px;top:0px;width:100%;height:100%;POSITION: absolute;FILTER: alpha(opacity=50);BACKGROUND-COLOR: #cccccc; opacity: 0.5; MozOpacity: 0.5" unselectable="on"></DIV>';
+				var p = '<DIV style="left:0px;top:0px;width:'+screenWidth+'px;height:'+screenHeight+'px;POSITION: absolute;FILTER: alpha(opacity=40);BACKGROUND-COLOR: #000000; opacity: 0.4; MozOpacity: 0.4" unselectable="on"></DIV>';
 				window._mask = Ext.get(Ext.DomHelper.append(Ext.getBody(),p));
 			}
 	    	window._mask.setStyle('z-index', Ext.fly(el).getStyle('z-index') - 1);
@@ -163,6 +215,14 @@ Aurora.Mask = function(){
 				Ext.fly(window._mask).remove();
 				window._mask = null;
 			}
+		},
+		resizeMask : function(){
+			if(window._mask) {
+				var screenWidth = Aurora.getViewportWidth();
+    			var screenHeight = Aurora.getViewportHeight();
+				Ext.fly(window._mask).setWidth(screenWidth);
+				Ext.fly(window._mask).setHeight(screenHeight);
+			}			
 		}
 	}
 	return m;
@@ -253,18 +313,23 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
         	var s = document.createElement("script");
             s.src = js.src;
             s.type = js.type;
-            s[Ext.isIE ? "onreadystatechange" : "onload"] = function(){ 
-            	if(this.readyState && this.readyState == "loading") return; 
-            	loaded ++;
-            	if(loaded==jslink.length) {
-                    for(j=0,k=jsscript.length;j<k;j++){
-	                	var jst = jsscript[j];
-	                	if(window.execScript) {
-	                    	window.execScript(jst);
-	                    } else {
-	                    	window.eval(jst);
-	                    }
-	                }
+            s[Ext.isIE ? "onreadystatechange" : "onload"] = function(){
+            	var isready = Ext.isIE ? (this.readyState == "complete") : true;
+            	if(isready) {            		
+	            	loaded ++;
+	            	if(loaded==jslink.length) {
+	                    for(j=0,k=jsscript.length;j<k;j++){
+		                	var jst = jsscript[j];
+		                	if(window.execScript) {	
+		                    	window.execScript(jst);
+		                    } else {
+		                    	window.eval(jst);
+		                    }
+		                }
+		                if(typeof callback == "function"){
+				            callback();
+				        }
+	            	}
             	}
             };
 			hd.appendChild(s);
@@ -278,13 +343,12 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
                    window.eval(jst);
                 }
             }
-        }
-        
+            if(typeof callback == "function"){
+	            callback();
+	        }
+        }        
         var el = document.getElementById(id);
-        if(el){Ext.removeNode(el);}
-        if(typeof callback == "function"){
-            callback();
-        }
+        if(el){Ext.removeNode(el);}        
         Ext.fly(dom).setStyle('display', '');
     });
     Ext.fly(dom).setStyle('display', 'none');
@@ -324,3 +388,19 @@ Aurora.DataSetManager = function(){
         }
     };
 }();
+
+
+Aurora.parseDate = function(str){      
+  if(typeof str == 'string'){      
+    var results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) *$/);      
+    if(results && results.length>3)      
+      return new Date(parseInt(results[1]),parseInt(results[2]) -1,parseInt(results[3]));       
+    results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) +(\d{1,2}):(\d{1,2}):(\d{1,2}) *$/);      
+    if(results && results.length>6)      
+      return new Date(parseInt(results[1]),parseInt(results[2]) -1,parseInt(results[3]),parseInt(results[4]),parseInt(results[5]),parseInt(results[6]));       
+  }      
+  return null;      
+}
+Aurora.formateDate = function(date){
+	return date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()
+}

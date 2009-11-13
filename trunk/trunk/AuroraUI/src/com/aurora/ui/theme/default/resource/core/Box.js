@@ -1,23 +1,20 @@
-Aurora.Box = Ext.extend(Ext.util.Observable,{
+Aurora.Box = Ext.extend(Aurora.Component,{
 	constructor: function(config) {
-        Aurora.Box.superclass.constructor.call(this);
-        this.id = config.id || Ext.id();		
-        Aurora.cmps[this.id] = this;
-		this.initComponent(config);
-        this.initEvents();
         this.errors = [];
+        Aurora.Box.superclass.constructor.call(this,config);
     },
-    initComponent : function(config){ 
-		config = config || {};
-        Ext.apply(this, config);
-        for(var i=0;i<this.cmps.length;i++){
-    		var cmp = $(this.cmps[i]);
-    		if(cmp){
-	    		cmp.on('valid', this.onValid, this)
-	    		cmp.on('invalid', this.onInvalid,this)
-    		}
-    	}
-    },
+//    initComponent : function(config){ 
+//		config = config || {};
+//        Ext.apply(this, config); 
+        //TODO:所有的组件?
+//        for(var i=0;i<this.cmps.length;i++){
+//    		var cmp = $(this.cmps[i]);
+//    		if(cmp){
+//	    		cmp.on('valid', this.onValid, this)
+//	    		cmp.on('invalid', this.onInvalid,this)
+//    		}
+//    	}
+//    },
     initEvents : function(){
 //    	this.addEvents('focus','blur','change','invalid','valid');    	
     },
