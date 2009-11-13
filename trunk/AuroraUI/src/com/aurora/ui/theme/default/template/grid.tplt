@@ -1,7 +1,7 @@
 <DIV class="item-grid" id="${id}" style="width:${width}px;height:${height}px;${style}">
 	${lockarea}
 	<DIV class="grid-ua" atype="grid.uc" style="width:${unlockwidth}px;">
-		<DIV class="grid-uh" atype="grid.uh" style="height:${headHeight}px;">
+		<DIV class="grid-uh" unselectable="on" onselectstart="return false;" style="-moz-user-select:none;"  atype="grid.uh" style="height:${headHeight}px;">
 			${unlockarea}
 		</DIV>
 		<DIV class="grid-ub"  atype="grid.ub" style="height:${bodyHeight}px">
@@ -11,15 +11,13 @@
 	<DIV atype="grid.spliter" class="grid-sp" style="display:none;"></DIV>
 </DIV>
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-	var grid = new Aurora.Grid({
+	var ${id} = new Aurora.Grid({
 		id:'${id}',
 		width:${width},
 		height:${height},
 		columns:${columns}
 	});
-	grid.bind('${dataset}');
-
-//-->
+	${id}.bind('${dataset}');
+	${events}
 </SCRIPT>
 ${editors}

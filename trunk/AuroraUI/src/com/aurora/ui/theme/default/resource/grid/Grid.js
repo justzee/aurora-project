@@ -1,10 +1,10 @@
 Aurora.Grid = Ext.extend(Aurora.Component,{
 	bgc:'background-color',
 	constructor: function(config){
-		Aurora.Grid.superclass.constructor.call(this,config);
 		this.overIndex = -1;
 		this.selectedIndex = -1;
 		this.lockWidth = 0;
+		Aurora.Grid.superclass.constructor.call(this,config);
 	},
 	initComponent:function(config){
 		Aurora.Grid.superclass.initComponent.call(this, config);
@@ -35,10 +35,11 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
     	//this.onLoad();//test
 	},
 	initEvents:function(){
-		Aurora.Grid.superclass.initEvents.call(this);
-		this.addEvents('select');
+		Aurora.Grid.superclass.initEvents.call(this);   
+		this.addEvents('dblclick','select');
 		this.ub.on('scroll',this.syncScroll, this);
 		this.ub.on('click',this.onClick, this);
+		this.ub.on('dblclick',this.onDblclick, this);
 		this.ub.on('mouseover',this.onMouseOver, this);
 		this.uht.on('mousemove',this.onUnLockHeadMove, this);
 		this.uh.on('mousedown', this.onHeadMouseDown,this);
@@ -84,7 +85,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 			var c = cols[i];
 			var data = {
 				width:c.width,
-				text:this.renderText(c.dataindex,item.data[c.dataindex]||''),
+				text:this.renderText(item,c.dataindex,item.data[c.dataindex]||''),
 				recordid:item.id,
 				visibility: c.hidden == true ? 'hidden' : 'visible',
 				align:c.align||'left',
@@ -95,8 +96,13 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		sb.add('</TR>');
 		return sb.join('');
 	},
-	renderText : function(name,value){
+	renderText : function(record,name,value){
 		var field = this.dataset.getField(name);
+		var col = this.getColByDataIndex(name);
+		if(col.renderer){
+			value = window[col.renderer].call(window,record,name, value);
+			return value;
+		}
 		if(field){
 			var options = field.getOptions();
 			if(options){
@@ -195,7 +201,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 	onUpdate : function(ds,record, name,value){
 		var div = document.getElementById(this.id+'_'+name+'_'+record.id)
 		if(div){ 
-			var text = this.renderText(name, value);
+			var text = this.renderText(record,name, value);
 			Ext.fly(div).update(text);//TODO:要考虑 renderer
 		}
 	},
@@ -237,55 +243,108 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		}
 		return index;
 	},
-	onClick : function(e) {
-		
+	onDblclick : function(e){
 		if(Ext.fly(e.target).hasClass('grid-cell')){
 			var dom = e.target;
 			var rid = Ext.fly(dom).getAttributeNS("","recordid");
 			var record = this.dataset.findById(rid);
-			var index = this.dataset.indexOf(record);
-			if(index == -1)return;
-			if(index != this.selectedIndex);
-			this.selectRow(index);
+			var row = this.dataset.indexOf(record);
 			var dataindex = Ext.fly(dom).getAttributeNS("","dataindex");
-			
-			var col = this.getColByDataIndex(dataindex);
-			
-			this.focusRow(index)
-			
-			var xy = Ext.fly(dom).getXY();
-			var editor = col.editor;			
-			if(col.editorfunction) {
-				editor = window[col.editorfunction].call(window,record)
-			}
-			if(editor){
-				var sf = this;
-				setTimeout(function(){
-					sf.showEditor(dom,editor,xy[0],xy[1],record,dataindex);				
-				},1)
-			}
+			this.fireEvent('dblclick', this, record, row, dataindex)
 		}
 	},
-	showEditor : function(dom,editor,x,y,record,dataindex){
-		var v = record.get(dataindex)
-		this.currentEditor = {
-			record:record,
-			ov:v,
-			dataindex:dataindex,
-			editor:$(editor)
-		};
-		var ed = this.currentEditor.editor;
-		if(ed){
-			ed.setHeight(Ext.fly(dom.parentNode).getHeight()-3)
-			ed.setWidth(Ext.fly(dom.parentNode).getWidth()-6);
-			ed.bind(this.dataset, dataindex);
-			ed.setValue(v,true);
-			if(!ed.wrap.isVisible())ed.setVisible(true);
-			ed.move(x,y)
-			ed.focus();
-			Ext.get(document.documentElement).on("mousedown", this.onEditorBlur, this);
-		}	
+	onClick : function(e) {
+		if(Ext.fly(e.target).hasClass('grid-cell')){
+			var dom = e.target;
+			var rid = Ext.fly(dom).getAttributeNS("","recordid");
+			var record = this.dataset.findById(rid);
+			var row = this.dataset.indexOf(record);
+			var dataindex = Ext.fly(dom).getAttributeNS("","dataindex");
+			this.showEditor(row,dataindex);
+			
+			
+//			if(row != this.selectedIndex);
+//			this.selectRow(row);
+//			
+//			var col = this.getColByDataIndex(dataindex);
+//			this.focusRow(row)
+//			
+//			var xy = Ext.fly(dom).getXY();
+//			var editor = col.editor;			
+//			if(col.editorfunction) {
+//				editor = window[col.editorfunction].call(window,record)
+//			}
+//			if($(editor)){
+//				var sf = this;
+//				setTimeout(function(){
+//					sf.showEditor(dom,editor,xy[0],xy[1],record,dataindex);				
+//				},1)
+//			}
+		}
 	},
+	showEditor : function(row, dataindex){
+		Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
+		if(row == -1)return;
+		var col = this.getColByDataIndex(dataindex);
+		if(!col)return;
+		var record = this.dataset.getAt(row);
+		if(!record)return;
+		if(row != this.selectedIndex);
+		this.selectRow(row);
+		this.focusRow(row)
+		
+		var editor = col.editor;			
+		if(col.editorfunction) {
+			editor = window[col.editorfunction].call(window,record)
+		}
+		if($(editor)){
+			var dom = document.getElementById(this.id+'_'+dataindex+'_'+record.id);
+			var xy = Ext.fly(dom).getXY();
+			var sf = this;
+			setTimeout(function(){
+				var v = record.get(dataindex)
+				sf.currentEditor = {
+					record:record,
+					ov:v,
+					dataindex:dataindex,
+					editor:$(editor)
+				};
+				var ed = sf.currentEditor.editor;
+				ed.setHeight(Ext.fly(dom.parentNode).getHeight()-3)
+				ed.setWidth(Ext.fly(dom.parentNode).getWidth()-6);
+				ed.bind(sf.dataset, dataindex);
+				ed.setValue(v,true);
+				if(!ed.wrap.isVisible())ed.setVisible(true);
+				
+				ed.move(xy[0],xy[1])
+				ed.focus();				
+				Ext.get(document.documentElement).on("mousedown", sf.onEditorBlur, sf);				
+			},1)
+		}
+		
+		
+		
+	},
+//	showEditor : function(dom,editor,x,y,record,dataindex){
+//		var v = record.get(dataindex)
+//		this.currentEditor = {
+//			record:record,
+//			ov:v,
+//			dataindex:dataindex,
+//			editor:$(editor)
+//		};
+//		var ed = this.currentEditor.editor;
+//		ed.setHeight(Ext.fly(dom.parentNode).getHeight()-3)
+//		ed.setWidth(Ext.fly(dom.parentNode).getWidth()-6);
+//		ed.bind(this.dataset, dataindex);
+//		ed.setValue(v,true);
+//		if(!ed.wrap.isVisible())ed.setVisible(true);
+//		
+//		ed.move(x,y)
+//		ed.focus();
+//		Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
+//		Ext.get(document.documentElement).on("mousedown", this.onEditorBlur, this);
+//	},
 	focusRow : function(row){
 		var stop = this.ub.getScroll().top;
 		if(row*24<stop){
@@ -388,6 +447,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		if(this.selectlockTr)this.selectlockTr.setStyle(this.bgc,'#ffe3a8');
 		var r = (this.dataset.currentPage-1)*this.dataset.pageSize + row+1
 		if(locate!==false && r != null) this.dataset.locate(r);
+//		this.fireEvent('select', this)
 	},
 	setColumnSize : function(dataindex, size){
 		var columns = this.columns;

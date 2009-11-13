@@ -12,7 +12,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(config.options) this.setOptions(config.options);		
 	},
 	initEvents:function(){
-		Aurora.ComboBox.superclass.initEvents.call(this);  
+		Aurora.ComboBox.superclass.initEvents.call(this);
 	},
 	onTriggerClick : function() {
 		this.doQuery('',true);
@@ -49,10 +49,11 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	onRender:function(){			
         if(!this.view){
-        	this.view=new Aurora.Element(document.createElement('ul'));
+        	this.popup.update('<ul></ul>');
+			this.view=this.popup.child('ul');
 			this.view.on('click', this.onViewClick,this);
 			this.view.on('mouseover',this.onViewOver,this);
-			this.view.on('mousemove',this.onViewMove,this);			
+			this.view.on('mousemove',this.onViewMove,this);
         }
         
         if(this.rendered===false && this.optionDataSet){
@@ -121,12 +122,13 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valuefield+'}">{'+this.displayfield+'}&#160;</li>');
 		var datas = this.optionDataSet.getAll();
 		var l=datas.length;
+		var sb = [];
 		for(var i=0;i<l;i++){
 			var d = Aurora.apply(datas[i].data, {index:i})
-			this.litp.append(this.view,d);	//等数据源明确以后再修改		
+			sb.add(this.litp.applyTemplate(d));	//等数据源明确以后再修改		
 		}
 		if(l!=0){
-			this.view.appendTo(this.popup);	
+			this.view.update(sb.join(''));			
 		}
 	},
 	refresh:function(){
@@ -149,18 +151,17 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	getNode:function(index){		
 		return this.view.dom.childNodes[index];
 	},	
-//	onDestroy:function(){
-//		if(this.view){
-//			Aurora.destroy(this.view);			     
-//		}		
-//	},
+	destroy : function(){
+		if(this.view){
+			this.view.un('click', this.onViewClick,this);
+			this.view.un('mouseover',this.onViewOver,this);
+			this.view.un('mousemove',this.onViewMove,this);
+		}
+		delete this.view;
+    	Aurora.ComboBox.superclass.destroy.call(this);
+	},
 	getText : function() {		
 		return this.text;
-	},	
-	getValue : function() {
-		var v= this.value;
-		v=(v === null || v === undefined ? '' : v);
-		return v;
 	},
 	processValue : function(rv){
 		var r = this.optionDataSet == null ? null : this.optionDataSet.find(this.displayfield, rv);

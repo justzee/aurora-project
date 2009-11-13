@@ -1,19 +1,13 @@
-Aurora.DateField = Ext.extend(Ext.util.Observable, {
-	constructor: function(elId, config) {	
-        config = config || {};
-        Ext.apply(this, config);
-        if(typeof(elId) == "string") Aurora.cmps[elId] = this;
-        Aurora.DateField.superclass.constructor.call(this);     
-
-        this.wrap = typeof(elId) == "string" ? Ext.get(elId) : elId;
-        this.table = this.wrap.child("table");        
-        this.tbody = this.wrap.child("tbody").dom;
-        this.initComponent();
-        this.initEvents();	
-		
+Aurora.DateField = Ext.extend(Aurora.Component, {
+	constructor: function(config) {
+        Aurora.DateField.superclass.constructor.call(this,config); 
 		this.draw();
     },
-    initComponent : function(){
+    initComponent : function(config){
+    	Aurora.DateField.superclass.initComponent.call(this, config);
+    	this.wrap = typeof(config.container) == "string" ? Ext.get(config.container) : config.container;
+        this.table = this.wrap.child("table");        
+        this.tbody = this.wrap.child("tbody").dom;
     	this.days = [];
     	this.selectDays = this.selectDays||[];
     	this.date = this.date||new Date();
@@ -22,9 +16,10 @@ Aurora.DateField = Ext.extend(Ext.util.Observable, {
     	this.preMonthBtn = this.wrap.child("div.item-dateField-pre");
     	this.nextMonthBtn = this.wrap.child("div.item-dateField-next");
     	this.yearSpan = this.wrap.child("span.item-dateField-year");
-    	this.monthSpan = this.wrap.child("span.item-dateField-month");    	
+    	this.monthSpan = this.wrap.child("span.item-dateField-month");
     },
-    initEvents : function(){   	
+    initEvents : function(){
+    	Aurora.DateField.superclass.initEvents.call(this);    
     	this.preMonthBtn.on("click", this.preMonth, this);
     	this.nextMonthBtn.on("click", this.nextMonth, this);
     	this.table.on("click", this.onSelect, this);
@@ -32,6 +27,20 @@ Aurora.DateField = Ext.extend(Ext.util.Observable, {
     	this.table.on("mouseout", this.mouseOut, this)
     	this.addEvents('select');
     },
+    destroy : function(){
+    	this.preMonthBtn.un("click", this.preMonth, this);
+    	this.nextMonthBtn.un("click", this.nextMonth, this);
+    	this.table.un("click", this.onSelect, this);
+    	this.table.un("mouseover", this.mouseOver, this);
+    	this.table.un("mouseout", this.mouseOut, this)
+		delete this.preMonthBtn;
+    	delete this.nextMonthBtn;
+    	delete this.yearSpan;
+    	delete this.monthSpan; 
+    	delete this.table;        
+        delete this.tbody;
+    	Aurora.DateField.superclass.destroy.call(this);
+	},
     mouseOut: function(e){
     	if(this.overTd) Ext.fly(this.overTd).removeClass('dateover');
     },
@@ -138,7 +147,7 @@ Aurora.DateField = Ext.extend(Ext.util.Observable, {
 						//判断是否今日
 						this.isSame(on, new Date()) && this.onToday(cell);
 						//判断是否选择日期
-						//this.selectDay && this.isSame(on, this.selectDay) && this.onSelectDay(cell);
+						this.selectDay && this.isSame(on, this.selectDay) && this.onSelectDay(cell);
 					}
 				}
 				row.appendChild(cell);

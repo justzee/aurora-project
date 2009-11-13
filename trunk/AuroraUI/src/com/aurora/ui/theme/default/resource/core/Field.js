@@ -35,6 +35,19 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.el.on("mouseout", this.onMouseOut, this);
     	
     },
+    destroy : function(){
+    	Aurora.Field.superclass.destroy.call(this);
+    	this.el.un(Ext.isIE || Ext.isSafari3 ? "keydown" : "keypress", this.fireKey,  this);
+    	this.el.un("focus", this.onFocus,  this);
+    	this.el.un("blur", this.onBlur,  this);
+    	this.el.un("change", this.onChange, this);
+    	this.el.un("keyup", this.onKeyUp, this);
+        this.el.un("keydown", this.onKeyDown, this);
+        this.el.un("keypress", this.onKeyPress, this);
+        this.el.un("mouseover", this.onMouseOver, this);
+        this.el.un("mouseout", this.onMouseOut, this);
+    	delete this.el;
+    },
 	setWidth: function(w){
 		this.wrap.setStyle("width",(w+3)+"px");
 		this.el.setStyle("width",w+"px");
@@ -89,8 +102,8 @@ Aurora.Field = Ext.extend(Aurora.Component,{
             this.startValue = this.getValue();
             this.select.defer(10,this);
             this.fireEvent("focus", this);
-            if(this.emptyText){
-	            if(this.el.dom.value == this.emptyText){
+            if(this.emptytext){
+	            if(this.el.dom.value == this.emptytext){
 	                this.setRawValue('');
 	            }
 	            this.wrap.removeClass(this.emptyTextCss);
@@ -114,10 +127,9 @@ Aurora.Field = Ext.extend(Aurora.Component,{
         this.wrap.removeClass(this.focusCss);
         this.fireEvent("blur", this);
     },
-    
     setValue : function(v, silent){
     	Aurora.Field.superclass.setValue.call(this,v, silent);
-    	if(this.emptyText && this.el && v !== undefined && v !== null && v !== ''){
+    	if(this.emptytext && this.el && v !== undefined && v !== null && v !== ''){
             this.wrap.removeClass(this.emptyTextCss);
         }
         this.el.dom.value = this.formatValue((v === null || v === undefined ? '' : v));
@@ -128,13 +140,15 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     },
     getRawValue : function(){
         var v = this.el.getValue();
-        if(v === this.emptyText || v === undefined){
+        if(v === this.emptytext || v === undefined){
             v = '';
         }
         return v;
     },
     getValue : function(){
-    	return this.value;
+    	var v= this.value;
+		v=(v === null || v === undefined ? '' : v);
+		return v;
     },
     setRequired : function(required){
     	if(this.crrentRequired == required)return;
@@ -157,8 +171,8 @@ Aurora.Field = Ext.extend(Aurora.Component,{
     	}
     },
     applyEmptyText : function(){
-        if(this.emptyText && this.getRawValue().length < 1){
-            this.setRawValue(this.emptyText);
+        if(this.emptytext && this.getRawValue().length < 1){
+            this.setRawValue(this.emptytext);
             this.wrap.addClass(this.emptyTextCss);
         }
     },
