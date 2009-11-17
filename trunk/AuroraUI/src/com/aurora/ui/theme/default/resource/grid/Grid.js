@@ -192,7 +192,8 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 	onIndexChange:function(ds, r){
 		var index = this.getDataIndex(r.id);
 		if(index == -1)return;
-		if(index != this.selectedIndex);
+//		alert(r.id + " " + this.selectRecord.id)
+		if(r != this.selectRecord)
 		this.selectRow(index, false);
 	},
 	onCreate : function(){
@@ -325,26 +326,6 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		
 		
 	},
-//	showEditor : function(dom,editor,x,y,record,dataindex){
-//		var v = record.get(dataindex)
-//		this.currentEditor = {
-//			record:record,
-//			ov:v,
-//			dataindex:dataindex,
-//			editor:$(editor)
-//		};
-//		var ed = this.currentEditor.editor;
-//		ed.setHeight(Ext.fly(dom.parentNode).getHeight()-3)
-//		ed.setWidth(Ext.fly(dom.parentNode).getWidth()-6);
-//		ed.bind(this.dataset, dataindex);
-//		ed.setValue(v,true);
-//		if(!ed.wrap.isVisible())ed.setVisible(true);
-//		
-//		ed.move(x,y)
-//		ed.focus();
-//		Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
-//		Ext.get(document.documentElement).on("mousedown", this.onEditorBlur, this);
-//	},
 	focusRow : function(row){
 		var stop = this.ub.getScroll().top;
 		if(row*24<stop){
@@ -360,7 +341,6 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 			var ed = this.currentEditor.editor;
 			ed.blur();
 			ed.move(-10000,-10000)
-//			ed.setVisible(false);
 		}
 	},
 	onEditorBlur : function(e){
@@ -440,12 +420,14 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		this.selectedIndex = row;
 		if(this.selectlockTr) this.selectlockTr.setStyle(this.bgc,'');
 		if(this.selectUnlockTr) this.selectUnlockTr.setStyle(this.bgc,'');
+		var s = new Date();
 		this.selectUnlockTr = Ext.get(document.getElementById(this.id+'$u-'+row));
 		if(this.selectUnlockTr)this.selectUnlockTr.setStyle(this.bgc,'#ffe3a8');
 		
 		this.selectlockTr = Ext.get(document.getElementById(this.id+'$l-'+row));
 		if(this.selectlockTr)this.selectlockTr.setStyle(this.bgc,'#ffe3a8');
-		var r = (this.dataset.currentPage-1)*this.dataset.pageSize + row+1
+		var r = (this.dataset.currentPage-1)*this.dataset.pageSize + row+1;
+		this.selectRecord = this.dataset.getAt(row) 
 		if(locate!==false && r != null) this.dataset.locate(r);
 //		this.fireEvent('select', this)
 	},

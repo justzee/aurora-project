@@ -13,7 +13,7 @@
 	border-bottom:1px solid #a4bed4;
 }
 .grid-lb table, .grid-lh table,  .grid-uh table, .grid-ub table{
-	 table-layout:fixed;
+	table-layout:fixed;
 }
 .grid-hl{
 	position:static !important;
@@ -49,7 +49,6 @@
 	overflow: hidden;
 }
 .grid-ub{
-	width:100%;
 	CURSOR: default;
 	overflow: auto;
 }
