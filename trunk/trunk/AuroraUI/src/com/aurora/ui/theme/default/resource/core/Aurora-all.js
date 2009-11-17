@@ -1624,3 +1624,399 @@ Aurora.Box = Ext.extend(Aurora.Component,{
     	}
     }
 });
+Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {	
+	maxHeight:200,
+	blankOption:true,
+	rendered:false,
+	selectedClass:'item-comboBox-selected',	
+	currentNodeClass:'item-comboBox-current',
+	constructor : function(config) {
+		Aurora.ComboBox.superclass.constructor.call(this, config);		
+	},
+	initComponent:function(config){
+		Aurora.ComboBox.superclass.initComponent.call(this, config);
+		if(config.options) this.setOptions(config.options);		
+	},
+	initEvents:function(){
+		Aurora.ComboBox.superclass.initEvents.call(this);
+	},
+	onTriggerClick : function() {
+		this.doQuery('',true);
+		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
+	},
+	expand:function(){
+		if(!this.optionDataSet)return;
+		if(this.rendered===false)this.initQuery();
+		Aurora.ComboBox.superclass.expand.call(this);
+		var v=this.getValue();
+		this.currentIndex = this.getIndex(v);
+		if (!Ext.isEmpty(v)) {				
+			if(this.selectedIndex)Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
+			Ext.fly(this.getNode(this.currentIndex)).addClass(this.currentNodeClass);
+			this.selectedIndex = this.currentIndex;
+		}		
+	},
+	collapse:function(){
+		Aurora.ComboBox.superclass.collapse.call(this);
+		if(this.currentIndex!==undefined)
+		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
+	},
+	setOptions : function(name){
+		var ds = name
+		if(typeof(name)==='string'){
+			ds = $(name);
+		}
+		if(this.currentOptions != ds){
+			this.optionDataSet = ds;
+			this.rendered = false;
+			this.currentOptions = ds;
+		}
+		if(!Ext.isEmpty(this.value))this.setValue(this.value, true)
+	},
+	onRender:function(){			
+        if(!this.view){
+        	this.popup.update('<ul></ul>');
+			this.view=this.popup.child('ul');
+			this.view.on('click', this.onViewClick,this);
+			this.view.on('mouseover',this.onViewOver,this);
+			this.view.on('mousemove',this.onViewMove,this);
+        }
+        
+        if(this.rendered===false && this.optionDataSet){
+			this.initList();
+			var l = this.optionDataSet.getAll().length;
+			var widthArray = [];
+			for(var i=0;i<l;i++){
+				var li=this.view.dom.childNodes[i];
+				var width=Aurora.TextMetrics.measure(li,li.innerHTML).width;
+				widthArray.push(width);
+			}		
+			if(l==0){				
+//				this.popup.setHeight(this.miniHeight);
+//				this.popup.setWidth(this.wrap.getWidth());
+			}else{
+				widthArray=widthArray.sort(function(a,b){return a-b});
+				var maxWdith=widthArray[l-1]+20;			
+				this.popup.setWidth(Math.max(this.wrap.getWidth(),maxWdith));
+				if(this.popup.getHeight()>this.maxHeight){				
+					this.popup.setHeight(this.maxHeight);
+				}
+			}
+			this.rendered = true;
+		}       
+	},
+	onViewClick:function(e,t){
+		if(t.tagName!='LI'){
+		    return;
+		}		
+		this.onSelect(t);
+		this.collapse();		
+	},	
+	onViewOver:function(e,t){
+		this.inKeyMode = false;
+	},
+	onViewMove:function(e,t){	
+		if(this.inKeyMode){ // prevent key nav and mouse over conflicts
+            return;
+        }
+        var index = t.tabIndex;        
+        this.selectItem(index);        
+	},
+	onSelect:function(target){
+		var value =target.attributes['itemValue'].value;
+		this.setValue(value);
+//		this.focus()
+	},
+	initQuery:function(){//事件定义中调用
+		this.doQuery(this.getText());
+	},
+	doQuery : function(q,forceAll) {		
+		if(q === undefined || q === null){
+			q = '';
+	    }		
+//		if(forceAll){
+//            this.store.clearFilter();
+//        }else{
+//            this.store.filter(this.displayField, q);
+//        }
+        
+		//值过滤先不添加
+		this.onRender();	
+	},
+	initList: function(){	
+		this.refresh();
+		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valuefield+'}">{'+this.displayfield+'}&#160;</li>');
+		var datas = this.optionDataSet.getAll();
+		var l=datas.length;
+		var sb = [];
+		for(var i=0;i<l;i++){
+			var d = Aurora.apply(datas[i].data, {index:i})
+			sb.add(this.litp.applyTemplate(d));	//等数据源明确以后再修改		
+		}
+		if(l!=0){
+			this.view.update(sb.join(''));			
+		}
+	},
+	refresh:function(){
+		this.view.update('');
+		this.selectedIndex = null;
+	},
+	selectItem:function(index){
+		if(Aurora.isEmpty(index)){
+			return;
+		}	
+		var node = this.getNode(index);			
+		if(node.tabIndex!=this.selectedIndex){
+			if(!Aurora.isEmpty(this.selectedIndex)){							
+				Aurora.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
+			}
+			this.selectedIndex=node.tabIndex;			
+			Aurora.fly(node).addClass(this.selectedClass);					
+		}			
+	},
+	getNode:function(index){		
+		return this.view.dom.childNodes[index];
+	},	
+	destroy : function(){
+		if(this.view){
+			this.view.un('click', this.onViewClick,this);
+			this.view.un('mouseover',this.onViewOver,this);
+			this.view.un('mousemove',this.onViewMove,this);
+		}
+		delete this.view;
+    	Aurora.ComboBox.superclass.destroy.call(this);
+	},
+	getText : function() {		
+		return this.text;
+	},
+	processValue : function(rv){
+		var r = this.optionDataSet == null ? null : this.optionDataSet.find(this.displayfield, rv);
+		if(r != null){
+			return r.get(this.valuefield);
+		}else{
+			return this.value;
+		}
+	},
+	formatValue : function(){
+		var v = this.getValue();
+		var r = this.optionDataSet == null ? null : this.optionDataSet.find(this.valuefield, v);
+		this.text = '';
+		if(r != null){
+			this.text = r.get(this.displayfield);
+		}else{
+//			this.value = ''
+		}
+		return this.text;
+	},
+//	setValue:function(v,silent){
+//        Aurora.ComboBox.superclass.setValue.call(this, v, silent);
+//	},
+	getIndex:function(v){
+		var datas = this.optionDataSet.getAll();		
+		var l=datas.length;
+		for(var i=0;i<l;i++){
+			if(datas[i].data[this.valuefield]==v){				
+				return i;
+			}
+		}		
+	}
+});
+Aurora.DateField = Ext.extend(Aurora.Component, {
+	constructor: function(config) {
+        Aurora.DateField.superclass.constructor.call(this,config); 
+		this.draw();
+    },
+    initComponent : function(config){
+    	Aurora.DateField.superclass.initComponent.call(this, config);
+    	this.wrap = typeof(config.container) == "string" ? Ext.get(config.container) : config.container;
+        this.table = this.wrap.child("table");        
+        this.tbody = this.wrap.child("tbody").dom;
+    	this.days = [];
+    	this.selectDays = this.selectDays||[];
+    	this.date = this.date||new Date();
+		this.year = this.date.getFullYear();
+		this.month = this.date.getMonth() + 1;
+    	this.preMonthBtn = this.wrap.child("div.item-dateField-pre");
+    	this.nextMonthBtn = this.wrap.child("div.item-dateField-next");
+    	this.yearSpan = this.wrap.child("span.item-dateField-year");
+    	this.monthSpan = this.wrap.child("span.item-dateField-month");
+    },
+    initEvents : function(){
+    	Aurora.DateField.superclass.initEvents.call(this);    
+    	this.preMonthBtn.on("click", this.preMonth, this);
+    	this.nextMonthBtn.on("click", this.nextMonth, this);
+    	this.table.on("click", this.onSelect, this);
+    	this.table.on("mouseover", this.mouseOver, this);
+    	this.table.on("mouseout", this.mouseOut, this)
+    	this.addEvents('select');
+    },
+    destroy : function(){
+    	this.preMonthBtn.un("click", this.preMonth, this);
+    	this.nextMonthBtn.un("click", this.nextMonth, this);
+    	this.table.un("click", this.onSelect, this);
+    	this.table.un("mouseover", this.mouseOver, this);
+    	this.table.un("mouseout", this.mouseOut, this)
+		delete this.preMonthBtn;
+    	delete this.nextMonthBtn;
+    	delete this.yearSpan;
+    	delete this.monthSpan; 
+    	delete this.table;        
+        delete this.tbody;
+    	Aurora.DateField.superclass.destroy.call(this);
+	},
+    mouseOut: function(e){
+    	if(this.overTd) Ext.fly(this.overTd).removeClass('dateover');
+    },
+    mouseOver: function(e){
+    	if(this.overTd) Ext.fly(this.overTd).removeClass('dateover');
+    	if(Ext.fly(e.target).hasClass('item-day') && e.target.date != 0){
+    		this.overTd = e.target; 
+    		Ext.fly(this.overTd).addClass('dateover');
+    	}
+    	
+    },
+    onSelect: function(e){
+    	if(this.singleSelect === false){
+    		
+    	}else{
+    		if(this.selectedDay) Ext.fly(this.selectedDay).removeClass('onSelect');
+    		if(Ext.fly(e.target).hasClass('item-day') && e.target.date != 0){
+	    		this.selectedDay = e.target; 
+	    		this.onSelectDay(this.selectedDay);
+	    		this.fireEvent('select', this, this.selectedDay.date);
+	    	}
+    	}
+    },
+	onSelectDay: function(o){
+		if(!Ext.fly(o).hasClass('onSelect'))Ext.fly(o).addClass('onSelect');
+	},
+	//在选择日期触发
+	onToday: function(o){
+		o.className = "onToday";
+	},//在当天日期触发
+	afterFinish: function(){
+		for(var i=0;i<this.selectDays.length;i++){
+			var d = this.selectDays[i];
+			if(d.getFullYear() == this.year && d.getMonth()+1 == this.month){
+				this.onSelectDay(this.days[d.getDate()]);
+			}
+		}		
+	},
+    //当前月
+	nowMonth: function() {
+		this.predraw(new Date());
+	},
+	//上一月
+	preMonth: function() {
+		this.predraw(new Date(this.year, this.month - 2, 1));
+	},
+	//下一月
+	nextMonth: function() {
+		this.predraw(new Date(this.year, this.month, 1));
+	},
+	//上一年
+	preYear: function() {
+		this.predraw(new Date(this.year - 1, this.month - 1, 1));
+	},
+	//下一年
+	nextYear: function() {
+		this.predraw(new Date(this.year + 1, this.month - 1, 1));
+	},
+  	//根据日期画日历
+  	predraw: function(date) {
+		//再设置属性
+		this.year = date.getFullYear(); this.month = date.getMonth() + 1;
+		//重新画日历
+		this.draw();
+  	},
+  	//画日历
+	draw: function() {
+//		return;
+		//用来保存日期列表
+		var arr = [];
+		//用当月第一天在一周中的日期值作为当月离第一天的天数
+		for(var i = 1, firstDay = new Date(this.year, this.month - 1, 1).getDay(); i <= firstDay; i++){ 
+			arr.push(0); 
+		}
+		//用当月最后一天在一个月中的日期值作为当月的天数
+		for(var i = 1, monthDay = new Date(this.year, this.month, 0).getDate(); i <= monthDay; i++){ 
+			arr.push(i); 
+		}
+		//清空原来的日期对象列表
+		this.days = [];
+		//先清空内容再插入(ie的table不能用innerHTML)
+		while(this.tbody.hasChildNodes()){ 
+			this.tbody.removeChild(this.tbody.firstChild); 
+		}
+		
+		//插入日期
+//		if(!this.tbody) this.tbody = document.createElement("TBODY");
+		while(arr.length){
+			//每个星期插入一个tr
+			var row = document.createElement("tr");
+			//每个星期有7天
+			for(var i = 1; i <= 7; i++){
+				var cell = document.createElement("td"); 
+				cell.className = "item-day";
+				cell.innerHTML = "&nbsp;";
+				cell.date=0;
+				if(arr.length){
+					var d = arr.shift();
+					if(d){
+						cell.innerHTML = d;
+						this.days[d] = cell;
+						var on = new Date(this.year, this.month - 1, d);
+						cell.date=on;
+						//判断是否今日
+						this.isSame(on, new Date()) && this.onToday(cell);
+						//判断是否选择日期
+						this.selectDay && this.isSame(on, this.selectDay) && this.onSelectDay(cell);
+					}
+				}
+				row.appendChild(cell);
+			}
+			this.tbody.appendChild(row);
+		}
+		
+		
+		this.yearSpan.dom.innerHTML = this.year; 
+		this.monthSpan.dom.innerHTML = this.month;
+		this.afterFinish();
+	},
+	//判断是否同一日
+	isSame: function(d1, d2) {
+		return (d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate());
+	}
+});
+Aurora.DatePicker = Ext.extend(Aurora.TriggerField,{
+	constructor: function(config) {
+        Aurora.DatePicker.superclass.constructor.call(this, config);        
+    },
+    initComponent : function(config){
+    	Aurora.DatePicker.superclass.initComponent.call(this,config);
+    	if(!this.dateField){
+    		var cfg = {id:this.id+'_df',container:this.popup}
+	    	this.dateField = new Aurora.DateField(cfg);
+	    	this.dateField.on("select", this.onSelect, this);
+    	}
+    },
+    onSelect: function(dateField, date){
+    	this.setValue(date)
+    	this.collapse();
+    },
+    setValue:function(v,silent){
+        Aurora.DatePicker.superclass.setValue.call(this, v, silent);
+        this.dateField.selectDay = this.getValue();
+        this.dateField.predraw(this.getValue());
+	},
+    formatValue : function(date){
+    	if(date instanceof Date) {
+    		return Aurora.formateDate(date);
+    	}else{
+    		return date;
+    	}
+    },
+    destroy : function(){
+    	Aurora.DatePicker.superclass.destroy.call(this);
+	}
+});
