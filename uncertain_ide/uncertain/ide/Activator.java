@@ -7,13 +7,10 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -22,8 +19,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
+import uncertain.pkg.PackageManager;
 import uncertain.schema.Element;
 import uncertain.schema.Schema;
 import uncertain.schema.SchemaConstant;
@@ -99,10 +96,65 @@ public class Activator extends AbstractUIPlugin {
 		return ResourcesPlugin.getWorkspace();
 	}
 	public static SchemaManager getSchemaManager(){
+//		if(schemaManager != null)
+//			return schemaManager;
+////		schemaManager = new SchemaManager();
+//		schemaManager = SchemaManager.getDefaultInstance();
+//		return schemaManager;
 		if(schemaManager != null)
-			return schemaManager;
-//		schemaManager = new SchemaManager();
+		return schemaManager;
+		PackageManager pkgManager = new PackageManager();
+		try {
+//			Path path = new Path("schema");
+//			String filePath = FileLocator.resolve(
+//					FileLocator.find(Activator.getDefault().getBundle(), path,
+//							null)).getPath();
+			String sxsdDir = Activator.getDefault().getPreferenceStore().getString(Common.SXSD_DIRECTORY);
+			System.out.println("SXSD_DIRECTORY1:"+sxsdDir);
+			
+			if(sxsdDir ==null || sxsdDir.equals("")){
+				showSxsdDirHint();
+			}
+			pkgManager.loadPackgeDirectory(sxsdDir);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage());
+		} // 将该目录下面所有的子目录作为package装载
+
 		schemaManager = SchemaManager.getDefaultInstance();
+		schemaManager.addAll( pkgManager.getSchemaManager() );
+
+		return schemaManager;
+	}
+	private static void showSxsdDirHint(){
+		Shell shell = new Shell();
+		MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING
+				| SWT.OK);
+		messageBox.setText("Warning");
+		messageBox.setMessage("尚未设置sxsd目录，请先设置");
+		messageBox.open();
+	}
+	
+	public static SchemaManager refeshSchemaManager(){
+
+		PackageManager pkgManager = new PackageManager();
+		try {
+//			Path path = new Path("schema");
+//			String filePath = FileLocator.resolve(
+//					FileLocator.find(Activator.getDefault().getBundle(), path,
+//							null)).getPath();
+			String sxsdDir = Activator.getDefault().getPreferenceStore().getString(Common.SXSD_DIRECTORY);
+			System.out.println("SXSD_DIRECTORY1:"+sxsdDir);
+			
+			if(sxsdDir ==null || sxsdDir.equals("")){
+				showSxsdDirHint();
+			}
+			pkgManager.loadPackgeDirectory(sxsdDir);
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage());
+		} // 将该目录下面所有的子目录作为package装载
+		schemaManager = SchemaManager.getDefaultInstance();
+		schemaManager.addAll( pkgManager.getSchemaManager() );
+
 		return schemaManager;
 	}
 	public static void main(String[] args){
