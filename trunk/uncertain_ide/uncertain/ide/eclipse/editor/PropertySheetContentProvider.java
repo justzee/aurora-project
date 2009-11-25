@@ -10,7 +10,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.ICategory;
+import uncertain.ide.Activator;
+import uncertain.ide.eclipse.action.IPropertyCategory;
 import uncertain.schema.Attribute;
 import uncertain.schema.Category;
 import uncertain.schema.ISchemaManager;
@@ -34,19 +35,19 @@ public class PropertySheetContentProvider implements IStructuredContentProvider 
 //	public static Set Categorys = new TreeSet(); 
 //	public static List Categorys = new ArrayList(); 
 	public static HashMap Categorys = new HashMap();
-	ICategory mDirtyObject;
-    public PropertySheetContentProvider(ISchemaManager schemaManager,ICategory mDirtyObject) {
+	IPropertyCategory mDirtyObject;
+    public PropertySheetContentProvider(IPropertyCategory mDirtyObject) {
         super();
-        mSchemaManager = schemaManager;
         this.mDirtyObject = mDirtyObject;
     }
 
-    ISchemaManager      mSchemaManager;
+//    ISchemaManager      mSchemaManager;
     
     public Object[] getElements(Object inputElement) {
     	Categorys.clear();
         CompositeMap    map = (CompositeMap)inputElement;
 //        System.out.println(map.toXML());
+        ISchemaManager mSchemaManager  = Activator.getSchemaManager();
         CompositeMapEditor editor = new CompositeMapEditor(mSchemaManager, map);
         AttributeValue[] avs =  editor.getAttributeList();
         if(!mDirtyObject.IsCategory())

@@ -7,8 +7,6 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import aurora_ide.Activator;
-
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 

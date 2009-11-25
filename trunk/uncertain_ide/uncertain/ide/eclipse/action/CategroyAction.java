@@ -3,28 +3,31 @@ package uncertain.ide.eclipse.action;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import aurora_ide.Activator;
-
-import uncertain.ide.eclipse.editor.service.ServicePropertyEditor;
+import uncertain.ide.eclipse.editor.ActionLabelManager;
 
 public class CategroyAction extends Action {
 	
-	private IPropertyCategory mDirtyAction;
-	public CategroyAction(IPropertyCategory dirtyObject) {
+	private IPropertyCategory viewer;
+	public CategroyAction(IPropertyCategory viewer) {
+		this.viewer = viewer;
+	}
+	public CategroyAction(IPropertyCategory viewer,ImageDescriptor imageDescriptor,String text) {
 		// 正常情况下的图标
-		setHoverImageDescriptor(getImageDescriptor());
+		if(imageDescriptor != null)
+			setHoverImageDescriptor(imageDescriptor);
 		// 置灰（removeAction.setEnabled(false)）情况下的图标
 		// setDisabledImageDescriptor(getImageDesc("disremove.gif"));
-		setText("分组显示");
-		mDirtyAction = dirtyObject;
+		if(text != null)
+			setText(text);
+		this.viewer = viewer;
 	}
 
+
 	public void run() {
-		mDirtyAction.setIsCategory(true);
-		mDirtyAction.refresh();
+		viewer.setIsCategory(true);
+		viewer.refresh(false);
 	}
-	public ImageDescriptor getImageDescriptor(){
-		ImageDescriptor imageDescriptor = Activator.getImageDescriptor("icons/category.gif");
-		return imageDescriptor;
+	public static ImageDescriptor getDefaultImageDescriptor(){
+		return ActionLabelManager.getImageDescriptor(ActionLabelManager.CATEGORY);
 	}
 }

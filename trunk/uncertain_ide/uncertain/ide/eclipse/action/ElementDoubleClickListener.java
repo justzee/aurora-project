@@ -4,18 +4,16 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.service.ServiceShell;
+import uncertain.ide.eclipse.editor.AuroraShell;
 
 public class ElementDoubleClickListener implements IDoubleClickListener {
-	IDirty mDirtyAction;
-	public ElementDoubleClickListener(IDirty dirtyAction){
-		this.mDirtyAction = dirtyAction;
+	IDirty viewer;
+	public ElementDoubleClickListener(IDirty viewer){
+		this.viewer = viewer;
 	}
 	
 	public void doubleClick(DoubleClickEvent event) {
@@ -26,7 +24,7 @@ public class ElementDoubleClickListener implements IDoubleClickListener {
 
 			final CompositeMap oldCopyData = new CompositeMap(data);
 			// System.out.println("oldCopyData:"+oldCopyData.toXML());
-			ServiceShell editor = new ServiceShell(mDirtyAction,data);
+			AuroraShell editor = new AuroraShell(viewer,data);
 			// editor.start();
 			Shell shell = new Shell(SWT.MIN | SWT.MAX | SWT.DIALOG_TRIM
 					| SWT.APPLICATION_MODAL);

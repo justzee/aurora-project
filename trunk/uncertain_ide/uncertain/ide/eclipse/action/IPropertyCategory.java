@@ -3,8 +3,12 @@
  */
 package uncertain.ide.eclipse.action;
 
-import org.eclipse.jface.viewers.ColumnViewer;
+import uncertain.composite.CompositeMap;
+import uncertain.schema.editor.AttributeValue;
 
-public interface IPropertyCategory extends ICategory{
-	public void refresh();
+public interface IPropertyCategory extends IViewer{
+	public  CompositeMap getInput();
+	public  AttributeValue getFocusData();
+	public boolean IsCategory();
+	public void setIsCategory(boolean isCategory);
 }

@@ -144,7 +144,7 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() {
-		String xmlHint = "<?xml version=\"1.0\" encoding=\"GB2312\"?>";
+		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		String contents =xmlHint+rootElement.toXML();
 		return new ByteArrayInputStream(contents.getBytes());
 	}

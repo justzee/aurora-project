@@ -7,8 +7,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
-import aurora_ide.Activator;
-import aurora_ide.Common;
+import uncertain.ide.Activator;
+import uncertain.ide.Common;
+
 
 public class ProjectWizard extends BasicNewProjectResourceWizard {
 

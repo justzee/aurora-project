@@ -29,7 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.sxsd.SxsdActionGroup;
+import uncertain.ide.eclipse.action.CompositeMapAction;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -162,9 +162,9 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		String rootPropertyKey = fixName+":"+namespacePrefix;
 
 //		rootElement.put(rootPropertyKey, namespaceUrl);
-		SxsdActionGroup.createSonArray(rootElement);
+		CompositeMapAction.addElementArray(rootElement);
 		String contents =rootElement.toXML();
-//		System.out.println(contents);
+		System.out.println(contents);
 		return rootElement;
 	}
 

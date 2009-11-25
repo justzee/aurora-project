@@ -7,24 +7,24 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.service.ServicePropertyArrayEditor;
-import uncertain.ide.eclipse.editor.service.ServicePropertyEditor;
+import uncertain.ide.Activator;
+import uncertain.ide.eclipse.editor.AuroraPropertyArrayEditor;
+import uncertain.ide.eclipse.editor.AuroraPropertyEditor;
 import uncertain.schema.Element;
-import aurora_ide.Activator;
 
 public class ElementSelectionListener implements ISelectionChangedListener {
 
 	TabFolder mTabFolder;
-	ServicePropertyEditor mPropertyEditor;
-	ServicePropertyArrayEditor mPropertyArrayEditor;
+	AuroraPropertyEditor mPropertyEditor;
+	AuroraPropertyArrayEditor mPropertyArrayEditor;
 	IViewerDirty mColumnViewerDirtyAction;
 	Text mInnerText;
 	
 	
 	
 	public ElementSelectionListener(TabFolder tabFolder,
-			ServicePropertyEditor propertyEditor,
-			ServicePropertyArrayEditor propertyArrayEditor,
+			AuroraPropertyEditor propertyEditor,
+			AuroraPropertyArrayEditor propertyArrayEditor,
 			IViewerDirty columnViewerDirtyAction, Text innerText) {
 		super();
 		mTabFolder = tabFolder;

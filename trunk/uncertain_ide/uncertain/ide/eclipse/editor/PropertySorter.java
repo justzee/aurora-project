@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-import uncertain.ide.eclipse.action.ICategory;
+import uncertain.ide.eclipse.action.IPropertyCategory;
 import uncertain.schema.Category;
 import uncertain.schema.editor.AttributeValue;
 
@@ -16,8 +16,8 @@ public class PropertySorter extends ViewerSorter {
 	private static final int DESCENDING = 1;
 	private int order;
 	private int column;
-	ICategory mDirtyObject;
-	public PropertySorter(ICategory dirtyObject){
+	IPropertyCategory mDirtyObject;
+	public PropertySorter(IPropertyCategory dirtyObject){
 		mDirtyObject = dirtyObject;
 	}
 	
