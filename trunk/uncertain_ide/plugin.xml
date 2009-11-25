@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="uncertain_ide"
+            class="uncertain.ide.wizards.ProjectWizard"
+            icon="icons/sopc_obj.gif"
+            id="uncertain.ide.eclipse.editor.ProjectWizard"
+            name="Aurora项目"
+            project="true"/>
+      <category
+            id="uncertain_ide"
+            name="Aurora Wizards">
+      </category>
+      <wizard
+            category="uncertain_ide"
+            class="uncertain.ide.wizards.ServiceNewWizard"
+            icon="icons/new_platform.gif"
+            id="uncertain_ide.wizards.SampleNewWizard"
+            name="Service文件">
+      </wizard>
+      <wizard
+            category="uncertain_ide"
+            class="uncertain.ide.wizards.SxsdNewWizard"
+            icon="icons/text_edit.gif"
+            id="uncertain_ide.wizards.SxsdNewWizard"
+            name="Sxsd 文件">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="uncertain.ide.eclipse.editor.service.ServiceEditor"
+            default="false"
+            filenames="*.xml,*.service"
+            icon="icons/eside_persp.gif"
+            id="uncertain.ide.eclipse.editor.ServiceEditor"
+            name="ServiceEditor"/>
+      <editor
+            class="uncertain.ide.eclipse.editor.sxsd.SxsdEditor"
+            default="false"
+            filenames="*.sxsd"
+            icon="icons/board_file_obj.gif"
+            id="uncertain.ide.eclipse.editor.SxsdEditor"
+            name="SxsdEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
+            id="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
+            name="Sxsd目录">
+      </page>
+   </extension>
+</plugin>
