@@ -12,6 +12,7 @@ public class Common {
 	 */
 	public static final String ServiceEditor = "uncertain.ide.eclipse.editor.ServiceEditor";
 	public static final String NewProjectFile = "uncertain.service";
+	public static final String SXSD_DIRECTORY = "sxsdDirectory";
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
