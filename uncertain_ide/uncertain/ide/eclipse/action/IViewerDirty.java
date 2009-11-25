@@ -8,8 +8,7 @@ import org.eclipse.swt.widgets.Control;
 
 import uncertain.composite.CompositeMap;
 
-public interface IViewerDirty extends IDirty{
-	public void refresh();
+public interface IViewerDirty extends IViewer{
 	public ColumnViewer getObject();
 	public CompositeMap getSelectedData();
 	public void setSelectedData(CompositeMap data);

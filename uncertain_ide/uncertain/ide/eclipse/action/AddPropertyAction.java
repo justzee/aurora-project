@@ -11,27 +11,35 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
-import aurora_ide.Activator;
-
 import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.editor.ActionLabelManager;
 
 public 	class AddPropertyAction extends Action {
-	IViewerDirty mDirtyObject;
-	public AddPropertyAction(IViewerDirty dirtyAction) {
+	IPropertyCategory viewer;
+	public AddPropertyAction(IPropertyCategory viewer) {
+		this.viewer = viewer;
+	}
+	public AddPropertyAction(IPropertyCategory viewer,ImageDescriptor imageDescriptor,String text) {
 		// 正常情况下的图标
-		setHoverImageDescriptor(getImageDescriptor());
+		if(imageDescriptor != null)
+			setHoverImageDescriptor(imageDescriptor);
 		// 置灰（removeAction.setEnabled(false)）情况下的图标
 		// setDisabledImageDescriptor(getImageDesc("disremove.gif"));
-		setText("添加属性");
-		this.mDirtyObject = dirtyAction;
+		if(text != null)
+			setText(text);
+		this.viewer = viewer;
 	}
 
-	/**
-	 * 这里演示了如何从表格中删除所选的记录（可选多个）
-	 */
+
 	public void run() {
 //		final CompositeMap data = (CompositeMap) mDirtyObject.getObject().getInput();
-		final CompositeMap data = (CompositeMap) mDirtyObject.getFocusData();
+		showInputDialog();
+	}
+	public static ImageDescriptor getDefaultImageDescriptor(){
+		return ActionLabelManager.getImageDescriptor(ActionLabelManager.ADD);
+	}
+	private void showInputDialog(){
+		final CompositeMap data = viewer.getInput();
 		System.out.println(data.toXML());
 		final Shell shell = new Shell();
 		shell.setSize(400, 200);
@@ -57,12 +65,22 @@ public 	class AddPropertyAction extends Action {
 		final Button cancel = new Button(shell, SWT.PUSH);
 		cancel.setText("Cancel");
 		cancel.setBounds(300, 120, 70, 25);
+		SelectionListener listener = getListener(data, shell, propertyText,
+				valueText, ok, cancel);
+		ok.addSelectionListener(listener);
+		cancel.addSelectionListener(listener);
+		shell.open();
+	}
+
+
+	private SelectionListener getListener(final CompositeMap data,
+			final Shell shell, final Text propertyText, final Text valueText,
+			final Button ok, final Button cancel) {
 		SelectionListener listener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 
 			}
-
 			public void widgetSelected(SelectionEvent e) {
 				Widget w = e.widget;
 				if (w == ok) {
@@ -71,8 +89,7 @@ public 	class AddPropertyAction extends Action {
 							+ valueText.getText());
 					data.put(propertyText.getText(), valueText.getText());
 					System.out.println(data.toXML());
-					mDirtyObject.setDirty(true);
-					mDirtyObject.refresh();
+					viewer.refresh(true);
 					shell.dispose();
 				} else if (w == cancel) {
 					shell.dispose();
@@ -80,15 +97,7 @@ public 	class AddPropertyAction extends Action {
 
 			}
 		};
-		ok.addSelectionListener(listener);
-		cancel.addSelectionListener(listener);
-		shell.open();
-
-		mDirtyObject.refresh();
-	}
-	public ImageDescriptor getImageDescriptor(){
-		ImageDescriptor imageDescriptor = Activator.getImageDescriptor("icons/add_obj.gif");
-		return imageDescriptor;
+		return listener;
 	}
 }
 

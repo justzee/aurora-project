@@ -31,10 +31,7 @@ public class RemoveElementListener implements Listener {
 
 		CompositeMapAction.addElement(parentCM, _prefix, _uri, _name);
 		if (mDirtyObject != null) {
-			mDirtyObject.setDirty(true);
-		}
-		if (mColumnViewer != null) {
-			mColumnViewer.refresh();
+			mDirtyObject.refresh(true);
 		}
 	}
 }

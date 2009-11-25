@@ -3,7 +3,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path=""/>
-	<classpathentry combineaccessrules="false" kind="src" path="/uncertain"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/uncertain_test"/>
+	<classpathentry kind="lib" path="E:/MySoftWare/eclipse/workspace/uncertain_ide/lib/uncertain.jar"/>
+	<classpathentry kind="lib" path="E:/MySoftWare/eclipse/workspace/uncertain_ide/lib/aurora.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

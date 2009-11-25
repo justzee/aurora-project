@@ -7,8 +7,7 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import aurora_ide.Activator;
-
+import uncertain.ide.Activator;
 import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 

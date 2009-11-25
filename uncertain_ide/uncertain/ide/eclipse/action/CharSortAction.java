@@ -3,31 +3,31 @@ package uncertain.ide.eclipse.action;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import aurora_ide.Activator;
-
-import uncertain.ide.eclipse.editor.service.ServicePropertyEditor;
+import uncertain.ide.eclipse.editor.ActionLabelManager;
 
 public class CharSortAction extends Action {
 	
-	private IPropertyCategory mDirtyAction;
-	public CharSortAction(IPropertyCategory dirtyObject) {
+	private IPropertyCategory viewer;
+	public CharSortAction(IPropertyCategory viewer) {
+//		setText("A-Z排序");
+		this.viewer = viewer;
+	}
+	public CharSortAction(IPropertyCategory viewer,ImageDescriptor imageDescriptor,String text) {
 		// 正常情况下的图标
-		setHoverImageDescriptor(getImageDescriptor());
+		if(imageDescriptor != null)
+			setHoverImageDescriptor(imageDescriptor);
 		// 置灰（removeAction.setEnabled(false)）情况下的图标
 		// setDisabledImageDescriptor(getImageDesc("disremove.gif"));
-		setText("A-Z排序");
-		mDirtyAction = dirtyObject;
+		if(text != null)
+			setText(text);
+		this.viewer = viewer;
 	}
 
-	/**
-	 * 这里演示了如何从表格中删除所选的记录（可选多个）
-	 */
 	public void run() {
-		mDirtyAction.setIsCategory(false);
-		mDirtyAction.refresh();
+		viewer.setIsCategory(false);
+		viewer.refresh(false);
 	}
-	public ImageDescriptor getImageDescriptor(){
-		ImageDescriptor imageDescriptor = Activator.getImageDescriptor("icons/asc.gif");
-		return imageDescriptor;
+	public static ImageDescriptor getDefaultImageDescriptor(){
+		return ActionLabelManager.getImageDescriptor(ActionLabelManager.ASC);
 	}
 }

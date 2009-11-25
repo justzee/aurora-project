@@ -20,8 +20,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
+import uncertain.ide.Activator;
 import uncertain.schema.Element;
-import aurora_ide.Activator;
 
 public class ToolBarAddElementListener implements Listener {
 	private ToolBar toolBar;
@@ -46,6 +47,7 @@ public class ToolBarAddElementListener implements Listener {
 			ISelection selection = mColumnViewer.getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
 			final CompositeMap selectedCM = (CompositeMap) obj;
+			if(selectedCM == null)return;
 
 			// 清空原先的子菜单
 			MenuItem[] mi = menu.getItems();
@@ -65,27 +67,34 @@ public class ToolBarAddElementListener implements Listener {
 				messageBox.open();
 				return;
 			}
-			List arrays = element.getAllElements();
-			if (arrays != null) {
-				Iterator ite = arrays.iterator();
+			List sonElements = element.getAllElements();
+			if (sonElements != null) {
+				Iterator ite = sonElements.iterator();
 				while (ite.hasNext()) {
-					final Element ele = (Element) ite.next();
+					Element ele = (Element) ite.next();
+					final QualifiedName qName = ele.getQName();
+					//判读最多出现次数
+//					selectedCM.getChild(name)
+//					if(ele.getMaxOccurs())
+					
 					MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
 					itemPush.addListener(SWT.Selection, new AddElementListener(
-							mColumnViewer, mDirtyObject, selectedCM, null,
-							null, ele.getLocalName()));
+					mColumnViewer, mDirtyObject, selectedCM, qName));
 					itemPush.setText(ele.getLocalName());
 					itemPush.setImage(getIcon());
 				}
 			}
 
 			if (element.isArray()) {
+				final QualifiedName qName = element.getElementType().getQName();
 				final String elementType = element.getElementType().getQName()
 						.getLocalName();
 				MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
+//				itemPush.addListener(SWT.Selection, new AddElementListener(
+//						mColumnViewer, mDirtyObject, selectedCM, null, null,
+//						elementType));
 				itemPush.addListener(SWT.Selection, new AddElementListener(
-						mColumnViewer, mDirtyObject, selectedCM, null, null,
-						elementType));
+				mColumnViewer, mDirtyObject, selectedCM, qName));
 				itemPush.setText(elementType);
 				itemPush.setImage(getIcon());
 			}

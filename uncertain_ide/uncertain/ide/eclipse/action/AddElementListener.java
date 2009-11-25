@@ -5,32 +5,40 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 
 public class AddElementListener implements Listener {
-	private IViewerDirty mDirtyObject;
+	private IViewerDirty viewer;
 
 	CompositeMap parentCM;
-	String _prefix;
-	String _uri;
-	String _name;
+	String prefix;
+	String uri;
+	String cmName;
 
-	public AddElementListener(ColumnViewer mColumnViewer,
-			IViewerDirty mDirtyObject, CompositeMap parentCM, String _prefix,
-			String _uri, String _name) {
-		this.mDirtyObject = mDirtyObject;
+	private AddElementListener(ColumnViewer mColumnViewer,
+			IViewerDirty viewer, CompositeMap parentCM, String prefix,
+			String uri, String cmName) {
+		this.viewer = viewer;
 		this.parentCM = parentCM;
-		this._prefix = _prefix;
-		this._uri = _uri;
-		this._name = _name;
+		this.prefix = prefix;
+		this.uri = uri;
+		this.cmName = cmName;
 
 	}
+	public AddElementListener(ColumnViewer mColumnViewer,
+			IViewerDirty viewer, CompositeMap parentCM, QualifiedName qName) {
+		this.viewer = viewer;
+		this.parentCM = parentCM;
+		this.prefix = qName.getPrefix();
+		this.uri = qName.getNameSpace();
+		this.cmName = qName.getLocalName();
 
+	}
 	public void handleEvent(Event event) {
 
-		CompositeMapAction.addElement(parentCM, _prefix, _uri, _name);
-		if (mDirtyObject != null) {
-			mDirtyObject.setDirty(true);
-			mDirtyObject.refresh();
+		CompositeMapAction.addElement(parentCM, prefix, uri, cmName);
+		if (viewer != null) {
+			viewer.refresh(true);
 		}
 	}
 }

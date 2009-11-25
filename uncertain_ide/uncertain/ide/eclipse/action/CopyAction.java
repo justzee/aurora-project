@@ -1,31 +1,38 @@
 package uncertain.ide.eclipse.action;
 
+import static uncertain.ide.eclipse.editor.ActionLabelManager.COPY;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-
-import aurora_ide.Activator;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.editor.ActionLabelManager;
 
 public 	class CopyAction extends Action {
-	IViewerDirty mDirtyObject;
-	public CopyAction(IViewerDirty dirtyObject) {
-		setHoverImageDescriptor(getImageDescriptor());
-		setText("¸´ÖÆ");
-		mDirtyObject = dirtyObject;
+	IViewerDirty viewer;
+	public CopyAction(IViewerDirty viewer) {
+		this.viewer = viewer;
+	}
+	public CopyAction(IViewerDirty viewer,ImageDescriptor imageDescriptor,String text) {
+		if(imageDescriptor != null)
+			setImageDescriptor(imageDescriptor);
+		if(text != null)
+			setText(text);
+		this.viewer = viewer;
 	}
 
 	public void run() {
 //		ISelection selection = mDirtyObject.getObject().getSelection();
 //		Object obj = ((IStructuredSelection) selection).getFirstElement();
 //		CompositeMap cm = new CompositeMap((CompositeMap) obj);
-		CompositeMap cm = mDirtyObject.getFocusData();
-		mDirtyObject.setSelectedData(cm);
+		CompositeMap cm = viewer.getFocusData();
+		viewer.setSelectedData(cm);
 	}
-	public ImageDescriptor getImageDescriptor(){
-		ImageDescriptor imageDescriptor = Activator.getImageDescriptor("icons/copy.gif");
-		return imageDescriptor;
+	public static ImageDescriptor getDefaultImageDescriptor(){
+		return ActionLabelManager.getImageDescriptor(ActionLabelManager.COPY);
 	}
+	public static String getDefaultText(){
+		return ActionLabelManager.getText(COPY);
+	}
+	
 }

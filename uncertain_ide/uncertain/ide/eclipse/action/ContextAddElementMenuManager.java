@@ -4,24 +4,22 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
+import uncertain.ide.Activator;
 import uncertain.schema.Element;
-import aurora_ide.Activator;
 
 public class ContextAddElementMenuManager extends MenuManager {
-	private IViewerDirty viewerDirty;
-	String _prefix;
-	String _uri;
+	private IViewerDirty viewer;
+	String prefix;
+	String uri;
 
-	public ContextAddElementMenuManager(IViewerDirty dirtyObject, String prefix, String uri, String label) {
+	public ContextAddElementMenuManager(IViewerDirty viewer, String prefix, String uri, String label) {
 		super(label);
-		viewerDirty = dirtyObject;
-		_prefix = prefix;
-		_uri = uri;
+		this.viewer = viewer;
+		this.prefix = prefix;
+		this.uri = uri;
 		createActions();
 	}
 
@@ -30,7 +28,7 @@ public class ContextAddElementMenuManager extends MenuManager {
 //		Object obj = ((IStructuredSelection) selection).getFirstElement();
 //		final CompositeMap comp = (CompositeMap) obj;
 		
-		final CompositeMap comp = viewerDirty.getFocusData();
+		final CompositeMap comp = viewer.getFocusData();
 
 		Element element = Activator.getSchemaManager().getElement(comp);
 		if (element == null) {
@@ -38,11 +36,14 @@ public class ContextAddElementMenuManager extends MenuManager {
 		}
 
 		if (element.isArray()) {
+			final QualifiedName qName = element.getElementType().getQName();
 			final String elementType = element.getElementType().getQName()
 					.getLocalName();
-
-			this.add(new AddElementAction(viewerDirty, comp,
-					_prefix, _uri, elementType));
+//			AddElementAction addAtion = new AddElementAction(viewer, comp,
+//					prefix, uri, elementType,AddElementAction.getDefaultImageDescriptor(),elementType);
+			AddElementAction addAtion = new AddElementAction(viewer, comp,
+					qName,AddElementAction.getDefaultImageDescriptor(),elementType);
+			this.add(addAtion);
 
 		} else if (element != null) {
 			List arrays = element.getAllElements();
@@ -50,8 +51,12 @@ public class ContextAddElementMenuManager extends MenuManager {
 				Iterator ite = arrays.iterator();
 				while (ite.hasNext()) {
 					final Element ele = (Element) ite.next();
-					this.add(new AddElementAction(viewerDirty,
-							comp, _prefix, _uri, ele.getLocalName()));
+					final QualifiedName qName = element.getQName();
+//					this.add(new AddElementAction(viewer,
+//							comp, prefix, uri, ele.getLocalName(),AddElementAction.getDefaultImageDescriptor(),ele.getLocalName()));
+					this.add(new AddElementAction(viewer,
+							comp, qName,AddElementAction.getDefaultImageDescriptor(),ele.getLocalName()));
+
 				}
 			}
 		}
