@@ -64,7 +64,7 @@ public class PropertySheetContentProvider implements IStructuredContentProvider 
         		}
         	}
         }
-        Categorys.put("未分组",(Categorys.size()+1)*10);
+        Categorys.put("未分组",new Integer((Categorys.size()+1)*10));
 
         AttributeValue[] newAttrv = new AttributeValue[avs.length+Categorys.size()];
         System.arraycopy(avs, 0, newAttrv, 0, avs.length);

@@ -1,6 +1,5 @@
 package uncertain.ide.eclipse.action;
 
-import static uncertain.ide.eclipse.editor.ActionLabelManager.DELETE;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -36,6 +35,6 @@ public 	class RemoveElementAction extends Action {
 		return ActionLabelManager.getImageDescriptor(ActionLabelManager.DELETE);
 	}
 	public static String getDefaultText(){
-		return ActionLabelManager.getText(DELETE);
+		return ActionLabelManager.getText(ActionLabelManager.DELETE);
 	}
 }

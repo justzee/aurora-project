@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.TableItem;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.action.IDirty;
 
-public class AuroraPropertyArrayCellModifier implements ICellModifier {
+public class PropertyArrayCellModifier implements ICellModifier {
 
 	/**
 	 * @param viewer
@@ -15,7 +15,7 @@ public class AuroraPropertyArrayCellModifier implements ICellModifier {
 	protected IDirty mDirtyObject;
 	protected TableViewer mViewer;
 
-	public AuroraPropertyArrayCellModifier(TableViewer viewer, IDirty dirtyObject) {
+	public PropertyArrayCellModifier(TableViewer viewer, IDirty dirtyObject) {
 		super();
         mViewer = viewer;
         mDirtyObject = dirtyObject;

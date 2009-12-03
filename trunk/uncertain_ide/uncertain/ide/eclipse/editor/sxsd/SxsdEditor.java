@@ -1,11 +1,11 @@
 package uncertain.ide.eclipse.editor.sxsd;
 
-import uncertain.ide.eclipse.editor.AuroraEditor;
+import uncertain.ide.eclipse.editor.MainFormEditor;
 
-public class SxsdEditor extends AuroraEditor {
+public class SxsdEditor extends MainFormEditor {
 
 	public SxsdEditor() {
 		super();
-		auroraPage = new SxsdPage(this);
+		mainFormPage = new SxsdPage(this);
 	}
 }

@@ -75,7 +75,7 @@ public class PropertySheetLabelProvider extends BaseLabelProvider implements ITa
         
         if( columnIndex == 0 ){
             Attribute attr = av.getAttribute();
-            String text = attr.getName();
+            String text = attr.getLocalName();
             if(attr.getUse()!=null&&attr.getUse().equals("required"))
             	text = " * "+text;
             return text;

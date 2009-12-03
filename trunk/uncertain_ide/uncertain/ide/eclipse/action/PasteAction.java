@@ -1,6 +1,5 @@
 package uncertain.ide.eclipse.action;
 
-import static uncertain.ide.eclipse.editor.ActionLabelManager.PASTE;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -64,6 +63,6 @@ public 	class PasteAction extends Action {
 		return ActionLabelManager.getImageDescriptor(ActionLabelManager.PASTE);
 	}
 	public static String getDefaultText(){
-		return ActionLabelManager.getText(PASTE);
+		return ActionLabelManager.getText(ActionLabelManager.PASTE);
 	}
 }

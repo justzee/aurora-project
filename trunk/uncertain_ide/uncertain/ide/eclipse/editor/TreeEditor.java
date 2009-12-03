@@ -14,12 +14,12 @@ import uncertain.ide.eclipse.action.ElementDoubleClickListener;
 import uncertain.ide.eclipse.action.IDirty;
 import uncertain.ide.eclipse.action.IViewerDirty;
 
-public class AuroraTreeEditor implements IViewerDirty{
+public class TreeEditor implements IViewerDirty{
 	protected TreeViewer mTreeViewer;
 	protected IDirty mDirtyAction;
 	protected CompositeMap mSelectedData;
 	protected CompositeMap mFocusData;
-	public AuroraTreeEditor(Tree tree, IDirty mDirtyAction,
+	public TreeEditor(Tree tree, IDirty mDirtyAction,
 			CompositeMap data) {
 		this.mDirtyAction = mDirtyAction;
 		createEditorContent(tree, data);
@@ -27,9 +27,8 @@ public class AuroraTreeEditor implements IViewerDirty{
 
 	protected void createEditorContent(Tree tree, CompositeMap data) {
 		mTreeViewer = new TreeViewer(tree);
-		mTreeViewer.setLabelProvider(new AuroraTreeLabelProvider());
-		mTreeViewer.setContentProvider(new AuroraTreeContentProvider(Activator
-				.getSchemaManager(), data));
+		mTreeViewer.setLabelProvider(new TreeLabelProvider());
+		mTreeViewer.setContentProvider(new TreeContentProvider(data));
 
 
 		CompositeMap parent = data.getParent();
@@ -42,10 +41,6 @@ public class AuroraTreeEditor implements IViewerDirty{
 
 		mTreeViewer.setInput(parent);
 		
-//		ServcieActionGroup servcieActionGroup = new ServcieActionGroup(this);
-//		servcieActionGroup.fillContextMenu();
-//		servcieActionGroup.fillDNDListener();
-//		servcieActionGroup.fillKeyListener();
 		CompositeMapAction.fillContextMenu(this);
 		CompositeMapAction.fillDNDListener(this);
 		CompositeMapAction.fillKeyListener(this);

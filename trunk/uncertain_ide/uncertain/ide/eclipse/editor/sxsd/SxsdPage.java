@@ -11,10 +11,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import uncertain.composite.CompositeLoader;
-import uncertain.ide.eclipse.editor.AuroraPage;
-import uncertain.ide.eclipse.editor.AuroraTreeEditor;
+import uncertain.ide.eclipse.editor.MainFormPage;
+import uncertain.ide.eclipse.editor.TreeEditor;
 
-public class SxsdPage extends  AuroraPage{
+public class SxsdPage extends  MainFormPage{
 	private static final String PageId = "SxsdTreePage";
 	private static final String PageTitle = "Simple XML Schema";
 //	public static String namespacePrefix;

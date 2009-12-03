@@ -1,7 +1,5 @@
 package uncertain.ide.eclipse.action;
 
-import static uncertain.ide.eclipse.editor.ActionLabelManager.COPY;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -25,14 +23,14 @@ public 	class CopyAction extends Action {
 //		ISelection selection = mDirtyObject.getObject().getSelection();
 //		Object obj = ((IStructuredSelection) selection).getFirstElement();
 //		CompositeMap cm = new CompositeMap((CompositeMap) obj);
-		CompositeMap cm = viewer.getFocusData();
+		CompositeMap cm = new CompositeMap(viewer.getFocusData());
 		viewer.setSelectedData(cm);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
 		return ActionLabelManager.getImageDescriptor(ActionLabelManager.COPY);
 	}
 	public static String getDefaultText(){
-		return ActionLabelManager.getText(COPY);
+		return ActionLabelManager.getText(ActionLabelManager.COPY);
 	}
 	
 }

@@ -3,35 +3,40 @@ package uncertain.ide.eclipse.action;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.AuroraPropertyArrayEditor;
-import uncertain.ide.eclipse.editor.AuroraPropertyEditor;
+import uncertain.ide.eclipse.editor.PropertyArrayEditor;
+import uncertain.ide.eclipse.editor.PropertyEditor;
+import uncertain.ide.eclipse.editor.JavaScriptLineStyler;
 import uncertain.schema.Element;
 
 public class ElementSelectionListener implements ISelectionChangedListener {
 
-	TabFolder mTabFolder;
-	AuroraPropertyEditor mPropertyEditor;
-	AuroraPropertyArrayEditor mPropertyArrayEditor;
+	CTabFolder mTabFolder;
+	PropertyEditor mPropertyEditor;
+	PropertyArrayEditor mPropertyArrayEditor;
 	IViewerDirty mColumnViewerDirtyAction;
-	Text mInnerText;
+	StyledText mInnerText;
+	JavaScriptLineStyler mLineStyler;
 	
 	
-	
-	public ElementSelectionListener(TabFolder tabFolder,
-			AuroraPropertyEditor propertyEditor,
-			AuroraPropertyArrayEditor propertyArrayEditor,
-			IViewerDirty columnViewerDirtyAction, Text innerText) {
+	public ElementSelectionListener(CTabFolder tabFolder,
+			PropertyEditor propertyEditor,
+			PropertyArrayEditor propertyArrayEditor,
+			IViewerDirty columnViewerDirtyAction, StyledText innerText,
+			JavaScriptLineStyler lineStyler) {
 		super();
 		mTabFolder = tabFolder;
 		mPropertyEditor = propertyEditor;
 		mPropertyArrayEditor = propertyArrayEditor;
 		mColumnViewerDirtyAction = columnViewerDirtyAction;
 		mInnerText = innerText;
+		mLineStyler =lineStyler;
 	}
 
 
@@ -46,9 +51,9 @@ public class ElementSelectionListener implements ISelectionChangedListener {
 		Element em = Activator.getSchemaManager().getElement(data);
 		if (em != null && em.isArray()) {
 			mPropertyEditor.clearAll();
-			mPropertyArrayEditor.createEditor(mTabFolder, data);
+			mPropertyArrayEditor.createEditor(mTabFolder,data);
 			mTabFolder.getItem(1).setControl(
-					mPropertyArrayEditor.getTableViewer().getControl());
+					mPropertyArrayEditor.getControl());
 			mTabFolder.setSelection(1);
 			mTabFolder.layout(true);
 
@@ -63,6 +68,7 @@ public class ElementSelectionListener implements ISelectionChangedListener {
 		String a = data.getText();
 		if (a != null && !a.trim().equals("")) {
 			mInnerText.setText(data.getText());
+			mLineStyler.parseBlockComments(data.getText());
 			// System.out.println(data.getText());
 			mTabFolder.setSelection(2);
 			mTabFolder.layout(true);
