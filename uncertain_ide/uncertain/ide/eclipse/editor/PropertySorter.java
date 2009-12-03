@@ -36,8 +36,7 @@ public class PropertySorter extends ViewerSorter {
 		int side = (order == ASCENDING) ? 1 : -1;
 		AttributeValue av = (AttributeValue) element;
 		if (element instanceof CategoryLabel) {
-			result = (Integer) PropertySheetContentProvider.Categorys.get(av
-					.getValueString());
+			result = ((Integer)PropertySheetContentProvider.Categorys.get(av.getValueString())).intValue();
 			result = result - side;
 		} else {
 			Category category = av.getAttribute().getCategoryInstance();
@@ -47,7 +46,7 @@ public class PropertySorter extends ViewerSorter {
 			} else {
 				cln = "Î´·Ö×é";
 			}
-			result = (Integer) PropertySheetContentProvider.Categorys.get(cln);
+			result = ((Integer) PropertySheetContentProvider.Categorys.get(cln)).intValue();
 			// int result=((File) element).isDirectory() ? 0 : 1;
 		}
 		if (order == DESCENDING)

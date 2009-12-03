@@ -9,16 +9,16 @@ import org.eclipse.swt.widgets.TableItem;
 import uncertain.ide.eclipse.action.IPropertyCategory;
 import uncertain.schema.editor.AttributeValue;
 
-public class AuroraPropertyCellModifier implements ICellModifier {
+public class PropertyCellModifier implements ICellModifier {
 
-	public static final String[] PROPERTY_TO_UPDATE = { AuroraPropertyEditor.COLUMN_VALUE };
+	public static final String[] PROPERTY_TO_UPDATE = { PropertyEditor.COLUMN_VALUE };
 	
 	IPropertyCategory viewer;
 	// public PropertySheetCellModifier(TableViewer viewer) {
 	// super();
 	// mViewer = viewer;
 	// }
-	public AuroraPropertyCellModifier(IPropertyCategory viewer) {
+	public PropertyCellModifier(IPropertyCategory viewer) {
 		super();
 		this.viewer = viewer;
 	}
@@ -40,7 +40,7 @@ public class AuroraPropertyCellModifier implements ICellModifier {
 //		else{
 //			mViewer.setCellEditors(new CellEditor[] { null, new TextCellEditor(mViewer.getTable()) });
 //		}
-		return AuroraPropertyEditor.COLUMN_VALUE.equals(property);
+		return PropertyEditor.COLUMN_VALUE.equals(property);
 	}
 
 	public Object getValue(Object element, String property) {
@@ -49,7 +49,7 @@ public class AuroraPropertyCellModifier implements ICellModifier {
 //			return new Integer(0);
 //		}
 
-		if (AuroraPropertyEditor.COLUMN_VALUE.equals(property))
+		if (PropertyEditor.COLUMN_VALUE.equals(property))
 			return av.getValueString();
 		else {
 			return av.getAttribute().getLocalName();

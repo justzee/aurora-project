@@ -8,7 +8,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.AuroraShell;
+import uncertain.ide.eclipse.editor.MainShell;
 
 public class ElementDoubleClickListener implements IDoubleClickListener {
 	IDirty viewer;
@@ -24,7 +24,7 @@ public class ElementDoubleClickListener implements IDoubleClickListener {
 
 			final CompositeMap oldCopyData = new CompositeMap(data);
 			// System.out.println("oldCopyData:"+oldCopyData.toXML());
-			AuroraShell editor = new AuroraShell(viewer,data);
+			MainShell editor = new MainShell(viewer,data);
 			// editor.start();
 			Shell shell = new Shell(SWT.MIN | SWT.MAX | SWT.DIALOG_TRIM
 					| SWT.APPLICATION_MODAL);

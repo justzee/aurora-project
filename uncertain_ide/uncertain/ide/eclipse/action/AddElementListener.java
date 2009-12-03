@@ -1,6 +1,5 @@
 package uncertain.ide.eclipse.action;
 
-import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -15,18 +14,7 @@ public class AddElementListener implements Listener {
 	String uri;
 	String cmName;
 
-	private AddElementListener(ColumnViewer mColumnViewer,
-			IViewerDirty viewer, CompositeMap parentCM, String prefix,
-			String uri, String cmName) {
-		this.viewer = viewer;
-		this.parentCM = parentCM;
-		this.prefix = prefix;
-		this.uri = uri;
-		this.cmName = cmName;
-
-	}
-	public AddElementListener(ColumnViewer mColumnViewer,
-			IViewerDirty viewer, CompositeMap parentCM, QualifiedName qName) {
+	public AddElementListener(IViewerDirty viewer, CompositeMap parentCM, QualifiedName qName) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
 		this.prefix = qName.getPrefix();

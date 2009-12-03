@@ -8,10 +8,10 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-import uncertain.ide.eclipse.editor.AuroraPage;
-import uncertain.ide.eclipse.editor.AuroraTreeEditor;
+import uncertain.ide.eclipse.editor.MainFormPage;
+import uncertain.ide.eclipse.editor.TreeEditor;
 
-public class ServicePage extends AuroraPage{
+public class ServicePage extends MainFormPage{
 	protected static final String PageId = "ServicePage";
 	protected static final String PageTitle = "Service File";
 	public ServicePage(FormEditor editor) {

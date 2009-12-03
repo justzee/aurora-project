@@ -28,15 +28,15 @@ public class ToolBarAddElementListener implements Listener {
 	private ToolBar toolBar;
 	private Menu menu;
 	private ToolItem item;
-	private ColumnViewer mColumnViewer;
+//	private ColumnViewer mColumnViewer;
 	private IViewerDirty mDirtyObject;
 
 	public ToolBarAddElementListener(ToolBar toolBar, Menu menu, ToolItem item,
-			ColumnViewer mColumnViewer, IViewerDirty mDirtyObject) {
+			 IViewerDirty mDirtyObject) {
 		this.toolBar = toolBar;
 		this.menu = menu;
 		this.item = item;
-		this.mColumnViewer = mColumnViewer;
+//		this.mColumnViewer = mColumnViewer;
 		this.mDirtyObject = mDirtyObject;
 
 	}
@@ -44,7 +44,7 @@ public class ToolBarAddElementListener implements Listener {
 	public void handleEvent(Event event) {
 		if (event.detail == SWT.ARROW) {
 			// 获得当前选中的节点
-			ISelection selection = mColumnViewer.getSelection();
+			ISelection selection = mDirtyObject.getObject().getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
 			final CompositeMap selectedCM = (CompositeMap) obj;
 			if(selectedCM == null)return;
@@ -78,8 +78,7 @@ public class ToolBarAddElementListener implements Listener {
 //					if(ele.getMaxOccurs())
 					
 					MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
-					itemPush.addListener(SWT.Selection, new AddElementListener(
-					mColumnViewer, mDirtyObject, selectedCM, qName));
+					itemPush.addListener(SWT.Selection, new AddElementListener(mDirtyObject, selectedCM, qName));
 					itemPush.setText(ele.getLocalName());
 					itemPush.setImage(getIcon());
 				}
@@ -93,8 +92,7 @@ public class ToolBarAddElementListener implements Listener {
 //				itemPush.addListener(SWT.Selection, new AddElementListener(
 //						mColumnViewer, mDirtyObject, selectedCM, null, null,
 //						elementType));
-				itemPush.addListener(SWT.Selection, new AddElementListener(
-				mColumnViewer, mDirtyObject, selectedCM, qName));
+				itemPush.addListener(SWT.Selection, new AddElementListener(mDirtyObject, selectedCM, qName));
 				itemPush.setText(elementType);
 				itemPush.setImage(getIcon());
 			}

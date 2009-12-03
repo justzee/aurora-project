@@ -14,14 +14,14 @@ import uncertain.composite.TextParser;
 import uncertain.ide.Activator;
 import uncertain.schema.Element;
 
-public class AuroraTreeLabelProvider extends BaseLabelProvider implements
+public class TreeLabelProvider extends BaseLabelProvider implements
 		ILabelProvider {
 
 	/**
 	 * @param schemaManager
 	 */
 
-	public AuroraTreeLabelProvider() {
+	public TreeLabelProvider() {
 		super();
 	}
 

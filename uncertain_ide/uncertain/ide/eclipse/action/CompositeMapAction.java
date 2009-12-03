@@ -33,6 +33,7 @@ import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.ActionLabelManager;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
+import uncertain.schema.editor.AttributeValue;
 
 public class CompositeMapAction {
 
@@ -96,6 +97,37 @@ public class CompositeMapAction {
 			break;
 		}
 	}
+	
+	public static void removePropertyAction(IPropertyCategory viewer){
+		Shell shell = new Shell();
+		MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING
+				| SWT.OK | SWT.CANCEL);
+		messageBox.setText("Warning");
+		messageBox.setMessage("确认删除此属性吗?");
+		int buttonID = messageBox.open();
+		switch (buttonID) {
+		case SWT.OK:
+//			final CompositeMap data = (CompositeMap) viewer.getObject()
+//					.getInput();
+//			System.out.println(data.toXML());
+//			ISelection selection = viewer.getObject().getSelection();
+//			Object obj = ((IStructuredSelection) selection)
+//					.getFirstElement();
+//			AttributeValue av = (AttributeValue) obj;
+			final CompositeMap data = viewer.getInput();
+
+			AttributeValue av = viewer.getFocusData();
+			if(av == null)
+				return;
+			String propertyName = av.getAttribute().getLocalName();
+//			System.out.println(propertyName);
+			data.remove(propertyName);
+			viewer.refresh(true);
+		case SWT.CANCEL:
+			break;
+		}
+	}
+	
 	public static void cutElement(IViewerDirty viewer) {
 //		ISelection selection = mDirtyObject.getObject().getSelection();
 //		Object obj = ((IStructuredSelection) selection).getFirstElement();
@@ -215,7 +247,7 @@ public class CompositeMapAction {
 				// sourceCm.setText((String)event.data);
 
 				if (objectCm.equals(sourceCm)) {
-					System.out.println("一样的！");
+//					System.out.println("一样的！");
 					return;
 				}
 				CompositeMap childCm = new CompositeMap(sourceCm);
@@ -260,11 +292,11 @@ public class CompositeMapAction {
 //						Object obj = ((IStructuredSelection) selection)
 //								.getFirstElement();
 //						CompositeMap cm = new CompositeMap((CompositeMap) obj);
-						CompositeMap cm = mDirtyObject.getFocusData();
+						CompositeMap cm = new CompositeMap(mDirtyObject.getFocusData());
 						mDirtyObject.setSelectedData(cm);
 //						selectedCm = cm;
 					}
-					if (e.stateMask == SWT.CTRL && e.keyCode == 'v') {
+					else if (e.stateMask == SWT.CTRL && e.keyCode == 'v') {
 						if (mDirtyObject.getSelectedData() == null)
 							return;
 //						ISelection selection = mDirtyObject.getObject().getSelection();
@@ -291,7 +323,9 @@ public class CompositeMapAction {
 						mDirtyObject.refresh(true);
 
 					}
-
+					else if(e.keyCode==SWT.DEL){
+						CompositeMapAction.removeElement(mDirtyObject);
+					}
 				}
 
 				public void keyReleased(KeyEvent e) {

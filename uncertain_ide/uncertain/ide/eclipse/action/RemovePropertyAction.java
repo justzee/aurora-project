@@ -33,32 +33,7 @@ public 	class RemovePropertyAction extends Action {
 	}
 
 	public void run() {
-		Shell shell = new Shell();
-		MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING
-				| SWT.OK | SWT.CANCEL);
-		messageBox.setText("Warning");
-		messageBox.setMessage("确认删除此属性吗?");
-		int buttonID = messageBox.open();
-		switch (buttonID) {
-		case SWT.OK:
-//			final CompositeMap data = (CompositeMap) viewer.getObject()
-//					.getInput();
-//			System.out.println(data.toXML());
-//			ISelection selection = viewer.getObject().getSelection();
-//			Object obj = ((IStructuredSelection) selection)
-//					.getFirstElement();
-//			AttributeValue av = (AttributeValue) obj;
-			final CompositeMap data = viewer.getInput();
-
-			AttributeValue av = viewer.getFocusData();
-			String propertyName = av.getAttribute().getLocalName();
-			System.out.println(propertyName);
-			data.remove(propertyName);
-			viewer.refresh(true);
-		case SWT.CANCEL:
-			break;
-		}
-
+		CompositeMapAction.removePropertyAction(viewer);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
 		return ActionLabelManager.getImageDescriptor(ActionLabelManager.DELETE);

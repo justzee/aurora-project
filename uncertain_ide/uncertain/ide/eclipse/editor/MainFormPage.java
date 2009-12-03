@@ -1,28 +1,30 @@
 package uncertain.ide.eclipse.editor;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -32,7 +34,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
@@ -44,22 +45,25 @@ import uncertain.ide.eclipse.action.ElementSelectionListener;
 import uncertain.ide.eclipse.action.IDirty;
 import uncertain.ide.eclipse.action.IViewerDirty;
 import uncertain.ide.eclipse.action.ToolBarAddElementListener;
-import uncertain.pkg.PackageManager;
 
-public class AuroraPage extends FormPage implements IDirty {
+public class MainFormPage extends FormPage implements IDirty {
 
-	protected AuroraTreeEditor mServiceTreeEditor;
-	TabFolder mTabFolder;
-	AuroraPropertyEditor mPropertyEditor;
-	AuroraPropertyArrayEditor mPropertyArrayEditor;
-	Text mInnerText;
-	protected CompositeMap data;
+	protected TreeEditor mServiceTreeEditor;
+	private CTabFolder mTabFolder;
+	private PropertyEditor mPropertyEditor;
+	private PropertyArrayEditor mPropertyArrayEditor;
+	private StyledText mInnerText;
+	private CompositeMap data;
 
-	public AuroraPage(String id, String title) {
+	private JavaScriptLineStyler lineStyler = new JavaScriptLineStyler();
+	private SashForm sashForm;
+	private boolean modify = false;
+
+	public MainFormPage(String id, String title) {
 		super(id, title);
 	}
 
-	public AuroraPage(FormEditor editor, String id, String title) {
+	public MainFormPage(FormEditor editor, String id, String title) {
 		super(editor, id, title);
 	}
 
@@ -71,11 +75,9 @@ public class AuroraPage extends FormPage implements IDirty {
 		shell.setLayout(layout);
 
 		try {
-
 			CompositeLoader loader = new CompositeLoader();
 			data = loader.loadByFile(getFile().getAbsolutePath());
-			// System.out.println(data.toXML());
-			//此方法已不在使用
+			// 此方法已不在使用
 			autoLoadProjectSxsdFile();
 			createContent(shell, toolkit);
 		} catch (Exception e) {
@@ -85,7 +87,7 @@ public class AuroraPage extends FormPage implements IDirty {
 
 	protected void createContent(Composite shell, FormToolkit toolkit) {
 
-		SashForm sashForm = new SashForm(shell, SWT.NONE);
+		sashForm = new SashForm(shell, SWT.NONE);
 
 		createElementContent(sashForm, toolkit);
 		createPropertyContent(sashForm);
@@ -93,7 +95,7 @@ public class AuroraPage extends FormPage implements IDirty {
 		mServiceTreeEditor
 				.addSelectionChangedListener(new ElementSelectionListener(
 						mTabFolder, mPropertyEditor, mPropertyArrayEditor,
-						mServiceTreeEditor, mInnerText));
+						mServiceTreeEditor, mInnerText, lineStyler));
 
 		sashForm.setWeights(new int[] { 40, 60 });
 	}
@@ -104,12 +106,9 @@ public class AuroraPage extends FormPage implements IDirty {
 		viewForm.setLayout(new FillLayout());
 
 		Tree tree = toolkit.createTree(viewForm, SWT.NONE);
-		mServiceTreeEditor = new AuroraTreeEditor(tree, this, data);
+		mServiceTreeEditor = new TreeEditor(tree, this, data);
 
 		viewForm.setContent(mServiceTreeEditor.getControl()); // 主体：表格
-		// SxsdActionGroup servcieActionGroup = new
-		// SxsdActionGroup(mServiceTreeEditor);
-		// servcieActionGroup.fillElementToolBar(viewForm);
 		fillElementToolBar(viewForm, mServiceTreeEditor);
 
 	}
@@ -117,22 +116,49 @@ public class AuroraPage extends FormPage implements IDirty {
 	private void createPropertyContent(Composite parent) {
 
 		createTabFolder(parent);
-		mPropertyEditor = new AuroraPropertyEditor(mServiceTreeEditor);
+		mPropertyEditor = new PropertyEditor(mServiceTreeEditor);
 		mPropertyEditor.createEditor(mTabFolder);
 		mTabFolder.getItem(0).setControl(mPropertyEditor.viewForm);
 
-		mPropertyArrayEditor = new AuroraPropertyArrayEditor(this);
+		mPropertyArrayEditor = new PropertyArrayEditor(this);
 		mPropertyArrayEditor.createEditor(mTabFolder);
-		// mTabFolder.getItem(1).setControl(
-		// mPropertyArrayEditor.getTableViewer().getControl());
+		mTabFolder.getItem(1).setControl(mPropertyArrayEditor.viewForm);
 
 	}
 
-	private void createTabFolder(Composite parent) {
+	private void createTabFolder(final Composite parent) {
 		Image icon = null;
-		mTabFolder = new TabFolder(parent, SWT.TOP);
+		mTabFolder = new CTabFolder(parent, SWT.TOP);
+		mTabFolder.setMaximizeVisible(true);
+		// mTabFolder.setMinimizeVisible(true);
+		mTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+			public void minimize(CTabFolderEvent event) {
+				mTabFolder.setMinimized(true);
+				mTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+						false));
+				parent.layout(true);// 刷新布局
+			}
 
-		mInnerText = new Text(mTabFolder, SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
+			public void maximize(CTabFolderEvent event) {
+				mTabFolder.setMaximized(true);
+				// mTabFolder.setLayoutData(new
+				// GridData(SWT.FILL,SWT.FILL,true,true));
+				sashForm.setMaximizedControl(mTabFolder);
+				parent.layout(true);
+			}
+
+			public void restore(CTabFolderEvent event) {
+				// mTabFolder.setMinimized(false);
+				mTabFolder.setMaximized(false);
+				// mTabFolder.setLayoutData(new
+				// GridData(SWT.FILL,SWT.FILL,false,false));
+				sashForm.setMaximizedControl(null);
+				parent.layout(true);
+			}
+		});
+		// mInnerText = new StyledText(mTabFolder, SWT.MULTI | SWT.V_SCROLL |
+		// SWT.WRAP);
+		createStyledText();
 		mInnerText.addFocusListener(new FocusListener() {
 
 			public void focusGained(FocusEvent e) {
@@ -154,32 +180,41 @@ public class AuroraPage extends FormPage implements IDirty {
 				oldText = oldText.trim();
 				if (!newText.equals(oldText)) {
 					mServiceTreeEditor.getFocusData().setText(newText);
-					makeDirty();
+					setDirty(true);
 				}
 
 			}
 
 		});
-		TabItem tabItem1 = new TabItem(mTabFolder, SWT.NULL);
-		tabItem1.setText("属性");
+		mTabFolder.setBorderVisible(true);
+		mTabFolder.setSimple(false);
+		mTabFolder.setTabHeight(20);
+
+		CTabItem tabItem1 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
+				| SWT.V_SCROLL);
+		tabItem1.setText("  属性      ");
 		icon = Activator.getImageDescriptor("icons/property.gif").createImage();
 		// tabItem1.setImage(icon);
 		// tabItem1.setControl(mPropertyEditor.viewForm);
 
-		TabItem tabItem2 = new TabItem(mTabFolder, SWT.NULL);
-		tabItem2.setText("子项");
+		CTabItem tabItem2 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
+				| SWT.V_SCROLL);
+		tabItem2.setText("  子项        ");
 		// icon = Activator.getImageDescriptor("icons/items.gif").createImage();
 		// tabItem2.setImage(icon);
 
-		TabItem tabItem3 = new TabItem(mTabFolder, SWT.NULL);
-		tabItem3.setText("值");
+		CTabItem tabItem3 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
+				| SWT.V_SCROLL);
+		tabItem3.setText("  值         ");
+
 		// icon =
 		// Activator.getImageDescriptor("icons/document.gif").createImage();
 		// tabItem3.setImage(icon);
 		tabItem3.setControl(mInnerText);
 
-		TabItem tabItem4 = new TabItem(mTabFolder, SWT.NULL);
-		tabItem4.setText("编辑器");
+		CTabItem tabItem4 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
+				| SWT.V_SCROLL);
+		tabItem4.setText("  编辑器     ");
 		icon = Activator.getImageDescriptor("icons/editor.gif").createImage();
 		// tabItem4.setImage(icon);
 
@@ -192,6 +227,23 @@ public class AuroraPage extends FormPage implements IDirty {
 				widgetSelected(e);
 			}
 		});
+		// mTabFolder.(new CTabFolder2Adapter(){});
+
+	}
+
+	private void createStyledText() {
+		mInnerText = new StyledText(mTabFolder, SWT.MULTI | SWT.V_SCROLL
+				| SWT.H_SCROLL);
+		GridData spec = new GridData();
+		spec.horizontalAlignment = GridData.FILL;
+		spec.grabExcessHorizontalSpace = true;
+		spec.verticalAlignment = GridData.FILL;
+		spec.grabExcessVerticalSpace = true;
+		mInnerText.setLayoutData(spec);
+		mInnerText.addLineStyleListener(lineStyler);
+		// text.setEditable(false);
+		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+		mInnerText.setBackground(bg);
 	}
 
 	protected File getFile() {
@@ -208,35 +260,28 @@ public class AuroraPage extends FormPage implements IDirty {
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			File file = getFile();
-			// PrintStream out = new PrintStream(new FileOutputStream(file));
-			// out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			// String content = data.toXML();// new
-			// String(data.toXML().getBytes("GBK"),
-			// "UTF-8");
-			// System.out.println(content);
-			// out.println(content);
-			// out.close();
 			XMLOutputter.saveToFile(file, data);
-			setDirty(false);
+			// setDirty(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void setDirty(boolean dirty) {
-		// System.out.println("is dirty:"+getEditor().isDirty());
-		if (!dirty && getEditor().isDirty()) {
-			getEditor().editorDirtyStateChanged();
-		} else if (dirty && !(getEditor().isDirty())) {
-			getEditor().editorDirtyStateChanged();
+		if (dirty) {
+			mServiceTreeEditor.refresh();
+			mPropertyEditor.refresh();
+			mPropertyArrayEditor.refresh();
+			setModify(true);
 		}
-		// getEditor().editorDirtyStateChanged();
-		// ((ServiceEditor)getEditor()).makeDirty();
 		// System.out.println("is dirty:"+getEditor().isDirty());
-	}
+		// if (!dirty && getEditor().isDirty()) {
+		// getEditor().editorDirtyStateChanged();
+		// } else if (dirty && !(getEditor().isDirty())) {
+		// getEditor().editorDirtyStateChanged();
+		// }
+		getEditor().editorDirtyStateChanged();
 
-	public void makeDirty() {
-		setDirty(true);
 	}
 
 	public void fillElementToolBar(Composite shell,
@@ -249,8 +294,7 @@ public class AuroraPage extends FormPage implements IDirty {
 		ToolItem addItem = new ToolItem(toolBar, SWT.DROP_DOWN);
 		setToolItemShowProperty(addItem, "添加子节点", "icons/add_obj.gif");
 		addItem.addListener(SWT.Selection, new ToolBarAddElementListener(
-				toolBar, menu, addItem, columnViewerDirtyObject.getObject(),
-				columnViewerDirtyObject));
+				toolBar, menu, addItem, columnViewerDirtyObject));
 
 		final ToolItem cutItem = new ToolItem(toolBar, SWT.PUSH);
 		setToolItemShowProperty(cutItem, "剪切", "icons/cut.gif");
@@ -309,29 +353,26 @@ public class AuroraPage extends FormPage implements IDirty {
 	}
 
 	private void autoLoadProjectSxsdFile() {
-
-//		File project = ((IFileEditorInput) getEditorInput()).getFile()
-//				.getProject().getLocation().toFile();
-//		if (project != null && project.isDirectory()) {
-//			File[] files = project.listFiles();
-//			for (int i = 0; i < files.length; i++) {
-//				File file = files[i];
-//				if (file.getName().toLowerCase().endsWith(".sxsd")) {
-//					try {
-//						Activator.getSchemaManager().loadSchemaByFile(
-//								file.getAbsolutePath());
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					} catch (SAXException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		}
 		Activator.refeshSchemaManager();
-		// System.out.println("rootFile:"+rootFile );
 	}
 
+	public void refresh(CompositeMap data) {
+		this.data = data;
+		mServiceTreeEditor.mTreeViewer.setInput(data);
+	}
+
+	public boolean isModify() {
+		return modify;
+	}
+
+	public void setModify(boolean modify) {
+		this.modify = modify;
+	}
+	public CompositeMap getData() {
+		return data;
+	}
+
+	public void setData(CompositeMap data) {
+		this.data = data;
+	}
 }

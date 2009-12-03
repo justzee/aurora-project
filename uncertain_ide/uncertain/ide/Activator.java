@@ -110,7 +110,7 @@ public class Activator extends AbstractUIPlugin {
 //					FileLocator.find(Activator.getDefault().getBundle(), path,
 //							null)).getPath();
 			String sxsdDir = Activator.getDefault().getPreferenceStore().getString(Common.SXSD_DIRECTORY);
-			System.out.println("SXSD_DIRECTORY1:"+sxsdDir);
+//			System.out.println("SXSD_DIRECTORY:"+sxsdDir);
 			
 			if(sxsdDir ==null || sxsdDir.equals("")){
 				showSxsdDirHint();
@@ -143,7 +143,7 @@ public class Activator extends AbstractUIPlugin {
 //					FileLocator.find(Activator.getDefault().getBundle(), path,
 //							null)).getPath();
 			String sxsdDir = Activator.getDefault().getPreferenceStore().getString(Common.SXSD_DIRECTORY);
-			System.out.println("SXSD_DIRECTORY1:"+sxsdDir);
+//			System.out.println("SXSD_DIRECTORY:"+sxsdDir);
 			
 			if(sxsdDir ==null || sxsdDir.equals("")){
 				showSxsdDirHint();
