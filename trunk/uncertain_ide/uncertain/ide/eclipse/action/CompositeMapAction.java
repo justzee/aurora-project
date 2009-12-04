@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.CompositeUtil;
+import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.ActionLabelManager;
 import uncertain.schema.Array;
@@ -45,7 +47,16 @@ public class CompositeMapAction {
 
 		CompositeMap newCM = new CompositeMap(_prefix, _uri, _name);
 		parentCM.addChild(newCM);
-		addElementArray(newCM);
+		
+		Element element = Activator.getSchemaManager().getElement(parentCM);
+		if(element != null && element.isArray()){
+			QualifiedName nm = parentCM.getQName();
+			if(CompositeUtil.findChild(parentCM.getParent(), nm)==null){
+				parentCM.getParent().addChild(parentCM);
+	//			System.out.println(map.toXML());
+			}
+		}
+//		addElementArray(newCM);
 	}
 
 	public static void addElementArray(CompositeMap parentCM) {
@@ -90,7 +101,19 @@ public class CompositeMapAction {
 		switch (buttonID) {
 		case SWT.OK:
 			if (comp != null) {
-				comp.getParent().removeChild(comp);
+				CompositeMap parentCM = comp.getParent();
+//				System.out.println(parentCM.toXML());
+				Element element = Activator.getSchemaManager().getElement(parentCM);
+				if(element.isArray()){
+					comp.getParent().removeChild(comp);
+					if(parentCM.getChilds()==null ||parentCM.getChilds().size()==0){
+						parentCM.getParent().removeChild(parentCM);
+//						System.out.println(parentCM.toXML());
+					}
+				}
+				else{
+					comp.getParent().removeChild(comp);
+				}
 			}
 			viewer.refresh(true);
 		case SWT.CANCEL:
