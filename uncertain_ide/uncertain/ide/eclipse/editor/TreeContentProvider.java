@@ -3,13 +3,17 @@
  */
 package uncertain.ide.eclipse.editor;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.CompositeUtil;
+import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
@@ -29,26 +33,31 @@ public class TreeContentProvider implements ITreeContentProvider {
 		if (parentElement == null)
 			return null;
 		CompositeMap map = (CompositeMap) parentElement;
-		List childs = map.getChilds();
+		List childs = new LinkedList(map.getChildsNotNull());
 
-		if (childs == null) {
-			Element element = Activator.getSchemaManager().getElement(map);
-			if (element != null) {
-				List arrays = element.getAllArrays();
-				if (arrays != null) {
-					Iterator ite = arrays.iterator();
-					while (ite.hasNext()) {
-						String name = (String) ite.next();
-						CompositeMap newMap = new CompositeMap(name);
-						map.addChild(newMap);
-						childs = map.getChilds();
-						return childs.toArray();
+//		System.out.println(map.toXML());
+		Element element = Activator.getSchemaManager().getElement(map);
+		if (element != null) {
+			List arrays = element.getAllArrays();
+			if (arrays != null) {
+				Iterator ite = arrays.iterator();
+				while (ite.hasNext()) {
+					Array uncetainArray = (Array) ite.next();
+					String name = uncetainArray.getLocalName();
+					CompositeMap newCM = new CompositeMap(map.getPrefix(),
+							map.getNamespaceURI(), name);
+					QualifiedName nm = newCM.getQName();
+					if(CompositeUtil.findChild(map, nm)==null){
+						newCM.setParent(map);
+						childs.add(newCM);
+//						System.out.println(map.toXML());
 					}
 				}
 			}
-
+		}
+		if (childs == null)
 			return null;
-		} else
+		else
 			return childs.toArray();
 	}
 
@@ -66,55 +75,50 @@ public class TreeContentProvider implements ITreeContentProvider {
 		CompositeMap map = (CompositeMap) element;
 
 		List childs = map.getChilds();
-		boolean falg = childs != null;
-		return falg;
+		if(childs != null){
+			return true;
+		}
+		// this element maybe have arrays
+		else{
+			Element cm = Activator.getSchemaManager().getElement(map);
+			if(cm != null &&!cm.getAllArrays().isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Object[] getElements(Object inputElement) {
 
 		if (inputElement == null)
 			return null;
-		// CompositeMap root = new CompositeMap();
 
 		CompositeMap map = (CompositeMap) inputElement;
 		if (map.getChild(rootElement) != null && !map.equals(rootElement)) {
 			return new Object[] { rootElement };
 		}
-		List childs = map.getChilds();
-//		Element element = Activator.getSchemaManager().getElement(map);
-//		if (element != null) {
-//			List arrays = element.getAllArrays();
-//			if (arrays != null) {
-//				Iterator ite = arrays.iterator();
-//				while (ite.hasNext()) {
-//					Array uncetainArray = (Array) ite.next();
-//					String name = uncetainArray.getLocalName();
-//					CompositeMap newCM = new CompositeMap(map.getPrefix(),
-//							map.getNamespaceURI(), name);
-//					if(map.getChild(newCM)== null)
-//						map.addChild(newCM);
-//				}
-//			}
-//		}
-		if (childs == null) {
-			Element ele = Activator.getSchemaManager().getElement(map);
-			if (ele != null) {
-				List arrays = ele.getAllArrays();
-				if (arrays != null) {
-					Iterator ite = arrays.iterator();
-					while (ite.hasNext()) {
-						Array uncetainArray = (Array) ite.next();
-						String name = uncetainArray.getLocalName();
-						CompositeMap newMap = new CompositeMap(null, map
-								.getNamespaceURI(), name);
-						map.addChild(newMap);
+		List childs = new LinkedList(map.getChildsNotNull());
+
+//		System.out.println(map.toXML());
+		Element element = Activator.getSchemaManager().getElement(map);
+		if (element != null) {
+			List arrays = element.getAllArrays();
+			if (arrays != null) {
+				Iterator ite = arrays.iterator();
+				while (ite.hasNext()) {
+					Array uncetainArray = (Array) ite.next();
+					String name = uncetainArray.getLocalName();
+					CompositeMap newCM = new CompositeMap(map.getPrefix(),
+							map.getNamespaceURI(), name);
+					QualifiedName nm = newCM.getQName();
+					if(CompositeUtil.findChild(map, nm)==null){
+						newCM.setParent(map);
+						childs.add(newCM);
+//						System.out.println(map.toXML());
 					}
 				}
 			}
 		}
-
-		childs = map.getChilds();
-
 		if (childs == null)
 			return null;
 		else
