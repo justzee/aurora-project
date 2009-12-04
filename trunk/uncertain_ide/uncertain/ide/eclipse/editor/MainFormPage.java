@@ -81,7 +81,7 @@ public class MainFormPage extends FormPage implements IDirty {
 			autoLoadProjectSxsdFile();
 			createContent(shell, toolkit);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e.getLocalizedMessage());
 		}
 	}
 
