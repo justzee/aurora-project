@@ -74,7 +74,7 @@ public class WebContextInit implements ServletContextListener {
             IObjectRegistry os = uncertainEngine.getObjectRegistry();
             //os.registerParameter(ServletConfig.class,config);
             os.registerInstance(ServletContext.class,servletContext);
-            os.registerInstance(HttpServlet.class, this);
+            //os.registerInstance(HttpServlet.class, servletContext.getS);
               os.registerInstance(application);
               CompositeLoader loader = uncertainEngine.getCompositeLoader();
               CompositeMap default_config = loader.loadFromClassPath("org.lwap.application.DefaultClassRegistry");

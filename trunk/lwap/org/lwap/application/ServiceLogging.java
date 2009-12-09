@@ -17,14 +17,14 @@ import uncertain.core.UncertainEngine;
 import uncertain.event.IContextListener;
 import uncertain.event.RuntimeContext;
 import uncertain.logging.BasicFileHandler;
-import uncertain.logging.ConfigurableLoggerProvider;
+import uncertain.logging.LoggerProvider;
 import uncertain.logging.ILoggerProvider;
 import uncertain.logging.ILoggerProviderGroup;
 import uncertain.logging.LoggerProviderGroup;
 import uncertain.ocm.IConfigurable;
 import uncertain.ocm.OCManager;
 
-public class ServiceLogging extends ConfigurableLoggerProvider implements 
+public class ServiceLogging extends LoggerProvider implements 
     IGlobalInstance, IContextListener, IConfigurable 
 {
     
@@ -81,14 +81,15 @@ public class ServiceLogging extends ConfigurableLoggerProvider implements
     public void onContextCreate( RuntimeContext context ){
         MainService svc = MainService.getServiceInstance(context.getObjectContext());
         if( !svc.isTraceOn()) return;
-        ConfigurableLoggerProvider provider = new ConfigurableLoggerProvider(getTopicManager());
+        LoggerProvider provider = new LoggerProvider(getTopicManager());
         //provider.setLogPath(getLogPath());
         String file_name = getLogFilePath(svc);
         
         BasicFileHandler handler = getLogHandler(file_name);
         //handler.setAppend(false);
         //mOcManager.populateObject(mConfig,handler);
-        provider.addHandles( new Handler[]{handler});        
+        provider.addHandles( new Handler[]{handler});
+        provider.setDefaultLogLevel(getDefaultLogLevel());
         context.setInstanceOfType(BasicFileHandler.class, handler);
         
         ILoggerProvider lp = (ILoggerProvider)context.getInstanceOfType(ILoggerProvider.class);

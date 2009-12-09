@@ -52,7 +52,7 @@ public class JFreeXYChart {
     public boolean  IsLegend = true;
     public boolean  IsToolTips = true;
     public boolean  IsUrl = false;
-    public boolean  IsHorizontal = true; 
+    public boolean  IsHorizontal = false; 
     public String   Url;
     public String   UrlXParam = "series";
     public String   UrlYParam = "item";
@@ -143,7 +143,11 @@ public class JFreeXYChart {
             if(yValue instanceof String) yValue = new Double((String)yValue);
             Series series = (Series)seriesMap.get(series_name);
             if(series==null) throw new IllegalArgumentException("Series name '"+series_name+"' not found");
-            series.addData(xValue, yValue);
+            if(xValue instanceof Date)
+                series.add((Date)xValue, (Number)yValue);
+            else
+                series.add((Number)xValue, (Number)yValue);
+
         }
     }
     

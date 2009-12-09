@@ -36,7 +36,7 @@ public class ExcelReport  implements IFeature{
     public static final String SQL_EXCEL_REPORT_PARAM_QUERY = "ExcelReportParamQuery.data";
     public static final String SQL_GET_SID = "GetSessionIDFromESID.data";
 
-    public static final String KEY_LOGGING_TOPIC = "org.lwap.feature.excelreport";
+    public static final String LOGGING_TOPIC = "org.lwap.feature.excelreport";
 
 	public static final String KEY_IS_GENERATE_SCRIPT = "IS_GENERATE_SCRIPT";	
 
@@ -100,8 +100,10 @@ public class ExcelReport  implements IFeature{
     // get session_id & session_id_str
     public void onBeginService(ProcedureRunner runner) 
     throws Exception {
-		context = runner.getContext();
-		logger = LoggingContext.getLogger(context, KEY_LOGGING_TOPIC);
+		
+        context = runner.getContext();
+		//logger = LoggingContext.getLogger(context, LOGGING_TOPIC);
+        logger = runner.getLogger();
 
 		service = MainService.getServiceInstance(context);
         session_id = context.getObject("/session/@session_id");
@@ -210,7 +212,7 @@ public class ExcelReport  implements IFeature{
 					else
 					    context.replaceChild(m,model);
 				}else{
-				    logger.warning("model loaded from DB is null");					    
+				    logger.warning("model loaded from DB is null, session_id="+session_id);					    
 				}
 
 			}

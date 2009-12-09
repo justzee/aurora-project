@@ -73,7 +73,7 @@ public abstract class DatabaseAccess extends DynamicObject {
     public void initLogger( CompositeMap context ){
         CompositeMap m = context.getRoot();
         mLogger = LoggingContext.getLogger(m, LOGGING_TOPIC); 
-        mErrorLogger = LoggingContext.getErrorLogger(m);
+        mErrorLogger = mLogger;
     }
     
 	public void setService( BaseService s){

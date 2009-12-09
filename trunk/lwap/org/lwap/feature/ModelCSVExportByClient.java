@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.lwap.controller.AbstractController;
 import org.lwap.controller.IController;
+import org.lwap.controller.MainService;
 import org.lwap.mvc.DataBindingConvention;
 import org.lwap.mvc.excel.ExcelDataTable;
 
@@ -67,7 +68,9 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
         return IController.ACTION_NOT_DETECTED;
     }
   */  
-    public void postPrepareService(){
+    public void postPrepareService( ProcedureRunner runner ){
+        if(ServiceInstance==null)
+            ServiceInstance = MainService.getServiceInstance(runner.getContext());
         String s = ServiceInstance.getParameters().getString(Parameter_name);
         if("true".equalsIgnoreCase(s))
             in_generate_state = true;
