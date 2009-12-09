@@ -332,8 +332,10 @@ implements Configuration.IParticipantListener
                     proc.addEntry(entry);
                 }else{
                     Object inst = configuration.getInstance(item);
+                    if(inst==null)
+                        inst = configuration.getFeatureInstance(item, IEntry.class);
                     if(inst==null) {
-                        //throw new ConfigurationError("Unknown entry:"+item.getName());
+                        mLogger.warning("Can't get participant instance from config:"+item.toXML()+" config hash:" + item.hashCode());
                         continue;
                     }
                     else{                        
@@ -589,6 +591,18 @@ implements Configuration.IParticipantListener
             getServiceContext().remove(KEY_CONNECTION_SET);
         }        
     }
+    
+    public Configuration getConfiguration(){
+        return  configuration;
+    }
+    
+    /*
+    public void reloadConfig(){
+        configuration.clear();
+        prepare();
+        //configuration.loadConfig(getServiceConfig());
+    }
+    */
     
     
 }

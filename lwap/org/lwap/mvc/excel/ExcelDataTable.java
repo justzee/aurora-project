@@ -235,6 +235,8 @@ public class ExcelDataTable extends DynamicObject {
 		       		}
 		       		if(value != null){
                         String str = value.toString().replace('\n', ' ');
+                        str = str.replace('\r', ' ');
+                        str = str.replace(separator_char, ' ');
                         out.print(str);
                     }
 		       		else{

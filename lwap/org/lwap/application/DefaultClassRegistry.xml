@@ -35,6 +35,7 @@
 		<feature-attach elementName="attachment" featureClass="org.lwap.feature.UploadFileHandle"/>
 		<feature-attach elementName="query-statement" featureClass="org.lwap.feature.ModelCSVExport"/>
 		<feature-attach elementName="sql-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>
-		<feature-attach elementName="model-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>		
+		<feature-attach elementName="model-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>
+		<feature-attach elementName="excel-report-group" featureClass="org.lwap.mvc.excel.ExcelReportGroup" />
 	</class-registry>
 	

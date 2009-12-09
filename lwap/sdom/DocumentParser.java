@@ -1,7 +1,7 @@
 /*
  * DOMNodeBuilder.java
  *
- * Created on 2001дЙ9тб18ху, обнГ7:34
+ * Created on 2001О©╫О©╫9О©╫О©╫18О©╫О©╫, О©╫О©╫О©╫О©╫7:34
  */
 
 package sdom;
