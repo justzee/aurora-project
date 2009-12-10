@@ -90,14 +90,11 @@ public abstract class MainFormEditor extends FormEditor {
 			if(textPage.isModify()){
 				CompositeLoader loader = new CompositeLoader();
 				try {
-					
-					mainFormPage.refresh(loader.loadFromString(textPage.getOriginalContent()));
+					mainFormPage.refresh(loader.loadFromString(textPage.getOriginalContent(),"utf-8"));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new RuntimeException(e.getLocalizedMessage());
 				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new RuntimeException(e.getLocalizedMessage());
 				}
 				textPage.setModify(false);
 			}else if(mainFormPage.isModify()){
