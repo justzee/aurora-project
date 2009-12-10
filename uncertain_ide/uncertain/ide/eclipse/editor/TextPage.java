@@ -3,13 +3,9 @@ package uncertain.ide.eclipse.editor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-
-import javax.management.RuntimeErrorException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,6 +17,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -28,6 +26,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.ide.Common;
 import uncertain.ide.eclipse.action.IViewer;
 
@@ -38,7 +37,6 @@ public class TextPage extends FormPage implements IViewer {
 	private JavaScriptLineStyler lineStyler = new JavaScriptLineStyler();
 	private String originalContent;
 	private boolean modify = false;
-
 	public TextPage(String id, String title) {
 		super(id, title);
 	}
@@ -73,6 +71,8 @@ public class TextPage extends FormPage implements IViewer {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			InputStreamReader inputStramReader = new InputStreamReader(
 					fileInputStream, "utf-8");
+//			InputStreamReader inputStramReader = new InputStreamReader(
+//					fileInputStream);
 			BufferedReader bufferedReader = new BufferedReader(
 					inputStramReader);
 			originalContent = "";
@@ -135,16 +135,11 @@ public class TextPage extends FormPage implements IViewer {
 	}
 	//本页面改动时调用
 	public void setDirty(boolean dirty) {
-		// if (!dirty && getEditor().isDirty()) {
-		// getEditor().editorDirtyStateChanged();
-		// } else if (dirty && !(getEditor().isDirty())) {
-		// getEditor().editorDirtyStateChanged();
-		// }
 		getEditor().editorDirtyStateChanged();
 	}
 
 	public void refresh(boolean dirty) {
-		setModify(true);
+//		setModify(true);
 		setDirty(dirty);
 
 	}
@@ -170,5 +165,30 @@ public class TextPage extends FormPage implements IViewer {
 
 	public void setOriginalContent(String originalContent) {
 		this.originalContent = originalContent;
+	}
+	public boolean canLeaveThePage() {
+		if(!checkContentFormat()){
+			return false;
+		}
+		if(!originalContent.equals(mInnerText.getText())){
+			setModify(true);
+			setDirty(true);
+		}
+		return true;
+	}
+	private boolean checkContentFormat(){
+		CompositeLoader loader = new CompositeLoader();
+		try {
+			loader.loadFromString(getOriginalContent(),"utf-8");
+		} catch (Exception e) {
+			Shell shell = new Shell();
+			MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING
+					| SWT.OK);
+			messageBox.setText("Error");
+			messageBox.setMessage(e.getLocalizedMessage());
+			messageBox.open();
+			return false;
+		}
+		return true;
 	}
 }
