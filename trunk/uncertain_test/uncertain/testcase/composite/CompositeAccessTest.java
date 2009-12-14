@@ -10,7 +10,6 @@ import uncertain.composite.CompositeMap;
 
 public class CompositeAccessTest extends TestCase {
     
-    String[] PATHS = {}; 
     CompositeLoader     loader;
     CompositeMap        data;
     
