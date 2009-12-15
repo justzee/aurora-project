@@ -3,6 +3,7 @@ package uncertain.ide.eclipse.editor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -124,7 +125,7 @@ public class TextPage extends FormPage implements IViewer {
 		try {
 			if (mInnerText != null) {
 				File file = getFile();
-				PrintStream ps = new PrintStream(file);
+				PrintStream ps = new PrintStream( new FileOutputStream(file));
 				ps.print(mInnerText.getText());
 				ps.close();
 			}
