@@ -32,7 +32,7 @@ public class SiebelServiceinvoke extends AbstractEntry {
 
 	ILogger mLogger;
 //	Logger mLogger;
-	ILogger mErrorLogger;
+//	ILogger mErrorLogger;
 	
 	public SiebelServiceinvoke(SiebelInstance si) {
 		siebelInstance = si;
@@ -247,7 +247,7 @@ public class SiebelServiceinvoke extends AbstractEntry {
 		CompositeMap m = context.getRoot();
 		mLogger = LoggingContext.getLogger(m, SiebelInstance.LOGGING_TOPIC);
 //		mLogger = Logger.getLogger(SiebelInstance.LOGGING_TOPIC);
-		mErrorLogger = LoggingContext.getErrorLogger(m);
+//		mErrorLogger = LoggingContext.getErrorLogger(m);
 	}
 
 }

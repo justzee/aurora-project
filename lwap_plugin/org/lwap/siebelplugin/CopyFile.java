@@ -69,7 +69,7 @@ public class CopyFile implements IFeature, IController {
 
 	// Logger mLogger;
 	ILogger mLogger;
-	ILogger mErrorLogger;
+//	ILogger mErrorLogger;
 
 	public CopyFile() {
 
@@ -175,7 +175,7 @@ public class CopyFile implements IFeature, IController {
 				int c;
 				int size = 0;
 
-				// byteÊı×é½ÓÊÜÎÄ¼şµÄÊı¾İ
+				// byteæ•°ç»„æ¥å—æ–‡ä»¶çš„æ•°æ®
 				byte[] buffer = new byte[50 * 1024];//
 				// while ((c = is.read()) != -1)
 				// os.write(c);
@@ -183,10 +183,10 @@ public class CopyFile implements IFeature, IController {
 
 				while ((c = is.read(buffer)) != -1) {
 					size += c;
-					os.write(buffer, 0, c); // ¶ÁÈëÁ÷,±£´æÔÚBYTeÊı×éÖĞ
+					os.write(buffer, 0, c); // è¯»å…¥æµ,ä¿å­˜åœ¨BYTeæ•°ç»„ä¸­
 
 				}
-				// Á÷µÄ¹Ø±Õ:
+				// æµçš„å…³é—­:
 				os.close();
 				is.close();
 				params.put("UPLOAD_FILE", siebelFile);
@@ -204,7 +204,7 @@ public class CopyFile implements IFeature, IController {
 			DBUtil.closeConnection(conn);
 			DBUtil.closeResultSet(rs);
 			DBUtil.closeStatement(pst);
-			mErrorLogger.severe(e.getMessage());
+			mLogger.severe(e.getMessage());
 		}
 
 		DBUtil.closeConnection(conn);
@@ -218,7 +218,7 @@ public class CopyFile implements IFeature, IController {
 		CompositeMap m = context.getRoot();
 		mLogger = LoggingContext.getLogger(m, SiebelInstance.LOGGING_TOPIC);
 		// mLogger = Logger.getLogger(SiebelInstance.LOGGING_TOPIC);
-		mErrorLogger = LoggingContext.getErrorLogger(m);
+//		mErrorLogger = LoggingContext.getErrorLogger(m);
 	}
 
 	public int attachTo(CompositeMap arg0, Configuration arg1) {
