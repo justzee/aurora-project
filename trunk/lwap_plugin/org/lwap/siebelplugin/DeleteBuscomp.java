@@ -35,7 +35,7 @@ public class DeleteBuscomp extends AbstractEntry {
 
 	ILogger mLogger;
 //	Logger mLogger;
-	ILogger mErrorLogger;
+//	ILogger mErrorLogger;
 
 	public DeleteBuscomp(SiebelInstance si) {
 		siebelInstance = si;
@@ -142,7 +142,7 @@ public class DeleteBuscomp extends AbstractEntry {
 					.getObject(Selected.Source_field);
 			int value = o == null ? 1 : Integer.valueOf(o.toString())
 					.intValue();
-			mLogger.log(Level.CONFIG, "selected £º" + value);
+			mLogger.log(Level.CONFIG, "selected ï¿½ï¿½" + value);
 			selected_value = value;
 		}
 		if (selected_value == 0)
@@ -205,6 +205,6 @@ public class DeleteBuscomp extends AbstractEntry {
 		CompositeMap m = context.getRoot();
 		mLogger = LoggingContext.getLogger(m, SiebelInstance.LOGGING_TOPIC);
 //		mLogger = Logger.getLogger(SiebelInstance.LOGGING_TOPIC);
-		mErrorLogger = LoggingContext.getErrorLogger(m);
+//		mErrorLogger = LoggingContext.getErrorLogger(m);
 	}
 }

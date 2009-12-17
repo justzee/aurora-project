@@ -48,7 +48,7 @@ public class InsertBuscomp extends AbstractEntry {
 
 	ILogger mLogger;
 //	Logger mLogger;
-	ILogger mErrorLogger;
+//	ILogger mErrorLogger;
 
 	public InsertBuscomp(SiebelInstance si) {
 		siebelInstance = si;
@@ -237,6 +237,6 @@ public class InsertBuscomp extends AbstractEntry {
 		CompositeMap m = context.getRoot();
 		mLogger = LoggingContext.getLogger(m, SiebelInstance.LOGGING_TOPIC);
 //		mLogger = Logger.getLogger(SiebelInstance.LOGGING_TOPIC);
-		mErrorLogger = LoggingContext.getErrorLogger(m);
+//		mErrorLogger = LoggingContext.getErrorLogger(m);
 	}
 }

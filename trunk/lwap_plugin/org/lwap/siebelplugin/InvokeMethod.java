@@ -66,7 +66,7 @@ public class InvokeMethod implements IFeature, IController  {
 
 //	Logger mLogger;
 	ILogger mLogger;
-	ILogger mErrorLogger;
+//	ILogger mErrorLogger;
 
 	public InvokeMethod(SiebelInstance si) {
 		siebelInstance = si;
@@ -294,7 +294,7 @@ public class InvokeMethod implements IFeature, IController  {
 		CompositeMap m = context.getRoot();
 		mLogger = LoggingContext.getLogger(m, SiebelInstance.LOGGING_TOPIC);
 //		mLogger = Logger.getLogger(SiebelInstance.LOGGING_TOPIC);
-		mErrorLogger = LoggingContext.getErrorLogger(m);
+//		mErrorLogger = LoggingContext.getErrorLogger(m);
 	}
 
 	public int attachTo(CompositeMap arg0, Configuration arg1) {

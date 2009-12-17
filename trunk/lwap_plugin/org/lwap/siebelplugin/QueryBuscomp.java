@@ -61,7 +61,7 @@ public class QueryBuscomp extends AbstractEntry {
 
 //	Logger mLogger;
 	ILogger mLogger;
-	ILogger mErrorLogger;
+//	ILogger mErrorLogger;
 
 	public QueryBuscomp(SiebelInstance si) {
 		siebelInstance = si;
@@ -365,7 +365,7 @@ public class QueryBuscomp extends AbstractEntry {
 		CompositeMap m = context.getRoot();
 		mLogger = LoggingContext.getLogger(m, SiebelInstance.LOGGING_TOPIC);
 //		mLogger = Logger.getLogger(SiebelInstance.LOGGING_TOPIC);
-		mErrorLogger = LoggingContext.getErrorLogger(m);
+//		mErrorLogger = LoggingContext.getErrorLogger(m);
 	}
 
 }
