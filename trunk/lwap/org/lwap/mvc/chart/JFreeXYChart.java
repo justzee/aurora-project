@@ -230,6 +230,7 @@ public class JFreeXYChart {
 				Object o = cm.get("NAME");
 				String name = o == null ? "" : o.toString();
 				series.Name=name;
+				o = cm.get("DUALAXIS");
 				String str_dualAxis = o == null ? "false" : o.toString();
 				boolean bl_dualAxis = str_dualAxis.equals("true")?true:false;
 				series.DualAxis=bl_dualAxis;
