@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import org.lwap.controller.StateFlag;
 import org.lwap.database.DatabaseAccess;
 import org.lwap.database.IConnectionInitializer;
-import org.lwap.database.TransactionFactory;
+import org.lwap.mvc.BuildSession;
 import org.lwap.mvc.ClassViewFactory;
 import org.lwap.mvc.Layout;
 import org.lwap.mvc.LocalizedStringProvider;
@@ -82,6 +82,7 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 	boolean						dumped = false;
 	boolean     				_view_output = false;
 	protected RequestParameterSource	parameter_source;	
+	ServletBuildSession                _session;
 	
 	
 	public class ViewPopulateIterator implements IterationHandle {
@@ -612,22 +613,32 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
                page_context = JspFactory.getDefaultFactory().getPageContext(servlet, request, response, null, false, JspWriter.DEFAULT_BUFFER, true);
            }
            
-           ServletBuildSession _session = new ServletBuildSession( 
+           boolean use_parent_session = false;
+           // check if use parent build session
+           if(getCallingService()!=null){
+               _session = (ServletBuildSession)getCallingService().getBuildSession();
+               if(_session!=null)
+                   use_parent_session = true;
+           }
+           // create new session if not use parent session
+           if(!use_parent_session){
+               _session = new ServletBuildSession( 
                 getViewBuilderStore(), 
 				getServletContext(), 
                 request, 
                 response, 
                 page_context);
-           //_session.setStringProvider(this);
-           _session.setService(this);
-           if(upc){
-               _session.setAutoFlush(true);
+               _session.setService(this);
+               if(upc){
+                   _session.setAutoFlush(true);
+               }
            }
            
            try{
            		_session.applyViews( getModel(), getView().getChilds() );
            } finally {
-           		_session.endSession();
+           	   if(!use_parent_session)
+           	       _session.endSession();
            }
  		
 	}
@@ -678,4 +689,8 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 		}
 		
 	}	
+	
+	public BuildSession getBuildSession(){
+	    return _session;
+	}
 }
