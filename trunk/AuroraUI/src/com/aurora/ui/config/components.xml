@@ -1,6 +1,8 @@
 <package>
 	<components>
+		<view-component elementName="button" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="comboBox" builder="aurora.presentation.TemplateBasedView" />
+		<view-component elementName="lov" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="textField" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="datePicker" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="template" builder="aurora.presentation.component.TemplateRenderer" />
@@ -11,5 +13,6 @@
 		<view-component elementName="dataSet" builder="aurora.presentation.TemplateBasedView" />
 		<view-component elementName="grid" builder="aurora.presentation.TemplateBasedView"/>
 		<view-component elementName="dataSets" builder="aurora.application.features.DataSetInit" />
+		<view-component elementName="tabPanel" builder="aurora.presentation.TemplateBasedView" />
 	</components>
 </package>
