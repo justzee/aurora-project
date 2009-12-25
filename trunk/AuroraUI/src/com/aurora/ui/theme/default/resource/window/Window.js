@@ -19,13 +19,26 @@ Aurora.WindowManager = function(){
     				break;      			
         		}
         	}
-        	return ds;
+        	return win;
+        },
+        getZindex: function(){
+        	var zindex = 40;
+        	var all = this.getAll();
+        	for(var i = 0;i<all.length;i++){
+        		var win = all[i];
+        		var zd = win.wrap.getStyle('z-index');
+        		if(zd =='auto') zd = 0;
+        		if(zd > zindex) zindex = zd;
+				break;        		
+        	}
+        	return zindex;
         }
     };
 }();
 
 Aurora.Window = Ext.extend(Aurora.Component,{
 	constructor: function(config) { 
+		if(Aurora.WindowManager.get(config.id))return;
         this.draggable = true;
         this.closeable = true;
         this.modal = true;
@@ -38,15 +51,17 @@ Aurora.Window = Ext.extend(Aurora.Component,{
     	var sf = this; 
     	Aurora.WindowManager.put(sf);
     	var windowTpl = new Ext.Template(sf.getTemplate());
+    	var shadowTpl = new Ext.Template(sf.getShadowTemplate());
     	sf.width = sf.width||350;sf.height=sf.height||400;
         sf.wrap = windowTpl.append(document.body, {title:sf.title,width:sf.width,bodywidth:sf.width-2,height:sf.height}, true);
+        sf.shadow = shadowTpl.append(document.body, {}, true);
+        sf.focusEl = sf.wrap.child('a[atype=win.focus]')
     	sf.title = sf.wrap.child('div[atype=window.title]');
     	sf.head = sf.wrap.child('td[atype=window.head]');
     	sf.body = sf.wrap.child('div[atype=window.body]');
         sf.closeBtn = sf.wrap.child('div[atype=window.close]');
         if(sf.draggable) sf.initDraggable();
         if(!sf.closeable)sf.closeBtn.hide();
-        if(sf.modal) Aurora.Mask.mask(sf.wrap);
         if(sf.url){
         	sf.showLoading();       
         	sf.load(sf.url)
@@ -54,31 +69,54 @@ Aurora.Window = Ext.extend(Aurora.Component,{
         sf.center();
     },
     initEvents : function(){
+    	this.addEvents('close','load');
     	if(this.closeable) this.closeBtn.on("click", this.onClose,  this); 
-    	this.wrap.on("click", this.focus, this);
+    	this.wrap.on("click", this.toFront, this);
+    	this.focusEl.on("keydown", this.handleKeyDown,  this);
+    },
+    handleKeyDown : function(e){
+		e.stopEvent();
+		var key = e.getKey();
+		if(key == 27){
+			this.close();
+		}
     },
     initDraggable: function(){
     	this.head.addClass('item-draggable');
     	this.head.on('mousedown', this.onMouseDown,this);
     },
+    focus: function(){
+		this.focusEl.focus();
+	},
     center: function(){
     	var screenWidth = Aurora.getViewportWidth();
     	var screenHeight = Aurora.getViewportHeight();
     	var x = (screenWidth - this.width)/2;
     	var y = (screenHeight - this.height)/2;
         this.wrap.moveTo(x,y);
+        this.shadow.setWidth(this.wrap.getWidth())
+        this.shadow.setHeight(this.wrap.getHeight())
+        this.shadow.moveTo(x+3,y+3)
+        this.toFront();
+        var sf = this;
+        setTimeout(function(){
+        	sf.focusEl.focus();
+        },10)
+    },
+    getShadowTemplate: function(){
+    	return ['<DIV class="item-shadow""></DIV>']
     },
     getTemplate : function() {
         return [
-            '<TABLE unselectable="on" class="window-wrap" style="width:{width}px;height:{height}px;" cellSpacing="0" cellPadding="0" border="0">',
+            '<TABLE class="window-wrap" style="width:{width}px;height:{height}px;" cellSpacing="0" cellPadding="0" border="0">',
 			'<TBODY>',
 			'<TR style="height:21px;" >',
 				'<TD class="window-caption">',
-					'<TABLE cellSpacing="0"  cellPadding="1" width="100%" height="100%" border="0" unselectable="on">',
+					'<TABLE cellSpacing="0" unselectable="on"  onselectstart="return false;" style="-moz-user-select:none;"  cellPadding="1" width="100%" height="100%" border="0" unselectable="on">',
 						'<TBODY>',
 						'<TR>',
 							'<TD unselectable="on" class="window-caption-label" atype="window.head" width="99%">',
-								'<DIV unselectable="on" atype="window.title" unselectable="on">{title}</DIV>',
+								'<A atype="win.focus" href="#" class="win-fs" tabIndex="-1">&#160;</A><DIV unselectable="on" atype="window.title" unselectable="on">{title}</DIV>',
 							'</TD>',
 							'<TD unselectable="on" class="window-caption-button" noWrap>',
 								'<DIV class="window-close" atype="window.close" unselectable="on"></DIV>',
@@ -97,19 +135,21 @@ Aurora.Window = Ext.extend(Aurora.Component,{
 		'</TABLE>'
         ];
     },
-    focus : function(){
-    	var wins = Aurora.WindowManager.getAll();
-    	for(var i=0;i<wins.length;i++){
-    		var zindex = wins[i].wrap.getStyle('z-index');
-    		if(zindex == 45)
-    		wins[i].wrap.setStyle('z-index', 40);  
+    /**toFront**/
+    toFront : function(){ 
+    	var myzindex = this.wrap.getStyle('z-index');
+    	var zindex = Aurora.WindowManager.getZindex();
+    	if(myzindex =='auto') myzindex = 0;
+    	if(myzindex < zindex) {
+	    	this.wrap.setStyle('z-index', zindex+5);
+	    	this.shadow.setStyle('z-index', zindex+4);
+	    	if(this.modal) Aurora.Mask.mask(this.wrap);
     	}
-    	this.wrap.setStyle('z-index', 45);
     },
     onMouseDown : function(e){
     	var sf = this; 
-    	e.stopEvent();
-    	sf.focus();
+    	//e.stopEvent();
+//    	sf.toFront();
     	var xy = sf.wrap.getXY();
     	sf.relativeX=xy[0]-e.getPageX();
 		sf.relativeY=xy[1]-e.getPageY();
@@ -122,6 +162,7 @@ Aurora.Window = Ext.extend(Aurora.Component,{
     	Ext.get(document.documentElement).un("mouseup", sf.onMouseUp, sf);
     	if(sf.proxy){
     		sf.wrap.moveTo(sf.proxy.getX(),sf.proxy.getY());
+    		sf.shadow.moveTo(sf.proxy.getX()+3,sf.proxy.getY()+3);
 	    	sf.proxy.hide();
     	}
     },
@@ -151,8 +192,12 @@ Aurora.Window = Ext.extend(Aurora.Component,{
     	sf.proxy.setLocation(xy[0], xy[1]);
     },
     onClose : function(e){
+    	 this.close(); 	
+    },
+    close : function(){
     	Aurora.WindowManager.remove(this);
-    	this.destroy();    	
+    	this.destroy(); 
+    	this.fireEvent('close', this)
     },
     destroy : function(){
     	for(var key in this.cmps){
@@ -166,9 +211,10 @@ Aurora.Window = Ext.extend(Aurora.Component,{
     		}
     	}
     	var wrap = this.wrap;
+    	if(!wrap)return;
     	if(this.proxy) this.proxy.remove();
     	if(this.modal) Aurora.Mask.unmask(this.wrap);
-    	this.wrap.un("click", this.focus, this);
+    	this.wrap.un("click", this.toFront, this);
     	this.head.un('mousedown', this.onMouseDown,this);
     	this.closeBtn.un("click", this.onClose,  this);
     	delete this.title;
@@ -178,6 +224,7 @@ Aurora.Window = Ext.extend(Aurora.Component,{
         delete this.proxy;
     	Aurora.Window.superclass.destroy.call(this);
         wrap.remove();
+        this.shadow.remove();
     },
     load : function(url){
     	var cmps = Aurora.CmpManager.getAll();
@@ -206,6 +253,24 @@ Aurora.Window = Ext.extend(Aurora.Component,{
 	    			sf.cmps[key] = cmps[key];
 	    		}
 	    	}
+	    	sf.fireEvent('load',sf)
     	});
     }
 });
+Aurora.showMessage = function(title, msg){
+	return Aurora.showWindow(title, msg, 300, 100, 'win-alert');
+}
+Aurora.hideWindow = function(){
+	var cmp = Aurora.CmpManager.get('aurora-msg')
+	if(cmp) cmp.close();
+}
+Aurora.showWindow = function(title, msg, width, height, cls){
+	cls = cls ||'';
+	var cmp = Aurora.CmpManager.get('aurora-msg')
+	if(cmp == null) {
+		cmp = new Aurora.Window({id:'aurora-msg',title:title, height:height,width:width});
+//		cmp.body.update('<div style="width:100%;height:100%;text-align:center;line-height:'+(height)+'px">'+msg+'</div>');
+		cmp.body.update('<div class="'+cls+'">'+msg+'</div>');
+	}
+	return cmp;
+}

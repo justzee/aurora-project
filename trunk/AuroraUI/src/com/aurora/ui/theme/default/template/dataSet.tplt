@@ -1,6 +1,6 @@
 <script>
-var ${name} = new Aurora.DataSet({
-	id:'${name}', 
+new Aurora.DataSet({
+	id:'${id}', 
 	datas:${datas}, 
 	fields:${fields},
 	queryDataSet:'${querydataset}', 
@@ -8,6 +8,8 @@ var ${name} = new Aurora.DataSet({
 	submitUrl:'${submiturl}',
 	fetchAll:${fecthall},
 	pageSize:${pagesize},
-	autoCount:${autocount}
+	autoCount:${autocount},
+	pageid:'${pageid}'
 });
+${events}
 </script>

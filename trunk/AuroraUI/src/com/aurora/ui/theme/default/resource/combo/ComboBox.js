@@ -9,21 +9,52 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initComponent:function(config){
 		Aurora.ComboBox.superclass.initComponent.call(this, config);
-		if(config.options) this.setOptions(config.options);		
+		//if(config.options) 
+		this.setOptions(config.options);		
 	},
 	initEvents:function(){
 		Aurora.ComboBox.superclass.initEvents.call(this);
+		this.addEvents('select');
 	},
 	onTriggerClick : function() {
 		this.doQuery('',true);
 		Aurora.ComboBox.superclass.onTriggerClick.call(this);		
 	},
+	onBlur : function(){
+		Aurora.ComboBox.superclass.onBlur.call(this);
+		if(!this.isExpanded()) {
+			var raw = this.getRawValue();
+			var record = this.getRecordByDisplay(raw);
+			if(record != null){
+				this.setValue(record.get(this.valuefield));
+			}else {
+				this.setValue('');
+			}
+		}
+    },
+    getRecordByDisplay: function(name){
+    	if(!this.optionDataSet)return null;
+    	var datas = this.optionDataSet.getAll();
+		var l=datas.length;
+		var record = null;
+		for(var i=0;i<l;i++){
+			var r = datas[i];
+			var d = r.get(this.displayfield);
+			if(d == name){
+				record = r;
+				break;
+			}
+		}
+		return record;
+    },
 	expand:function(){
 		if(!this.optionDataSet)return;
 		if(this.rendered===false)this.initQuery();
+		this.popup.setStyle('width',this.wrap.getStyle('width'));
 		Aurora.ComboBox.superclass.expand.call(this);
 		var v=this.getValue();
 		this.currentIndex = this.getIndex(v);
+		if(!this.currentIndex) return;
 		if (!Ext.isEmpty(v)) {				
 			if(this.selectedIndex)Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
 			Ext.fly(this.getNode(this.currentIndex)).addClass(this.currentNodeClass);
@@ -52,7 +83,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
         	this.popup.update('<ul></ul>');
 			this.view=this.popup.child('ul');
 			this.view.on('click', this.onViewClick,this);
-			this.view.on('mouseover',this.onViewOver,this);
+//			this.view.on('mouseover',this.onViewOver,this);
 			this.view.on('mousemove',this.onViewMove,this);
         }
         
@@ -75,6 +106,10 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 				if(this.popup.getHeight()>this.maxHeight){				
 					this.popup.setHeight(this.maxHeight);
 				}
+				var w = this.popup.getWidth();
+		    	var h = this.popup.getHeight();
+		    	this.shadow.setWidth(w);
+		    	this.shadow.setHeight(h);
 			}
 			this.rendered = true;
 		}       
@@ -89,7 +124,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	onViewOver:function(e,t){
 		this.inKeyMode = false;
 	},
-	onViewMove:function(e,t){	
+	onViewMove:function(e,t){
 		if(this.inKeyMode){ // prevent key nav and mouse over conflicts
             return;
         }
@@ -97,8 +132,11 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
         this.selectItem(index);        
 	},
 	onSelect:function(target){
-		var value =target.attributes['itemValue'].value;
+//		var value =target.attributes['itemValue'].value;
+		var index = target.tabIndex
+		var value = this.optionDataSet.getAt(index).get(this.valuefield);
 		this.setValue(value);
+		this.fireEvent('select',this, value);
 //		this.focus()
 	},
 	initQuery:function(){//事件定义中调用
@@ -119,12 +157,12 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 	},
 	initList: function(){	
 		this.refresh();
-		this.litp=new Aurora.Template('<li tabIndex="{index}" itemValue="{'+this.valuefield+'}">{'+this.displayfield+'}&#160;</li>');
+		this.litp=new Ext.Template('<li tabIndex="{index}" itemValue="{'+this.valuefield+'}">{'+this.displayfield+'}&#160;</li>');
 		var datas = this.optionDataSet.getAll();
 		var l=datas.length;
 		var sb = [];
 		for(var i=0;i<l;i++){
-			var d = Aurora.apply(datas[i].data, {index:i})
+			var d = Ext.apply(datas[i].data, {index:i})
 			sb.add(this.litp.applyTemplate(d));	//等数据源明确以后再修改		
 		}
 		if(l!=0){
@@ -136,16 +174,16 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		this.selectedIndex = null;
 	},
 	selectItem:function(index){
-		if(Aurora.isEmpty(index)){
+		if(Ext.isEmpty(index)){
 			return;
 		}	
 		var node = this.getNode(index);			
 		if(node.tabIndex!=this.selectedIndex){
-			if(!Aurora.isEmpty(this.selectedIndex)){							
-				Aurora.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
+			if(!Ext.isEmpty(this.selectedIndex)){							
+				Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
 			}
 			this.selectedIndex=node.tabIndex;			
-			Aurora.fly(node).addClass(this.selectedClass);					
+			Ext.fly(node).addClass(this.selectedClass);					
 		}			
 	},
 	getNode:function(index){		
@@ -178,7 +216,7 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 		if(r != null){
 			this.text = r.get(this.displayfield);
 		}else{
-//			this.value = ''
+//			this.text = v;
 		}
 		return this.text;
 	},
@@ -192,6 +230,6 @@ Aurora.ComboBox = Ext.extend(Aurora.TriggerField, {
 			if(datas[i].data[this.valuefield]==v){				
 				return i;
 			}
-		}		
+		}
 	}
 });

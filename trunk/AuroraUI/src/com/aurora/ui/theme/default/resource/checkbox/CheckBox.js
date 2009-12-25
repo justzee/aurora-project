@@ -11,7 +11,7 @@ Aurora.CheckBox = Ext.extend(Aurora.Component,{
 	},
 	initComponent:function(config){
 		Aurora.CheckBox.superclass.initComponent.call(this, config);
-		this.wrap=Aurora.get(this.id);
+		this.wrap=Ext.get(this.id);
 		this.el=this.wrap.child('div[atype=checkbox]');
 	},
 	initEvents:function(){

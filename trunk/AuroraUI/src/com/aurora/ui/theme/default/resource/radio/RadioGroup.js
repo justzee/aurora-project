@@ -11,12 +11,12 @@ Aurora.RadioGroup = Ext.extend(Aurora.Component, {
 	constructor: function(config){
 		config.checked = config.checked || false;
 		config.readonly = config.readonly || false;
-		this.el=new Aurora.Element(document.createElement('div'));
+		this.el=new Ext.Element(document.createElement('div'));
 		Aurora.RadioGroup.superclass.constructor.call(this,config);		
 	},
 	initComponent:function(config){
 		Aurora.RadioGroup.superclass.initComponent.call(this, config);
-		this.wrap=Aurora.get(this.id);
+		this.wrap=Ext.get(this.id);
 		if (config.options) {
 			this.setOptions(config.options);
 			this.setOrientation(this.orientation);
@@ -41,7 +41,7 @@ Aurora.RadioGroup = Ext.extend(Aurora.Component, {
 	},
 	initOption:function(){
 		this.el.update('');		
-		this.otp=new Aurora.Template(
+		this.otp=new Ext.Template(
 	    '<div class="'+this.optionCss+'" value="{'+this.valueField+'}" index={index}>'+                    		
         	'<div class="'+this.imgCss+'"></div>'+
 			'<label class="'+this.labelCss+'">{'+this.displayField+'}</label>'+

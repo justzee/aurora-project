@@ -101,6 +101,7 @@ Aurora.DateField = Ext.extend(Aurora.Component, {
 	},
   	//根据日期画日历
   	predraw: function(date) {
+  		if(date=='') date = new Date();
 		//再设置属性
 		this.year = date.getFullYear(); this.month = date.getMonth() + 1;
 		//重新画日历
@@ -108,7 +109,6 @@ Aurora.DateField = Ext.extend(Aurora.Component, {
   	},
   	//画日历
 	draw: function() {
-//		return;
 		//用来保存日期列表
 		var arr = [];
 		//用当月第一天在一周中的日期值作为当月离第一天的天数
