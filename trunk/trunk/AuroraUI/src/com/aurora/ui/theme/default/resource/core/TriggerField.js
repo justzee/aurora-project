@@ -5,28 +5,58 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     initComponent : function(config){
     	Aurora.TriggerField.superclass.initComponent.call(this, config);
     	this.trigger = this.wrap.child('div[atype=triggerfield.trigger]'); 
-    	this.popup = this.wrap.child('div[atype=triggerfield.popup]'); 
+    	this.initPopup();
+    },
+    initPopup: function(){
+    	if(this.initpopuped == true) return;
+    	this.popup = this.wrap.child('div[atype=triggerfield.popup]');
+    	this.shadow = this.wrap.child('div[atype=triggerfield.shadow]');
+//    	var sf = this;
+    	Ext.getBody().insertFirst(this.popup)
+    	Ext.getBody().insertFirst(this.shadow)    	
+//    	Ext.onReady(function(){
+//    		Ext.getBody().appendChild(sf.popup);
+//    		Ext.getBody().appendChild(sf.shadow)
+//    	})
+		
+    	this.initpopuped = true
     },
     initEvents : function(){
     	Aurora.TriggerField.superclass.initEvents.call(this);    
     	this.trigger.on('click',this.onTriggerClick, this, {preventDefault:true})
     },
-    isExpanded : function(){    	
-        return this.popup && this.popup.isVisible();
+    isExpanded : function(){ 
+    	var xy = this.popup.getXY();
+    	return !(xy[0]==-1000||xy[1]==-1000)
+//        return this.popup && this.popup.isVisible();
     },
     setWidth: function(w){
 		this.wrap.setStyle("width",(w+3)+"px");
 		this.el.setStyle("width",(w-20)+"px");
 	},
     onFocus : function(){
-        Ext.get(document.documentElement).on("mousedown", this.triggerBlur, this, {delay: 10});
+    	if(this.readonly) return;
         Aurora.TriggerField.superclass.onFocus.call(this);
         if(!this.isExpanded())this.expand();
     },
     onBlur : function(){
-    	this.hasFocus = false;
-        this.wrap.removeClass(this.focusCss);
-        this.fireEvent("blur", this);
+//    	if(!this.isExpanded()){
+	    	this.hasFocus = false;
+	        this.wrap.removeClass(this.focusCss);
+	        this.fireEvent("blur", this);
+//    	}
+    },
+    onKeyDown: function(e){
+    	Aurora.TriggerField.superclass.onKeyDown.call(this,e);
+    	if(e.browserEvent.keyCode == 9 || e.keyCode == 27) {
+        	if(this.isExpanded()){
+	    		this.collapse();
+	    	}
+        }
+    },
+    isEventFromComponent:function(el){
+    	var isfrom = Aurora.TriggerField.superclass.isEventFromComponent.call(this,el);
+    	return isfrom || this.popup.contains(el);
     },
 	destroy : function(){
 		if(this.isExpanded()){
@@ -38,8 +68,7 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     	Aurora.TriggerField.superclass.destroy.call(this);
 	},
     triggerBlur : function(e){
-    	if(!this.wrap.contains(e.target)){
-    		Ext.get(document.documentElement).un("mousedown", this.triggerBlur, this);
+    	if(!this.popup.contains(e.target) && !this.wrap.contains(e.target)){    		
             if(this.isExpanded()){
 	    		this.collapse();
 	    	}	    	
@@ -52,12 +81,16 @@ Aurora.TriggerField = Ext.extend(Aurora.TextField,{
     	}
     },
     collapse : function(){
-    	this.wrap.setStyle("z-index",20);
-    	this.popup.hide();
+    	Ext.get(document.documentElement).un("mousedown", this.triggerBlur, this);
+    	this.popup.moveTo(-1000,-1000);
+    	this.shadow.moveTo(-1000,-1000);
     },
     expand : function(){
-    	this.wrap.setStyle("z-index",25);
-    	this.popup.show();
+//    	Ext.get(document.documentElement).on("mousedown", this.triggerBlur, this, {delay: 10});
+    	Ext.get(document.documentElement).on("mousedown", this.triggerBlur, this);
+    	var xy = this.wrap.getXY();
+    	this.popup.moveTo(xy[0],xy[1]+23);
+    	this.shadow.moveTo(xy[0]+3,xy[1]+26);
     },
     onTriggerClick : function(){
     	if(this.readonly) return;

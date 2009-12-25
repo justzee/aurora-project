@@ -2,42 +2,84 @@ Aurora.AUTO_ID = 1000;
 Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	constructor: function(config) {//datas,fields, type
 		Aurora.DataSet.superclass.constructor.call(this);
-		Aurora.DataSetManager.reg(this);
 		config = config || {};
-    	this.data = [];
-    	this.qpara = {};
-    	this.id = config.id || Ext.id();		
-    	this.qds = $(config.queryDataSet) || null;
+		this.pageid = config.pageid;
     	this.spara = {};
     	this.pageSize = config.pageSize || 10;
-    	this.fields = {};
-    	this.gotoPage = 1;
-    	this.currentPage = 1;
-    	this.currentIndex = 1;
-    	this.totalCount = 0;
-    	this.totalPage = 0;
-    	this.initEvents();
-    	if(config.fields)this.initFields(config.fields)
     	this.submitUrl = config.submitUrl || '';
     	this.queryUrl = config.queryUrl || '';
     	this.fetchAll = config.fetchAll;
     	this.autoCount = config.autoCount;
+		this.loading = false;
+    	this.qpara = {};
+    	this.fields = {};
+		
+    	this.resetConfig();
+    	
+		this.id = config.id || Ext.id();
+        Aurora.CmpManager.put(this.id,this)		
+    	this.qds = config.queryDataSet == "" ? null :$(config.queryDataSet);
+    	if(this.qds != null && this.qds.getCurrentRecord() == null) this.qds.create();
+    	this.initEvents();
+    	if(config.fields)this.initFields(config.fields)
     	if(config.datas && config.datas.length != 0) {
     		this.loadData(config.datas);
     		//this.locate(this.currentIndex); //不确定有没有影响
     	}
+    },
+    destroy : function(){
+    	Aurora.CmpManager.remove(this.id);
+    	delete Aurora.invalidRecords[this.id]
     },
     reConfig : function(config){
     	this.resetConfig();
     	Ext.apply(this, config);
     },
     bind : function(name, ds){
+    	if(this.fields[name]) {
+    		alert('重复绑定 ' + name);
+    		return;
+    	}
+    	ds.un('beforecreate', this.beforeCreate, this);
+    	ds.un('add', this.bindDataSetPrototype, this);
+    	ds.un('remove', this.bindDataSetPrototype, this);
+    	ds.un('update', this.bindDataSetPrototype, this);
+		ds.un('clear', this.bindDataSetPrototype, this);
+		ds.un('load', this.bindDataSetPrototype, this);
+		ds.un('reject', this.bindDataSetPrototype, this);
+    	
+    	ds.on('beforecreate', this.beforeCreate, this);
+    	ds.on('add', this.bindDataSetPrototype, this);
+    	ds.on('remove', this.bindDataSetPrototype, this);
+    	ds.on('update', this.bindDataSetPrototype, this);
+		ds.on('clear', this.bindDataSetPrototype, this);
+		ds.on('load', this.bindDataSetPrototype, this);
+		ds.on('reject', this.bindDataSetPrototype, this);
+    	
     	var field = new Aurora.Record.Field({
     		name:name,
     		type:'dataset',
     		dataset:ds
-    	});
+    	});    	
 	    this.fields[field.name] = field;
+    },
+   	bindDataSetPrototype: function(clear){
+    	var record = this.getCurrentRecord();
+    	if(!record)return;
+    	for(var k in this.fields){
+    		var field = this.fields[k];
+    		if(field.type == 'dataset'){    			
+    			var ds = field.pro['dataset'];
+    			if(clear===true)ds.resetConfig()
+    			record.data[field.name] = ds.getConfig();    			
+    		}
+    	}
+    },
+    beforeCreate: function(ds, record, index){
+    	if(this.data.length == 0){
+    		this.create({},false)
+	    	this.bindDataSetPrototype(true);
+    	}
     },
     resetConfig : function(){
     	this.data = [];
@@ -46,12 +88,14 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.currentIndex = 1;
     	this.totalCount = 0;
     	this.totalPage = 0;
+    	this.isValid = true;
     },
     getConfig : function(){
     	var c = {};
     	c.id = this.id;
     	c.xtype = 'dataset';
     	c.data = this.data;
+    	c.isValid = this.isValid;
     	c.gotoPage = this.gotoPage;
     	c.currentPage = this.currentPage;
     	c.currentIndex = this.currentIndex;
@@ -61,17 +105,20 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     initEvents : function(){
     	this.addEvents(
+    		'beforecreate',
 	        'metachange',
 	        'fieldchange',
-	        'create',
 	        'add',
 	        'remove',
 	        'update',
 	        'clear',
 	        'load',
+	        'refresh',
 	        'valid',
 	        'indexchange',
-	        'reject'
+	        'reject',
+	        'submitsuccess',
+	        'submitfailed'
 		);    	
     },
     initFields : function(fields){
@@ -96,9 +143,13 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     		for(var key in this.fields){
     			var field = this.fields[key];
     			var datatype = field.getPropertity('datatype');
-    			if(datatype == 'date'){
-    				var d = Aurora.parseDate(data[key])
-    				data[key] = d;
+    			switch(datatype){
+    				case 'date':
+    					data[key] = Aurora.parseDate(data[key]);
+    					break;
+    				case 'int':
+    					data[key] = parseInt(data[key]);
+    					break;
     			}
     		}
     		var record = new Aurora.Record(data,datas[i].field);
@@ -110,33 +161,46 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     
     /** ------------------数据操作------------------ **/ 
     create : function(data, valid){
-    	if(valid !== false) if(!this.validCurrent())return;
+    	this.fireEvent("beforecreate", this);
+//    	if(valid !== false) if(!this.validCurrent())return;
     	var record = new Aurora.Record(data||{});
         this.add(record); 
-        this.locate(this.data.length, false)
-        this.fireEvent("create", this, record);
+        var index = (this.currentPage-1)*this.pageSize + this.data.length;
+        this.locate(index, true);
         return record;
     },
-    validCurrent : function(){
-    	var c = this.getCurrentRecord();
-    	if(c==null)return true;
-    	return c.validateRecord();
+    getNewRecrods: function(){
+        var records = this.getAll();
+        var news = [];
+       	for(var k = 0,l=records.length;k<l;k++){
+			var record = records[k];
+			if(record.isNewRecord == true){
+				news.add(record);
+			}
+		}
+		return news;
     },
+//    validCurrent : function(){
+//    	var c = this.getCurrentRecord();
+//    	if(c==null)return true;
+//    	return c.validateRecord();
+//    },
     add : function(record){
     	record.isNew = true;
+    	record.isNewRecord = true;
         record.setDataSet(this);
         var index = this.data.length;
         this.data.add(record);
-        for(var k in this.fields){
-    		var field = this.fields[k];
-    		if(field.type == 'dataset'){
-    			var ds = field.pro['dataset'];
-    			ds.resetConfig()
-    			record.data[field.name] = ds.getConfig();    			
-    		}
-    	}
+//        for(var k in this.fields){
+//    		var field = this.fields[k];
+//    		if(field.type == 'dataset'){    			
+//    			var ds = field.pro['dataset'];
+//    			ds.resetConfig()   			
+//    		}
+//    	}
         this.fireEvent("add", this, record, index);
     },
+
     getCurrentRecord : function(){
     	if(this.data.length ==0) return null;
     	return this.data[this.currentIndex - (this.currentPage-1)*this.pageSize -1];
@@ -151,21 +215,68 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         this.data = this.data.concat(splice);
         this.fireEvent("add", this, records, index);
     },
-    remove : function(record){
-    	var index;
+    remove : function(record){  
     	if(!record){
     		record = this.getCurrentRecord();
     	}
-    	index = this.data.indexOf(record);
+    	if(!record)return;
+    	if(record.isNew){
+    		this.removeLocal(record);
+    	}else{
+    		this.removeRemote(record);
+    	}
+    },
+    removeRemote: function(r){
+    	if(this.submitUrl == '') return;
     	
+    	var d = Ext.apply({}, r.data);
+		d['_id'] = r.id;
+		d['_status'] = 'delete';
+    	var p = [d];
+    	for(var i=0;i<p.length;i++){
+    		p[i] = Ext.apply(p[i],this.spara)
+    	}
+    	if(p.length > 0) {
+	    	Aurora.request(this.submitUrl, p, this.onRemoveSuccess, this.onSubmitFailed, this);
+    	}
+    
+    },
+    onRemoveSuccess: function(res){
+    	if(res.result.record){
+    		var datas = [].concat(res.result.record);
+    		for(var i=0;i<datas.length;i++){
+    			var data = datas[i];
+	    		var r = this.findById(data['_id']);
+	    		this.removeLocal(r);
+    		}
+    	}
+    },
+    removeLocal: function(record){
+    	Aurora.removeInvalidReocrd(this.id, record)
+    	var index = this.data.indexOf(record);    	
     	if(index == -1)return;
         this.data.remove(record);
-        this.fireEvent("remove", this, record, index);
-        if(index< this.data.length) {
-        	this.next();        	
+        if(this.data.length == 0){
+        	this.removeAll();
+        	return;
+        }
+        var lindex = this.currentIndex - (this.currentPage-1)*this.pageSize;
+        if(lindex<0)return;
+        if(lindex<=this.data.length){
+        	this.locate(this.currentIndex,true);
         }else{
         	this.pre();
         }
+//        if(this.currentIndex<=this.data.length){
+////        	this.next();
+//        	this.locate(this.currentIndex,true);
+//        }else{
+////        	this.pre();
+//        	var index = this.currentIndex-1;
+//        	if(index>=0)
+//        	this.locate(index,true);
+//        }
+        this.fireEvent("remove", this, record, index);    	
     },
     getAll : function(){
     	return this.data;    	
@@ -216,65 +327,42 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     		var field = this.fields[k];
     		if(field.type == 'dataset'){
     			var ds = field.pro['dataset'];
-    			if(r){
+    			if(r && r.data[field.name]){
     				ds.reConfig(r.data[field.name]);
     			}else{
     				ds.resetConfig();
     			}
+    			ds.fireEvent('refresh',ds)
     			ds.processCurrentRow();
     		}
     	}
-    	this.fireEvent("indexchange", this, r);
+    	if(r) this.fireEvent("indexchange", this, r);
     },
     /** ------------------导航函数------------------ **/
-    locate : function(index, valid){
-//    	if(index == this.currentIndex) return;
-    	if(valid !== false) if(!this.validCurrent())return;
-    	
-    	if(index <=0 || (index > this.totalCount))return;
-    	
+    locate : function(index, force){
+    	if(this.currentIndex == index && force !== true) return;
+//    	if(valid !== false) if(!this.validCurrent())return;
+    	if(index <=0 || (index > this.totalCount + this.getNewRecrods().length))return;
     	var lindex = index - (this.currentPage-1)*this.pageSize;
     	if(this.data[lindex - 1]){
-//    		this.currentPage =  Math.ceil(index/this.pageSize);
 	    	this.currentIndex = index;
     	}else{
-//    		if(index > this.totalCount && this.totalCount != 0) {
-//				return;
-////    			index = this.totalCount;
-//			}
-			this.currentIndex = index;
-			this.currentPage =  Math.ceil(index/this.pageSize);
-			this.query(this.currentPage);
-			return;
+    		if(this.isModified()){
+    			Aurora.showMessage('提示', '有未保存数据!')
+    		}else{
+				this.currentIndex = index;
+				this.currentPage =  Math.ceil(index/this.pageSize);
+				this.query(this.currentPage);
+				return;
+    		}
     	}
-    	
-//    	if(this.queryUrl){
-//    		if(index >(this.currentPage-1)*this.pageSize && index <= Math.min(this.totalCount,this.currentPage*this.pageSize)) {
-//	    		this.currentIndex = index;
-//    		}else{
-//    			if(index > this.totalCount && this.totalCount != 0) {
-//    				return;
-////    				index = this.totalCount;
-//    			}
-//    			this.currentIndex = index;
-//    			this.currentPage =  Math.ceil(index/this.pageSize);
-//    			this.query(this.currentPage);
-//    			return;
-//    		}
-//    	}else{
-//    		if(index >0 && index <= this.data.length) {
-//    			this.currentPage =  Math.ceil(index/this.pageSize);
-//	    		this.currentIndex = index;	    		
-//    		}
-//    	}
     	this.processCurrentRow();
-//    	this.fireEvent("indexchange", this, this.getCurrentRecord());
-    },
-    
+    },    
     goPage : function(page){
     	if(page >0) {
     		this.gotoPage = page;
-	    	var go = (page-1)*this.pageSize+1;
+	    	var go = (page-1)*this.pageSize + this.getNewRecrods().length +1;
+//	    	var go = Math.max(0,page-2)*this.pageSize + this.data.length + 1;
 	    	this.locate(go);
     	}
     },
@@ -293,19 +381,58 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     nextPage : function(){
     	this.goPage(this.currentPage +1);
     },
-    
-    validate : function(){
-    	var valid = true;
+    validate : function(fire){
+    	this.isValid = true;
+    	var current = this.getCurrentRecord();
     	var records = this.getAll();
-    	if(records.length == 0) this.create({})
-		for(var k = 0,l=records.length;k<l;k++){
+		var dmap = {};
+		var hassub = false;
+		var unvalidRecord = null;
+					
+    	for(var k in this.fields){
+    		var field = this.fields[k];
+    		if(field.type == 'dataset'){
+    			hassub = true;
+    			var d = field.pro['dataset'];
+    			dmap[field.name] = d;
+    		}
+    	}
+    	for(var k = 0,l=records.length;k<l;k++){
 			var record = records[k];
-			record.validateRecord();
-			if(valid == true){
-				valid = record.valid;
+			if(record.dirty == true || record.isNew == true) {
+				if(!record.validateRecord()){
+					this.isValid = false;
+					unvalidRecord = record;
+					Aurora.addInValidReocrd(this.id, record);
+				}else{
+					Aurora.removeInvalidReocrd(this.id, record);
+				}
+				if(this.isValid == false) {
+					if(hassub)break;
+				}else {
+					for(key in dmap){
+						var ds = dmap[key];
+						ds.reConfig(record.data[key]);
+						if(!ds.validate(false)) {
+							this.isValid = false;
+							unvalidRecord = record;
+						}
+					}
+					if(this.isValid == false) {
+						break;
+					}
+									
+				}
 			}
 		}
-		return valid;
+		if(unvalidRecord != null){
+			var r = this.indexOf(unvalidRecord);
+			if(r!=-1)this.locate(r+1);
+		}
+		if(fire !== false) {
+			Aurora.manager.fireEvent('valid', Aurora.manager, this, this.isValid);
+		}
+		return this.isValid;
     },
     /** ------------------ajax函数------------------ **/
     setQueryUrl : function(url){
@@ -316,6 +443,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     },
     setQueryDataSet : function(ds){ 
     	this.qds = ds;
+    	if(this.qds.getCurrentRecord() == null) this.qds.create();
     },
     setSubmitUrl : function(url){
     	this.submitUrl = url;
@@ -324,24 +452,19 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
         this.spara[para] = value;
     },
     query : function(page){
-    	if(!this.qds) return;
-//    	if(this.qds.getCurrentRecord() == null) this.qds.create();
-    	if(!this.qds.validate()) return;
+    	var r;
+    	if(this.qds) {
+    		if(this.qds.getCurrentRecord() == null) this.qds.create();
+    		if(!this.qds.validate()) return;
+    		r = this.qds.getCurrentRecord();
+    	}
     	if(!this.queryUrl) return;
     	if(!page) this.currentIndex = 1;
     	this.currentPage = page || 1;
     	
     	var q = {};
-    	var r = this.qds.getCurrentRecord();
-    	if(r != null)
-    	Ext.apply(q, r.data);
-    	
+    	if(r != null) Ext.apply(q, r.data);
     	Ext.apply(q, this.qpara);
-//    	q['pagesize']= this.pageSize;
-//    	q['pagenum']=this.currentPage;
-//    	q['_fecthall']=this.fetchAll;
-//    	q['_autocount']=this.autoCount;
-//    	q['_rootpath']='list';
     	var para = 'pagesize='+this.pageSize + 
     				  '&pagenum='+this.currentPage+
     				  '&_fecthall='+this.fetchAll+
@@ -353,7 +476,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	}else{
     		url = this.queryUrl + '&' + para;
     	}
-    	
+    	this.loading = true;
     	Aurora.request(url, q, this.onLoadSuccess, this.onLoadFailed, this);
     },
     isModified : function(){
@@ -361,7 +484,7 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	var records = this.getAll();
 		for(var k = 0,l=records.length;k<l;k++){
 			var record = records[k];
-			if(record.modified) {
+			if(record.dirty == true || record.isNew == true) {
 				modified = true;
 				break;
 			}       			
@@ -390,14 +513,21 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	return datas;
     },
     submit : function(url){
+    	if(!this.validate()){
+//    		Aurora.showMessage('提示', '验证不通过!');
+    		return;
+    	}
+//    	alert('submit')
+//    	return;
     	this.submitUrl = url||this.submitUrl;
     	if(this.submitUrl == '') return;
     	var p = this.getJsonData();
     	for(var i=0;i<p.length;i++){
     		p[i] = Ext.apply(p[i],this.spara)
     	}
-//    	alert(Ext.util.JSON.encode(p));return;
-    	Aurora.request(this.submitUrl, p, this.onSubmitSuccess, this.onSubmitFailed, this);
+    	if(p.length > 0) {
+	    	Aurora.request(this.submitUrl, p, this.onSubmitSuccess, this.onSubmitFailed, this);
+    	}
     },
     
     /** ------------------事件函数------------------ **/
@@ -408,18 +538,28 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     	this.fireEvent("reject", this, record);
     },
     onSubmitSuccess : function(res){
-    	var datas = [].concat(res.result.record);
-    	this.refreshRecord(datas)
+    	if(res.result.record){
+    		var datas = [].concat(res.result.record);
+    		this.refreshRecord(datas)
+    	}
+    	this.fireEvent('submitsuccess', this, res)
     },
     refreshRecord : function(datas){
     	//this.resetConfig();
     	for(var i=0,l=datas.length;i<l;i++){
     		var data = datas[i];
 	    	var r = this.findById(data['_id']);
-	    	if(!r) return;
-	    	r.clear();
+	    	if(!r) return;	    	
 	    	for(var k in data){
-				var f = this.fields[k];
+	    		var field = k;
+	    		if(!this.fields[k]){
+	    			for(var kf in this.fields){
+	    				if(k.toLowerCase() == kf.toLowerCase()){
+	    					field = kf;
+	    				}
+	    			}
+	    		}
+				var f = this.fields[field];
 				if(f && f.type == 'dataset'){
 					var ds = f.pro['dataset'];
 					if(r){
@@ -427,19 +567,32 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	    			}
 	    			if(data[k].record)
 					ds.refreshRecord([].concat(data[k].record))
-				}else{
-					r.data[k] = data[k];
+				}else {
+					var ov = r.get(field);
+					var nv = data[k]
+					if(field == '_id' || field == '_status'||field=='__parameter_parsed__') continue;
+					var datatype = f.getPropertity('datatype');
+					if(datatype == 'date') 
+					nv = Aurora.parseDate(nv)
+					if(ov != nv) {
+						r.set(field,nv);
+					}
 				}
 	       	}
+	       	r.clear();
     	}
-    	this.fireEvent("indexchange", this, this.getCurrentRecord());
+//    	this.fireEvent("indexchange", this, this.getCurrentRecord());
     },
     onSubmitFailed : function(res){
-    	alert(res.error.message);    
+//    	alert(res.error.message);
+    	Aurora.showMessage('错误', res.error.message);
+		this.fireEvent('submitfailed', this, res)   
     },
     onLoadSuccess : function(res){
     	if(res == null) return;
-    	var records = res.result.list.record;
+//    	if(!res.result.list.record) return;
+    	if(!res.result.list.record) res.result.list.record = [];
+    	var records = [].concat(res.result.list.record);
     	var total = res.result.list.totalCount;
     	var datas = [];
     	if(records.length > 0){
@@ -450,14 +603,16 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
     			datas.push(item);
     		}
     	}else if(records.length == 0){
-//    		this.removeAll();
     		this.currentIndex  = 1
     	}
     	this.loadData(datas, total);
-	    this.locate(this.currentIndex);
+    	this.locate(this.currentIndex,true);
+	    this.loading = false;
     },
     onLoadFailed : function(res){
-    	alert(res.error.message)
+    	Aurora.showMessage('错误', res.error.message);
+//    	alert(res.error.message)
+    	this.loading = false;
     },
     onFieldChange : function(record,field,type,value) {
     	this.fireEvent('fieldchange', this, record, field, type, value)
@@ -475,23 +630,23 @@ Aurora.Record = function(data, fields){
     this.id = ++Aurora.AUTO_ID;
     this.data = data;
     this.fields = {};
-    this.errors = {};
+    this.valid = {};
+    this.isValid = true;
+    this.isNew = false;
+	this.dirty = false;	
+	this.editing = false;
+	this.modified= null;
     this.meta = new Aurora.Record.Meta(this);
     if(fields)this.initFields(fields);
 };
 Aurora.Record.prototype = {
-	isNew : false,
-	dirty : false,
-	valid : true,
-	editing : false,
-	modified: null,
 	clear : function() {
 		this.editing = false;
-		this.valid = true;
+		this.valid = {};
+		this.isValid = true;
 		this.isNew = false;
 		this.dirty = false;
 		this.modified = null;
-		this.errors = {};
 	},
 	initFields : function(fields){
 		for(var i=0,l=fields.length;i<l;i++){
@@ -500,44 +655,50 @@ Aurora.Record.prototype = {
 			this.fields[f.name] = f;
 		}
 	},
-	validateRecord : function(){
-		this.errors = {};
-		this.valid = true;
+	validateRecord : function() {
+		this.isValid = true;
+		this.valid = {};
 		var df = this.ds.fields;
 		var rf = this.fields;
 		var names = [];
 		for(var k in df){
-			names.add(k);
+			names.add(k.toLowerCase());
 		}
 		for(var k in rf){
-			if(names.indexOf(k) == -1){
-				names.add(k);
+			if(names.indexOf(k.toLowerCase()) == -1){
+				names.add(k.toLowerCase());
 			}
 		}
 		for(var i=0,l=names.length;i<l;i++){
-			if(this.valid == true) {
-				this.valid = this.validate(names[i]);
+			if(this.isValid == true) {
+				this.isValid = this.validate(names[i]);
 			} else {
 				this.validate(names[i]);
 			}
 		}
-		return this.valid;
+		return this.isValid;
 	},
 	validate : function(name){
 		var valid = true;
 		var v = this.get(name);
 		var field = this.getMeta().getField(name)
-		if(!v && field.snap.required == true){
-			this.errors[name] = {
-				message:'此字段不能为空',
-				code:'001',
-				field:name
-			};
+//		if(!v && field.snap.required == true){
+		if(!v && field.get('required') == true){
+			this.valid[name] = name +　'不能为空';
 			valid =  false;
 		}else{
-			//加入其他验证信息			
-			valid =  true;
+			var validator = field.snap.validator;
+			var isvalid = true;
+			if(validator){
+				validator = window[validator];
+				isvalid = validator.call(window,this, name, v);
+				if(isvalid !== true){
+					valid =	false;	
+					this.valid[name] = isvalid;
+				}
+			}
 		}
+		if(valid==true) delete this.valid[name];
 		this.ds.onRecordValid(this,name,valid)
 		return valid;
 	},
@@ -561,8 +722,7 @@ Aurora.Record.prototype = {
         this.data[name] = value;
         if(!this.editing && this.ds){
            this.ds.afterEdit(this, name, value);
-        }
-        
+        }        
         this.validate(name)
     },
     get : function(name){
@@ -629,7 +789,7 @@ Aurora.Record.Meta.prototype = {
     		if(df){
     			f = new Aurora.Record.Field({name:df.name,type:df.type});
     		}else{
-    			f = new Aurora.Record.Field({name:name,type:'string'});
+    			f = new Aurora.Record.Field({name:name,type:'string'});//
     		}
 			f.record = this.record;
 			this.record.fields[f.name]=f;
@@ -662,7 +822,7 @@ Aurora.Record.Meta.prototype = {
 
 Aurora.Record.Field = function(c){
     this.name = c.name;
-//    this.type = c.type;
+    this.type = c.type;
     this.pro = c||{};
     this.record;
 };
@@ -671,12 +831,19 @@ Aurora.Record.Field.prototype = {
 		this.pro = {};
 		this.record.onFieldClear(this.name);
 	},
-	setPropertity : function(value,type){
+	setPropertity : function(value,type) {
 		var op = this.pro[type];
 		if(op !== value){
 			this.pro[type] = value;
 			this.record.onFieldChange(this.name, type, value);
 		}
+	},
+	get : function(name){
+		var v = null;
+		if(this.snap){
+			v = this.snap[name];
+		}
+		return v;
 	},
 	getPropertity : function(name){
 		return this.pro[name]

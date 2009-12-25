@@ -4,19 +4,40 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
         this.id = config.id || Ext.id();
         Aurora.CmpManager.put(this.id,this)
 		this.initConfig=config;
+		this.isHidden = false;
+		this.isFireEvent = false;
 		this.initComponent(config);
         this.initEvents();
-    }, 
+    },
     initComponent : function(config){ 
 		config = config || {};
         Ext.apply(this, config);
         this.wrap = Ext.get(this.id);
     },
     initEvents : function(){
-    	this.addEvents('focus','blur','change','invalid','valid');    	
+    	this.addEvents('focus','blur','change','invalid','valid','mouseover','mouseout');  
+    	this.wrap.on("mouseover", this.onMouseOver, this);
+        this.wrap.on("mouseout", this.onMouseOut, this);
     },
+    isEventFromComponent:function(el){
+    	return this.wrap.contains(el)
+    },
+    move: function(x,y){
+		this.wrap.setX(x);
+		this.wrap.setY(y);
+	},
+	getBindName: function(){
+		return this.binder ? this.binder.name : null;
+	},
+	getBindDataSet: function(){
+		return this.binder ? this.binder.ds : null;
+	},
     bind : function(ds, name){
-    	this.removeDataSetListener();
+    	this.clearBind();
+    	if(typeof(ds) == 'string'){
+    		ds = $(ds);
+    	}
+    	if(!ds)return;
     	this.binder = {
     		ds: ds,
     		name:name
@@ -33,67 +54,81 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
 			
     	}
     	ds.on('metachange', this.onRefresh, this);
-    	ds.on('create', this.onCreate, this);
-    	ds.on('load', this.onRefresh, this);
     	ds.on('valid', this.onValid, this);
     	ds.on('remove', this.onRemove, this);
     	ds.on('clear', this.onClear, this);
     	ds.on('update', this.onUpdate, this);
     	ds.on('fieldchange', this.onFieldChange, this);
     	ds.on('indexchange', this.onRefresh, this);
+    	this.onRefresh(ds)
     },
-    removeDataSetListener : function(){
+    clearBind : function(){
     	if(this.binder) {
     		var bds = this.binder.ds;
     		bds.un('metachange', this.onRefresh, this);
-	    	bds.un('create', this.onCreate, this);
-	    	bds.un('load', this.onRefresh, this);
 	    	bds.un('valid', this.onValid, this);
 	    	bds.un('remove', this.onRemove, this);
 	    	bds.un('clear', this.onClear, this);
 	    	bds.un('update', this.onUpdate, this);
 	    	bds.un('fieldchange', this.onFieldChange, this);
 	    	bds.un('indexchange', this.onRefresh, this);
-    	}    	
+    	} 
+		this.binder = null; 
+		this.record = null;
     },
     destroy : function(){
-//    	alert('destroy ' + this.id)
+    	this.wrap.un("mouseover", this.onMouseOver, this);
+        this.wrap.un("mouseout", this.onMouseOut, this);
     	Aurora.CmpManager.remove(this.id);
-    	this.removeDataSetListener();
+    	this.clearBind();
     	delete this.wrap;
+    },
+    onMouseOver : function(e){
+    	this.fireEvent('mouseover', this, e);
+    },
+    onMouseOut : function(e){
+    	this.fireEvent('mouseout', this, e);
     },
     onRemove : function(ds, record){
     	if(this.binder.ds == ds && this.record == record){
     		this.clearValue();
     	}
     },
-    onCreate : function(ds){
+    onCreate : function(ds, record){
     	this.clearInvalid();
     	this.record = ds.getCurrentRecord();
-    	this.setValue('',true);
-    	this.fireEvent('valid', this, this.record, this.binder.name)
+		this.setValue('',true);	
+//    	this.fireEvent('valid', this, this.record, this.binder.name)
     },
     onRefresh : function(ds){
     	
+    	if(this.isFireEvent == true || this.isHidden == true) return;
+//    	if(this.isHidden == true) return; 
     	this.clearInvalid();
-		this.record = ds.getCurrentRecord();
-		
-		if(this.record) {
+		this.rerender(ds.getCurrentRecord());
+    },
+    rerender : function(record){
+    	this.record = record;
+    	if(this.record) {
 			var value = this.record.get(this.binder.name);			
 			var field = this.record.getMeta().getField(this.binder.name);		
 			var config={};
-			Ext.apply(config,this.initConfig);		
+			Ext.apply(config,this.initConfig);
 			Ext.apply(config, field.snap);		
 			this.initComponent(config);
+			if(this.record.valid[this.binder.name]){
+				this.markInvalid();
+			}
+//			Ext.get('console').update(Ext.get('console').dom.innerHTML + ' | ' + this.record.id + ' onRefresh')
+			
 			if(this.value == value) return;
 			this.setValue(value,true);
 		}else{
-			this.setValue('',true);		
+			this.setValue('',true);
 		}
-//    	this.fireEvent('valid', this, this.record, this.binder.name)
     },
     onValid : function(ds, record, name, valid){
-    	if(this.binder.ds == ds && this.binder.name == name && this.record == record){
+    	if(this.binder.ds == ds && this.binder.name.toLowerCase() == name.toLowerCase() && this.record == record){
 	    	if(valid){
 	    		this.fireEvent('valid', this, this.record, this.binder.name)
     			this.clearInvalid();
@@ -103,8 +138,8 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
 	    	}
     	}    	
     },
-    onUpdate : function(ds, record, name,value){
-    	if(this.binder.ds == ds && this.binder.name == name){
+    onUpdate : function(ds, record, name, value){
+    	if(this.binder.ds == ds && this.binder.name.toLowerCase() == name.toLowerCase()){
 	    	this.setValue(value, true);
     	}
     },
@@ -121,15 +156,16 @@ Aurora.Component = Ext.extend(Ext.util.Observable,{
     	if(silent === true)return;
     	if(this.binder){
     		this.record = this.binder.ds.getCurrentRecord();
-    		if(this.record == null){
+    		if(this.record == null){    			
+    			//TODO:应该先create()再编辑
     			var data = {};
     			data[this.binder.name] = v;
-    			this.record  = this.binder.ds.create(data,false);
+    			this.record = this.binder.ds.create(data,false);
     			this.record.validate(this.binder.name);
     		}else{
     			this.record.set(this.binder.name,v);
+	    		if(v=='') delete this.record.data[this.binder.name];	    		
     		}
-    		if(v=='') delete this.record.data[this.binder.name];
     	}
     },
     clearInvalid : function(){},

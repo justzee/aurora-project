@@ -1,8 +1,13 @@
 Aurora.Grid = Ext.extend(Aurora.Component,{
 	bgc:'background-color',
+	scor:'#d9e7ed',
+	ocor:'#ffe3a8',
+	cecls:'cell-editor',
 	constructor: function(config){
-		this.overIndex = -1;
-		this.selectedIndex = -1;
+//		this.overIndex = -1;
+//		this.selectedIndex = -1;
+		this.overId = null;
+		this.selectedId = null;
 		this.lockWidth = 0;
 		Aurora.Grid.superclass.constructor.call(this,config);
 	},
@@ -20,6 +25,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		this.lht = this.wrap.child('table[atype=grid.lht]'); 
 
 		this.sp = this.wrap.child('div[atype=grid.spliter]');
+		this.fs = this.wrap.child('a[atype=grid.focus]');
 		
 		var lock =[],unlock = [],columns=[];
 		for(var i=0,l=this.columns.length;i<l;i++){
@@ -36,27 +42,50 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 	},
 	initEvents:function(){
 		Aurora.Grid.superclass.initEvents.call(this);   
-		this.addEvents('dblclick','select');
+		this.addEvents('dblclick','rowclick','keydown');
+		this.wrap.on('click',this.focus,this);
+		this.fs.on(Ext.isOpera ? "keypress" : "keydown", this.handleKeyDown,  this);
 		this.ub.on('scroll',this.syncScroll, this);
 		this.ub.on('click',this.onClick, this);
 		this.ub.on('dblclick',this.onDblclick, this);
-		this.ub.on('mouseover',this.onMouseOver, this);
+//		this.ub.on('mouseover',this.onRowMouseOver, this);
 		this.uht.on('mousemove',this.onUnLockHeadMove, this);
 		this.uh.on('mousedown', this.onHeadMouseDown,this);
 
 		if(this.lb){
-			this.lb.on('mouseover',this.onMouseOver, this);
+//			this.lb.on('mouseover',this.onRowMouseOver, this);
 			this.lb.on('click',this.onClick, this);
 		}
 		if(this.lht) this.lht.on('mousemove',this.onLockHeadMove, this);
 		if(this.lh) this.lh.on('mousedown', this.onHeadMouseDown,this);
-		
-		
 	},
 	syncScroll : function(){
 		this.hideEditor();
 		this.uh.dom.scrollLeft = this.ub.dom.scrollLeft;
 		if(this.lb) this.lb.dom.scrollTop = this.ub.dom.scrollTop;
+	},
+	handleKeyDown : function(e){
+		e.stopEvent();
+		var key = e.getKey();
+		if(key == 38 || key == 40 || key == 33 || key == 34) {
+			if(this.dataset.loading == true) return;
+			var row;
+			switch(e.getKey()){
+				case 33:
+					this.dataset.prePage();
+					break;
+				case 34:
+					this.dataset.nextPage();
+					break;
+				case 38:
+					this.dataset.pre();
+					break;
+				case 40:
+					this.dataset.next();
+					break;
+			}
+		}
+		this.fireEvent('keydown', this, e)
 	},
 	bind : function(ds){
 		if(typeof(ds)==='string'){
@@ -66,29 +95,39 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		this.dataset = ds;
 		ds.on('metachange', this.onRefresh, this);
 		ds.on('update', this.onUpdate, this);
-    	ds.on('create', this.onCreate, this);
+    	ds.on('add', this.onAdd, this);
     	ds.on('load', this.onLoad, this);
     	ds.on('valid', this.onValid, this);
     	ds.on('remove', this.onRemove, this);
-    	ds.on('clear', this.onClear, this);
+    	ds.on('clear', this.onLoad, this);
+    	ds.on('refresh',this.onRefresh,this);
     	ds.on('fieldchange', this.onFieldChange, this);
     	ds.on('indexchange', this.onIndexChange, this);
-		this.onLoad();
+    	this.onLoad();
+		if(this.autoQuery == true)
+		ds.query();
 	},
 	initTemplate : function(){
-		this.cellTpl = new Ext.Template('<TD style="visibility:{visibility};text-align:{align}" dataindex="{dataindex}"><div class="grid-cell" id="'+this.id+'_{dataindex}_{recordid}" dataindex="{dataindex}" recordid="{recordid}">{text}</div></TD>');		
+		this.cellTpl = new Ext.Template('<TD style="visibility:{visibility};text-align:{align}" dataindex="{dataindex}"><div class="grid-cell {cellcls}" id="'+this.id+'_{dataindex}_{recordid}" dataindex="{dataindex}" recordid="{recordid}">{text}</div></TD>');		
 	},
 	createRow : function(type, row, cols, item){
 		var sb = [];
-		sb.add('<TR id="'+this.id+'$'+type+'-'+row+'" class="'+(row % 2==0 ? '' : 'row-alt')+'">');
+		sb.add('<TR id="'+this.id+'$'+type+'-'+item.id+'" class="'+(row % 2==0 ? '' : 'row-alt')+'">');
 		for(var i=0,l=cols.length;i<l;i++){
 			var c = cols[i];
+			var field = item.getMeta().getField(c.dataindex);
+			var cls = c.editor ? this.cecls : '';
+//			if(Ext.isEmpty(item.data[c.dataindex]) && item.isNew == true && field.snap.required == true){
+			if(Ext.isEmpty(item.data[c.dataindex]) && item.isNew == true && field.get('required') == true){
+				cls = cls + ' item-notBlank'
+			}
 			var data = {
 				width:c.width,
-				text:this.renderText(item,c.dataindex,item.data[c.dataindex]||''),
+				text:this.renderText(item,c.dataindex,item.data[c.dataindex]),
 				recordid:item.id,
 				visibility: c.hidden == true ? 'hidden' : 'visible',
 				align:c.align||'left',
+				cellcls: cls,
 				dataindex:c.dataindex
 			}
 			sb.add(this.cellTpl.applyTemplate(data));
@@ -97,19 +136,34 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		return sb.join('');
 	},
 	renderText : function(record,name,value){
-		var field = this.dataset.getField(name);
 		var col = this.getColByDataIndex(name);
-		if(col.renderer){
-			value = window[col.renderer].call(window,record,name, value);
+		var renderer = col.renderer
+		if(renderer){
+			var rder;
+			if(renderer.indexOf('Aurora.') != -1){
+				rder = Aurora[renderer.substr(7,renderer.length)]
+			}else{
+				rder = window[renderer];
+			}
+			if(rder == null){
+				alert("未找到"+renderer+"方法!")
+				return value;
+			}
+			value = rder.call(window,value,record, name);
 			return value;
 		}
+//		var field = this.dataset.getField(name);
+		var field = record.getMeta().getField(name);
 		if(field){
-			var options = field.getOptions();
+//			var options = field.getOptions();
+			var options = field.get('options');
 			if(options){
-				var val = field.getPropertity('valuefield');
-				var dis = field.getPropertity('displayfield');
+				var val = field.get('valuefield');
+				var dis = field.get('displayfield');
+//				var val = field.getPropertity('valuefield');
+//				var dis = field.getPropertity('displayfield');
 				var r = $(options).find(val,value);
-				value = r ? r.get(dis) : value;
+				value = r ? r.get(dis) : '';//value;
 			}
 		}
 		return value;
@@ -125,10 +179,14 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		sb.add('</TR>');
 		return sb.join('');
 	},
-	onLoad : function(){
+	onLoad : function(focus){
 		if(this.lb)
 		this.renderLockArea();
 		this.renderUnLockAread();
+		if(focus !== false) this.focus.defer(10,this)
+	},
+	focus: function(){
+		this.fs.focus();
 	},
 	renderLockArea : function(){
 		var sb = [];var cols = [];
@@ -187,30 +245,65 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		return isOver;
 	},
 	onRefresh : function(){
-		
+		this.onLoad(false)
 	},
 	onIndexChange:function(ds, r){
 		var index = this.getDataIndex(r.id);
 		if(index == -1)return;
-//		alert(r.id + " " + this.selectRecord.id)
-		if(r != this.selectRecord)
-		this.selectRow(index, false);
+		if(r != this.selectRecord){
+			this.selectRow(index, false);
+		}
 	},
-	onCreate : function(){
-		
+	//TODO:增加lock部分
+	onAdd : function(ds,record,index){
+		if(this.lb)
+		var sb = [];var cols = [];
+		var v = 0;
+		var columns = this.columns;
+		var tr = document.createElement("TR");
+		var row = this.dataset.data.length-1;
+		tr.id=this.id+'$u'+'-'+record.id;
+		tr.className=(row % 2==0 ? '' : 'row-alt');
+		for(var i=0,l=columns.length;i<l;i++){
+			var col = columns[i];
+			if(col.lock !== true){
+				var td = document.createElement("TD");
+				td.style.visibility=col.hidden == true ? 'hidden' : 'visible';
+				td.style.textAlign=col.align||'left';
+				td.dataindex=col.dataindex;
+				var text = this.renderText(record,col.dataindex,record.data[col.dataindex]||'');
+				var field = record.getMeta().getField(col.dataindex);		
+//				var cell = '<div class="grid-cell'+ (field.snap.required == true ? ' item-notBlank' : '')+ (col.editor ? ' '+this.cecls : '')+'" id="'+this.id+'_'+col.dataindex+'_'+record.id+'" dataindex="'+col.dataindex+'" recordid="'+record.id+'">'+text+'</div>';
+				var cell = '<div class="grid-cell'+ (field.get('required') == true ? ' item-notBlank' : '')+ (col.editor ? ' '+this.cecls : '')+'" id="'+this.id+'_'+col.dataindex+'_'+record.id+'" dataindex="'+col.dataindex+'" recordid="'+record.id+'">'+text+'</div>';
+				td.innerHTML = cell;
+				tr.appendChild(td);
+			}
+		}
+		this.ubt.dom.tBodies[0].appendChild(tr);
+//		this.selectRow(row,false);
 	},
 	onUpdate : function(ds,record, name,value){
 		var div = document.getElementById(this.id+'_'+name+'_'+record.id)
 		if(div){ 
 			var text = this.renderText(record,name, value);
-			Ext.fly(div).update(text);//TODO:要考虑 renderer
+			Ext.fly(div).update(text);
 		}
 	},
-	onValid : function(){
-		
+	onValid : function(ds, record, name, valid){
+		var div = document.getElementById(this.id+'_'+name+'_'+record.id);
+		if(div) {
+			if(valid == false){
+				Ext.fly(div).addClass('item-invalid');
+			}else{
+				Ext.fly(div).removeClass('item-invalid');
+				Ext.fly(div).removeClass('item-notBlank');
+			}
+		}
+		//alert(record.errors[name].message)
 	},
-	onRemove : function(){
-		
+	onRemove : function(ds,record,index){
+		var row = Ext.get(document.getElementById(this.id+'$u-'+record.id));
+		row.remove();
 	},
 	onClear : function(){
 		
@@ -218,21 +311,21 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 	onFieldChange : function(){
 		
 	},
-	onMouseOver : function(e){
-		if(Ext.fly(e.target).hasClass('grid-cell')){
-			var rid = Ext.fly(e.target).getAttributeNS("","recordid");
-			var row = this.getDataIndex(rid);
-			if(row == -1)return;
-			if(row != this.overIndex)
-			if(this.overlockTr) this.overlockTr.setStyle(this.bgc, this.selectedIndex ==this.overIndex ? '#ffe3a8' : '');
-				if(this.overUnlockTr)  this.overUnlockTr.setStyle(this.bgc,this.selectedIndex ==this.overIndex ? '#ffe3a8' : '');
-				this.overIndex = row;
-				this.overlockTr = Ext.get(document.getElementById(this.id+'$l-'+row));
-				if(this.overlockTr)this.overlockTr.setStyle(this.bgc,'#d9e7ed');
-				this.overUnlockTr = Ext.get(document.getElementById(this.id+'$u-'+row));
-				this.overUnlockTr.setStyle(this.bgc,'#d9e7ed');
-			}
-	},
+//	onRowMouseOver : function(e){
+//		if(Ext.fly(e.target).hasClass('grid-cell')){
+//			var rid = Ext.fly(e.target).getAttributeNS("","recordid");
+//			var row = this.getDataIndex(rid);
+//			if(row == -1)return;
+//			if(rid != this.overId)
+//			if(this.overlockTr) this.overlockTr.setStyle(this.bgc, this.selectedId ==this.overId ? '#ffe3a8' : '');
+//			if(this.overUnlockTr)  this.overUnlockTr.setStyle(this.bgc,this.selectedId ==this.overId ? '#ffe3a8' : '');
+//			this.overId = rid;
+//			this.overlockTr = Ext.get(document.getElementById(this.id+'$l-'+rid));
+//			if(this.overlockTr)this.overlockTr.setStyle(this.bgc,'#d9e7ed');
+//			this.overUnlockTr = Ext.get(document.getElementById(this.id+'$u-'+rid));
+//			this.overUnlockTr.setStyle(this.bgc,'#d9e7ed');
+//		}
+//	},
 	getDataIndex : function(rid){
 		var index = -1;
 		for(var i=0,l=this.dataset.data.length;i<l;i++){
@@ -262,43 +355,41 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 			var row = this.dataset.indexOf(record);
 			var dataindex = Ext.fly(dom).getAttributeNS("","dataindex");
 			this.showEditor(row,dataindex);
-			
-			
-//			if(row != this.selectedIndex);
-//			this.selectRow(row);
-//			
-//			var col = this.getColByDataIndex(dataindex);
-//			this.focusRow(row)
-//			
-//			var xy = Ext.fly(dom).getXY();
-//			var editor = col.editor;			
-//			if(col.editorfunction) {
-//				editor = window[col.editorfunction].call(window,record)
-//			}
-//			if($(editor)){
-//				var sf = this;
-//				setTimeout(function(){
-//					sf.showEditor(dom,editor,xy[0],xy[1],record,dataindex);				
-//				},1)
-//			}
+			this.fireEvent('rowclick', this, row, record)
+		}
+	},
+	setEditor: function(dataindex,editor){
+		var col = this.getColByDataIndex(dataindex);
+		col.editor = editor;
+		var div = document.getElementById(this.id+'_'+dataindex+'_'+this.selectRecord.id)
+		if(editor == ''){
+			Ext.fly(div).removeClass(this.cecls)
+		}else{
+			if(!Ext.fly(div).hasClass(this.cecls))Ext.fly(div).addClass(this.cecls)
 		}
 	},
 	showEditor : function(row, dataindex){
-		Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
+		
+//		Ext.get('console').update(Ext.get('console').dom.innerHTML + " | removeMousedown" )
+//		Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
 		if(row == -1)return;
 		var col = this.getColByDataIndex(dataindex);
 		if(!col)return;
 		var record = this.dataset.getAt(row);
 		if(!record)return;
-		if(row != this.selectedIndex);
+		if(record.id != this.selectedId);
 		this.selectRow(row);
-		this.focusRow(row)
-		
-		var editor = col.editor;			
 		if(col.editorfunction) {
-			editor = window[col.editorfunction].call(window,record)
+			var ef = window[col.editorfunction];
+			if(ef==null) {
+				alert("未找到"+col.editorfunction+"方法!") ;
+				return;
+			}
+			var edit = ef.call(window,record)
+			this.setEditor(dataindex,edit);
 		}
-		if($(editor)){
+		var editor = col.editor;			
+		if(editor){
 			var dom = document.getElementById(this.id+'_'+dataindex+'_'+record.id);
 			var xy = Ext.fly(dom).getXY();
 			var sf = this;
@@ -311,40 +402,68 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 					editor:$(editor)
 				};
 				var ed = sf.currentEditor.editor;
-				ed.setHeight(Ext.fly(dom.parentNode).getHeight()-3)
-				ed.setWidth(Ext.fly(dom.parentNode).getWidth()-6);
-				ed.bind(sf.dataset, dataindex);
-				ed.setValue(v,true);
-				if(!ed.wrap.isVisible())ed.setVisible(true);
-				
+				ed.setHeight(Ext.fly(dom.parentNode).getHeight()-5)
+				ed.setWidth(Ext.fly(dom.parentNode).getWidth()-7);
+//				ed.attachGrid = sf;
+//				if(ed instanceof Aurora.Lov){
+//					ed.attachGrid = sf;
+//					var value = record.get(ed.valuefield);
+//					var text = v;
+//					ed.setValue(text, text, true);
+////					ed.setValue(value, text,true);
+////					if(ed.attachGridListener != true){
+////						ed.on('commit', sf.onLovCommit, sf)
+////						ed.attachGridListener = true;
+////					}
+//				}else{
+//					ed.setValue(v,true);					
+//				}
+				ed.isFireEvent = true;
+				ed.isHidden = false;
 				ed.move(xy[0],xy[1])
-				ed.focus();				
+				ed.bind(sf.dataset, dataindex);
+				ed.rerender(record);
+				ed.focus();
+//				Ext.get('console').update(Ext.get('console').dom.innerHTML + " | addMousedown" )
 				Ext.get(document.documentElement).on("mousedown", sf.onEditorBlur, sf);				
 			},1)
-		}
-		
-		
-		
+		}			
+	},
+	onLovCommit: function(lov, v, t,r){
+		var vf = lov.valuefield
+		this.selectRecord.set(vf, v);
 	},
 	focusRow : function(row){
+		var r = 25;
 		var stop = this.ub.getScroll().top;
-		if(row*24<stop){
-			this.ub.scrollTo('top',row*24-1)
+		if(row*r<stop){
+			this.ub.scrollTo('top',row*r-1)
 		}
-		if((row+1)*24>(stop+this.ub.getHeight())){
-			this.ub.scrollTo('top',(row+1)*24-this.ub.getHeight())
+		if((row+1)*r>(stop+this.ub.getHeight())){
+			this.ub.scrollTo('top',(row+1)*r-this.ub.getHeight())
 		}
+		this.focus();
 	},
 	hideEditor : function(){
-		Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
 		if(this.currentEditor && this.currentEditor.editor){
 			var ed = this.currentEditor.editor;
-			ed.blur();
-			ed.move(-10000,-10000)
+			var needHide = true;
+			if(ed.canHide){
+				needHide = ed.canHide();
+			}
+			if(needHide) { 
+//				Ext.get('console').update(Ext.get('console').dom.innerHTML + " | removeMousedown" )
+				Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
+				var ed = this.currentEditor.editor;
+//				ed.blur();
+				ed.move(-10000,-10000);
+				ed.isFireEvent = false;
+				ed.isHidden = true;
+			}
 		}
 	},
 	onEditorBlur : function(e){
-		if(this.currentEditor && !this.currentEditor.editor.wrap.contains(e.target)) {			
+		if(this.currentEditor && !this.currentEditor.editor.isEventFromComponent(e.target)) {			
 			this.hideEditor();
 		}
 	},
@@ -408,7 +527,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		var col;
 		for(var i=0,l=this.columns.length;i<l;i++){
 			var c = this.columns[i];
-			if(c.dataindex === dataindex){
+			if(c.dataindex.toLowerCase() === dataindex.toLowerCase()){
 				col = c;
 				break;
 			}
@@ -417,19 +536,23 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 	},
 	/** API ���� **/
 	selectRow : function(row, locate){
-		this.selectedIndex = row;
+		var record = this.dataset.getAt(row) 
+		this.selectedId = record.id;
 		if(this.selectlockTr) this.selectlockTr.setStyle(this.bgc,'');
 		if(this.selectUnlockTr) this.selectUnlockTr.setStyle(this.bgc,'');
-		var s = new Date();
-		this.selectUnlockTr = Ext.get(document.getElementById(this.id+'$u-'+row));
-		if(this.selectUnlockTr)this.selectUnlockTr.setStyle(this.bgc,'#ffe3a8');
+		this.selectUnlockTr = Ext.get(document.getElementById(this.id+'$u-'+record.id));
+		if(this.selectUnlockTr)this.selectUnlockTr.setStyle(this.bgc,this.scor);
 		
-		this.selectlockTr = Ext.get(document.getElementById(this.id+'$l-'+row));
-		if(this.selectlockTr)this.selectlockTr.setStyle(this.bgc,'#ffe3a8');
+		this.selectlockTr = Ext.get(document.getElementById(this.id+'$l-'+record.id));
+		if(this.selectlockTr)this.selectlockTr.setStyle(this.bgc,this.scor);
+		this.focusRow(row)
+		
 		var r = (this.dataset.currentPage-1)*this.dataset.pageSize + row+1;
-		this.selectRecord = this.dataset.getAt(row) 
-		if(locate!==false && r != null) this.dataset.locate(r);
-//		this.fireEvent('select', this)
+		this.selectRecord = record
+		if(locate!==false && r != null) {
+//			this.dataset.locate(r);
+			this.dataset.locate.defer(5, this.dataset,[r,false]);
+		}
 	},
 	setColumnSize : function(dataindex, size){
 		var columns = this.columns;
@@ -495,6 +618,5 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 			}
 			
 		}
-	}	
-	
+	}
 });

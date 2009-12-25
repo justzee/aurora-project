@@ -9,15 +9,17 @@
 	</DIV>
 	<DIV style="clear:both"></DIV>
 	<DIV atype="grid.spliter" class="grid-sp" style="display:none;"></DIV>
+	<A atype="grid.focus" href="#" class="grid-fs" tabIndex="-1">&#160;</A>
 </DIV>
 <SCRIPT LANGUAGE="JavaScript">
-	var ${id} = new Aurora.Grid({
+	new Aurora.Grid({
 		id:'${id}',
 		width:${width},
 		height:${height},
+		autoQuery:${autoquery},
 		columns:${columns}
 	});
-	${id}.bind('${dataset}');
+	$$('${id}').bind('${dataset}');
 	${events}
 </SCRIPT>
 ${editors}

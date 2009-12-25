@@ -1,12 +1,9 @@
-.item-dateList {
-	
-}
 .item-dateButton {	
-	BACKGROUND: url(datebtn.gif) no-repeat 2px 0px;
+	BACKGROUND: url(../datefield/datebtn.gif) no-repeat 2px 0px;
 }
 .item-dateField {
-	font-family:Verdana;
-	font-size:12px;
+	/*font-family:Verdana;
+	font-size:12px;*/
 	padding:1px;
 	background-color:#fff;
 	float:left;
@@ -17,7 +14,7 @@
 .item-dateField-head {	
 	FONT-WEIGHT: bold;	
 	FONT-SIZE: 100%;
-	BACKGROUND: url(bgCalendarV2.gif) #305ebc repeat-x;
+	BACKGROUND: url(../datefield/bgCalendarV2.gif) #305ebc repeat-x;
 	COLOR: #fff;	
 	LINE-HEIGHT: 17px;	
 	HEIGHT: 18px;	
@@ -39,7 +36,7 @@
 	padding:1px;
 }
 .item-dateField-pre{
-	BACKGROUND: url(prebtn.gif);
+	BACKGROUND: url(../datefield/prebtn.gif);
 	cursor:pointer;
 	float:left;
 	padding-right:5px;
@@ -47,7 +44,7 @@
 	height:17px;
 }
 .item-dateField-next{
-	BACKGROUND: url(nextbtn.gif);
+	BACKGROUND: url(../datefield/nextbtn.gif);
 	cursor:pointer;
 	float:right;
 	padding-right:5px;
