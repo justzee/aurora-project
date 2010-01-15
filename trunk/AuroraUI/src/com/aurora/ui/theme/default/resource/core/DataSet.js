@@ -491,25 +491,39 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 		}
 		return modified;
     },
-    getJsonData : function(){
-    	var datas = [];
+    isDataModified : function(){
+    	var modified = false;
     	for(var i=0,l=this.data.length;i<l;i++){
     		var r = this.data[i];    		
     		if(r.dirty || r.isNew){
-    			var d = Ext.apply({}, r.data);
-    			d['_id'] = r.id;
-    			d['_status'] = r.isNew ? 'new' : 'update';
-    			for(var k in r.data){
-    				var item = d[k]; 
-    				if(item.xtype == 'dataset'){
-    					var ds =$(item.id);
-    					ds.reConfig(item)
-    					d[k] = ds.getJsonData();
-    				}
-    			}
-		    	datas.push(d);    			
+    			modified = true;
+    			break;
     		}
     	}
+    	return modified;
+    },
+    getJsonData : function(){
+    	var datas = [];
+    	for(var i=0,l=this.data.length;i<l;i++){
+    		var r = this.data[i];
+    		var isAdd = r.dirty || r.isNew
+			var d = Ext.apply({}, r.data);
+			d['_id'] = r.id;
+			d['_status'] = r.isNew ? 'new' : 'update';
+			for(var k in r.data){
+				var item = d[k]; 
+				if(item && item.xtype == 'dataset'){
+					var ds =$(item.id);
+					ds.reConfig(item)
+					isAdd = isAdd == false ? ds.isDataModified() :isAdd;
+					d[k] = ds.getJsonData();
+				}
+			}
+    		if(isAdd){
+	    		datas.push(d);    			
+			}
+    	}
+    	
     	return datas;
     },
     submit : function(url){
@@ -517,8 +531,6 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 //    		Aurora.showMessage('提示', '验证不通过!');
     		return;
     	}
-//    	alert('submit')
-//    	return;
     	this.submitUrl = url||this.submitUrl;
     	if(this.submitUrl == '') return;
     	var p = this.getJsonData();
@@ -567,12 +579,11 @@ Aurora.DataSet = Ext.extend(Ext.util.Observable,{
 	    			}
 	    			if(data[k].record)
 					ds.refreshRecord([].concat(data[k].record))
-				}else {
+				}else{
 					var ov = r.get(field);
 					var nv = data[k]
 					if(field == '_id' || field == '_status'||field=='__parameter_parsed__') continue;
-					var datatype = f.getPropertity('datatype');
-					if(datatype == 'date') 
+					if(f && f.getPropertity('datatype') == 'date') 
 					nv = Aurora.parseDate(nv)
 					if(ov != nv) {
 						r.set(field,nv);
