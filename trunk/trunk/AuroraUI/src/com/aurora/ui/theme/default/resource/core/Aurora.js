@@ -411,21 +411,38 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
     dom.innerHTML = html.replace(/(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)/ig, "").replace(/(?:<link.*?>)((\n|\r|.)*?)/ig, "");
     return this;
 }
-Aurora.parseDate = function(str){      
-  if(typeof str == 'string'){      
-    var results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) *$/);      
-    if(results && results.length>3)      
-      return new Date(parseInt(results[1]),parseInt(results[2]) -1,parseInt(results[3]));       
-    results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) +(\d{1,2}):(\d{1,2}):(\d{1,2}) *$/);      
-    if(results && results.length>6)      
-      return new Date(parseInt(results[1]),parseInt(results[2]) -1,parseInt(results[3]),parseInt(results[4]),parseInt(results[5]),parseInt(results[6]));       
-  }      
-  return null;      
+Aurora.parseDate = function(str){
+	if(typeof str == 'string'){  
+		//TODO:临时, 需要服务端解决
+		if(str.indexOf('.0') !=-1) str = str.substr(0,str.length-2);
+		
+		var results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) *$/);      
+		if(results && results.length>3)      
+	  		return new Date(parseInt(results[1]),parseInt(results[2]) -1,parseInt(results[3]));       
+		results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) +(\d{1,2}):(\d{1,2}):(\d{1,2}) *$/);      
+	    if(results && results.length>6)      
+    	return new Date(parseInt(results[1]),parseInt(results[2]) -1,parseInt(results[3]),parseInt(results[4]),parseInt(results[5]),parseInt(results[6]));       
+	}      
+  	return null;      
 }
 Aurora.formateDate = function(date){
 	if(!date)return '';
 	if(date.getFullYear){
 		return date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()
+	}else{
+		return date
+	}
+}
+Aurora.formateDateTime = function(date){
+	if(!date)return '';
+	if(date.getFullYear){
+		return date.getFullYear() + 
+		"-" + (date.getMonth()+1) + 
+		"-" + date.getDate() + 
+		" " + date.getHours() + 
+		":" + date.getMinutes() + 
+		":" + date.getSeconds();
+		
 	}else{
 		return date
 	}

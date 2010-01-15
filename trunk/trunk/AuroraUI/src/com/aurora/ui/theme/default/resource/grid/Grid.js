@@ -56,6 +56,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 //			this.lb.on('mouseover',this.onRowMouseOver, this);
 			this.lb.on('click',this.onClick, this);
 		}
+		
 		if(this.lht) this.lht.on('mousemove',this.onLockHeadMove, this);
 		if(this.lh) this.lh.on('mousedown', this.onHeadMouseDown,this);
 	},
@@ -150,7 +151,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 				return value;
 			}
 			value = rder.call(window,value,record, name);
-			return value;
+			return value == null ? '' : value;
 		}
 //		var field = this.dataset.getField(name);
 		var field = record.getMeta().getField(name);
@@ -166,7 +167,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 				value = r ? r.get(dis) : '';//value;
 			}
 		}
-		return value;
+		return value == null ? '' : value;
 	},
 	createTH : function(cols){
 		var sb = [];
@@ -260,10 +261,31 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		var sb = [];var cols = [];
 		var v = 0;
 		var columns = this.columns;
-		var tr = document.createElement("TR");
 		var row = this.dataset.data.length-1;
-		tr.id=this.id+'$u'+'-'+record.id;
-		tr.className=(row % 2==0 ? '' : 'row-alt');
+		if(this.lbt){
+			var ltr = document.createElement("TR");
+			ltr.id=this.id+'$l'+'-'+record.id;
+			ltr.className=(row % 2==0 ? '' : 'row-alt');
+			for(var i=0,l=columns.length;i<l;i++){
+				var col = columns[i];
+				if(col.lock == true){
+					var td = document.createElement("TD");
+					td.style.visibility=col.hidden == true ? 'hidden' : 'visible';
+					td.style.textAlign=col.align||'left';
+					td.dataindex=col.dataindex;
+					var text = this.renderText(record,col.dataindex,record.data[col.dataindex]||'');
+					var field = record.getMeta().getField(col.dataindex);
+					var cell = '<div class="grid-cell'+ (field.get('required') == true ? ' item-notBlank' : '')+ (col.editor ? ' '+this.cecls : '')+'" id="'+this.id+'_'+col.dataindex+'_'+record.id+'" dataindex="'+col.dataindex+'" recordid="'+record.id+'">'+text+'</div>';
+					td.innerHTML = cell;
+					ltr.appendChild(td);
+				}
+			}
+			this.lbt.dom.tBodies[0].appendChild(ltr);
+		}
+		
+		var utr = document.createElement("TR");
+		utr.id=this.id+'$u'+'-'+record.id;
+		utr.className=(row % 2==0 ? '' : 'row-alt');
 		for(var i=0,l=columns.length;i<l;i++){
 			var col = columns[i];
 			if(col.lock !== true){
@@ -272,15 +294,13 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 				td.style.textAlign=col.align||'left';
 				td.dataindex=col.dataindex;
 				var text = this.renderText(record,col.dataindex,record.data[col.dataindex]||'');
-				var field = record.getMeta().getField(col.dataindex);		
-//				var cell = '<div class="grid-cell'+ (field.snap.required == true ? ' item-notBlank' : '')+ (col.editor ? ' '+this.cecls : '')+'" id="'+this.id+'_'+col.dataindex+'_'+record.id+'" dataindex="'+col.dataindex+'" recordid="'+record.id+'">'+text+'</div>';
+				var field = record.getMeta().getField(col.dataindex);
 				var cell = '<div class="grid-cell'+ (field.get('required') == true ? ' item-notBlank' : '')+ (col.editor ? ' '+this.cecls : '')+'" id="'+this.id+'_'+col.dataindex+'_'+record.id+'" dataindex="'+col.dataindex+'" recordid="'+record.id+'">'+text+'</div>';
 				td.innerHTML = cell;
-				tr.appendChild(td);
+				utr.appendChild(td);
 			}
 		}
-		this.ubt.dom.tBodies[0].appendChild(tr);
-//		this.selectRow(row,false);
+		this.ubt.dom.tBodies[0].appendChild(utr);
 	},
 	onUpdate : function(ds,record, name,value){
 		var div = document.getElementById(this.id+'_'+name+'_'+record.id)
@@ -302,8 +322,11 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		//alert(record.errors[name].message)
 	},
 	onRemove : function(ds,record,index){
-		var row = Ext.get(document.getElementById(this.id+'$u-'+record.id));
-		row.remove();
+		var lrow = Ext.get(document.getElementById(this.id+'$l-'+record.id));
+		if(lrow)lrow.remove();
+		
+		var urow = Ext.get(document.getElementById(this.id+'$u-'+record.id));
+		if(urow)urow.remove();
 	},
 	onClear : function(){
 		
@@ -468,6 +491,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		}
 	},
 	onLockHeadMove : function(e){
+//		if(this.draging)return;
 		this.hmx = e.xy[0] - this.lht.getXY()[0];
 		if(this.isOverSplitLine(this.hmx)){
 			this.lh.setStyle('cursor',"w-resize");			
@@ -477,6 +501,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		//Ext.get('console').update(this.hmx)
 	},
 	onUnLockHeadMove : function(e){
+//		if(this.draging)return;
 		var lw = 0;
 		if(this.uht){
 			lw = this.uht.getXY()[0] + this.uht.getScroll().left;
@@ -490,7 +515,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 	},
 	onHeadMouseDown : function(e){
 		this.dragWidth = -1;
-		if(this.overColIndex == -1) return;
+		if(this.overColIndex == undefined || this.overColIndex == -1) return;
 		this.dragIndex = this.overColIndex;
 		this.dragStart = e.getXY()[0];
 		this.sp.setHeight(this.height);
@@ -500,6 +525,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
     	Ext.get(document.documentElement).on("mouseup", this.onHeadMouseUp, this);
 	},
 	onHeadMouseMove: function(e){
+//		this.draging = true
 		e.stopEvent();
 		this.dragEnd = e.getXY()[0];
 		var move = this.dragEnd - this.dragStart;
@@ -514,10 +540,9 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		}
 	},
 	onHeadMouseUp: function(e){
+//		this.draging = false;
 		Ext.get(document.documentElement).un("mousemove", this.onHeadMouseMove, this);
-    	Ext.get(document.documentElement).un("mouseup", this.onHeadMouseUp, this);
-		
-		
+    	Ext.get(document.documentElement).un("mouseup", this.onHeadMouseUp, this);		
 		this.sp.setVisible(false);
 		if(this.dragWidth != -1)
 		this.setColumnSize(this.columns[this.dragIndex].dataindex, this.dragWidth);
@@ -564,8 +589,7 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 				c.width = size;
 				if(c.lock !== true){					
 					hth = this.uh.child('TH[dataindex='+dataindex+']');
-					bth = this.ub.child('TH[dataindex='+dataindex+']');
-					
+					bth = this.ub.child('TH[dataindex='+dataindex+']');					
 				}else{							
 					if(this.lh) hth = this.lh.child('TH[dataindex='+dataindex+']');
 					if(this.lb) bth = this.lb.child('TH[dataindex='+dataindex+']');
@@ -583,6 +607,24 @@ Aurora.Grid = Ext.extend(Aurora.Component,{
 		this.uc.setStyle("width", (this.width - lw)+"px");
 		this.uht.setStyle("width",uw+"px");
 		this.ubt.setStyle("width",uw+"px");
+		this.syncSize();
+	},
+	syncSize : function(){
+		var lw = 0;
+		for(var i=0,l=this.columns.length;i<l;i++){
+			var c = this.columns[i];
+			if(c.hidden !== true){
+				if(c.lock === true){
+					lw += c.width;
+				}
+			}
+		}
+		if(lw !=0){
+			var us = this.width -lw;
+			this.uc.setWidth(us);
+			this.uh.setWidth(us);
+			this.ub.setWidth(us);
+		}
 	},
 	showColumn : function(dataindex){
 		var col = this.getColByDataIndex(dataindex);
