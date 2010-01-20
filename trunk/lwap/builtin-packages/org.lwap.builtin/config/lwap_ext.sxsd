@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<my:schema xmlns:my="http://www.uncertain-framework.org/schema/simple-schema" xmlns:jsp="http://mvc.lwap.org/builder/jsp">
+	<my:namespaces>
+		<my:namespace url="http://mvc.lwap.org/builder/jsp" prefix="jsp"/>
+	</my:namespaces>
+	<my:elements>
+		<my:element name="item"/>
+		<my:element name="FieldSet">
+			<my:arrays>
+				<my:array type="column" name="columns"/>
+			</my:arrays>
+		</my:element>
+		
+		<my:element name="component">
+			<my:attributes>
+				<my:attribute name="Type"/>
+				<my:attribute name="Id"/>
+				<my:attribute name="Name"/>
+				<my:attribute name="Label"/>
+				<my:attribute name="Anchor"/>
+				<my:attribute name="Value"/>
+				<my:attribute name="DataSource"/>
+				<my:attribute name="DisplayField"/>
+				<my:attribute name="ValueField"/>
+				<my:attribute name="NotBlank"/>
+			</my:attributes>
+		</my:element>
+		<my:element name="column">
+			<my:attributes>
+				<my:attribute name="ColumnWidth"/>
+			</my:attributes>
+			<my:elements>
+				<my:element ref="component"/>
+			</my:elements>
+		</my:element>
+		<my:element name="items">
+			<my:elements>
+				<my:element ref="component"/>
+				<my:element ref="FieldSet"/>
+			</my:elements>
+		</my:element>
+		<my:element name="jsp:formPanel">
+			<my:attributes>
+				<my:attribute use="required" name="Id"/>
+				<my:attribute name="Width"/>
+			</my:attributes>
+			<my:arrays>
+				<my:array type="component" name="items"/>
+			</my:arrays>
+		</my:element>
+		
+	</my:elements>
+</my:schema>
