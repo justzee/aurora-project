@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by guest (guest) -->
 <ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema">
-	<ss:types>
-		<ss:complexType name="BasicLWAPDatabaseAction"/>
-	</ss:types>
 	<ss:elements>
 		<ss:element name="transform">
 			<ss:attributes>
@@ -19,8 +15,9 @@
 				</ss:element>
 			</ss:elements>
 		</ss:element>
-		<ss:element name="query" type="ss:string">
+		<ss:element name="query" type="ss:string" displayMask="{ElementName:${@ElementName};Target:${@Target}}" >
 			<ss:attributes>
+				<ss:attribute type="ss:string" use="optional" document="执行查询的SQL语句" name="Sql"/>
 				<ss:attribute type="ss:string" use="optional" document="如果设为true，将在web server的终端输出屏幕显示调试信息" name="Dump"/>
 				<ss:attribute type="ss:string" use="optional" document="查询产生的结果集的名称" name="Target"/>
 				<ss:attribute type="ss:string" use="optional" document="查询产生的结果集中，每条记录的名称" name="ElementName"/>
@@ -42,15 +39,16 @@
 				<ss:extension base="query"/>
 			</ss:extensions>
 		</ss:element>
+
 		<ss:element name="update" type="ss:string">
-			<ss:attributes/>
-			<ss:elements/>
-			<ss:arrays/>
+			<ss:attributes>
+				<ss:attribute type="ss:string" use="optional" document="执行查询的SQL语句" name="Sql"/>
+			</ss:attributes>
 			<ss:extensions>
 				<ss:extension base="BasicLWAPDatabaseAction"/>
 			</ss:extensions>
-			<ss:classes/>
 		</ss:element>
+
 		<ss:element name="batch">
 			<ss:attributes>
 				<ss:attribute use="required" name="BatchSource"/>
@@ -59,13 +57,11 @@
 				<ss:attribute name="FailedRecordPath"/>
 				<ss:attribute name="ExceptionHandlePath"/>
 			</ss:attributes>
-			<ss:elements/>
-			<ss:arrays/>
 			<ss:extensions>
 				<ss:extension base="BasicLWAPDatabaseAction"/>
 			</ss:extensions>
-			<ss:classes/>
 		</ss:element>
+
 		<ss:element name="procedure">
 			<ss:attributes>
 				<ss:attribute use="required" name="Name"/>
@@ -82,17 +78,11 @@
 						<ss:attribute name="Value"/>
 						<ss:attribute name="DBTypeName"/>
 					</ss:attributes>
-					<ss:elements/>
-					<ss:arrays/>
-					<ss:extensions/>
-					<ss:classes/>
 				</ss:element>
 			</ss:elements>
-			<ss:arrays/>
 			<ss:extensions>
 				<ss:extension base="BasicLWAPDatabaseAction"/>
 			</ss:extensions>
-			<ss:classes/>
 		</ss:element>
 	</ss:elements>
 </ss:schema>
