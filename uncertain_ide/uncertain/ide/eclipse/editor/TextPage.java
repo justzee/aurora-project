@@ -15,6 +15,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -26,6 +27,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.ide.Common;
@@ -100,7 +102,9 @@ public class TextPage extends FormPage implements IViewer {
 				| SWT.H_SCROLL);
 		mInnerText.addLineStyleListener(lineStyler);
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
-		mInnerText.setBackground(bg);
+//		mInnerText.setBackground(bg);
+		mInnerText.setLineSpacing(2);
+		mInnerText.setFont(new Font(parent.getDisplay(), "Courier New", 10, SWT.NORMAL));
 		Display display = mInnerText.getDisplay();
 		display.asyncExec(new Runnable() {
 			public void run() {
@@ -175,6 +179,7 @@ public class TextPage extends FormPage implements IViewer {
 			setModify(true);
 			setDirty(true);
 		}
+		originalContent=mInnerText.getText();
 		return true;
 	}
 	private boolean checkContentFormat(){
@@ -186,7 +191,11 @@ public class TextPage extends FormPage implements IViewer {
 			MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING
 					| SWT.OK);
 			messageBox.setText("Error");
-			messageBox.setMessage(e.getLocalizedMessage());
+			String message = e.getMessage();
+			if(e.getCause()!= null){
+				message= e.getCause().getMessage();
+			}
+			messageBox.setMessage(message);
 			messageBox.open();
 			return false;
 		}

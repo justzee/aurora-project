@@ -11,12 +11,19 @@
 package uncertain.ide.eclipse.editor;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineStyleEvent;
+import org.eclipse.swt.custom.LineStyleListener;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 public class JavaScriptLineStyler implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
@@ -64,10 +71,12 @@ boolean inBlockComment(int start, int end) {
 void initializeColors() {
 	Display display = Display.getDefault();
 	colors= new Color[] {
-		new Color(display, new RGB(255, 0, 0)),		// black
-		new Color(display, new RGB(0, 128, 0)),	// red
-		new Color(display, new RGB(128, 0, 225)),	// green
-		new Color(display, new RGB(128,   0, 0))	// blue
+		new Color(display, new RGB(0, 0, 0)),		// ºÚ
+		new Color(display, new RGB(0, 128, 0)),	// ÂÌ
+		new Color(display, new RGB(0, 0, 225)),	// À¶
+		new Color(display, new RGB(128,   0, 0)),	// Ç³ºì
+		new Color(display, new RGB(255, 0, 0)),	// ºì
+		new Color(display, new RGB(128, 0, 225)),	// ×Ï
 	};
 	tokenColors= new int[MAXIMUM_TOKEN];
 	tokenColors[WORD]=		0;
@@ -241,7 +250,10 @@ public class JavaScanner {
 			"static" ,  "super" ,  "switch" ,  "synchronized" ,  
 			"this" ,  "throw" ,  "throws" ,  "transient" ,  "try" ,  
 			"typeof" ,  "var" ,  "void" ,  "volatile" ,  "while" , 
-			"with" ,  "true" ,  "false" ,  "prototype"
+			"with" ,  "true" ,  "false" ,  "prototype",
+			//sql
+			"select","distinct","from","group by","where","and","or","order by","sum"
+			
 	};
 
 	public JavaScanner() {
