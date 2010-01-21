@@ -17,6 +17,7 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -243,7 +244,9 @@ public class MainFormPage extends FormPage implements IDirty {
 		mInnerText.addLineStyleListener(lineStyler);
 		// text.setEditable(false);
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
-		mInnerText.setBackground(bg);
+//		mInnerText.setBackground(bg);
+//		mInnerText.setLineSpacing(1);
+		mInnerText.setFont(new Font(mTabFolder.getDisplay(), "Courier New", 10, SWT.NORMAL));
 	}
 
 	protected File getFile() {
@@ -358,7 +361,7 @@ public class MainFormPage extends FormPage implements IDirty {
 
 	public void refresh(CompositeMap data) {
 		this.data = data;
-		mServiceTreeEditor.mTreeViewer.setInput(data);
+		mServiceTreeEditor.setInput(data);
 	}
 
 	public boolean isModify() {

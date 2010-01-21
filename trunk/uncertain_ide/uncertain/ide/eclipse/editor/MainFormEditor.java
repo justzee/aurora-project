@@ -54,6 +54,8 @@ public abstract class MainFormEditor extends FormEditor {
 	}
 
 	public void doSave(IProgressMonitor monitor) {
+		if(!textPage.canLeaveThePage())
+			return;
 		setDirty(false);
 		mainFormPage.doSave(monitor);
 //		textPage.doSave(monitor);

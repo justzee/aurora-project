@@ -6,9 +6,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 
-
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Activator;
 import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.action.ElementDoubleClickListener;
 import uncertain.ide.eclipse.action.IDirty;
@@ -110,6 +108,18 @@ public class TreeEditor implements IViewerDirty{
 			throw new RuntimeException("cm:"+cm+" errorMessage:"+e.getLocalizedMessage());
 		}
 		
+	}
+	public void setInput(CompositeMap data){
+		mTreeViewer.setContentProvider(new TreeContentProvider(data));
+		CompositeMap parent = data.getParent();
+		
+		if(parent==null){
+			CompositeMap root = new CompositeMap("root");
+			root.addChild(data);
+			parent = root;
+		}
+
+		mTreeViewer.setInput(parent);
 	}
 
 }
