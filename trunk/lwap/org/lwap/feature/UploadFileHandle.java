@@ -300,7 +300,7 @@ public class UploadFileHandle implements IFeature, IController {
         }
     }
 
-    private String toUtf8String(String s) {
+    public String toUtf8String(String s) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
