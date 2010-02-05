@@ -20,7 +20,7 @@ public class LwapJobRunner implements Job {
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         UncertainEngine engine = SchedulerConfig.getUncertainEngine(context.getJobDetail().getJobDataMap());
-        IObjectRegistry os = engine.getObjectSpace();
+        IObjectRegistry os = engine.getObjectRegistry();
         LwapJobDetail detail = (LwapJobDetail) context.getJobDetail();
         Class cls_to_run = detail.getTargetJobClass();
         String method = detail.getMethod();
