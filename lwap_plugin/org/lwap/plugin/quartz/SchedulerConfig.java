@@ -106,7 +106,7 @@ public class SchedulerConfig implements IGlobalInstance {
     }    
     
     public void onInitialize() throws Exception {
-        IObjectRegistry os = uncertainEngine.getObjectSpace();
+        IObjectRegistry os = uncertainEngine.getObjectRegistry();
         try{
             scheduler = schedulerFactory.getScheduler();
         }catch(Throwable er){
