@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,8 +14,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import jxl.Cell;
 import jxl.CellView;
@@ -40,8 +45,11 @@ import org.apache.commons.io.FileUtils;
 import org.lwap.controller.ControllerProcedures;
 import org.lwap.controller.IController;
 import org.lwap.controller.MainService;
+import org.lwap.database.DBUtil;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import uncertain.composite.TextParser;
 import uncertain.proc.ProcedureRunner;
 
 /**
@@ -83,37 +91,43 @@ public class ImportExcel implements IController {
 
 	private String file_path = DEFAULT_FILE_PATH;
 
+	private String store_flag;
+	
+	private String session_id;
+
 	private ImportSettings settings;
 
 	private MainService service;
 
 	public ImportExcel(ImportSettings settings) {
 		this.settings = settings;
-        //System.out.println("ImportExcel created");
+		// System.out.println("ImportExcel created");
 	}
 
-	public void onParseParameter(ProcedureRunner runner) throws Exception {
-        //System.out.println("parse parameter");
-        try{
-    		CompositeMap context = runner.getContext();
-    		HttpServletRequest request = service.getRequest();
-    		//RequestContext requestContext = new ServletRequestContext(request);
-    		//boolean isMultipart = ServletFileUpload.isMultipartContent(requestContext);
-    		//if (isMultipart) {            
-    			init();
-                //System.out.println("init()");
-                processUpload(request);
-                //System.out.println("processUpload()");
-    			parseExcelFile(context);
-                //System.out.println("parseExcelFile()");
-    		/*
-            }else
-                System.out.println("Upload content Not multipart");
-                */
-        } catch(Exception ex){
-            ex.printStackTrace();
-            throw ex;
-        }
+	public void onPrepareService(ProcedureRunner runner) throws Exception {
+		 System.out.println(getProcedureName());
+		try {
+			CompositeMap context = runner.getContext();			
+			HttpServletRequest request = service.getRequest();			
+			session_id=TextParser.parse(session_id, context);
+			// RequestContext requestContext = new
+			// ServletRequestContext(request);
+			// boolean isMultipart =
+			// ServletFileUpload.isMultipartContent(requestContext);
+			// if (isMultipart) {
+			init();
+			// System.out.println("init()");
+			processUpload(request);
+			// System.out.println("processUpload()");
+			parseExcelFile(context);
+			// System.out.println("parseExcelFile()");
+			/*
+			 * }else System.out.println("Upload content Not multipart");
+			 */
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
 	}
 
 	private void processUpload(HttpServletRequest request) throws Exception {
@@ -123,73 +137,111 @@ public class ImportExcel implements IController {
 		Iterator iter = items.iterator();
 		while (iter.hasNext()) {
 			FileItem item = (FileItem) iter.next();
-			if (!item.isFormField()) {                
-				String radomFileName = String.valueOf(System.currentTimeMillis());
+			if (!item.isFormField()) {
+				String radomFileName = String.valueOf(System
+						.currentTimeMillis());
 				String returnString = formatPath(item.getName());
-				String fileName = radomFileName.concat(returnString.substring(returnString.lastIndexOf(".")));
-				//String fileType = item.getContentType();
-                //System.out.println("processing "+radomFileName+" as "+formatPath(item.getName()));
-                //System.out.println("file type:"+fileType);
-                //if ("application/vnd.ms-excel".equals(fileType)) {
-					File uploadedFile = new File(settings.getDestPath(), fileName);
-					item.write(uploadedFile);
-					fileMap.put(fileName, uploadedFile);
-                    //System.out.println("saving "+uploadedFile);
-				//}
+				String fileName = radomFileName.concat(returnString
+						.substring(returnString.lastIndexOf(".")));
+				// String fileType = item.getContentType();
+				// System.out.println("processing "+radomFileName+" as "+formatPath(item.getName()));
+				// System.out.println("file type:"+fileType);
+				// if ("application/vnd.ms-excel".equals(fileType)) {
+				File uploadedFile = new File(settings.getDestPath(), fileName);
+				item.write(uploadedFile);
+				fileMap.put(fileName, uploadedFile);
+				// System.out.println("saving "+uploadedFile);
+				// }
 			}
 		}
 	}
 
-	private List parseExcelFile(CompositeMap context) throws Exception {
-
-		List headers = new ArrayList();
-		InputStream is = null;
-		FileInputStream fn = null;
-		int rs = 0;
-		CompositeMap dataMap = new CompositeMap();
-		CompositeMap params = service.getParameters();
-
+	private void parseExcelFile(CompositeMap context) throws Exception {
+		String suffix;
 		Iterator it = fileMap.entrySet().iterator();
 		while (it.hasNext()) {
-			try {
-				Map.Entry entry = (Map.Entry) it.next();
-				String fileName = (String) entry.getKey();
-				File file = (File) entry.getValue();
-				dataMap.put(FILE_NAME, fileName);
+			Map.Entry entry = (Map.Entry) it.next();
+			String fileName = (String) entry.getKey();
+			suffix = fileName.substring(fileName.lastIndexOf("."));
+			File file = (File) entry.getValue();
+			if (".xls".equalsIgnoreCase(suffix.toLowerCase())) {
+				parseExcel2003(file);
+			} 
+		}
+	}
 
-				fn = new FileInputStream(file);
-				is = fn;
-				Workbook rb = Workbook.getWorkbook(is);
-				Sheet s = rb.getSheet(0);
-				rs = s.getRows();
-
+	private void parseExcel2003(File file)throws Exception {
+		InputStream is = null;
+		FileInputStream fn = null;
+		CompositeMap params = service.getParameters();
+		boolean is_store = "Y".equals(store_flag)?true:false;
+		try {	
+			fn = new FileInputStream(file);
+			is = fn;
+			Workbook rb = Workbook.getWorkbook(is);
+			Sheet s = rb.getSheet(0);
+			int rs = s.getRows();			
+			if (is_store) {
+				Connection conn = service.getConnection();
+				Statement st = conn.createStatement();				
+				String sqlpre;
+				String sql;
+				int max_column=0;
+				try {					
+					st.executeUpdate("delete from fnd_import_temp where creation_date<sysdate-1 or session_id="+session_id);
+					st.executeUpdate("delete from fnd_import_error_msg where creation_date<sysdate-1 or session_id="+session_id);
+					st.executeUpdate("delete from fnd_import_status where creation_date<sysdate-1 or session_id="+session_id);
+					for (int j = 0; j < rs; j++) {
+						Cell[] c = s.getRow(j);
+						int m = c.length;
+						if(max_column<m)max_column=m;
+						sqlpre = "insert into fnd_import_temp(creation_date,session_id,row_num";
+						sql = ")values(sysdate,'"+session_id+"',"+j;
+						for (int k = 0; k < m; k++) {							
+							sqlpre += ",c" + (k+1);
+							sql += ",'" + c[k].getContents()+"'";							
+						}
+						st.executeUpdate(sqlpre + sql + ")");
+					}
+					st.executeUpdate("insert into fnd_import_status(creation_date,session_id,max_row,max_col)values(sysdate,'"+session_id+"',"+rs+","+ max_column+")");
+					st.execute("commit");
+					conn.commit();
+				} finally {
+					try {
+						DBUtil.closeConnection(conn);
+						DBUtil.closeStatement(st);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			} else {	
 				Cell[] headerCells = s.getRow(0);
+				List headers = new ArrayList();
 				for (int k = 0; k < headerCells.length; k++)
 					headers.add(headerCells[k].getContents());
-
+				params.put(HEADER_NAME, headers);
+				CompositeMap dataMap = new CompositeMap();
+				dataMap.put(FILE_NAME, file.getName());				
 				for (int j = 1; j < rs; j++) {
 					CompositeMap item = new CompositeMap(MAP_CHILD_NAME);
 					Cell[] c = s.getRow(j);
 					for (int x = 0; x < c.length; x++) {
-						item.put(headerCells[x].getContents(), c[x].getContents() == null ? ""
-								: c[x].getContents());
+						item.put(headerCells[x].getContents(), c[x]
+								.getContents() == null ? "" : c[x]
+								.getContents());
 					}
 					dataMap.addChild(item);
 				}
-				params.putObject(getTarget(), dataMap, true);
-				params.put(HEADER_NAME, headers);
+				params.putObject(getTarget(), dataMap, true);				
+			}
+		} finally {
+			try {
+				fn.close();
+				is.close();
 			} catch (Exception e) {
 				throw e;
-			} finally {
-				try {
-					fn.close();
-					is.close();
-				} catch (Exception e) {
-					throw e;
-				}
 			}
 		}
-		return headers;
 	}
 
 	private void init() throws IOException {
@@ -222,8 +274,10 @@ public class ImportExcel implements IController {
 		Boolean isSuccess = (Boolean) context.getObject(getSuccess_flag());
 		if (isSuccess != null && !isSuccess.booleanValue()) {
 			List headers = (List) parameter.get(HEADER_NAME);
-			CompositeMap sourceData = (CompositeMap) parameter.getObject(getTarget());
-			CompositeMap errorData = (CompositeMap) parameter.getObject(getFailed_record());
+			CompositeMap sourceData = (CompositeMap) parameter
+					.getObject(getTarget());
+			CompositeMap errorData = (CompositeMap) parameter
+					.getObject(getFailed_record());
 
 			CompositeMap errorMap = new CompositeMap();
 			String errorFileName = "error_" + sourceData.getString(FILE_NAME);
@@ -252,26 +306,29 @@ public class ImportExcel implements IController {
 			context.putObject(getFile_path(), sb.toString(), true);
 		}
 	}
-	
+
 	/**
 	 * Each file which was created 3 days ago will be deleted.
+	 * 
 	 * @param settings
 	 */
 	public void clearFile(ImportSettings settings) {
 		Calendar deleteDay = Calendar.getInstance();
-		deleteDay.set(Calendar.DAY_OF_YEAR, deleteDay.get(Calendar.DAY_OF_YEAR)- settings.getFileTimeOut());
+		deleteDay.set(Calendar.DAY_OF_YEAR, deleteDay.get(Calendar.DAY_OF_YEAR)
+				- settings.getFileTimeOut());
 
 		String destPath = settings.getDestPath();
 		File dest = new File(destPath);
-		if(dest.exists() && dest.isDirectory()) {
+		if (dest.exists() && dest.isDirectory()) {
 			File[] files = dest.listFiles();
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
 				String fileName = file.getName();
-				String suffix = fileName.substring(fileName.lastIndexOf(".")+1, fileName.length());
-				if("xls".equalsIgnoreCase(suffix)) {
+				String suffix = fileName.substring(
+						fileName.lastIndexOf(".") + 1, fileName.length());
+				if ("xls".equalsIgnoreCase(suffix)) {
 					Date lastModifyDate = new Date(file.lastModified());
-					if(lastModifyDate.before(deleteDay.getTime())) {
+					if (lastModifyDate.before(deleteDay.getTime())) {
 						file.delete();
 					}
 				}
@@ -279,7 +336,8 @@ public class ImportExcel implements IController {
 		}
 	}
 
-	private void generateExcel(List headers, CompositeMap dataMap) throws Exception {
+	private void generateExcel(List headers, CompositeMap dataMap)
+			throws Exception {
 		WritableWorkbook workbook = null;
 		File file = null;
 		try {
@@ -291,7 +349,9 @@ public class ImportExcel implements IController {
 			workbook = Workbook.createWorkbook(file, wbs);
 			WritableSheet ws = workbook.createSheet("ErrorResult", 0);
 
-			WritableFont headerWF = new WritableFont(WritableFont.ARIAL, 8, WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, jxl.format.Colour.BLACK);
+			WritableFont headerWF = new WritableFont(WritableFont.ARIAL, 8,
+					WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE,
+					jxl.format.Colour.BLACK);
 			WritableCellFormat headerWCF = new WritableCellFormat(headerWF);
 			headerWCF.setBackground(Colour.GRAY_25);
 			headerWCF.setAlignment(Alignment.CENTRE);
@@ -312,16 +372,21 @@ public class ImportExcel implements IController {
 				Iterator headerKeyIt = headers.iterator();
 				while (headerKeyIt.hasNext()) {
 					String headerKey = (String) headerKeyIt.next();
-					WritableFont itemWF = new WritableFont(WritableFont.ARIAL, 8, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, jxl.format.Colour.BLACK);
+					WritableFont itemWF = new WritableFont(WritableFont.ARIAL,
+							8, WritableFont.NO_BOLD, false,
+							UnderlineStyle.NO_UNDERLINE,
+							jxl.format.Colour.BLACK);
 					WritableCellFormat itemWCF = new WritableCellFormat(itemWF);
 					itemWCF.setAlignment(Alignment.CENTRE);
 					itemWCF.setWrap(false);
 					itemWCF.setBorder(Border.ALL, BorderLineStyle.THIN);
 
-					Label l = new Label(column, row, item.getString(headerKey), itemWCF);
+					Label l = new Label(column, row, item.getString(headerKey),
+							itemWCF);
 					if (column == 0) {
 						WritableCellFeatures cellFeatures = new WritableCellFeatures();
-						cellFeatures.setComment(item.getString(getErrorField()));
+						cellFeatures
+								.setComment(item.getString(getErrorField()));
 						l.setCellFeatures(cellFeatures);
 					}
 					ws.addCell(l);
@@ -413,5 +478,20 @@ public class ImportExcel implements IController {
 
 	public void setFile_path(String file_path) {
 		this.file_path = file_path;
+	}
+
+	public String getStore_flag() {
+		return store_flag;
+	}
+
+	public void setStore_flag(String storeFlag) {		
+		store_flag = storeFlag;
+	}
+	public String getSession_id() {
+		return session_id;
+	}
+
+	public void setSession_id(String sessionId) {		
+		session_id = sessionId;
 	}
 }
