@@ -196,7 +196,7 @@ public class ImportExcel implements IController {
 						int m = c.length;
 						if(max_column<m)max_column=m;
 						sqlpre = "insert into fnd_import_temp(creation_date,session_id,row_num";
-						sql = ")values(sysdate,'"+session_id+"',"+j;
+						sql = ")values(sysdate,'"+session_id+"',"+(j+1);
 						for (int k = 0; k < m; k++) {							
 							sqlpre += ",c" + (k+1);
 							sql += ",'" + c[k].getContents()+"'";							
