@@ -37,5 +37,6 @@
 		<feature-attach elementName="sql-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>
 		<feature-attach elementName="model-query" featureClass="org.lwap.feature.ModelCSVExportByClient"/>
 		<feature-attach elementName="excel-report-group" featureClass="org.lwap.mvc.excel.ExcelReportGroup" />
+		<feature-attach elementName="excel-export-check" nameSpace="http://mvc.lwap.org/builder/jsp" featureClass="org.lwap.feature.StaticModelCSVExport" />
 	</class-registry>
 	
