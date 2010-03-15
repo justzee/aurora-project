@@ -1,53 +1,214 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<my:schema xmlns:my="http://www.uncertain-framework.org/schema/simple-schema" xmlns:jsp="http://mvc.lwap.org/builder/jsp">
-	<my:namespaces>
-		<my:namespace url="http://mvc.lwap.org/builder/jsp" prefix="jsp"/>
-	</my:namespaces>
-	<my:elements>
-		<my:element name="item"/>
-		<my:element name="FieldSet">
-			<my:arrays>
-				<my:array type="column" name="columns"/>
-			</my:arrays>
-		</my:element>
-		
-		<my:element name="component">
-			<my:attributes>
-				<my:attribute name="Type"/>
-				<my:attribute name="Id"/>
-				<my:attribute name="Name"/>
-				<my:attribute name="Label"/>
-				<my:attribute name="Anchor"/>
-				<my:attribute name="Value"/>
-				<my:attribute name="DataSource"/>
-				<my:attribute name="DisplayField"/>
-				<my:attribute name="ValueField"/>
-				<my:attribute name="NotBlank"/>
-			</my:attributes>
-		</my:element>
-		<my:element name="column">
-			<my:attributes>
-				<my:attribute name="ColumnWidth"/>
-			</my:attributes>
-			<my:elements>
-				<my:element ref="component"/>
-			</my:elements>
-		</my:element>
-		<my:element name="items">
-			<my:elements>
-				<my:element ref="component"/>
-				<my:element ref="FieldSet"/>
-			</my:elements>
-		</my:element>
-		<my:element name="jsp:formPanel">
-			<my:attributes>
-				<my:attribute use="required" name="Id"/>
-				<my:attribute name="Width"/>
-			</my:attributes>
-			<my:arrays>
-				<my:array type="component" name="items"/>
-			</my:arrays>
-		</my:element>
-		
-	</my:elements>
-</my:schema>
+<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema">
+    <ss:namespaces>
+        <ss:namespace url="http://mvc.lwap.org/builder/jsp" prefix="jsp"/>
+    </ss:namespaces>
+    <ss:elements>
+        <ss:element name="item"/>
+        <ss:element name="FieldSet">
+            <ss:arrays>
+                <ss:array type="column" name="columns"/>
+            </ss:arrays>
+            <ss:attributes>
+                <ss:attribute document="标题,默认为 FieldSet" name="Title"/>
+                <ss:attribute document="是否可以折叠: 默认为false" name="Collapsible"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="component">
+            <ss:attributes>
+                <ss:attribute use="required" document="表明component是个什么组" name="Type"/>
+                <ss:attribute document="唯一标示. 此组件的唯一标记,不能重复" name="Id"/>
+                <ss:attribute document="组件的Name,用于提交到后台的标示,默认空" name="Name"/>
+                <ss:attribute document="文本的label描述,默认为空" name="Label"/>
+                <ss:attribute document="组件的比例宽度,例如Anchor=”100%”" name="Anchor"/>
+                <ss:attribute document="文本的值 默认空" name="Value"/>
+                <ss:attribute document="Combo数据源地址,例如:DataSource=&quot;/model/cashtype-list“" name="DataSource"/>
+                <ss:attribute document="Combo显示字段 例如 DisplayField=&quot;NAME“" name="DisplayField"/>
+                <ss:attribute document="Combo值字段 例如:ValueField=&quot;VALUE" name="ValueField"/>
+                <ss:attribute document="是否为空. 默认true" name="NotBlank"/>
+                <ss:attribute document="是否不可用 默认false" name="Disabled"/>
+                <ss:attribute document="触发事件,combo选择改变后触发:  以后要统一成change" name="OnChange"/>
+                <ss:attribute document="组件的高度 例如Height=300  标示300px" name="Height"/>
+                <ss:attribute document="Lov的引用页面 例如: Src=&quot;cnl_distributor_select.service&quot;" name="Src"/>
+                <ss:attribute document="Lov弹出窗口选择记录后的触发回调函数. 例如:Commit=&quot;setDirectDeliver“" name="Commit"/>
+                <ss:attribute document="当点击lov的时候触发. 主要用来动态改变lov的url  不推荐,建议使用OnOpen" name="Binding"/>
+                <ss:attribute document="绑定回调函数 例如: OnBinding=&quot;bindTargetSrc&quot;" name="OnOpen"/>
+                <ss:attribute document="Lov返回Id的隐藏组件名" name="HiddenName"/>
+                <ss:attribute document="Label分隔符,默认为”:”" name="LabelSeparator"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="column">
+            <ss:attributes>
+                <ss:attribute document="当前列的宽度,单位px. 例如 Width=“100”, 默认值为100" name="ColumnWidth"/>
+                <ss:attribute document="当前列的值是否为空" name="NotBlank"/>
+                <ss:attribute document="列对应的数据字段名." name="DataIndex"/>
+                <ss:attribute document="当前列是否隐藏. True隐藏当前列,但是当前行数据对象中保留此字段值" name="Hidden"/>
+                <ss:attribute document="列名.例如 Prompt=“MKT_EXPENSE.CASHING_TYPE” , Prompt=“测试”" name="Prompt"/>
+                <ss:attribute document="设置列的分组ID" name="Group"/>
+                <ss:attribute document="当前列的数据类型. 例如DataType=&quot;float“" name="DataType"/>
+                <ss:attribute document="如果当前列为日期类型,需要指定Format  例如 Format=&quot;Y-m-d&quot;" name="Format"/>
+                <ss:attribute document="做复制Copy时,同时需要拷贝的字段值.通过”,”分割" name="CopyFields"/>
+                <ss:attribute document="是否显示右键”当页批量修改”菜单" name="BatchCopy"/>
+                <ss:attribute document="是否显示右键”跨页批量修改”菜单" name="BatchUpdate"/>
+                <ss:attribute document="单元格渲染函数" name="Renderer"/>
+                <ss:attribute document="单元格数据验证函数" name="Validator"/>
+                <ss:attribute document="列过滤枚举: numeric, string, boolean, date,  list" name="Filter"/>
+            </ss:attributes>
+            <ss:elements>
+                <ss:element ref="component"/>
+                <ss:element ref="editor"/>
+            </ss:elements>
+        </ss:element>
+        <ss:element name="items">
+            <ss:elements>
+                <ss:element ref="component"/>
+                <ss:element ref="FieldSet"/>
+            </ss:elements>
+        </ss:element>
+        <ss:element name="jsp:formPanel">
+            <ss:attributes>
+                <ss:attribute use="required" type="ss:string" document="formPanel的ID值,唯一表示formPanel组件.不能重复" name="Id"/>
+                <ss:attribute type="ss:string" document="formPanel组件的宽, 数值,单位px, 默认值是100%.  例如: Width=400" name="Width"/>
+                <ss:attribute use="optional" type="ss:string" document="formPanel组件的数据源地址.例如 http://localhost:8080/xx.service" name="Url"/>
+                <ss:attribute type="ss:string" document="formPanel组件的标题,默认空" name="Title"/>
+                <ss:attribute type="ss:string" document="formPanel组件是否可以折叠,默认是false" name="Collapsible"/>
+                <ss:attribute type="ss:string" document="formPanel组件按钮的摆放方式 left|gright|center.默认为center" name="ButtonAlign"/>
+                <ss:attribute type="ss:string" document="formPanel组件label的宽度. 默认75" name="LabelWidth"/>
+                <ss:attribute type="ss:string" document="formPanel组件label的摆放方式  left|top  默认为 left." name="LabelAlign"/>
+            </ss:attributes>
+            <ss:elements>
+                <ss:element minOccurs="1" ref="items"/>
+            </ss:elements>
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+            <ss:arrays>
+                <ss:array type="button" name="buttons"/>
+            </ss:arrays>
+        </ss:element>
+        <ss:element name="TABLE">
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+            <ss:elements>
+                <ss:element ref="TR"/>
+            </ss:elements>
+        </ss:element>
+        <ss:element name="TR">
+            <ss:elements>
+                <ss:element ref="TD"/>
+            </ss:elements>
+        </ss:element>
+        <ss:element name="TD">
+            <ss:elements>
+                <ss:element ref="jsp:button_ext"/>
+            </ss:elements>
+        </ss:element>
+        <ss:element name="jsp:button_ext">
+            <ss:attributes>
+                <ss:attribute document="按钮显示文本" name="Text"/>
+                <ss:attribute document="按钮出发事件" name="Handler"/>
+                <ss:attribute document="主键" name="Id"/>
+                <ss:attribute document="table容器" name="Container"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="div">
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+        </ss:element>
+        <ss:element name="script">
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+        </ss:element>
+        <ss:element name="jsp:ext-init">
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+        </ss:element>
+        <ss:element name="style">
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+        </ss:element>
+        <ss:element name="jsp:grid">
+            <ss:extensions>
+                <ss:extension base="AbstractViewComponent"/>
+            </ss:extensions>
+            <ss:arrays>
+                <ss:array type="column" name="columns"/>
+                <ss:array type="button" name="toolBar"/>
+                <ss:array type="group" name="headGroup"/>
+                <ss:array type="Event" name="Events"/>
+            </ss:arrays>
+            <ss:attributes>
+                <ss:attribute use="required" document="Grid的ID值,唯一表示Grid组件" name="Id"/>
+                <ss:attribute use="required" document="指定Grid组件的查询Form,Grid会序列化查询Form的查询条件作为参数进行查询" name="QueryForm"/>
+                <ss:attribute document="指定触发Grid查询的按钮" name="QueryButton"/>
+                <ss:attribute document="分页大小配置,数字数值. 例如:50" name="PageSize"/>
+                <ss:attribute document="Grid组件的数据源地址.例如 http://localhost:8080/xx.service" name="Url"/>
+                <ss:attribute document="Grid组件的宽, 数值,单位px, 默认值是300.  例如: Width=400" name="Width"/>
+                <ss:attribute document="Grid组件的高, 数值,单位px, 默认值是100.  例如: Height=400" name="Height"/>
+                <ss:attribute document="判断单元格是否编辑的函数.例如: IsCellEditable=&quot;isCellEditable“" name="IsCellEditable"/>
+                <ss:attribute document="数据源" name="dataModel"/>
+                <ss:attribute document="是否汇总" name="Sum"/>
+                <ss:attribute document="跨页批量修改的url地址" name="BatchUpdateUrl"/>
+                <ss:attribute document="批量新增时,每次最多多少行." name="MaxRow"/>
+                <ss:attribute document="行分组的列DataIndex" name="GroupField"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="button">
+            <ss:attributes>
+                <ss:attribute document="Button类型. 可选项 save|add|delete|reset" name="Type"/>
+                <ss:attribute document="Button提交请求的Url." name="Url"/>
+                <ss:attribute document="按钮提交前的处理函数, 返回true提交,返回false不提交" name="BeforeAction"/>
+                <ss:attribute document="按钮文本" name="Text"/>
+                <ss:attribute document="样式名" name="Cls"/>
+                <ss:attribute document="自定义按钮函数" name="Handler"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="group">
+            <ss:attributes>
+                <ss:attribute document="Group分组的ID值" name="Id"/>
+                <ss:attribute document="分组名称" name="Name"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="editor">
+            <ss:attributes>
+                <ss:attribute document="类型" name="Type"/>
+                <ss:attribute document="Combo数据源地址,例如:DataSource=&quot;/model/cashtype-list“" name="DataSource"/>
+                <ss:attribute document="Combo值字段 例如:ValueField=&quot;VALUE“" name="ValueField"/>
+                <ss:attribute document="Combo显示字段 例如 DisplayField=&quot;NAME“" name="DisplayField"/>
+                <ss:attribute document="Lov的引用页面 例如: Src=&quot;cnl_distributor_select.service&quot;" name="Src"/>
+                <ss:attribute document="Lov弹出窗口选择记录后的触发回调函数. 例如:Commit=&quot;setDirectDeliver“" name="Commit"/>
+                <ss:attribute document="绑定属性名 例如:Binding=&quot;Src“ 通过”,”分割" name="Binding"/>
+                <ss:attribute document="绑定回调函数 例如: OnBinding=&quot;bindTargetSrc&quot;" name="OnBinding"/>
+                <ss:attribute document="指定对应的ID字段" name="IdField"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="autoComplete">
+            <ss:attributes>
+                <ss:attribute document="autoComplete的数据源" name="Url"/>
+                <ss:attribute document="设置查询参数的方法" name="SetParameter"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="field">
+            <ss:attributes>
+                <ss:attribute document="字段名 例如: Promt=&quot;垫付费用经销商&quot;" name="Promt"/>
+                <ss:attribute document="是否隐藏  例如: Hidden=&quot;true&quot;" name="Hidden"/>
+                <ss:attribute document="字段值 例如 Name=&quot;NAME" name="Name"/>
+                <ss:attribute document="指定是ID还是Value.  例如IdField=“true”  或者 ValueField=“true”" name="IdField"/>
+                <ss:attribute document="指定是ID还是Value.  例如IdField=“true”  或者 ValueField=“true”" name="ValueField"/>
+                <ss:attribute document="宽度" name="Width"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="Event">
+            <ss:attributes>
+                <ss:attribute document="事件名" name="name"/>
+                <ss:attribute document="事件处理函数" name="handler"/>
+            </ss:attributes>
+        </ss:element>
+        <ss:element name="button"/>
+    </ss:elements>
+</ss:schema>
