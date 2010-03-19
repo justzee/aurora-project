@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.ide.eclipse.action.IPropertyCategory;
 import uncertain.schema.Attribute;
 import uncertain.schema.Category;
@@ -47,7 +47,7 @@ public class PropertySheetContentProvider implements IStructuredContentProvider 
     	Categorys.clear();
         CompositeMap    map = (CompositeMap)inputElement;
 //        System.out.println(map.toXML());
-        ISchemaManager mSchemaManager  = Activator.getSchemaManager();
+        ISchemaManager mSchemaManager  = Common.getSchemaManager();
         CompositeMapEditor editor = new CompositeMapEditor(mSchemaManager, map);
         AttributeValue[] avs =  editor.getAttributeList();
         if(!mDirtyObject.IsCategory())

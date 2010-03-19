@@ -27,7 +27,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.ide.Common;
@@ -172,6 +171,8 @@ public class TextPage extends FormPage implements IViewer {
 		this.originalContent = originalContent;
 	}
 	public boolean canLeaveThePage() {
+		if(mInnerText == null)
+			return true;
 		if(!checkContentFormat()){
 			return false;
 		}

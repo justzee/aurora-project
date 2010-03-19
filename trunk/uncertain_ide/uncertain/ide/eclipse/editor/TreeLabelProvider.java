@@ -3,8 +3,6 @@
  */
 package uncertain.ide.eclipse.editor;
 
-import java.util.HashMap;
-
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -12,6 +10,7 @@ import org.eclipse.swt.graphics.Image;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.schema.Element;
 
 public class TreeLabelProvider extends BaseLabelProvider implements
@@ -29,7 +28,7 @@ public class TreeLabelProvider extends BaseLabelProvider implements
 		String defaultPath = "icons/element_obj.gif";
 		
 		CompositeMap elemenntCm = (CompositeMap) element;
-		Element ele = Activator.getSchemaManager().getElement(elemenntCm);
+		Element ele = Common.getSchemaManager().getElement(elemenntCm);
 		if (ele != null) {
 			if (ele.isArray()) {
 				return Activator.getImageDescriptor("icons/array.gif")
@@ -59,10 +58,16 @@ public class TreeLabelProvider extends BaseLabelProvider implements
 			elementText = elementName;
 		else
 			elementText = tagName;
-		Element element = Activator.getSchemaManager().getElement(elemenntCm);
+		Element element = Common.getSchemaManager().getElement(elemenntCm);
 		if (element != null) {
-			if (element.isArray())
-				return "[]" + elementText;
+			if (element.isArray()){
+				int nodes = elemenntCm.getChildsNotNull().size();
+//				if(nodes>0){
+					return "["+nodes+"]" + elementText;
+//				}
+//				return "[]" + elementText;
+			}
+				
 		}
 
 		return elementText;
@@ -71,7 +76,7 @@ public class TreeLabelProvider extends BaseLabelProvider implements
 	private String getElementName(CompositeMap element) {
 
 		String tagName = element.getRawName();
-		Element elm = Activator.getSchemaManager().getElement(
+		Element elm = Common.getSchemaManager().getElement(
 				element);
 		String elemName = null;
 		if(elm != null && !elm.isArray()){

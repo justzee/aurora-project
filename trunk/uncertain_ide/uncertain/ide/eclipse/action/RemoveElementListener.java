@@ -7,31 +7,30 @@ import org.eclipse.swt.widgets.Listener;
 import uncertain.composite.CompositeMap;
 
 public class RemoveElementListener implements Listener {
-	private ColumnViewer mColumnViewer;
-	private IViewerDirty mDirtyObject;
-
+//	private ColumnViewer mColumnViewer;
+	private IViewerDirty viewer;
 	CompositeMap parentCM;
-	String _prefix;
-	String _uri;
-	String _name;
+	String prefix;
+	String uri;
+	String name;
 
 	public RemoveElementListener(ColumnViewer mColumnViewer,
-			IViewerDirty mDirtyObject, CompositeMap parentCM, String _prefix,
-			String _uri, String _name) {
-		this.mColumnViewer = mColumnViewer;
-		this.mDirtyObject = mDirtyObject;
+			IViewerDirty viewer, CompositeMap parentCM, String prefix,
+			String uri, String name) {
+//		this.mColumnViewer = mColumnViewer;
+		this.viewer = viewer;
 		this.parentCM = parentCM;
-		this._prefix = _prefix;
-		this._uri = _uri;
-		this._name = _name;
+		this.prefix = prefix;
+		this.uri = uri;
+		this.name = name;
 
 	}
 
 	public void handleEvent(Event event) {
 
-		CompositeMapAction.addElement(parentCM, _prefix, _uri, _name);
-		if (mDirtyObject != null) {
-			mDirtyObject.refresh(true);
+		CompositeMapAction.addElement(parentCM, prefix, uri, name);
+		if (viewer != null) {
+			viewer.refresh(true);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package uncertain.ide.wizards;
+package uncertain.ide.eclipse.wizards;
 
 import java.io.File;
 
@@ -24,10 +24,10 @@ public class ProjectWizardPage extends WizardPage{
     Label locationLabel;
     Button browseButton;
     private String initialLocationFieldValue;
-    private static String WZ_TITLE = "Aurora Make Project";
-	private static String WZ_DESCRIPTION = "Create a New Aurora Project using 'make' to build it";
+    private static String WZ_TITLE = "uncertain Project";
+	private static String WZ_DESCRIPTION = "Create a New uncertain Project ";
 	public ProjectWizardPage() {
-		super("Aurora Wizard Page");
+		super("uncertain Wizard Page");
 		setTitle(WZ_TITLE);
 		setDescription(WZ_DESCRIPTION);
 	}

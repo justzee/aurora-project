@@ -80,6 +80,11 @@ public class PropertySheetLabelProvider extends BaseLabelProvider implements ITa
             	text = " * "+text;
             return text;
         }
+        else if( columnIndex == 2){
+        	Attribute attr = av.getAttribute();
+            String document = attr.getDocument();
+            return document;
+        }
         else if( columnIndex == 1 ){
             return av.getValueString();
         }
