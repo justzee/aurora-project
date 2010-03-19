@@ -1,4 +1,4 @@
-package uncertain.ide.wizards;
+package uncertain.ide.eclipse.wizards;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.CompositeMapAction;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -37,19 +36,19 @@ import uncertain.ide.eclipse.action.CompositeMapAction;
  * (a folder or a project) is selected in the workspace 
  * when the wizard is opened, it will accept it as the target
  * container. The wizard creates one file with the extension
- * "sxsd". If a sample multi-page editor (also available
+ * "service". If a sample multi-page editor (also available
  * as a template) is registered for the same extension, it will
  * be able to open it.
  */
 
-public class SxsdNewWizard extends Wizard implements INewWizard {
-	private SxsdNewWizardPage page;
+public class ServiceNewWizard extends Wizard implements INewWizard {
+	private ServiceNewWizardPage page;
 	private ISelection selection;
 	private CompositeMap rootElement;
 	/**
-	 * Constructor for SxsdNewWizard.
+	 * Constructor for SampleNewWizard.
 	 */
-	public SxsdNewWizard() {
+	public ServiceNewWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -59,7 +58,7 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new SxsdNewWizardPage(selection);
+		page = new ServiceNewWizardPage(selection);
 		addPage(page);
 	}
 
@@ -107,6 +106,11 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		IProgressMonitor monitor)
 		throws CoreException {
 		// create a sample file
+		
+		//如果用户没有指定文件名后缀，自动加service后缀
+		if(fileName.indexOf(".")==-1){
+			fileName = fileName+".service";
+		}
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
@@ -145,29 +149,22 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() {
-		String contents =rootElement.toXML();
+		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		String contents =xmlHint+rootElement.toXML();
 		return new ByteArrayInputStream(contents.getBytes());
 	}
+
 	private CompositeMap createRootElement() {
-
-		String namespacePrefix = page.getNamespacePrefix();
-		String namespaceUrl = page.getNamespaceUrl();
-
-		String rootElementName = "schema";
-		String rootFullElementName = namespacePrefix+":"+rootElementName;
 		
-		CompositeMap rootElement = new CompositeMap(namespacePrefix,namespaceUrl,rootElementName);
+		String rootElementName = "service";
 		
-		String fixName="xmlns";
-		String rootPropertyKey = fixName+":"+namespacePrefix;
-
-//		rootElement.put(rootPropertyKey, namespaceUrl);
-		CompositeMapAction.addElementArray(rootElement);
+		CompositeMap rootElement = new CompositeMap(rootElementName);
+		
 		String contents =rootElement.toXML();
-		System.out.println(contents);
+//		System.out.println(contents);
 		return rootElement;
 	}
-
+	
 	private void throwCoreException(String message) throws CoreException {
 		IStatus status =
 			new Status(IStatus.ERROR, "uncertain_ide", IStatus.OK, message, null);

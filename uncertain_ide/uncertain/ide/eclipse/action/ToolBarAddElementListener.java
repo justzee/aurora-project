@@ -3,7 +3,6 @@ package uncertain.ide.eclipse.action;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -14,14 +13,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.schema.Element;
 
 public class ToolBarAddElementListener implements Listener {
@@ -29,7 +27,7 @@ public class ToolBarAddElementListener implements Listener {
 	private Menu menu;
 	private ToolItem item;
 //	private ColumnViewer mColumnViewer;
-	private IViewerDirty mDirtyObject;
+	private IViewerDirty viewer;
 
 	public ToolBarAddElementListener(ToolBar toolBar, Menu menu, ToolItem item,
 			 IViewerDirty mDirtyObject) {
@@ -37,14 +35,14 @@ public class ToolBarAddElementListener implements Listener {
 		this.menu = menu;
 		this.item = item;
 //		this.mColumnViewer = mColumnViewer;
-		this.mDirtyObject = mDirtyObject;
+		this.viewer = mDirtyObject;
 
 	}
 
 	public void handleEvent(Event event) {
 		if (event.detail == SWT.ARROW) {
 			// 获得当前选中的节点
-			ISelection selection = mDirtyObject.getObject().getSelection();
+			ISelection selection = viewer.getObject().getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
 			final CompositeMap selectedCM = (CompositeMap) obj;
 			if(selectedCM == null)return;
@@ -55,46 +53,29 @@ public class ToolBarAddElementListener implements Listener {
 				mi[i].dispose();
 			}
 
-			Element element = Activator.getSchemaManager().getElement(
+			Element element = Common.getSchemaManager().getElement(
 					selectedCM);
 
 			if (element == null) {
-				Shell shell = new Shell();
-				MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING
-						| SWT.OK);
-				messageBox.setText("信息");
-				messageBox.setMessage("此元素本身没有定义。");
-				messageBox.open();
+				Common.showWarningMessageBox(null, Common.getString("undefined.self.element"));
 				return;
 			}
-			List sonElements = element.getAllElements();
+
+			List sonElements = 	CompositeMapAction.getAvailableSonElements(element,selectedCM);
 			if (sonElements != null) {
 				Iterator ite = sonElements.iterator();
 				while (ite.hasNext()) {
-					Element ele = (Element) ite.next();
+					Object object = ite.next();
+					if(! (object instanceof Element))
+						continue;
+					Element ele = (Element) object;
 					final QualifiedName qName = ele.getQName();
-					//判读最多出现次数
-//					selectedCM.getChild(name)
-//					if(ele.getMaxOccurs())
-					
 					MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
-					itemPush.addListener(SWT.Selection, new AddElementListener(mDirtyObject, selectedCM, qName));
-					itemPush.setText(ele.getLocalName());
+					itemPush.addListener(SWT.Selection, new AddElementListener(viewer, selectedCM, qName));
+					String text = Common.getElementFullName(selectedCM, qName);
+					itemPush.setText(text);
 					itemPush.setImage(getIcon());
 				}
-			}
-
-			if (element.isArray()) {
-				final QualifiedName qName = element.getElementType().getQName();
-				final String elementType = element.getElementType().getQName()
-						.getLocalName();
-				MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
-//				itemPush.addListener(SWT.Selection, new AddElementListener(
-//						mColumnViewer, mDirtyObject, selectedCM, null, null,
-//						elementType));
-				itemPush.addListener(SWT.Selection, new AddElementListener(mDirtyObject, selectedCM, qName));
-				itemPush.setText(elementType);
-				itemPush.setImage(getIcon());
 			}
 
 			Rectangle rect = item.getBounds();
@@ -105,7 +86,6 @@ public class ToolBarAddElementListener implements Listener {
 		}
 	}
 	private Image getIcon(){
-		Image icon = Activator.getImageDescriptor("icons/element_obj.gif").createImage();
-		return icon;
+		return Activator.getImageDescriptor(Common.getString("element.icon")).createImage();
 	}
 }

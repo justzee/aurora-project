@@ -5,14 +5,12 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.Text;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Activator;
+import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.JavaScriptLineStyler;
 import uncertain.ide.eclipse.editor.PropertyArrayEditor;
 import uncertain.ide.eclipse.editor.PropertyEditor;
-import uncertain.ide.eclipse.editor.JavaScriptLineStyler;
 import uncertain.schema.Element;
 
 public class ElementSelectionListener implements ISelectionChangedListener {
@@ -48,7 +46,7 @@ public class ElementSelectionListener implements ISelectionChangedListener {
 
 		if (data == null)
 			return;
-		Element em = Activator.getSchemaManager().getElement(data);
+		Element em = Common.getSchemaManager().getElement(data);
 		if (em != null && em.isArray()) {
 			mPropertyEditor.clearAll();
 			mPropertyArrayEditor.createEditor(mTabFolder,data);

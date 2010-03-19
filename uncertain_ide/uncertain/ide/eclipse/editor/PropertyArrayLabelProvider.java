@@ -15,9 +15,12 @@ public class PropertyArrayLabelProvider extends BaseLabelProvider implements ITa
     /**
      * @param attribArray
      */
+	int nodeIndex;
+	int nodeCount;
     public PropertyArrayLabelProvider(Object[] attribArray) {
         super();
         this.mAttribArray = attribArray;
+        
     }
 
     Object[]     mAttribArray;
@@ -39,12 +42,29 @@ public class PropertyArrayLabelProvider extends BaseLabelProvider implements ITa
     }
     
     public String getColumnText(Object element, int columnIndex){
+ 
         CompositeMap data = (CompositeMap)element;
+    	int nowCount = data.getParent().getChildsNotNull().size();
+    	//if nodes has changed,reset the nodeIndex;
+    	if(nowCount!=nodeCount){
+//    		System.out.println("nodeCount:"+nodeCount+"nowCount:"+nowCount);
+    		nodeCount = nowCount;
+    		nodeIndex = 0;
+    	}
+    	//the first column is sequence.
+    	if(columnIndex == 0){
+//    		System.out.println("nodeIndex:"+nodeIndex);
+    		return String.valueOf(++nodeIndex);
+    	}
+    	
         if(mAttribArray==null || mAttribArray.length==0)
         	return null;
-        Attribute attrib = (Attribute)mAttribArray[columnIndex];
+        Attribute attrib = (Attribute)mAttribArray[columnIndex-1];
         return data.getString(attrib.getName());
     }
-
+    public void refresh(){
+    	nodeIndex = 0;
+    }
+    
 
 }

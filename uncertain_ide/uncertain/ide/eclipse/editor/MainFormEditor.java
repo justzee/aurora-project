@@ -20,7 +20,7 @@ import uncertain.ide.Common;
 public abstract class MainFormEditor extends FormEditor {
 
 	protected MainFormPage mainFormPage ;
-	private TextPage textPage = new TextPage(this);
+	protected TextPage textPage = new TextPage(this);
 	private boolean dirty = false;
 	private File file;
 
@@ -101,6 +101,7 @@ public abstract class MainFormEditor extends FormEditor {
 				textPage.setModify(false);
 			}else if(mainFormPage.isModify()){
 //				auroraPage.data
+//				System.out.println("to xml:"+mainFormPage.getData().toXML());
 				textPage.refresh(mainFormPage.getData().toXML());
 				mainFormPage.setModify(false);
 			}

@@ -1,13 +1,13 @@
 package uncertain.ide.eclipse.preferencePage;
 
-import org.eclipse.jface.preference.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.eclipse.presentation.PreferenceLabelManager;
 
 
 /**
@@ -31,7 +31,7 @@ public class SxsdDirectoryPreferencePage extends FieldEditorPreferencePage
 	protected void createFieldEditors() {
 
 		DirectoryFieldEditor sxsdDir = new DirectoryFieldEditor(
-				Common.SXSD_DIRECTORY, "Sxsd Ŀ¼", getFieldEditorParent());
+				PreferenceLabelManager.SXSD_DIRECTORY, "builtin-packages Ŀ¼", getFieldEditorParent());
 		addField(sxsdDir);
 	}
 

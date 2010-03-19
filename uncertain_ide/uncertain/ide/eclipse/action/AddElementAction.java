@@ -5,9 +5,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.eclipse.editor.ActionLabelManager;
+import uncertain.ide.Activator;
+import uncertain.ide.Common;
 
-public 	class AddElementAction extends Action {
+public class AddElementAction extends Action {
 	private IViewerDirty viewer;
 
 	private CompositeMap parentCM;
@@ -15,40 +16,29 @@ public 	class AddElementAction extends Action {
 	private String uri;
 	private String cmName;
 
-	public AddElementAction(IViewerDirty viewer, CompositeMap parentCM, String prefix,
-			String uri, String cmName) {
+	public AddElementAction(IViewerDirty viewer, CompositeMap parentCM,
+			String prefix, String uri, String cmName) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
 		this.prefix = prefix;
 		this.uri = uri;
 		this.cmName = cmName;
 		setText(cmName);
-	
+
 	}
-	private AddElementAction(IViewerDirty viewer, CompositeMap parentCM, String prefix,
-			String uri, String cmName,ImageDescriptor imageDescriptor,String text) {
+
+	public AddElementAction(IViewerDirty viewer, CompositeMap parentCM,
+			QualifiedName qName, ImageDescriptor imageDescriptor, String text) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
-		this.prefix = prefix;
-		this.uri = uri;
-		this.cmName = cmName;
-		if(imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if(text != null)
-			setText(text);
-	
-	}
-	public AddElementAction(IViewerDirty viewer, CompositeMap parentCM, QualifiedName qName,ImageDescriptor imageDescriptor,String text) {
-		this.viewer = viewer;
-		this.parentCM = parentCM;
-		this.prefix = qName.getPrefix();
 		this.uri = qName.getNameSpace();
+		this.prefix = Common.getPrefix(parentCM,qName);
 		this.cmName = qName.getLocalName();
-		if(imageDescriptor != null)
+		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
-		if(text != null)
+		if (text != null)
 			setText(text);
-	
+
 	}
 
 	public void run() {
@@ -57,7 +47,8 @@ public 	class AddElementAction extends Action {
 			viewer.refresh(true);
 		}
 	}
-	public static ImageDescriptor getDefaultImageDescriptor(){
-		return ActionLabelManager.getImageDescriptor(ActionLabelManager.ELEMENT);
+
+	public static ImageDescriptor getDefaultImageDescriptor() {
+		return Activator.getImageDescriptor(Common.getString("element.icon"));
 	}
 }

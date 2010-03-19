@@ -12,7 +12,12 @@ import uncertain.composite.CompositeMap;
 
 public class PropertyArrayContentProvider implements IStructuredContentProvider {
 
-    public Object[] getElements(Object inputElement) {
+    /**
+	 * 
+	 */
+	public Object[] getElements(Object inputElement) {
+//    	System.out.println("PropertyArrayContentProvider:getElements");
+//    	labelProvider.addListener(listener)
         CompositeMap data = (CompositeMap)inputElement;
 //        System.out.println(data.toXML());
         List childs = data.getChilds();

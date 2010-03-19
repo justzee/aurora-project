@@ -1,24 +1,21 @@
 package uncertain.ide.eclipse.editor;
 
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.IDirty;
+import uncertain.ide.eclipse.action.IViewerDirty;
 
 public class PropertyArrayCellModifier implements ICellModifier {
 
 	/**
 	 * @param viewer
 	 */
-	protected IDirty mDirtyObject;
-	protected TableViewer mViewer;
+	protected IViewerDirty viewer;
 
-	public PropertyArrayCellModifier(TableViewer viewer, IDirty dirtyObject) {
+	public PropertyArrayCellModifier(IViewerDirty viewer) {
 		super();
-        mViewer = viewer;
-        mDirtyObject = dirtyObject;
+		this.viewer = viewer;
 	}
 
 	public boolean canModify(Object element, String property) {
@@ -48,16 +45,10 @@ public class PropertyArrayCellModifier implements ICellModifier {
 			oldValue = "";
 		if (oldValue == null || !oldValue.equals(value)) {
 			data.put(property, value);
-			markDirty();
-			mViewer.refresh();
+			viewer.refresh(true);
 		}
 		if(value == null ||value.equals("")){
 			data.remove(property);
 		}
 	}
-
-	private void markDirty() {
-		mDirtyObject.setDirty(true);
-	}
-
 }

@@ -7,7 +7,7 @@ import org.eclipse.jface.action.MenuManager;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.schema.Element;
 
 public class ContextAddElementMenuManager extends MenuManager {
@@ -15,7 +15,8 @@ public class ContextAddElementMenuManager extends MenuManager {
 	String prefix;
 	String uri;
 
-	public ContextAddElementMenuManager(IViewerDirty viewer, String prefix, String uri, String label) {
+	public ContextAddElementMenuManager(IViewerDirty viewer, String prefix,
+			String uri, String label) {
 		super(label);
 		this.viewer = viewer;
 		this.prefix = prefix;
@@ -24,40 +25,21 @@ public class ContextAddElementMenuManager extends MenuManager {
 	}
 
 	private void createActions() {
-//		ISelection selection = mColumnViewer.getSelection();
-//		Object obj = ((IStructuredSelection) selection).getFirstElement();
-//		final CompositeMap comp = (CompositeMap) obj;
-		
 		final CompositeMap comp = viewer.getFocusData();
-
-		Element element = Activator.getSchemaManager().getElement(comp);
+		Element element = Common.getSchemaManager().getElement(comp);
 		if (element == null) {
 			return;
 		}
+		List sonElements = CompositeMapAction.getAvailableSonElements(element, comp);
+		if (sonElements != null) {
+			Iterator ite = sonElements.iterator();
+			while (ite.hasNext()) {
+				final Element ele = (Element) ite.next();
+				final QualifiedName qName = ele.getQName();
+				String text = Common.getElementFullName(comp, qName);
+				this.add(new AddElementAction(viewer, comp, ele.getQName(),
+						AddElementAction.getDefaultImageDescriptor(), text));
 
-		if (element.isArray()) {
-			final QualifiedName qName = element.getElementType().getQName();
-			final String elementType = element.getElementType().getQName()
-					.getLocalName();
-//			AddElementAction addAtion = new AddElementAction(viewer, comp,
-//					prefix, uri, elementType,AddElementAction.getDefaultImageDescriptor(),elementType);
-			AddElementAction addAtion = new AddElementAction(viewer, comp,
-					qName,AddElementAction.getDefaultImageDescriptor(),elementType);
-			this.add(addAtion);
-
-		} else if (element != null) {
-			List arrays = element.getAllElements();
-			if (arrays != null) {
-				Iterator ite = arrays.iterator();
-				while (ite.hasNext()) {
-					final Element ele = (Element) ite.next();
-					final QualifiedName qName = element.getQName();
-//					this.add(new AddElementAction(viewer,
-//							comp, prefix, uri, ele.getLocalName(),AddElementAction.getDefaultImageDescriptor(),ele.getLocalName()));
-					this.add(new AddElementAction(viewer,
-							comp, qName,AddElementAction.getDefaultImageDescriptor(),ele.getLocalName()));
-
-				}
 			}
 		}
 	}

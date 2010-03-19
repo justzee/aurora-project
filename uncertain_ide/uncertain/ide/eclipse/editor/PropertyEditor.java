@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.events.KeyEvent;
@@ -20,14 +19,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.ide.eclipse.action.AddPropertyAction;
 import uncertain.ide.eclipse.action.CategroyAction;
 import uncertain.ide.eclipse.action.CharSortAction;
@@ -36,14 +33,14 @@ import uncertain.ide.eclipse.action.IPropertyCategory;
 import uncertain.ide.eclipse.action.IViewerDirty;
 import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemovePropertyAction;
-import uncertain.schema.Element;
 import uncertain.schema.editor.AttributeValue;
 
 public class PropertyEditor  implements IPropertyCategory{
 
 	public static final String COLUMN_PROPERTY = "PROPERTY";
 	public static final String COLUMN_VALUE = "VALUE";
-	public static final String[] TABLE_COLUMN_PROPERTIES = {COLUMN_PROPERTY,COLUMN_VALUE};
+	public static final String COLUMN_DOCUMENT = "DOCUMENT";
+	public static final String[] TABLE_COLUMN_PROPERTIES = {COLUMN_PROPERTY,COLUMN_VALUE,COLUMN_DOCUMENT};
 	private boolean isCategory;
 	TableViewer mPropertyViewer;
 	Table mTable;
@@ -99,8 +96,9 @@ public class PropertyEditor  implements IPropertyCategory{
 	//        mTable.setLayoutData(rowData);
 	        
 	        TableColumn propertycolumn = new TableColumn(mTable, SWT.LEFT);
-	        propertycolumn.setText("属性");
-	        new TableColumn(mTable, SWT.LEFT).setText("值");
+	        propertycolumn.setText(Common.getString("property.name"));
+	        new TableColumn(mTable, SWT.LEFT).setText(Common.getString("value"));
+	        new TableColumn(mTable, SWT.LEFT).setText(Common.getString("description"));
 	        
 			ToolBar toolBar = new ToolBar(viewForm, SWT.RIGHT|SWT.FLAT);
 			// 创建一个toolBar的管理器

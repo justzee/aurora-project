@@ -82,7 +82,8 @@ public class MainFormPage extends FormPage implements IDirty {
 			autoLoadProjectSxsdFile();
 			createContent(shell, toolkit);
 		} catch (Exception e) {
-			throw new RuntimeException(e.getLocalizedMessage());
+//			throw new RuntimeException(e.getLocalizedMessage());
+			throw new RuntimeException(e.getCause());
 		}
 	}
 
@@ -193,20 +194,21 @@ public class MainFormPage extends FormPage implements IDirty {
 
 		CTabItem tabItem1 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
 				| SWT.V_SCROLL);
-		tabItem1.setText("  属性      ");
-		icon = Activator.getImageDescriptor("icons/property.gif").createImage();
+		String tab = "  ";
+		tabItem1.setText(tab+Common.getString("property")+tab);
+		icon = Activator.getImageDescriptor(Common.getString("property.icon")).createImage();
 		// tabItem1.setImage(icon);
 		// tabItem1.setControl(mPropertyEditor.viewForm);
 
 		CTabItem tabItem2 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
 				| SWT.V_SCROLL);
-		tabItem2.setText("  子项        ");
+		tabItem2.setText(tab+Common.getString("son.list")+tab);
 		// icon = Activator.getImageDescriptor("icons/items.gif").createImage();
 		// tabItem2.setImage(icon);
 
 		CTabItem tabItem3 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
 				| SWT.V_SCROLL);
-		tabItem3.setText("  值         ");
+		tabItem3.setText(tab+Common.getString("value")+tab);
 
 		// icon =
 		// Activator.getImageDescriptor("icons/document.gif").createImage();
@@ -215,8 +217,8 @@ public class MainFormPage extends FormPage implements IDirty {
 
 		CTabItem tabItem4 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
 				| SWT.V_SCROLL);
-		tabItem4.setText("  编辑器     ");
-		icon = Activator.getImageDescriptor("icons/editor.gif").createImage();
+		tabItem4.setText(tab+Common.getString("editor")+tab);
+		icon = Activator.getImageDescriptor(Common.getString("editor.icon")).createImage();
 		// tabItem4.setImage(icon);
 
 		mTabFolder.addSelectionListener(new SelectionListener() {
@@ -272,17 +274,12 @@ public class MainFormPage extends FormPage implements IDirty {
 
 	public void setDirty(boolean dirty) {
 		if (dirty) {
+//			System.out.println("mainform..............");
 			mServiceTreeEditor.refresh();
 			mPropertyEditor.refresh();
 			mPropertyArrayEditor.refresh();
 			setModify(true);
-		}
-		// System.out.println("is dirty:"+getEditor().isDirty());
-		// if (!dirty && getEditor().isDirty()) {
-		// getEditor().editorDirtyStateChanged();
-		// } else if (dirty && !(getEditor().isDirty())) {
-		// getEditor().editorDirtyStateChanged();
-		// }
+		}		
 		getEditor().editorDirtyStateChanged();
 
 	}
@@ -295,12 +292,12 @@ public class MainFormPage extends FormPage implements IDirty {
 		Menu menu = new Menu(shell);
 
 		ToolItem addItem = new ToolItem(toolBar, SWT.DROP_DOWN);
-		setToolItemShowProperty(addItem, "添加子节点", "icons/add_obj.gif");
+		setToolItemShowProperty(addItem, Common.getString("add.element.label"), Common.getString("add.icon"));
 		addItem.addListener(SWT.Selection, new ToolBarAddElementListener(
 				toolBar, menu, addItem, columnViewerDirtyObject));
 
 		final ToolItem cutItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(cutItem, "剪切", "icons/cut.gif");
+		setToolItemShowProperty(cutItem, Common.getString("cut"), Common.getString("cut.icon"));
 		cutItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				CompositeMapAction.cutElement(columnViewerDirtyObject);
@@ -308,7 +305,7 @@ public class MainFormPage extends FormPage implements IDirty {
 		});
 
 		final ToolItem copyItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(copyItem, "复制", "icons/copy.gif");
+		setToolItemShowProperty(copyItem, Common.getString("copy"), Common.getString("copy.icon"));
 		copyItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				CompositeMapAction.copyElement(columnViewerDirtyObject);
@@ -316,22 +313,22 @@ public class MainFormPage extends FormPage implements IDirty {
 		});
 
 		final ToolItem pasteItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(pasteItem, "粘贴", "icons/paste.gif");
+		setToolItemShowProperty(pasteItem, Common.getString("paste"), Common.getString("paste.icon"));
 		pasteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				CompositeMapAction.pasteElement(columnViewerDirtyObject);
 			}
 		});
 		final ToolItem refreshItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(refreshItem, "刷新", "icons/refresh.gif");
+		setToolItemShowProperty(refreshItem, Common.getString("refresh"), Common.getString("refresh.icon"));
 		refreshItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				mServiceTreeEditor.getObject().refresh();
-				Activator.refeshSchemaManager();
+				Common.refeshSchemaManager();
 			}
 		});
 		final ToolItem removeItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(removeItem, "删除", "icons/delete_obj.gif");
+		setToolItemShowProperty(removeItem, Common.getString("delete"), Common.getString("delete.icon"));
 		removeItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				CompositeMapAction.removeElement(columnViewerDirtyObject);
@@ -356,7 +353,7 @@ public class MainFormPage extends FormPage implements IDirty {
 	}
 
 	private void autoLoadProjectSxsdFile() {
-		Activator.refeshSchemaManager();
+		Common.refeshSchemaManager();
 	}
 
 	public void refresh(CompositeMap data) {

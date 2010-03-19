@@ -5,25 +5,25 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.wizards.ProjectWizard"
+            class="uncertain.ide.eclipse.wizards.ProjectWizard"
             icon="icons/sopc_obj.gif"
             id="uncertain.ide.eclipse.editor.ProjectWizard"
-            name="Aurora项目"
+            name="uncertain项目"
             project="true"/>
       <category
             id="uncertain_ide"
-            name="Aurora Wizards">
+            name="uncertain Wizards">
       </category>
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.wizards.ServiceNewWizard"
+            class="uncertain.ide.eclipse.wizards.ServiceNewWizard"
             icon="icons/new_platform.gif"
             id="uncertain_ide.wizards.SampleNewWizard"
             name="Service文件">
       </wizard>
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.wizards.SxsdNewWizard"
+            class="uncertain.ide.eclipse.wizards.SxsdNewWizard"
             icon="icons/text_edit.gif"
             id="uncertain_ide.wizards.SxsdNewWizard"
             name="Sxsd 文件">
@@ -50,9 +50,51 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
+            category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
             class="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
-            name="Sxsd目录">
+            name="builtin-packages目录">
+      </page>
+      <page
+            category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
+            class="uncertain.ide.eclipse.preferencePage.BrowserPreferencePage"
+            id="uncertain.ide.eclipse.preferencePage.BrowserPreferencePage"
+            name="service preview config">
+      </page>
+      <page
+            class="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
+            id="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
+            name="uncertain">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.eclipse.aurora.ide.sxsd.valid"
+            objectClass="org.eclipse.core.resources.IResource">
+         <action
+               class="uncertain.ide.eclipse.action.SxsdPackageValidAction"
+               icon="icons/items.gif"
+               id="Aurora_ide.action1"
+               label="校验sxsd">
+         </action>
+         <enablement>
+            <test
+                  forcePluginActivation="true"
+                  property="advancedpopupmenus.popup.visable"
+                  value="true">
+            </test>
+         </enablement>
+      </objectContribution>
+   </extension>
+       <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
+    <propertyTester
+    namespace ="advancedpopupmenus.popup" 
+   properties ="visable" 
+   type ="java.lang.Object" 
+   class ="uncertain.ide.eclipse.action.VisablePropertyTester" 
+   id ="advancedpopupmenus.popup.propertyTesters.visable" >   
+    </propertyTester >       
+    </extension > 
 </plugin>

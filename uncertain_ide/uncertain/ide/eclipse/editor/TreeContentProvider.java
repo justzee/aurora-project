@@ -3,7 +3,6 @@
  */
 package uncertain.ide.eclipse.editor;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,10 +13,9 @@ import org.eclipse.jface.viewers.Viewer;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
-import uncertain.schema.ISchemaManager;
 
 public class TreeContentProvider implements ITreeContentProvider {
 
@@ -36,7 +34,7 @@ public class TreeContentProvider implements ITreeContentProvider {
 		List childs = new LinkedList(map.getChildsNotNull());
 
 //		System.out.println(map.toXML());
-		Element element = Activator.getSchemaManager().getElement(map);
+		Element element = Common.getSchemaManager().getElement(map);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
@@ -57,8 +55,10 @@ public class TreeContentProvider implements ITreeContentProvider {
 		}
 		if (childs == null)
 			return null;
-		else
+		else{
+//			Collections.sort(childs);   
 			return childs.toArray();
+		}
 	}
 
 	public Object getParent(Object element) {
@@ -80,7 +80,7 @@ public class TreeContentProvider implements ITreeContentProvider {
 		}
 		// this element maybe have arrays
 		else{
-			Element cm = Activator.getSchemaManager().getElement(map);
+			Element cm = Common.getSchemaManager().getElement(map);
 			if(cm != null &&!cm.getAllArrays().isEmpty()){
 				return true;
 			}
@@ -100,7 +100,7 @@ public class TreeContentProvider implements ITreeContentProvider {
 		List childs = new LinkedList(map.getChildsNotNull());
 
 //		System.out.println(map.toXML());
-		Element element = Activator.getSchemaManager().getElement(map);
+		Element element = Common.getSchemaManager().getElement(map);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
@@ -108,8 +108,9 @@ public class TreeContentProvider implements ITreeContentProvider {
 				while (ite.hasNext()) {
 					Array uncetainArray = (Array) ite.next();
 					String name = uncetainArray.getLocalName();
-					CompositeMap newCM = new CompositeMap(map.getPrefix(),
-							map.getNamespaceURI(), name);
+					QualifiedName qn = uncetainArray.getQName();
+					CompositeMap newCM = new CompositeMap(qn.getPrefix(),
+							qn.getNameSpace(), name);
 					QualifiedName nm = newCM.getQName();
 					if(CompositeUtil.findChild(map, nm)==null){
 						newCM.setParent(map);
@@ -121,8 +122,10 @@ public class TreeContentProvider implements ITreeContentProvider {
 		}
 		if (childs == null)
 			return null;
-		else
+		else{
+//			Collections.sort(childs);   
 			return childs.toArray();
+		}
 	}
 
 	public void dispose() {

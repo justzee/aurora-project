@@ -1,4 +1,4 @@
-package uncertain.ide.wizards;
+package uncertain.ide.eclipse.wizards;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -21,21 +21,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
+import uncertain.ide.Common;
+
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (sxsd).
+ * OR with the extension that matches the expected one (service).
  */
 
-public class SxsdNewWizardPage extends WizardPage {
+public class ServiceNewWizardPage extends WizardPage {
 	private Text containerText;
 
 	private Text fileText;
-	
-	private Text namespacePrefix;
-	
-	private Text namespaceUrl;
-	
+
 	private ISelection selection;
 
 	/**
@@ -43,10 +41,10 @@ public class SxsdNewWizardPage extends WizardPage {
 	 * 
 	 * @param pageName
 	 */
-	public SxsdNewWizardPage(ISelection selection) {
+	public ServiceNewWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle("Aurora Sxsd Editor File");
-		setDescription("This wizard creates a new file with *.sxsd extension that can be opened by a multi-page editor.");
+		setTitle("Aurora Service Editor File");
+		setDescription("This wizard creates a new file with *.service extension that can be opened by a Service editor.");
 		this.selection = selection;
 	}
 
@@ -83,38 +81,12 @@ public class SxsdNewWizardPage extends WizardPage {
 
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan=2;
 		fileText.setLayoutData(gd);
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}
 		});
-		
-		label = new Label(container, SWT.NULL);
-		label.setText("&Namespace Prefix:");
-		namespacePrefix = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan=2;
-		namespacePrefix.setLayoutData(gd);
-		namespacePrefix.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		
-		label = new Label(container, SWT.NULL);
-		label.setText("&Namespace Url:");
-		namespaceUrl = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan=2;
-		namespaceUrl.setLayoutData(gd);
-		namespaceUrl.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		
 		initialize();
 		dialogChanged();
 		setControl(container);
@@ -140,9 +112,7 @@ public class SxsdNewWizardPage extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
-//		fileText.setText("new_file.sxsd");
-		namespacePrefix.setText("sxsd");
-		namespaceUrl.setText("http://www.uncertain-framework.org/schema/simple-schema");
+//		fileText.setText("new_file.service");
 	}
 
 	/**
@@ -181,7 +151,7 @@ public class SxsdNewWizardPage extends WizardPage {
 			return;
 		}
 		if(fileName !=null &&!fileName.equals("")&&container.getProject().getFile(fileName).exists()){
-			updateStatus("此文件名已经被使用！");
+			updateStatus(Common.getString("filename.used"));
 			return;
 		}
 		if (!container.isAccessible()) {
@@ -192,7 +162,6 @@ public class SxsdNewWizardPage extends WizardPage {
 			updateStatus("File name must be specified");
 			return;
 		}
-		
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
 			updateStatus("File name must be valid");
 			return;
@@ -200,22 +169,11 @@ public class SxsdNewWizardPage extends WizardPage {
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("sxsd") == false) {
-				updateStatus("File extension must be \"sxsd\"");
+			if (ext.equalsIgnoreCase("service") == false) {
+				updateStatus("File extension must be \"service\"");
 				return;
 			}
 		}
-		
-		if(getNamespacePrefix().length() == 0){
-			updateStatus("Namespace Prefix must be specified");
-			return;
-		}
-		
-		if(getNamespaceUrl().length() == 0){
-			updateStatus("Namespace Url must be specified");
-			return;
-		}
-		
 		updateStatus(null);
 	}
 
@@ -231,12 +189,9 @@ public class SxsdNewWizardPage extends WizardPage {
 	public String getFileName() {
 		return fileText.getText();
 	}
-
-	public String getNamespacePrefix() {
-		return namespacePrefix.getText();
-	}
-
-	public String getNamespaceUrl() {
-		return namespaceUrl.getText();
+	public static void main(String[] args){
+		ServiceNewWizardPage swp = new ServiceNewWizardPage(null);
+		swp.setVisible(true);
+		
 	}
 }

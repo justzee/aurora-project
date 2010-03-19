@@ -19,14 +19,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
+import uncertain.ide.Common;
 import uncertain.ide.eclipse.action.ElementSelectionListener;
 import uncertain.ide.eclipse.action.IDirty;
 import uncertain.schema.SchemaManager;
@@ -54,7 +52,7 @@ public class MainShell implements IDirty {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 	
-		SchemaManager sm = Activator.getSchemaManager();
+		SchemaManager sm = Common.getSchemaManager();
 		sm.loadSchemaFromClassPath("aurora.testcase.ui.config.components",
 				"sxsd");
 		sm.loadSchemaFromClassPath("aurora.testcase.ui.config.service", "sxsd");
@@ -193,18 +191,19 @@ public class MainShell implements IDirty {
 
 			
 			CTabItem tabItem1 = new CTabItem(mTabFolder, SWT.None|SWT.MULTI|SWT.V_SCROLL);
-			tabItem1.setText("  属性      ");
-			icon = Activator.getImageDescriptor("icons/property.gif").createImage();
+			String tab = "  ";
+			tabItem1.setText(tab+Common.getString("property")+tab);
+			icon = Activator.getImageDescriptor(Common.getString("property.icon")).createImage();
 			// tabItem1.setImage(icon);
 			// tabItem1.setControl(mPropertyEditor.viewForm);
 
 			CTabItem tabItem2 = new CTabItem(mTabFolder, SWT.None|SWT.MULTI|SWT.V_SCROLL);
-			tabItem2.setText("  子项        ");
+			tabItem2.setText(tab+Common.getString("son.list")+tab);
 			// icon = Activator.getImageDescriptor("icons/items.gif").createImage();
 			// tabItem2.setImage(icon);
 
 			CTabItem tabItem3 = new CTabItem(mTabFolder, SWT.None|SWT.MULTI|SWT.V_SCROLL);
-			tabItem3.setText("  值         ");
+			tabItem3.setText(tab+Common.getString("value")+tab);
 			
 			// icon =
 			// Activator.getImageDescriptor("icons/document.gif").createImage();
@@ -212,8 +211,8 @@ public class MainShell implements IDirty {
 			tabItem3.setControl(mInnerText);
 
 			CTabItem tabItem4 = new CTabItem(mTabFolder, SWT.None|SWT.MULTI|SWT.V_SCROLL);
-			tabItem4.setText("  编辑器     ");
-			icon = Activator.getImageDescriptor("icons/editor.gif").createImage();
+			tabItem4.setText(tab+Common.getString("editor")+tab);
+			icon = Activator.getImageDescriptor(Common.getString("editor.icon")).createImage();
 			// tabItem4.setImage(icon);
 	
 			mTabFolder.addSelectionListener(new SelectionListener() {
@@ -245,8 +244,15 @@ public class MainShell implements IDirty {
 
 	public void setDirty(boolean dirty) {
 		String text = shell.getText();
-		text = "*" + text;
+		if(text.indexOf("*")==-1)
+			text = "*" + text;
 		shell.setText(text);
+		if (dirty) {
+//			System.out.println("mainform..............");
+			mServiceTreeEditor.refresh();
+			mPropertyEditor.refresh();
+			mPropertyArrayEditor.refresh();
+		}	
 		mDirtyAction.setDirty(true);
 		
 	}
