@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema" xmlns:jsp="http://mvc.lwap.org/builder/jsp" xmlns:std="http://mvc.lwap.org/default">
+<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema" xmlns:jsp="http://mvc.lwap.org/builder/jsp" xmlns:std="http://mvc.lwap.org/default"  >
 	<ss:types>
 		<ss:complexType name="FieldBinding">
 			<ss:attributes>
@@ -17,6 +17,9 @@
 				<ss:attribute name="Id"/>
 				<ss:attribute name="StyleClass"/>
 			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="AbstractViewComponent"/>
+			</ss:extensions>
 		</ss:complexType>
 		<ss:complexType name="BasicInputComponent">
 			<ss:extensions>
