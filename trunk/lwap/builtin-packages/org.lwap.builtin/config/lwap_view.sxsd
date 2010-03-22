@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema">
-    <ss:types>
-        <ss:complexType name="FieldBinding">
-            <ss:attributes>
-                <ss:attribute type="ss:string" name="dataField"/>
-                <ss:attribute type="ss:string" name="dataValue"/>
-            </ss:attributes>
-        </ss:complexType>
-        <ss:complexType name="ModelBinding">
-            <ss:attributes>
-                <ss:attribute type="ss:string" name="dataModel"/>
-            </ss:attributes>
-        </ss:complexType>
-        <ss:complexType name="BasicHtmlComponent">
-            <ss:attributes>
-                <ss:attribute name="Id"/>
-                <ss:attribute name="StyleClass"/>
-            </ss:attributes>
-        </ss:complexType>
-        <ss:complexType name="BasicInputComponent">
-            <ss:extensions>
-                <ss:extension base="BasicParameter"/>
-                <ss:extension base="BasicHtmlComponent"/>
-                <ss:extension base="FieldBinding"/>
-            </ss:extensions>
-        </ss:complexType>
-    </ss:types>
-    <ss:elements>
-        <ss:element name="jsp:textlabel">
-            <ss:attributes>
-                <ss:attribute name="HtmlFormat"/>
-                <ss:attribute name="ReplaceBlank"/>
-                <ss:attribute name="OnClick"/>
-                <ss:attribute name="FormatNum"/>
-            </ss:attributes>
-            <ss:extensions>
-                <ss:extension base="BasicHtmlComponent"/>
-            </ss:extensions>
-        </ss:element>
-    </ss:elements>
+<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema" xmlns:jsp="http://mvc.lwap.org/builder/jsp" xmlns:std="http://mvc.lwap.org/default">
+	<ss:types>
+		<ss:complexType name="FieldBinding">
+			<ss:attributes>
+				<ss:attribute type="ss:string" name="dataField"/>
+				<ss:attribute type="ss:string" name="dataValue"/>
+			</ss:attributes>
+		</ss:complexType>
+		<ss:complexType name="ModelBinding">
+			<ss:attributes>
+				<ss:attribute type="ss:string" name="dataModel"/>
+			</ss:attributes>
+		</ss:complexType>
+		<ss:complexType name="BasicHtmlComponent">
+			<ss:attributes>
+				<ss:attribute name="Id"/>
+				<ss:attribute name="StyleClass"/>
+			</ss:attributes>
+		</ss:complexType>
+		<ss:complexType name="BasicInputComponent">
+			<ss:extensions>
+				<ss:extension base="BasicParameter"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+			</ss:extensions>
+		</ss:complexType>
+	</ss:types>
+	<ss:elements>
+		<ss:element name="jsp:textlabel">
+			<ss:attributes>
+				<ss:attribute name="HtmlFormat"/>
+				<ss:attribute name="ReplaceBlank"/>
+				<ss:attribute name="OnClick"/>
+				<ss:attribute name="FormatNum"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+	</ss:elements>
 </ss:schema>
