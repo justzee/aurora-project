@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema">
-    <ss:namespaces>
-        <ss:namespace url="http://mvc.lwap.org/builder/jsp" prefix="jsp"/>
-    </ss:namespaces>
+<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema" xmlns:jsp="http://mvc.lwap.org/builder/jsp">
     <ss:elements>
         <ss:element name="item"/>
         <ss:element name="FieldSet">
