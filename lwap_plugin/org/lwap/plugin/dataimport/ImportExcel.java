@@ -130,58 +130,38 @@ public class ImportExcel implements IController {
 		}
 	}
 
-	private void processUpload(HttpServletRequest request) throws Exception {
-		// Parse the request
-		List items = upload.parseRequest(request);
-		// Process the uploaded items
+	private void processUpload(HttpServletRequest request) throws Exception {		
+		List items = upload.parseRequest(request);		
 		Iterator iter = items.iterator();
 		while (iter.hasNext()) {
 			FileItem item = (FileItem) iter.next();
 			if (!item.isFormField()) {
-				String radomFileName = String.valueOf(System
-						.currentTimeMillis());
+				String radomFileName = String.valueOf(System.currentTimeMillis());
 				String returnString = formatPath(item.getName());
-				String fileName = radomFileName.concat(returnString
-						.substring(returnString.lastIndexOf(".")));
-				// String fileType = item.getContentType();
-				// System.out.println("processing "+radomFileName+" as "+formatPath(item.getName()));
-				// System.out.println("file type:"+fileType);
-				// if ("application/vnd.ms-excel".equals(fileType)) {
+				String fileName = radomFileName.concat(returnString.substring(returnString.lastIndexOf(".")));
+				String fileType = item.getContentType();				
+			    //if ("application/vnd.ms-excel".equals(fileType)) {
 				File uploadedFile = new File(settings.getDestPath(), fileName);
 				item.write(uploadedFile);
-				fileMap.put(fileName, uploadedFile);
-				// System.out.println("saving "+uploadedFile);
-				// }
+				fileMap.put(fileName, uploadedFile);				
+				//}
 			}
 		}
 	}
 
 	private void parseExcelFile(CompositeMap context) throws Exception {
 		String suffix;
+		CompositeMap dataMap = new CompositeMap();		
+		PareExcel p=new PareExcel();
+		boolean is_store = "Y".equals(store_flag)?true:false;
 		Iterator it = fileMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry entry = (Map.Entry) it.next();
 			String fileName = (String) entry.getKey();
 			suffix = fileName.substring(fileName.lastIndexOf("."));
 			File file = (File) entry.getValue();
-			if (".xls".equalsIgnoreCase(suffix.toLowerCase())) {
-				parseExcel2003(file);
-			} 
-		}
-	}
-
-	private void parseExcel2003(File file)throws Exception {
-		InputStream is = null;
-		FileInputStream fn = null;
-		CompositeMap params = service.getParameters();
-		boolean is_store = "Y".equals(store_flag)?true:false;
-		try {	
-			fn = new FileInputStream(file);
-			is = fn;
-			Workbook rb = Workbook.getWorkbook(is);
-			Sheet s = rb.getSheet(0);
-			int rs = s.getRows();			
-			if (is_store) {
+			dataMap=p.pareExcel(file, dataMap);				
+			if(is_store){
 				Connection conn = service.getConnection();
 				Statement st = conn.createStatement();				
 				String sqlpre;
@@ -191,21 +171,30 @@ public class ImportExcel implements IController {
 					st.executeUpdate("delete from fnd_import_temp where creation_date<sysdate-1 or session_id="+session_id);
 					st.executeUpdate("delete from fnd_import_error_msg where creation_date<sysdate-1 or session_id="+session_id);
 					st.executeUpdate("delete from fnd_import_status where creation_date<sysdate-1 or session_id="+session_id);
-					for (int j = 0; j < rs; j++) {
-						Cell[] c = s.getRow(j);
-						int m = c.length;
-						if(max_column<m)max_column=m;
-						sqlpre = "insert into fnd_import_temp(creation_date,session_id,row_num";
-						sql = ")values(sysdate,'"+session_id+"',"+(j+1);
-						for (int k = 0; k < m; k++) {							
-							sqlpre += ",c" + (k+1);
-							sql += ",'" + c[k].getContents()+"'";							
+					List dataList=dataMap.getChilds();					
+					if(dataList!=null){
+						int rs=dataList.size();	
+						CompositeMap item;
+						for (int j = 0; j < rs; j++) {
+							sqlpre = "insert into fnd_import_temp(creation_date,session_id,row_num";
+							sql = ")values(sysdate,'"+session_id+"',"+(j+1);
+						
+							item=(CompositeMap)dataList.get(j);
+							Iterator itemIt=item.entrySet().iterator();
+							int cellnum=0;
+							while(itemIt.hasNext()){
+								itemIt.next();						
+								sqlpre += ",c" + (cellnum+1);
+								sql += ",'" + item.getString("cell"+cellnum)+"'";							
+								cellnum++;
+							}						
+							if(max_column<cellnum)max_column=cellnum;					
+							st.executeUpdate(sqlpre + sql + ")");
 						}
-						st.executeUpdate(sqlpre + sql + ")");
+						st.executeUpdate("insert into fnd_import_status(creation_date,session_id,max_row,max_col)values(sysdate,'"+session_id+"',"+rs+","+ max_column+")");
+						st.execute("commit");
+						conn.commit();
 					}
-					st.executeUpdate("insert into fnd_import_status(creation_date,session_id,max_row,max_col)values(sysdate,'"+session_id+"',"+rs+","+ max_column+")");
-					st.execute("commit");
-					conn.commit();
 				} finally {
 					try {
 						DBUtil.closeConnection(conn);
@@ -214,34 +203,40 @@ public class ImportExcel implements IController {
 						ex.printStackTrace();
 					}
 				}
-			} else {	
-				Cell[] headerCells = s.getRow(0);
+			}else{
+				CompositeMap params = service.getParameters();
 				List headers = new ArrayList();
-				for (int k = 0; k < headerCells.length; k++)
-					headers.add(headerCells[k].getContents());
-				params.put(HEADER_NAME, headers);
-				CompositeMap dataMap = new CompositeMap();
-				dataMap.put(FILE_NAME, file.getName());				
-				for (int j = 1; j < rs; j++) {
-					CompositeMap item = new CompositeMap(MAP_CHILD_NAME);
-					Cell[] c = s.getRow(j);
-					for (int x = 0; x < c.length; x++) {
-						item.put(headerCells[x].getContents(), c[x]
-								.getContents() == null ? "" : c[x]
-								.getContents());
+				List dataList=dataMap.getChilds();
+				if(dataList!=null){
+					CompositeMap item=(CompositeMap)dataList.get(0);
+					Iterator itemIt = item.entrySet().iterator();
+					int cellnum=0;
+					while(itemIt.hasNext()){
+						itemIt.next();
+						headers.add(item.getString("cell"+cellnum));
+						cellnum++;
+					}				
+					params.put(HEADER_NAME, headers);
+					CompositeMap data= new CompositeMap();
+					data.put(FILE_NAME, file.getName());
+					int rs=dataList.size();		
+					CompositeMap temp;
+					for (int j = 1; j < rs; j++) {		
+						temp=(CompositeMap)dataList.get(j);				
+						item = new CompositeMap(MAP_CHILD_NAME);
+						itemIt = temp.entrySet().iterator();
+						cellnum=0;
+						while(itemIt.hasNext()){
+							itemIt.next();
+							item.put(headers.get(cellnum), temp.getString("cell"+cellnum));					
+							cellnum++;
+						}										
+						data.addChild(item);
 					}
-					dataMap.addChild(item);
+					params.putObject(getTarget(), data, true);	
 				}
-				params.putObject(getTarget(), dataMap, true);				
 			}
-		} finally {
-			try {
-				fn.close();
-				is.close();
-			} catch (Exception e) {
-				throw e;
-			}
-		}
+		}		
 	}
 
 	private void init() throws IOException {
