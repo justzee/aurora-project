@@ -9,6 +9,8 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import java.util.logging.Logger;
+
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.OCManager;
 import uncertain.ocm.IObjectRegistry;
@@ -45,6 +47,7 @@ public class LwapJobRunner implements Job {
                 else    
                     args[i] = os.getInstanceOfType(types[i]);
             }
+            ((IObjectRegistry)engine.getObjectRegistry()).registerInstanceOnce(Logger.class,engine.getLogger());
             Object instance = engine.getObjectCreator().createInstance(cls_to_run);
             OCManager om = engine.getOcManager();
             om.populateObject(detail.getConfig(), instance);
