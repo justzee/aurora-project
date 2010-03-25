@@ -3,19 +3,19 @@
 	<ss:types>
 		<ss:complexType name="FieldBinding">
 			<ss:attributes>
-				<ss:attribute type="ss:string" name="dataField"/>
-				<ss:attribute type="ss:string" name="dataValue"/>
+				<ss:attribute type="ss:string" name="dataField"  document="绑定的数据字段，例如：@FIELD或/model/element/@FIELD"/>
+				<ss:attribute type="ss:string" name="dataValue"  document="绑定的数据字段，例如：${@FIELD}或${/model/element/@FIELD}"/>
 			</ss:attributes>
 		</ss:complexType>
 		<ss:complexType name="ModelBinding">
 			<ss:attributes>
-				<ss:attribute type="ss:string" name="dataModel"/>
+				<ss:attribute type="ss:string" name="dataModel" document="绑定的数据源，例如：/model/element"/>
 			</ss:attributes>
 		</ss:complexType>
 		<ss:complexType name="BasicHtmlComponent">
 			<ss:attributes>
-				<ss:attribute name="Id"/>
-				<ss:attribute name="StyleClass"/>
+				<ss:attribute name="Id" document="定义在页面中的唯一标识"/>
+				<ss:attribute name="StyleClass"  document="该文本显示时使用的样式，默认为default"/> 
 			</ss:attributes>
 			<ss:extensions>
 				<ss:extension base="AbstractViewComponent"/>
@@ -27,18 +27,34 @@
 				<ss:extension base="BasicHtmlComponent"/>
 				<ss:extension base="FieldBinding"/>
 			</ss:extensions>
-		</ss:complexType>
+		</ss:complexType> 
 	</ss:types>
 	<ss:elements>
 		<ss:element name="jsp:textlabel">
 			<ss:attributes>
-				<ss:attribute name="HtmlFormat"/>
-				<ss:attribute name="ReplaceBlank"/>
-				<ss:attribute name="OnClick"/>
-				<ss:attribute name="FormatNum"/>
+				<ss:attribute name="HtmlFormat"  document="true|false，是否使用html方式显示文本标注，缺省值为true，会自动将字符中的\n转换成&lt;br>来显示"/>
+				<ss:attribute name="ReplaceBlank"  document="是否对空格进行替换成html的空格，true|false，默认true"/>
+				<ss:attribute name="OnClick"  document="当点击文本标注时，调用的事件处理过程"/>
+				<ss:attribute name="FormatNum"  document="如果内容是数字，会根据提供的格式要求显示"/> 
+				<ss:attribute name="Hint"  document="在该文本上显示一个图标，鼠标移到该图标上会显示出本字段的提示信息"/>
 			</ss:attributes>
 			<ss:extensions>
 				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:textedit">
+			<ss:attributes>
+				<ss:attribute name="ReadOnly"  document="true|false，是否只读，缺省值为false"/>
+				
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="BasicInputComponent"/>
 			</ss:extensions>
 		</ss:element>
 	</ss:elements>
