@@ -599,8 +599,7 @@
 				<ss:extension base="ModelBinding"/>
 			</ss:extensions>
 		</ss:element>
-  
- 
+   
 		<ss:element name="jsp:excel-runmacro" >
 			<ss:attributes>
 				<ss:attribute name="Macro"  document="excel模板中的宏命令"/> 
@@ -611,28 +610,42 @@
 		<!-- word 报表相关 -->
 		<ss:element name="jsp:word-report" >
 			<ss:attributes>
-				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+				<ss:attribute name="Template"  document="Word模板文件名"/> 
+				<ss:attribute name="Template_url"  document="Word模板链接地址"/> 
+				<ss:attribute name="AutoHide"  document="打开word后是否关闭程序页面，true|false"/> 
+				<ss:attribute name="MultiRecord"  document="数据是否是多记录，true|false，缺省值false"/> 
 			</ss:attributes> 
+            <ss:elements>
+                <ss:element ref="jsp:word-result-set"/>
+                <ss:element ref="jsp:word-replace"/>
+                <ss:element ref="jsp:word-result-set"/>
+            </ss:elements>
+			<ss:extensions>  
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
 		</ss:element>
-		
-		<ss:element name="jsp:word-copy" >
-			<ss:attributes>
-				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
-			</ss:attributes> 
-		</ss:element>
-		
+		  
 		<ss:element name="jsp:word-replace" >
 			<ss:attributes>
-				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+				<ss:attribute name="Tag"  document="模板中替换的字符标记,可设置为$"/>  
 			</ss:attributes> 
+			<ss:extensions> 
+				<ss:extension base="ModelBinding"/>
+			</ss:extensions>
 		</ss:element>
 		
 		<ss:element name="jsp:word-result-set" >
 			<ss:attributes>
-				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+				<ss:attribute name="PagePerRecord"  document="是否每条记录分页"/>  
 			</ss:attributes> 
+            <ss:elements> 
+                <ss:element ref="jsp:word-replace"/> 
+            </ss:elements>
+			<ss:extensions> 
+				<ss:extension base="ModelBinding"/>
+			</ss:extensions>
 		</ss:element>
-
+			  
   
 	</ss:elements>
 </ss:schema>
