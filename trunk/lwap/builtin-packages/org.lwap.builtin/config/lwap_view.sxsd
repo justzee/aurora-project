@@ -15,7 +15,7 @@
 		<ss:complexType name="BasicHtmlComponent">
 			<ss:attributes>
 				<ss:attribute name="Id" document="定义在页面中的唯一标识"/>
-				<ss:attribute name="StyleClass"  document="该文本显示时使用的样式，默认为default"/> 
+				<ss:attribute name="StyleClass"  document="显示时使用的样式，默认为default"/> 
 			</ss:attributes>
 			<ss:extensions>
 				<ss:extension base="AbstractViewComponent"/>
@@ -28,8 +28,146 @@
 				<ss:extension base="FieldBinding"/>
 			</ss:extensions>
 		</ss:complexType> 
+		
+		
+		<ss:complexType name="FormSectionProperty">
+			<ss:attributes>
+				<ss:attribute type="ss:string" name="ColSpans"  document="在form-section中可以跨栏显示的列数"/>
+			</ss:attributes> 
+		</ss:complexType> 
 	</ss:types>
-	<ss:elements>
+	
+	<ss:elements> 
+		<ss:element name="param"> 
+			<ss:attributes>
+				<ss:attribute name="Name"  document="参数名称"/>
+				<ss:attribute name="DataType"  document="参数类型"/>	
+				<ss:attribute name="DefaultValue"  document="参数的缺省值"/>	
+				<ss:attribute name="Nullable"  document="是否允许为空，缺省值：true"/>	
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="option"> 
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="数据显示信息"/>
+				<ss:attribute name="Value"  document="数据值"/>	
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="case"> 
+			<ss:attributes>
+				<ss:attribute name="Value"  document="数据值或数据绑定"/> 
+			</ss:attributes> 
+            <ss:elements>
+                <ss:element ref="jsp:form"/>
+                <ss:element ref="jsp:form-section"/>
+                <ss:element ref="jsp:table"/>
+                <ss:element ref="jsp:frame"/>
+                <ss:element ref="jsp:textedit"/>
+                <ss:element ref="jsp:textlabel"/>
+                <ss:element ref="jsp:textarea"/>
+                <ss:element ref="jsp:button"/>
+                <ss:element ref="jsp:select"/>
+                <ss:element ref="jsp:checkbox"/>
+                <ss:element ref="jsp:radio-group"/>
+                <ss:element ref="jsp:lov" />
+                <ss:element ref="jsp:value-selector"/>
+                <ss:element ref="jsp:datepicker"/> 
+            </ss:elements>
+		</ss:element>
+		
+		<ss:element name="tab"> 
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="标签页上的显示信息"/>
+				<ss:attribute name="link-field"  document="标签页上连接的url"/>	
+				<ss:attribute name="active-field"  document="是否将本标签页设置默认打开的页面，1：是 0：否"/>	
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="column"> 
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="列标题的显示信息"/>
+				<ss:attribute name="Width"  document="列宽，如果不设置，html会自动设置宽度"/>	
+				<ss:attribute name="SummaryFunction"  document="在表格底部显示本栏汇总值。可用的汇总函数包括：sum, avg, max, min, count"/>	
+				<ss:attribute name="SummaryPrompt"  document="在表格底部汇总栏显示的文本内容。"/>	
+				<ss:attribute name="Align"  document="列数据左右对齐方式left/center/right"/>	
+				<ss:attribute name="HeadAlign"  document="列标题左右对齐方式left/center/right"/>	
+				<ss:attribute name="Hint"  document="列标题提示信息"/>
+				<ss:attribute name="DataType"  document="列数据的显示类型，用于excel-table中，2:文本 5：日期，不设置为常规"/>
+				<ss:attribute name="GroupType"  document="excel数据透视图中该字段类型：1:按行汇总 2:按列汇总 3:按页汇总 4:数据项，不汇总"/>
+				<ss:attribute name="GroupLevel"  document="excel数据透视图中该字段的汇总级别"/> 
+			</ss:attributes> 
+			<ss:extensions>
+				<ss:extension base="FieldBinding"/>
+			</ss:extensions>
+		</ss:element>
+		
+  <ss:element name="std:repeator" >
+   <ss:attributes>
+    <ss:attribute name="dataModel"  document="绑定的数据源，例如：/model/element"/> 
+    <ss:attribute name="CellWidth"  document="设置循环显示内容的宽度,如果设置为0，框架将设置其为自动宽度"/> 
+    <ss:attribute name="CellHeight"  document="设置循环显示内容的高度，框架将设置其为自动高度"/> 
+    <ss:attribute name="Columns"  document="显示每行显示的内容的数量"/> 
+   </ss:attributes> 
+            <ss:elements>
+                <ss:element ref="jsp:form"/>
+                <ss:element ref="jsp:form-section"/>
+                <ss:element ref="jsp:table"/>
+                <ss:element ref="jsp:frame"/>
+                <ss:element ref="jsp:textedit"/>
+                <ss:element ref="jsp:textlabel"/>
+                <ss:element ref="jsp:textarea"/>
+                <ss:element ref="jsp:button"/>
+                <ss:element ref="jsp:select"/>
+                <ss:element ref="jsp:checkbox"/>
+                <ss:element ref="jsp:radio-group"/>
+                <ss:element ref="jsp:lov"/>
+                <ss:element ref="jsp:value-selector"/>
+                <ss:element ref="jsp:datepicker"/>
+                <ss:element ref="jsp:tree"/>
+            </ss:elements>
+  </ss:element>
+ 
+
+  <ss:element name="std:layout" >
+   <ss:attributes>
+    <ss:attribute name="Type"  document="布局的类型，目前可用：tabular"/> 
+    <ss:attribute name="Template"  document="布局使用的模板文件"/> 
+    <ss:attribute name="CellWidth"  document="设置循环显示内容的宽度,如果设置为0，框架将设置其为自动宽度"/> 
+    <ss:attribute name="CellHeight"  document="设置循环显示内容的高度，框架将设置其为自动高度"/> 
+    <ss:attribute name="Columns"  document="显示每行显示的内容的数量"/> 
+   </ss:attributes> 
+   <ss:extensions>  
+    <ss:extension base="BasicHtmlComponent"/>
+   </ss:extensions>
+            <ss:elements>
+                <ss:element ref="jsp:form"/>
+                <ss:element ref="jsp:form-section"/>
+                <ss:element ref="jsp:table"/>
+                <ss:element ref="jsp:frame"/>
+                <ss:element ref="jsp:textedit"/>
+                <ss:element ref="jsp:textlabel"/>
+                <ss:element ref="jsp:textarea"/>
+                <ss:element ref="jsp:button"/>
+                <ss:element ref="jsp:select"/>
+                <ss:element ref="jsp:checkbox"/>
+                <ss:element ref="jsp:radio-group"/>
+                <ss:element ref="jsp:lov"/>
+                <ss:element ref="jsp:value-selector"/>
+                <ss:element ref="jsp:datepicker"/>
+                <ss:element ref="jsp:tree"/>
+                <ss:element ref="std:repeator"/>
+            </ss:elements>
+  </ss:element>
+  
+  <ss:element name="std:selector" >
+   <ss:attributes>
+    <ss:attribute name="Test"  document="用于判断的数据绑定"/> 
+   </ss:attributes> 
+            <ss:elements>
+                <ss:element ref="case"/>
+            </ss:elements>
+  </ss:element>
 		<ss:element name="jsp:textlabel">
 			<ss:attributes>
 				<ss:attribute name="HtmlFormat"  document="true|false，是否使用html方式显示文本标注，缺省值为true，会自动将字符中的\n转换成&lt;br>来显示"/>
@@ -48,14 +186,453 @@
 		<ss:element name="jsp:textedit">
 			<ss:attributes>
 				<ss:attribute name="ReadOnly"  document="true|false，是否只读，缺省值为false"/>
-				
+				<ss:attribute name="InputSize"  document="文本框长度,缺省值 20"/>
+				<ss:attribute name="MaxLength"  document="文本框最大字符数"/>
+				<ss:attribute name="OnChange"  document="文本框内容发生变化时调用的事件处理过程"/>
+				<ss:attribute name="OnBlur"  document="焦点离开文本框时调用的事件处理过程"/>
+				<ss:attribute name="OnFocus"  document="焦点进入文本框时调用的事件处理过程"/>
+				<ss:attribute name="BackColor"  document="是否显示背景颜色，如果是，在离开合进入文本框时底色变化，缺省值true"/> 				
 			</ss:attributes>
 			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/> 
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:textarea">
+			<ss:attributes>
+				<ss:attribute name="ReadOnly"  document="true|false，是否只读，缺省值为false"/>
+				<ss:attribute name="Cols"  document="文本区域列数,缺省值 20"/>
+				<ss:attribute name="Rows"  document="文本区域的行数,缺省值 10"/>			
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
 				<ss:extension base="BasicHtmlComponent"/>
 				<ss:extension base="FieldBinding"/>
 				<ss:extension base="ModelBinding"/>
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:button">
+			<ss:attributes>
+				<ss:attribute name="Type"  document="按钮类型，默认为普通button，可以设置submit/reset/button"/>
+				<ss:attribute name="OnClick"  document="点击按钮时执行的事件处理过程"/>
+				<ss:attribute name="Disabled"  document="按钮是否有效"/>
+				<ss:attribute name="Prompt"  document="按钮上显示的提示内容"/>			
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+		 
+		<ss:element name="jsp:select">
+            <ss:elements>
+                <ss:element ref="option"/>
+            </ss:elements>
+			<ss:attributes>
+				<ss:attribute name="dataSource"  document="输入内容的数据类型，java.lang.String/java.lang.Long/java.sql.Date等java数据类型"/>
+				<ss:attribute name="displayField"  document="对应于&lt;option>中显示的内容"/>
+				<ss:attribute name="valueField"  document="对应于&lt;option>中value的值"/>
+				<ss:attribute name="InputSize"  document="定义控件的宽度"/>			
+				<ss:attribute name="ReadOnly"  document="true|false,是否只读，默认值为false"/>		
+				<ss:attribute name="OnChange"  document="下拉框选择的内容发生变化时触发的事件处理过程"/>		
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+				
+		<ss:element name="jsp:datepicker">
+			<ss:attributes> 	
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:checkbox">
+			<ss:attributes>
+				<ss:attribute name="ValueChecked"  document="点击选择（打对勾）以后的值"/>
+				<ss:attribute name="ValueUnChecked"  document="不选择（对勾空白）以后的值"/>			
+				<ss:attribute name="ReadOnly"  document="true|false,是否只读，默认值为false"/>		
+				<ss:attribute name="OtherValueMapping"  document="其他情况的值（异常情况）"/>		
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:radio-group">
+			<ss:attributes>
+				<ss:attribute name="Orientation"  document="单选按钮的显示方式，横向或竖向Horizental/Vertical,缺省值：Vertical"/>
+				<ss:attribute name="OnClick"  document="点击按钮时执行的事件处理过程"/>	
+				<ss:attribute name="ReadOnly"  document="true|false,是否只读，默认值为false"/>	
+				<ss:attribute name="dataSource"  document="输入内容的数据类型，java.lang.String/java.lang.Long/java.sql.Date等java数据类型"/>
+				<ss:attribute name="displayField"  document="对应于&lt;option>中显示的内容"/>
+				<ss:attribute name="valueField"  document="对应于&lt;option>中value的值"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		
+		<ss:element name="jsp:frame">
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="布局框的提示"/>
+				<ss:attribute name="Width"  document="布局的宽度，缺省值 100%"/>	
+				<ss:attribute name="Height"  document="布局的高度，如果为0，就是自动扩展高度"/>	
+				<ss:attribute name="Align"  document="布局中包含的控件左右显示的位置；left/center/right，缺省值：center"/>
+				<ss:attribute name="Valign"  document="布局中包含的控件上下显示的位置；top/middle/bottom，缺省值：middle"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="ModelBinding"/>
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:popuplink">
+			<ss:attributes>
+				<ss:attribute name="Content"  document="链接上显示的文字内容,可通过数据绑定获取"/>
+				<ss:attribute name="HRef"  document="链接的页面"/>	
+				<ss:attribute name="Prompt"  document="链接的提示说明"/>	
+				<ss:attribute name="Width"  document="弹出页面的宽度"/>
+				<ss:attribute name="Height"  document="弹出页面的高度"/>
+				<ss:attribute name="Top"  document="弹出页面上方的位置"/>
+				<ss:attribute name="Left"  document="弹出页面左边的位置"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+		
+		<ss:element name="jsp:tree">
+			<ss:attributes>
+				<ss:attribute name="HRef"  document="树节点的链接"/>	
+				<ss:attribute name="Prompt"  document="树节点的显示内容"/>	
+				<ss:attribute name="id-field"  document="节点的数据值"/>
+				<ss:attribute name="parent-field"  document="上级节点的数据值"/>
+				<ss:attribute name="IncludeRoot"  document="是否包含根目录，选项为true|false,缺省值true"/>
+				<ss:attribute name="Target"  document="链接打开时的目标页面"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+		
+		
+		<ss:element name="jsp:value-selector" >
+			<ss:attributes>
+				<ss:attribute name="HRef"  document="点击控件后弹出的选择页面url"/>	
+				<ss:attribute name="Prompt"  document="控件提示信息"/>
+				<ss:attribute name="displayField"  document="控件上显示的数据内容信息"/>	
+				<ss:attribute name="ReadOnly"  document="是否只读，如果是，控件显示成文本备注"/>	
+				<ss:attribute name="DisplayReadOnly"  document="显示框是否只读，是否允许修改显示的内容，缺省值true"/>	
+				<ss:attribute name="Width"  document="弹出页面的宽度，缺省值200"/>	
+				<ss:attribute name="Height"  document="弹出页面的高度，缺省值100"/>	
+				<ss:attribute name="HRefVar"  document="可以用JS定义一个动态的连接地址,示例：&lt;script>order_url='abc_select.service&lt;/script>&lt;jsp:input Type=&quot;value-selector&quot; HRefVar=&quot;order_url&quot;dataField=&quot;@ORDER&quot;  /> "/>	
+				<ss:attribute name="onChange"  document="当选择发生变化时触发的事件过程"/>	
+				<ss:attribute name="InputSize"  document="控件宽度"/>	
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicInputComponent"/>
+				<ss:extension base="BasicHtmlComponent"/>
+				<ss:extension base="FieldBinding"/>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="FormSectionProperty"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		
+		<ss:element name="jsp:lov" >
+			<ss:attributes>
+				<ss:attribute name="Config"  document="Lov配置的xml文件,通过配置文件动态生成url后的value-selector，“HRef='lov-query.service?lovconfig='+config"/> 
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="jsp:value-selector"/> 
+			</ss:extensions>
+		</ss:element>
+		
+		
+		<ss:element name="jsp:tab" >
+			<ss:attributes>
+				<ss:attribute name="Width"  document="整个tab标签页控件的宽度"/> 
+				<ss:attribute name="Height"  document="整个tab标签页控件的高度"/> 
+				<ss:attribute name="tabWidth"  document="每个标签页的宽度"/> 
+			</ss:attributes>
+            <ss:elements>
+                <ss:element ref="tab"/>
+            </ss:elements> 
+		</ss:element>
+
+		
+		<ss:element name="jsp:table" >
+			<ss:attributes>
+				<ss:attribute name="Width"  document="表格的宽度"/> 
+				<ss:attribute name="Align"  document="表格左右对齐方式left/center/right"/> 
+				<ss:attribute name="Valign"  document="表格上下对齐方式top/middle/bottom"/> 
+				<ss:attribute name="HtmlFormat"  document="是否按html方式输出，是：将空格回车等特殊符号进行html显示的替换"/> 
+				<ss:attribute name="EmptyPrompt"  document="表格无数据时显示的提示信息"/>  
+			</ss:attributes>
+            <ss:elements>
+                <ss:element ref="column"/>
+            </ss:elements> 
+			<ss:extensions>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+
+		<ss:element name="jsp:form-section" >
+			<ss:attributes>
+				<ss:attribute name="Width"  document="控件的宽度"/> 
+				<ss:attribute name="Border"  document="是否显示边框"/> 
+				<ss:attribute name="HeadPromptAlign"  document="控件的标题显示"/> 
+				<ss:attribute name="PromptAlign"  document="包含的控件提示内容在单元格的显示位置，缺省值left"/> 
+				<ss:attribute name="InputAlign"  document="包含的控件输入部分在单元格的显示位置，缺省值middle"/> 
+				<ss:attribute name="FormALign"  document="控件在FORM中的显示位置，缺省值center"/>  
+				<ss:attribute name="InputWidth"  document="输入部分的单元格宽度，缺省值70%"/>  
+				<ss:attribute name="PromptWidth"  document="提示部分的单元格宽度，缺省值30%"/>  
+				<ss:attribute name="ID"  document="控件在页面中的唯一标识"/>   
+				<ss:attribute name="Columns"  document="每行显示的控件数量，缺省值：1"/>   
+			</ss:attributes>
+            <ss:elements>
+                <ss:element ref="jsp:textedit"/>
+                <ss:element ref="jsp:textarea"/>
+                <ss:element ref="jsp:select"/>
+                <ss:element ref="jsp:value-selector"/>
+                <ss:element ref="jsp:lov"/>
+                <ss:element ref="jsp:radio-group"/>
+                <ss:element ref="jsp:checkbox"/>
+                <ss:element ref="jsp:datepicker"/>
+            </ss:elements> 
+			<ss:extensions>
+				<ss:extension base="ModelBinding"/>
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+  
+		<ss:element name="jsp:message" >
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+				<ss:attribute name="Align"  document="水平布局的位置left/center/right,缺省值：center"/> 
+				<ss:attribute name="Width"  document="message的表格宽度"/> 
+				<ss:attribute name="Height"  document="message的表格高度"/> 
+			</ss:attributes> 
+			<ss:extensions> 
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+   
+		<ss:element name="jsp:upload-file" >
+			<ss:attributes>
+				<ss:attribute name="Name"  document="上传控件的名字"/> 
+				<ss:attribute name="Prompt"  document="控件的提示信息"/> 
+				<ss:attribute name="Source"  document="附件在表fnd_atm_file_source的source_type_code"/> 
+				<ss:attribute name="SourceValue"  document="附件source的PK值"/> 
+				<ss:attribute name="FormName"  document="控件所在的表单名称"/> 
+				<ss:attribute name="AfterUpload"  document="上传完附件后的javascript操作"/> 
+				<ss:attribute name="ClearPrompt"  document="清除附件的提示信息"/> 
+				<ss:attribute name="Type"  document="上传操作的控件，Button|link，缺省值：Button"/> 
+			</ss:attributes> 
+			<ss:extensions> 
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+ 
+		<ss:element name="jsp:upload-multi-file" >
+			<ss:attributes>
+				<ss:attribute name="Name"  document="上传控件的名字"/> 
+				<ss:attribute name="Prompt"  document="控件的提示信息"/>
+				<ss:attribute name="TableName"  document="附件对应的表名称"/> 
+				<ss:attribute name="PKValue"  document="附件对应表的PK"/> 
+				<ss:attribute name="Type"  document="上传操作的控件，Button|link，缺省值：Button"/> 
+				<ss:attribute name="ButtonPrompt"  document="上传按钮的提示"/> 
+				<ss:attribute name="Target"  document="打开上传附件页面的对象,缺省值:_blank"/> 
+				<ss:attribute name="InitPrompt"  document="初始显示该附件内容的提示信息"/> 
+			</ss:attributes> 
+			<ss:extensions> 
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+ 
+		<ss:element name="jsp:page-control" >
+			<ss:attributes>
+				<ss:attribute name="PageSize"  document="每页显示的记录数，缺省值：30"/>  
+				<ss:attribute name="CountField"  document="计数的字段，缺省：/model/query-count/@TOTAL_COUNT"/> 
+				<ss:attribute name="MaxDisplayPage"  document="最大显示页数"/> 
+				<ss:attribute name="HRef"  document="链接的url或JavaScript，例：javascript:post_query_form(MAIN_FORM, ${@pagenum})"/> 
+				<ss:attribute name="HRefType"  document="链接的类型，如果是script，HRef就是JavaScript，如果是url,HRef设置为页面名"/> 
+				<ss:attribute name="PageSize"  document="每页显示的记录数，缺省值：30"/> 
+			</ss:attributes> 
+			<ss:extensions>  
 				<ss:extension base="BasicInputComponent"/>
 			</ss:extensions>
 		</ss:element>
+		 
+		
+		<ss:element name="jsp:form" >
+			<ss:attributes>
+				<ss:attribute name="Align"  document="表单中的显示位置，缺省为default"/> 
+				<ss:attribute name="ButtonAlign"  document="表单的提交和重置按钮的显示位置，缺省为left"/> 
+				<ss:attribute name="Target"  document="表单提交的页面位置，默认为本页面"/> 
+				<ss:attribute name="SubmitPrompt"  document="提交的按钮提示"/> 
+				<ss:attribute name="ResetPrompt"  document="重置的按钮提示"/> 
+				<ss:attribute name="Action"  document="页面提交的对象"/> 
+			</ss:attributes> 
+			<ss:extensions>  
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+            <ss:elements>
+                <ss:element ref="jsp:table"/>
+                <ss:element ref="jsp:frame"/>
+                <ss:element ref="jsp:form-section"/>
+                <ss:element ref="jsp:form-parameters"/>
+                <ss:element ref="jsp:textedit"/>
+                <ss:element ref="jsp:textarea"/>
+                <ss:element ref="jsp:select"/>
+                <ss:element ref="jsp:value-selector"/>
+                <ss:element ref="jsp:lov"/>
+                <ss:element ref="jsp:radio-group"/>
+                <ss:element ref="jsp:checkbox"/>
+                <ss:element ref="jsp:datepicker"/>
+                <ss:element ref="jsp:form-button"/>
+            </ss:elements> 
+		</ss:element>
+ 
+ 
+		<ss:element name="jsp:form-button" >
+			<ss:extensions>  
+				<ss:extension base="jsp:button"/>
+			</ss:extensions>
+		</ss:element>
+ 
+		<ss:element name="jsp:form-parameters" >  
+            <ss:elements>
+                <ss:element ref="param"/>
+            </ss:elements>
+		</ss:element>
+ 
+		<ss:element name="jsp:excel-export-check" >
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="控件信息提示的内容"/> 
+			</ss:attributes>  
+			<ss:extensions>  
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+		</ss:element>
+		
+		<!-- excel 报表相关 -->
+		<ss:element name="jsp:excel-report" >
+			<ss:attributes>
+				<ss:attribute name="Template"  document="报表使用的excel模板"/> 
+				<ss:attribute name="AutoHide"  document="弹出的页面是否在报表打开后关闭"/> 
+			</ss:attributes> 
+			<ss:extensions>  
+				<ss:extension base="BasicHtmlComponent"/>
+			</ss:extensions>
+            <ss:elements>
+                <ss:element ref="jsp:excel-group"/>
+                <ss:element ref="jsp:excel-label"/>
+                <ss:element ref="jsp:excel-table"/>
+                <ss:element ref="jsp:excel-runmacro"/> 
+            </ss:elements> 
+		</ss:element>
+		
+		<ss:element name="jsp:excel-group" >
+			<ss:attributes>
+				<ss:attribute name="dataModel"  document="绑定的数据源，例如：/model/element"/> 
+				<ss:attribute name="GroupType"  document="分组的显示方式，sheet：按sheet页分组"/> 
+				<ss:attribute name="SheetTitle"  document="sheet页的名称"/> 
+			</ss:attributes>  
+            <ss:elements> 
+                <ss:element ref="jsp:excel-label"/>
+                <ss:element ref="jsp:excel-table"/>
+                <ss:element ref="jsp:excel-runmacro"/> 
+            </ss:elements> 
+		</ss:element>
+  
+		<ss:element name="jsp:excel-label" >
+			<ss:attributes>
+				<ss:attribute name="Content"  document="显示的文本内容"/> 
+				<ss:attribute name="Style"  document="显示文本的excel单元格样式"/> 
+				<ss:attribute name="Row"  document="显示文本的Excel中行"/> 
+				<ss:attribute name="Col"  document="显示文本的Excel中列"/> 
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="jsp:excel-table" >
+			<ss:attributes>
+				<ss:attribute name="ViewID"  document="信息提示的内容"/> 
+				<ss:attribute name="Row"  document="显示文本的Excel中行"/> 
+				<ss:attribute name="Col"  document="显示文本的Excel中列"/> 
+				<ss:attribute name="CreateTableHead"  document="是否创建标题栏"/> 
+				<ss:attribute name="TableHeadEachRow"  document="是否每行数据都显示表头"/> 
+				<ss:attribute name="TableHeadStyle"  document="数据标题栏使用的excel样式名"/> 
+				<ss:attribute name="TableCellStyle"  document="单元格使用的excel样式名"/> 
+				<ss:attribute name="TableType"  document="如果设置为PivotTable，报表显示成数据透视图"/>   
+			</ss:attributes> 
+            <ss:elements>
+                <ss:element ref="column"/>
+            </ss:elements>
+			<ss:extensions> 
+				<ss:extension base="ModelBinding"/>
+			</ss:extensions>
+		</ss:element>
+  
+ 
+		<ss:element name="jsp:excel-runmacro" >
+			<ss:attributes>
+				<ss:attribute name="Macro"  document="excel模板中的宏命令"/> 
+			</ss:attributes> 
+		</ss:element>
+  
+		
+		<!-- word 报表相关 -->
+		<ss:element name="jsp:word-report" >
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="jsp:word-copy" >
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="jsp:word-replace" >
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+			</ss:attributes> 
+		</ss:element>
+		
+		<ss:element name="jsp:word-result-set" >
+			<ss:attributes>
+				<ss:attribute name="Prompt"  document="信息提示的内容"/> 
+			</ss:attributes> 
+		</ss:element>
+
+  
 	</ss:elements>
 </ss:schema>
