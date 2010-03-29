@@ -9,16 +9,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 import junit.framework.TestCase;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
+import uncertain.logging.LoggerProvider;
+import uncertain.logging.LoggingContext;
 import aurora.database.FetchDescriptor;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
+import aurora.database.service.SqlServiceContext;
 import aurora.service.json.JSONDirectOutputor;
 
 public class ModelServiceTest extends TestCase {
@@ -71,30 +75,45 @@ public class ModelServiceTest extends TestCase {
     public void testQuery()
         throws Throwable
     {
-        BusinessModelService service = svcFactory.getService("testcase.HR.EMP");
-        service.setConnection(conn);
+        CompositeMap  context = new CompositeMap("root");
+        BusinessModelServiceContext bc = (BusinessModelServiceContext)DynamicObject.cast(context, BusinessModelServiceContext.class);
+        assertNotNull(conn);
+        assertTrue(!conn.isClosed());
+        bc.setConnection(conn);
+        BusinessModelService service = svcFactory.getModelService("testcase.HR.EMP", context);
+        assertNotNull(service);
         Map parameters = new HashMap();
-        parameters.put("EMPNO", "1121");
+        //parameters.put("EMPNO", "7788");
         CompositeMap result =  service.queryAsMap(parameters, FetchDescriptor.createInstance(0, 5));
         assertNotNull(result);
         System.out.println(result.toXML());
     }
-*/    
-    public void testUpdateAndQuery()
-        throws Throwable
-    {
+*/
+    
+    BusinessModelServiceContext createContext(){
         Configuration rootConfig = uncertainEngine.createConfig();
         rootConfig.addParticipant(this);
         CompositeMap  context = new CompositeMap("root");        
         BusinessModelServiceContext bc = (BusinessModelServiceContext)DynamicObject.cast(context, BusinessModelServiceContext.class);
         bc.setConfig(rootConfig);
         bc.setConnection(conn);
-        bc.setTrace(true);
+        LoggerProvider lp = LoggerProvider.createInstance(Level.FINE, System.out);
+        LoggingContext.setLoggerProvider(context, lp);
+        SqlServiceContext sc = SqlServiceContext.createSqlServiceContext(context);
+        sc.setTrace(true);
+        return bc;
+    }
+    
+    public void testUpdateAndQuery()
+        throws Throwable
+    {
+        BusinessModelServiceContext bc = createContext();
+        CompositeMap context = bc.getObjectContext();
         
         long time = System.currentTimeMillis();
         BusinessModelService service = svcFactory.getModelService("testcase.HR.EMP", context);
         time = System.currentTimeMillis() - time;
-        System.out.println("[load time] "+time);
+        //System.out.println("[load time] "+time);
         
 
         //service.getServiceContext().setConnection(conn);
@@ -108,8 +127,8 @@ public class ModelServiceTest extends TestCase {
         parameters.put("mgr", new Long(7839));
         parameters.put("hiredate", new java.sql.Date( new Date().getTime()));
         service.updateByPK(parameters);
-        assertNotNull(context.get("update_invoked"));
-        assertEquals(bc.getConfig(), rootConfig);
+        //assertNotNull(context.get("update_invoked"));
+        //assertEquals(bc.getConfig(), rootConfig);
         conn.commit();
         
         parameters.clear();
@@ -137,6 +156,24 @@ public class ModelServiceTest extends TestCase {
         service.query(parameters, consumer, desc);
 
         //System.out.println(context.toXML());
+    }
+    
+    public void testInsert()
+        throws Exception
+    {
+        BusinessModelServiceContext bc = createContext();
+        CompositeMap context = bc.getObjectContext();
+        //LoggingContext.setLogger(context, uncertainEngine.getLogger(topic));
+        BusinessModelService service = svcFactory.getModelService("testcase.HR.EMP", context);
+        Map emp = new HashMap();
+        emp.put("ename", "new employee");
+        emp.put("deptno", new Long(10));
+        service.insert(emp);
+        System.out.println(context.toXML());
+        conn.commit();
+        CompositeMap data = service.queryAsMap(emp);
+        assertNotNull(data);
+        System.out.println(data.toXML());
     }
     
     public void onExecuteUpdate( BusinessModelServiceContext context ){

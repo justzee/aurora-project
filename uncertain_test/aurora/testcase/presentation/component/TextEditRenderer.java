@@ -31,8 +31,11 @@ public class TextEditRenderer  implements ISingleton {
         
         String type = view.getString("type", "text");
         map.put("html.textedit.type", type);
-        
-        
+/*        
+        ServiceInstance svc = (ServiceInstance)session.getInstanceOfType(IService.class);
+        ScreenConfig screen = ScreenConfig.createScreenConfig(svc.getServiceConfigData());
+        System.out.println(screen.getDataSetsConfig().toXML());
+  */      
     }
     
     public void onPreparePageContent( BuildSession session, ViewContext context )

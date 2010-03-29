@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
+	<classpathentry excluding="aurora/testcase/ui/config/|aurora/testcase/ui/theme/|aurora/testcase/ui/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/uncertain"/>
 	<classpathentry kind="var" path="LIB_ORACLE_JDBC"/>
