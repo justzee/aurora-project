@@ -10,6 +10,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
+import uncertain.pkg.PackageManager;
 import uncertain.schema.Array;
 import uncertain.schema.Attribute;
 import uncertain.schema.Category;
@@ -179,6 +180,13 @@ public class SchemaManagerBasicTest extends TestCase {
         assertNotNull(cr);
         assertEquals(cr.getQName().getLocalName(), "BasicControl");
         
+    }
+    
+    public void testPackage() throws Exception {
+        PackageManager pm = new PackageManager();
+        pm.loadPackgeDirectory("G:\\Work\\workspace\\lwap\\builtin-packages");
+        SchemaManager sm = pm.getSchemaManager();
+        assertNotNull(sm);
     }
 
 }

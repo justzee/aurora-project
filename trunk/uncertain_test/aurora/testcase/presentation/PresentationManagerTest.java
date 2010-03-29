@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
-import uncertain.logging.ConfigurableLoggerProvider;
+import uncertain.logging.LoggerProvider;
 import uncertain.logging.DefaultLogger;
 import uncertain.ocm.ClassRegistry;
 import aurora.presentation.BuildSession;
@@ -55,7 +55,8 @@ public class PresentationManagerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        URL url = Thread.currentThread().getContextClassLoader().getResource("aurora/testcase/ui");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("aurora.testcase.ui");
+        assertNotNull(url);
         mBasePath = new File(url.getFile());
         mEngine = UncertainEngine.createInstance();
         mPrManager = new PresentationManager(mEngine);
@@ -184,7 +185,7 @@ public class PresentationManagerTest extends TestCase {
         o.put("prompt", "All");
         form.addChild(select);
         
-        ConfigurableLoggerProvider pr = ConfigurableLoggerProvider.createInstance("aurora.presentation", Level.INFO);
+        LoggerProvider pr = LoggerProvider.createInstance("aurora.presentation", Level.INFO);
         pr.getTopicManager().setTopicLevel(Configuration.LOGGING_TOPIC, Level.INFO);
         DefaultLogger logger = (DefaultLogger)pr.getLogger(Configuration.LOGGING_TOPIC); 
 

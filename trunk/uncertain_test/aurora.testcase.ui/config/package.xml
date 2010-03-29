@@ -1,3 +1,8 @@
 <package name="aurora.testcase.ui">
-
+<!--
+	<schema-files>
+		<schema-file path="components.sxsd" />
+		<schema-file path="add-on.sxsd" />		
+	</schema-files>
+-->	
 </package>
