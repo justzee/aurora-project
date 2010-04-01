@@ -1,5 +1,6 @@
 package org.lwap.mvc.chart;
 
+import java.awt.Font;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
@@ -9,8 +10,13 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.Legend;
+import org.jfree.chart.StandardLegend;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.servlet.ServletUtilities;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
@@ -54,6 +60,8 @@ public class BarWebChart extends AbstractWebChart {
 
     // generate chart
       JFreeChart chart = ChartFactory.createBarChart(title,xTitle,yTitle,dataset,PlotOrientation.VERTICAL,is_legend,true,is_url);
+      setChartFont(chart);
+      
       CategoryPlot plot = (CategoryPlot)chart.getPlot();
       if (is_url)
           plot.getRenderer().setItemURLGenerator(new StandardCategoryURLGenerator(
@@ -80,5 +88,27 @@ public class BarWebChart extends AbstractWebChart {
     }
       return fileName;
   }
+	private void setChartFont(JFreeChart chart) {
 
+		if (fontFamily == null)
+			return;
+		Font font = new Font(fontFamily, fontStyle, fontSize);
+		// set title font
+		if (chart.getTitle() != null && title != null) {
+			chart.getTitle().setFont(font);
+		}
+		// set legend font
+		Legend legend = chart.getLegend();
+		if (legend != null) {
+			StandardLegend standardLegend = (StandardLegend) legend;
+			standardLegend.setItemFont(font);
+		}
+		 CategoryPlot plot = (CategoryPlot)chart.getPlot();
+		 CategoryAxis domainAxis = plot.getDomainAxis();//(柱状图的x轴)   
+		 domainAxis.setTickLabelFont(font);//设置x轴坐标上的字体   
+		 domainAxis.setLabelFont(font);//设置x轴上的标题的字体     
+		 ValueAxis valueAxis = plot.getRangeAxis();//(柱状图的y轴)   
+		 valueAxis.setTickLabelFont(font);//设置y轴坐标上的字体   
+		 valueAxis.setLabelFont(font);//设置y轴坐标上的标题的字体  
+	}
 }
