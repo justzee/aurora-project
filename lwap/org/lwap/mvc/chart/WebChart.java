@@ -21,15 +21,15 @@ public interface WebChart {
     public static String SQL_XPARAMETER = "X-AXIS";
     public static String SQL_YPARAMETER = "Y-AXIS";
 
-    /* Í¼Æ¬³¤*/
+    /* Í¼Æ¬ï¿½ï¿½*/
     public void setLength(int length);
-    /* Í¼Æ¬¿í*/
+    /* Í¼Æ¬ï¿½ï¿½*/
     public void setWidth (int width);
-    /* X²ÎÊýÃû³Æ*/
+    /* Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
     public void setParam1(String param1);
-    /*Y²ÎÊýÃû³Æ*/
+    /*Yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
     public void setParam2(String param2);
-    /*Êý¾ÝÃû³Æ*/
+    /*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
     public void setData(String data);
     /*label*/
     public void setTitle(String title);
@@ -37,9 +37,19 @@ public interface WebChart {
     public void setXTitle(String xtitle);
     /*valueAxisLabel*/
     public void setYTitle(String ytitle);
-    /*±êÇ©µÄÀàÐÍ*/
+    /*ï¿½ï¿½Ç©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
     public void setLabelType(String type);
-    /* Éú³É¶ÔÓ¦µÄÍ¼Æ¬  */
+    /* ï¿½ï¿½É¶ï¿½Ó¦ï¿½ï¿½Í¼Æ¬  */
     public String generateChart(CompositeMap model,String url,HttpSession session, PrintWriter pw);
+    
+	public void setLabelFormat(String labelFormat);
+
+	public void setPercentFormat(String percentFormat);
+
+	public void setFontFamily(String fontFamily);
+
+	public void setFontSize(int fontSize);
+
+	public void setFontStyle(int fontStyle);
 
 }
