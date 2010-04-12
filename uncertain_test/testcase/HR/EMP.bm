@@ -55,7 +55,7 @@
 				<field name="DESCRIPTION" />
 			</fields>
 		</fnd:multi-language>
-		
+		<fnd:effective-date-control />
 	</features>
 	-->
 </model>
