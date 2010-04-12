@@ -3,11 +3,13 @@
  */
 package uncertain.demo.ocm;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.ClassRegistry;
+import uncertain.ocm.IObjectCreator;
 import uncertain.ocm.OCManager;
 import uncertain.ocm.ObjectRegistryImpl;
 import uncertain.ocm.PackageMapping;
@@ -25,7 +27,11 @@ public class OCMDemo {
         }
 
         public void setAttachments(List attachments) {
-            this.attachments = attachments;
+            if(attachments!=null)
+                attachments.clear();
+            else
+                attachments = new LinkedList();
+            this.attachments.addAll(attachments);
         }
         
     }
@@ -63,8 +69,8 @@ public class OCMDemo {
        
        // setup IObjectRegistry 
        SmtpHost host = new SmtpHost("yahoo.com", 25);
-       ObjectRegistryImpl objReg = new ObjectRegistryImpl();
-       objReg.registerInstance(SmtpHost.class, host);
+       IObjectCreator objReg = new ObjectRegistryImpl();
+       ((ObjectRegistryImpl)objReg).registerInstance(SmtpHost.class, host);
        ocManager.setObjectCreator(objReg);
        // create object with constructor arguments
        Mail mail2 = (Mail)ocManager.createObject(map);
