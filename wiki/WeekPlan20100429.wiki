@@ -14,5 +14,5 @@
 2 增加对service权限校验 
 
 牛佳庆 ：
-  * 完善AutoGrid增加可编辑方式的自动生成
-  * 完善AutoForm
+  * 完善autogrid增加可编辑方式的自动生成
+  * 完善autoform
