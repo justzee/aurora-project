@@ -12,3 +12,7 @@
 马超 ：
 1 实现对cookie的操作 
 2 增加对service权限校验 
+
+牛佳庆:
+1.完善AutoGrid 增加可编辑方式的自动生成
+2.完善AutoForm
