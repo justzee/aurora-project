@@ -1,0 +1,6 @@
+#labels WeekPlan
+本周计划
+
+周凡：
+1、实现service执行前/后调用的全局性工作流的配置，用于权限校验等；
+2、实现数据库本地化特性的demo，完成sequence功能
