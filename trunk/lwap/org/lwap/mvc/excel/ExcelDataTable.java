@@ -21,6 +21,7 @@ import org.lwap.mvc.DataBindingConvention;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
+import uncertain.composite.transform.GroupCompositeMapWithFields;
 
 /**
  * 
@@ -59,7 +60,8 @@ public class ExcelDataTable extends DynamicObject {
 	public static final String TYPE_SUB_TOTAL			= "SubTotal";
     public static final String KEY_ROWNUM               = "rownum";
     public static final String KEY_ROWEND               = "excel_datatable_row_end";
-	
+    public static final String KEY_GROUP_FIELDS         = "GroupFields";
+    
 	public static final String KEY_PIVOT_TABLE_FUNCTION		= "PivotTableFunction";
 	public static HashMap pivot_function_name = new HashMap(20);
 	static{
@@ -81,6 +83,7 @@ public class ExcelDataTable extends DynamicObject {
 	boolean		CreateTableHead;
 	boolean		TableHeadEachRow;
 	char 		separator_char = '\t';
+	String[]    GroupFields;
 	
 	PrintWriter   out;
 	
@@ -472,7 +475,9 @@ public class ExcelDataTable extends DynamicObject {
 		ColumnSpace = context.getInt(KEY_COLUMN_SPACE, 1);
 		CreateTableHead	= context.getBoolean(KEY_TABLE_HEAD, true);
 		TableHeadEachRow= context.getBoolean(KEY_TABLE_HEAD_EACHROW, false);
-		
+		String groupfields = context.getString(KEY_GROUP_FIELDS);
+		if(groupfields != null)
+			GroupFields = groupfields.split("[\\s,]+");
 		//initTableColumns();		
 		return this;
 	}
@@ -489,4 +494,7 @@ public class ExcelDataTable extends DynamicObject {
     public void setSeparatorChar(char separator_char) {
         this.separator_char = separator_char;
     }
-}
+    public List getMergeRange(){
+    	return GroupCompositeMapWithFields.getInstance().groupCompositeMap(model, GroupFields);
+    }
+ }
