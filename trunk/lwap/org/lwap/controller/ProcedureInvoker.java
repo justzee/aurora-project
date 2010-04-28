@@ -36,10 +36,10 @@ public class ProcedureInvoker {
      * @param engine
      * @param logger
      */
-    public ProcedureInvoker(UncertainEngine engine, Logger logger, WebApplication app) {
+    public ProcedureInvoker(UncertainEngine engine, WebApplication app) {
         super();
         this.engine = engine;
-        this.logger = logger;
+        this.logger = engine.getLogger();
         this.app = app;
     }
     
