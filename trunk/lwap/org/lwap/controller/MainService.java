@@ -331,7 +331,9 @@ implements Configuration.IParticipantListener
                     DatabaseEntry entry = new DatabaseEntry(da,real_conn,params,target,this);
                     proc.addEntry(entry);
                 }else{
-                    Object inst = configuration.getInstance(item);
+                    Object inst = super.application.getUncertainEngine().getOcManager().createObject(item); 
+                    if(inst==null)
+                        inst = configuration.getInstance(item);
                     if(inst==null)
                         inst = configuration.getFeatureInstance(item, IEntry.class);
                     if(inst==null) {
