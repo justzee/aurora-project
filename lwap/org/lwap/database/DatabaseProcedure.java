@@ -232,7 +232,7 @@ public class DatabaseProcedure extends DatabaseAccess {
 					if( pm.dt == null) throw new SQLException("DatabaseProcedure: can't decide DataType for output parameter No." + (i+1)+", maybe InputField is null");
 					Object obj = pm.dt.getObject(stmt,i+1);
 					target_context.putObject(pm.return_field,obj,true);
-					mLogger.log(Level.CONFIG, "returning {"+pm.return_field+"} -> " + obj==null?"null":obj.toString());
+					mLogger.log(Level.CONFIG, "returning {0} -> {1}", new Object[]{pm.return_field, obj});
 				}
 			}
             
