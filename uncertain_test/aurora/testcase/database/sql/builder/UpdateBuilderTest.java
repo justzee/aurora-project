@@ -4,13 +4,13 @@
 package aurora.testcase.database.sql.builder;
 
 import junit.framework.TestCase;
+import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.sql.BaseField;
 import aurora.database.sql.CompareExpression;
 import aurora.database.sql.ConditionList;
 import aurora.database.sql.RawSqlExpression;
 import aurora.database.sql.UpdateStatement;
 import aurora.database.sql.UpdateTarget;
-import aurora.database.sql.builder.SqlBuilderRegistry;
 
 public class UpdateBuilderTest extends TestCase {
     

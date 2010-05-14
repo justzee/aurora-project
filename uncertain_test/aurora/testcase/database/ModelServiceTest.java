@@ -18,7 +18,13 @@ import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
+import uncertain.ocm.IObjectRegistry;
 import aurora.database.FetchDescriptor;
+import aurora.database.actions.ServiceInitiator;
+import aurora.database.profile.DatabaseFactory;
+import aurora.database.profile.DatabaseProfile;
+import aurora.database.profile.ISqlBuilderRegistry;
+import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
@@ -62,7 +68,19 @@ public class ModelServiceTest extends TestCase {
         builder_reg = new SqlBuilderRegistry(profile);
 */        
         
-        svcFactory = new DatabaseServiceFactory(uncertainEngine);
+        IObjectRegistry reg = uncertainEngine.getObjectRegistry();
+        ServiceInitiator sinit = new ServiceInitiator(uncertainEngine);
+        svcFactory = (DatabaseServiceFactory)reg.getInstanceOfType(DatabaseServiceFactory.class);
+        assertNotNull(svcFactory);
+        
+        DatabaseFactory fact = new DatabaseFactory(uncertainEngine);
+        DatabaseProfile prof = new DatabaseProfile("SQL92");
+        fact.addDatabaseProfile(prof);
+        fact.setDefaultDatabase("SQL92");     
+        fact.onInitialize();
+        assertNotNull(fact.getDefaultDatabaseProfile());
+        ISqlBuilderRegistry sqlreg2 = fact.getDefaultSqlBuilderRegistry();
+        assertNotNull(sqlreg2);
     }
 
     protected void tearDown() throws Exception {
@@ -174,6 +192,16 @@ public class ModelServiceTest extends TestCase {
         CompositeMap data = service.queryAsMap(emp);
         assertNotNull(data);
         System.out.println(data.toXML());
+    }
+    
+    public void testCreateSql() throws Exception {
+        BusinessModelServiceContext bc = createContext();
+        CompositeMap context = bc.getObjectContext();
+        BusinessModelService service = svcFactory.getModelService("testcase.HR.EMP", context); 
+        StringBuffer sql = service.getSql("Insert");
+        assertNotNull(sql);
+        System.out.println("Auto generated insert sql:");
+        System.out.println(sql);
     }
     
     public void onExecuteUpdate( BusinessModelServiceContext context ){

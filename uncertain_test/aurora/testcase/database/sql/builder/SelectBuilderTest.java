@@ -4,6 +4,7 @@
 package aurora.testcase.database.sql.builder;
 
 import junit.framework.TestCase;
+import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.sql.CompareExpression;
 import aurora.database.sql.Condition;
 import aurora.database.sql.ILogicalExpression;
@@ -13,7 +14,6 @@ import aurora.database.sql.RawSqlExpression;
 import aurora.database.sql.SelectField;
 import aurora.database.sql.SelectSource;
 import aurora.database.sql.SelectStatement;
-import aurora.database.sql.builder.SqlBuilderRegistry;
 
 public class SelectBuilderTest extends TestCase {
     
