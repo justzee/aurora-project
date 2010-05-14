@@ -4,8 +4,8 @@
 package aurora.testcase.database.sql.builder;
 
 import junit.framework.TestCase;
+import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.sql.InsertStatement;
-import aurora.database.sql.builder.SqlBuilderRegistry;
 
 public class InsertBuilderTest extends TestCase {
     
