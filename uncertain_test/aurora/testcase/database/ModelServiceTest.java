@@ -24,7 +24,6 @@ import aurora.database.actions.ServiceInitiator;
 import aurora.database.profile.DatabaseFactory;
 import aurora.database.profile.DatabaseProfile;
 import aurora.database.profile.ISqlBuilderRegistry;
-import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
