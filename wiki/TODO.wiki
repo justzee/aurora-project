@@ -2,4 +2,4 @@
 
 = uncertain.proc =
 
-* 当前，如果在一个流程中执行<invoke>，子流程中用到的所有字段必须在顶层流程中加以定义
+* 测试<invoke>及<transfer>
