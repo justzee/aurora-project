@@ -19,6 +19,10 @@ public class GroupCompositeMapWithFieldsTest extends TestCase {
 
 	CompositeMap target ;
 	GroupCompositeMapWithFields instance;
+	
+    public GroupCompositeMapWithFieldsTest(String arg0) {
+        super(arg0);
+    }
 	/*
      * @see TestCase#setUp()
      */
