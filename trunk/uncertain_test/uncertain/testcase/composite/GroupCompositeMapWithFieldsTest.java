@@ -17,7 +17,7 @@ import uncertain.composite.transform.*;
  */
 public class GroupCompositeMapWithFieldsTest extends TestCase {
 
-	CompositeMap target ;
+    CompositeMap target ;
 	GroupCompositeMapWithFields instance;
 	
     public GroupCompositeMapWithFieldsTest(String arg0) {
