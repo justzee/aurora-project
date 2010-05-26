@@ -2,6 +2,14 @@
 <d:database-factory xmlns:d="http://www.aurora-framework.org/schema/database" defaultDatabase="Oracle10g">
 	<databases>
 		<d:database-profile databaseName="Oracle10g">
+				<d:keywords 
+						current_time="sysdate"
+						current_date="trunc(sysdate)"
+						composite_statement_prefix="BEGIN "
+						composite_statement_postfix=" END;" 
+						composite_statement_separator=";"
+				
+				/>		
 				<d:properties key1="value1" key2="value2" key3="value3" />
 				<d:sql-builder-mapping sqlBuilder="aurora.database.local.oracle.sql.OracleSqlBuilder">
 					<d:mappings>
