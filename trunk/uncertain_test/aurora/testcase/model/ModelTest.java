@@ -9,6 +9,7 @@ import uncertain.core.UncertainEngine;
 import aurora.bm.BusinessModel;
 import aurora.bm.Field;
 import aurora.bm.ModelFactory;
+import aurora.bm.Operation;
 import aurora.bm.Relation;
 
 public class ModelTest extends TestCase {
@@ -44,10 +45,26 @@ public class ModelTest extends TestCase {
         assertTrue(fields==f2);
         Field[] pks = model.getPrimaryKeyFields();
         assertNotNull(pks);
-        assertEquals(pks.length, 2);
+        assertEquals(pks.length, 1);
         Relation[] relations = model.getRelations();
         assertNotNull(relations);
         assertEquals(relations.length, 2);
+    }
+    
+    public void testOperations()
+        throws Exception
+    {
+        BusinessModel model = factory.getModel("testcase.HR.EMP_FOR_MAINTAIN");
+        assertNotNull(model);
+        Operation op = model.getOperation("query_for_test");
+        assertNotNull(op);
+        assertTrue(op.isQuery());
+        String sql = op.getSql();
+        assertTrue(sql.indexOf("select")>0);
+        Operation op1 = model.getOperation("update");
+        assertNotNull(op1);
+        assertTrue(!op1.isQuery());
+        assertTrue(op1.getSql().indexOf("update")>0);
     }
 
 }
