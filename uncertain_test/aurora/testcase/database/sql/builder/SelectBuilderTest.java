@@ -3,8 +3,6 @@
  */
 package aurora.testcase.database.sql.builder;
 
-import junit.framework.TestCase;
-import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.sql.CompareExpression;
 import aurora.database.sql.Condition;
 import aurora.database.sql.ILogicalExpression;
@@ -15,9 +13,8 @@ import aurora.database.sql.SelectField;
 import aurora.database.sql.SelectSource;
 import aurora.database.sql.SelectStatement;
 
-public class SelectBuilderTest extends TestCase {
+public class SelectBuilderTest extends AbstractSqlBuilderTest {
     
-    SqlBuilderRegistry      registry;
     SelectSource            emp;
     SelectSource            dept;
     SelectStatement         dept_list_query;
@@ -61,16 +58,11 @@ public class SelectBuilderTest extends TestCase {
         OrderByField f2 = new OrderByField( new RawSqlExpression("trunc(HIREDATE)"), OrderByField.ASCENT);
         emp_list_query.addOrderByField(f1);
         emp_list_query.addOrderByField(f2);
-                
-        registry = new SqlBuilderRegistry();
-    }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
     
     public void testCreateSql(){
-        String sql = registry.getSql(emp_list_query);
+        String sql = mRegistry.getSql(emp_list_query);
         assertNotNull(sql);
         System.out.println(sql);
         assertTrue(sql.indexOf("t1.ENAME AS EMPLOYEE_NAME")>0);

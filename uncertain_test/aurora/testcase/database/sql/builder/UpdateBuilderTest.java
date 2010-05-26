@@ -3,8 +3,6 @@
  */
 package aurora.testcase.database.sql.builder;
 
-import junit.framework.TestCase;
-import aurora.database.profile.SqlBuilderRegistry;
 import aurora.database.sql.BaseField;
 import aurora.database.sql.CompareExpression;
 import aurora.database.sql.ConditionList;
@@ -12,9 +10,8 @@ import aurora.database.sql.RawSqlExpression;
 import aurora.database.sql.UpdateStatement;
 import aurora.database.sql.UpdateTarget;
 
-public class UpdateBuilderTest extends TestCase {
-    
-    SqlBuilderRegistry registry;
+public class UpdateBuilderTest extends AbstractSqlBuilderTest {
+
     UpdateStatement    statement;
 
     public UpdateBuilderTest(String arg0) {
@@ -23,14 +20,9 @@ public class UpdateBuilderTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        registry = new SqlBuilderRegistry();
-        statement = new UpdateStatement("EMP");
-        
+        statement = new UpdateStatement("EMP");        
     }
-    
-    public static void assertContains(String s1, String s2){
-        assertTrue(s1.indexOf(s2)>0);
-    }
+
     
     public void testCreateUpdate(){
         UpdateTarget target = statement.getUpdateTarget();
@@ -40,7 +32,7 @@ public class UpdateBuilderTest extends TestCase {
         statement.addUpdateField("DEPTNO", "${@DEPTNO}");
         statement.addUpdateField("JOINDATE", "nvl(${@JOINDATE},sysdate)");
         
-        String sql = registry.getSql(statement);
+        String sql = mRegistry.getSql(statement);
         assertContains(sql, "t.ENAME=${@ENAME},");
         assertContains(sql, "t.MGR=${@MGR},");
         assertContains(sql, "t.HIREDATE=${@HIREDATE},");
@@ -53,7 +45,7 @@ public class UpdateBuilderTest extends TestCase {
         CompareExpression exp = new CompareExpression(fld, CompareExpression.IS_NOT_NULL, null);
         where.addCondition(exp);
         
-        sql = registry.getSql(statement);
+        sql = mRegistry.getSql(statement);
         assertContains(sql, "WHERE");
         assertContains(sql, "t.EMPNO = ${@EMPNO}");
         assertContains(sql, "t.DEPTNO IS NOT NULL");
