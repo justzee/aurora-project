@@ -86,7 +86,7 @@ public class Activator extends AbstractUIPlugin {
 		try {
 			wp.openEditor(new FileEditorInput(file), id);
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			Common.showExceptionMessageBox(null, e);
 		}
 	}
 
