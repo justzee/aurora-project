@@ -6,7 +6,7 @@
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.wizards.ProjectWizard"
-            icon="icons/sopc_obj.gif"
+            icon="icons/uncertain.gif"
             id="uncertain.ide.eclipse.editor.ProjectWizard"
             name="uncertain项目"
             project="true"/>
@@ -17,52 +17,68 @@
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.wizards.ServiceNewWizard"
-            icon="icons/new_platform.gif"
+            icon="icons/service.gif"
             id="uncertain_ide.wizards.SampleNewWizard"
             name="Service文件">
       </wizard>
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.wizards.SxsdNewWizard"
-            icon="icons/text_edit.gif"
+            icon="icons/sxsd.gif"
             id="uncertain_ide.wizards.SxsdNewWizard"
             name="Sxsd 文件">
       </wizard>
+      <wizard
+            category="uncertain_ide"
+            class="uncertain.ide.eclipse.wizards.BmNewWizard"
+            icon="icons/bm.gif"
+            id="uncertain.ide.eclipse.wizards.BmNewWizard"
+            name="BM文件">
+      </wizard>
    </extension>
    <extension
+         id="BussinessModelEditor"
          point="org.eclipse.ui.editors">
       <editor
             class="uncertain.ide.eclipse.editor.service.ServiceEditor"
             default="false"
             filenames="*.xml,*.service"
-            icon="icons/eside_persp.gif"
+            icon="icons/service.gif"
             id="uncertain.ide.eclipse.editor.ServiceEditor"
             name="ServiceEditor"/>
       <editor
             class="uncertain.ide.eclipse.editor.sxsd.SxsdEditor"
             default="false"
             filenames="*.sxsd"
-            icon="icons/board_file_obj.gif"
+            icon="icons/sxsd.gif"
             id="uncertain.ide.eclipse.editor.SxsdEditor"
             name="SxsdEditor">
+      </editor>
+      <editor
+            class="uncertain.ide.eclipse.editor.bm.BussinessModelEditor"
+            default="false"
+            filenames="*.bm"
+            icon="icons/bm.gif"
+            id="uncertain.ide.eclipse.editor.bm.BussinessModelEditor"
+            name="BussinessModelEditor">
       </editor>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            class="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
+            class="uncertain.ide.eclipse.preferencepages.SxsdDirectoryPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
             name="builtin-packages目录">
       </page>
       <page
             category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            class="uncertain.ide.eclipse.preferencePage.BrowserPreferencePage"
+            class="uncertain.ide.eclipse.preferencepages.BrowserPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.BrowserPreferencePage"
             name="service preview config">
       </page>
       <page
-            class="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
+            class="uncertain.ide.eclipse.preferencepages.RootPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
             name="uncertain">
       </page>
@@ -75,14 +91,14 @@
             objectClass="org.eclipse.core.resources.IResource">
          <action
                class="uncertain.ide.eclipse.action.SxsdPackageValidAction"
-               icon="icons/items.gif"
-               id="Aurora_ide.action1"
-               label="校验sxsd">
+               icon="icons/sxsd.gif"
+               id="uncertain.ide.eclipse.action.SxsdPackageValidAction"
+               label="校验SXSD">
          </action>
          <enablement>
             <test
                   forcePluginActivation="true"
-                  property="advancedpopupmenus.popup.visable"
+                  property="uncertain.sxsd.valid.visable"
                   value="true">
             </test>
          </enablement>
@@ -90,11 +106,11 @@
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
     <propertyTester
-    namespace ="advancedpopupmenus.popup" 
+    namespace ="uncertain.sxsd.valid" 
    properties ="visable" 
    type ="java.lang.Object" 
-   class ="uncertain.ide.eclipse.action.VisablePropertyTester" 
-   id ="advancedpopupmenus.popup.propertyTesters.visable" >   
+   class ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTester" 
+   id ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTeste" >   
     </propertyTester >       
     </extension > 
 </plugin>
