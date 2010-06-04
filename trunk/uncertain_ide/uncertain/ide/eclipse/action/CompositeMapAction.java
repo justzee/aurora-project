@@ -4,7 +4,6 @@
 package uncertain.ide.eclipse.action;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,6 +34,8 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.eclipse.editor.IContainer;
 import uncertain.schema.Array;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
@@ -64,20 +65,21 @@ public class CompositeMapAction {
 
 	}
 
-	public static void addElement(CompositeMap parentCM, String _prefix,
-			String _uri, String _name) {
+	public static CompositeMap addElement(CompositeMap parent, String prefix,
+			String uri, String name) {
 
-		CompositeMap newCM = new CompositeMap(_prefix, _uri, _name);
-		parentCM.addChild(newCM);
-		checkaddArrayNode(parentCM);
+		CompositeMap child = new CompositeMap(prefix, uri, name);
+		parent.addChild(child);
+		addArrayNode(parent);
+		return child;
 	}
 	//如果是在空数组下添加节点，则添加这个空数组节点
-	private static void checkaddArrayNode(CompositeMap parentCM) {
-		Element element = Common.getSchemaManager().getElement(parentCM);
+	private static void addArrayNode(CompositeMap parent) {
+		Element element = Common.getSchemaManager().getElement(parent);
 		if (element != null && element.isArray()) {
-			QualifiedName nm = parentCM.getQName();
-			if (CompositeUtil.findChild(parentCM.getParent(), nm) == null) {
-				parentCM.getParent().addChild(parentCM);
+			QualifiedName qName = parent.getQName();
+			if (CompositeUtil.findChild(parent.getParent(), qName) == null) {
+				parent.getParent().addChild(parent);
 			}
 		}
 	}
@@ -99,8 +101,8 @@ public class CompositeMapAction {
 		}
 	}
 
-	public static void removeElement(IViewerDirty viewer) {
-		CompositeMap comp = viewer.getFocusData();
+	public static void removeElement(IContainer viewer) {
+		CompositeMap comp = (CompositeMap)viewer.getFocus();
 		if (comp != null) {
 			Element em = Common.getSchemaManager().getElement(comp);
 			if (em != null && em.isArray()) {
@@ -148,12 +150,12 @@ public class CompositeMapAction {
 		}
 	}
 
-	public static void removePropertyAction(IPropertyCategory viewer) {
+	public static void removePropertyAction(ICategoryContainer viewer) {
 		int buttonID = Common.showConfirmDialogBox(null, Common.getString("delete.attribute.confirm"));
 		switch (buttonID) {
 		case SWT.OK:
 			final CompositeMap data = viewer.getInput();
-			AttributeValue av = viewer.getFocusData();
+			AttributeValue av = (AttributeValue)viewer.getFocus();
 			if (av == null)
 				return;
 			String propertyName = av.getAttribute().getLocalName();
@@ -165,24 +167,24 @@ public class CompositeMapAction {
 		}
 	}
 
-	public static void cutElement(IViewerDirty viewer) {
-		CompositeMap cm = viewer.getFocusData();
-		viewer.setSelectedData(cm);
+	public static void cutElement(IContainer viewer) {
+		CompositeMap cm = (CompositeMap)viewer.getFocus();
+		viewer.setSelection(cm);
 	}
 
-	public static void copyElement(IViewerDirty viewer) {
-		CompositeMap cm = viewer.getFocusData();
+	public static void copyElement(IContainer viewer) {
+		CompositeMap cm = (CompositeMap)viewer.getFocus();
 		CompositeMap child = new CompositeMap(cm);
 		child.setParent(cm.getParent());
-		viewer.setSelectedData(child);
+		viewer.setSelection(child);
 
 	}
 
-	public static void pasteElement(IViewerDirty viewer) {
-		CompositeMap selectedCm = viewer.getSelectedData();
+	public static void pasteElement(IContainer viewer) {
+		CompositeMap selectedCm = (CompositeMap)viewer.getSelection();
 		if (selectedCm == null)
 			return;
-		CompositeMap parentComp = viewer.getFocusData();
+		CompositeMap parentComp = (CompositeMap)viewer.getFocus();
 		if (!validNextNodeLegalWithAction(parentComp, selectedCm)) {
 			return;
 		}
@@ -190,7 +192,7 @@ public class CompositeMapAction {
 		if (child != null) {
 			parentComp.addChild(child);
 			selectedCm.getParent().removeChild(selectedCm);
-			checkaddArrayNode(parentComp);
+			addArrayNode(parentComp);
 		}
 		selectedCm = null;
 		viewer.refresh(true);
@@ -200,7 +202,7 @@ public class CompositeMapAction {
 	/**
 	 * 生成菜单Menu，并将两个Action传入
 	 */
-	public static void fillContextMenu(final IViewerDirty mDirtyObject) {
+	public static void fillContextMenu(final IContainer container) {
 		/*
 		 * 加入两个Action对象到菜单管理器
 		 */
@@ -212,43 +214,63 @@ public class CompositeMapAction {
 			public void menuAboutToShow(IMenuManager manager) {
 				manager.add(new Separator(
 						IWorkbenchActionConstants.MB_ADDITIONS));
-				MenuManager cascadingMenu = new ContextAddElementMenuManager(
-						mDirtyObject, null, null, Common.getString("add.element.label"));
-				manager.add(cascadingMenu);
-				manager.add(new CopyElementAction(mDirtyObject,
+				MenuManager childElements = addChildElements(container);
+				manager.add(childElements);
+				manager.add(new CopyElementAction(container,
 						CopyElementAction.getDefaultImageDescriptor(),
 						CopyElementAction.getDefaultText()));
-				manager.add(new PasteAction(mDirtyObject, PasteAction
+				manager.add(new PasteAction(container, PasteAction
 						.getDefaultImageDescriptor(), PasteAction
 						.getDefaultText()));
-				manager.add(new RemoveElementAction(mDirtyObject,
+				manager.add(new RemoveElementAction(container,
 						RemoveElementAction.getDefaultImageDescriptor(),
 						RemoveElementAction.getDefaultText()));
-				manager.add(new RefreshAction(mDirtyObject, RefreshAction
+				manager.add(new RefreshAction(container, RefreshAction
 						.getDefaultImageDescriptor(), Common.getString("refresh")));
 			}
 		});
 
-		Menu menu = menuManager.createContextMenu(mDirtyObject.getControl());
+		Menu menu = menuManager.createContextMenu(container.getControl());
 		// Menu menu = menuManager.createMenuBar(mColumnViewer.)
-		mDirtyObject.getControl().setMenu(menu);
+		container.getControl().setMenu(menu);
 
 	}
+	private static MenuManager addChildElements(IContainer container){
+		MenuManager childElementMenus = new MenuManager(Common.getString("add.element.label")); 
+		final CompositeMap comp = (CompositeMap)container.getFocus();
+		Element element = Common.getSchemaManager().getElement(comp);
+		if (element == null) {
+			return childElementMenus;
+		}
+		List childElements = CompositeMapAction.getAvailableChildElements(element, comp);
+		if (childElements != null) {
+			Iterator ite = childElements.iterator();
+			while (ite.hasNext()) {
+				final Element ele = (Element) ite.next();
+				final QualifiedName qName = ele.getQName();
+				String text = Common.getElementFullName(comp, qName);
+				childElementMenus.add(new AddElementAction(container, comp, ele.getQName(),
+						AddElementAction.getDefaultImageDescriptor(), text));
 
-	public static void fillDNDListener(final IViewerDirty mDirtyObject) {
+			}
+		}
+		return childElementMenus;
+	}
 
-		DragSource ds = new DragSource(mDirtyObject.getControl(), DND.DROP_MOVE);
+	public static void fillDNDListener(final IContainer container) {
+
+		DragSource ds = new DragSource(container.getControl(), DND.DROP_MOVE);
 		ds.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
 		ds.addDragListener(new DragSourceAdapter() {
 			public void dragSetData(DragSourceEvent event) {
 			}
 		});
 
-		DropTarget dt = new DropTarget(mDirtyObject.getControl(), DND.DROP_MOVE);
+		DropTarget dt = new DropTarget(container.getControl(), DND.DROP_MOVE);
 		dt.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
 		dt.addDropListener(new DropTargetAdapter() {
 			public void drop(DropTargetEvent event) {
-				CompositeMap sourceCm = mDirtyObject.getFocusData();
+				CompositeMap sourceCm = (CompositeMap)container.getFocus();
 				if (sourceCm == null)
 					return;
 				CompositeMap objectCm = (CompositeMap) event.item.getData();
@@ -268,7 +290,7 @@ public class CompositeMapAction {
 					if (sourceCm.getParent() != null)
 						sourceCm.getParent().removeChild(sourceCm);
 				}
-				mDirtyObject.refresh(true);
+				container.refresh(true);
 			}
 
 			public void dragEnter(DropTargetEvent event) {
@@ -278,16 +300,16 @@ public class CompositeMapAction {
 		});
 	}
 
-	public static void fillKeyListener(final IViewerDirty mDirtyObject) {
-		TreeViewer treeViewer = (TreeViewer) mDirtyObject.getObject();
+	public static void fillKeyListener(final IContainer container) {
+		TreeViewer treeViewer = (TreeViewer) container.getViewer();
 		treeViewer.getTree().addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.stateMask == SWT.CTRL && e.keyCode == 'c') {
-					copyElement(mDirtyObject);
+					copyElement(container);
 				} else if (e.stateMask == SWT.CTRL && e.keyCode == 'v') {
-					pasteElement(mDirtyObject);
+					pasteElement(container);
 				} else if (e.keyCode == SWT.DEL) {
-					CompositeMapAction.removeElement(mDirtyObject);
+					CompositeMapAction.removeElement(container);
 				}
 			}
 
@@ -299,28 +321,27 @@ public class CompositeMapAction {
 
 	}
 
-	public static List getAvailableSonElements(Element element,
+	public static List getAvailableChildElements(Element element,
 			CompositeMap selectedCM) {
 		if (element == null)
 			return null;
-		List sonElements = new LinkedList();
+		List childElements = new LinkedList();
 		if (element.isArray()) {
 			IType type = element.getElementType();
 			if (!(type instanceof Element))
-				return sonElements;
+				return childElements;
 			Element arrayType = Common.getSchemaManager().getElement(
 					type.getQName());
-			sonElements.add(arrayType);
-			return sonElements;
+			childElements.add(arrayType);
+			return childElements;
 		}
-//		sonElements = element.getSonElements(Activator.getSchemaManager());
-		sonElements = getSonElements(element,selectedCM);
-		return sonElements;
+		childElements = getChildElements(element,selectedCM);
+		return childElements;
 	}
 
-	private static List getSonElements(Element element, CompositeMap selectedCM) {
+	private static List getChildElements(Element element, CompositeMap selectedCM) {
 		Set schemaChilds = getSchemaChilds(element,Common.getSchemaManager());
-		List availableSons = new ArrayList();
+		List availableChilds = new ArrayList();
 
 		if (schemaChilds != null) {
 			Iterator ite = schemaChilds.iterator();
@@ -331,39 +352,23 @@ public class CompositeMapAction {
 				Element ele = (Element) object;
 				final QualifiedName qName = ele.getQName();
 				if (ele.getMaxOccurs() == null) {
-					availableSons.add(ele);
+					availableChilds.add(ele);
 					continue;
 				}
 				int maxOccurs = Integer.valueOf(ele.getMaxOccurs()).intValue();
-				int nowOccurs = getCountOfSonElement(selectedCM, qName);
+				int nowOccurs = getCountOfChildElement(selectedCM, qName);
 				if (nowOccurs < maxOccurs) {
-					availableSons.add(ele);
+					availableChilds.add(ele);
 				}
 			}
 		}
-		return availableSons;
+		return availableChilds;
 	}
-	private void print(Collection collection){
-		if (collection != null) {
-			Iterator ite = collection.iterator();
-			while (ite.hasNext()) {
-				Object object = ite.next();
-				if (!(object instanceof Element))
-					continue;
-				Element ele = (Element) object;
-				System.out.println("localnamE:" + ele.getLocalName());
-				System.out.println("getMaxOccurs:" + ele.getMaxOccurs());
-				
-			}
-		}
-	}
-	
-	
 	public static Set getSchemaChilds(Element element,SchemaManager manager){
 		Set childs = new HashSet();
 		
-		Set sonElements = element.getChilds();
-		for(Iterator cit = sonElements.iterator(); cit!=null && cit.hasNext();){
+		Set childElements = element.getChilds();
+		for(Iterator cit = childElements.iterator(); cit!=null && cit.hasNext();){
 			Object node = cit.next();
 			if(!(node instanceof ComplexType))
 				continue;
@@ -396,7 +401,7 @@ public class CompositeMapAction {
 		return childs;
 	}
 
-	public static int getCountOfSonElement(CompositeMap cm, QualifiedName qName) {
+	public static int getCountOfChildElement(CompositeMap cm, QualifiedName qName) {
 		List childs = cm.getChildsNotNull();
 		int count = 0;
 		Iterator it = childs.iterator();
@@ -410,16 +415,16 @@ public class CompositeMapAction {
 	}
 
 	public static boolean validNextNodeLegalWithAction(CompositeMap element,
-			CompositeMap son) {
-		if (!validNextNodeLegal(element, son)) {
+			CompositeMap child) {
+		if (!validNextNodeLegal(element, child)) {
 			String warning = "";
 			if (element == null) {
 				warning = Common.getString("parent.element.is.null");
 			} else if (element == null) {
-				warning = Common.getString("son.element.is.null");
+				warning = Common.getString("child.element.is.null");
 			} else {
 				warning = " " + element.getQName().getLocalName() + " "+Common.getString("undefined")
-						 +son.getQName().getLocalName() + " "+Common.getString("son.element");
+						 +child.getQName().getLocalName() + " "+Common.getString("child.element");
 			}
 			Common.showWarningMessageBox(null, warning);
 			return false;
@@ -428,31 +433,31 @@ public class CompositeMapAction {
 	}
 
 	public static boolean validNextNodeLegal(CompositeMap element,
-			CompositeMap son) {
-		if (element == null || son == null)
+			CompositeMap child) {
+		if (element == null || child == null)
 			return false;
 		Element em = Common.getSchemaManager().getElement(element);
-		return validNextNodeLegal(em, son.getQName());
+		return validNextNodeLegal(em, child.getQName());
 	}
 
-	public static boolean validNextNodeLegal(Element element, QualifiedName son) {
-		if (element == null || son == null)
+	public static boolean validNextNodeLegal(Element element, QualifiedName child) {
+		if (element == null || child == null)
 			return false;
 		if (element.isArray()) {
 			QualifiedName array = element.getElementType().getQName();
-			if (array.equals(son)) {
+			if (array.equals(child)) {
 				return true;
 			}
 		}
-		List sonElements = element.getSonElements(Common.getSchemaManager());
-		if (sonElements != null) {
-			Iterator ite = sonElements.iterator();
+		List childElements = element.getChildElements(Common.getSchemaManager());
+		if (childElements != null) {
+			Iterator ite = childElements.iterator();
 			while (ite.hasNext()) {
 				Object object = ite.next();
 				if (!(object instanceof Element))
 					continue;
 				Element ele = (Element) object;
-				if (son.equals(ele.getQName()))
+				if (child.equals(ele.getQName()))
 					return true;
 			}
 		}

@@ -5,16 +5,17 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.ICategoryContainer;
 
 
 public class CharSortAction extends Action {
 	
-	private IPropertyCategory viewer;
-	public CharSortAction(IPropertyCategory viewer) {
+	private ICategoryContainer viewer;
+	public CharSortAction(ICategoryContainer viewer) {
 
 		this.viewer = viewer;
 	}
-	public CharSortAction(IPropertyCategory viewer,ImageDescriptor imageDescriptor,String text) {
+	public CharSortAction(ICategoryContainer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
 		if(text != null)
@@ -23,7 +24,7 @@ public class CharSortAction extends Action {
 	}
 
 	public void run() {
-		viewer.setIsCategory(false);
+		viewer.setCategory(false);
 		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){

@@ -5,16 +5,17 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.ICategoryContainer;
 
 public class RemovePropertyAction extends Action {
 
-	IPropertyCategory viewer;
+	ICategoryContainer viewer;
 
-	public RemovePropertyAction(IPropertyCategory viewer) {
+	public RemovePropertyAction(ICategoryContainer viewer) {
 		this.viewer = viewer;
 	}
 
-	public RemovePropertyAction(IPropertyCategory viewer,
+	public RemovePropertyAction(ICategoryContainer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);

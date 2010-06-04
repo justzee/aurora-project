@@ -7,16 +7,17 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IContainer;
 
 public class AddElementAction extends Action {
-	private IViewerDirty viewer;
+	private IContainer viewer;
 
 	private CompositeMap parentCM;
 	private String prefix;
 	private String uri;
 	private String cmName;
 
-	public AddElementAction(IViewerDirty viewer, CompositeMap parentCM,
+	public AddElementAction(IContainer viewer, CompositeMap parentCM,
 			String prefix, String uri, String cmName) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
@@ -27,7 +28,7 @@ public class AddElementAction extends Action {
 
 	}
 
-	public AddElementAction(IViewerDirty viewer, CompositeMap parentCM,
+	public AddElementAction(IContainer viewer, CompositeMap parentCM,
 			QualifiedName qName, ImageDescriptor imageDescriptor, String text) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;

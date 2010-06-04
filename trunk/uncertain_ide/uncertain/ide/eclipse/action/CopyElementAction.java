@@ -5,13 +5,14 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IContainer;
 
 public 	class CopyElementAction extends Action {
-	IViewerDirty viewer;
-	public CopyElementAction(IViewerDirty viewer) {
+	IContainer viewer;
+	public CopyElementAction(IContainer viewer) {
 		this.viewer = viewer;
 	}
-	public CopyElementAction(IViewerDirty viewer,ImageDescriptor imageDescriptor,String text) {
+	public CopyElementAction(IContainer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setImageDescriptor(imageDescriptor);
 		if(text != null)

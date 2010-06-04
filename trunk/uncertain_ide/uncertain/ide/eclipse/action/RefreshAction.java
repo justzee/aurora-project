@@ -5,6 +5,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IViewer;
 
 /**
  * Ë¢ÐÂµÄActionÀà

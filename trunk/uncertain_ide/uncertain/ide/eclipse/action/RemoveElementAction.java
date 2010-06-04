@@ -5,15 +5,16 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IContainer;
 
 public class RemoveElementAction extends Action {
-	IViewerDirty viewer;
+	IContainer viewer;
 
-	public RemoveElementAction(IViewerDirty viewer) {
+	public RemoveElementAction(IContainer viewer) {
 		this.viewer = viewer;
 	}
 
-	public RemoveElementAction(IViewerDirty viewer,
+	public RemoveElementAction(IContainer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setImageDescriptor(imageDescriptor);

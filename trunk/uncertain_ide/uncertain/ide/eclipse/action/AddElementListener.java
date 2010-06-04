@@ -6,16 +6,17 @@ import org.eclipse.swt.widgets.Listener;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IContainer;
 
 public class AddElementListener implements Listener {
-	private IViewerDirty viewer;
+	private IContainer viewer;
 
 	CompositeMap parentCM;
 	String prefix;
 	String uri;
 	String cmName;
 
-	public AddElementListener(IViewerDirty viewer, CompositeMap parentCM, QualifiedName qName) {
+	public AddElementListener(IContainer viewer, CompositeMap parentCM, QualifiedName qName) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
 		this.prefix = Common.getPrefix(parentCM,qName);
