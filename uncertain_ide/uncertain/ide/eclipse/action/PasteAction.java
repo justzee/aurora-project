@@ -5,11 +5,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IContainer;
 
 public class PasteAction extends Action {
-	IViewerDirty viewer;
+	IContainer viewer;
 
-	public PasteAction(IViewerDirty viewer, ImageDescriptor imageDescriptor,
+	public PasteAction(IContainer viewer, ImageDescriptor imageDescriptor,
 			String text) {
 		this.setHoverImageDescriptor(getImageDescriptor());
 		if (imageDescriptor != null)

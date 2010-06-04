@@ -3,6 +3,7 @@ package uncertain.ide.eclipse.action;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -20,29 +21,29 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.IContainer;
 import uncertain.schema.Element;
 
 public class ToolBarAddElementListener implements Listener {
 	private ToolBar toolBar;
 	private Menu menu;
 	private ToolItem item;
-//	private ColumnViewer mColumnViewer;
-	private IViewerDirty viewer;
+
+	private IContainer container;
 
 	public ToolBarAddElementListener(ToolBar toolBar, Menu menu, ToolItem item,
-			 IViewerDirty mDirtyObject) {
+			 IContainer container) {
 		this.toolBar = toolBar;
 		this.menu = menu;
 		this.item = item;
-//		this.mColumnViewer = mColumnViewer;
-		this.viewer = mDirtyObject;
+		this.container = container;
 
 	}
 
 	public void handleEvent(Event event) {
 		if (event.detail == SWT.ARROW) {
 			// 获得当前选中的节点
-			ISelection selection = viewer.getObject().getSelection();
+			ISelection selection = ((ColumnViewer)container.getViewer()).getSelection();
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
 			final CompositeMap selectedCM = (CompositeMap) obj;
 			if(selectedCM == null)return;
@@ -61,9 +62,9 @@ public class ToolBarAddElementListener implements Listener {
 				return;
 			}
 
-			List sonElements = 	CompositeMapAction.getAvailableSonElements(element,selectedCM);
-			if (sonElements != null) {
-				Iterator ite = sonElements.iterator();
+			List childElements = 	CompositeMapAction.getAvailableChildElements(element,selectedCM);
+			if (childElements != null) {
+				Iterator ite = childElements.iterator();
 				while (ite.hasNext()) {
 					Object object = ite.next();
 					if(! (object instanceof Element))
@@ -71,7 +72,7 @@ public class ToolBarAddElementListener implements Listener {
 					Element ele = (Element) object;
 					final QualifiedName qName = ele.getQName();
 					MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
-					itemPush.addListener(SWT.Selection, new AddElementListener(viewer, selectedCM, qName));
+					itemPush.addListener(SWT.Selection, new AddElementListener(container, selectedCM, qName));
 					String text = Common.getElementFullName(selectedCM, qName);
 					itemPush.setText(text);
 					itemPush.setImage(getIcon());

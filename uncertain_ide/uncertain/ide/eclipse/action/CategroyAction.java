@@ -5,14 +5,15 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.ICategoryContainer;
 
 public class CategroyAction extends Action {
 	
-	private IPropertyCategory viewer;
-	public CategroyAction(IPropertyCategory viewer) {
+	private ICategoryContainer viewer;
+	public CategroyAction(ICategoryContainer viewer) {
 		this.viewer = viewer;
 	}
-	public CategroyAction(IPropertyCategory viewer,ImageDescriptor imageDescriptor,String text) {
+	public CategroyAction(ICategoryContainer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
 		if(text != null)
@@ -22,7 +23,7 @@ public class CategroyAction extends Action {
 
 
 	public void run() {
-		viewer.setIsCategory(true);
+		viewer.setCategory(true);
 		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){

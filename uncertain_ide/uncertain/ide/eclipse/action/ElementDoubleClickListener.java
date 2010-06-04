@@ -8,20 +8,21 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.MainShell;
+import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.CompositeMapTreeShell;
 
 public class ElementDoubleClickListener implements IDoubleClickListener {
-	IDirty viewer;
+	IViewer parent;
 
-	public ElementDoubleClickListener(IDirty viewer) {
-		this.viewer = viewer;
+	public ElementDoubleClickListener(IViewer viewer) {
+		this.parent = viewer;
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
 		TreeSelection selection = (TreeSelection) event.getSelection();
 		CompositeMap data = (CompositeMap) selection.getFirstElement();
 		if (data.getChilds() != null && data.getChilds().size() != 0) {
-			MainShell editor = new MainShell(viewer, data);
+			CompositeMapTreeShell editor = new CompositeMapTreeShell(parent, data);
 			Shell shell = new Shell(SWT.MIN | SWT.MAX | SWT.DIALOG_TRIM
 					| SWT.APPLICATION_MODAL);
 			shell.setLayout(new FillLayout());

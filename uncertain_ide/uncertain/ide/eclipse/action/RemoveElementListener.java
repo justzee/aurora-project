@@ -5,17 +5,18 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.editor.IContainer;
 
 public class RemoveElementListener implements Listener {
 //	private ColumnViewer mColumnViewer;
-	private IViewerDirty viewer;
+	private IContainer viewer;
 	CompositeMap parentCM;
 	String prefix;
 	String uri;
 	String name;
 
 	public RemoveElementListener(ColumnViewer mColumnViewer,
-			IViewerDirty viewer, CompositeMap parentCM, String prefix,
+			IContainer viewer, CompositeMap parentCM, String prefix,
 			String uri, String name) {
 //		this.mColumnViewer = mColumnViewer;
 		this.viewer = viewer;

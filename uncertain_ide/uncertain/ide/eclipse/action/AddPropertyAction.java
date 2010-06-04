@@ -14,15 +14,16 @@ import org.eclipse.swt.widgets.Widget;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.ICategoryContainer;
 
 public class AddPropertyAction extends Action {
-	IPropertyCategory viewer;
+	ICategoryContainer viewer;
 
-	public AddPropertyAction(IPropertyCategory viewer) {
+	public AddPropertyAction(ICategoryContainer viewer) {
 		this.viewer = viewer;
 	}
 
-	public AddPropertyAction(IPropertyCategory viewer,
+	public AddPropertyAction(ICategoryContainer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);

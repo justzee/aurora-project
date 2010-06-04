@@ -7,8 +7,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -34,7 +32,7 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 		File selectedFile = type.getLocation().toFile();
 		// System.out.println("file:"+selectedFile.getAbsolutePath());
 		PackageManager pkgManager = new PackageManager();
-		String fileList = Common.getString("valid.sxsd.file.window.title")+"\r\n";
+		String fileList = "";
 		try {
 			pkgManager.loadPackgeDirectory(selectedFile.getAbsolutePath());
 			File[] files = selectedFile.listFiles();
@@ -43,6 +41,8 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 				if (file.isDirectory()
 						&& PackageManager.isPackageDirectory(file)) {
 					File mConfigPathFile = new File(file.getPath(), CONFIG_PATH);
+					if(mConfigPathFile == null)
+						return;
 					String extension = "." + SchemaManager.DEFAULT_EXTENSION;
 					File[] sxsdFiles = mConfigPathFile.listFiles();
 					if (sxsdFiles == null)
@@ -52,7 +52,7 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 						String sxsdFile = sxsdFiles[k].getName().toLowerCase();
 						String projectBaseName = projectName + "/"
 								+ type.getProjectRelativePath().toString()
-								+ "/" + file.getName() + "/"
+								+ file.getName() + "/"
 								+ mConfigPathFile.getName() + "/"
 								+ sxsdFiles[k].getName();
 						if (sxsdFile.endsWith(extension)) {
@@ -61,14 +61,18 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 					}
 				}
 			}
-			showSxsdDirHint(SWT.ICON_INFORMATION, fileList);
+			if(!fileList.equals("")){
+				fileList = Common.getString("valid.sxsd.file.window.title")+"\r\n"+fileList;
+			}else{
+				fileList = "No file is valid!";
+			}
+			Common.showMessageBox(SWT.ICON_INFORMATION,"Result",fileList);
 		} catch (Exception e) {
-			e.printStackTrace();
-			showSxsdDirHint(SWT.ICON_ERROR, e.getMessage());
 			if (e.getCause() != null) {
-				throw new RuntimeException(e.getMessage(), e.getCause());
+				Common.showErrorMessageBox(null,e.getLocalizedMessage()+":\r\n"+e.getCause().getLocalizedMessage());
+				throw new RuntimeException(e.getLocalizedMessage(), e.getCause());
 			} else
-				throw new RuntimeException(e.getMessage());
+				throw new RuntimeException(e.getLocalizedMessage());
 		}
 	}
 
@@ -76,9 +80,4 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 		this.selection = selection;
 
 	}
-
-	private static void showSxsdDirHint(int messageType, String message) {
-		Common.showMessageBox(messageType,null, message);
-	}
-
 }
