@@ -1,6 +1,15 @@
 package uncertain.ide.eclipse.wizards;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
+
+import uncertain.ide.Common;
 
 
 public class ProjectWizard extends BasicNewProjectResourceWizard {
@@ -11,7 +20,8 @@ public class ProjectWizard extends BasicNewProjectResourceWizard {
 
 	public void addPages() {
 		super.addPages();
-		// addPage(fMainPage);
+		fMainPage.setPageComplete(false);
+		addPage(fMainPage);
 	}
 
 	public boolean performFinish() {
@@ -23,21 +33,24 @@ public class ProjectWizard extends BasicNewProjectResourceWizard {
 
 	private void initProject() {
 		try {
-			
-			//TODO 初始化工作，暂时空缺
-//			IFile file = getNewProject().getFile(Common.NewProjectFile);
-//			String fileFullPath = Common.getIfileLocalPath(file);
-//			File root = new File(fileFullPath);
-//			if (!root.exists()) {
-//				try {
-//					root.createNewFile();
-//				} catch (IOException e) {
-//					 throw new RuntimeException(e.getMessage());
-//				}
-//			}
-//			// file.create(null, true, null);
+			IFile file = getNewProject().getFile(Common.projectFile);
+			String fileFullPath = Common.getIfileLocalPath(file);
+			File root = new File(fileFullPath);
+			if (!root.exists()) {
+				try {
+					if(root.createNewFile()){
+						 Properties props = new Properties();
+						 props.put(Common.uncertain_project_dir, fMainPage.getUncertainProDir());
+						 props.store(new FileOutputStream(root), "uncertina project properties");
+					}
+					
+				} catch (IOException e) {
+					 Common.showExceptionMessageBox(null, e);
+				}
+			}
+			// file.create(null, true, null);
 //			Activator.openFileInEditor(file, Common.ServiceEditor);
-//			getNewProject().refreshLocal(IResource.DEPTH_ONE, null);
+			getNewProject().refreshLocal(IResource.DEPTH_ONE, null);
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}

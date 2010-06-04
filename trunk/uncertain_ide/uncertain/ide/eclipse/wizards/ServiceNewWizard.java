@@ -157,11 +157,7 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 	private CompositeMap createRootElement() {
 		
 		String rootElementName = "service";
-		
 		CompositeMap rootElement = new CompositeMap(rootElementName);
-		
-		String contents =rootElement.toXML();
-//		System.out.println(contents);
 		return rootElement;
 	}
 	

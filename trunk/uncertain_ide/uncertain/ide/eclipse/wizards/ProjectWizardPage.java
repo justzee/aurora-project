@@ -1,29 +1,27 @@
 package uncertain.ide.eclipse.wizards;
 
-import java.io.File;
-
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import uncertain.ide.Common;
+
 public class ProjectWizardPage extends WizardPage{
 	
-	Text locationPathField;
-	String customLocationFieldValue;
-    Label locationLabel;
-    Button browseButton;
-    private String initialLocationFieldValue;
+	private Text uncertainProDirText;
+	private Label uncertainProDirLabel;
+	private Button uncertainProDirButton;
     private static String WZ_TITLE = "uncertain Project";
 	private static String WZ_DESCRIPTION = "Create a New uncertain Project ";
 	public ProjectWizardPage() {
@@ -43,58 +41,66 @@ public class ProjectWizardPage extends WizardPage{
         layout.numColumns = 3;
         fileGroup.setLayout(layout);
         fileGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        fileGroup.setText("Seclcet the file");
+        fileGroup.setText("uncertain project");
         
-        locationLabel = new Label(fileGroup, SWT.NONE);
-        locationLabel.setText("Path");
+        uncertainProDirLabel = new Label(fileGroup, SWT.NONE);
+        uncertainProDirLabel.setText("Path");
 
 
         // project location entry field
-        locationPathField = new Text(fileGroup, SWT.BORDER);
+        uncertainProDirText = new Text(fileGroup, SWT.BORDER);
         GridData data = new GridData(GridData.FILL_HORIZONTAL);
         //data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-        locationPathField.setLayoutData(data);
-  
-        browseButton = new Button(fileGroup, SWT.PUSH);
-        browseButton.setText("Browse");
-        browseButton.addSelectionListener(new SelectionAdapter() {
+        uncertainProDirText.setLayoutData(data);
+        uncertainProDirText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				dialogChanged();
+			}
+		});
+        
+        uncertainProDirButton = new Button(fileGroup, SWT.PUSH);
+        uncertainProDirButton.setText("Browse");
+        uncertainProDirButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
                 handleLocationBrowseButton();
             }
         });
         
-        setButtonLayoutData(browseButton);
-        
-        if (initialLocationFieldValue == null)
-            locationPathField.setText(Platform.getLocation().toOSString());
-        else
-            locationPathField.setText(initialLocationFieldValue);
+        setButtonLayoutData(uncertainProDirButton);
         
         setControl(composite);
+        setPageComplete(true);
         
    }
 	void handleLocationBrowseButton() {
-        FileDialog dialog = new FileDialog(locationPathField
-                .getShell());
-
-        String fileName = getFileocationFieldValue();
-        if (!fileName.equals("")) { //$NON-NLS-1$
-            File path = new File(fileName);
-            if (path.exists())
-                dialog.setFilterPath(new Path(fileName).toOSString());
-        }
-
-        String selectedFile = dialog.open();
-        if (selectedFile != null) {
-            customLocationFieldValue = selectedFile;
-            locationPathField.setText(customLocationFieldValue);
+		DirectoryDialog dialog = new DirectoryDialog (getShell(), SWT.NONE);
+		dialog.setMessage (Common.getString("Example_string"));
+		dialog.setText (Common.getString("Title"));
+		String result = dialog.open ();
+        if (result != null) {
+            uncertainProDirText.setText(result);
         }
     }
-	private String getFileocationFieldValue() {
-        if (locationPathField == null)
-            return ""; //$NON-NLS-1$
-
-        return locationPathField.getText().trim();
-    }
-
+	private void dialogChanged(){
+		if(uncertainProDirText.getText() == null){
+			updateStatus("uncertain project directory must be specified");
+			return;
+		}
+		if(uncertainProDirText.getText() != null){
+			try {
+				Common.getDBConnection(uncertainProDirText.getText());
+			} catch (Exception e) {
+				Common.showExceptionMessageBox(null, e);
+				updateStatus("The path is not valid!");
+				return;
+			}
+		}
+	}
+	private void updateStatus(String message) {
+		setErrorMessage(message);
+		setPageComplete(message == null);
+	}
+	public String getUncertainProDir(){
+		return uncertainProDirText.getText();
+	}
 }
