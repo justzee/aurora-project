@@ -1,11 +1,10 @@
 package uncertain.ide.eclipse.editor.sxsd;
 
-import uncertain.ide.eclipse.editor.MainFormEditor;
+import uncertain.ide.eclipse.editor.CompositeMapTreeEditor;
 
-public class SxsdEditor extends MainFormEditor {
+public class SxsdEditor extends CompositeMapTreeEditor {
 
-	public SxsdEditor() {
-		super();
-		mainFormPage = new SxsdPage(this);
+	public void initTreePage(){
+		treePage = new SxsdTreePage(this);
 	}
 }

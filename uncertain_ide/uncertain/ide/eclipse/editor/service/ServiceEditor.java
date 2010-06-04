@@ -2,26 +2,26 @@ package uncertain.ide.eclipse.editor.service;
 
 import org.eclipse.ui.PartInitException;
 
-import uncertain.ide.eclipse.editor.BrowserPage;
-import uncertain.ide.eclipse.editor.MainFormEditor;
+import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.CompositeMapTreeEditor;
 
 
 
 
-public class ServiceEditor extends MainFormEditor{
-	BrowserPage be;
-	public ServiceEditor() {
-		super();
-		mainFormPage = new ServicePage(this);
-		be = new BrowserPage(this);
+public class ServiceEditor extends CompositeMapTreeEditor{
+
+	public void initTreePage(){
+		treePage = new ServiceTreePage(this);
 	}
+	
 	protected void addPages() {
+		BrowserPage be = new BrowserPage(this);
 		try {
-			addPage(mainFormPage);
+			addPage(treePage);
 			addPage(textPage);
 			addPage(be);
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			Common.showExceptionMessageBox(null, e);
 		}
 	}
 }

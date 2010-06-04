@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -20,6 +23,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -29,7 +33,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.CompositeMapAction;
+import uncertain.ide.Common;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -37,19 +41,30 @@ import uncertain.ide.eclipse.action.CompositeMapAction;
  * (a folder or a project) is selected in the workspace 
  * when the wizard is opened, it will accept it as the target
  * container. The wizard creates one file with the extension
- * "sxsd". If a sample multi-page editor (also available
+ * "bm". If a sample multi-page editor (also available
  * as a template) is registered for the same extension, it will
  * be able to open it.
  */
 
-public class SxsdNewWizard extends Wizard implements INewWizard {
-	private SxsdNewWizardPage page;
+public class BmNewWizard extends Wizard implements INewWizard {
+	
+	public static String bm_uri = "http://www.aurora-framework.org/schema/bm";
+	public static String bm_pre = "bm";
+	
+	private BmMainPage mainPage;
+	private BmTablePage tablePage;
+	private BmTableFieldsPage fieldsPage;
 	private ISelection selection;
-	private CompositeMap rootElement;
+	private CompositeMap initContent;
+	
+	
+	
+
+	
 	/**
-	 * Constructor for SxsdNewWizard.
+	 * Constructor for BmNewWizard.
 	 */
-	public SxsdNewWizard() {
+	public BmNewWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -59,8 +74,13 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new SxsdNewWizardPage(selection);
-		addPage(page);
+		mainPage = new BmMainPage(selection,this);
+		tablePage= new BmTablePage(selection,this);
+		fieldsPage = new BmTableFieldsPage(selection,this);
+		fieldsPage.setPageComplete(false);
+		addPage(mainPage);
+		addPage(tablePage);
+		addPage(fieldsPage);
 	}
 
 	/**
@@ -69,9 +89,9 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String containerName = page.getContainerName();
-		final String fileName = page.getFileName();
-		rootElement = createRootElement();
+		final String containerName = mainPage.getContainerName();
+		final String fileName = mainPage.getFileName();
+		initContent = createInitContent();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
@@ -107,9 +127,9 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		IProgressMonitor monitor)
 		throws CoreException {
 		
-		//如果用户没有指定文件名后缀，自动加sxsd后缀
+		//如果用户没有指定文件名后缀，自动加bm后缀
 		if(fileName.indexOf(".")==-1){
-			fileName = fileName+".sxsd";
+			fileName = fileName+".bm";
 		}
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
@@ -150,17 +170,25 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() {
-		String contents =rootElement.toXML();
+		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		String contents =xmlHint+initContent.toXML();
 		return new ByteArrayInputStream(contents.getBytes());
 	}
-	private CompositeMap createRootElement() {
+	private CompositeMap createInitContent() {
 
-		String namespacePrefix = page.getNamespacePrefix();
-		String namespaceUrl = page.getNamespaceUrl();
-		String rootElementName = "schema";
-		CompositeMap rootElement = new CompositeMap(namespacePrefix,namespaceUrl,rootElementName);
-		CompositeMapAction.addElementArray(rootElement);
-		return rootElement;
+		CompositeMap model = new CompositeMap(BmNewWizard.bm_pre,BmNewWizard.bm_uri,"model");
+		model.put("baseTable", getTableName());
+		model.addChild(getSelectedFields());
+		
+		try {
+			CompositeMap pks = getPrimaryKeys();
+			if(pks != null && pks.getChilds() != null){
+				model.addChild(pks);
+			}
+		} catch (SQLException e) {
+			Common.showExceptionMessageBox(null, e);
+		}
+		return model;
 	}
 
 	private void throwCoreException(String message) throws CoreException {
@@ -176,5 +204,37 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
+	}
+/*	public String getUncertainProjectDir() {
+		return mainPage.getUncertainProjectDir();
+	}*/
+	public String getTableName(){
+		return tablePage.getTableName();
+	}
+	public DatabaseMetaData getDBMetaData(){
+		return tablePage.getDBMetaData();
+	}
+	public CompositeMap getPrimaryKeys() throws SQLException{
+		return tablePage.getPrimaryKeys();
+	}
+	//防止所有页面同时初始化
+	public void createPageControls(Composite pageContainer) {
+		// super.createPageControls(pageContainer); 
+	}
+	public CompositeMap getSelectedFields(){
+		return fieldsPage.getSelectedFields();
+	}
+	public Connection getConnection() throws Exception{
+		String containerName = mainPage.getContainerName();
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IResource resource = root.findMember(new Path(containerName));
+		if (!resource.exists() || !(resource instanceof IContainer)) {
+			throwCoreException("Container \"" + containerName + "\" does not exist.");
+		}
+		return Common.getDBConnection(resource.getProject());
+	}
+	public void refresh(){
+		if(fieldsPage.getControl() != null )
+			fieldsPage.refresh();
 	}
 }

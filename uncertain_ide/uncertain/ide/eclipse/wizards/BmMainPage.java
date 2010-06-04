@@ -26,26 +26,32 @@ import uncertain.ide.Common;
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (service).
+ * OR with the extension that matches the expected one (bm).
  */
 
-public class ServiceNewWizardPage extends WizardPage {
+public class BmMainPage extends WizardPage {
 	private Text containerText;
 
 	private Text fileText;
-
+	
 	private ISelection selection;
+	
+//	Text uncetainText;
+
+	
+	BmNewWizard wizard;
 
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public ServiceNewWizardPage(ISelection selection) {
+	public BmMainPage(ISelection selection,BmNewWizard bmWizard) {
 		super("wizardPage");
-		setTitle("Service Editor File");
-		setDescription("This wizard creates a new file with *.service extension that can be opened by a Service editor.");
+		setTitle("Uncetain bm Editor File");
+		setDescription("This wizard creates a new file with *.bm extension that can be opened by a multi-page editor.");
 		this.selection = selection;
+		this.wizard = bmWizard;
 	}
 
 	/**
@@ -81,12 +87,33 @@ public class ServiceNewWizardPage extends WizardPage {
 
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan=2;
 		fileText.setLayoutData(gd);
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}
 		});
+		
+/*		label = new Label(container, SWT.NULL);
+		label.setText("&uncertain project path:");
+
+		uncetainText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		uncetainText.setLayoutData(gd);
+		uncetainText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				dialogChanged();
+			}
+		});
+		button = new Button(container, SWT.PUSH);
+		button.setText("Browse...");
+		button.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				uncertainProjectListener();
+			}
+		});*/
+		
 		initialize();
 		dialogChanged();
 		setControl(container);
@@ -112,9 +139,7 @@ public class ServiceNewWizardPage extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
-//		fileText.setText("new_file.service");
 	}
-
 	/**
 	 * Uses the standard container selection dialog to choose the new value for
 	 * the container field.
@@ -131,6 +156,13 @@ public class ServiceNewWizardPage extends WizardPage {
 			}
 		}
 	}
+/*	private void uncertainProjectListener() {
+		DirectoryDialog dialog = new DirectoryDialog (getShell(), SWT.NONE);
+		dialog.setMessage (Common.getString("Example_string"));
+		dialog.setText (Common.getString("Title"));
+		String result = dialog.open ();
+		uncetainText.setText(result);
+	}*/
 
 	/**
 	 * Ensures that both text fields are set.
@@ -162,6 +194,7 @@ public class ServiceNewWizardPage extends WizardPage {
 			updateStatus("File name must be specified");
 			return;
 		}
+		
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
 			updateStatus("File name must be valid");
 			return;
@@ -169,11 +202,26 @@ public class ServiceNewWizardPage extends WizardPage {
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("service") == false) {
-				updateStatus("File extension must be \"service\"");
+			if (ext.equalsIgnoreCase("bm") == false) {
+				updateStatus("File extension must be \"bm\"");
 				return;
 			}
 		}
+/*		if(getUncertainProjectDir().length() == 0){
+			updateStatus("uncertain project directory must be specified");
+			return;
+		}
+		if(getUncertainProjectDir().length() != 0){
+			try {
+				connection = getDBConnection(getUncertainProjectDir());
+			} catch (Exception e) {
+				e.printStackTrace();
+				updateStatus(e.getLocalizedMessage());
+				Common.showExceptionMessageBox(null, e);
+				return;
+			}
+		}*/
+		
 		updateStatus(null);
 	}
 
@@ -189,9 +237,9 @@ public class ServiceNewWizardPage extends WizardPage {
 	public String getFileName() {
 		return fileText.getText();
 	}
-	public static void main(String[] args){
-		ServiceNewWizardPage swp = new ServiceNewWizardPage(null);
-		swp.setVisible(true);
-		
-	}
+/*
+	public String getUncertainProjectDir() {
+		return uncetainText.getText();
+	}*/
+	
 }
