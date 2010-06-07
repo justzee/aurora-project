@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<procedure xmlns="uncertain.proc">
+	<action Name="BeginService" />
+	<action Name="ParseParameter" />
+	<action Name="PrepareService" />
+	<action Name="CheckPrivilege" />
+	<action Name="CreateModel" />
+	<action Name="CreateView" />	
+	<action Name="PopulateView" />
+</procedure>
