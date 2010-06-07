@@ -1,8 +1,0 @@
-	<span>中文内容</span>
-	<pre>Employee edit</pre>
-		<form>
-			Name: ${name}<br>
-			Address: ${address}<br>
-			Department: ${deptid}<br>
-			Memo: ${memo}<br>
-		</form>
