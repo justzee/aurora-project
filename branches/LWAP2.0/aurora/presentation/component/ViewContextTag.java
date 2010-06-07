@@ -3,9 +3,9 @@
  */
 package aurora.presentation.component;
 
-import aurora.presentation.ViewContext;
 import uncertain.composite.CompositeMap;
 import uncertain.util.template.ITagContent;
+import aurora.presentation.ViewContext;
 
 public class ViewContextTag implements ITagContent {
     

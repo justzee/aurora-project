@@ -10,10 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
-import uncertain.composite.CharCaseProcessor;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeMapParser;
 import uncertain.datatype.DataTypeRegistry;
 import uncertain.logging.DefaultLogger;
 import uncertain.logging.ILogger;

@@ -4,11 +4,9 @@
 package aurora.service.validation;
 
 import java.util.Locale;
-
 import java.util.ResourceBundle;
 
 import uncertain.composite.CompositeMap;
-
 import uncertain.composite.DynamicObject;
 
 public class ErrorMessage extends DynamicObject {

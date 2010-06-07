@@ -6,7 +6,6 @@ package org.lwap.mvc;
 
 import java.util.LinkedList;
 
-import uncertain.util.AdaptiveTagParser;
 import uncertain.util.QuickTagParser;
 import uncertain.util.TagParseHandle;
 

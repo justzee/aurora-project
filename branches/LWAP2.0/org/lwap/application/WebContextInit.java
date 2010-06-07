@@ -5,14 +5,11 @@ package org.lwap.application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Enumeration;
 import java.util.Locale;
-import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.HttpServlet;
 import javax.sql.DataSource;
 
 import org.lwap.database.TransactionFactory;
@@ -30,7 +27,6 @@ import uncertain.core.DirectoryConfig;
 import uncertain.core.UncertainEngine;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.IObjectRegistry;
-import uncertain.util.LoggingUtil;
 
 public class WebContextInit implements ServletContextListener {   
     

@@ -3,7 +3,6 @@
  */
 package uncertain.logging;
 
-import java.util.Iterator;
 import java.util.logging.Level;
 
 public class DummyLogger implements ILogger {

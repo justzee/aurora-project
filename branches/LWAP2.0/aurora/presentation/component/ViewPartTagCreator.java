@@ -8,15 +8,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import aurora.presentation.BuildSession;
-import aurora.presentation.ViewContext;
-import aurora.presentation.ViewCreationException;
-
 import uncertain.composite.CompositeMap;
-import uncertain.core.ConfigurationError;
 import uncertain.util.template.EmptyTag;
 import uncertain.util.template.ITagContent;
 import uncertain.util.template.ITagCreator;
+import aurora.presentation.BuildSession;
+import aurora.presentation.ViewContext;
 
 public class ViewPartTagCreator implements ITagCreator {
     

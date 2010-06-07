@@ -6,7 +6,6 @@ package aurora.database.actions;
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
 import uncertain.ocm.OCManager;
-import uncertain.proc.ProcedureRunner;
 import aurora.database.FetchDescriptor;
 import aurora.database.IResultSetConsumer;
 import aurora.database.service.DatabaseServiceFactory;

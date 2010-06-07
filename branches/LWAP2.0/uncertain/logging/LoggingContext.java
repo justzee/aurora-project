@@ -6,7 +6,6 @@ package uncertain.logging;
 import uncertain.composite.CompositeMap;
 import uncertain.event.RuntimeContext;
 import uncertain.ocm.IObjectRegistry;
-import uncertain.logging.DummyLoggerProvider;
 
 public class LoggingContext extends RuntimeContext {
     

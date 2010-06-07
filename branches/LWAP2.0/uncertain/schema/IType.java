@@ -3,7 +3,6 @@
  */
 package uncertain.schema;
 
-import uncertain.datatype.DataType;
 
 public interface IType extends IQualifiedNamed  {
     

@@ -17,7 +17,6 @@ import org.lwap.database.datatype.DatabaseTypeField;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.core.ConfigurationError;
-import uncertain.logging.ILogger;
 
 /**
  * 

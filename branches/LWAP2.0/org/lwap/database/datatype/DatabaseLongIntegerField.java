@@ -12,8 +12,7 @@ import java.sql.Types;
 public class DatabaseLongIntegerField extends DatabaseTypeField {
 	// VersionUID for Version 1.0
 	static final long serialVersionUID = 2682057044304580564L;
-	private final static String copyright = "Licensed Materials -- Property of IBM\n(c) Copyright International Business Machines Corporation, 1998, 2000";
-/**
+	/**
  * 
  * @param aName java.lang.String
  */

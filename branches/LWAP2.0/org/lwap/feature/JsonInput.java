@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.lwap.controller.ControllerProcedures;
 import org.lwap.controller.IController;
 import org.lwap.controller.MainService;
 

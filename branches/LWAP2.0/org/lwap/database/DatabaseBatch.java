@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import uncertain.composite.CompositeMap;
-import uncertain.logging.ILogger;
 
 /**
  * <batch BatchSource="/path/to/source" 

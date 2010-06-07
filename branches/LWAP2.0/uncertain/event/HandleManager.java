@@ -15,7 +15,6 @@ import uncertain.proc.IEventHandle;
 import uncertain.proc.IEventListener;
 import uncertain.proc.ParticipantRegistry;
 import uncertain.proc.ReflectionMethodHandle;
-import uncertain.proc.ParticipantRegistry.HandleMethod;
 
 
 /**

@@ -4,13 +4,11 @@
 package org.lwap.feature;
 
 import org.lwap.application.event.AbstractServiceHandle;
-import org.lwap.application.event.IServiceListenerManager;
 import org.lwap.controller.MainService;
 
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
 import uncertain.event.EventModel;
-import uncertain.ocm.IObjectRegistry;
 
 public class SqlExecutor extends AbstractServiceHandle {
     

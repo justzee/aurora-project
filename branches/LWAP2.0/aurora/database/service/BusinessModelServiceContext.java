@@ -5,8 +5,6 @@ package aurora.database.service;
 
 import uncertain.composite.CompositeMap;
 import aurora.bm.BusinessModel;
-import aurora.database.FetchDescriptor;
-import aurora.database.IResultSetConsumer;
 import aurora.database.SqlRunner;
 import aurora.database.sql.ISqlStatement;
 

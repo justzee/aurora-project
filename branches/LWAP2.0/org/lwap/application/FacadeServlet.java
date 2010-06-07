@@ -5,11 +5,7 @@
 package org.lwap.application;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Locale;
-import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -17,23 +13,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 
-import org.lwap.database.TransactionFactory;
-import org.lwap.mvc.BuiltInViewFactory;
-import org.lwap.mvc.ClassViewFactory;
-import org.lwap.mvc.DefaultViewFactory;
-import org.lwap.mvc.ViewConfig;
-import org.lwap.mvc.ViewFactoryStore;
-import org.lwap.mvc.servlet.JspViewFactory;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
-import uncertain.ocm.ClassRegistry;
-import uncertain.ocm.IObjectRegistry;
-import uncertain.util.LoggingUtil;
 
 
 //import com.handchina.hrms.util.*;

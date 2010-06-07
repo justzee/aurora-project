@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 
 import uncertain.composite.CompositeMap;
-import uncertain.logging.ILogger;
 
 /**
  * 

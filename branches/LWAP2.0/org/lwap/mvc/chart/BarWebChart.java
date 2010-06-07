@@ -16,7 +16,6 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.servlet.ServletUtilities;
 import org.jfree.chart.urls.StandardCategoryURLGenerator;
@@ -104,11 +103,11 @@ public class BarWebChart extends AbstractWebChart {
 			standardLegend.setItemFont(font);
 		}
 		 CategoryPlot plot = (CategoryPlot)chart.getPlot();
-		 CategoryAxis domainAxis = plot.getDomainAxis();//(柱状图的x轴)   
-		 domainAxis.setTickLabelFont(font);//设置x轴坐标上的字体   
+		 CategoryAxis domainAxis = plot.getDomainAxis();//(柱状图的x轄1�7)   
+		 domainAxis.setTickLabelFont(font);//设置x轴坐标上的字佄1�7   
 		 domainAxis.setLabelFont(font);//设置x轴上的标题的字体     
-		 ValueAxis valueAxis = plot.getRangeAxis();//(柱状图的y轴)   
-		 valueAxis.setTickLabelFont(font);//设置y轴坐标上的字体   
+		 ValueAxis valueAxis = plot.getRangeAxis();//(柱状图的y轄1�7)   
+		 valueAxis.setTickLabelFont(font);//设置y轴坐标上的字佄1�7   
 		 valueAxis.setLabelFont(font);//设置y轴坐标上的标题的字体  
 	}
 }

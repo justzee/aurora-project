@@ -4,8 +4,8 @@
  */
 package aurora.database.actions.config;
 
-import aurora.application.Version;
 import uncertain.composite.CompositeMap;
+import aurora.application.Version;
 
 public class ActionConfigManager {
     

@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.lwap.application.BaseService;
 import org.lwap.application.NoPrivilegeException;
@@ -33,7 +34,6 @@ import org.lwap.database.PerformanceRecorder;
 import org.lwap.feature.ExceptionProcessor;
 import org.lwap.mvc.ViewCreationException;
 
-import javax.sql.DataSource;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.core.UncertainEngine;

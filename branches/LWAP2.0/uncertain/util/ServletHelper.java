@@ -8,9 +8,6 @@ import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.sql.DataSource;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;

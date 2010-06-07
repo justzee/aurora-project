@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,13 +19,11 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.lwap.application.WebApplication;
 import org.lwap.database.DBUtil;
-import org.lwap.mvc.DataBindingConvention;
 
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;

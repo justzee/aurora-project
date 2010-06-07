@@ -6,12 +6,9 @@
 
 package uncertain.composite;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 /** A Map with a list of child maps, and a name and namespace

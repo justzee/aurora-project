@@ -9,7 +9,6 @@ import uncertain.core.UncertainEngine;
 import uncertain.logging.ILogger;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.IObjectRegistry;
-import aurora.bm.IModelFactory;
 import aurora.database.service.DatabaseServiceFactory;
 
 public class ServiceInitiator {

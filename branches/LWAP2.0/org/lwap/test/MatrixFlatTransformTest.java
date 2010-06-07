@@ -3,12 +3,12 @@
  */
 package org.lwap.test;
 
+import junit.framework.TestCase;
+
 import org.lwap.action.MatrixFlatTransform;
 
-import junit.framework.TestCase;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeUtil;
 import uncertain.proc.ProcedureRunner;
 
 public class MatrixFlatTransformTest extends TestCase {

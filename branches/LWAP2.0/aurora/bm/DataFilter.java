@@ -3,10 +3,10 @@
  */
 package aurora.bm;
 
-import aurora.database.sql.StringConcatenater;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
 import uncertain.util.StringSplitter;
+import aurora.database.sql.StringConcatenater;
 
 public class DataFilter extends DynamicObject {
     

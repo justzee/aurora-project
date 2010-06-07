@@ -7,7 +7,6 @@ import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-
 import aurora.presentation.BuildSession;
 import aurora.presentation.ViewContext;
 
@@ -15,7 +14,7 @@ public class NavBar extends ToolBar {
 	
 	public static final String PROPERTITY_DATASET = "dataset";
 	
-	//TODO:多语言!
+	//TODO:多语訄1�7!
 	public void onCreateViewContent(BuildSession session, ViewContext context) throws IOException{
 		try {
 			CompositeMap view = context.getView();
@@ -30,8 +29,8 @@ public class NavBar extends ToolBar {
 			}
 			view.putString(PROPERTITY_ID, id);
 			
-			view.addChild(createButton("nav-firstpage","background-position:0px 1px;","function(){$('"+dataset+"').firstPage()}","第一页"));
-			view.addChild(createButton("nav-prepage","background-position:0px -31px;","function(){$('"+dataset+"').prePage()}","上一页"));
+			view.addChild(createButton("nav-firstpage","background-position:0px 1px;","function(){$('"+dataset+"').firstPage()}","第一顄1�7"));
+			view.addChild(createButton("nav-prepage","background-position:0px -31px;","function(){$('"+dataset+"').prePage()}","上一顄1�7"));
 			
 			CompositeLoader loader = new CompositeLoader();
 			String pagetext = "<div class='item-label' style='margin-left:2px;margin-right:2px;'>页数:</div>";
@@ -49,12 +48,12 @@ public class NavBar extends ToolBar {
 			
 			String pageId = IDGenerator.getInstance().generate();
 			map.put("pageId", pageId);
-			String text = "<div id='"+pageId+"' class='item-label' style='margin-left:5px;margin-right:5px;'>共1页</div>";
+			String text = "<div id='"+pageId+"' class='item-label' style='margin-left:5px;margin-right:5px;'>兄1�7�1�7/div>";
 			CompositeMap totalpage = loader.loadFromString(text,"UTF-8");
 			view.addChild(totalpage);
 			
-			view.addChild(createButton("nav-nextpage","background-position:0px -46px;","function(){$('"+dataset+"').nextPage()}","下一页"));
-			view.addChild(createButton("nav-lastpage","background-position:0px -15px","function(){$('"+dataset+"').lastPage()}","最后页"));
+			view.addChild(createButton("nav-nextpage","background-position:0px -46px;","function(){$('"+dataset+"').nextPage()}","下一顄1�7"));
+			view.addChild(createButton("nav-lastpage","background-position:0px -15px","function(){$('"+dataset+"').lastPage()}","朄1�7后页"));
 			view.addChild(createButton("nav-refresh","background-position:0px -63px;","function(){$('"+dataset+"').query($('"+dataset+"').currentPage)}","刷新"));
 			
 			String infoId = IDGenerator.getInstance().generate();

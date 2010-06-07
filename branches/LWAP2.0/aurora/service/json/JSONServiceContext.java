@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import uncertain.event.RuntimeContext;
-
 import aurora.service.ServiceContext;
 
 public class JSONServiceContext extends ServiceContext {

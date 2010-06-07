@@ -6,7 +6,6 @@ package aurora.application.config;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
-import uncertain.composite.DynamicObject;
 
 public class ScreenConfig extends BaseServiceConfig {
 

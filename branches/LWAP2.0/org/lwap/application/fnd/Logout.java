@@ -1,8 +1,11 @@
 package org.lwap.application.fnd;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
+
 import org.lwap.application.BaseService;
 
 public class Logout extends BaseService

@@ -3,7 +3,6 @@
  */
 package uncertain.logging;
 
-import java.io.IOException;
 
 /**
  * Implement this interface so that the framework can set base log path parameter

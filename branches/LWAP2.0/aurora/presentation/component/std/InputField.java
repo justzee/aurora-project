@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import uncertain.composite.CompositeMap;
-
 import aurora.presentation.BuildSession;
 import aurora.presentation.ViewContext;
 
@@ -32,11 +31,11 @@ public class InputField extends Field {
 		CompositeMap view = context.getView();
 		Map map = context.getMap();
 		
-		/** 输入框宽度**/
+		/** 输入框宽庄1�7**/
 		Integer width = (Integer)map.get(PROPERTITY_WIDTH);
 		map.put(PROPERTITY_INPUTWIDTH, new Integer(width.intValue()-3));
 		
-		/** 值 **/
+		/** 倄1�7 **/
 		String value = (String)map.get(PROPERTITY_VALUE);
 		
 		/** 文本提示 **/

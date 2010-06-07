@@ -5,7 +5,6 @@ package org.lwap.database.datatype;
  * Creation date: (4/26/2000 9:29:31 PM)
  * @author: 
  */
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;

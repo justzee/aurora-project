@@ -3,16 +3,10 @@
  */
 package aurora.database.actions;
 
-import java.sql.Connection;
-
-//import org.lwap.controller.MainService;
-
 import uncertain.composite.CompositeMap;
-import uncertain.composite.DynamicObject;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 import aurora.database.service.BusinessModelService;
-import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
 
 public abstract class AbstractModelAction extends AbstractEntry  {

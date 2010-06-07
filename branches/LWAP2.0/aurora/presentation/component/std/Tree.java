@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import uncertain.composite.CompositeMap;
-
 import aurora.presentation.BuildSession;
 import aurora.presentation.ViewContext;
 
@@ -34,13 +33,13 @@ public class Tree extends Component {
 		CompositeMap view = context.getView();
 
 		String size = "";
-		/** Widthå±žæ€§**/
+		/** Widthå±žæ„1¤7„1¤7**/
 		String width = view.getString(PROPERTITY_WIDTH, "");
 		if(!"".endsWith(width)) {
 			size += "width:"+width+"px;";
 			addConfig(PROPERTITY_WIDTH, width);
 		}
-		/** Heightå±žæ€§**/
+		/** Heightå±žæ„1¤7„1¤7**/
 		String height = view.getString(PROPERTITY_HEIGHT, "");
 		if(!"".endsWith(height)) {
 			size += "height:"+height+"px;";

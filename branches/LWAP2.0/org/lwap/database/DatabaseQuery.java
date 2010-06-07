@@ -12,7 +12,6 @@ import java.util.logging.Level;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.transform.Transformer;
-import uncertain.logging.ILogger;
 
 /**
  * 

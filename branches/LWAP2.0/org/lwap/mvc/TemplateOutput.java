@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import uncertain.util.QuickTagParser;
 import org.lwap.application.BaseService;
 import org.lwap.application.WebApplication;
 

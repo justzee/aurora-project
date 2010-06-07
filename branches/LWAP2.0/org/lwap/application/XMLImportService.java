@@ -16,7 +16,6 @@ import org.xml.sax.SAXParseException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeMapParser;
 
 /**
  * 

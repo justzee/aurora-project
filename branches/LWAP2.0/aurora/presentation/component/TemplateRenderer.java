@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import uncertain.composite.CompositeMap;
-import uncertain.logging.ILogger;
 import uncertain.ocm.ISingleton;
 import uncertain.util.template.ITagCreatorRegistry;
 import uncertain.util.template.TagCreatorRegistry;

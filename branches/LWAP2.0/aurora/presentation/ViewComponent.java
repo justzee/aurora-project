@@ -4,7 +4,6 @@
 package aurora.presentation;
 
 import uncertain.composite.QualifiedName;
-import uncertain.util.StringSplitter;
 
 public class ViewComponent {
     
