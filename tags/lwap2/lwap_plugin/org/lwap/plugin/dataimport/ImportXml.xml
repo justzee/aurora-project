@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:procedure xmlns:p="uncertain.proc">
+	<fields>
+		<p:field Name="FileName" Type="String" />
+	</fields>
+	<p:action Name="GetFileName" Output="FileName"/>
+	<p:action Name="CheckValidation" />
+	<p:action Name="DoImport" />
+	<exception-handles>
+		<p:catch Exception="*">
+			<p:action Name="WriteErrorLog" />
+		</p:catch>
+	</exception-handles>
+</p:procedure>

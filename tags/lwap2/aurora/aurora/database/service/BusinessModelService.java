@@ -1,0 +1,272 @@
+/*
+ * Created on 2008-5-14
+ */
+package aurora.database.service;
+
+import java.util.List;
+import java.util.Map;
+
+import uncertain.composite.CompositeMap;
+import uncertain.event.Configuration;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
+import uncertain.proc.ProcedureRunner;
+import aurora.bm.BusinessModel;
+import aurora.database.CompositeMapCreator;
+import aurora.database.Constant;
+import aurora.database.DBUtil;
+import aurora.database.FetchDescriptor;
+import aurora.database.IResultSetConsumer;
+import aurora.database.SqlRunner;
+import aurora.events.E_PrepareBusinessModel;
+import aurora.service.ServiceContext;
+import aurora.service.validation.IParameterIterator;
+import aurora.service.validation.ParameterParser;
+import aurora.service.validation.ValidationException;
+
+public class BusinessModelService {
+    
+    public static final String PROC_EXECUTE_DML = "aurora.database.service.bm.execute_dml";
+    
+    //public static final String PROC_UPDATE = "aurora.database.service.bm.update";
+
+    //public static final String PROC_DELETE = "aurora.database.service.bm.delete";
+
+    //public static final String PROC_INSERT = "aurora.database.service.bm.insert";
+    
+    public static final String PROC_QUERY = "aurora.database.service.bm.query";
+
+    //public static final String PROC_EXECUTE = "aurora.database.service.bm.execute";    
+    
+    public static final String PROC_CREATE_SQL = "aurora.database.service.bm.create_sql";
+
+    Configuration                       config;
+    BusinessModel                       model;
+    DatabaseServiceFactory              serviceFactory;
+    BusinessModelServiceContext         context;  
+    CompositeMap                        context_map;
+    ProcedureRunner                     runner;    
+    String                              action = null;
+    //boolean                             trace;
+    
+    Configuration                       mOldConfig = null;
+    
+    protected BusinessModelService(DatabaseServiceFactory factory, Configuration config, BusinessModel model, CompositeMap context_map ) 
+        throws Exception
+    {
+        this.config = config;
+        this.model = model;
+        this.serviceFactory = factory;
+        setContextMap(context_map);
+        config.fireEvent(E_PrepareBusinessModel.EVENT_NAME, new Object[]{model} );
+    }
+ 
+    protected void prepareForRun( String proc_name )
+        throws ValidationException
+    {
+        action = proc_name.substring(proc_name.lastIndexOf('.')+1);
+        if(action==null) action = proc_name;
+        context.setAction(action);
+        runner = serviceFactory.loadProcedure(proc_name, context_map);
+        parseParameter(context);
+    }
+    
+    public void setServiceContext( ServiceContext context ){
+        setContextMap(context.getObjectContext());
+    }
+    
+    public void  setContextMap( CompositeMap map ){
+        this.context_map = map;
+        if(context==null)
+            context = new BusinessModelServiceContext();
+        context.initialize(context_map);
+        context.setBusinessModel(model);
+    }
+
+    public BusinessModelServiceContext getServiceContext(){
+        return context;
+    }
+    
+    public ProcedureRunner getRunner(){
+        return runner;
+    }
+    
+    public BusinessModel    getBusinessModel(){
+        return model;
+    }
+    
+    private void pushConfig(){
+        mOldConfig = context.getConfig();
+        context.setConfig(config);
+    }
+    
+    private void popConfig(){
+        context.setConfig(mOldConfig);
+        mOldConfig = null;
+    }
+    
+    public StringBuffer getSql( String type )
+        throws Exception
+    {
+        context.setStatementType(type);
+        pushConfig();
+        try{
+            prepareForRun(PROC_CREATE_SQL);
+            runner.run();
+            runner.checkAndThrow();            
+        }finally{
+            popConfig();            
+        }
+        return context.getSqlString();
+    }
+    
+    public void query( Map parameters,  IResultSetConsumer consumer, FetchDescriptor desc )
+        throws Exception
+    {
+        //Configuration old_config = context.getConfig();
+        pushConfig();
+        try{
+            prepareForRun(PROC_QUERY);
+            if(parameters!=null) context.setCurrentParameter(parameters);            
+            context.setResultsetConsumer(consumer);
+            context.setFetchDescriptor(desc);
+            runner.run();
+            runner.checkAndThrow();
+        } finally{            
+            popConfig();
+            printTraceInfo();            
+        }
+    }
+    
+    public CompositeMap queryAsMap( Map parameters, FetchDescriptor desc )
+        throws Exception
+    {
+        CompositeMapCreator map_creator = new CompositeMapCreator();
+        query(parameters, map_creator, desc);
+        return map_creator.getCompositeMap();
+    }
+    
+    public CompositeMap queryAsMap( Map parameters )
+        throws Exception
+    {
+        FetchDescriptor desc = FetchDescriptor.fetchAll();
+        return queryAsMap( parameters, desc );
+    }
+    
+    public CompositeMap queryIntoMap( Map parameters, FetchDescriptor desc, CompositeMap root)
+        throws Exception
+    {
+        CompositeMapCreator map_creator = new CompositeMapCreator(root);
+        query(parameters, map_creator, desc);
+        return map_creator.getCompositeMap();
+    }
+    
+    public void query()
+        throws Exception
+    {
+        CompositeMap        param = context.getCurrentParameter();
+        IResultSetConsumer  consumer = context.getResultsetConsumer();
+        if(consumer==null) throw new IllegalStateException("IResultSetConsumer instance is not set in service context");
+        FetchDescriptor     desc = context.getFetchDescriptor();
+        if(desc==null)
+            desc = FetchDescriptor.createFromParameter(context.getParameter());
+        query(param,consumer,desc);
+    }
+    
+    protected void runProcedure( Map parameters, String proc_name )
+        throws Exception
+    {
+        pushConfig();
+        try{
+            prepareForRun(proc_name);
+            if(parameters!=null) context.setCurrentParameter(parameters);
+            runner.run();
+            runner.checkAndThrow();
+        }finally{
+            popConfig();
+            printTraceInfo();             
+        }        
+    }
+    
+    public void executeDml( Map parameters, String statement_type )
+        throws Exception
+    {
+        context.getObjectContext().put("SqlStatementType", new StringBuffer(statement_type) );
+        runProcedure(parameters, PROC_EXECUTE_DML);
+    }
+    
+    public void updateByPK( Map parameters )
+        throws Exception
+    {
+        //runProcedure(parameters, PROC_UPDATE);
+        executeDml(parameters, "Update");
+    }
+    
+    public void insert( Map parameters )
+        throws Exception    
+    {
+        //runProcedure(parameters, PROC_INSERT);
+        executeDml(parameters, "Insert");
+    }
+    
+    public void deleteByPK( Map parameters )
+        throws Exception
+    {
+        //runProcedure(parameters, PROC_DELETE);
+        executeDml(parameters, "Delete");
+    }
+    
+    public void parseParameter( ServiceContext context )
+        throws ValidationException
+    {
+        CompositeMap parameter = context.getCurrentParameter();
+        boolean parsed = parameter.getBoolean(ServiceContext.KEY_PARAMETER_PARSED, false);
+        if(!parsed){
+            ParameterParser parser = ParameterParser.getInstance();
+            List exceptions = null;
+            IParameterIterator params = model.getParameterForAction(action);
+            if(params!=null){
+                exceptions = parser.parse( parameter,  params );
+                if(exceptions!=null){ 
+                    ValidationException exp = new ValidationException(parameter,exceptions);
+                    throw exp;
+                }
+                parameter.putBoolean(ServiceContext.KEY_PARAMETER_PARSED, true);
+            }
+        }
+    }
+
+    /**
+     * @return the action
+     */
+    public String getAction() {
+        return action;
+    }
+
+    /**
+     * @param action the action to set
+     */
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    void printTraceInfo(){
+        ILogger logger = LoggingContext.getLogger(context.getObjectContext(), Constant.AURORA_DATABASE_LOGGING_TOPIC);
+        SqlRunner runner = context.getSqlRunner();
+        DBUtil.printTraceInfo(action, logger, runner);
+    }    
+    
+    public Configuration getConfiguration(){
+        return config;
+    }
+/*
+    
+    public boolean getTrace() {
+        return trace;
+    }
+
+    public void setTrace(boolean trace) {
+        this.trace = trace;
+    } 
+*/
+}
