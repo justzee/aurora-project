@@ -44,6 +44,8 @@ public class CompositeBuilderTest extends AbstractSqlBuilderTest {
         assertContains(sql, update_sql);
         assertContains(sql, "BEGIN");
         assertContains(sql, "END");
+        
+        System.out.println(sql);
       
     }
     
@@ -120,7 +122,7 @@ public class CompositeBuilderTest extends AbstractSqlBuilderTest {
         assertTrue(isExists("P6",params));   
         
         String sql = mRegistry.getSql(comp);
-        System.out.println(sql);
+        //System.out.println(sql);
     }
     
 
