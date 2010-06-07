@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="sapjco_dll/" kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/lwap"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uncertain"/>
+	<classpathentry kind="var" path="LIB_JUNIT"/>
+	<classpathentry kind="lib" path="G:/Java/jfreechart-1.0.4/lib/jfreechart-1.0.4.jar" sourcepath="G:/Java/jfreechart-1.0.4/source"/>
+	<classpathentry kind="lib" path="G:/Java/jfreechart-1.0.4/lib/jcommon-1.0.8.jar"/>
+	<classpathentry kind="var" path="LIB_SERVLET"/>
+	<classpathentry kind="var" path="LIB_ORACLE_JDBC"/>
+	<classpathentry kind="var" path="LIB_QUARTS" sourcepath="/JOB_SOURCE"/>
+	<classpathentry kind="var" path="LIB_SAPJCO"/>
+	<classpathentry kind="var" path="LIB_JXL"/>
+	<classpathentry kind="var" path="LIB_COMMONS_UPLOAD"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
