@@ -11,7 +11,6 @@ import java.util.Iterator;
 import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeMapParser;
 import uncertain.proc.ProcedureRunner;
 /**
  * SchemaModel

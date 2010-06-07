@@ -3,7 +3,6 @@
  */
 package aurora.presentation;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import uncertain.composite.CompositeMap;

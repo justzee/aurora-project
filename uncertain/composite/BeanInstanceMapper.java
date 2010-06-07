@@ -6,9 +6,15 @@
 
 package uncertain.composite;
 
-import java.lang.reflect.*;
-import java.util.*;
-import uncertain.util.reflect.*;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import uncertain.util.reflect.MethodArgSizeFilter;
+import uncertain.util.reflect.MethodCache;
+import uncertain.util.reflect.MethodDeclareClassFilter;
+import uncertain.util.reflect.MethodNameFilter;
 
 
 /**

@@ -3,7 +3,6 @@
  */
 package uncertain.schema;
 
-import uncertain.composite.DynamicObject;
 
 public class Array extends Element {
     

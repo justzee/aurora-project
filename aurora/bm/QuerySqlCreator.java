@@ -16,7 +16,6 @@ import aurora.database.ParsedSql;
 import aurora.database.ResultSetLoader;
 import aurora.database.SqlRunner;
 import aurora.database.service.BusinessModelServiceContext;
-import aurora.database.service.ServiceOption;
 import aurora.database.sql.ISqlStatement;
 import aurora.database.sql.Join;
 import aurora.database.sql.SelectField;

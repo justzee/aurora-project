@@ -12,7 +12,6 @@ import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeMapParser;
 import uncertain.composite.DynamicObject;
 import uncertain.core.ConfigurationError;
 import uncertain.core.UncertainEngine;

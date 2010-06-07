@@ -3,7 +3,6 @@
  */
 package org.lwap.application.fnd;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,12 +44,6 @@ public class ResourceBundleStore implements ResourceBundleFactory, IGlobalInstan
 	private static final String FND_LANGUAGE_SERVICE = "sys.load_fnd_language";
 
 	private static final String SYSTEM_PROMOT_SERVICE = "sys.load_system_prompts";
-
-	private static final String COMPANY_SERVICE = "sys.load_comany_prompts";
-
-	private static final String ROLE_SERVICE = "sys.load_role_prompts";
-
-	private static final String USER_SERVICE = "sys.load_user_prompts";
 
 	private Map resourceCache = new HashMap();
 

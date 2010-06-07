@@ -6,8 +6,9 @@
 
 package uncertain.util.reflect;
 
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  *

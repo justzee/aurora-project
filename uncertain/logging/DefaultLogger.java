@@ -4,9 +4,7 @@
  */
 package uncertain.logging;
 
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class DefaultLogger extends Logger implements ILogger {

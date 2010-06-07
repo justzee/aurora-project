@@ -3,10 +3,6 @@
  */
 package aurora.database.sql;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.naming.OperationNotSupportedException;
 
 public class SelectSource extends BaseTable {
     

@@ -11,7 +11,6 @@ import aurora.database.sql.AbstractStatement;
 import aurora.database.sql.FieldWithSource;
 import aurora.database.sql.ISqlStatement;
 import aurora.database.sql.InsertField;
-import aurora.database.sql.builder.ISqlBuilder;
 
 /** implements oracle returning into clause
  *  returning field1, field2, ... , fieldn into value1, value2, ... , valuen 

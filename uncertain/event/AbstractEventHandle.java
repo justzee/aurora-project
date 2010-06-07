@@ -4,8 +4,6 @@
 package uncertain.event;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ocm.ISingleton;
-import uncertain.proc.IEventHandle;
 import uncertain.proc.ProcedureRunner;
 
 public abstract class AbstractEventHandle implements ISingleEventHandle {

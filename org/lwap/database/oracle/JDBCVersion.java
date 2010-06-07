@@ -3,9 +3,6 @@
  */
 package org.lwap.database.oracle;
 
-import java.sql.Driver;
-
-import oracle.jdbc.driver.OracleDriver;
 
 public class JDBCVersion {
 

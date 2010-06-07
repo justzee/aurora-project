@@ -4,7 +4,6 @@ import java.io.Writer;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.lwap.database.DatabaseQuery;
 import org.lwap.mvc.DataBindingConvention;
 import org.lwap.mvc.excel.ExcelDataTable;
 

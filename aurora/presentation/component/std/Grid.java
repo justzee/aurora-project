@@ -52,7 +52,6 @@ public class Grid extends Component {
 	
 	private static final String COLUMN_TYPE = "type";
 	private static final String TYPE_CELL_CHECKBOX = "cellcheck";
-	private static final String TYPE_CELL_RADIO = "cellradio";
 	private static final String TYPE_ROW_CHECKBOX = "rowcheck";
 	private static final String TYPE_ROW_RADIO = "rowradio";
 	
@@ -290,7 +289,7 @@ public class Grid extends Component {
 				if("button".equals(item.getName())){
 					String type = item.getString("type");
 					if(!"".equals(type)){
-						//TODO:澶氳瑷�
+						//TODO:澶氳瑷�
 						if("add".equalsIgnoreCase(type)){
 							item = createButton(item,"鏂板","grid-add","background-position:0px 0px;","function(){$('"+dataset+"').create()}");
 						}else if("delete".equalsIgnoreCase(type)){

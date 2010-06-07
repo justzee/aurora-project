@@ -4,7 +4,6 @@
 package uncertain.ocm;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import uncertain.composite.CompositeMap;
-import uncertain.logging.DefaultLogger;
 import uncertain.logging.ILogger;
 
 /** Create object by constructor reflection, using instances associated with specific class

@@ -3,7 +3,6 @@
  */
 package aurora.application;
 
-import java.lang.reflect.Method;
 
 public class Version {
     

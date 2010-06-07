@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import uncertain.composite.CompositeMap;
-import uncertain.core.ConfigurationError;
 import uncertain.ocm.OCManager;
 
 public class Loop extends Procedure {

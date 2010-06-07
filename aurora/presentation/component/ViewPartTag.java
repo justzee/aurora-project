@@ -4,18 +4,13 @@
 package aurora.presentation.component;
 
 import java.io.Writer;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Level;
 
-import aurora.presentation.BuildSession;
-import aurora.presentation.ViewContext;
 import uncertain.composite.CompositeMap;
-import uncertain.core.ConfigurationError;
 import uncertain.logging.ILogger;
 import uncertain.util.template.ITagContent;
+import aurora.presentation.BuildSession;
+import aurora.presentation.ViewContext;
 
 public class ViewPartTag implements ITagContent {
 

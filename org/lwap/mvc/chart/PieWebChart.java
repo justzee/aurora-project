@@ -1,8 +1,6 @@
 package org.lwap.mvc.chart;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -20,8 +18,6 @@ import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.labels.StandardPieItemLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.servlet.ServletUtilities;
-import org.jfree.chart.title.LegendTitle;
-import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.urls.StandardPieURLGenerator;
 import org.jfree.data.DefaultPieDataset;
 

@@ -3,7 +3,6 @@
  */
 package aurora.presentation.markup;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import aurora.presentation.ViewContext;

@@ -4,11 +4,12 @@
  */
 package org.lwap.report;
 
-import org.lwap.database.*;
+import java.util.List;
 
-import uncertain.composite.*;
+import org.lwap.database.SQLSelectStatement;
 
-import java.util.*;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.DynamicObject;
  
 /**
  * 

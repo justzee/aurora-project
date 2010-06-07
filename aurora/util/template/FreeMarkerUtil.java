@@ -5,12 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-
-import uncertain.composite.CompositeMap;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;

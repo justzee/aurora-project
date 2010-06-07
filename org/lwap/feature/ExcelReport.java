@@ -4,13 +4,11 @@
 package org.lwap.feature;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.lwap.application.NoPrivilegeException;
-import org.lwap.application.WebApplication;
 import org.lwap.controller.MainService;
 import org.lwap.database.DBUtil;
 import org.lwap.database.oracle.BlobUtil;
@@ -20,7 +18,6 @@ import uncertain.composite.CompositeMap;
 import uncertain.event.Configuration;
 import uncertain.event.EventModel;
 import uncertain.logging.ILogger;
-import uncertain.logging.LoggingContext;
 import uncertain.proc.IFeature;
 import uncertain.proc.ProcedureRunner;
 

@@ -36,16 +36,11 @@ public class GridCustomizer {
 	private static final String COLUMN_ORDER = "ORDER_NUM";
 	private static final String COLUMN_WIDTH = "WIDTH";
 
-	private IObjectRegistry mRegistry;
-
-	private ILogger mLogger;
-
 	private DatabaseServiceFactory mSvcFactory;
 
 	private DataSource dataSource;
 
 	public GridCustomizer(IObjectRegistry registry, DatabaseServiceFactory factory, DataSource ds) {
-		mRegistry = registry;
 		mSvcFactory = factory;
 		dataSource = ds;
 	}

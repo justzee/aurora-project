@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import uncertain.util.AdaptiveTagParser;
 import org.lwap.mvc.servlet.ServletBuildSession;
 
 import uncertain.composite.CompositeMap;

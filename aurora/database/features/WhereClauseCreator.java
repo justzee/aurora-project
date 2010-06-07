@@ -11,7 +11,6 @@ import aurora.bm.Field;
 import aurora.bm.QueryField;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.RawSqlService;
-import aurora.database.service.ServiceOption;
 import aurora.database.sql.ConditionList;
 import aurora.database.sql.ISqlStatement;
 import aurora.database.sql.IWithWhereClause;

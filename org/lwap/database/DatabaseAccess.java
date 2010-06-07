@@ -7,7 +7,6 @@ package org.lwap.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

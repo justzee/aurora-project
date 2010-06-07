@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.lwap.application.BaseService;

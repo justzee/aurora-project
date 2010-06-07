@@ -5,7 +5,7 @@
  */
 
 package uncertain.util.reflect;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 /**
  *
  * @author  Administrator

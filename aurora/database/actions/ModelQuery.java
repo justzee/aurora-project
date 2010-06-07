@@ -3,20 +3,14 @@
  */
 package aurora.database.actions;
 
-import java.sql.Connection;
-import java.util.List;
-
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
-import uncertain.composite.transform.Transformer;
 import uncertain.ocm.OCManager;
-import uncertain.proc.ProcedureRunner;
 import aurora.database.FetchDescriptor;
 import aurora.database.IResultSetConsumer;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
-import aurora.database.service.ServiceOption;
 
 public class ModelQuery extends AbstractQueryAction {
  

@@ -6,7 +6,6 @@
 
 package uncertain.util;
 
-import uncertain.composite.TextParser.ParseHandle;
 
 /**
  * Parse tag in "copy $SOURCE_FILE $DEST_DIR" format

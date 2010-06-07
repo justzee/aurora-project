@@ -3,7 +3,6 @@
  */
 package uncertain.ocm;
 
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * IObjectCreator

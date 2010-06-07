@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.xml.sax.Locator;
-
 /** A Map with a list of child maps, and a name and namespace
  * for xml creation
  * @author Zhou Fan

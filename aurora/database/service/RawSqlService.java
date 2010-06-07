@@ -3,7 +3,6 @@
  */
 package aurora.database.service;
 
-import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Iterator;

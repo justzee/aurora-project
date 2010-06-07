@@ -5,7 +5,6 @@ package aurora.service.exception;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
-import uncertain.core.IGlobalInstance;
 import uncertain.ocm.ISingleton;
 import uncertain.proc.ProcedureRunner;
 import aurora.service.ServiceContext;

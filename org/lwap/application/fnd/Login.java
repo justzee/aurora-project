@@ -19,7 +19,6 @@ import javax.servlet.http.HttpSession;
 
 import org.lwap.application.BaseService;
 import org.lwap.controller.MainService;
-import org.lwap.validation.ValidationException;
 
 import uncertain.composite.CompositeMap;
 
