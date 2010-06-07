@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ss:schema xmlns:ss="http://www.uncertain-framework.org/schema/simple-schema">
+	<ss:elements>
+		<ss:element name="transform">
+			<ss:attributes>
+				<ss:attribute name="class"/>
+				<ss:attribute name="group-name"/>
+				<ss:attribute name="group-field"/>
+			</ss:attributes>
+			<ss:elements>
+				<ss:element name="group-field">
+					<ss:attributes>
+						<ss:attribute name="name"/>
+					</ss:attributes>
+				</ss:element>
+			</ss:elements>
+		</ss:element>
+		<ss:element name="query" type="ss:string" displayMask="{ElementName:${@ElementName};Target:${@Target}}" >
+			<ss:attributes>
+				<ss:attribute type="ss:string" use="optional" document="执行查询的SQL语句" name="Sql"/>
+				<ss:attribute type="ss:string" use="optional" document="如果设为true，将在web server的终端输出屏幕显示调试信息" name="Dump"/>
+				<ss:attribute type="ss:string" use="optional" document="查询产生的结果集的名称" name="Target"/>
+				<ss:attribute type="ss:string" use="optional" document="查询产生的结果集中，每条记录的名称" name="ElementName"/>
+				<ss:attribute type="ss:boolean" use="optional" document="查询结果集是否分页" name="PageResultset"/>
+				<ss:attribute type="ss:int" use="optional" document="每页记录数" name="PageSize"/>
+			</ss:attributes>
+			<ss:arrays>
+				<ss:array type="transform" name="transform-list"/>
+			</ss:arrays>
+			<ss:extensions>
+				<ss:extension base="BasicLWAPDatabaseAction"/>
+			</ss:extensions>
+		</ss:element>
+		<ss:element name="query-statement">
+			<ss:attributes>
+				<ss:attribute type="ss:string" use="optional" document="缺省查询条件，无论用户如何输入，该条件都会被拼接到SQL where部分" name="DefaultWhere"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="query"/>
+			</ss:extensions>
+		</ss:element>
+
+		<ss:element name="update" type="ss:string">
+			<ss:attributes>
+				<ss:attribute type="ss:string" use="optional" document="执行查询的SQL语句" name="Sql"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicLWAPDatabaseAction"/>
+			</ss:extensions>
+		</ss:element>
+
+		<ss:element name="batch">
+			<ss:attributes>
+				<ss:attribute use="required" name="BatchSource"/>
+				<ss:attribute name="AllowPartialFailure"/>
+				<ss:attribute name="SuccessFlagPath"/>
+				<ss:attribute name="FailedRecordPath"/>
+				<ss:attribute name="ExceptionHandlePath"/>
+			</ss:attributes>
+			<ss:extensions>
+				<ss:extension base="BasicLWAPDatabaseAction"/>
+			</ss:extensions>
+		</ss:element>
+
+		<ss:element name="procedure">
+			<ss:attributes>
+				<ss:attribute use="required" name="Name"/>
+				<ss:attribute name="ReturnTarget"/>
+				<ss:attribute name="ReturnField"/>
+				<ss:attribute name="DataType"/>
+			</ss:attributes>
+			<ss:elements>
+				<ss:element name="param">
+					<ss:attributes>
+						<ss:attribute name="InputField"/>
+						<ss:attribute name="DataType"/>
+						<ss:attribute name="ReturnField"/>
+						<ss:attribute name="Value"/>
+						<ss:attribute name="DBTypeName"/>
+					</ss:attributes>
+				</ss:element>
+			</ss:elements>
+			<ss:extensions>
+				<ss:extension base="BasicLWAPDatabaseAction"/>
+			</ss:extensions>
+		</ss:element>
+	</ss:elements>
+</ss:schema>
