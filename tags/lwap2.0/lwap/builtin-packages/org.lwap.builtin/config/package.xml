@@ -1,6 +1,0 @@
-<package name="lwap.components/config">
-	<schema-files>
-		<schema-file path="lwap_core.sxsd"/>
-		<schema-file path="lwap_model.sxsd"/>
-	</schema-files>
-</package>
