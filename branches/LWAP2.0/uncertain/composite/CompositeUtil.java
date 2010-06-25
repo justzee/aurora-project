@@ -475,4 +475,23 @@ public class CompositeUtil {
 		return connectAttribute(root, attrib_name, ",");
 	}
 
+	public static CompositeMap attributeNameToLower(CompositeMap map){			
+			Set keySet=map.keySet();			
+			Iterator it=keySet.iterator();	
+			CompositeMap newMap=(CompositeMap)map.clone();
+			while (it.hasNext()) {
+				String key = (String) it.next();
+				Object vlaue=map.get(key);
+				newMap.remove(key);
+				newMap.put(key.toLowerCase(), vlaue);				
+			}	
+			Iterator childIt=newMap.getChildIterator();
+			if(childIt!=null){
+				while (childIt.hasNext()) {
+					CompositeMap child = (CompositeMap) childIt.next();					
+					newMap.replaceChild(child, attributeNameToLower(child));
+				}
+			}		
+		return newMap;
+	}
 }
