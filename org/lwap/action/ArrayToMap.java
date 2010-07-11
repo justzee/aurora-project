@@ -12,6 +12,9 @@ import oracle.sql.Datum;
 import oracle.sql.STRUCT;
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
+import uncertain.ocm.IObjectRegistry;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 
@@ -21,10 +24,10 @@ import uncertain.proc.ProcedureRunner;
  */
 public class ArrayToMap extends AbstractEntry {
     
-    Logger  logger;
+	ILogger  logger;
     
-    public ArrayToMap(Logger l){
-        this.logger = l;
+    public ArrayToMap(IObjectRegistry reg){
+        this.logger = LoggingContext.getLogger("org.lwap.action.ArrayToMap", reg);
     }
     
     public String Array_path;
