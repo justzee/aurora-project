@@ -62,7 +62,7 @@ public class DateUtil {
 		calendar.set(Calendar.DAY_OF_MONTH,1);
 		while(calendar.getTime().getMonth()==date.getMonth()){
 			record=new CompositeMap("record");
-			record.put("TITLE", new String(df.format(calendar.getTime())));
+			record.put("PROMPT", new String(df.format(calendar.getTime())));
 			map.addChild(record);
 			calendar.add(Calendar.DATE, 1);
 		}
@@ -75,7 +75,7 @@ public class DateUtil {
 		calendar.set(Calendar.DAY_OF_MONTH,1);
 		for(int i=0;i<12;i++){			
 			record=new CompositeMap("record");
-			record.put("TITLE", new String(df.format(calendar.getTime())));
+			record.put("PROMPT", new String(df.format(calendar.getTime())));
 			map.addChild(record);
 			calendar.add(Calendar.MONTH, 1);
 		}
@@ -88,7 +88,7 @@ public class DateUtil {
 		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		while(calendar.getTime().compareTo(dateTo)!=1){
 			record=new CompositeMap("record");
-			record.put("TITLE", new String(df.format(calendar.getTime())));
+			record.put("PROMPT", new String(df.format(calendar.getTime())));
 			map.addChild(record);
 			calendar.add(Calendar.DATE, 7);
 		}
