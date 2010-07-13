@@ -20,7 +20,6 @@ import uncertain.composite.TextParser;
 
 public class ExcelFactoryImpl {
 	CompositeMap dataModel;
-
 	public File createExcel(CompositeMap dataModel, ExcelReport config)throws Exception {
 		File f = null;
 		Workbook wb = null;
@@ -33,7 +32,9 @@ public class ExcelFactoryImpl {
 		this.dataModel = dataModel;
 		boolean is_xls = "xls".equalsIgnoreCase(config.getFileFormat()) ? true
 				: false;
-		String template = is_xls ? config.getTemplate() + ".xlt" : config
+		String template=config.getTemplate();	
+		if(template!=null)
+			template = is_xls? template + ".xlt" : config
 				.getTemplate() + ".xlsx";
 		String templatePath=config.getTemplatePath();	
 		File filePath=new File(templatePath);
@@ -50,7 +51,6 @@ public class ExcelFactoryImpl {
 			wb = is_xls ? new HSSFWorkbook(is) : new XSSFWorkbook(is);
 		else
 			wb = is_xls ? new HSSFWorkbook() : new XSSFWorkbook();
-
 		sheetConfigs = config.getExcelSheets();
 		for (int i = 0, size = sheetConfigs.size(); i < size; i++) {
 			sheetConfig = sheetConfigs.get(i);
