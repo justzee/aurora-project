@@ -1,6 +1,7 @@
 package org.lwap.plugin.util;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.TextParser;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 
@@ -62,6 +63,9 @@ public class ConvertDateByUnit extends AbstractEntry{
 		// TODO Auto-generated method stub
 		CompositeMap config = runner.getContext();
 		CompositeMap model=config.getChild("model");
+		unit=TextParser.parse(unit,model);
+		dateFom=TextParser.parse(dateFom,model);
+		dateTo=TextParser.parse(dateTo,model);
 		CompositeMap child=null;
 		DateUtil tool=new DateUtil();
 		if(KEY_DAY_OF_MONTH.equalsIgnoreCase(unit))

@@ -35,7 +35,7 @@ public class DateUtil {
 	public CompositeMap convetDateByUnit(String dateFromString,String dateToString,int unit) throws Exception{
 		Date fromDate=df.parse(dateFromString);
 		Date ToDate=null;
-		if(dateToString!=null){
+		if(dateToString!=null&&!"".equalsIgnoreCase(dateToString)){
 			ToDate=df.parse(dateToString);
 		}		
 		return convetDateByUnit(fromDate,ToDate,unit);
@@ -63,6 +63,7 @@ public class DateUtil {
 		while(calendar.getTime().getMonth()==date.getMonth()){
 			record=new CompositeMap("record");
 			record.put("PROMPT", new String(df.format(calendar.getTime())));
+			record.put("DATA_INDEX", new String(df.format(calendar.getTime())));
 			map.addChild(record);
 			calendar.add(Calendar.DATE, 1);
 		}
@@ -76,6 +77,7 @@ public class DateUtil {
 		for(int i=0;i<12;i++){			
 			record=new CompositeMap("record");
 			record.put("PROMPT", new String(df.format(calendar.getTime())));
+			record.put("DATA_INDEX", new String(df.format(calendar.getTime())));
 			map.addChild(record);
 			calendar.add(Calendar.MONTH, 1);
 		}
@@ -89,6 +91,7 @@ public class DateUtil {
 		while(calendar.getTime().compareTo(dateTo)!=1){
 			record=new CompositeMap("record");
 			record.put("PROMPT", new String(df.format(calendar.getTime())));
+			record.put("DATA_INDEX", new String(df.format(calendar.getTime())));
 			map.addChild(record);
 			calendar.add(Calendar.DATE, 7);
 		}
