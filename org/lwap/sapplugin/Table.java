@@ -49,7 +49,7 @@ public class Table {
      * 'map': the result is fetched as CompositeMap
      * 'array': the result is fetched as java.sql.Array
      */
-    public String   Fetch_type = "array";
+    public String   Fetch_type = "map";
     
     /**
      * For fetch_type 'array': Name of PL/SQL collection type
