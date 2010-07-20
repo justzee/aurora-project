@@ -120,10 +120,16 @@ public class JcoInvoke extends AbstractEntry {
                         if(table.isImport()){
                            JCO.Table tbl = table.getJCOTable(list);
                            Object o = context.getObject(table.Source_field);
-                           if(!(o instanceof Array))
-                               throw new IllegalArgumentException("Object from context path "+table.Source_field+" is should be of type java.sql.Array");
                            logger.config("transfer import table "+table.Name+" from '"+table.Source_field+"':" + o);
-                           table.fillJCOTable(tbl,(Array)o);
+                           if(table.isFetchTypeArray()){
+	                           if(!(o instanceof Array))
+	                               throw new IllegalArgumentException("Object from context path "+table.Source_field+" is should be of type java.sql.Array");	                           
+	                           table.fillJCOTable(tbl,(Array)o);
+                           }else if(table.isFetchTypeMap()){
+                        	   if(!(o instanceof CompositeMap))
+	                               throw new IllegalArgumentException("Object from context path "+table.Source_field+" is should be of type uncertain.composite.CompositeMap");
+                        	   table.fillCompositeMap(tbl, (CompositeMap)o);
+                           }                           
                         }                        
                     }
                 }
