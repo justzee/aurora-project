@@ -16,6 +16,7 @@ public class DateUtil {
     public final static int KEY_FRIDAY=6;
     public final static int KEY_SATURDAY=7;
     public final static int KEY_SUNDAY=8;
+    public final static int KEY_MONTH=9;
 	DateFormat df=new SimpleDateFormat("yyyy-MM-dd");		
 	TimeZone timeZone=TimeZone.getDefault();	
 	Calendar calendar =Calendar.getInstance(timeZone);
@@ -31,31 +32,32 @@ public class DateUtil {
 	public void setTimeZone(TimeZone timeZone) {
 		calendar.setTimeZone(timeZone);
 		this.timeZone = timeZone;
-	}
-	public CompositeMap convetDateByUnit(String dateFromString,String dateToString,int unit) throws Exception{
+	}	
+	public CompositeMap getRange(String dateFromString,String dateToString,int unit) throws Exception{
 		Date fromDate=df.parse(dateFromString);
 		Date ToDate=null;
 		if(dateToString!=null&&!"".equalsIgnoreCase(dateToString)){
 			ToDate=df.parse(dateToString);
 		}		
-		return convetDateByUnit(fromDate,ToDate,unit);
+		return getRange(fromDate,ToDate,unit);
 	}
-	public CompositeMap convetDateByUnit(Date dateFrom,Date dateTo,int unit){
+	public CompositeMap getRange(Date dateFrom,Date dateTo,int unit){
 		CompositeMap map=null;
 		switch(unit){
-			case 0:map=convetDateByDayOfMonth(dateFrom);break;
-			case 1:map=convetDateByMonthOfYear(dateFrom);break;
-			case 2:map=convetDateByMonday(dateFrom,dateTo);break;
-			case 3:map=convetDateByTuesday(dateFrom,dateTo);break;
-			case 4:map=convetDateByWednesday(dateFrom,dateTo);break;
-			case 5:map=convetDateByThursday(dateFrom,dateTo);break;
-			case 6:map=convetDateByFriday(dateFrom,dateTo);break;
-			case 7:map=convetDateBySaturday(dateFrom,dateTo);break;
-			case 8:map=convetDateBySunday(dateFrom,dateTo);break;
+			case KEY_DAY_OF_MONTH:map=getRangeByDayOfMonth(dateFrom);break;
+			case KEY_MONTH_OF_YEAR:map=getRangeByMonthOfYear(dateFrom);break;
+			case KEY_MONDAY:map=getRangeByMonday(dateFrom,dateTo);break;
+			case KEY_TUESDAY:map=getRangeByTuesday(dateFrom,dateTo);break;
+			case KEY_WEDNESDAY:map=getRangeByWednesday(dateFrom,dateTo);break;
+			case KEY_THURSDAY:map=getRangeByThursday(dateFrom,dateTo);break;
+			case KEY_FRIDAY:map=getRangeByFriday(dateFrom,dateTo);break;
+			case KEY_SATURDAY:map=getRangeBySaturday(dateFrom,dateTo);break;
+			case KEY_SUNDAY:map=getRangeBySunday(dateFrom,dateTo);break;
+			case KEY_MONTH:map=getRangeByMonth(dateFrom,dateTo);break;
 		}		
 		return map;
 	}
-	private CompositeMap convetDateByDayOfMonth(Date date){
+	private CompositeMap getRangeByDayOfMonth(Date date){
 		CompositeMap map=new CompositeMap();
 		CompositeMap record;		
 		calendar.setTime(date);
@@ -69,7 +71,21 @@ public class DateUtil {
 		}
 		return map;
 	}
-	private CompositeMap convetDateByMonthOfYear(Date date){
+	private CompositeMap getRangeByMonth(Date dateFrom,Date dateTo){
+		CompositeMap map=new CompositeMap();
+		CompositeMap record;
+		calendar.setTime(dateFrom);
+		calendar.set(Calendar.DAY_OF_MONTH,1);
+		while(dateTo.compareTo(calendar.getTime())!=-1){
+			record=new CompositeMap("record");
+			record.put("PROMPT", new String(df.format(calendar.getTime())));
+			record.put("DATA_INDEX", new String(df.format(calendar.getTime())));
+			map.addChild(record);
+			calendar.add(Calendar.MONTH, 1);
+		}	
+		return map;
+	}
+	private CompositeMap getRangeByMonthOfYear(Date date){
 		CompositeMap map=new CompositeMap();
 		CompositeMap record;
 		calendar.setTime(date);
@@ -83,7 +99,7 @@ public class DateUtil {
 		}
 		return map;
 	}
-	private CompositeMap convetDateByMonday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeByMonday(Date dateFrom,Date dateTo){
 		CompositeMap map=new CompositeMap();
 		CompositeMap record;
 		calendar.setTime(dateFrom);
@@ -97,22 +113,22 @@ public class DateUtil {
 		}
 		return map;
 	}
-	private CompositeMap convetDateByTuesday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeByTuesday(Date dateFrom,Date dateTo){
 		return null;
 	}
-	private CompositeMap convetDateByWednesday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeByWednesday(Date dateFrom,Date dateTo){
 		return null;
 	}
-	private CompositeMap convetDateByThursday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeByThursday(Date dateFrom,Date dateTo){
 		return null;
 	}
-	private CompositeMap convetDateByFriday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeByFriday(Date dateFrom,Date dateTo){
 		return null;
 	}
-	private CompositeMap convetDateBySaturday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeBySaturday(Date dateFrom,Date dateTo){
 		return null;
 	}
-	private CompositeMap convetDateBySunday(Date dateFrom,Date dateTo){
+	private CompositeMap getRangeBySunday(Date dateFrom,Date dateTo){
 		return null;
-	}
+	}	
 }
