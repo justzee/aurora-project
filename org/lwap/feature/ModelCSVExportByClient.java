@@ -5,7 +5,6 @@ package org.lwap.feature;
 
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +20,8 @@ import uncertain.composite.DynamicObject;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.event.EventModel;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.IFeature;
 import uncertain.proc.ProcedureRunner;
 
@@ -42,7 +43,7 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
     
     String	        mRootPath;
     CompositeMap	mQueryActionConfig;
-    Logger          mLogger;
+    ILogger          mLogger;
     
     //String  query_name;
     boolean in_generate_state = false;
@@ -51,7 +52,6 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
     
     public ModelCSVExportByClient(UncertainEngine engine){
         super(engine);
-        mLogger = engine.getLogger();
     }
     
     public int detectAction( HttpServletRequest request, CompositeMap context ){
@@ -70,6 +70,7 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
     public void postPrepareService( ProcedureRunner runner ){
         if(ServiceInstance==null)
             ServiceInstance = MainService.getServiceInstance(runner.getContext());
+        mLogger = LoggingContext.getLogger(runner.getContext(), "org.lwap.service");
         String s = ServiceInstance.getParameters().getString(Parameter_name);
         if("true".equalsIgnoreCase(s))
             in_generate_state = true;
@@ -95,8 +96,8 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
         mQueryActionConfig = config;
         mRootPath = config.getString("rootpath");
         if(mRootPath==null ){
-            mLogger.warning("[ModelCSVExportByClient]: 'rootpath' property must be set to a path to dataModel");
-            mLogger.warning(config.toXML());
+            //mLogger.warning("[ModelCSVExportByClient]: 'rootpath' property must be set to a path to dataModel");
+            //mLogger.warning(config.toXML());
             return IFeature.NO_FEATURE_INSTANCE;
         }
         else{
@@ -112,6 +113,7 @@ public class ModelCSVExportByClient extends AbstractController implements IFeatu
     }
     
     public int preCreateSuccessResponse(ProcedureRunner runner) throws Exception {
+    	mLogger.info("ModelCSVExportByClient.....");
         if(!in_generate_state){
             return EventModel.HANDLE_NORMAL;
         }
