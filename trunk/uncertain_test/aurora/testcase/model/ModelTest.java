@@ -33,7 +33,7 @@ public class ModelTest extends AbstractModelServiceTest {
 
     protected void setUp() throws Exception {
         super.setUp();
-        factory = new ModelFactory(super.uncertainEngine);
+        factory = new ModelFactory(super.uncertainEngine.getOcManager());
     }
 
     
