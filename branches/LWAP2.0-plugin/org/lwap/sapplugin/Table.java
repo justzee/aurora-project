@@ -187,6 +187,7 @@ public class Table {
             logger.info("\r\nTable transfered");
         }
     }
+    //add by 1266@hand 2010-7-26
     public void fillJCOTable(JCO.Table table,  CompositeMap map){      
         List records=map.getChilds();        
         table.appendRows(records.size());      
@@ -205,8 +206,10 @@ public class Table {
             	String source_name=key;
             	String field_name = source_name;
             	FieldMapping mapping = (FieldMapping)source_map.get(source_name.toLowerCase());
-            	if(mapping!=null) field_name = mapping.Name;
-                table.setValue(value, field_name);
+            	if(mapping!=null){ //页面传过来的CompositeMap参数比较多，在页面做参数过滤比较复杂。这个和数据库table有些区别
+            		field_name = mapping.Name;
+            		table.setValue(value, field_name);
+            	}
                 if(Dump){
                     logger.info(field_name+" -> "+value);
                 }
