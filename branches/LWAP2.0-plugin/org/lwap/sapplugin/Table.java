@@ -67,7 +67,7 @@ public class Table {
     
     ILogger              logger;    
     
-    boolean Dump = false;
+    boolean Dump = true;
     
     FieldMapping[]  field_mappings;
     HashMap         source_map;
@@ -188,7 +188,8 @@ public class Table {
         }
     }
     //add by 1266@hand 2010-7-26
-    public void fillJCOTable(JCO.Table table,  CompositeMap map){      
+    public void fillJCOTable(JCO.Table table,  CompositeMap context){ 
+    	CompositeMap map=(CompositeMap)context.getObject(Source_field);
         List records=map.getChilds();        
         table.appendRows(records.size());      
         if(Dump){
@@ -197,15 +198,13 @@ public class Table {
         Iterator iterator=records.iterator();
         while(iterator.hasNext()){
         	CompositeMap record=(CompositeMap)iterator.next();
-        	Set keySet=record.keySet();
+        	Set keySet=name_map.keySet();
             Iterator it=keySet.iterator();
             int i=0;
             while(it.hasNext()){
-            	String key=(String)it.next();
-            	Object value=record.get(key);
-            	String source_name=key;
-            	String field_name = source_name;
-            	FieldMapping mapping = (FieldMapping)source_map.get(source_name.toLowerCase());
+            	String field_name=(String)it.next();
+            	FieldMapping mapping = (FieldMapping)name_map.get(field_name.toLowerCase());
+            	Object value=record.getObject(mapping.Source_name);
             	if(mapping!=null){ //页面传过来的CompositeMap参数比较多，在页面做参数过滤比较复杂。这个和数据库table有些区别
             		field_name = mapping.Name;
             		table.setValue(value, field_name);
