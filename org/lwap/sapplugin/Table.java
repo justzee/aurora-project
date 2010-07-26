@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import oracle.sql.ARRAY;
@@ -184,7 +187,38 @@ public class Table {
             logger.info("\r\nTable transfered");
         }
     }
-    
+    public void fillJCOTable(JCO.Table table,  CompositeMap map){      
+        List records=map.getChilds();        
+        table.appendRows(records.size());      
+        if(Dump){
+            logger.info("Appending " + records.size() +" rows to ABAP table " + Name);
+        }
+        Iterator iterator=records.iterator();
+        while(iterator.hasNext()){
+        	CompositeMap record=(CompositeMap)iterator.next();
+        	Set keySet=record.keySet();
+            Iterator it=keySet.iterator();
+            int i=0;
+            while(it.hasNext()){
+            	String key=(String)it.next();
+            	Object value=record.get(key);
+            	String source_name=key;
+            	String field_name = source_name;
+            	FieldMapping mapping = (FieldMapping)source_map.get(source_name.toLowerCase());
+            	if(mapping!=null) field_name = mapping.Name;
+                table.setValue(value, field_name);
+                if(Dump){
+                    logger.info(field_name+" -> "+value);
+                }
+                table.nextRow();
+                logger.info("================ end line "+i+"=====================");
+                i++;
+            }     
+        }        
+        if(Dump){
+            logger.info("\r\nTable transfered");
+        }
+    }
     /**
      * Fill a CompositeMap with records fetched from JCO.Table
      * @param records An instance of JCO.Table containing data
