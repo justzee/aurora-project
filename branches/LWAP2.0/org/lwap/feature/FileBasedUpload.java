@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -175,22 +176,37 @@ public class FileBasedUpload extends UploadFileHandle {
 	            }
 	
 	        } finally{
-	            try{
-	                DBUtil.closeConnection(conn);
+                    DBUtil.closeStatement(pst);
 	                DBUtil.closeResultSet(rs);
-	                DBUtil.closeStatement(pst);
-	                if(rbc!=null) rbc.close();
-	                if(pst!=null) pst.close();
-	                if(is!=null) is.close();
-	                if(os!=null) 
-	                    os.close();
-	            }catch(Exception ex){
-	                ex.printStackTrace();
-	            }
+                    DBUtil.closeConnection(conn);
+                    closeChannel(rbc);
+                    closeChannel(wbc);
+                    try{
+                        if(is!=null) is.close();
+                    }catch(Exception ex){
+                        
+                    }
+                    try{
+    	                if(os!=null) 
+    	                    os.close();
+                    }catch(Exception ex){
+                        
+                    }
 	        }
         }    
         return EventModel.HANDLE_NO_SAME_SEQUENCE;
     }
+    
+    private void closeChannel(Channel ch){
+        if(ch!=null)
+        try{
+            ch.close();
+        }catch(Exception ex){
+            
+        }
+    }
+  
+    
     private void deleteFile(CompositeMap model)throws Exception{  
     	String path=null;    	
     	CompositeMap m = (CompositeMap)model.getObject(dataModel);    	
