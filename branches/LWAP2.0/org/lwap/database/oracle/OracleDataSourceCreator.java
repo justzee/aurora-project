@@ -96,6 +96,8 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
                 occi.setMaxLimit(datasource_config.getInt(KEY_MAX_CONN, 10));
                 occi.setMinLimit(datasource_config.getInt(KEY_MIN_CONN, 1));
                 occi.setCacheScheme(OracleConnectionCacheImpl.FIXED_RETURN_NULL_SCHEME);
+                occi.setCacheInactivityTimeout(60*60*1000);
+                
             } catch (SQLException ex) {
                 throw new ApplicationInitializeException(ex);
             }
