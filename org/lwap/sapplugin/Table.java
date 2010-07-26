@@ -212,11 +212,11 @@ public class Table {
             	}
                 if(Dump){
                     logger.info(field_name+" -> "+value);
-                }
-                table.nextRow();
-                logger.info("================ end line "+i+"=====================");
-                i++;
-            }     
+                }     
+            }    
+            table.nextRow();
+            logger.info("================ end line "+i+"=====================");
+            i++;
         }        
         if(Dump){
             logger.info("\r\nTable transfered");
