@@ -124,7 +124,7 @@ public class JcoInvoke extends AbstractEntry {
                            if(o instanceof Array)
                         	   table.fillJCOTable(tbl,(Array)o);
                     	   if(o instanceof CompositeMap)
-                    		   table.fillCompositeMap(tbl, (CompositeMap)o);                                                     
+                    		   table.fillJCOTable(tbl, (CompositeMap)o);                                                     
                         }                        
                     }
                 }
