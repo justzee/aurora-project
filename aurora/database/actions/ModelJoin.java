@@ -11,7 +11,7 @@ public class ModelJoin extends AbstractEntry{
     private String source;
     private String keyword;
     private  CompositeMap  resComposteMap= new CompositeMap();
-	private String target;
+	private String rootpath;
 	private String sharefield;
 	private String valuefield;
     public String getSharefield() {
@@ -26,11 +26,11 @@ public class ModelJoin extends AbstractEntry{
 	public void setValuefield(String valuefiled) {
 		this.valuefield = valuefiled;
 	}
-	public String getTarget() {
-		return target;
+	public String getRootpath() {
+		return rootpath;
 	}
-	public void setTarget(String target) {
-		this.target = target;
+	public void setRootpath(String rootpath) {
+		this.rootpath = rootpath;
 	}
 	public String getSource() {
 		return source;
@@ -47,7 +47,7 @@ public class ModelJoin extends AbstractEntry{
 
 	public void run(ProcedureRunner runner) throws Exception {
 		 CompositeMap cm = runner.getContext();
-		 CompositeMap cmc =cm.createChildByTag(this.getTarget());
+		 CompositeMap cmc =cm.createChildByTag(this.getRootpath());
 		 String [] sourcelist = this.source.split(",");
 		 String [] keylist = this.keyword.split(",");
 		 for (int i =0;i<sourcelist.length;i++){
