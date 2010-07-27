@@ -66,6 +66,9 @@ public class CalendarRange extends AbstractEntry{
 		CompositeMap model=config.getChild("model");
 		unit=TextParser.parse(unit,model);
 		dateFom=TextParser.parse(dateFom,model);
+		if("".equalsIgnoreCase(dateFom)){
+			return;
+		}
 		dateTo=TextParser.parse(dateTo,model);
 		CompositeMap child=null;
 		DateUtil tool=new DateUtil();
