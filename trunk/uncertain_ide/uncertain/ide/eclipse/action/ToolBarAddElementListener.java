@@ -3,9 +3,6 @@ package uncertain.ide.eclipse.action;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -20,45 +17,40 @@ import org.eclipse.swt.widgets.ToolItem;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.CompositeMapViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Element;
 
 public class ToolBarAddElementListener implements Listener {
 	private ToolBar toolBar;
 	private Menu menu;
 	private ToolItem item;
-
-	private IContainer container;
-
+	private CompositeMapViewer viewer;
 	public ToolBarAddElementListener(ToolBar toolBar, Menu menu, ToolItem item,
-			 IContainer container) {
+			CompositeMapViewer container) {
 		this.toolBar = toolBar;
 		this.menu = menu;
 		this.item = item;
-		this.container = container;
+		this.viewer = container;
 
 	}
 
 	public void handleEvent(Event event) {
 		if (event.detail == SWT.ARROW) {
-			// 获得当前选中的节点
-			ISelection selection = ((ColumnViewer)container.getViewer()).getSelection();
-			Object obj = ((IStructuredSelection) selection).getFirstElement();
-			final CompositeMap selectedCM = (CompositeMap) obj;
+			CompositeMap selectedCM = viewer.getFocus();
 			if(selectedCM == null)return;
-
-			// 清空原先的子菜单
 			MenuItem[] mi = menu.getItems();
 			for (int i = 0; i < mi.length; i++) {
 				mi[i].dispose();
 			}
 
-			Element element = Common.getSchemaManager().getElement(
+			Element element = LoadSchemaManager.getSchemaManager().getElement(
 					selectedCM);
 
 			if (element == null) {
-				Common.showWarningMessageBox(null, Common.getString("undefined.self.element"));
+				CustomDialog.showWarningMessageBox(null, LocaleMessage.getString("undefined.self.element"));
 				return;
 			}
 
@@ -72,8 +64,8 @@ public class ToolBarAddElementListener implements Listener {
 					Element ele = (Element) object;
 					final QualifiedName qName = ele.getQName();
 					MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
-					itemPush.addListener(SWT.Selection, new AddElementListener(container, selectedCM, qName));
-					String text = Common.getElementFullName(selectedCM, qName);
+					itemPush.addListener(SWT.Selection, new AddElementListener(viewer, selectedCM, qName));
+					String text = CompositeMapAction.getElementFullName(selectedCM, qName);
 					itemPush.setText(text);
 					itemPush.setImage(getIcon());
 				}
@@ -87,6 +79,6 @@ public class ToolBarAddElementListener implements Listener {
 		}
 	}
 	private Image getIcon(){
-		return Activator.getImageDescriptor(Common.getString("element.icon")).createImage();
+		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon")).createImage();
 	}
 }

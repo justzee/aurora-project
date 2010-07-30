@@ -12,6 +12,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+
 
 /**
  * The activator class controls the plug-in life cycle
@@ -86,7 +88,7 @@ public class Activator extends AbstractUIPlugin {
 		try {
 			wp.openEditor(new FileEditorInput(file), id);
 		} catch (PartInitException e) {
-			Common.showExceptionMessageBox(null, e);
+			CustomDialog.showExceptionMessageBox(e);
 		}
 	}
 

@@ -4,13 +4,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.eclipse.editor.ITableViewer;
 import uncertain.schema.Attribute;
 
 public class StringTextCellEditor extends AbstractTextCellEditor {
 
-	StringTextCellEditor(IContainer container, CompositeMap record,Attribute property,TableItem item) {
-		super(container, record,property,item);
+	/**
+	 * @param tableViewer
+	 * @param property
+	 * @param record it can be null in grid table
+	 * @param item it can be null in grid table
+	 */
+	StringTextCellEditor(ITableViewer tableViewer, Attribute property,
+			CompositeMap record, TableItem item) {
+		super(tableViewer, property, record, item);
 	}
 
 	public void createCellEditor(Composite parent) {

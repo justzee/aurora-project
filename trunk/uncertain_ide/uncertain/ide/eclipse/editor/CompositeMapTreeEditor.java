@@ -1,116 +1,70 @@
 package uncertain.ide.eclipse.editor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.FormEditor;
-import org.xml.sax.SAXException;
+import org.eclipse.jface.viewers.StructuredSelection;
 
-import uncertain.composite.CompositeLoader;
-import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.action.InputFileListener;
-import uncertain.ide.eclipse.editor.textpage.TextPage;
+import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.action.CompositeMapLocatorParser;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 
-public abstract class CompositeMapTreeEditor extends FormEditor {
+public abstract class CompositeMapTreeEditor extends BaseCompositeMapEditor {
 
-	protected CompositeMapTreePage treePage ;
-	protected TextPage textPage = new TextPage(this);
-	private boolean dirty = false;
-	private File file;
-
+	
+	protected CompositeMapTreePage treePage;
+	
 	public CompositeMapTreeEditor() {
 		super();
-		initTreePage();
 	}
-	protected abstract void initTreePage();
+	
+	public CompositeMapPage initMainViewerPage(){
+		this.treePage = initTreePage();
+		return treePage;
+	}
+	public abstract CompositeMapTreePage initTreePage();
+	
+	protected void pageChange(int newPageIndex){
+		int currentPage = getCurrentPage();
+		super.pageChange(newPageIndex);
+		if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
+			locateTextPage();
+		}else if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
+			locateTreePage();
+		}
+	}
+	private void locateTreePage(){
+		CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
 
-	protected void addPages() {
 		try {
-			addPage(treePage);
-			addPage(textPage);
-		} catch (PartInitException e) {
-			Common.showExceptionMessageBox(null, e);
+			InputStream content = new ByteArrayInputStream(textPage.getContent()
+					.getBytes("UTF-8"));
+			CompositeMap  cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
+			treePage.getTreeViewer().expandToLevel(
+					cm, 0);
+			treePage.getTreeViewer().setSelection(
+					new StructuredSelection(cm), true);
+		} catch (Exception e){
+			CustomDialog.showExceptionMessageBox(e);
 		}
-	}
 
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		if (!(input instanceof IFileEditorInput))
-			throw new PartInitException(
-					"Invalid Input: Must be IFileEditorInput");
-		setSite(site);
-		setInput(input);
-		Activator.getWorkspace().addResourceChangeListener(
-				new InputFileListener(this));
-		IFile ifile = ((IFileEditorInput) input).getFile();
-		file = new File(Common.getIfileLocalPath(ifile));
-		String fileName = file.getName();
-		// setPartName(fileName + " - " + getPartName());
-		setPartName(fileName);
-	
 	}
-
-	public void doSave(IProgressMonitor monitor) {
-		if(!textPage.canLeaveThePage())
+	private void locateTextPage(){
+		CompositeMap selection = treePage.getSelection();
+		if(selection == null)
 			return;
-		setDirty(false);
-		treePage.doSave(monitor);
-//		textPage.doSave(monitor);
-	}
+		CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
 
-	public void doSaveAs() {
-	}
-
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
-
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
-		super.editorDirtyStateChanged();
-	}
-
-	public boolean isDirty() {
-		return dirty;
-	}
-
-	public File getFile() {
-		return file;
-	}
-
-	public void makeDirty() {
-		setDirty(true);
-	}
-
-	public void editorDirtyStateChanged() {
-		if(!dirty)
-			setDirty(true);
-		if(dirty){
-			if(textPage.isModify()){
-				CompositeLoader loader = new CompositeLoader();
-				try {
-					treePage.refresh(loader.loadFromString(textPage.getOriginalContent(),"utf-8"));
-				} catch (IOException e) {
-					throw new RuntimeException(e.getLocalizedMessage());
-				} catch (SAXException e) {
-					throw new RuntimeException(e.getLocalizedMessage());
-				}
-				textPage.setModify(false);
-			}else if(treePage.isModify()){
-//				auroraPage.data
-//				System.out.println("to xml:"+mainFormPage.getData().toXML());
-				textPage.refresh(treePage.getData().toXML());
-				treePage.setModify(false);
-			}
+		int line = 0;
+		try {
+			InputStream content = new ByteArrayInputStream(treePage.getFullContent()
+					.getBytes("UTF-8"));
+			line = parser.LocateCompositeMapLine(content, selection);
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
 		}
+		int offset = textPage.getOffsetFromLine(line);
+		textPage.setHighlightRange(offset, 10, true);
 	}
-	
-
 }

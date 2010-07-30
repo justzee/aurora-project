@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.bm;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -27,7 +27,8 @@ import org.eclipse.swt.widgets.Text;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.PlainCompositeMapContentProvider;
 import uncertain.ide.eclipse.editor.widgets.PlainCompositeMapLabelProvider;
 
@@ -55,7 +56,7 @@ public class BmTablePage extends WizardPage {
 	 */
 	private final String[] ColumnProperties = { "sequence", "TABLE_NAME",
 			"TABLE_CAT", "TABLE_SCHEM", "TABLE_TYPE", "REMARKS" };
-	private final String[] ColumnText = { Common.getString("sequence"),
+	private final String[] ColumnText = { LocaleMessage.getString("sequence"),
 			"TABLE_NAME", "TABLE_CAT", "TABLE_SCHEM", "TABLE_TYPE", "REMARKS" };
 	DatabaseMetaData m_DBMetaData;
 
@@ -77,7 +78,7 @@ public class BmTablePage extends WizardPage {
 			m_DBMetaData = dbConnection.getMetaData();
 			input = getInput(m_DBMetaData, "%");
 		} catch (Exception e) {
-			Common.showExceptionMessageBox(null, e);
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		
 		Composite container = new Composite(parent, SWT.NULL);
@@ -91,7 +92,7 @@ public class BmTablePage extends WizardPage {
 		container.setLayout(layout);
 
 		Label headerLabel = new Label(container, SWT.NONE);
-		headerLabel.setText("输入表名前缀：");
+		headerLabel.setText("Please input the prefix of table:");
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		headerLabel.setLayoutData(gd);
@@ -136,11 +137,6 @@ public class BmTablePage extends WizardPage {
 			public void modifyText(ModifyEvent e) {
 				String filterChars = filterText.getText();
 				filterChars = filterChars.toUpperCase();
-				/*
-				 * try { tableViewer.setInput(getInput(m_DBMetaData,
-				 * filterChars+"%")); } catch (SQLException e1) { // TODO
-				 * Auto-generated catch block e1.printStackTrace(); }
-				 */
 				filter.setFilterString(filterChars);
 				labelProvider.refresh();
 				tableViewer.refresh();
@@ -179,7 +175,7 @@ public class BmTablePage extends WizardPage {
 	}
 
 	private void createTableColumn(String[] ColumnProperties) {
-		String seq_imagePath = Common.getString("property.icon");
+		String seq_imagePath = LocaleMessage.getString("property.icon");
 		Image idp = Activator.getImageDescriptor(seq_imagePath).createImage();
 		for (int i = 0; i < ColumnProperties.length; i++) {
 			TableColumn column = new TableColumn(tableViewer.getTable(),
@@ -205,7 +201,7 @@ public class BmTablePage extends WizardPage {
 					.getSelection();
 			CompositeMap record = (CompositeMap) selection.getFirstElement();
 			tableName = record.getString("TABLE_NAME");
-			System.out.println("tableName:"+tableName);			
+//			System.out.println("tableName:"+tableName);			
 //		}
 		return tableName;
 	}

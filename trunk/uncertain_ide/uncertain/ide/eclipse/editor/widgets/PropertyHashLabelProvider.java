@@ -8,20 +8,16 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.CategoryLabel;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
 import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 
 public class PropertyHashLabelProvider extends BaseLabelProvider implements
 		ITableLabelProvider {
 
-	ICategoryContainer viewer;
-
-	public PropertyHashLabelProvider(ICategoryContainer viewer) {
+	public PropertyHashLabelProvider() {
 		super();
-		this.viewer = viewer;
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
@@ -29,10 +25,10 @@ public class PropertyHashLabelProvider extends BaseLabelProvider implements
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
-		String imagePath = Common.getString("property.icon");
+		String imagePath = LocaleMessage.getString("property.icon");
 		if (columnIndex == 0) {
 			if (element instanceof CategoryLabel) {
-				return Activator.getImageDescriptor(Common.getString("category.icon"))
+				return Activator.getImageDescriptor(LocaleMessage.getString("category.icon"))
 						.createImage();
 			}
 			return Activator.getImageDescriptor(imagePath).createImage();

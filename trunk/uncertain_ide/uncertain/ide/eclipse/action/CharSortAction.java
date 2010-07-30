@@ -4,18 +4,18 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.ICategoryViewer;
 
 
 public class CharSortAction extends Action {
 	
-	private ICategoryContainer viewer;
-	public CharSortAction(ICategoryContainer viewer) {
+	private ICategoryViewer viewer;
+	public CharSortAction(ICategoryViewer viewer) {
 
 		this.viewer = viewer;
 	}
-	public CharSortAction(ICategoryContainer viewer,ImageDescriptor imageDescriptor,String text) {
+	public CharSortAction(ICategoryViewer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
 		if(text != null)
@@ -28,6 +28,6 @@ public class CharSortAction extends Action {
 		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
-		return Activator.getImageDescriptor(Common.getString("asc.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("asc.icon"));
 	}
 }

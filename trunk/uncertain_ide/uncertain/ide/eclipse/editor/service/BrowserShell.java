@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 public class BrowserShell {
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("uncertain");
@@ -371,7 +371,7 @@ public class BrowserShell {
 		try {
 			stream.close();
 		} catch (IOException e) {
-			Common.showExceptionMessageBox(null, e);
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		BrowserShell app = new BrowserShell(shell, true);
 		app.setShellDecoration(icon, true);

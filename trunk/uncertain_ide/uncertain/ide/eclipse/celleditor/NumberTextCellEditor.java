@@ -12,8 +12,8 @@ import uncertain.composite.QualifiedName;
 import uncertain.datatype.ConvertionException;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Attribute;
 
 /**
@@ -22,22 +22,32 @@ import uncertain.schema.Attribute;
  */
 public class NumberTextCellEditor extends AbstractTextCellEditor {
 
-	public NumberTextCellEditor(IContainer container, CompositeMap record,
-			Attribute property, TableItem item) {
-		super(container, record, property, item);
+	/**
+	 * @param tableViewer
+	 * @param property
+	 * @param record it can be null in grid table
+	 * @param item it can be null in grid table
+	 */
+	public NumberTextCellEditor(ITableViewer tableViewer, Attribute property,
+			CompositeMap record, TableItem item) {
+		super(tableViewer, property, record, item);
 	}
-
+	/**
+	 * 
+	 */
 	public boolean validValue(String value) {
 		String errorMessage = "";
 		QualifiedName typeQname = property.getTypeQName();
 		String typeLocalName = typeQname.getLocalName();
 		DataType dt = DataTypeRegistry.getInstance().getDataType(typeLocalName);
 		try {
-			if(dt !=null && value != null)
+			if (dt != null && value != null)
 				dt.convert(value);
 		} catch (ConvertionException e) {
-			errorMessage = "the value '"+value+"' can not for this field <"+property.getLocalName()+"> !  "+e.getLocalizedMessage();
-			Common.showErrorMessageBox(null, errorMessage);
+			errorMessage = "the value '" + value + "' can not for this field <"
+					+ property.getLocalName() + "> !  "
+					+ e.getLocalizedMessage();
+			CustomDialog.showErrorMessageBox(null, errorMessage);
 			getCellControl().setFocus();
 			throw new IllegalArgumentException(errorMessage);
 		}

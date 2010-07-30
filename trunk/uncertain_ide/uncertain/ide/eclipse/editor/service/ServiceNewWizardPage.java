@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.service;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -151,7 +151,7 @@ public class ServiceNewWizardPage extends WizardPage {
 			return;
 		}
 		if(fileName !=null &&!fileName.equals("")&&container.getProject().getFile(fileName).exists()){
-			updateStatus(Common.getString("filename.used"));
+			updateStatus(LocaleMessage.getString("filename.used"));
 			return;
 		}
 		if (!container.isAccessible()) {

@@ -5,7 +5,6 @@ package uncertain.ide.eclipse.celleditor;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -18,8 +17,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Attribute;
 import uncertain.schema.Editor;
 
@@ -30,15 +29,21 @@ import uncertain.schema.Editor;
 public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 
 	Button button;
-
+	private boolean hasSelection = false;
 	protected Editor editor;
-	protected IContainer container;
+	protected ITableViewer tableViewer;
 	protected CompositeMap record;
 	protected Attribute property;
 	protected TableItem item;
 	private boolean required = false;
-	public BoolCellEditor(IContainer container, CompositeMap record,Attribute property,TableItem item) {
-		this.container = container;
+	/**
+	 * @param tableViewer
+	 * @param property
+	 * @param record it can be null in grid table
+	 * @param item it can be null in grid table
+	 */
+	public BoolCellEditor(ITableViewer tableViewer, Attribute property,CompositeMap record,TableItem item) {
+		this.tableViewer = tableViewer;
 		this.record = record;
 		this.property = property;
 		this.item = item;
@@ -67,7 +72,7 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 			errorMessage = "this field <"+property.getLocalName()+">  value must be 'true' or 'false' ! Can not be "+value+" !";
 		}
 		if(!validValue){
-			Common.showErrorMessageBox(null, errorMessage);
+			CustomDialog.showErrorMessageBox(null, errorMessage);
 			if(getCellControl() != null)
 				getCellControl().setFocus();
 			throw new IllegalArgumentException(errorMessage);
@@ -82,6 +87,8 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 	public String getSelection() {
 		// System.out.println("button.getSelection():"+button.getSelection());
 		if (button != null) {
+			if(!hasSelection)
+				return null;
 			if (button.getSelection()) {
 				return "true";
 			} else
@@ -104,8 +111,13 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 	}
 
 	public void SetSelection(String dataValue) {
+//		if(dataValue == null)
+//			return;
+		if(dataValue == null)
+			dataValue = "false";
 		Boolean showValue = (Boolean)valueToShow(dataValue);
 		if(button != null){
+			hasSelection = true;
 			button.setSelection(showValue.booleanValue());
 		}else{
 			super.setValue(showValue);
@@ -121,7 +133,7 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 
 	}
 	public void init() {
-		Table parent = ((TableViewer) container.getViewer()).getTable();
+		Table parent = tableViewer.getViewer().getTable();
 		createCellEditor(parent);
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
 		if (property.getUse() != null && property.getUse().equals("required")) {
@@ -139,16 +151,15 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 		button.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
-//				System.out.println("applyEditorValue");
+				if(!hasSelection)
+					hasSelection = true;
 				String dataValue = getSelection();
-//				validValue(dataValue);
-//				data.setValue(dataValue);
 				record.put(property.getLocalName(), dataValue);
-				container.refresh(true);
+				tableViewer.refresh(true);
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
+				widgetSelected(e);
 
 			}
 		});
@@ -165,17 +176,4 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 	public CellEditor getCellEditor() {
 		return this;
 	}
-//	public LayoutData getLayoutData() {
-//		LayoutData layoutData = super.getLayoutData();
-//		if ((button == null) || button.isDisposed()) {
-//			layoutData.minimumWidth = 60;
-//		} else {
-//			// make the comboBox 10 characters wide
-//			GC gc = new GC(button);
-//			layoutData.minimumWidth = (gc.getFontMetrics()
-//					.getAverageCharWidth() * 10) + 10;
-//			gc.dispose();
-//		}
-//		return layoutData;
-//	}
 }

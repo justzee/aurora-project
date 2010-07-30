@@ -2,7 +2,6 @@ package uncertain.ide.eclipse.celleditor;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellEditorListener;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -15,8 +14,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Attribute;
 import uncertain.schema.Editor;
 
@@ -24,13 +23,20 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		ICellEditor {
 
 	protected Editor editor;
-	protected IContainer container;
-	protected CompositeMap record;
+	protected ITableViewer tableViewer;
 	protected Attribute property;
+	protected CompositeMap record;
 	protected TableItem item;
 	private boolean required = false;
-	public AbstractTextCellEditor(IContainer container, CompositeMap record,Attribute property,TableItem item) {
-		this.container = container;
+	
+	/**
+	 * @param tableViewer
+	 * @param property
+	 * @param record it can be null in grid table
+	 * @param item it can be null in grid table
+	 */
+	public AbstractTextCellEditor(ITableViewer tableViewer,Attribute property,CompositeMap record,TableItem item) {
+		this.tableViewer = tableViewer;
 		this.record = record;
 		this.property = property;
 		this.item = item;
@@ -39,7 +45,7 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 	public boolean validValue(String value) {
 		if(required && (value == null || value.equals(""))){
 			String message = "this field <"+property.getLocalName()+"> is required! can't be not null";
-			Common.showErrorMessageBox(null, message);
+			CustomDialog.showErrorMessageBox(null, message);
 			getCellControl().setFocus();
 			throw new IllegalArgumentException(message);
 		}
@@ -74,13 +80,13 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 			return;
 		}
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-		Table parent = ((TableViewer) container.getViewer()).getTable();
+		Table parent = tableViewer.getViewer().getTable();
 		createCellEditor(parent);
 		if (property.getUse() != null && property.getUse().equals("required")) {
 			required = true;
 			getCellControl().setBackground(bg);
 		}
-		if(record != null){
+		if(item != null){
 			SetSelection(record.getString(property.getLocalName()));
 			addCellListener();
 		}
@@ -101,7 +107,7 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 			public void applyEditorValue() {
 				String dataValue = getSelection();
 				record.put(property.getLocalName(), dataValue);
-				container.refresh(true);
+				tableViewer.refresh(true);
 			}
 		});
 		getCellControl().addFocusListener(new FocusListener() {

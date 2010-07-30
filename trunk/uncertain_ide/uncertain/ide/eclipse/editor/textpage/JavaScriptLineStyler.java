@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package uncertain.ide.eclipse.editor.textpage;
 
 import java.io.IOException;
@@ -75,12 +65,12 @@ public class JavaScriptLineStyler implements LineStyleListener {
 
 	void initializeColors() {
 		Display display = Display.getDefault();
-		colors = new Color[] { new Color(display, new RGB(0, 0, 0)), // ╨з
-				new Color(display, new RGB(0, 128, 0)), // бл
-				new Color(display, new RGB(0, 0, 225)), // ю╤
-				new Color(display, new RGB(128, 0, 0)), // гЁ╨Л
-				new Color(display, new RGB(255, 0, 0)), // ╨Л
-				new Color(display, new RGB(128, 0, 225)), // во
+		colors = new Color[] { new Color(display, new RGB(0, 0, 0)), // О©╫О©╫
+				new Color(display, new RGB(0, 128, 0)), // О©╫О©╫
+				new Color(display, new RGB(0, 0, 225)), // 6
+				new Color(display, new RGB(128, 0, 0)), // гЁО©╫О©╫
+				new Color(display, new RGB(255, 0, 0)), // О©╫О©╫
+				new Color(display, new RGB(128, 0, 225)), // О©╫О©╫
 		};
 		tokenColors = new int[MAXIMUM_TOKEN];
 		tokenColors[WORD] = 0;
@@ -266,7 +256,7 @@ public class JavaScriptLineStyler implements LineStyleListener {
 				"typeof", "var", "void", "volatile", "while", "with", "true",
 				"false", "prototype",
 				// sql
-				"select", "distinct", "from", "group by", "where", "and", "or",
+				"select", "update","delete","distinct","set", "from", "group by", "where", "and", "or",
 				"order by", "sum"
 
 		};

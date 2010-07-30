@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Common;
+import uncertain.ide.LoadSchemaManager;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
 
@@ -34,7 +34,7 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		List childs = new LinkedList(map.getChildsNotNull());
 
 //		System.out.println(map.toXML());
-		Element element = Common.getSchemaManager().getElement(map);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
@@ -83,7 +83,7 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		}
 		// this element maybe have arrays
 		else{
-			Element cm = Common.getSchemaManager().getElement(map);
+			Element cm = LoadSchemaManager.getSchemaManager().getElement(map);
 			if(cm != null &&!cm.getAllArrays().isEmpty()){
 				return true;
 			}
@@ -96,13 +96,16 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 			return null;
 
 		CompositeMap map = (CompositeMap) inputElement;
-		if (map.getChild(rootElement) != null && !map.equals(rootElement)) {
+//		if (map.getChild(rootElement) != null && !map.equals(rootElement)) {
+//			return new Object[] { rootElement };
+//		}
+		if (map.equals(rootElement.getParent())&& !map.equals(rootElement)) {
 			return new Object[] { rootElement };
 		}
 		List childs = new LinkedList(map.getChildsNotNull());
 
 //		System.out.println(map.toXML());
-		Element element = Common.getSchemaManager().getElement(map);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {

@@ -64,6 +64,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import uncertain.ide.Activator;
 import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.preferencepages.BrowserPreferencePage;
 
 public class BrowserPage extends FormPage {
@@ -141,7 +143,7 @@ public class BrowserPage extends FormPage {
 			}
 		});
 		if (top) {
-			browser.setUrl("g.cn");
+//			browser.setUrl("");
 
 			show(false, null, null, true, true, true, true);
 		} else {
@@ -228,7 +230,7 @@ public class BrowserPage extends FormPage {
 			final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
 			itemGo.setText(getResourceString("Go"));
 
-			// ´´½¨Ö±½Ó·ÃÎÊuncertain·þÎñÆ÷µÄ°´Å¥
+			// ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½uncertainï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä°ï¿½Å¥
 			createServerButtons(shell);
 
 			itemBack.setEnabled(browser.isBackEnabled());
@@ -420,7 +422,7 @@ public class BrowserPage extends FormPage {
 							Rectangle bounds = drop_down.getBounds();
 							Point point = toolbar.toDisplay(bounds.x, bounds.y
 									+ bounds.height);
-							// ÉèÖÃ²Ëµ¥µÄÏÔÊ¾Î»ÖÃ
+							// ï¿½ï¿½ï¿½Ã²Ëµï¿½ï¿½ï¿½ï¿½ï¿½Ê¾Î»ï¿½ï¿½
 							menu.setLocation(point);
 							menu.setVisible(true);
 
@@ -455,9 +457,9 @@ public class BrowserPage extends FormPage {
 
 	private List initServerActionMenu() {
 		List menus = new ArrayList();
-		ServerActionMenu remoteMachine = new ServerActionMenu(Common
-				.getString("remote.server"), Common
-				.getString("undefined.remote.server.hint"), Common
+		ServerActionMenu remoteMachine = new ServerActionMenu(LocaleMessage
+				.getString("remote.server"), LocaleMessage
+				.getString("undefined.remote.server.hint"), LocaleMessage
 				.getString("go.preference.page"));
 		String remoteMain = Activator.getDefault().getPreferenceStore()
 				.getString(BrowserPreferencePage.BROWSER_REMOTE);
@@ -465,25 +467,25 @@ public class BrowserPage extends FormPage {
 			remoteMachine.setDisabled(true);
 		}
 		String space = " ";
-		new ServerAction(remoteMachine, Common.getString("main.page") + space
+		new ServerAction(remoteMachine, LocaleMessage.getString("main.page") + space
 				+ space + "(" + remoteMain + ")", remoteMain);
 		String remoteUrl = remoteMain + getFileName();
-		new ServerAction(remoteMachine, Common.getString("this.page") + space
+		new ServerAction(remoteMachine, LocaleMessage.getString("this.page") + space
 				+ "(" + remoteUrl + ")", remoteUrl);
 
-		ServerActionMenu localMachine = new ServerActionMenu(Common
-				.getString("local.server"), Common
-				.getString("undefined.local.server.hint"), Common
+		ServerActionMenu localMachine = new ServerActionMenu(LocaleMessage
+				.getString("local.server"), LocaleMessage
+				.getString("undefined.local.server.hint"), LocaleMessage
 				.getString("go.preference.page"));
 		String localMain = Activator.getDefault().getPreferenceStore()
 				.getString(BrowserPreferencePage.BROWSER_LOCAL);
 		if (localMain == null || localMain.equals("")) {
 			localMachine.setDisabled(true);
 		}
-		new ServerAction(localMachine, Common.getString("main.page") + space
+		new ServerAction(localMachine, LocaleMessage.getString("main.page") + space
 				+ space + "(" + localMain + ")", localMain);
 		String localUrl = localMain + getFileName();
-		new ServerAction(localMachine, Common.getString("this.page") + space
+		new ServerAction(localMachine, LocaleMessage.getString("this.page") + space
 				+ "(" + localUrl + ")", localUrl);
 
 		menus.add(remoteMachine);
@@ -665,7 +667,7 @@ public class BrowserPage extends FormPage {
 		try {
 			stream.close();
 		} catch (IOException e) {
-			Common.showExceptionMessageBox(null, e);
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		// BrowserExample app = new BrowserExample(shell, true);
 		BrowserPage app = new BrowserPage();

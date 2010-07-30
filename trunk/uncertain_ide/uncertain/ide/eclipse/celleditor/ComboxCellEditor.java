@@ -6,7 +6,6 @@ package uncertain.ide.eclipse.celleditor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellEditorListener;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.FocusEvent;
@@ -20,8 +19,9 @@ import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Attribute;
 import uncertain.schema.Editor;
 import uncertain.schema.Enumeration;
@@ -38,13 +38,13 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 	String[] items;
 
 	protected Editor editor;
-	protected IContainer container;
+	protected ITableViewer tableViewer;
 	protected CompositeMap record;
 	protected Attribute property;
 	protected TableItem item;
 	private boolean required;
-	public ComboxCellEditor(IContainer container, CompositeMap record,Attribute property,TableItem item) {
-		this.container = container;
+	public ComboxCellEditor(ITableViewer tableViewer, Attribute property,CompositeMap record,TableItem item) {
+		this.tableViewer = tableViewer;
 		this.record = record;
 		this.property = property;
 		this.item = item;
@@ -64,7 +64,7 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 		}
 		if(!validResult){
 			errorMessage = "the field <"+property.getLocalName()+"> value must be in '"+selections+"' !";
-			Common.showErrorMessageBox(null, errorMessage);
+			CustomDialog.showErrorMessageBox(null, errorMessage);
 			getCellControl().setFocus();
 			throw new IllegalArgumentException(errorMessage);
 		}
@@ -96,7 +96,8 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 			}
 		}
 		if(showValue == null)
-			showValue = (Integer)super.getValue();
+			showValue = new Integer(-1);
+//			showValue = (Integer)super.getValue();
 		return showValue;
 	}
 	public void SetSelection(String value) {
@@ -113,7 +114,7 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 			if(getCellControl() != null)
 				getCellControl().setBackground(bg);
 		}
-		Table parent = ((TableViewer) container.getViewer()).getTable();
+		Table parent = tableViewer.getViewer().getTable();
 		createCellEditor(parent);
 
 		if (property.getUse() != null && property.getUse().equals("required")) {
@@ -138,13 +139,13 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 			public void applyEditorValue() {
 				String dataValue = getSelection();
 				record.put(property.getLocalName(), dataValue);
-				container.refresh(true);
+				tableViewer.refresh(true);
 			}
 		});
 		getCellControl().addFocusListener(new FocusListener() {
 			
 			public void focusLost(FocusEvent e) {
-				fillTableCellEditor(((TableViewer)(container.getViewer())).getTable(),getTableItem());
+				fillTableCellEditor(tableViewer.getViewer().getTable(),getTableItem());
 				
 			}
 			
@@ -159,7 +160,7 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 			attributeType = editor.getElementType();
 		}else{
 			QualifiedName typeQname = property.getTypeQName();
-			attributeType = Common.getSchemaManager().getType(typeQname);
+			attributeType = LoadSchemaManager.getSchemaManager().getType(typeQname);
 		}
 		if (attributeType != null && attributeType instanceof SimpleType) {
 			SimpleType simpleType = (SimpleType) attributeType;
@@ -191,7 +192,7 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 		items = getCellItems();
 		super.setItems(items);
 		super.create(parent);
-		
+		super.setValue(new Integer(-1));
 	}
 
 	public TableItem getTableItem() {
@@ -214,7 +215,7 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 		QualifiedName editorName = property.getEditorQName();
 		if (editorName == null)
 			return null;
-		Editor ed = Common.getSchemaManager().getEditor(editorName);
+		Editor ed = LoadSchemaManager.getSchemaManager().getEditor(editorName);
 		return ed;
 
 	}

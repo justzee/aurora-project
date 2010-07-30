@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.bm;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -21,35 +21,37 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (sxsd).
+ * OR with the extension that matches the expected one (bm).
  */
 
-public class SxsdNewWizardPage extends WizardPage {
+public class BmMainPage extends WizardPage {
 	private Text containerText;
 
 	private Text fileText;
 	
-	private Text namespacePrefix;
-	
-	private Text namespaceUrl;
-	
 	private ISelection selection;
+	
+//	Text uncetainText;
+
+	
+	BmNewWizard wizard;
 
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public SxsdNewWizardPage(ISelection selection) {
+	public BmMainPage(ISelection selection,BmNewWizard bmWizard) {
 		super("wizardPage");
-		setTitle("Uncetain Sxsd Editor File");
-		setDescription("This wizard creates a new file with *.sxsd extension that can be opened by a multi-page editor.");
+		setTitle("Uncetain bussiness Model Editor File");
+		setDescription("This wizard creates a new file with *.bm extension that can be opened by a multi-page editor.");
 		this.selection = selection;
+		this.wizard = bmWizard;
 	}
 
 	/**
@@ -92,31 +94,6 @@ public class SxsdNewWizardPage extends WizardPage {
 				dialogChanged();
 			}
 		});
-		
-		label = new Label(container, SWT.NULL);
-		label.setText("&Namespace Prefix:");
-		namespacePrefix = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan=2;
-		namespacePrefix.setLayoutData(gd);
-		namespacePrefix.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		
-		label = new Label(container, SWT.NULL);
-		label.setText("&Namespace Url:");
-		namespaceUrl = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan=2;
-		namespaceUrl.setLayoutData(gd);
-		namespaceUrl.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		
 		initialize();
 		dialogChanged();
 		setControl(container);
@@ -142,11 +119,7 @@ public class SxsdNewWizardPage extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
-//		fileText.setText("new_file.sxsd");
-		namespacePrefix.setText("sxsd");
-		namespaceUrl.setText("http://www.uncertain-framework.org/schema/simple-schema");
 	}
-
 	/**
 	 * Uses the standard container selection dialog to choose the new value for
 	 * the container field.
@@ -163,7 +136,6 @@ public class SxsdNewWizardPage extends WizardPage {
 			}
 		}
 	}
-
 	/**
 	 * Ensures that both text fields are set.
 	 */
@@ -183,7 +155,7 @@ public class SxsdNewWizardPage extends WizardPage {
 			return;
 		}
 		if(fileName !=null &&!fileName.equals("")&&container.getProject().getFile(fileName).exists()){
-			updateStatus(Common.getString("filename.used"));
+			updateStatus(LocaleMessage.getString("filename.used"));
 			return;
 		}
 		if (!container.isAccessible()) {
@@ -202,22 +174,11 @@ public class SxsdNewWizardPage extends WizardPage {
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("sxsd") == false) {
-				updateStatus("File extension must be \"sxsd\"");
+			if (ext.equalsIgnoreCase("bm") == false) {
+				updateStatus("File extension must be \"bm\"");
 				return;
 			}
 		}
-		
-		if(getNamespacePrefix().length() == 0){
-			updateStatus("Namespace Prefix must be specified");
-			return;
-		}
-		
-		if(getNamespaceUrl().length() == 0){
-			updateStatus("Namespace Url must be specified");
-			return;
-		}
-		
 		updateStatus(null);
 	}
 
@@ -232,13 +193,5 @@ public class SxsdNewWizardPage extends WizardPage {
 
 	public String getFileName() {
 		return fileText.getText();
-	}
-
-	public String getNamespacePrefix() {
-		return namespacePrefix.getText();
-	}
-
-	public String getNamespaceUrl() {
-		return namespaceUrl.getText();
 	}
 }

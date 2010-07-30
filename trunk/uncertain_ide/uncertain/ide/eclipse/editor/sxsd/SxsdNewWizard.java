@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.sxsd;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -107,7 +107,7 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		IProgressMonitor monitor)
 		throws CoreException {
 		
-		//Èç¹ûÓÃ»§Ã»ÓÐÖ¸¶¨ÎÄ¼þÃûºó×º£¬×Ô¶¯¼Ósxsdºó×º
+		//ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ã»ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½sxsdï¿½ï¿½×º
 		if(fileName.indexOf(".")==-1){
 			fileName = fileName+".sxsd";
 		}
