@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Configuration Editor Plug-in
 Bundle-SymbolicName: uncertain_ide;singleton:=true
-Bundle-Version: 1.1.5
+Bundle-Version: 1.1.6
 Bundle-Activator: uncertain.ide.Activator
 Bundle-Vendor: Uncertain Framework
 Require-Bundle: org.eclipse.ui,
@@ -16,8 +16,8 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  bin/,
- lib/uncertain.jar,
  lib/aurora.jar,
+ lib/uncertain.jar,
  lib/classes12.jar,
  lib/c3p0-0.9.1.2.jar,
  lib/jotm-1.5.3.jar,
@@ -27,7 +27,8 @@ Bundle-ClassPath: .,
  lib/ow2-jta-1.1-spec.jar,
  lib/sqlserverjdbc.jar,
  lib/xapool.jar,
- lib/servlet.jar
+ lib/servlet.jar,
+ lib/xerces.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: 
  aurora.application.util,
@@ -50,4 +51,5 @@ Export-Package:
  aurora.service.json,
  aurora.service.validation,
  aurora.util.template
-Import-Package: org.eclipse.core.expressions
+Import-Package: org.eclipse.core.expressions,
+ org.eclipse.ui.views.contentoutline
