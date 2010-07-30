@@ -6,8 +6,8 @@ import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.eclipse.editor.ITableViewer;
 import uncertain.schema.Attribute;
 import uncertain.schema.Editor;
 import uncertain.schema.Enumeration;
@@ -44,18 +44,18 @@ public class CellEditorFactory {
 		return editorFactory;
 	}
 
-	public ICellEditor createCellEditor(IContainer viewer, Attribute attribute,
-			TableItem item) {
+	public ICellEditor createCellEditor(ITableViewer viewer,
+			Attribute attribute, CompositeMap record, TableItem item) {
 		ICellEditor cellEditor = null;
 		if (attribute == null)
 			return cellEditor;
 
 		QualifiedName attributeQName = attribute.getQName();
 
-		cellEditor = createDefinedEditor(viewer, attribute, item,
+		cellEditor = createDefinedEditor(viewer, attribute, record, item,
 				attributeQName);
 		if (cellEditor == null)
-			cellEditor = createDefaultEditor(viewer, attribute, item,
+			cellEditor = createDefaultEditor(viewer, attribute, record, item,
 					attributeQName);
 
 		if (cellEditor != null) {
@@ -64,20 +64,22 @@ public class CellEditorFactory {
 		return cellEditor;
 	}
 
-	private ICellEditor createDefaultEditor(IContainer viewer,
-			Attribute attribute, TableItem item, QualifiedName attributeQName) {
+	private ICellEditor createDefaultEditor(ITableViewer viewer,
+			Attribute attribute, CompositeMap record, TableItem item,
+			QualifiedName attributeQName) {
 		ICellEditor cellEditor = null;
 		QualifiedName typeQname = attribute.getTypeQName();
 
-		IType attributeType = Common.getSchemaManager().getType(typeQname);
-		if (attributeType !=null && attributeType instanceof SimpleType) {
+		IType attributeType = LoadSchemaManager.getSchemaManager().getType(
+				typeQname);
+		if (attributeType != null && attributeType instanceof SimpleType) {
 			SimpleType simpleType = (SimpleType) attributeType;
 			Restriction rest = simpleType.getRestriction();
 			if (rest != null) {
 				Enumeration[] emus = rest.getEnumerations();
 				if (emus != null) {
-					cellEditor = new ComboxCellEditor(viewer,
-							viewer.getInput(), attribute, item);
+					cellEditor = new ComboxCellEditor(viewer, attribute,
+							record, item);
 					return cellEditor;
 				}
 			}
@@ -85,29 +87,28 @@ public class CellEditorFactory {
 
 		if (typeQname == null) {
 			if (required.equals(attribute.getUse())) {
-				cellEditor = new StringTextCellEditor(viewer,
-						viewer.getInput(), attribute, item);
+				cellEditor = new StringTextCellEditor(viewer, attribute,
+						record, item);
 				return cellEditor;
 			}
 			return cellEditor;
 		}
 		// String typeName = typeQname.getLocalName();
 		if (typeQname.equals(boolean_qn)) {
-			cellEditor = new BoolCellEditor(viewer, viewer.getInput(),
-					attribute, item);
+			cellEditor = new BoolCellEditor(viewer, attribute, record, item);
 			return cellEditor;
 		}
 		if (required.equals(attribute.getUse())) {
 			if (typeQname.equals(string_qn)) {
-				cellEditor = new StringTextCellEditor(viewer,
-						viewer.getInput(), attribute, item);
+				cellEditor = new StringTextCellEditor(viewer, attribute,
+						record, item);
 				return cellEditor;
 			} else if (typeQname.equals(int_qn) || typeQname.equals(integer_qn)
 					|| typeQname.equals(double_qn) || typeQname.equals(long_qn)
 					|| typeQname.equals(float_qn)
 					|| typeQname.equals(double_qn)) {
-				cellEditor = new NumberTextCellEditor(viewer,
-						viewer.getInput(), attribute, item);
+				cellEditor = new NumberTextCellEditor(viewer, attribute,
+						record, item);
 				return cellEditor;
 			}
 		}
@@ -115,13 +116,14 @@ public class CellEditorFactory {
 
 	}
 
-	private ICellEditor createDefinedEditor(IContainer viewer,
-			Attribute attribute, TableItem item, QualifiedName attributeQName) {
+	private ICellEditor createDefinedEditor(ITableViewer viewer,
+			Attribute attribute, CompositeMap record, TableItem item,
+			QualifiedName attributeQName) {
 		Object editor;
 		QualifiedName editorName = attribute.getEditorQName();
 		if (editorName == null)
 			return null;
-		Editor ed = Common.getSchemaManager().getEditor(editorName);
+		Editor ed = LoadSchemaManager.getSchemaManager().getEditor(editorName);
 		if (ed == null)
 			return null;
 		String cls_name = ed.getInstanceClass();
@@ -134,11 +136,11 @@ public class CellEditorFactory {
 		}
 		Constructor constructor = null;
 		try {
-			Class[] constructorClasses = new Class[] { IContainer.class,
-					CompositeMap.class, Attribute.class, TableItem.class };
+			Class[] constructorClasses = new Class[] { ITableViewer.class,
+					Attribute.class, CompositeMap.class, TableItem.class };
 			constructor = cls.getConstructor(constructorClasses);
-			Object[] constructorObjects = new Object[] { viewer,
-					viewer.getInput(), attribute, item };
+			Object[] constructorObjects = new Object[] { viewer, attribute,
+					record, item };
 			editor = constructor.newInstance(constructorObjects);
 			ICellEditor cellEditor = (ICellEditor) editor;
 			return cellEditor;

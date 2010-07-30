@@ -8,40 +8,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceAdapter;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IWorkbenchActionConstants;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Array;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
+import uncertain.schema.Namespace;
+import uncertain.schema.Schema;
 import uncertain.schema.SchemaManager;
-import uncertain.schema.editor.AttributeValue;
 
 public class CompositeMapAction {
 
@@ -54,7 +36,6 @@ public class CompositeMapAction {
 
 	}
 
-	// TODO ×¼±¸µ¥Àý»¯Õâ¸öÀà
 	public CompositeMapAction getInstance() {
 		if (instance != null)
 			return instance;
@@ -65,6 +46,33 @@ public class CompositeMapAction {
 
 	}
 
+	public static String getElementFullName(CompositeMap cm, QualifiedName qName) {
+		String text = null;
+		String prefix = getPrefix(cm, qName);
+		String localName = qName.getLocalName();
+		if (prefix != null)
+			text = prefix + ":" + localName;
+		else
+			text = localName;
+		return text;
+	}
+
+	public static String getPrefix(CompositeMap cm, QualifiedName qName) {
+		if (qName == null) {
+			return null;
+		}
+		if (cm == null) {
+			return qName.getPrefix();
+		}
+		Map prefix_mapping = CompositeUtil.getPrefixMapping(cm);
+		String getNameSpace = qName.getNameSpace();
+		Object uri_ot = prefix_mapping.get(getNameSpace);
+		if (uri_ot != null)
+			return (String) uri_ot;
+		else
+			return qName.getPrefix();
+	}
+
 	public static CompositeMap addElement(CompositeMap parent, String prefix,
 			String uri, String name) {
 
@@ -73,9 +81,8 @@ public class CompositeMapAction {
 		addArrayNode(parent);
 		return child;
 	}
-	//Èç¹ûÊÇÔÚ¿ÕÊý×éÏÂÌí¼Ó½Úµã£¬ÔòÌí¼ÓÕâ¸ö¿ÕÊý×é½Úµã
-	private static void addArrayNode(CompositeMap parent) {
-		Element element = Common.getSchemaManager().getElement(parent);
+	public static void addArrayNode(CompositeMap parent) {
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
 		if (element != null && element.isArray()) {
 			QualifiedName qName = parent.getQName();
 			if (CompositeUtil.findChild(parent.getParent(), qName) == null) {
@@ -85,7 +92,7 @@ public class CompositeMapAction {
 	}
 
 	public static void addElementArray(CompositeMap parentCM) {
-		Element element = Common.getSchemaManager().getElement(parentCM);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCM);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
@@ -100,227 +107,6 @@ public class CompositeMapAction {
 			}
 		}
 	}
-
-	public static void removeElement(IContainer viewer) {
-		CompositeMap comp = (CompositeMap)viewer.getFocus();
-		if (comp != null) {
-			Element em = Common.getSchemaManager().getElement(comp);
-			if (em != null && em.isArray()) {
-				if (comp.getChildsNotNull().size() > 0) {
-					int buttonID = Common.showConfirmDialogBox(null,
-							Common.getString("clear.array.question"));
-					switch (buttonID) {
-					case SWT.OK:
-						if (comp != null) {
-							comp.getChildsNotNull().clear();
-							viewer.refresh(true);
-							return;
-						}
-						viewer.refresh(true);
-					case SWT.CANCEL:
-						return;
-					}
-				}
-				Common.showWarningMessageBox(null, Common.getString("can.not.delete.array.hint"));
-				return;
-			}
-		}
-		int buttonID = Common.showConfirmDialogBox(null, Common.getString("delete.element.confirm"));
-		switch (buttonID) {
-		case SWT.OK:
-			if (comp != null) {
-				CompositeMap parentCM = comp.getParent();
-				// System.out.println(parentCM.toXML());
-				Element element = Common.getSchemaManager().getElement(
-						parentCM);
-				if (element.isArray()) {
-					comp.getParent().removeChild(comp);
-					if (parentCM.getChilds() == null
-							|| parentCM.getChilds().size() == 0) {
-						parentCM.getParent().removeChild(parentCM);
-						// System.out.println(parentCM.toXML());
-					}
-				} else {
-					comp.getParent().removeChild(comp);
-				}
-			}
-			viewer.refresh(true);
-		case SWT.CANCEL:
-			break;
-		}
-	}
-
-	public static void removePropertyAction(ICategoryContainer viewer) {
-		int buttonID = Common.showConfirmDialogBox(null, Common.getString("delete.attribute.confirm"));
-		switch (buttonID) {
-		case SWT.OK:
-			final CompositeMap data = viewer.getInput();
-			AttributeValue av = (AttributeValue)viewer.getFocus();
-			if (av == null)
-				return;
-			String propertyName = av.getAttribute().getLocalName();
-			// System.out.println(propertyName);
-			data.remove(propertyName);
-			viewer.refresh(true);
-		case SWT.CANCEL:
-			break;
-		}
-	}
-
-	public static void cutElement(IContainer viewer) {
-		CompositeMap cm = (CompositeMap)viewer.getFocus();
-		viewer.setSelection(cm);
-	}
-
-	public static void copyElement(IContainer viewer) {
-		CompositeMap cm = (CompositeMap)viewer.getFocus();
-		CompositeMap child = new CompositeMap(cm);
-		child.setParent(cm.getParent());
-		viewer.setSelection(child);
-
-	}
-
-	public static void pasteElement(IContainer viewer) {
-		CompositeMap selectedCm = (CompositeMap)viewer.getSelection();
-		if (selectedCm == null)
-			return;
-		CompositeMap parentComp = (CompositeMap)viewer.getFocus();
-		if (!validNextNodeLegalWithAction(parentComp, selectedCm)) {
-			return;
-		}
-		CompositeMap child = new CompositeMap(selectedCm);
-		if (child != null) {
-			parentComp.addChild(child);
-			selectedCm.getParent().removeChild(selectedCm);
-			addArrayNode(parentComp);
-		}
-		selectedCm = null;
-		viewer.refresh(true);
-
-	}
-
-	/**
-	 * Éú³É²Ëµ¥Menu£¬²¢½«Á½¸öAction´«Èë
-	 */
-	public static void fillContextMenu(final IContainer container) {
-		/*
-		 * ¼ÓÈëÁ½¸öAction¶ÔÏóµ½²Ëµ¥¹ÜÀíÆ÷
-		 */
-		MenuManager mgr = new MenuManager("#PopupMenu");
-		MenuManager menuManager = (MenuManager) mgr; // ÀàÐÍ×ª»»Ò»ÏÂ£¬×¢Òâ²ÎÊýÊÇ½Ó¿Ú
-		mgr.setRemoveAllWhenShown(true);
-
-		menuManager.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				manager.add(new Separator(
-						IWorkbenchActionConstants.MB_ADDITIONS));
-				MenuManager childElements = addChildElements(container);
-				manager.add(childElements);
-				manager.add(new CopyElementAction(container,
-						CopyElementAction.getDefaultImageDescriptor(),
-						CopyElementAction.getDefaultText()));
-				manager.add(new PasteAction(container, PasteAction
-						.getDefaultImageDescriptor(), PasteAction
-						.getDefaultText()));
-				manager.add(new RemoveElementAction(container,
-						RemoveElementAction.getDefaultImageDescriptor(),
-						RemoveElementAction.getDefaultText()));
-				manager.add(new RefreshAction(container, RefreshAction
-						.getDefaultImageDescriptor(), Common.getString("refresh")));
-			}
-		});
-
-		Menu menu = menuManager.createContextMenu(container.getControl());
-		// Menu menu = menuManager.createMenuBar(mColumnViewer.)
-		container.getControl().setMenu(menu);
-
-	}
-	private static MenuManager addChildElements(IContainer container){
-		MenuManager childElementMenus = new MenuManager(Common.getString("add.element.label")); 
-		final CompositeMap comp = (CompositeMap)container.getFocus();
-		Element element = Common.getSchemaManager().getElement(comp);
-		if (element == null) {
-			return childElementMenus;
-		}
-		List childElements = CompositeMapAction.getAvailableChildElements(element, comp);
-		if (childElements != null) {
-			Iterator ite = childElements.iterator();
-			while (ite.hasNext()) {
-				final Element ele = (Element) ite.next();
-				final QualifiedName qName = ele.getQName();
-				String text = Common.getElementFullName(comp, qName);
-				childElementMenus.add(new AddElementAction(container, comp, ele.getQName(),
-						AddElementAction.getDefaultImageDescriptor(), text));
-
-			}
-		}
-		return childElementMenus;
-	}
-
-	public static void fillDNDListener(final IContainer container) {
-
-		DragSource ds = new DragSource(container.getControl(), DND.DROP_MOVE);
-		ds.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
-		ds.addDragListener(new DragSourceAdapter() {
-			public void dragSetData(DragSourceEvent event) {
-			}
-		});
-
-		DropTarget dt = new DropTarget(container.getControl(), DND.DROP_MOVE);
-		dt.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
-		dt.addDropListener(new DropTargetAdapter() {
-			public void drop(DropTargetEvent event) {
-				CompositeMap sourceCm = (CompositeMap)container.getFocus();
-				if (sourceCm == null)
-					return;
-				CompositeMap objectCm = (CompositeMap) event.item.getData();
-				if (objectCm == null)
-					return;
-				if (objectCm.equals(sourceCm)
-						&& objectCm.toXML().equals(sourceCm.toXML())) {
-					return;
-				}
-				if (!validNextNodeLegalWithAction(objectCm, sourceCm)) {
-					return;
-				}
-				CompositeMap childCm = new CompositeMap(sourceCm);
-
-				if (childCm != null) {
-					objectCm.addChild(childCm);
-					if (sourceCm.getParent() != null)
-						sourceCm.getParent().removeChild(sourceCm);
-				}
-				container.refresh(true);
-			}
-
-			public void dragEnter(DropTargetEvent event) {
-				// System.out.println(event.getSource());
-
-			}
-		});
-	}
-
-	public static void fillKeyListener(final IContainer container) {
-		TreeViewer treeViewer = (TreeViewer) container.getViewer();
-		treeViewer.getTree().addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.stateMask == SWT.CTRL && e.keyCode == 'c') {
-					copyElement(container);
-				} else if (e.stateMask == SWT.CTRL && e.keyCode == 'v') {
-					pasteElement(container);
-				} else if (e.keyCode == SWT.DEL) {
-					CompositeMapAction.removeElement(container);
-				}
-			}
-
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-	}
-
 	public static List getAvailableChildElements(Element element,
 			CompositeMap selectedCM) {
 		if (element == null)
@@ -330,7 +116,7 @@ public class CompositeMapAction {
 			IType type = element.getElementType();
 			if (!(type instanceof Element))
 				return childElements;
-			Element arrayType = Common.getSchemaManager().getElement(
+			Element arrayType = LoadSchemaManager.getSchemaManager().getElement(
 					type.getQName());
 			childElements.add(arrayType);
 			return childElements;
@@ -340,7 +126,7 @@ public class CompositeMapAction {
 	}
 
 	private static List getChildElements(Element element, CompositeMap selectedCM) {
-		Set schemaChilds = getSchemaChilds(element,Common.getSchemaManager());
+		Set schemaChilds = getSchemaChilds(element,LoadSchemaManager.getSchemaManager());
 		List availableChilds = new ArrayList();
 
 		if (schemaChilds != null) {
@@ -373,7 +159,6 @@ public class CompositeMapAction {
 			if(!(node instanceof ComplexType))
 				continue;
 			ComplexType context = (ComplexType)node;
-			//context instanceof Element½á¹ûÓÀÔ¶ÊÇtrue£¬ËùÒÔÒª»ñµÃËüµÄÔ­Ê¼¶¨Òå
 			ComplexType original = manager.getComplexType(context.getQName());
 			if (original instanceof Element) {
 				Element new_name = (Element) context;
@@ -419,14 +204,14 @@ public class CompositeMapAction {
 		if (!validNextNodeLegal(element, child)) {
 			String warning = "";
 			if (element == null) {
-				warning = Common.getString("parent.element.is.null");
+				warning = LocaleMessage.getString("parent.element.is.null");
 			} else if (element == null) {
-				warning = Common.getString("child.element.is.null");
+				warning = LocaleMessage.getString("child.element.is.null");
 			} else {
-				warning = " " + element.getQName().getLocalName() + " "+Common.getString("undefined")
-						 +child.getQName().getLocalName() + " "+Common.getString("child.element");
+				warning = " " + element.getQName().getLocalName() + " "+LocaleMessage.getString("undefined")
+						 +child.getQName().getLocalName() + " "+LocaleMessage.getString("child.element");
 			}
-			Common.showWarningMessageBox(null, warning);
+			CustomDialog.showWarningMessageBox(null, warning);
 			return false;
 		}
 		return true;
@@ -436,7 +221,7 @@ public class CompositeMapAction {
 			CompositeMap child) {
 		if (element == null || child == null)
 			return false;
-		Element em = Common.getSchemaManager().getElement(element);
+		Element em = LoadSchemaManager.getSchemaManager().getElement(element);
 		return validNextNodeLegal(em, child.getQName());
 	}
 
@@ -449,7 +234,7 @@ public class CompositeMapAction {
 				return true;
 			}
 		}
-		List childElements = element.getChildElements(Common.getSchemaManager());
+		List childElements = element.getChildElements(LoadSchemaManager.getSchemaManager());
 		if (childElements != null) {
 			Iterator ite = childElements.iterator();
 			while (ite.hasNext()) {
@@ -463,10 +248,69 @@ public class CompositeMapAction {
 		}
 		return false;
 	}
+	// TODO æœªä½¿ç”¨
+	public Set getMaxOcuss(Element element, SchemaManager manager) {
+		Set allChildElements = new HashSet();
+		Set childElements = element.getChilds();
+		for (Iterator cit = childElements.iterator(); cit != null
+				&& cit.hasNext();) {
+			Object node = cit.next();
+			if (!(node instanceof ComplexType))
+				continue;
+			ComplexType ct = (ComplexType) node;
+			if (ct instanceof Element) {
+				Element new_name = (Element) ct;
+				allChildElements.add(new_name);
+			} else {
+				allChildElements.addAll(manager.getElementsOfType(ct));
+			}
+		}
+		List complexTypes = element.getAllExtendedTypes();
+		if (complexTypes == null)
+			return allChildElements;
+		for (Iterator cit = complexTypes.iterator(); cit != null
+				&& cit.hasNext();) {
+			ComplexType ct = (ComplexType) cit.next();
+			// System.out.println("ExtendedTypes:"+ct.getLocalName());
+			if (ct instanceof Element) {
+				Element new_name = (Element) ct;
+				allChildElements.addAll(getMaxOcuss(new_name, manager));
+			}
+			// else{
+			// complexTypes.addAll(manager.getElementsOfType(ct));
+			// }
 
+		}
+		return allChildElements;
+	}
+
+	public static Namespace getQualifiedName(CompositeMap root,String prefix) throws Exception{
+		 Map namespace_mapping = CompositeUtil.getPrefixMapping(root);
+		 Schema schema = new Schema();
+		 Namespace[] ns = getNameSpaces(namespace_mapping);
+		 schema.addNameSpaces(ns);
+		 Namespace nameSpace = schema.getNamespace(prefix);
+		 return nameSpace;
+	}
+	
+	private static Namespace[] getNameSpaces(Map namespaceToPrefix) {
+		if (namespaceToPrefix == null)
+			return null;
+
+		Namespace[] namespaces = new Namespace[namespaceToPrefix.keySet()
+				.size()];
+		Iterator elements = namespaceToPrefix.keySet().iterator();
+		int i = 0;
+		while (elements.hasNext()) {
+			Object element = elements.next();
+			Namespace namespace = new Namespace();
+			namespace.setPrefix(namespaceToPrefix.get(element).toString());
+			namespace.setUrl(element.toString());
+			namespaces[i] = namespace;
+		}
+		return namespaces;
+	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

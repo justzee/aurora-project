@@ -9,8 +9,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.ISqlViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 public class ExecuteSqlAction extends Action {
 	ISqlViewer viewer;
@@ -48,12 +49,12 @@ public class ExecuteSqlAction extends Action {
 				resultCount = resultSet.getFetchSize();
 			}
 		} catch (SQLException e) {
-			Common.showExceptionMessageBox(null, e);
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		viewer.refresh(resultSet, resultCount);
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("run.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("run.icon"));
 	}
 }

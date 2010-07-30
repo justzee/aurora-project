@@ -10,7 +10,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.pkg.PackageManager;
 import uncertain.schema.SchemaManager;
 
@@ -20,8 +21,6 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 	private static final String CONFIG_PATH = "config";
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void run(IAction action) {
@@ -30,7 +29,6 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 		IStructuredSelection structured = (IStructuredSelection) selection;
 		IResource type = (IResource) structured.getFirstElement();
 		File selectedFile = type.getLocation().toFile();
-		// System.out.println("file:"+selectedFile.getAbsolutePath());
 		PackageManager pkgManager = new PackageManager();
 		String fileList = "";
 		try {
@@ -62,17 +60,13 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 				}
 			}
 			if(!fileList.equals("")){
-				fileList = Common.getString("valid.sxsd.file.window.title")+"\r\n"+fileList;
+				fileList = LocaleMessage.getString("valid.sxsd.file.window.title")+"\r\n"+fileList;
 			}else{
 				fileList = "No file is valid!";
 			}
-			Common.showMessageBox(SWT.ICON_INFORMATION,"Result",fileList);
+			CustomDialog.showMessageBox(SWT.ICON_INFORMATION,"Result",fileList);
 		} catch (Exception e) {
-			if (e.getCause() != null) {
-				Common.showErrorMessageBox(null,e.getLocalizedMessage()+":\r\n"+e.getCause().getLocalizedMessage());
-				throw new RuntimeException(e.getLocalizedMessage(), e.getCause());
-			} else
-				throw new RuntimeException(e.getLocalizedMessage());
+			CustomDialog.showExceptionMessageBox(e);
 		}
 	}
 

@@ -1,12 +1,9 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -23,7 +20,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -33,7 +29,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Common;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -41,30 +36,19 @@ import uncertain.ide.Common;
  * (a folder or a project) is selected in the workspace 
  * when the wizard is opened, it will accept it as the target
  * container. The wizard creates one file with the extension
- * "bm". If a sample multi-page editor (also available
+ * "service". If a sample multi-page editor (also available
  * as a template) is registered for the same extension, it will
  * be able to open it.
  */
 
-public class BmNewWizard extends Wizard implements INewWizard {
-	
-	public static String bm_uri = "http://www.aurora-framework.org/schema/bm";
-	public static String bm_pre = "bm";
-	
-	private BmMainPage mainPage;
-	private BmTablePage tablePage;
-	private BmTableFieldsPage fieldsPage;
+public class ServiceNewWizard extends Wizard implements INewWizard {
+	private ServiceNewWizardPage page;
 	private ISelection selection;
-	private CompositeMap initContent;
-	
-	
-	
-
-	
+	private CompositeMap rootElement;
 	/**
-	 * Constructor for BmNewWizard.
+	 * Constructor for SampleNewWizard.
 	 */
-	public BmNewWizard() {
+	public ServiceNewWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -74,13 +58,8 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		mainPage = new BmMainPage(selection,this);
-		tablePage= new BmTablePage(selection,this);
-		fieldsPage = new BmTableFieldsPage(selection,this);
-		fieldsPage.setPageComplete(false);
-		addPage(mainPage);
-		addPage(tablePage);
-		addPage(fieldsPage);
+		page = new ServiceNewWizardPage(selection);
+		addPage(page);
 	}
 
 	/**
@@ -89,9 +68,9 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String containerName = mainPage.getContainerName();
-		final String fileName = mainPage.getFileName();
-		initContent = createInitContent();
+		final String containerName = page.getContainerName();
+		final String fileName = page.getFileName();
+		rootElement = createRootElement();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
@@ -126,12 +105,12 @@ public class BmNewWizard extends Wizard implements INewWizard {
 		String fileName,
 		IProgressMonitor monitor)
 		throws CoreException {
-		
-		//Èç¹ûÓÃ»§Ã»ÓÐÖ¸¶¨ÎÄ¼þÃûºó×º£¬×Ô¶¯¼Óbmºó×º
-		if(fileName.indexOf(".")==-1){
-			fileName = fileName+".bm";
-		}
 		// create a sample file
+		
+		//ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ã»ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½serviceï¿½ï¿½×º
+		if(fileName.indexOf(".")==-1){
+			fileName = fileName+".service";
+		}
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
@@ -171,26 +150,17 @@ public class BmNewWizard extends Wizard implements INewWizard {
 
 	private InputStream openContentStream() {
 		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		String contents =xmlHint+initContent.toXML();
+		String contents =xmlHint+rootElement.toXML();
 		return new ByteArrayInputStream(contents.getBytes());
 	}
-	private CompositeMap createInitContent() {
 
-		CompositeMap model = new CompositeMap(BmNewWizard.bm_pre,BmNewWizard.bm_uri,"model");
-		model.put("baseTable", getTableName());
-		model.addChild(getSelectedFields());
+	private CompositeMap createRootElement() {
 		
-		try {
-			CompositeMap pks = getPrimaryKeys();
-			if(pks != null && pks.getChilds() != null){
-				model.addChild(pks);
-			}
-		} catch (SQLException e) {
-			Common.showExceptionMessageBox(null, e);
-		}
-		return model;
+		String rootElementName = "service";
+		CompositeMap rootElement = new CompositeMap(rootElementName);
+		return rootElement;
 	}
-
+	
 	private void throwCoreException(String message) throws CoreException {
 		IStatus status =
 			new Status(IStatus.ERROR, "uncertain_ide", IStatus.OK, message, null);
@@ -204,37 +174,5 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
-	}
-/*	public String getUncertainProjectDir() {
-		return mainPage.getUncertainProjectDir();
-	}*/
-	public String getTableName(){
-		return tablePage.getTableName();
-	}
-	public DatabaseMetaData getDBMetaData(){
-		return tablePage.getDBMetaData();
-	}
-	public CompositeMap getPrimaryKeys() throws SQLException{
-		return tablePage.getPrimaryKeys();
-	}
-	//·ÀÖ¹ËùÓÐÒ³ÃæÍ¬Ê±³õÊ¼»¯
-	public void createPageControls(Composite pageContainer) {
-		// super.createPageControls(pageContainer); 
-	}
-	public CompositeMap getSelectedFields(){
-		return fieldsPage.getSelectedFields();
-	}
-	public Connection getConnection() throws Exception{
-		String containerName = mainPage.getContainerName();
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
-		}
-		return Common.getDBConnection(resource.getProject());
-	}
-	public void refresh(){
-		if(fieldsPage.getControl() != null )
-			fieldsPage.refresh();
 	}
 }

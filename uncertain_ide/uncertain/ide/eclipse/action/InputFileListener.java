@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.EditorPart;
 
-import uncertain.ide.Common;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 public class InputFileListener implements IResourceChangeListener, IResourceDeltaVisitor {
 	private EditorPart editor;
@@ -26,7 +26,7 @@ public class InputFileListener implements IResourceChangeListener, IResourceDelt
 				delta.accept(this);
 			}
 			catch (CoreException e) {
-				Common.showExceptionMessageBox(null, e);
+				CustomDialog.showExceptionMessageBox(e);
 			}
 		}
 	}

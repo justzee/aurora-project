@@ -7,9 +7,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.CategoryLabel;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.eclipse.editor.ICategory;
 import uncertain.schema.Category;
 import uncertain.schema.editor.AttributeValue;
 
@@ -18,8 +18,8 @@ public class PropertyHashSorter extends ViewerSorter {
 	private static final int DESCENDING = 1;
 	private int order;
 	private int column;
-	ICategoryContainer container;
-	public PropertyHashSorter(ICategoryContainer container){
+	ICategory container;
+	public PropertyHashSorter(ICategory container){
 		this.container = container;
 	}
 	
@@ -46,7 +46,7 @@ public class PropertyHashSorter extends ViewerSorter {
 				cln = category.getLocalName();
 
 			} else {
-				cln = Common.getString("noncategory");
+				cln = LocaleMessage.getString("noncategory");
 			}
 			result = ((Integer) PropertyHashContentProvider.Categorys.get(cln)).intValue();
 			// int result=((File) element).isDirectory() ? 0 : 1;

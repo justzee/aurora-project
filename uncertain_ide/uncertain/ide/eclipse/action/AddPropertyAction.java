@@ -13,17 +13,17 @@ import org.eclipse.swt.widgets.Widget;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.PropertyViewer;
 
 public class AddPropertyAction extends Action {
-	ICategoryContainer viewer;
+	PropertyViewer viewer;
 
-	public AddPropertyAction(ICategoryContainer viewer) {
+	public AddPropertyAction(PropertyViewer viewer) {
 		this.viewer = viewer;
 	}
 
-	public AddPropertyAction(ICategoryContainer viewer,
+	public AddPropertyAction(PropertyViewer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
@@ -37,7 +37,8 @@ public class AddPropertyAction extends Action {
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("add.icon"));
+		return Activator
+				.getImageDescriptor(LocaleMessage.getString("add.icon"));
 	}
 
 	private void showInputDialog() {
@@ -46,14 +47,14 @@ public class AddPropertyAction extends Action {
 		shell.setSize(400, 200);
 
 		Label propertyLabe = new Label(shell, SWT.NONE);
-		propertyLabe.setText(Common.getString("property.name"));
+		propertyLabe.setText(LocaleMessage.getString("property.name"));
 		propertyLabe.setBounds(20, 20, 50, 30);
 
 		final Text propertyText = new Text(shell, SWT.SHADOW_IN);
 		propertyText.setBounds(80, 20, 300, 20);
 
 		Label valueLabel = new Label(shell, SWT.NONE);
-		valueLabel.setText(Common.getString("value"));
+		valueLabel.setText(LocaleMessage.getString("value"));
 		valueLabel.setBounds(20, 50, 50, 30);
 
 		final Text valueText = new Text(shell, SWT.SHADOW_IN);
@@ -78,8 +79,7 @@ public class AddPropertyAction extends Action {
 			final Button ok, final Button cancel) {
 		SelectionListener listener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
+				widgetSelected(e);
 			}
 
 			public void widgetSelected(SelectionEvent e) {

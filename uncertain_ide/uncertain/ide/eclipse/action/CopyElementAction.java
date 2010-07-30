@@ -4,15 +4,15 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.CompositeMapViewer;
 
 public 	class CopyElementAction extends Action {
-	IContainer viewer;
-	public CopyElementAction(IContainer viewer) {
+	CompositeMapViewer viewer;
+	public CopyElementAction(CompositeMapViewer viewer) {
 		this.viewer = viewer;
 	}
-	public CopyElementAction(IContainer viewer,ImageDescriptor imageDescriptor,String text) {
+	public CopyElementAction(CompositeMapViewer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setImageDescriptor(imageDescriptor);
 		if(text != null)
@@ -21,13 +21,13 @@ public 	class CopyElementAction extends Action {
 	}
 
 	public void run() {
-		CompositeMapAction.copyElement(viewer);
+		viewer.copyElement();
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
-		return Activator.getImageDescriptor(Common.getString("copy.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("copy.icon"));
 	}
 	public static String getDefaultText(){
-		return Common.getString("copy");
+		return LocaleMessage.getString("copy");
 	}
 	
 }

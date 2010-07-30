@@ -9,12 +9,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.IViewer;
 import uncertain.ide.eclipse.editor.widgets.ListElementsExchangeDialog;
 
 public class AddFieldAction extends Action {
-	private IContainer container;
+	private IViewer viewer;
 
 	private CompositeMap source;
 	private CompositeMap target;
@@ -22,8 +22,8 @@ public class AddFieldAction extends Action {
 	private String localName="field";
 	private String prefix;
 	private String uri;
-	public AddFieldAction(IContainer container,CompositeMap source,CompositeMap target,ImageDescriptor imageDescriptor, String text) {
-		this.container = container;
+	public AddFieldAction(IViewer viewer,CompositeMap source,CompositeMap target,ImageDescriptor imageDescriptor, String text) {
+		this.viewer = viewer;
 		this.source = source;
 		this.target = target;
 		if (imageDescriptor != null)
@@ -84,12 +84,12 @@ public class AddFieldAction extends Action {
 			CompositeMap newNode = CompositeMapAction.addElement(target, prefix, uri, localName);
 			newNode.put(targetMainAttribute, result[i]);
 		}
-		if (container != null) {
-			container.refresh(true);
+		if (viewer != null) {
+			viewer.refresh(true);
 		}
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("element.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon"));
 	}
 }

@@ -1,7 +1,6 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.bm;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.eclipse.jface.dialogs.IDialogPage;
@@ -25,7 +24,8 @@ import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.PlainCompositeMapContentProvider;
 import uncertain.ide.eclipse.editor.widgets.PlainCompositeMapLabelProvider;
 
@@ -51,7 +51,7 @@ public class BmTableFieldsPage extends WizardPage {
 	 * @param pageName
 	 */
 	private final String[] ColumnProperties = {"Sequence","COLUMN_NAME","TYPE_NAME", "COLUMN_SIZE","IS_NULLABLE", "REMARKS"};
-	private final String[] ColumnText =  {Common.getString("sequence"),"COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE","IS_NULLABLE", "REMARKS"};
+	private final String[] ColumnText =  {LocaleMessage.getString("sequence"),"COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE","IS_NULLABLE", "REMARKS"};
 	DatabaseMetaData m_DBMetaData;
 	
 	
@@ -75,9 +75,8 @@ public class BmTableFieldsPage extends WizardPage {
 		CompositeMap input = null;
 		try {
 			input = getInput(m_DBMetaData, "%");
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (SQLException e) {
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		
 		Composite container = new Composite(parent, SWT.NULL);
@@ -91,7 +90,7 @@ public class BmTableFieldsPage extends WizardPage {
 		container.setLayout(layout);
 		
 		Label headerLabel = new Label(container, SWT.NONE);
-		headerLabel.setText("ÊäÈë×Ö¶ÎÃûÇ°×º£º");
+		headerLabel.setText("Please input the prefix of table:");
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		headerLabel.setLayoutData(gd);
@@ -144,10 +143,10 @@ public class BmTableFieldsPage extends WizardPage {
 	private CompositeMap getInput(DatabaseMetaData DBMetaData,String tableNamePattern ) throws SQLException{
 		CompositeMap input = new CompositeMap();
 		ResultSet tableRet = DBMetaData.getColumns(null,DBMetaData.getUserName(), wizard.getTableName(),"%");
-		ResultSetMetaData  rsMetaData = tableRet.getMetaData();
-		for(int i=1;i<=rsMetaData.getColumnCount();i++){
-			System.out.println(rsMetaData.getColumnName(i)+":"+rsMetaData.getColumnTypeName(i));
-		}
+//		ResultSetMetaData  rsMetaData = tableRet.getMetaData();
+//		for(int i=1;i<=rsMetaData.getColumnCount();i++){
+//			System.out.println(rsMetaData.getColumnName(i)+":"+rsMetaData.getColumnTypeName(i));
+//		}
 
 		while(tableRet.next()) {
 			CompositeMap element = new CompositeMap();
@@ -167,7 +166,7 @@ public class BmTableFieldsPage extends WizardPage {
 	}
 
 	private void createTableColumn(String[] ColumnProperties) {
-		String seq_imagePath = Common.getString("property.icon");
+		String seq_imagePath = LocaleMessage.getString("property.icon");
 		Image idp=Activator.getImageDescriptor(seq_imagePath).createImage();
 		for(int i=0;i<ColumnProperties.length;i++){
 			TableColumn column = new TableColumn(tableViewer.getTable(), SWT.LEFT);
@@ -204,7 +203,7 @@ public class BmTableFieldsPage extends WizardPage {
 			DataTypeRegistry dtr = DataTypeRegistry.getInstance();
 			DataType dt = dtr.getType(db_data_type.intValue());
 			if(dt == null){
-				Common.showErrorMessageBox(null, "dataBase dataType "+db_data_type+" is not registried!");
+				CustomDialog.showErrorMessageBox(null, "dataBase dataType "+db_data_type+" is not registried!");
 				continue;
 			}
 			field.put("datatype", dt.getJavaType().getName());
@@ -218,7 +217,7 @@ public class BmTableFieldsPage extends WizardPage {
 		try {
 			input = getInput(m_DBMetaData, "%");
 		} catch (SQLException e) {
-			Common.showExceptionMessageBox(null, e);
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		tableViewer.setInput(input);
 	}

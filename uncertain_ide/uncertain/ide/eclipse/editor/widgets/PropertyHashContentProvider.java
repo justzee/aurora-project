@@ -10,21 +10,16 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Common;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.CategoryLabel;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.eclipse.editor.ICategory;
 import uncertain.schema.Attribute;
 import uncertain.schema.Category;
 import uncertain.schema.ISchemaManager;
 import uncertain.schema.editor.AttributeValue;
 import uncertain.schema.editor.CompositeMapEditor;
 
-/**
- * For edit CompositeMap in property sheet view ElementContentProvider
- * 
- * @author Zhou Fan
- * 
- */
 public class PropertyHashContentProvider implements IStructuredContentProvider {
 
 	/**
@@ -34,9 +29,9 @@ public class PropertyHashContentProvider implements IStructuredContentProvider {
 	 * @param schemaManager
 	 */
 	public static HashMap Categorys = new HashMap();
-	ICategoryContainer mViewer;
+	ICategory mViewer;
 
-	public PropertyHashContentProvider(ICategoryContainer mViewer) {
+	public PropertyHashContentProvider(ICategory mViewer) {
 		super();
 		this.mViewer = mViewer;
 	}
@@ -46,7 +41,7 @@ public class PropertyHashContentProvider implements IStructuredContentProvider {
 	public Object[] getElements(Object inputElement) {
 		Categorys.clear();
 		CompositeMap map = (CompositeMap) inputElement;
-		ISchemaManager mSchemaManager = Common.getSchemaManager();
+		ISchemaManager mSchemaManager = LoadSchemaManager.getSchemaManager();
 		CompositeMapEditor editor = new CompositeMapEditor(mSchemaManager, map);
 		AttributeValue[] avs = editor.getAttributeList();
 		if (!mViewer.isCategory())
@@ -63,7 +58,7 @@ public class PropertyHashContentProvider implements IStructuredContentProvider {
 				}
 			}
 		}
-		Categorys.put(Common.getString("noncategory"), new Integer((Categorys
+		Categorys.put(LocaleMessage.getString("noncategory"), new Integer((Categorys
 				.size() + 1) * 10));
 
 		AttributeValue[] newAttrv = new AttributeValue[avs.length

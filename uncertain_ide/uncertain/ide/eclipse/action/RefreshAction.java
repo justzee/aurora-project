@@ -4,12 +4,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.IViewer;
 
-/**
- * Ë¢ÐÂµÄActionÀà
- */
 public class RefreshAction extends Action {
 	IViewer viewer;
 
@@ -31,6 +28,6 @@ public class RefreshAction extends Action {
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("refresh.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("refresh.icon"));
 	}
 }

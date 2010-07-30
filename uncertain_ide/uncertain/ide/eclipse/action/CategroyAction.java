@@ -4,16 +4,16 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.ICategoryViewer;
 
 public class CategroyAction extends Action {
 	
-	private ICategoryContainer viewer;
-	public CategroyAction(ICategoryContainer viewer) {
+	private ICategoryViewer viewer;
+	public CategroyAction(ICategoryViewer viewer) {
 		this.viewer = viewer;
 	}
-	public CategroyAction(ICategoryContainer viewer,ImageDescriptor imageDescriptor,String text) {
+	public CategroyAction(ICategoryViewer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
 		if(text != null)
@@ -27,6 +27,6 @@ public class CategroyAction extends Action {
 		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
-		return Activator.getImageDescriptor(Common.getString("category.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("category.icon"));
 	}
 }

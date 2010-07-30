@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.wizards;
+package uncertain.ide.eclipse.editor.sxsd;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -21,37 +21,35 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (bm).
+ * OR with the extension that matches the expected one (sxsd).
  */
 
-public class BmMainPage extends WizardPage {
+public class SxsdNewWizardPage extends WizardPage {
 	private Text containerText;
 
 	private Text fileText;
 	
+	private Text namespacePrefix;
+	
+	private Text namespaceUrl;
+	
 	private ISelection selection;
-	
-//	Text uncetainText;
-
-	
-	BmNewWizard wizard;
 
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public BmMainPage(ISelection selection,BmNewWizard bmWizard) {
+	public SxsdNewWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle("Uncetain bm Editor File");
-		setDescription("This wizard creates a new file with *.bm extension that can be opened by a multi-page editor.");
+		setTitle("Uncetain Sxsd Editor File");
+		setDescription("This wizard creates a new file with *.sxsd extension that can be opened by a multi-page editor.");
 		this.selection = selection;
-		this.wizard = bmWizard;
 	}
 
 	/**
@@ -95,24 +93,29 @@ public class BmMainPage extends WizardPage {
 			}
 		});
 		
-/*		label = new Label(container, SWT.NULL);
-		label.setText("&uncertain project path:");
-
-		uncetainText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		label = new Label(container, SWT.NULL);
+		label.setText("&Namespace Prefix:");
+		namespacePrefix = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		uncetainText.setLayoutData(gd);
-		uncetainText.addModifyListener(new ModifyListener() {
+		gd.horizontalSpan=2;
+		namespacePrefix.setLayoutData(gd);
+		namespacePrefix.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}
 		});
-		button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				uncertainProjectListener();
+		
+		label = new Label(container, SWT.NULL);
+		label.setText("&Namespace Url:");
+		namespaceUrl = new Text(container, SWT.BORDER | SWT.SINGLE);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan=2;
+		namespaceUrl.setLayoutData(gd);
+		namespaceUrl.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				dialogChanged();
 			}
-		});*/
+		});
 		
 		initialize();
 		dialogChanged();
@@ -139,7 +142,11 @@ public class BmMainPage extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
+//		fileText.setText("new_file.sxsd");
+		namespacePrefix.setText("sxsd");
+		namespaceUrl.setText("http://www.uncertain-framework.org/schema/simple-schema");
 	}
+
 	/**
 	 * Uses the standard container selection dialog to choose the new value for
 	 * the container field.
@@ -156,13 +163,6 @@ public class BmMainPage extends WizardPage {
 			}
 		}
 	}
-/*	private void uncertainProjectListener() {
-		DirectoryDialog dialog = new DirectoryDialog (getShell(), SWT.NONE);
-		dialog.setMessage (Common.getString("Example_string"));
-		dialog.setText (Common.getString("Title"));
-		String result = dialog.open ();
-		uncetainText.setText(result);
-	}*/
 
 	/**
 	 * Ensures that both text fields are set.
@@ -183,7 +183,7 @@ public class BmMainPage extends WizardPage {
 			return;
 		}
 		if(fileName !=null &&!fileName.equals("")&&container.getProject().getFile(fileName).exists()){
-			updateStatus(Common.getString("filename.used"));
+			updateStatus(LocaleMessage.getString("filename.used"));
 			return;
 		}
 		if (!container.isAccessible()) {
@@ -202,25 +202,21 @@ public class BmMainPage extends WizardPage {
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("bm") == false) {
-				updateStatus("File extension must be \"bm\"");
+			if (ext.equalsIgnoreCase("sxsd") == false) {
+				updateStatus("File extension must be \"sxsd\"");
 				return;
 			}
 		}
-/*		if(getUncertainProjectDir().length() == 0){
-			updateStatus("uncertain project directory must be specified");
+		
+		if(getNamespacePrefix().length() == 0){
+			updateStatus("Namespace Prefix must be specified");
 			return;
 		}
-		if(getUncertainProjectDir().length() != 0){
-			try {
-				connection = getDBConnection(getUncertainProjectDir());
-			} catch (Exception e) {
-				e.printStackTrace();
-				updateStatus(e.getLocalizedMessage());
-				Common.showExceptionMessageBox(null, e);
-				return;
-			}
-		}*/
+		
+		if(getNamespaceUrl().length() == 0){
+			updateStatus("Namespace Url must be specified");
+			return;
+		}
 		
 		updateStatus(null);
 	}
@@ -237,9 +233,12 @@ public class BmMainPage extends WizardPage {
 	public String getFileName() {
 		return fileText.getText();
 	}
-/*
-	public String getUncertainProjectDir() {
-		return uncetainText.getText();
-	}*/
-	
+
+	public String getNamespacePrefix() {
+		return namespacePrefix.getText();
+	}
+
+	public String getNamespaceUrl() {
+		return namespaceUrl.getText();
+	}
 }

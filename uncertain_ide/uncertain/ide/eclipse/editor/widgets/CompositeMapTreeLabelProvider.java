@@ -10,7 +10,8 @@ import org.eclipse.swt.graphics.Image;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.LocaleMessage;
 import uncertain.schema.Element;
 
 public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
@@ -22,14 +23,14 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 
 	public Image getImage(Object element) {
 		CompositeMap elemenntCm = (CompositeMap) element;
-		Element ele = Common.getSchemaManager().getElement(elemenntCm);
+		Element ele = LoadSchemaManager.getSchemaManager().getElement(elemenntCm);
 		if (ele != null) {
 			if (ele.isArray()) {
 				return Activator.getImageDescriptor(
-						Common.getString("array.icon")).createImage();
+						LocaleMessage.getString("array.icon")).createImage();
 			}
 		}
-		String defaultPath = Common.getString("element.icon");
+		String defaultPath = LocaleMessage.getString("element.icon");
 		return Activator.getImageDescriptor(defaultPath).createImage();
 	}
 
@@ -51,7 +52,7 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 			elementText = elementName;
 		else
 			elementText = tagName;
-		Element element = Common.getSchemaManager().getElement(elemenntCm);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(elemenntCm);
 		if (element != null) {
 			if (element.isArray()) {
 				int nodes = elemenntCm.getChildsNotNull().size();
@@ -66,7 +67,7 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 	private String getElementName(CompositeMap element) {
 
 		String tagName = element.getRawName();
-		Element elm = Common.getSchemaManager().getElement(element);
+		Element elm = LoadSchemaManager.getSchemaManager().getElement(element);
 		String elemName = null;
 		if (elm != null && !elm.isArray()) {
 			if (elm.getDisplayMask() == null) {

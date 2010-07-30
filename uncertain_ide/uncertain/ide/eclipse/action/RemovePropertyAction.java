@@ -4,18 +4,18 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.ICategoryContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.PropertyViewer;
 
 public class RemovePropertyAction extends Action {
 
-	ICategoryContainer viewer;
+	PropertyViewer viewer;
 
-	public RemovePropertyAction(ICategoryContainer viewer) {
+	public RemovePropertyAction(PropertyViewer viewer) {
 		this.viewer = viewer;
 	}
 
-	public RemovePropertyAction(ICategoryContainer viewer,
+	public RemovePropertyAction(PropertyViewer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
@@ -25,10 +25,10 @@ public class RemovePropertyAction extends Action {
 	}
 
 	public void run() {
-		CompositeMapAction.removePropertyAction(viewer);
+		viewer.removePropertyAction();
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("delete.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("delete.icon"));
 	}
 }

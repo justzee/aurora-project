@@ -6,18 +6,18 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.IViewer;
 
 public class AddElementAction extends Action {
-	private IContainer viewer;
+	private IViewer viewer;
 
 	private CompositeMap parentCM;
 	private String prefix;
 	private String uri;
 	private String cmName;
 
-	public AddElementAction(IContainer viewer, CompositeMap parentCM,
+	public AddElementAction(IViewer viewer, CompositeMap parentCM,
 			String prefix, String uri, String cmName) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
@@ -28,12 +28,12 @@ public class AddElementAction extends Action {
 
 	}
 
-	public AddElementAction(IContainer viewer, CompositeMap parentCM,
+	public AddElementAction(IViewer viewer, CompositeMap parentCM,
 			QualifiedName qName, ImageDescriptor imageDescriptor, String text) {
 		this.viewer = viewer;
 		this.parentCM = parentCM;
 		this.uri = qName.getNameSpace();
-		this.prefix = Common.getPrefix(parentCM,qName);
+		this.prefix = CompositeMapAction.getPrefix(parentCM,qName);
 		this.cmName = qName.getLocalName();
 		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
@@ -50,6 +50,6 @@ public class AddElementAction extends Action {
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("element.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon"));
 	}
 }

@@ -55,9 +55,12 @@ public class PropertyGridLabelProvider extends BaseLabelProvider implements ITab
         Object cellEditor_object = mCellModifier.getCellEditor(attrib.getLocalName());
         
 		if(cellEditor_object != null && cellEditor_object instanceof CheckboxCellEditor){
-			ICellEditor cellEditor= (ICellEditor)cellEditor_object;
-			String value = cellEditor.getSelection();
-			if(value != null && value.equals("true"))
+			CompositeMap data = (CompositeMap)element;
+			String returnValue = data.getString(attrib.getLocalName());
+//			ICellEditor cellEditor= (ICellEditor)cellEditor_object;
+//			String value = cellEditor.getSelection();
+//			if(value != null && value.equals("true"))
+			if(returnValue != null && returnValue.equals("true"))	
 				return Activator.getImageDescriptor("icons/checked.gif").createImage();
 			return Activator.getImageDescriptor("icons/unchecked.gif").createImage();
 		}

@@ -8,8 +8,6 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
@@ -27,16 +25,17 @@ import org.eclipse.swt.widgets.ToolBar;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.action.AddElementAction;
 import uncertain.ide.eclipse.action.AddPropertyAction;
-import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemoveElementAction;
 import uncertain.ide.eclipse.action.RemovePropertyAction;
 import uncertain.ide.eclipse.celleditor.CellEditorFactory;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.eclipse.editor.CompositeMapViewer;
+import uncertain.ide.eclipse.editor.ITableViewer;
 import uncertain.ide.eclipse.editor.IViewer;
 import uncertain.schema.Array;
 import uncertain.schema.Attribute;
@@ -44,7 +43,8 @@ import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 
-public class PropertyGridViewer implements IContainer {
+public class PropertyGridViewer extends CompositeMapViewer implements
+		ITableViewer {
 
 	public static final String COLUMN_PROPERTY = "PROPERTY";
 	public static final String COLUMN_VALUE = "VALUE";
@@ -59,16 +59,21 @@ public class PropertyGridViewer implements IContainer {
 	PropertyGridCellModifier cellModifiers;
 	private PropertyGridLabelProvider propertyArrayLabelProvider;
 	ToolBarManager toolBarManager;
+
+	private boolean isPacked = true;
 	public PropertyGridViewer(IViewer parent) {
 		super();
 		mParent = parent;
+	}
+	public PropertyGridViewer(IViewer parent,boolean isInitPacked) {
+		super();
+		mParent = parent;
+		isPacked = isInitPacked;
 	}
 
 	public void setData(CompositeMap data) {
 		mData = data;
 		if (mTable != null) {
-			// createEditor( mTable.getParent() );
-//			CellEditorFactory.getInstance().setTableChanged(true);
 			createTableColumns();
 			if (mData.getChilds() != null)
 				mPropertyViewer.setInput(mData);
@@ -84,12 +89,13 @@ public class PropertyGridViewer implements IContainer {
 			cellModifiers.clear();
 			mPropertyViewer.getTable().dispose();
 			viewForm.dispose();
-			
+
 		}
-		
+
 	}
+
 	protected void createTableColumns() {
-		Element elm = Common.getSchemaManager().getElement(mData);
+		Element elm = LoadSchemaManager.getSchemaManager().getElement(mData);
 		if (elm == null)
 			throw new IllegalArgumentException("Can't get element schema from "
 					+ mData.toXML());
@@ -110,12 +116,12 @@ public class PropertyGridViewer implements IContainer {
 			return;
 		String[] column_index = createColumnProperties(attrib_list);
 		mPropertyViewer.setColumnProperties(column_index);
-		
+
 		propertyArrayLabelProvider = new PropertyGridLabelProvider(attrib_list
-				.toArray(),cellModifiers);
+				.toArray(), cellModifiers);
 		mPropertyViewer.setLabelProvider(propertyArrayLabelProvider);
 		createTableColumn(attrib_list);
-		
+
 		CellEditor[] editors = createCellEditors(attrib_list);
 		mPropertyViewer.setCellEditors(editors);
 
@@ -126,25 +132,24 @@ public class PropertyGridViewer implements IContainer {
 		int id = 1;
 		for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 			Attribute attrib = (Attribute) it.next();
-//			editors[id++] = new TextCellEditor(mTable);
-			ICellEditor cellEditor = CellEditorFactory.getInstance().createCellEditor(this,attrib,null);
-			if(cellEditor !=null){
+			// editors[id++] = new TextCellEditor(mTable);
+			ICellEditor cellEditor = CellEditorFactory.getInstance()
+					.createCellEditor(this, attrib, null, null);
+			if (cellEditor != null) {
 				editors[id++] = cellEditor.getCellEditor();
-				cellModifiers.addEditor(attrib.getLocalName(), cellEditor);}
-			else{
+				cellModifiers.addEditor(attrib.getLocalName(), cellEditor);
+			} else {
 				editors[id++] = new TextCellEditor(mTable);
 			}
 		}
-//		String[] items = {"true","false","aa"}; 
-//		editors[1] = new ComboBoxCellEditor(mTable,items);
 		return editors;
 	}
 
 	private void createTableColumn(List attrib_list) {
-		String seq_imagePath = Common.getString("property.icon");
-		Image idp=Activator.getImageDescriptor(seq_imagePath).createImage();
+		String seq_imagePath = LocaleMessage.getString("property.icon");
+		Image idp = Activator.getImageDescriptor(seq_imagePath).createImage();
 		TableColumn seq_column = new TableColumn(mTable, SWT.LEFT);
-		seq_column.setText(Common.getString("sequence"));
+		seq_column.setText(LocaleMessage.getString("sequence"));
 		seq_column.setImage(idp);
 		// column.setWidth(80);
 		seq_column.pack();
@@ -154,25 +159,29 @@ public class PropertyGridViewer implements IContainer {
 			TableColumn column = new TableColumn(mTable, SWT.LEFT);
 			column.setText(attrib.getLocalName());
 			column.setImage(idp);
-			// column.setWidth(80);
-			column.pack();
+			if(!isPacked)
+				column.setWidth(40);
+			else
+				column.pack();
 		}
 	}
 
 	private String[] createColumnProperties(List attrib_list) {
 		String[] column_index = new String[attrib_list.size() + 1];
-//		CellEditor[] editors = new CellEditor[attrib_list.size() + 1];
+		// CellEditor[] editors = new CellEditor[attrib_list.size() + 1];
 		int id = 0;
 		column_index[0] = "sequence";
 		for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 			Attribute attrib = (Attribute) it.next();
-//			editors[++id] = new TextCellEditor(mTable);
+			// editors[++id] = new TextCellEditor(mTable);
 			column_index[++id] = attrib.getLocalName();
 		}
 		return column_index;
 	}
+
 	public void createEditor(Composite parent) {
 		viewForm = new ViewForm(parent, SWT.NONE);
+		viewForm.setSize(200, 200);
 		viewForm.setLayout(new FillLayout());
 
 		mPropertyViewer = new TableViewer(viewForm, SWT.BORDER
@@ -192,14 +201,12 @@ public class PropertyGridViewer implements IContainer {
 		createEditor(parent);
 		setData(data);
 		ToolBar toolBar = new ToolBar(viewForm, SWT.RIGHT | SWT.FLAT);
-		// 创建一个toolBar的管理器
 		toolBarManager = new ToolBarManager(toolBar);
-		// 调用fillActionToolBars方法将Action注入ToolBar中
 		if (mData != null)
 			createDefaultActions();
-		fillKeyListener(this);
-		viewForm.setContent(mPropertyViewer.getControl()); // 主体：表格
-		viewForm.setTopLeft(toolBar); // 顶端边缘：工具栏
+		fillKeyListener();
+		viewForm.setContent(mPropertyViewer.getControl());
+		viewForm.setTopLeft(toolBar);
 	}
 
 	public TableViewer getTableViewer() {
@@ -210,56 +217,32 @@ public class PropertyGridViewer implements IContainer {
 		return mTable;
 	}
 
-	public boolean IsCategory() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void setIsCategory(boolean isCategory) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public Object getViewer() {
-		// TODO Auto-generated method stub
+	public TableViewer getViewer() {
 		return mPropertyViewer;
 	}
 
-	public Object getSelection() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setSelection(Object data) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void setFocus(Object data) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void addActions(IAction[] actions){
-		if(actions ==null)
+	public void addActions(IAction[] actions) {
+		if (actions == null)
 			return;
-		for(int i=0;i<actions.length;i++){
+		for (int i = 0; i < actions.length; i++) {
 			toolBarManager.add(createActionContributionItem(actions[i]));
 		}
 		toolBarManager.update(true);
 	}
-	public void setActions(IAction[] actions){
+
+	public void setActions(IAction[] actions) {
 		toolBarManager.removeAll();
-		if(actions ==null)
+		if (actions == null)
 			return;
-		for(int i=0;i<actions.length;i++){
+		for (int i = 0; i < actions.length; i++) {
 			toolBarManager.add(createActionContributionItem(actions[i]));
 		}
 		toolBarManager.update(true);
 	}
 
 	public void createDefaultActions() {
-		Element element = Common.getSchemaManager().getElement(mData);
+		Element element = LoadSchemaManager.getSchemaManager()
+				.getElement(mData);
 		if (element == null) {
 			return;
 		}
@@ -279,28 +262,34 @@ public class PropertyGridViewer implements IContainer {
 		}
 	}
 
-
 	ActionContributionItem createActionContributionItem(IAction action) {
 		ActionContributionItem aci = new ActionContributionItem(action);
-		aci.setMode(ActionContributionItem.MODE_FORCE_TEXT);// 显示图像+文字
+		aci.setMode(ActionContributionItem.MODE_FORCE_TEXT);// 锟斤拷示图锟斤拷+锟斤拷锟斤拷
 		return aci;
 	}
 
-	public void refresh() {
-//		System.out.println("refresh..");
-		if (mPropertyViewer != null && !mPropertyViewer.getTable().isDisposed()) {
-			// mPropertyViewer.refresh();
-			mPropertyViewer.setInput(mData);
-			propertyArrayLabelProvider.refresh();
-		}
-
-	}
-
 	public void refresh(boolean dirty) {
-		refresh();
 		if (dirty) {
 			mParent.refresh(dirty);
+		} else {
+			if (mPropertyViewer != null
+					&& !mPropertyViewer.getTable().isDisposed()) {
+				if (mData != null && mData.getChilds() != null) {
+					mPropertyViewer.setInput(mData);
+					propertyArrayLabelProvider.refresh();
+				}
+			}
 		}
+	}
+
+	public void packColumns() {
+		if(mTable == null || isPacked)
+			return;
+		for (int i = 0; i < mTable.getColumnCount(); i++) {
+			TableColumn column = mTable.getColumn(i);
+			column.pack();
+		}
+		isPacked = true;
 	}
 
 	public CompositeMap getInput() {
@@ -308,30 +297,19 @@ public class PropertyGridViewer implements IContainer {
 
 	}
 
-	public Object getFocus() {
-		// TODO Auto-generated method stub
-		ISelection selection = mPropertyViewer.getSelection();
-		Object obj = ((IStructuredSelection) selection).getFirstElement();
-		CompositeMap av = (CompositeMap) obj;
-		return av;
-	}
-
 	public Control getControl() {
-		// TODO Auto-generated method stub
 		return viewForm;
 	}
 
-	public void fillKeyListener(final IContainer viewer) {
+	public void fillKeyListener() {
 		mTable.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.DEL) {
-					CompositeMapAction.removeElement(viewer);
+					removeElement();
 				}
 			}
 
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 

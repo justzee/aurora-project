@@ -4,17 +4,17 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.eclipse.editor.IContainer;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.CompositeMapViewer;
 
 public class RemoveElementAction extends Action {
-	IContainer viewer;
+	private CompositeMapViewer viewer;
 
-	public RemoveElementAction(IContainer viewer) {
+	public RemoveElementAction(CompositeMapViewer viewer) {
 		this.viewer = viewer;
 	}
 
-	public RemoveElementAction(IContainer viewer,
+	public RemoveElementAction(CompositeMapViewer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setImageDescriptor(imageDescriptor);
@@ -24,15 +24,15 @@ public class RemoveElementAction extends Action {
 	}
 
 	public void run() {
-		CompositeMapAction.removeElement(viewer);
+		viewer.removeElement();
 
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(Common.getString("delete.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("delete.icon"));
 	}
 
 	public static String getDefaultText() {
-		return Common.getString("delete");
+		return LocaleMessage.getString("delete");
 	}
 }

@@ -7,7 +7,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 
 
 /**
@@ -34,9 +34,9 @@ public class BrowserPreferencePage extends FieldEditorPreferencePage
 	protected void createFieldEditors() {
 
 		StringFieldEditor  remoteUrl = new StringFieldEditor (
-				BROWSER_REMOTE, Common.getString("remote.server.page"), getFieldEditorParent());
+				BROWSER_REMOTE, LocaleMessage.getString("remote.server.page"), getFieldEditorParent());
 		StringFieldEditor  localUrl = new StringFieldEditor (
-				BROWSER_LOCAL, Common.getString("local.server.page"), getFieldEditorParent());
+				BROWSER_LOCAL, LocaleMessage.getString("local.server.page"), getFieldEditorParent());
 		
 		
 		addField(remoteUrl);

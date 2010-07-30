@@ -8,8 +8,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.IViewer;
 import uncertain.ide.eclipse.editor.CompositeMapTreeShell;
+import uncertain.ide.eclipse.editor.IViewer;
 
 public class ElementDoubleClickListener implements IDoubleClickListener {
 	IViewer parent;

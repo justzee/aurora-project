@@ -10,15 +10,12 @@ public class CategoryLabel extends AttributeValue {
 	public CategoryLabel(CompositeMap container, Attribute attribute,
 			Object value) {
 		super(container, attribute, value);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
