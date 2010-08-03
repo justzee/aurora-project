@@ -1,6 +1,7 @@
 <model xmlns="http://www.aurora-framework.org/schema/bm" alias="c" extend="aurora.testcase.model.child1" extendMode="override">
 	<fields>
 		<field name="ename" forDisplay="true" forUpdate="false" />
-		<field name="level" dataType="java.lang.Long" />		
+		<field name="level" dataType="java.lang.Long" />
+		<field name="hiredate" />		
 	</fields>
 </model>
