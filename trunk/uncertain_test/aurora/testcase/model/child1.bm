@@ -3,6 +3,7 @@
 		<field name="new_field" dataType="java.lang.String" />
 		<field name="ename" forDisplay="false" />
 		<field name="deptno"  />
+		<field name="empno" />
 	</fields>
 	<relations>
         <relation name="DEPT"  joinType="LEFT OUTTER" />

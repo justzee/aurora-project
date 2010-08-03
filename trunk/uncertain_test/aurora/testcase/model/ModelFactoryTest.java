@@ -5,6 +5,7 @@
 package aurora.testcase.model;
 
 import junit.framework.TestCase;
+import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.bm.Field;
@@ -12,10 +13,11 @@ import aurora.bm.ModelFactory;
 import aurora.bm.Relation;
 
 public class ModelFactoryTest extends TestCase {
-    
-    static final String PKG_NAME = ModelFactoryTest.class.getPackage().getName();
-    
-    ModelFactory        fact;
+
+    static final String PKG_NAME = ModelFactoryTest.class.getPackage()
+            .getName();
+
+    ModelFactory fact;
 
     public ModelFactoryTest(String name) {
         super(name);
@@ -25,18 +27,16 @@ public class ModelFactoryTest extends TestCase {
         super.setUp();
         fact = new ModelFactory(OCManager.getInstance());
     }
-    
-    public void testModelExtend()
-        throws Exception
-    {
-        BusinessModel child1 = fact.getModel(PKG_NAME+".child1");
+
+    public void testModelExtend() throws Exception {
+        BusinessModel child1 = fact.getModel(PKG_NAME + ".child1");
         assertNotNull(child1);
         assertNotNull(child1.getField("new_field"));
         Field ename = child1.getField("ename");
         assertTrue(!ename.isForDisplay());
-        //System.out.println(child1.getObjectContext().toXML());
-        
-        BusinessModel child2 = fact.getModel(PKG_NAME+".child2");
+        // System.out.println(child1.getObjectContext().toXML());
+
+        BusinessModel child2 = fact.getModel(PKG_NAME + ".child2");
         assertNotNull(child2);
         Field level = child2.getField("level");
         assertNotNull(level);
@@ -45,6 +45,12 @@ public class ModelFactoryTest extends TestCase {
         Relation dept = child2.getRelation("DEPT");
         assertNotNull(dept);
         assertEquals("LEFT OUTTER", dept.getJoinType());
+    }
+
+    public void testGetModelConfig() throws Exception {
+        CompositeMap map = fact.getModelConfig(PKG_NAME+".child1");
+        assertNotNull(map);
+        System.out.println(map.toXML());
     }
 
 }
