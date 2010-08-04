@@ -111,5 +111,13 @@ public class SimpleDataSource implements DataSource {
         this.loginTimeOut = seconds;
 
     }
+    
+    public boolean isWrapperFor(Class t){
+        return false;
+    }
+    
+    public Object unwrap(Class t){
+        return null;
+    }
 
 }
