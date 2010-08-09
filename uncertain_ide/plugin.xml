@@ -33,7 +33,14 @@
             class="uncertain.ide.eclipse.editor.bm.BmNewWizard"
             icon="icons/bm.gif"
             id="uncertain.ide.eclipse.wizards.BmNewWizard"
-            name="BussinessModel File">
+            name="BussinessModel File From DataBase">
+      </wizard>
+      <wizard
+            category="uncertain_ide"
+            class="uncertain.ide.eclipse.editor.bm.BMNewWizardFromSQL"
+            icon="icons/sql.gif"
+            id="uncertain.ide.eclipse.wizards.BmNewWizard"
+            name="BussinessModel File From SQL">
       </wizard>
    </extension>
    <extension

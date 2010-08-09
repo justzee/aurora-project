@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Configuration Editor Plug-in
 Bundle-SymbolicName: uncertain_ide;singleton:=true
-Bundle-Version: 1.1.6
+Bundle-Version: 1.1.7
 Bundle-Activator: uncertain.ide.Activator
 Bundle-Vendor: Uncertain Framework
 Require-Bundle: org.eclipse.ui,
@@ -16,8 +16,8 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  bin/,
- lib/aurora.jar,
  lib/uncertain.jar,
+ lib/aurora.jar,
  lib/classes12.jar,
  lib/c3p0-0.9.1.2.jar,
  lib/jotm-1.5.3.jar,
