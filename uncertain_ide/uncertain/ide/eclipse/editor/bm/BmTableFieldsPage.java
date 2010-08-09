@@ -1,4 +1,5 @@
 package uncertain.ide.eclipse.editor.bm;
+
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,12 +38,11 @@ import uncertain.ide.eclipse.editor.widgets.PlainCompositeMapLabelProvider;
 
 public class BmTableFieldsPage extends WizardPage {
 	private TableViewer tableViewer;
-	
+
 	private Text containerText;
 
 	private Text fileText;
-	
-	
+
 	Text uncetainText;
 	BmNewWizard wizard;
 	/**
@@ -50,16 +50,18 @@ public class BmTableFieldsPage extends WizardPage {
 	 * 
 	 * @param pageName
 	 */
-	private final String[] ColumnProperties = {"Sequence","COLUMN_NAME","TYPE_NAME", "COLUMN_SIZE","IS_NULLABLE", "REMARKS"};
-	private final String[] ColumnText =  {LocaleMessage.getString("sequence"),"COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE","IS_NULLABLE", "REMARKS"};
+	private final String[] ColumnProperties = { "Sequence", "COLUMN_NAME",
+			"TYPE_NAME", "COLUMN_SIZE", "IS_NULLABLE", "REMARKS" };
+	private final String[] ColumnText = { LocaleMessage.getString("sequence"),
+			"COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", "IS_NULLABLE", "REMARKS" };
 	DatabaseMetaData m_DBMetaData;
-	
-	
+
 	CompositeMap fields = new CompositeMap();
-	
-	CheckboxTableViewer ctv;
-	
-	public BmTableFieldsPage(ISelection selection,BmNewWizard bmWizard) {
+
+	private CheckboxTableViewer ctv;
+	private PlainCompositeMapLabelProvider labelProvider;
+
+	public BmTableFieldsPage(ISelection selection, BmNewWizard bmWizard) {
 		super("wizardPage");
 		setTitle("Uncetain bm Editor File");
 		setDescription("This wizard creates a new file with *.bm extension that can be opened by a multi-page editor.");
@@ -71,48 +73,48 @@ public class BmTableFieldsPage extends WizardPage {
 	 */
 	public void createControl(Composite parent) {
 		m_DBMetaData = wizard.getDBMetaData();
-		
+
 		CompositeMap input = null;
 		try {
 			input = getInput(m_DBMetaData, "%");
 		} catch (SQLException e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
-		
+
 		Composite container = new Composite(parent, SWT.NULL);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		container.setLayoutData(gd);
-		
+
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 1;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		container.setLayout(layout);
-		
+
 		Label headerLabel = new Label(container, SWT.NONE);
 		headerLabel.setText("Please input the prefix of table:");
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		headerLabel.setLayoutData(gd);
 
-		
-		final Text filterText = new Text(container,SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL);
-		gd.heightHint=15;
+		final Text filterText = new Text(container, SWT.SINGLE | SWT.BORDER
+				| SWT.SEARCH | SWT.ICON_CANCEL);
+		gd.heightHint = 15;
 		filterText.setLayoutData(gd);
-		
-		
-		tableViewer = new TableViewer(container, SWT.MULTI|SWT.CHECK|SWT.FULL_SELECTION |SWT.BORDER|SWT.V_SCROLL|SWT.H_SCROLL);
 
-		
+		tableViewer = new TableViewer(container, SWT.MULTI | SWT.CHECK
+				| SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+
 		Table table = tableViewer.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-//		table.setBounds(97, 79, 373, 154);
+		// table.setBounds(97, 79, 373, 154);
 		gd = new GridData(GridData.FILL_BOTH);
-		gd.heightHint= tableViewer.getTable().getItemHeight() * 15;
+		gd.heightHint = tableViewer.getTable().getItemHeight() * 15;
 		tableViewer.getTable().setLayoutData(gd);
 		tableViewer.setContentProvider(new PlainCompositeMapContentProvider());
-		final PlainCompositeMapLabelProvider labelProvider = new PlainCompositeMapLabelProvider(ColumnProperties);
+		labelProvider = new PlainCompositeMapLabelProvider(
+				ColumnProperties);
 		tableViewer.setLabelProvider(labelProvider);
 
 		tableViewer.setColumnProperties(ColumnProperties);
@@ -121,44 +123,54 @@ public class BmTableFieldsPage extends WizardPage {
 		tableViewer.addFilter(filter);
 		tableViewer.setInput(input);
 
-		
 		ctv = new CheckboxTableViewer(tableViewer.getTable());
 		ctv.setAllChecked(true);
-		
+
 		filterText.addModifyListener(new ModifyListener() {
-			
+
 			public void modifyText(ModifyEvent e) {
 				String filterChars = filterText.getText();
 				filterChars = filterChars.toUpperCase();
 				filter.setFilterString(filterChars);
 				labelProvider.refresh();
 				tableViewer.refresh();
-//				tableViewer.getTable().getItem(1).set
-				
+				// tableViewer.getTable().getItem(1).set
+
 			}
 		});
 		setControl(container);
 		setPageComplete(true);
 	}
-	private CompositeMap getInput(DatabaseMetaData DBMetaData,String tableNamePattern ) throws SQLException{
-		CompositeMap input = new CompositeMap();
-		ResultSet tableRet = DBMetaData.getColumns(null,DBMetaData.getUserName(), wizard.getTableName(),"%");
-//		ResultSetMetaData  rsMetaData = tableRet.getMetaData();
-//		for(int i=1;i<=rsMetaData.getColumnCount();i++){
-//			System.out.println(rsMetaData.getColumnName(i)+":"+rsMetaData.getColumnTypeName(i));
-//		}
 
-		while(tableRet.next()) {
+	private CompositeMap getInput(DatabaseMetaData DBMetaData,
+			String tableNamePattern) throws SQLException {
+		CompositeMap input = new CompositeMap();
+		ResultSet tableRet = DBMetaData.getColumns(null, DBMetaData
+				.getUserName(), wizard.getTableName(), "%");
+		// ResultSetMetaData rsMetaData = tableRet.getMetaData();
+		// for(int i=1;i<=rsMetaData.getColumnCount();i++){
+		// System.out.println(rsMetaData.getColumnName(i)+":"+rsMetaData.getColumnTypeName(i));
+		// }
+
+		while (tableRet.next()) {
 			CompositeMap element = new CompositeMap();
-			element.put(ColumnProperties[1], tableRet.getString(ColumnProperties[1]));
-			element.put(ColumnProperties[2], tableRet.getString(ColumnProperties[2]));
-			element.put(ColumnProperties[3], new Integer(tableRet.getInt(ColumnProperties[3])));
-			element.put(ColumnProperties[4], tableRet.getString(ColumnProperties[4]));
-/*			short dataType = tableRet.getShort(ColumnProperties[4]);
-			String javaDataTyper= java.sql.Types.class.getFields()[dataType].getName();
-			
-			element.put(ColumnProperties[4], javaDataTyper);*/
-			element.put(ColumnProperties[5], tableRet.getString(ColumnProperties[5]));
+			element.put(ColumnProperties[1], tableRet
+					.getString(ColumnProperties[1]));
+			element.put(ColumnProperties[2], tableRet
+					.getString(ColumnProperties[2]));
+			element.put(ColumnProperties[3], new Integer(tableRet
+					.getInt(ColumnProperties[3])));
+			element.put(ColumnProperties[4], tableRet
+					.getString(ColumnProperties[4]));
+			/*
+			 * short dataType = tableRet.getShort(ColumnProperties[4]); String
+			 * javaDataTyper=
+			 * java.sql.Types.class.getFields()[dataType].getName();
+			 * 
+			 * element.put(ColumnProperties[4], javaDataTyper);
+			 */
+			element.put(ColumnProperties[5], tableRet
+					.getString(ColumnProperties[5]));
 			element.put("DATA_TYPE", new Integer(tableRet.getInt("DATA_TYPE")));
 			input.addChild(element);
 		}
@@ -167,15 +179,17 @@ public class BmTableFieldsPage extends WizardPage {
 
 	private void createTableColumn(String[] ColumnProperties) {
 		String seq_imagePath = LocaleMessage.getString("property.icon");
-		Image idp=Activator.getImageDescriptor(seq_imagePath).createImage();
-		for(int i=0;i<ColumnProperties.length;i++){
-			TableColumn column = new TableColumn(tableViewer.getTable(), SWT.LEFT);
+		Image idp = Activator.getImageDescriptor(seq_imagePath).createImage();
+		for (int i = 0; i < ColumnProperties.length; i++) {
+			TableColumn column = new TableColumn(tableViewer.getTable(),
+					SWT.LEFT);
 			column.setText(ColumnText[i]);
 			column.setImage(idp);
 			// column.setWidth(80);
 			column.pack();
 		}
 	}
+
 	public String getContainerName() {
 		return containerText.getText();
 	}
@@ -187,38 +201,45 @@ public class BmTableFieldsPage extends WizardPage {
 	public String getUncertainProjectDir() {
 		return uncetainText.getText();
 	}
-	public CompositeMap getSelectedFields(){
-		CompositeMap fieldsArray = new CompositeMap(BmNewWizard.bm_pre,BmNewWizard.bm_uri,"fields");
+
+	public CompositeMap getSelectedFields() {
+		CompositeMap fieldsArray = new CompositeMap(BmNewWizard.bm_pre,
+				BmNewWizard.bm_uri, "fields");
 		Object[] elements = ctv.getCheckedElements();
-		for(int j=0;j<elements.length;j++){
-			CompositeMap record = (CompositeMap)elements[j];
-			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,BmNewWizard.bm_uri,"field");
-			field.put("name",record.getString("COLUMN_NAME").toLowerCase());
+		for (int j = 0; j < elements.length; j++) {
+			CompositeMap record = (CompositeMap) elements[j];
+			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,
+					BmNewWizard.bm_uri, "field");
+			field.put("name", record.getString("COLUMN_NAME").toLowerCase());
 			field.put("physicalName", record.getString("COLUMN_NAME"));
-			String required = record.getString("IS_NULLABLE").equals("true")?"false":"true";
+			String required = record.getString("IS_NULLABLE").equals("YES") ? "false"
+					: "true";
 			field.put("required", required);
 			String dataType = record.getString("TYPE_NAME");
 			field.put("databaseType", dataType);
-			Integer db_data_type = record.getInt("DATA_TYPE"); 
+			Integer db_data_type = record.getInt("DATA_TYPE");
 			DataTypeRegistry dtr = DataTypeRegistry.getInstance();
 			DataType dt = dtr.getType(db_data_type.intValue());
-			if(dt == null){
-				CustomDialog.showErrorMessageBox(null, "dataBase dataType "+db_data_type+" is not registried!");
-				continue;
-			}
-			field.put("datatype", dt.getJavaType().getName());
+			if (dt == null) {
+				CustomDialog.showErrorMessageBox(null, "dataBase dataType "
+						+ db_data_type + " is not registried!");
+			} else
+				field.put("datatype", dt.getJavaType().getName());
 
 			fieldsArray.addChild(field);
 		}
 		return fieldsArray;
 	}
-	public void refresh(){
+
+	public void refresh() {
 		CompositeMap input = null;
 		try {
 			input = getInput(m_DBMetaData, "%");
+			labelProvider.refresh();
 		} catch (SQLException e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
 		tableViewer.setInput(input);
+		ctv.setAllChecked(true);
 	}
 }

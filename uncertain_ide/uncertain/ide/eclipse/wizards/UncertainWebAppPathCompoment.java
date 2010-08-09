@@ -1,5 +1,7 @@
 package uncertain.ide.eclipse.wizards;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -13,6 +15,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.bm.UncertainDataBase;
@@ -24,6 +27,7 @@ public class UncertainWebAppPathCompoment {
 	private Text uncertainProDirText;
 	private Button uncertainProDirButton;
 	private String proDirPath;
+	private boolean fromLocal = false;
 	public UncertainWebAppPathCompoment(UpdateMessageDialog dialog){
 		this.dialog = dialog;
 	}
@@ -58,12 +62,21 @@ public class UncertainWebAppPathCompoment {
         
         uncertainProDirButton = new Button(fileGroup, SWT.PUSH);
         uncertainProDirButton.setData(data);
-        uncertainProDirButton.setText("Browse");
+        uncertainProDirButton.setText("From Exist Projects");
         uncertainProDirButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent event) {
-                handleLocationBrowseButton();
+            	handleBrowse();
             }
         });
+        
+//        uncertainProDirButton = new Button(fileGroup, SWT.PUSH);
+//        uncertainProDirButton.setData(data);
+//        uncertainProDirButton.setText("From Local Path");
+//        uncertainProDirButton.addSelectionListener(new SelectionAdapter() {
+//            public void widgetSelected(SelectionEvent event) {
+//                handleLocationBrowseButton();
+//            }
+//        });
         
         return composite;
        
@@ -77,6 +90,18 @@ public class UncertainWebAppPathCompoment {
             uncertainProDirText.setText(result);
         }
     }
+	private void handleBrowse() {
+		fromLocal = false;
+		ContainerSelectionDialog dialog = new ContainerSelectionDialog(
+				new Shell(), ResourcesPlugin.getWorkspace().getRoot(), false,
+				"Select Uncertain Project Home");
+		if (dialog.open() == ContainerSelectionDialog.OK) {
+			Object[] result = dialog.getResult();
+			if (result.length == 1) {
+				uncertainProDirText.setText(((Path) result[0]).toString());
+			}
+		}
+	}
 	private void dialogChanged(){
 		if(uncertainProDirText.getText() == null){
 			updateStatus("Uncertain Project directory must be specified");
@@ -84,10 +109,10 @@ public class UncertainWebAppPathCompoment {
 		}
 		if(uncertainProDirText.getText() != null){
 			try {
-				String projectPath = uncertainProDirText.getText();
+				String projectPath = getFullPathOfUncertainProDir();
 				UncertainDataBase.getDBConnection(projectPath);
 				updateStatus(null);
-				proDirPath = projectPath;
+				proDirPath = uncertainProDirText.getText();
 			} catch (Exception e) {
 				updateStatus("This path is not valid!");
 				CustomDialog.showExceptionMessageBox(e);
@@ -100,5 +125,12 @@ public class UncertainWebAppPathCompoment {
 	}
 	public String getUncertainProDir(){
 		return proDirPath;
+	}
+	private String getFullPathOfUncertainProDir(){
+		if(uncertainProDirText.getText()==null ||uncertainProDirText.getText().equals(""))
+			return null;
+		if(fromLocal)
+			return uncertainProDirText.getText();
+		return ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString()+uncertainProDirText.getText();
 	}
 }

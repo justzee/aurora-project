@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -44,6 +45,7 @@ public class UncertainProject implements IRunnableWithProgress {
 		props.load(new FileInputStream(root));
 		String uncertain_project_dir = (String) props
 				.get(UncertainDataBase.uncertain_project_dir);
+		uncertain_project_dir = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString()+uncertain_project_dir;
 		UncertainEngine  uncertainEngine =  initUncertainProject(uncertain_project_dir);
 		return uncertainEngine;
 	}
@@ -102,6 +104,8 @@ public class UncertainProject implements IRunnableWithProgress {
 					new ProgressMonitorDialog(null).run(true, false, up);
 				}
 			}
+			else
+				throw new InvocationTargetException(e.getCause());
 		}
 		return up.getUncertainEngine();
 	}
