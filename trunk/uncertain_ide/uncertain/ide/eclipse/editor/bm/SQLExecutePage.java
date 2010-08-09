@@ -24,6 +24,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.ViewForm;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -68,18 +70,17 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private CTabFolder mTabFolder;
 	private SashForm sashForm;
 
-
 	private Connection conn;
 
 	private ToolBarManager toolBarManager;
-	private static final String[] tabs = { "Query", "Insert", "Update", "Delete" };
-	
+	private static final String[] tabs = { "Query", "Insert", "Update",
+			"Delete" };
+
 	UncertainEngine uncertainEngine;
 	private BusinessModelService service;
 	private ViewForm viewForm;
 	private TableViewer tableViewer;
 	private boolean modify = false;
-
 
 	public SQLExecutePage(FormEditor editor) {
 		super(editor, PageId, PageTitle);
@@ -122,7 +123,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	}
 
 	protected void createResultContent(Composite parent) {
-		tableViewer = new TableViewer(parent,SWT.FULL_SELECTION| SWT.BORDER );
+		tableViewer = new TableViewer(parent, SWT.FULL_SELECTION | SWT.BORDER);
 		Table table = tableViewer.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -137,7 +138,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		ExecuteSqlAction action = new ExecuteSqlAction(this, ExecuteSqlAction
 				.getDefaultImageDescriptor(), null);
 		addActions(new Action[] { action });
-		viewForm.setTopLeft(toolBar); 
+		viewForm.setTopLeft(toolBar);
 	}
 
 	public void addActions(IAction[] actions) {
@@ -165,11 +166,25 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		for (int i = 0; i < tabs.length; i++) {
 			mTabFolder.getItem(i)
 					.setText(TabHeighGrab + tabs[i] + TabHeighGrab);
-			StyledText st = createStyledText();
-			st.setText(service.getSql(tabs[i]).toString());
+			final StyledText st = createStyledText(mTabFolder);
 			mTabFolder.getItem(i).setControl(st);
+			final int itemIndex = i;
+			final String sql = service.getSql(tabs[i]).toString();
+			mTabFolder.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					if (mTabFolder.getSelectionIndex() == itemIndex
+							&& (st.getText() == null || st.getText().equals(""))) {
+						st.setText(sql);
+					}
+				}
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+					widgetSelected(e);
+				}
+			});
 		}
-		mTabFolder.setSelection(0);
+
+		// mTabFolder.setSelection(0);
 		mTabFolder.layout(true);
 
 	}
@@ -177,23 +192,16 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	public void createCustomerActions(PropertyGridViewer pae) {
 	}
 
-	private StyledText createStyledText() {
-		StyledText mInnerText = new StyledText(mTabFolder, SWT.WRAP | SWT.MULTI
-				| SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData spec = new GridData();
-		spec.horizontalAlignment = GridData.FILL;
-		spec.grabExcessHorizontalSpace = true;
-		spec.verticalAlignment = GridData.FILL;
-		spec.grabExcessVerticalSpace = true;
-		mInnerText.setLayoutData(spec);
+	private StyledText createStyledText(Composite parent) {
+		StyledText mInnerText = new StyledText(parent, SWT.WRAP | SWT.V_SCROLL);
 		mInnerText.setFont(new Font(mTabFolder.getDisplay(), "Courier New", 10,
 				SWT.NORMAL));
 		return mInnerText;
 	}
 
 	private CTabFolder createTabFolder(final Composite parent) {
-		final CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE
-				| SWT.BORDER);
+		final CTabFolder tabFolder = new CTabFolder(parent, SWT.V_SCROLL
+				| SWT.H_SCROLL | SWT.BORDER);
 		tabFolder.setMaximizeVisible(true);
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void minimize(CTabFolderEvent event) {
@@ -219,7 +227,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		tabFolder.setTabHeight(23);
 
 		for (int i = 0; i < tabs.length; i++) {
-			new CTabItem(tabFolder, SWT.None | SWT.MULTI | SWT.V_SCROLL);
+			new CTabItem(tabFolder, SWT.H_SCROLL);
 		}
 		return tabFolder;
 	}
@@ -234,8 +242,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	protected void initConnection() throws Exception {
 
 		IProject project = ((IFileEditorInput) getEditor().getEditorInput())
-		.getFile().getProject();
-		
+				.getFile().getProject();
+
 		uncertainEngine = UncertainProject.getUncertainEngine(project);
 		conn = UncertainDataBase.getDBConnection(uncertainEngine);
 		conn.setAutoCommit(false);
@@ -244,14 +252,17 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg
 				.getInstanceOfType(DatabaseServiceFactory.class);
 
-		BusinessModelServiceContext bc = createContext(uncertainEngine,conn);
+		BusinessModelServiceContext bc = createContext(uncertainEngine, conn);
 		CompositeMap context = bc.getObjectContext();
-		
-		CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadByFullFilePath(getFile().getAbsolutePath());
-//		System.out.println("init:"+bm_model.toXML());
+
+		CompositeMap bm_model = svcFactory.getModelFactory()
+				.getCompositeLoader().loadByFullFilePath(
+						getFile().getAbsolutePath());
 		service = svcFactory.getModelService(bm_model, context);
-	}	
-	private BusinessModelServiceContext createContext(UncertainEngine uncertainEngine,Connection connection) {
+	}
+
+	private BusinessModelServiceContext createContext(
+			UncertainEngine uncertainEngine, Connection connection) {
 		Configuration rootConfig = uncertainEngine.createConfig();
 		rootConfig.addParticipant(this);
 		CompositeMap context = new CompositeMap("root");
@@ -278,7 +289,6 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		if (resultSet != null) {
 			try {
 				creatTableViewer(viewForm, resultSet);
-				tableViewer.getTable().setVisible(true);
 				sashForm.layout();
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
@@ -299,30 +309,33 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 					conn.rollback();
 				}
 			} catch (SQLException e) {
-				CustomDialog.showErrorMessageBox(null, e.getCause().getLocalizedMessage());
+				CustomDialog.showExceptionMessageBox(e);
 			}
 		}
 	}
-	public void refresh(String data) throws Exception{
-		if(uncertainEngine == null || !isModify()){
+
+	public void refresh(String data) throws Exception {
+		if (uncertainEngine == null || !isModify()) {
 			return;
 		}
 		IObjectRegistry reg = uncertainEngine.getObjectRegistry();
 		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg
 				.getInstanceOfType(DatabaseServiceFactory.class);
 
-		BusinessModelServiceContext bc = createContext(uncertainEngine,conn);
+		BusinessModelServiceContext bc = createContext(uncertainEngine, conn);
 		CompositeMap context = bc.getObjectContext();
-		
-//		CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadByFullFilePath(getFile().getAbsolutePath());
-		CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadFromString(data);
+
+		// CompositeMap bm_model =
+		// svcFactory.getModelFactory().getCompositeLoader().loadByFullFilePath(getFile().getAbsolutePath());
+		CompositeMap bm_model = svcFactory.getModelFactory()
+				.getCompositeLoader().loadFromString(data);
 		service = svcFactory.getModelService(bm_model, context);
-		
+
 		for (int i = 0; i < tabs.length; i++) {
-			StyledText st = (StyledText)mTabFolder.getItem(i).getControl();
+			StyledText st = (StyledText) mTabFolder.getItem(i).getControl();
 			st.setText(service.getSql(tabs[i]).toString());
 		}
-		
+
 		if (tableViewer != null && tableViewer.getTable() != null) {
 			tableViewer.getTable().setVisible(false);
 			sashForm.layout();
@@ -340,20 +353,20 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		tableViewer.getTable().setVisible(true);
 		String[] ColumnProperties = createColumnProperties(resultSet);
 		tableViewer.setColumnProperties(ColumnProperties);
-		tableViewer.setLabelProvider(new PlainCompositeMapLabelProvider(ColumnProperties));
-
 		CellEditor[] editors = new CellEditor[ColumnProperties.length];
-		for(int i=0;i<ColumnProperties.length;i++){
+		for (int i = 0; i < ColumnProperties.length; i++) {
 			TextCellEditor tce = new TextCellEditor(tableViewer.getTable());
-			Text text = (Text)tce.getControl();
+			Text text = (Text) tce.getControl();
 			text.setEditable(false);
 			editors[i] = tce;
 		}
 		tableViewer.setCellEditors(editors);
-		
+
 		createTableColumn(ColumnProperties, tableViewer.getTable());
 		CompositeMap input = getInput(resultSet, ColumnProperties);
 		tableViewer.setInput(input);
+		tableViewer.setLabelProvider(new PlainCompositeMapLabelProvider(
+				ColumnProperties));
 
 	}
 
@@ -397,6 +410,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 			column.pack();
 		}
 	}
+
 	public Connection getConnection() {
 		return conn;
 	}
@@ -405,6 +419,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		StyledText st = (StyledText) mTabFolder.getSelection().getControl();
 		return st.getText();
 	}
+
 	public boolean isModify() {
 		return modify;
 	}

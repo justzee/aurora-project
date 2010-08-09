@@ -53,6 +53,7 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 //		return button;
 		if(record !=null){
 			button = new Button(parent, SWT.CHECK);
+			button.setBackground(parent.getBackground());
 			return button;
 		}
 		else{

@@ -110,6 +110,8 @@ public class UncertainDataBase implements IRunnableWithProgress {
 					new ProgressMonitorDialog(null).run(true, false, up);
 				}
 			}
+			else
+				throw new InvocationTargetException(e.getCause());
 		}
 		return up.getConnection();
 	}
