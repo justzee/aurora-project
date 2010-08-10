@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
 
-import org.apache.xerces.parsers.SAXParser;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -90,7 +92,10 @@ public class XMLParser
 
 		try
 		{
-			XMLReader reader = new SAXParser();
+//			XMLReader reader = SAXParser.class.
+			SAXParserFactory spfactory =SAXParserFactory.newInstance();
+			SAXParser saxParser = spfactory.newSAXParser();
+			XMLReader reader = saxParser.getXMLReader();
 			reader.setErrorHandler(errorHandler);
 			reader.setContentHandler(contentHandler);
 //			String dynamic = "http://apache.org/xml/features/validation/dynamic";
