@@ -98,7 +98,7 @@ public class BmTableFieldsPage extends WizardPage {
 		headerLabel.setLayoutData(gd);
 
 		final Text filterText = new Text(container, SWT.SINGLE | SWT.BORDER
-				| SWT.SEARCH | SWT.ICON_CANCEL);
+				| SWT.SEARCH);
 		gd.heightHint = 15;
 		filterText.setLayoutData(gd);
 
