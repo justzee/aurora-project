@@ -114,11 +114,14 @@ public class CompositeMapAction {
 		List childElements = new LinkedList();
 		if (element.isArray()) {
 			IType type = element.getElementType();
-			if (!(type instanceof Element))
-				return childElements;
-			Element arrayType = LoadSchemaManager.getSchemaManager().getElement(
-					type.getQName());
-			childElements.add(arrayType);
+			if (type instanceof ComplexType){
+				childElements.addAll(LoadSchemaManager.getSchemaManager().getElementsOfType(type));
+			}	
+			if(type instanceof Element){
+				Element arrayType = LoadSchemaManager.getSchemaManager().getElement(
+						type.getQName());
+				childElements.add(arrayType);
+			}
 			return childElements;
 		}
 		childElements = getChildElements(element,selectedCM);
