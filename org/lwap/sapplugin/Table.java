@@ -175,10 +175,11 @@ public class Table {
                 String field_name = source_name;
                 FieldMapping mapping = (FieldMapping)source_map.get(source_name.toLowerCase());
                 if(mapping!=null) field_name = mapping.Name;
-                table.setValue(values[n], field_name);
                 if(Dump){
+                    //Object type = values[n]==null?"null":values[n].getClass().getName();
                     logger.info(field_name+" -> "+values[n]);
                 }
+                table.setValue(values[n], field_name);                
             }
             table.nextRow();
             logger.info("================ end line "+i+"=====================");            
