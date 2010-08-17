@@ -99,16 +99,18 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	
 	protected void pageChange(int newPageIndex) {
 		int currentPage = getCurrentPage();
-		super.pageChange(newPageIndex);
-		if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
-			sycTextPageWithMainViewerPage();
-		}else if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
+		if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
 			try {
 				sycMainViewerPageWithTextPage();
 			} catch (Exception e) {
+				setActivePage(textPageIndex);
 				CustomDialog.showExceptionMessageBox(e);
 			}
 		}
+		super.pageChange(newPageIndex);
+		if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
+			sycTextPageWithMainViewerPage();
+		} 
 	}
 	private boolean sycMainViewerPageWithTextPage() throws IOException, SAXException {
 		CompositeLoader loader = new CompositeLoader();
