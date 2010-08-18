@@ -21,7 +21,7 @@ public class XMLOutputterTest extends TestCase {
 
     public void testGeneral() throws Exception {
         String xml = null, xml2 = null;
-        {
+        
             CompositeMap root = new CompositeMap("r", "http://somesite.com",
                     "root");
             root.put("attrib1", "value1");
@@ -49,7 +49,7 @@ public class XMLOutputterTest extends TestCase {
             //System.out.println(xml);
             xml2 = XMLOutputter.defaultInstance().toXML(root, true);
             //System.out.println(xml2);
-        }
+        //{}
         assertTrue(xml.indexOf("r:root xmlns:r=\"http://somesite.com\"") > 0);
         for (int i = 1; i < 10; i++) {
             String to_find = "ns" + i + ":child" + i + " xmlns:ns" + i
@@ -58,8 +58,6 @@ public class XMLOutputterTest extends TestCase {
         }
         assertTrue(xml.indexOf("ns8:anotherchild Key=\"Value\"") > 0);
         assertTrue(xml.indexOf("<no_ns_child1/>") > 0);
-
-        // System.out.println(root.toXML());
 
         CompositeMap parsed_back = loader.loadFromString(xml);
         CompositeMap child9 = CompositeUtil.findChild(parsed_back, "child9");
@@ -79,6 +77,9 @@ public class XMLOutputterTest extends TestCase {
         assertNotNull(child_with_diff_ns1);
         assertEquals(child_with_diff_ns1.getNamespaceURI(), "http://differentsite.com");
         assertEquals(child_with_diff_ns1.get("K1"), "V1");
+        
+        //System.out.println(root.toXML());
+
     }
 
 }
