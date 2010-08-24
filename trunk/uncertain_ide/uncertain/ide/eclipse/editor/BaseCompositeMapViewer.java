@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.XMLOutputter;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.textpage.JavaScriptLineStyler;
@@ -98,7 +99,7 @@ public class BaseCompositeMapViewer implements IViewer {
 		String encoding = "UTF-8";
 		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding
 				+ "\"?>\n";
-		return xml_decl + data.toXML();
+		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
 	}
 
 	public void setContent(CompositeMap content) {
