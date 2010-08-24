@@ -80,6 +80,7 @@ public class TextPage extends TextEditor implements IViewer {
 
 	private boolean checkContentFormat() {
 		CompositeLoader loader = new CompositeLoader();
+		loader.setSaveNamespaceMapping(true);
 		try {
 			loader.loadFromString(getContent());
 		} catch (IOException e) {
