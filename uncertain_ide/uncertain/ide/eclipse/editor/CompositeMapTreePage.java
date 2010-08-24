@@ -38,6 +38,7 @@ public class CompositeMapTreePage extends CompositeMapPage {
 		shell.setLayout(layout);
 		try {
 			CompositeLoader loader = new CompositeLoader();
+			loader.setSaveNamespaceMapping(true);
 			data = loader.loadByFile(getFile().getAbsolutePath());
 			createContent(shell);
 		} catch (Exception e) {
@@ -110,7 +111,7 @@ public class CompositeMapTreePage extends CompositeMapPage {
 	public String getFullContent() {
 		String encoding = "UTF-8" ;
 		String xml_decl = "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>\n";
-		return xml_decl+data.toXML();
+		return xml_decl+XMLOutputter.defaultInstance().toXML(data, true);
 	}
 
 	public void setContent(CompositeMap content) {
