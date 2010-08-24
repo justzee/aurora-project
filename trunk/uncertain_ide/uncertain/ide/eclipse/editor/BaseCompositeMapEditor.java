@@ -66,7 +66,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			try {
 				sycMainViewerPageWithTextPage();
 			} catch (Exception e) {
-				CustomDialog.showExceptionMessageBox(e);
+				throw new RuntimeException(CustomDialog.getExceptionMessage(e));
 			}
 		}
 		mainViewerPage.doSave(monitor);
@@ -114,6 +114,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	}
 	private boolean sycMainViewerPageWithTextPage() throws IOException, SAXException {
 		CompositeLoader loader = new CompositeLoader();
+		loader.setSaveNamespaceMapping(true);
 		CompositeMap cm = loader.loadFromString(textPage.getContent(),"UTF-8");
 		mainViewerPage.setContent(cm);
 		return true;
