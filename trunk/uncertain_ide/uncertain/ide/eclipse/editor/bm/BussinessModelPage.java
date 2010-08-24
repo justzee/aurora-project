@@ -73,6 +73,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		}
 		try {
 			CompositeLoader loader = new CompositeLoader();
+			loader.setSaveNamespaceMapping(true);
 			data = loader.loadByFile(getFile().getAbsolutePath());
 		} catch (Exception e) {
 			throw new RuntimeException(e.getLocalizedMessage(), e.getCause());
@@ -304,7 +305,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		String encoding = "UTF-8";
 		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding
 				+ "\"?>\n";
-		return xml_decl + data.toXML();
+		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
 	}
 
 	public void setContent(CompositeMap content) {
