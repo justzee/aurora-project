@@ -94,7 +94,7 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 	public TableItem getTableItem(){
 		return item;
 	}
-	private void addCellListener() {
+	protected void addCellListener() {
 		this.addListener(new ICellEditorListener() {
 
 			public void editorValueChanged(boolean oldValidState,
@@ -122,7 +122,7 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 			}
 		});
 	}
-	private void fillTableCellEditor(TableItem item) {
+	protected void fillTableCellEditor(TableItem item) {
 		TableEditor editor = new TableEditor(item.getParent());
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
