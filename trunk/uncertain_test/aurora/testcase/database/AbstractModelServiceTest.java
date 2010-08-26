@@ -36,12 +36,17 @@ public abstract class AbstractModelServiceTest extends TestCase {
         super(arg0);
 
     }
+    
+    protected void createConnection()
+        throws Exception
+    {
+        cp = new ConnectionProvider();
+        conn = cp.getConnection();        
+    }
 
     protected void setUp() throws Exception {
         super.setUp();
-        cp = new ConnectionProvider();
-        conn = cp.getConnection();
-
+        createConnection();
         uncertainEngine = new UncertainEngine();
         uncertainEngine.initialize(new CompositeMap());
         IObjectRegistry reg = uncertainEngine.getObjectRegistry();
