@@ -10,6 +10,7 @@ import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.bm.Field;
 import aurora.bm.ModelFactory;
+import aurora.bm.QueryField;
 import aurora.bm.Relation;
 
 public class ModelFactoryTest extends TestCase {
@@ -48,9 +49,25 @@ public class ModelFactoryTest extends TestCase {
     }
 
     public void testGetModelConfig() throws Exception {
-        CompositeMap map = fact.getModelConfig(PKG_NAME+".child1");
+        CompositeMap map = fact.getModelConfig(PKG_NAME+".child2");
         assertNotNull(map);
-        System.out.println(map.toXML());
+        assertNotNull(map.getChild("data-filters"));
+        assertNotNull(map.getChild("query-fields"));
+        assertNotNull(map.getChild("primary-key"));
+        assertNotNull(map.getChild("relations"));
+    }
+    
+    public void testChildWithoutFieldWithRelation() throws Exception {
+        BusinessModel model = fact.getModel(PKG_NAME+".child3");
+        assertNotNull(model);
+        Relation r= model.getRelation("DEPT");
+        assertNotNull(r);
+        Field[] fields = model.getPrimaryKeyFields();
+        assertNotNull(fields);
+        assertEquals(fields.length, 1);
+        QueryField[] qf = model.getQueryFieldsArray();
+        assertNotNull(qf);
+
     }
 
 }
