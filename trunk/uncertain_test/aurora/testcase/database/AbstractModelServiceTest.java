@@ -28,6 +28,7 @@ public abstract class AbstractModelServiceTest extends TestCase {
     protected Connection conn;
     protected UncertainEngine uncertainEngine;
     protected DatabaseServiceFactory svcFactory;
+    DatabaseFactory     databaseFactory;
 
     /**
      * @param arg0
@@ -55,13 +56,13 @@ public abstract class AbstractModelServiceTest extends TestCase {
                 .getInstanceOfType(DatabaseServiceFactory.class);
         assertNotNull(svcFactory);
 
-        DatabaseFactory fact = new DatabaseFactory(uncertainEngine);
+        databaseFactory = new DatabaseFactory(uncertainEngine);
         DatabaseProfile prof = new DatabaseProfile("SQL92");
-        fact.addDatabaseProfile(prof);
-        fact.setDefaultDatabase("SQL92");
-        fact.onInitialize();
-        assertNotNull(fact.getDefaultDatabaseProfile());
-        ISqlBuilderRegistry sqlreg2 = fact.getDefaultSqlBuilderRegistry();
+        databaseFactory.addDatabaseProfile(prof);
+        databaseFactory.setDefaultDatabase("SQL92");
+        databaseFactory.onInitialize();
+        assertNotNull(databaseFactory.getDefaultDatabaseProfile());
+        ISqlBuilderRegistry sqlreg2 = databaseFactory.getDefaultSqlBuilderRegistry();
         assertNotNull(sqlreg2);
     }
 
