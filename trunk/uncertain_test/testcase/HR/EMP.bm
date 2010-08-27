@@ -1,5 +1,4 @@
 <model xmlns="http://www.aurora-framework.org/schema/businessmodel" baseTable="EMP" alias="e">
-	<primary-key-generator type="sequence" />	
 	<fields>
 		<field name="empno" datatype="long" databaseType="BIGINT" insertExpression="EMP_S.nextval" />
 		<field name="ename" datatype="string" databaseType="VARCHAR" />		
@@ -13,12 +12,10 @@
 		<field name="NOW_DATE" datatype="date" expression="sysdate" databaseType="DATE" forInsert="false"/>
 		<ref-field name="dname" sourceField="dname" sourceModel="testcase.HR.DEPT" />
 		<ref-field name="mgr_name" sourceField="ename" relationName="MGR" />
-	</fields>
-	
+	</fields>	
 	<primary-key>
 		<field name="empno" sequenceName="EMP_S" />
-	</primary-key>
-	
+	</primary-key>	
 	<relations>
 		<relation joinType="INNER" refModel="testcase.HR.DEPT" >
 			<reference localField="DEPTNO" foreignField="DEPTNO"/>
@@ -33,9 +30,6 @@
 		<query-field field="ename" queryOperator="like" matchMode="full" />
 		<query-field field="deptno" queryOperator="=" />		
 		<query-field field="mgr" queryExpression="exists (select * from emp t1 where t1.mgr=e.mgr)" />
-		<!--
-		<query-field field="mgr_name" queryOperator="=" />		
-		-->
 	</query-fields>
 		
 	<data-filters>

@@ -1,0 +1,12 @@
+<model xmlns="http://www.aurora-framework.org/schema/businessmodel" name="EMP_FOR_INSERT" baseModel="testcase.HR.EMP" extendMode="replace|append|merge" fieldExtendMode="reference" orderExpression="empno, ename" allowFetchAll="false" defaultPageSize="20" maxPageSize="500">
+	<fields>
+		<field name="empno" />
+		<field name="ename" required="true" maxLength="400" minLength="300" />
+		<field name="job" required="false" />
+		<field name="mgr"  required="false" />
+		<field name="hiredate" />
+		<field name="deptno" />
+		<field name="sal" />
+		<field name="comm" />		
+	</fields>	
+</model>
