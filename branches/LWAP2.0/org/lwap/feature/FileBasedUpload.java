@@ -210,12 +210,14 @@ public class FileBasedUpload extends UploadFileHandle {
     private void deleteFile(CompositeMap model)throws Exception{  
     	String path=null;    	
     	CompositeMap m = (CompositeMap)model.getObject(dataModel);    	
-    	Iterator iterator = m.getChilds().iterator();
-    	while(iterator.hasNext()) {
-    		CompositeMap oj=(CompositeMap)iterator.next();
-            path=oj.getString((this.pathName).toUpperCase());
-            if(path!=null)physicallyDeleted(path);  
-        }   	
+    	Iterator iterator = m.getChildIterator();
+    	if(iterator!=null){
+	    	while(iterator.hasNext()) {
+	    		CompositeMap oj=(CompositeMap)iterator.next();
+	            path=oj.getString((this.pathName).toUpperCase());
+	            if(path!=null)physicallyDeleted(path);  
+	        }   	
+    	}
     }
     private void physicallyDeleted(String path){
     	File f=new File(path);
