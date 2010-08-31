@@ -4,7 +4,7 @@
 = 概述 =
 
 基本原理：
-* aurora.service.http.AutoCrudServlet在执行实际的BM操作之前，先触发·CheckBMAccess·事件;
+* aurora.service.http.AutoCrudServlet在执行实际的BM操作之前，先触发`CheckBMAccess`事件;
 * 在service-listener.config文件中，可配置一个全局instance，监听该事件，执行BM访问的检查；
 * BusinessModel设置accessControlMode属性，用于控制BM访问权限检查的方式
   "none": 无控制，可被任何人访问
@@ -14,6 +14,9 @@
 = 内建BM访问支持的设置 =
 
 * 首先开发一个BM，执行BM访问权限的检查。用户所请求的BM名称（按前述逻辑，已经转换为最终的BM名称）参数路径为/request/@bm_name，所请求的操作路径为/request/@operation_name。通常会写一个程序段，检查当前用户的角色是否被授予此BM的操作权限，如果没有，就抛出异常。
-* 在WEB-INF/service-listener.config文件中，增加一行 `<participant class="aurora.bm.ModelAccessChecker" />` （参考aurora/sample_web）
+* 在WEB-INF/service-listener.config文件中，增加一行 
+`<participant class="aurora.bm.ModelAccessChecker" />` （参考aurora/sample_web）
+
 * 在WEB-INF/application.config中，增加一行
-`<access-control-config BMCheckService="testcase.HR.CheckBM" />` 其中，BMCheckService就是上面开发的用于检查BM权限的BM
+`<access-control-config BMCheckService="testcase.HR.CheckBM" />` （参考aurora/sample_web）
+其中，BMCheckService就是上面开发的用于检查BM权限的BM
