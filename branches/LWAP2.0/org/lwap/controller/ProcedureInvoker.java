@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.lwap.application.Service;
 import org.lwap.application.WebApplication;
 
 import uncertain.composite.CompositeMap;
@@ -63,13 +64,22 @@ public class ProcedureInvoker {
         CompositeMap map = null;
         try{
             map = app.getCompositeLoader().loadByFile(Config);
-            config = engine.createConfig(map);
+            if(map.get("trace")==null)
+            	map.putBoolean("trace", false);
             proc = loadProcedure(Procedure);
             if(proc==null) throw new IllegalArgumentException("Can't load procedure "+Procedure);
             runner = engine.createProcedureRunner();
+            CompositeMap context = runner.getContext();
+            Service svc=new MainService();
+            svc.setServiceName(Config);  
+            svc.setServiceContext(context);
+            svc.init(map);
+            map.put(MainService.KEY_SERVICE_INSTANCE, svc);
+            engine.initContext(map); 
+            config = engine.createConfig(map);
             runner.setProcedure(proc);
             runner.setContext(map);
-            runner.setConfiguration(config);
+            runner.setConfiguration(config);            
             runner.run();
         }catch(Exception ex){
             ex.printStackTrace();
