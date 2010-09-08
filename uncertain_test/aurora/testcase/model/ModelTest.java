@@ -4,12 +4,13 @@
 package aurora.testcase.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.sql.DataSource;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
-
 import aurora.bm.BusinessModel;
 import aurora.bm.Field;
 import aurora.bm.ModelFactory;
@@ -20,12 +21,14 @@ import aurora.database.service.BusinessModelServiceContext;
 import aurora.service.validation.IParameter;
 import aurora.service.validation.IParameterIterator;
 import aurora.testcase.database.AbstractModelServiceTest;
+import aurora.testcase.database.DummyDataSource;
 
 public class ModelTest extends AbstractModelServiceTest {
     
     static String PKG_NAME = ModelTest.class.getPackage().getName();
     
     ModelFactory        factory;
+    DummyDataSource     ds;
 
     public ModelTest(String arg0) {
         super(arg0);
@@ -34,6 +37,7 @@ public class ModelTest extends AbstractModelServiceTest {
     protected void setUp() throws Exception {
         super.setUp();
         factory = new ModelFactory(super.uncertainEngine.getOcManager());
+        super.uncertainEngine.getObjectRegistry().registerInstanceOnce(DataSource.class, ds);        
     }
 
     
@@ -128,12 +132,25 @@ public class ModelTest extends AbstractModelServiceTest {
         StringBuffer query_sql = bms.getSql("queryForTest");
         assertTrue(query_sql.indexOf("rule_code is not null")>0);
         assertTrue(query_sql.indexOf("workflow_id = ${@workflow_id}")>0);
-        System.out.println(query_sql);
+        //System.out.println(query_sql);
         
     }
     
+    public void testParameterForOperation()
+        throws Exception
+    {
+        BusinessModel bm = super.svcFactory.getModelFactory().getModel(PKG_NAME+".wfl_workflow_notification");
+        List lst = bm.getParameterForOperationInList("insert");
+        System.out.println(lst);
+    }
+   
+        
+    protected void createConnection() throws Exception {
+        ds = new DummyDataSource();
+        conn = ds.getConnection();
+    }
     
-    
+
     
 
 }
