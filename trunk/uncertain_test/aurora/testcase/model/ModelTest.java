@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
 import aurora.bm.BusinessModel;
+import aurora.bm.CascadeOperation;
 import aurora.bm.Field;
 import aurora.bm.ModelFactory;
 import aurora.bm.Operation;
@@ -58,6 +59,29 @@ public class ModelTest extends AbstractModelServiceTest {
         Relation[] relations = model.getRelations();
         assertNotNull(relations);
         assertEquals(relations.length, 2);
+        assertNull(model.getCascadeOperations());
+        
+        BusinessModel dept = factory.getModel("testcase.HR.DEPT");
+        CascadeOperation[] ops = dept.getCascadeOperations();
+        assertNotNull(ops);
+        assertEquals(ops.length, 3);
+        
+        CascadeOperation op1 = ops[0];
+        Set operations = op1.getEnabledOperations();
+        assertNotNull(operations);
+        assertEquals(operations.size(), 3);
+        assertTrue(operations.contains("insert"));
+        assertTrue(operations.contains("update"));
+        assertTrue(operations.contains("delete"));
+        
+        CascadeOperation op2 = ops[1];
+        operations = op2.getEnabledOperations();
+        assertEquals(operations.size(), 1);
+        
+        CascadeOperation op3 = ops[2];
+        operations = op3.getEnabledOperations();
+        assertNull(operations);        
+                
     }
     
     public void testOperations()
@@ -140,8 +164,20 @@ public class ModelTest extends AbstractModelServiceTest {
         throws Exception
     {
         BusinessModel bm = super.svcFactory.getModelFactory().getModel(PKG_NAME+".wfl_workflow_notification");
-        List lst = bm.getParameterForOperationInList("insert");
-        System.out.println(lst);
+
+        List lst1 = bm.getParameterForOperationInList("update");
+        assertEquals(lst1.size(),2);
+        
+        List lst2 = bm.getParameterForOperationInList("insert");
+        assertEquals(lst2.size(),13);
+        
+        List lst3 = bm.getParameterForOperationInList("delete");
+        assertEquals(lst3.size(),1);
+
+        BusinessModel bm2 = super.svcFactory.getModelFactory().getModel(PKG_NAME+".wfl_workflow_notification_rules");
+        List lst4 = bm2.getParameterForOperationInList("update");
+        assertEquals(lst4.size(), 7);
+        
     }
    
         
