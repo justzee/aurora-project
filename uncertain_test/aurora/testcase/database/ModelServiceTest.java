@@ -9,9 +9,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.event.Configuration;
 import aurora.database.FetchDescriptor;
+import aurora.database.actions.ModelBatchUpdate;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.service.json.JSONDirectOutputor;
@@ -108,6 +110,49 @@ public class ModelServiceTest extends AbstractModelServiceTest {
 
     public void onExecuteUpdate(BusinessModelServiceContext context) {
         context.putBoolean("update_invoked", true);
+    }
+    
+    public void testBatchInsert()
+        throws Exception
+    {
+        conn.setAutoCommit(false);
+        
+        BusinessModelServiceContext bc = createContext();
+        CompositeMap context = bc.getObjectContext();
+        
+        BusinessModelService s1 = svcFactory.getModelService("testcase.HR.ClearTestData", context);
+        s1.execute(null);
+
+        BusinessModelService service = svcFactory.getModelService(
+                "testcase.HR.DEPT_FOR_BATCH", context);
+        
+        CompositeLoader loader = CompositeLoader.createInstanceWithExt("xml");
+        CompositeMap data = loader.loadFromClassPath("testcase.HR.dept_batch_insert");
+        assertNotNull(data);
+        CompositeMap depts = data.getChild("dept-list");
+        assertNotNull(depts);
+        bc.getParameter().addChild(depts);
+        
+        ModelBatchUpdate mbu = new ModelBatchUpdate(svcFactory, uncertainEngine.getOcManager() );
+        mbu.setModel("testcase.HR.DEPT_FOR_BATCH");
+        //mbu.setSourcePath("");
+        mbu.doBatchUpdate(depts.getChilds(), context);
+        
+        conn.commit();
+        
+        BusinessModelService empsvc = svcFactory.getModelService(
+                "testcase.HR.EMP", context);
+        Map params = new HashMap();
+        params.put("ename", "EMP_IN_BATCH_MODE%");
+        params.put("deptno", new Long(0));
+        CompositeMap records = empsvc.queryAsMap(params);        
+        assertEquals(records.getChilds().size(), 2);
+        
+        params.put("deptno", new Long(1));
+        records = empsvc.queryAsMap(params);
+        assertEquals(records.getChilds().size(), 3);
+        
+        
     }
 
 }
