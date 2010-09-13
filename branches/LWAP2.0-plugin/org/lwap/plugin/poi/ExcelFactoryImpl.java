@@ -73,7 +73,7 @@ public class ExcelFactoryImpl {
 		}catch (Exception e) {
 			throw new Exception("temp path undefined");
 		}			
-		String filename = "报表" + String.valueOf(System.currentTimeMillis())
+		String filename = String.valueOf(System.currentTimeMillis())
 				+ ".xls";
 		if (!is_xls) {
 			filename = filename + "x";
