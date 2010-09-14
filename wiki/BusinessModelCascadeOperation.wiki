@@ -2,7 +2,11 @@
 
 = BM的层级更新特性 =
 
-在BM中，通过<cascade-operations>标签，可设置层级更新，例如：
+在BM中，通过
+{{{
+<cascade-operations>
+}}}
+标签，可设置层级更新，例如：
 
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
