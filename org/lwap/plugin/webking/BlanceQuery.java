@@ -2,6 +2,8 @@ package org.lwap.plugin.webking;
 
 import java.util.Date;
 
+import org.lwap.plugin.dataimport.ImportSettings;
+
 import com.kingdee.bos.ebservice.Balance;
 import com.kingdee.bos.ebservice.BalanceResponse;
 import com.kingdee.bos.ebservice.BalanceResponseBody;
@@ -22,8 +24,13 @@ public class BlanceQuery extends AbstractEntry {
 	
 	 public String accno;
 	 
-	
+	 private ServiceSettings settings;
 
+	 public BlanceQuery(ServiceSettings settings) {
+			this.settings = settings;
+			 System.out.println("ImportExcel created");
+		}
+	
 	public String getAccno() {
 		return accno;
 	}
@@ -41,8 +48,8 @@ public class BlanceQuery extends AbstractEntry {
 	        CompositeMap context = runner.getContext();
 	        System.out.println(context.toXML());
 	    	setAccno(context.getObject(accno).toString());
-	        int port = 5286;
-			String ip = "172.16.35.151";
+	        int port = this.settings.getServicePORT();
+			String ip = this.settings.getServiceIP();
 			String path = "success";
 //			// 从form通过get()方法取值
 			String currency = "CNY";
@@ -60,12 +67,8 @@ public class BlanceQuery extends AbstractEntry {
 					                                     DateUtil.formatDateTime(new Date()));
 
 				BalanceResponse balance = null;
-				try {
 					balance = balanceUtils.callWS(header);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 				EBException ebe = balance.getException();
 				
 				
