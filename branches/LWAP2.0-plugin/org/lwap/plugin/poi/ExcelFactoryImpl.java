@@ -90,6 +90,7 @@ public class ExcelFactoryImpl {
 	}
 
 	void createExcelTable(Sheet sheet, ExcelTable tableConfig) {
+		String context=null;
 		Row r = null;
 		Cell c = null;
 		boolean createTableHead = tableConfig.getCreateTableHead();
@@ -122,8 +123,12 @@ public class ExcelFactoryImpl {
 									.next();
 							if ((c = r.getCell(j + colnum)) == null)
 								c = r.createCell(j + colnum);
-							c.setCellValue(record.getString(object.getString(
-									"datafield").replace("@", "")));
+							context=object.getString("datafield");
+							if(context.indexOf("@")!=0){
+								c.setCellValue(TextParser.parse(context, dataModel));
+							}else{
+								c.setCellValue(record.getString(context.replace("@", "")));
+							}
 							j++;
 						}
 					}
@@ -142,7 +147,7 @@ public class ExcelFactoryImpl {
 				CompositeMap object = (CompositeMap) iterator.next();
 				if ((c = r.getCell(j + colnum)) == null)
 					c = r.createCell(j + colnum);
-				c.setCellValue(object.getString("prompt"));
+				c.setCellValue(TextParser.parse(object.getString("prompt"), dataModel));
 				j++;
 			}
 		}
