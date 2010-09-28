@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import uncertain.composite.CompositeMap;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
@@ -53,17 +55,13 @@ public class FreeMarkerUtil {
 	 * @throws TemplateException
 	 */
 	public static String processTemplate(ServletContext context, String template, Map model) throws TemplateException, IOException {
-
 		model.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 		cfg.setDirectoryForTemplateLoading(getWebApplicationRoot(context));
-		Template temp = cfg.getTemplate(template);
-		
+		Template temp = cfg.getTemplate(template);		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Writer out = new OutputStreamWriter(baos);
+		Writer out = new OutputStreamWriter(baos,"UTF-8");
 		temp.process(model, out);
-		out.flush();
-		return baos.toString();
-
+		out.flush();		
+		return baos.toString("UTF-8");		
 	}
-
 }
