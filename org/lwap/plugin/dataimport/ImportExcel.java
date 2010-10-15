@@ -217,6 +217,7 @@ public class ImportExcel implements IController {
 						cellnum++;
 					}				
 					params.put(HEADER_NAME, headers);
+					int hsize = headers.size();
 					CompositeMap data= new CompositeMap();
 					data.put(FILE_NAME, file.getName());
 					int rs=dataList.size();		
@@ -228,10 +229,10 @@ public class ImportExcel implements IController {
 						cellnum=0;
 						while(itemIt.hasNext()){
 							itemIt.next();
-							String header = (String)headers.get(cellnum);
-							if(header==null)continue;
-							item.put(header, temp.getString("cell"+cellnum));					
-							cellnum++;
+							if(cellnum<hsize) {
+								item.put(headers.get(cellnum), temp.getString("cell"+cellnum));					
+								cellnum++;
+							}
 						}										
 						data.addChild(item);
 					}
