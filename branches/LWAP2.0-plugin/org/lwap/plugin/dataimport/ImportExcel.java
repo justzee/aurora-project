@@ -228,7 +228,9 @@ public class ImportExcel implements IController {
 						cellnum=0;
 						while(itemIt.hasNext()){
 							itemIt.next();
-							item.put(headers.get(cellnum), temp.getString("cell"+cellnum));					
+							String header = (String)headers.get(cellnum);
+							if(header==null)continue;
+							item.put(header, temp.getString("cell"+cellnum));					
 							cellnum++;
 						}										
 						data.addChild(item);
