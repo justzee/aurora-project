@@ -191,36 +191,39 @@ public class Table {
     //add by 1266@hand 2010-7-26
     public void fillJCOTable(JCO.Table table,  CompositeMap context){ 
     	CompositeMap map=(CompositeMap)context.getObject(Source_field);
-        List records=map.getChilds();        
-        table.appendRows(records.size());      
-        if(Dump){
-            logger.info("Appending " + records.size() +" rows to ABAP table " + Name);
-        }
-        Iterator iterator=records.iterator();
-        while(iterator.hasNext()){
-        	CompositeMap record=(CompositeMap)iterator.next();
-        	Set keySet=name_map.keySet();
-            Iterator it=keySet.iterator();
-            int i=0;
-            while(it.hasNext()){
-            	String field_name=(String)it.next();
-            	FieldMapping mapping = (FieldMapping)name_map.get(field_name.toLowerCase());
-            	Object value=record.getObject(mapping.Source_name);
-            	if(mapping!=null){ //页面传过来的CompositeMap参数比较多，在页面做参数过滤比较复杂。这个和数据库table有些区别
-            		field_name = mapping.Name;
-            		table.setValue(value, field_name);
-            	}
-                if(Dump){
-                    logger.info(field_name+" -> "+value);
-                }     
-            }    
-            table.nextRow();
-            logger.info("================ end line "+i+"=====================");
-            i++;
-        }        
-        if(Dump){
-            logger.info("\r\nTable transfered");
-        }
+    	//判断map是否为空
+    	if(map.getChildIterator()!=null){
+	        List records=map.getChilds();        
+	        table.appendRows(records.size());      
+	        if(Dump){
+	            logger.info("Appending " + records.size() +" rows to ABAP table " + Name);
+	        }
+	        Iterator iterator=records.iterator();
+	        while(iterator.hasNext()){
+	        	CompositeMap record=(CompositeMap)iterator.next();
+	        	Set keySet=name_map.keySet();
+	            Iterator it=keySet.iterator();
+	            int i=0;
+	            while(it.hasNext()){
+	            	String field_name=(String)it.next();
+	            	FieldMapping mapping = (FieldMapping)name_map.get(field_name.toLowerCase());
+	            	Object value=record.getObject(mapping.Source_name);
+	            	if(mapping!=null){ //页面传过来的CompositeMap参数比较多，在页面做参数过滤比较复杂。这个和数据库table有些区别
+	            		field_name = mapping.Name;
+	            		table.setValue(value, field_name);
+	            	}
+	                if(Dump){
+	                    logger.info(field_name+" -> "+value);
+	                }     
+	            }    
+	            table.nextRow();
+	            logger.info("================ end line "+i+"=====================");
+	            i++;
+	        }        
+	        if(Dump){
+	            logger.info("\r\nTable transfered");
+	        }
+    	}
     }
     /**
      * Fill a CompositeMap with records fetched from JCO.Table
@@ -289,6 +292,5 @@ public class Table {
         ARRAY result =  new ARRAY(adesc, conn,elements );
         
         return result;
-    }
-
+    }    
 }
