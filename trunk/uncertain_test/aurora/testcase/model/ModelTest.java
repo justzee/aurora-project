@@ -49,7 +49,7 @@ public class ModelTest extends AbstractModelServiceTest {
         
         Field[] fields = model.getFields();
         assertNotNull(fields);
-        assertEquals(fields.length, 12);
+        assertEquals(fields.length, 13);
         assertNotNull(model.getField("ENAME"));
         Field[] f2 = model.getFields();
         assertTrue(fields==f2);
@@ -160,6 +160,17 @@ public class ModelTest extends AbstractModelServiceTest {
         
     }
     
+    public void testDataFilter()
+        throws Exception
+    {
+        String name = PKG_NAME+".wfl_workflow_notification";
+        BusinessModelService bms = super.svcFactory.getModelService(name);
+        bms.getServiceContext().getCurrentParameter().put("node_notification_id", "1");
+        String sql = bms.getSql("delete").toString();
+        assertTrue(sql.indexOf("rule_code<>'A'")>0);
+        
+    }
+    
     public void testParameterForOperation()
         throws Exception
     {
@@ -178,6 +189,20 @@ public class ModelTest extends AbstractModelServiceTest {
         List lst4 = bm2.getParameterForOperationInList("update");
         assertEquals(lst4.size(), 7);
         
+    }
+    
+    public void testGetSqlWithJoin() throws Exception {
+        String name = PKG_NAME+".wfl_workflow_notification_for_test";
+        BusinessModelService bms = super.svcFactory.getModelService(name);
+        BusinessModelServiceContext context = bms.getServiceContext();
+        LoggerProvider lp = LoggerProvider.createInstance(Level.FINE, System.out);
+        LoggingContext.setLoggerProvider(context.getObjectContext(), lp);
+        
+        assertNotNull(bms);
+        String sql = bms.getSql("query").toString();
+        System.out.println("####### sql test ####################");
+        System.out.println(sql);
+              
     }
    
         
