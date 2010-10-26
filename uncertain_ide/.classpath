@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/xerces.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/uncertain.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding="lib/" kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.4"/>
-	<classpathentry kind="lib" path="lib/aurora.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0-0.9.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aurora.jar"/>
 	<classpathentry kind="lib" path="lib/classes12.jar"/>
 	<classpathentry kind="lib" path="lib/jotm-1.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/jotm-client.jar"/>
@@ -14,8 +13,7 @@
 	<classpathentry kind="lib" path="lib/ow2-jta-1.1-spec.jar"/>
 	<classpathentry kind="lib" path="lib/servlet.jar"/>
 	<classpathentry kind="lib" path="lib/sqlserverjdbc.jar"/>
-	<classpathentry kind="lib" path="lib/uncertain.jar"/>
-	<classpathentry kind="lib" path="lib/xapool-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/xapool.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/j2re1.4.2_04"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

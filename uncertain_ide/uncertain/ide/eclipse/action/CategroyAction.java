@@ -24,7 +24,6 @@ public class CategroyAction extends Action {
 
 	public void run() {
 		viewer.setCategory(true);
-		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
 		return Activator.getImageDescriptor(LocaleMessage.getString("category.icon"));

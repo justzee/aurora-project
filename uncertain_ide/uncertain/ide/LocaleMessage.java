@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 
 public class LocaleMessage {
 
+	final static String resource = "uncertain";
+	private static ResourceBundle resourceBundle = getResourceBundle();
 	/**
 	 * Gets a string from the resource bundle. We don't want to crash because of
 	 * a missing String. Returns the key if not found.
@@ -28,8 +30,4 @@ public class LocaleMessage {
 		LocaleMessage.resourceBundle = ResourceBundle.getBundle(LocaleMessage.resource);
 		return LocaleMessage.resourceBundle;
 	}
-
-	final static String resource = "uncertain";
-	static ResourceBundle resourceBundle = getResourceBundle();
-
 }

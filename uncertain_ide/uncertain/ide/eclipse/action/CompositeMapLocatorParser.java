@@ -19,6 +19,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 import uncertain.composite.CompositeMap;
@@ -29,7 +30,8 @@ import uncertain.composite.NameProcessor;
  * @author jinxiao.lin
  * @version
  */
-public class CompositeMapLocatorParser extends DefaultHandler {
+public class CompositeMapLocatorParser extends DefaultHandler implements
+		LexicalHandler {
 
 	private final int lineToCompositeMap = 0;
 	private final int compositeMapToLine = 1;
@@ -37,6 +39,7 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 	private CompositeMap targetCompositeMap;
 	private int line;
 	private boolean serchfinished = false;
+	String globalComment;
 
 	/**
 	 * @param composite_loader
@@ -71,7 +74,6 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 	Locator locator;
 
 	// boolean support_xinclude = false;
-
 	// the default SAXParserFactory instance
 
 	private HashMap compositeMapPositions;
@@ -99,8 +101,6 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 		// Class nodeCls = node.getClass();
 		for (int i = 0; i < attribs.getLength(); i++) {
 			String attrib_name = attribs.getQName(i);
-			/** @todo Add attribute namespace support */
-			// String uri = attribs.getURI(i);
 			if (name_processor != null)
 				attrib_name = name_processor.getAttributeName(attrib_name);
 			node.put(attrib_name, attribs.getValue(i));
@@ -134,19 +134,12 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 			push(current_node);
 			current_node = node;
 		}
-		// System.out.println("lineNumber:" + lineNumber + " current_node:"
-		// + current_node.toXML());
 		if (!serchfinished && function == lineToCompositeMap) {
 			if (lineNumber >= line) {
 				targetCompositeMap = current_node;
 				serchfinished = true;
 			}
 		}
-		/*
-		 * if (!serchfinished && function == compositeMapToLine &&
-		 * current_node.equals(targetCompositeMap)) { line = lineNumber;
-		 * serchfinished = true; } current_node.setStartLineNumber(lineNumber);
-		 */
 		if (function == compositeMapToLine)
 			compositeMapPositions.put(current_node, new Integer(lineNumber));
 	}
@@ -191,31 +184,10 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 		}
 	}
 
-	/** end handles */
-	/*
-	 * public CompositeMapParser() {
-	 * 
-	 * }
-	 */
-
-	/*
-	 * public CompositeMapParser(CompositeMapParser prototype) { this();
-	 * copySettings(prototype); }
-	 */
-
-	/*
-	 * public CompositeMapParser( CompositeLoader loader){ if( loader == null)
-	 * return; setCompositeLoader(loader); }
-	 */
-
-	/** set a new INameProcessor */
-	/*
-	 * public void setNameProcessor(NameProcessor processor) {
-	 * this.name_processor = processor; }
-	 */
-
 	/** get root CompositeMap parsed */
 	public CompositeMap getRoot() {
+		if (globalComment != null)
+			current_node.setGlobalComment(globalComment);
 		return current_node;
 	}
 
@@ -229,9 +201,9 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 		} catch (ParserConfigurationException ex) {
 			throw new SAXException("error when creating SAXParser", ex);
 		}
+		parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+				this);
 		parser.parse(stream, this);
-		// if( getCompositeLoader().getSaveNamespaceMapping())
-		// root.setNamespaceMapping(saved_uri_mapping);
 	}
 
 	public int LocateCompositeMapLine(InputStream stream,
@@ -253,6 +225,10 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 		function = lineToCompositeMap;
 		this.line = line;
 		parseStream(stream);
+		
+		CompositeMap root = new CompositeMap("root");
+		root.addChild(getRoot());
+		
 		return targetCompositeMap;
 	}
 
@@ -264,45 +240,6 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 			uri_mapping.clear();
 		name_processor = null;
 	}
-
-	/*
-	 * public static CompositeMapParser createInstance(CompositeLoader loader) {
-	 * CompositeMapParser parser = new CompositeMapParser(loader); return
-	 * parser; }
-	 */
-
-	/*
-	 * public Map getNamespaceMapping(){ return namespace_mapping; }
-	 */
-
-	/*
-	 * public void setDocumentLocator(Locator locator) { last_locator = locator;
-	 * }
-	 */
-
-	/*
-	 * 
-	 * public static CompositeMap parse( InputStream stream, CompositeLoader
-	 * loader, NameProcessor processor ) throws SAXException, IOException {
-	 * CompositeMapParser parser = null; try{ parser = createInstance(loader,
-	 * processor); return parser.parseStream(stream); }finally{ if(parser!=null)
-	 * parser.clear(); } }
-	 * 
-	 * public static CompositeMap parse( InputStream stream, CompositeLoader
-	 * loader) throws SAXException, IOException { return parse( stream, loader,
-	 * null); }
-	 * 
-	 * public static CompositeMap parse( InputStream stream, NameProcessor
-	 * processor ) throws SAXException, IOException { return parse(stream, null,
-	 * processor); }
-	 * 
-	 * public static CompositeMap parse( InputStream stream) throws
-	 * SAXException, IOException { return parse(stream, null, null); }
-	 */
-
-	/**
-	 * @todo Add element location info
-	 */
 
 	public void setDocumentLocator(Locator locator) {
 		this.locator = locator;
@@ -320,4 +257,31 @@ public class CompositeMapLocatorParser extends DefaultHandler {
 
 	}
 
+	public void comment(char ch[], int start, int length) throws SAXException {
+		if (ch == null)
+			return;
+		if (current_node != null) {
+			String t = current_node.getComment();
+			String now = "<!--" + new String(ch, start, length) + "-->";
+			if (t != null)
+				t += "," + now;
+			else
+				t = now;
+			current_node.setComment(t);
+		} else {
+			globalComment = "<!--" + new String(ch, start, length) + "-->";
+		}
+	}
+
+	public void endCDATA() throws SAXException {}
+
+	public void endDTD() throws SAXException {}
+
+	public void endEntity(String arg0) throws SAXException {}
+
+	public void startCDATA() throws SAXException {}
+
+	public void startDTD(String arg0, String arg1, String arg2)	throws SAXException {}
+
+	public void startEntity(String arg0) throws SAXException {}
 }

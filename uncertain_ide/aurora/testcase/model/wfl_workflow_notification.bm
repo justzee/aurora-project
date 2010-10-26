@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:model xmlns:ns1="http://www.aurora-framework.org/schema/bm" xmlns:ns2="aurora.database.local.oracle" xmlns:ns3="aurora.database.features" baseTable="wfl_node_notification" alias="e">
+    <ns1:fields>
+        <ns1:field databaseType="BIGINT" datatype="java.lang.Long" name="node_notification_id"/>
+        <ns1:field databaseType="BIGINT" datatype="java.lang.Long" insertExpression="${../../@workflow_id}" forUpdate="false" name="workflow_id"/>
+        <ns1:field databaseType="BIGINT" datatype="java.lang.Long" name="node_id"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="rule_code"/>
+        <ns1:field expression="(select description from wfl_notification_rules_vl where rule_code=e.rule_code)" forUpdate="false" forInsert="false" name="rule_code_display"/>
+        <ns1:ref-field sourceField="parameter_1_type" relationName="p1" forUpdate="false" forInsert="false" name="parameter_1_type"/>
+        <ns1:ref-field sourceField="parameter_1_url" relationName="p1" forUpdate="false" forInsert="false" name="parameter_1_url"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_1_value"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_1_desc"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_2_value"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_2_desc"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_3_value"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_3_desc"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_4_value"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="parameter_4_desc"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" name="mail_template"/>
+    </ns1:fields>
+    <ns1:primary-key>
+        <ns1:field name="node_notification_id"/>
+    </ns1:primary-key>
+    <ns1:relations>
+        <ns1:relation joinType="LEFT OUTER" refModel="aurora.testcase.model.wfl_workflow_notification_rules" name="p1">
+            <ns1:reference foreignField="rule_code" localField="rule_code"/>
+        </ns1:relation>
+    </ns1:relations>
+    <ns1:query-fields>
+        <ns1:query-field queryOperator="=" field="workflow_id"/>
+    </ns1:query-fields>
+    <ns1:data-filters>
+        <ns1:data-filter expression="rule_code is not null"/>
+        <ns1:data-filter enforceOperations="query,update,delete" expression="rule_code&lt;&gt;&apos;A&apos;"/>
+    </ns1:data-filters>
+    <ns1:order-by>
+        <ns1:field name="node_notification_id"/>
+    </ns1:order-by>
+    <ns1:features>
+        <ns2:sequence-pk/>
+        <ns3:standard-who/>
+    </ns1:features>
+    <ns1:operations>
+        <ns1:operation name="update">
+            <ns1:parameters>
+                <ns1:parameter datatype="java.lang.String" name="rule_code"/>
+                <ns1:parameter datatype="java.lang.String" name="mail_template"/>
+            </ns1:parameters>
+            <ns1:update-sql><![CDATA[
+    			update wfl_node_notification
+    			set rule_code = ${@rule_code},
+    			mail_template=nvl(${@mail_template},'[empty]')
+    			#WHERE_CLAUSE#
+    		]]></ns1:update-sql>
+        </ns1:operation>
+        <ns1:operation name="queryForTest">
+            <ns1:query-sql><![CDATA[
+    			select * from wfl_node_notification
+    			#WHERE_CLAUSE#
+    			#ORDER_BY_CLAUSE#
+    		]]></ns1:query-sql>
+        </ns1:operation>
+    </ns1:operations>
+</ns1:model>

@@ -13,38 +13,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.schema.Attribute;
-import uncertain.schema.Editor;
 
 public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		ICellEditor {
 
-	protected Editor editor;
-	protected ITableViewer tableViewer;
-	protected Attribute property;
-	protected CompositeMap record;
-	protected TableItem item;
-	private boolean required = false;
+	protected CellProperties cellProperties;
 	
-	/**
-	 * @param tableViewer
-	 * @param property
-	 * @param record it can be null in grid table
-	 * @param item it can be null in grid table
-	 */
-	public AbstractTextCellEditor(ITableViewer tableViewer,Attribute property,CompositeMap record,TableItem item) {
-		this.tableViewer = tableViewer;
-		this.record = record;
-		this.property = property;
-		this.item = item;
+	public AbstractTextCellEditor(CellProperties cellProperties) {
+		this.cellProperties = cellProperties;
 	}
 
 	public boolean validValue(String value) {
-		if(required && (value == null || value.equals(""))){
-			String message = "this field <"+property.getLocalName()+"> is required! can't be not null";
+		if(cellProperties.isRequired() && (value == null || value.equals(""))){
+			String message = LocaleMessage.getString("this.field")+"<"+cellProperties.getColumnName()+"> "+LocaleMessage.getString("is.required");
 			CustomDialog.showErrorMessageBox(null, message);
 			getCellControl().setFocus();
 			throw new IllegalArgumentException(message);
@@ -80,20 +63,17 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 			return;
 		}
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-		Table parent = tableViewer.getViewer().getTable();
+		Table parent = cellProperties.getTable();
 		createCellEditor(parent);
-		if (property.getUse() != null && property.getUse().equals("required")) {
-			required = true;
+		if (cellProperties.isRequired()) {
 			getCellControl().setBackground(bg);
 		}
-		if(item != null){
-			SetSelection(record.getString(property.getLocalName()));
+		if(isTableItemEditor()){
+			SetSelection(cellProperties.getRecord().getString(cellProperties.getColumnName()));
 			addCellListener();
 		}
 	}
-	public TableItem getTableItem(){
-		return item;
-	}
+	
 	protected void addCellListener() {
 		this.addListener(new ICellEditorListener() {
 
@@ -106,15 +86,15 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 
 			public void applyEditorValue() {
 				String dataValue = getSelection();
-				record.put(property.getLocalName(), dataValue);
-				tableViewer.refresh(true);
+				cellProperties.getRecord().put(cellProperties.getColumnName(), dataValue);
+				cellProperties.getTableViewer().refresh(true);
 			}
 		});
 		getCellControl().addFocusListener(new FocusListener() {
 			
 			public void focusLost(FocusEvent e) {
-				if(item!=null)
-					fillTableCellEditor(getTableItem());
+				if(isTableItemEditor())
+					fillTableCellEditor(cellProperties.getTableItem());
 			
 			}
 			
@@ -133,6 +113,9 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 	}
 	public CellEditor getCellEditor(){
 		return this;
+	}
+	private boolean isTableItemEditor(){
+		return cellProperties.getTableItem() != null;
 	}
 	
 }

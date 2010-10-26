@@ -36,6 +36,7 @@ import org.eclipse.ui.ide.IDE;
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 /**
@@ -203,11 +204,9 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 		if (fromClause == null)
 			return model;
 		String test = fromClause + " where 1<>1";
-		System.out.println(test);
 		CompositeMap selectedFields = null;
 		try {
 			Statement stmt = dbConnection.createStatement();
-
 			ResultSet result = stmt.executeQuery(test);
 			ResultSetMetaData rsMetaData = result.getMetaData();
 			selectedFields = getSelectedFields(rsMetaData);
@@ -227,10 +226,9 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName
-					+ "\" does not exist.");
+			throwCoreException(LocaleMessage.getString("container")+" \"" + containerName + "\""+LocaleMessage.getString("not.exist"));
 		}
-		return UncertainDataBase.getDBConnection(resource.getProject());
+		return AuroraDataBase.getDBConnection(resource.getProject());
 	}
 
 	private static String getSelectClause(String sql) {

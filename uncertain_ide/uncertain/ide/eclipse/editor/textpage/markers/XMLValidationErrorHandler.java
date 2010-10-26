@@ -1,6 +1,3 @@
-/*
- * Created on Oct 10, 2004
- */
 package uncertain.ide.eclipse.editor.textpage.markers;
 
 import java.util.ArrayList;
@@ -39,8 +36,6 @@ public class XMLValidationErrorHandler extends DefaultHandler
 	{
 		XMLValidationError validationError = nextError(e, isFatal);
 		errorList.add(validationError);
-//		System.out.println(validationError.toString());
-
 	}
 
 	protected XMLValidationError nextError(SAXParseException e, boolean isFatal)

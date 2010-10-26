@@ -1,7 +1,7 @@
 package uncertain.ide.eclipse.action;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Event;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
@@ -9,47 +9,49 @@ import uncertain.ide.Activator;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.IViewer;
 
-public class AddElementAction extends Action {
-	private IViewer viewer;
+public class AddElementAction extends ActionListener{
+	
+	protected IViewer viewer;
+	protected CompositeMap parent;
+	protected String prefix;
+	protected String uri;
+	protected String localName;
 
-	private CompositeMap parentCM;
-	private String prefix;
-	private String uri;
-	private String cmName;
-
-	public AddElementAction(IViewer viewer, CompositeMap parentCM,
-			String prefix, String uri, String cmName) {
+	public AddElementAction(IViewer viewer, CompositeMap parent, QualifiedName childQN) {
 		this.viewer = viewer;
-		this.parentCM = parentCM;
+		this.parent = parent;
+		this.prefix = CompositeMapAction.getContextPrefix(parent,childQN);
+		childQN.setPrefix(prefix);
+		this.uri = childQN.getNameSpace();
+		this.localName = childQN.getLocalName();
+		setHoverImageDescriptor(getDefaultImageDescriptor());
+		setText(childQN.getFullName());
+	}
+	
+	public AddElementAction(IViewer viewer, CompositeMap parent,
+			String prefix, String uri, String localName,String text) {
+		this.viewer = viewer;
+		this.parent = parent;
 		this.prefix = prefix;
 		this.uri = uri;
-		this.cmName = cmName;
-		setText(cmName);
-
+		this.localName = localName;
+		setHoverImageDescriptor(getDefaultImageDescriptor());
+		setText(text);
 	}
-
-	public AddElementAction(IViewer viewer, CompositeMap parentCM,
-			QualifiedName qName, ImageDescriptor imageDescriptor, String text) {
-		this.viewer = viewer;
-		this.parentCM = parentCM;
-		this.uri = qName.getNameSpace();
-		this.prefix = CompositeMapAction.getPrefix(parentCM,qName);
-		this.cmName = qName.getLocalName();
-		if (imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if (text != null)
-			setText(text);
-
-	}
-
+	
 	public void run() {
-		CompositeMapAction.addElement(parentCM, prefix, uri, cmName);
+		CompositeMapAction.addElement(parent, prefix, uri, localName);
 		if (viewer != null) {
 			viewer.refresh(true);
 		}
 	}
 
-	public static ImageDescriptor getDefaultImageDescriptor() {
+	public void handleEvent(Event event) {
+		run();
+	}
+
+	public ImageDescriptor getDefaultImageDescriptor() {
 		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon"));
 	}
+
 }

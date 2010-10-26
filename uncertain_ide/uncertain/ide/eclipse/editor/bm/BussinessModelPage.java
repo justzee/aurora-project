@@ -13,6 +13,8 @@ import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -30,6 +32,7 @@ import uncertain.composite.QualifiedName;
 import uncertain.composite.XMLOutputter;
 import uncertain.ide.Common;
 import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.action.AddFieldAction;
 import uncertain.ide.eclipse.action.AddPropertyAction;
 import uncertain.ide.eclipse.action.RefreshAction;
@@ -38,8 +41,9 @@ import uncertain.ide.eclipse.action.RemovePropertyAction;
 import uncertain.ide.eclipse.editor.BaseCompositeMapViewer;
 import uncertain.ide.eclipse.editor.CompositeMapPage;
 import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.eclipse.editor.widgets.PropertyGridViewer;
+import uncertain.ide.eclipse.editor.widgets.IGridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
@@ -47,7 +51,7 @@ import uncertain.schema.IType;
 
 public class BussinessModelPage extends CompositeMapPage {
 	private static final String PageId = "BussinessModelPage";
-	private static final String PageTitle = "Bussiness Model";
+	private static final String PageTitle = LocaleMessage.getString("bussiness.model.file");
 	private CTabFolder mTabFolder;
 	private CompositeMap data;
 	private SashForm sashForm;
@@ -69,7 +73,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		Element schemaElement = LoadSchemaManager.getSchemaManager()
 				.getElement(bm_model);
 		if (schemaElement == null) {
-			throw new RuntimeException("Please add the bm schema file first!");
+			throw new RuntimeException(LocaleMessage.getString("please.add.bm.schema.file"));
 		}
 		try {
 			CompositeLoader loader = new CompositeLoader();
@@ -79,8 +83,7 @@ public class BussinessModelPage extends CompositeMapPage {
 			throw new RuntimeException(e.getLocalizedMessage(), e.getCause());
 		}
 		if (!data.getQName().equals(bm_model))
-			throw new RuntimeException("This root element is not " + bm_model
-					+ " !");
+			throw new RuntimeException(LocaleMessage.getString("this.root.element.is.not") + bm_model+ " !");
 		createContent(shell);
 	}
 
@@ -146,27 +149,27 @@ public class BussinessModelPage extends CompositeMapPage {
 						array_data));
 				continue;
 			} else {
-				final PropertyGridViewer propertyArrayEditor = new PropertyGridViewer(
-						this,false);
-				propertyArrayEditor.createEditor(mTabFolder, array_data);
+				final GridViewer gridViewer = new GridViewer(null,IGridViewer.fullEditable);
+				gridViewer.setParent(this);
+				gridViewer.createViewer(mTabFolder, array_data);
 
 				if (array.getLocalName().equals("primary-key")
 						|| array.getLocalName().equals("order-by")) {
-					createCustomerActions(propertyArrayEditor);
+					createCustomerActions(gridViewer);
 				}
 
 				mTabFolder.getItem(i).setText(
 						TabHeighGrab + array.getLocalName().toUpperCase()
 								+ TabHeighGrab);
 				mTabFolder.getItem(i).setControl(
-						propertyArrayEditor.getControl());
-				childViews.add(propertyArrayEditor);
+						gridViewer.getControl());
+				childViews.add(gridViewer);
 				final int  itemIndex = i;
 				mTabFolder.addSelectionListener(new SelectionListener() {
 
 					public void widgetSelected(SelectionEvent e) {
 						if(mTabFolder.getSelectionIndex()==itemIndex)
-							propertyArrayEditor.packColumns();
+							gridViewer.packColumns();
 					}
 
 					public void widgetDefaultSelected(SelectionEvent e) {
@@ -175,7 +178,6 @@ public class BussinessModelPage extends CompositeMapPage {
 				});
 			}
 		}
-//		mTabFolder.setSelection(0);
 		mTabFolder.layout(true);
 
 	}
@@ -192,15 +194,15 @@ public class BussinessModelPage extends CompositeMapPage {
 		return baseViewer;
 	}
 
-	public void createCustomerActions(PropertyGridViewer pae) {
+	public void createCustomerActions(GridViewer pae) {
 		Element element = LoadSchemaManager.getSchemaManager().getElement(
-				pae.getData());
+				pae.getInput());
 		if (element == null) {
 			return;
 		}
 		if (element.isArray()) {
 			Action addAction = new AddFieldAction(pae, data.getChild("fields"),
-					pae.getData(), AddPropertyAction
+					pae.getInput(), AddPropertyAction
 							.getDefaultImageDescriptor(), null);
 			Action removeAction = new RemoveElementAction(pae,
 					RemovePropertyAction.getDefaultImageDescriptor(), null);
@@ -215,6 +217,23 @@ public class BussinessModelPage extends CompositeMapPage {
 		final CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE
 				| SWT.BORDER);
 		tabFolder.setMaximizeVisible(true);
+		tabFolder.addMouseListener(new MouseListener() {
+			public void mouseUp(MouseEvent e) {
+			}
+			public void mouseDown(MouseEvent e) {
+			}
+			public void mouseDoubleClick(MouseEvent e) {
+				if(tabFolder.getMaximized()){
+					tabFolder.setMaximized(false);
+					sashForm.setMaximizedControl(null);
+					parent.layout(true);
+				}else{
+					tabFolder.setMaximized(true);
+					sashForm.setMaximizedControl(tabFolder);
+					parent.layout(true);
+				}
+			}
+		});
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void minimize(CTabFolderEvent event) {
 				tabFolder.setMinimized(true);
@@ -264,7 +283,7 @@ public class BussinessModelPage extends CompositeMapPage {
 
 	public void refresh(boolean dirty) {
 		if (dirty) {
-			setModify(true);
+			getEditor().editorDirtyStateChanged();
 		}
 		for (Iterator iterator = childViews.iterator(); iterator.hasNext();) {
 			Object childViewer = iterator.next();
@@ -273,8 +292,6 @@ public class BussinessModelPage extends CompositeMapPage {
 				iViewer.refresh(false);
 			}
 		}
-		getEditor().editorDirtyStateChanged();
-
 	}
 
 	public void refresh(CompositeMap data) {

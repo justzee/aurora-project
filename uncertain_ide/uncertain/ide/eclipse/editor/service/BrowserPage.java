@@ -1,22 +1,8 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package uncertain.ide.eclipse.editor.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
@@ -67,15 +53,15 @@ import uncertain.ide.Common;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.preferencepages.BrowserPreferencePage;
+import uncertain.ide.eclipse.wizards.ProjectProperties;
 
 public class BrowserPage extends FormPage {
-	protected static final String textPageId = "Browser";
-	protected static final String textPageTitle = "Preview";
+	protected static final String textPageId = "uncertain.ide.eclipse.editor.service.browser";
+	protected static final String textPageTitle = LocaleMessage.getString("preview");
 	static ResourceBundle resourceBundle = ResourceBundle
 			.getBundle("uncertain");
 	int index;
 	boolean busy;
-	Image images[];
 	Image icon = null;
 	boolean title = false;
 	Composite parent;
@@ -88,11 +74,6 @@ public class BrowserPage extends FormPage {
 	ProgressBar progressBar;
 	SWTError error = null;
 
-	static final String[] imageLocations = { "icons/browser/eclipse01.bmp", "icons/browser/eclipse02.bmp",
-			"icons/browser/eclipse03.bmp", "icons/browser/eclipse04.bmp", "icons/browser/eclipse05.bmp", "icons/browser/eclipse06.bmp",
-			"icons/browser/eclipse07.bmp", "icons/browser/eclipse08.bmp", "icons/browser/eclipse09.bmp", "icons/browser/eclipse10.bmp",
-			"icons/browser/eclipse11.bmp", "icons/browser/eclipse12.bmp", };
-	static final String iconLocation = "icons/browser/document.gif";
 
 	public BrowserPage(FormEditor editor) {
 		super(editor, textPageId, textPageTitle);
@@ -122,14 +103,13 @@ public class BrowserPage extends FormPage {
 			/* Browser widget could not be instantiated */
 			parent.setLayout(new FillLayout());
 			Label label = new Label(parent, SWT.CENTER | SWT.WRAP);
-			label.setText(getResourceString("BrowserNotCreated"));
+			label.setText(LocaleMessage.getString("BrowserNotCreated"));
 			parent.layout(true);
 			return;
 		}
-		initResources();
 		final Display display = browser.getShell().getDisplay();
 		browser.setData(
-				"org.eclipse.swt.examples.browserexample.BrowserApplication",
+				textPageId,
 				this);
 		browser.addOpenWindowListener(new OpenWindowListener() {
 			public void open(WindowEvent event) {
@@ -143,8 +123,6 @@ public class BrowserPage extends FormPage {
 			}
 		});
 		if (top) {
-//			browser.setUrl("");
-
 			show(false, null, null, true, true, true, true);
 		} else {
 			browser.addVisibilityWindowListener(new VisibilityWindowListener() {
@@ -153,8 +131,7 @@ public class BrowserPage extends FormPage {
 
 				public void show(WindowEvent e) {
 					Browser browser = (Browser) e.widget;
-					BrowserPage app = (BrowserPage) browser
-							.getData("org.eclipse.swt.examples.browserexample.BrowserApplication");
+					BrowserPage app = (BrowserPage) browser.getData(textPageId);
 					app.show(true, e.location, e.size, e.addressBar, e.menuBar,
 							e.statusBar, e.toolBar);
 				}
@@ -174,21 +151,6 @@ public class BrowserPage extends FormPage {
 	 * BrowserApplication.
 	 */
 	public void dispose() {
-		freeResources();
-	}
-
-	/**
-	 * Gets a string from the resource bundle. We don't want to crash because of
-	 * a missing String. Returns the key if not found.
-	 */
-	static String getResourceString(String key) {
-		try {
-			return resourceBundle.getString(key);
-		} catch (MissingResourceException e) {
-			return key;
-		} catch (NullPointerException e) {
-			return "!" + key + "!";
-		}
 	}
 
 	public SWTError getError() {
@@ -220,17 +182,16 @@ public class BrowserPage extends FormPage {
 			data.top = new FormAttachment(0, 7);
 			toolbar.setLayoutData(data);
 			itemBack = new ToolItem(toolbar, SWT.PUSH);
-			itemBack.setText(getResourceString("Back"));
+			itemBack.setText(LocaleMessage.getString("Back"));
 			itemForward = new ToolItem(toolbar, SWT.PUSH);
-			itemForward.setText(getResourceString("Forward"));
+			itemForward.setText(LocaleMessage.getString("Forward"));
 			final ToolItem itemStop = new ToolItem(toolbar, SWT.PUSH);
-			itemStop.setText(getResourceString("Stop"));
+			itemStop.setText(LocaleMessage.getString("Stop"));
 			final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
-			itemRefresh.setText(getResourceString("Refresh"));
+			itemRefresh.setText(LocaleMessage.getString("Refresh"));
 			final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
-			itemGo.setText(getResourceString("Go"));
+			itemGo.setText(LocaleMessage.getString("Go"));
 
-			// ����ֱ�ӷ���uncertain������İ�ť
 			createServerButtons(shell);
 
 			itemBack.setEnabled(browser.isBackEnabled());
@@ -263,18 +224,9 @@ public class BrowserPage extends FormPage {
 			data.top = new FormAttachment(0, 7);
 			data.right = new FormAttachment(100, -7);
 			canvas.setLayoutData(data);
-
-			final Rectangle rect = images[0].getBounds();
-			canvas.addListener(SWT.Paint, new Listener() {
-				public void handleEvent(Event e) {
-					Point pt = ((Canvas) e.widget).getSize();
-					e.gc.drawImage(images[index], 0, 0, rect.width,
-							rect.height, 0, 0, pt.x, pt.y);
-				}
-			});
 			canvas.addListener(SWT.MouseDown, new Listener() {
 				public void handleEvent(Event e) {
-					browser.setUrl(getResourceString("Startup"));
+					browser.setUrl(LocaleMessage.getString("Startup"));
 				}
 			});
 
@@ -284,9 +236,6 @@ public class BrowserPage extends FormPage {
 					if (canvas.isDisposed())
 						return;
 					if (busy) {
-						index++;
-						if (index == images.length)
-							index = 0;
 						canvas.redraw();
 					}
 					display.timerExec(150, this);
@@ -352,8 +301,10 @@ public class BrowserPage extends FormPage {
 					if (event.total == 0)
 						return;
 					int ratio = event.current * 100 / event.total;
-					if (progressBar != null)
+					if (progressBar != null){
 						progressBar.setSelection(ratio);
+						progressBar.setVisible(true);
+					}
 					busy = event.current != event.total;
 					if (!busy) {
 						index = 0;
@@ -363,8 +314,10 @@ public class BrowserPage extends FormPage {
 				}
 
 				public void completed(ProgressEvent event) {
-					if (progressBar != null)
+					if (progressBar != null){
 						progressBar.setSelection(0);
+						progressBar.setVisible(false);
+					}
 					busy = false;
 					index = 0;
 					if (canvas != null) {
@@ -391,7 +344,7 @@ public class BrowserPage extends FormPage {
 			browser.addTitleListener(new TitleListener() {
 				public void changed(TitleEvent event) {
 					shell.setText(event.title + " - "
-							+ getResourceString("window.title"));
+							+ LocaleMessage.getString("window.title"));
 				}
 			});
 		}
@@ -422,7 +375,6 @@ public class BrowserPage extends FormPage {
 							Rectangle bounds = drop_down.getBounds();
 							Point point = toolbar.toDisplay(bounds.x, bounds.y
 									+ bounds.height);
-							// ���ò˵�����ʾλ��
 							menu.setLocation(point);
 							menu.setVisible(true);
 
@@ -612,72 +564,34 @@ public class BrowserPage extends FormPage {
 			parent.setFocus();
 	}
 
-	/**
-	 * Frees the resources
-	 */
-	void freeResources() {
-		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
-				if (image != null)
-					image.dispose();
-			}
-			images = null;
-		}
-	}
-
-	/**
-	 * Loads the resources
-	 */
-	void initResources() {
-		if (resourceBundle != null) {
-			try {
-				if (images == null) {
-					images = new Image[imageLocations.length];
-					for (int i = 0; i < imageLocations.length; ++i) {
-						images[i]=Activator.getImageDescriptor(imageLocations[i]).createImage();
-					}
-				}
-				return;
-			} catch (Throwable t) {
-			}
-		}
-		String error = (resourceBundle != null) ? getResourceString("error.CouldNotLoadResources")
-				: "Unable to load resources";
-		freeResources();
-		throw new RuntimeException(error);
-	}
 
 	protected String getFileName() {
+		//TODO test
 		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
 				.getFile();
 		String fileName = Common.getIfileLocalPath(ifile);
-		return (new File(fileName)).getName();
+		String rootDir = null;
+		try {
+			rootDir = ProjectProperties.getWebBaseDir();
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
+		}
+		int webLocation = fileName.indexOf(rootDir);
+		String registerPath = fileName.substring(webLocation+rootDir.length());
+		return registerPath;
 	}
 
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		shell.setText(getResourceString("window.title"));
-		InputStream stream = BrowserPage.class
-				.getResourceAsStream(iconLocation);
-		Image icon = new Image(display, stream);
-		shell.setImage(icon);
-		try {
-			stream.close();
-		} catch (IOException e) {
-			CustomDialog.showExceptionMessageBox(e);
-		}
-		// BrowserExample app = new BrowserExample(shell, true);
+		shell.setText(LocaleMessage.getString("window.title"));
 		BrowserPage app = new BrowserPage();
-		app.setShellDecoration(icon, true);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		icon.dispose();
 		app.dispose();
 		display.dispose();
 	}

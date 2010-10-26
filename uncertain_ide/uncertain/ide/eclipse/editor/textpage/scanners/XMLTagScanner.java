@@ -31,27 +31,6 @@ public class XMLTagScanner extends RuleBasedScanner {
 			new Token(
 				new TextAttribute(manager.getColor(IXMLColorConstants.ATTRIBUTE)));
 
-//		IRule[] rules = new IRule[3];
-//
-////		rules[0] = new XMLTagNameRule(tagName, true);
-//		// Add rule for double quotes
-//		rules[0] = new SingleLineRule("\"", "\"", string, '\\');
-//		// Add a rule for single quotes
-//		rules[1] = new SingleLineRule("'", "'", string, '\\');
-//		// Add generic whitespace rule.
-//		rules[2] = new WhitespaceRule(new XMLWhitespaceDetector());
-
-//		IRule[] rules = new IRule[4];
-//
-//		rules[0] = new XMLTagNameRule(tagName, true);
-//		// Add rule for double quotes
-//		rules[1] = new SingleLineRule("\"", "\"", string, '\\');
-//		// Add a rule for single quotes
-//		rules[2] = new SingleLineRule("'", "'", string, '\\');
-//		// Add generic whitespace rule.
-//		rules[3] = new WhitespaceRule(new XMLWhitespaceDetector());
-//		
-		
 		
 		IRule[] rules = new IRule[5];
 

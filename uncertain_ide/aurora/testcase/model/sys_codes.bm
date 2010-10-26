@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://www.aurora-framework.org/schema/bm" baseTable="sys_codes"  xmlns:f="aurora.database.features" alias="c">
+    <fields>
+        <field name="code_id" datatype="java.lang.Long" databaseType="NUMBER"/>
+        <field name="code" datatype="java.lang.String" databaseType="VARCHAR" prompt="SYS_CODE.CODE"/>
+        <field name="sys_flag" insertExpression="'N'" datatype="java.lang.String" databaseType="VARCHAR" prompt="SYS_CODE.SYS_FLAG_DSP"/>
+        <field name="enabled_flag" datatype="java.lang.String" databaseType="VARCHAR" prompt="SYS_CODE.ENABLED_FLAG"/>
+        <field name="code_name_id" datatype="java.lang.Long" databaseType="BIGINT" multiLanguage="true" multiLanguageDescField="code_name"/>
+        <field name="code_name" datatype="java.lang.String" databaseType="VARCHAR" prompt="SYS_CODE.CODE_NAME" forInsert="false" forUpdate="false"/>
+        <!--
+        <field name="code_prompt_id" datatype="java.lang.Long" databaseType="BIGINT" multiLanguage="true" multiLanguageDescField="code_prompt"/>
+        <field name="code_prompt" datatype="java.lang.String" databaseType="VARCHAR" prompt="SYS_CODE.CODE_PROMPT" forInsert="false" forUpdate="false"/>
+        
+        <field name="code_name_prompt_id" datatype="java.lang.Long" databaseType="BIGINT" multiLanguage="true" multiLanguageDescField="code_name_prompt"/>
+        <field name="code_name_prompt" datatype="java.lang.String" databaseType="VARCHAR" prompt="SYS_CODE.CODE_PROMPT_NAME" forInsert="false" forUpdate="false"/>
+        -->
+    </fields>
+    <!--<data-filters>
+        <data-filter enforceActions="delete,update" expression="sys_flag='N'" name="MustNotBeSys"/>
+    </data-filters>-->
+    
+    <primary-key>
+        <field name="code_id"/>
+    </primary-key>
+    <query-fields>
+        <query-field field="sys_flag" queryOperator="="/>
+        <query-field field="code" queryOperator="like"/>
+        <query-field field="code_name" queryExpression="exists (select 1 from fnd_descriptions fd where c.code_name_id=fd.description_id and fd.description_text like ${@code_name} and fd.language = ${/session/@lang})"/>
+    </query-fields>
+    <features>
+        <f:multi-language-storage/> 
+        <sequence-pk xmlns="aurora.database.local.oracle"/>
+        <standard-who xmlns="aurora.database.features"/>
+    </features>
+</model>

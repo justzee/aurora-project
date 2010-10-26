@@ -41,10 +41,12 @@ public abstract class CompositeMapTreeEditor extends BaseCompositeMapEditor {
 			InputStream content = new ByteArrayInputStream(textPage.getContent()
 					.getBytes("UTF-8"));
 			CompositeMap  cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
-			treePage.getTreeViewer().expandToLevel(
-					cm, 0);
-			treePage.getTreeViewer().setSelection(
-					new StructuredSelection(cm), true);
+			if(cm != null){
+//				treePage.getTreeViewer().expandToLevel(
+//						cm, 0);
+				treePage.getTreeViewer().setSelection(
+						new StructuredSelection(cm), true);
+			}
 		} catch (Exception e){
 			CustomDialog.showExceptionMessageBox(e);
 		}

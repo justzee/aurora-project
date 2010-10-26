@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.ide.eclipse.editor.CategoryLabel;
 import uncertain.ide.eclipse.editor.ICategoryViewer;
 import uncertain.schema.editor.AttributeValue;
 
@@ -16,10 +15,6 @@ public class PropertyHashCellModifier implements ICellModifier {
 	public static final String[] PROPERTY_TO_UPDATE = { PropertyHashViewer.COLUMN_VALUE };
 	
 	ICategoryViewer viewer;
-	// public PropertySheetCellModifier(TableViewer viewer) {
-	// super();
-	// mViewer = viewer;
-	// }
 	CellEditor cellEditor;
 	public PropertyHashCellModifier(ICategoryViewer viewer) {
 		super();
@@ -36,12 +31,7 @@ public class PropertyHashCellModifier implements ICellModifier {
 	}
 
 	public Object getValue(Object element, String property) {
-//		System.out.println("getValue...");
 		AttributeValue av = (AttributeValue) element;
-//		if(av.getAttribute().getLocalName().equals("name")){
-//			return new Integer(0);
-//		}
-
 		if (PropertyHashViewer.COLUMN_VALUE.equals(property))
 			return av.getValueString();
 		else {
@@ -56,7 +46,6 @@ public class PropertyHashCellModifier implements ICellModifier {
 			return ;
 		}
 		String attributeName = av.getAttribute().getLocalName();
-//		System.out.println("modify:"+attributeName);
 		Object oldValue = av.getContainer().get(av.getAttribute().getLocalName());
 		
 		if((oldValue==null ||oldValue.equals(""))&&(value==null ||value.equals(""))){

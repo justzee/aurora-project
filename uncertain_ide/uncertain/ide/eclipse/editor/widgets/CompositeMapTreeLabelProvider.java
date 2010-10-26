@@ -1,6 +1,3 @@
-/*
- * Created on 2009-7-3
- */
 package uncertain.ide.eclipse.editor.widgets;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -23,7 +20,8 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 
 	public Image getImage(Object element) {
 		CompositeMap elemenntCm = (CompositeMap) element;
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(elemenntCm);
+		Element ele = LoadSchemaManager.getSchemaManager().getElement(
+				elemenntCm);
 		if (ele != null) {
 			if (ele.isArray()) {
 				return Activator.getImageDescriptor(
@@ -52,7 +50,8 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 			elementText = elementName;
 		else
 			elementText = tagName;
-		Element element = LoadSchemaManager.getSchemaManager().getElement(elemenntCm);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(
+				elemenntCm);
 		if (element != null) {
 			if (element.isArray()) {
 				int nodes = elemenntCm.getChildsNotNull().size();
@@ -68,27 +67,25 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 
 		String tagName = element.getRawName();
 		Element elm = LoadSchemaManager.getSchemaManager().getElement(element);
-		String elemName = null;
+		String elemDesc = null;
 		if (elm != null && !elm.isArray()) {
 			if (elm.getDisplayMask() == null) {
-				if (element.get("name") != null)
-					elemName = element.get("name").toString();
-				else {
-					if (element.get("Name") != null)
-						elemName = element.get("Name").toString();
-				}
-
-				if (elemName != null)
-					tagName = tagName + " (" + elemName + ")";
-			} else {
-				tagName = tagName + " "
-						+ TextParser.parse(elm.getDisplayMask(), element);
+				elemDesc = TextParser.parse(elm.getDisplayMask(), element);
 			}
+			if (elemDesc != null)
+				tagName = tagName + " " + elemDesc;
+		}
+		if (elemDesc == null) {
+			if (element.get("id") != null) {
+				elemDesc = element.getString("id");
+			} else if (element.get("name") != null)
+				elemDesc = element.get("name").toString();
+			else if (element.get("Name") != null)
+					elemDesc = element.get("Name").toString();
+			if (elemDesc != null)
+				tagName = tagName + " (" + elemDesc + ")";
 		}
 
-		Object elementNameObject = null;
-		if (elementNameObject == null || elementNameObject.equals(""))
-			return tagName;
-		return elementNameObject.toString();
+		return tagName;
 	}
 }

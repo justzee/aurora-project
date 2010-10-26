@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.CategoryLabel;
 import uncertain.ide.eclipse.editor.ICategory;
 import uncertain.schema.Category;
 import uncertain.schema.editor.AttributeValue;
@@ -18,9 +17,11 @@ public class PropertyHashSorter extends ViewerSorter {
 	private static final int DESCENDING = 1;
 	private int order;
 	private int column;
-	ICategory container;
-	public PropertyHashSorter(ICategory container){
+	private ICategory container;
+	private PropertyHashContentProvider contentProvider;
+	public PropertyHashSorter(ICategory container,PropertyHashContentProvider contentProvider){
 		this.container = container;
+		this.contentProvider = contentProvider;
 	}
 	
 	public void doSort(int column) {
@@ -38,7 +39,7 @@ public class PropertyHashSorter extends ViewerSorter {
 		int side = (order == ASCENDING) ? 1 : -1;
 		AttributeValue av = (AttributeValue) element;
 		if (element instanceof CategoryLabel) {
-			result = ((Integer)PropertyHashContentProvider.Categorys.get(av.getValueString())).intValue();
+			result = ((Integer)contentProvider.getCategorys().get(av.getValueString())).intValue();
 			result = result - side;
 		} else {
 			Category category = av.getAttribute().getCategoryInstance();
@@ -48,7 +49,7 @@ public class PropertyHashSorter extends ViewerSorter {
 			} else {
 				cln = LocaleMessage.getString("noncategory");
 			}
-			result = ((Integer) PropertyHashContentProvider.Categorys.get(cln)).intValue();
+			result = ((Integer)contentProvider.getCategorys().get(cln)).intValue();
 			// int result=((File) element).isDirectory() ? 0 : 1;
 		}
 		if (order == DESCENDING)
@@ -95,7 +96,6 @@ public class PropertyHashSorter extends ViewerSorter {
 		}
 
 		// use the comparator to compare the strings
-		// System.out.println(name1+":"+name2);
 		result = getComparator().compare(name1, name2);
 		if (order == DESCENDING)
 			result = -result;

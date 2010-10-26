@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
+import uncertain.ide.LocaleMessage;
+
 /**
  * This class demonstrates Lists
  */
@@ -91,13 +93,13 @@ public class ListElementsExchangeDialog {
 		RowLayout rowLayout = new RowLayout();
 		rowLayout.wrap = false;
 		rowLayout.pack = false;
-		rowLayout.justify = true;
+		rowLayout.justify = false;
 		rowLayout.type = SWT.VERTICAL;
 		rowLayout.marginLeft = 15;
-		rowLayout.marginTop = 15;
+		rowLayout.marginTop = 150;
 		rowLayout.marginRight = 15;
-		rowLayout.marginBottom = 15;
-		rowLayout.spacing = 15;
+		rowLayout.marginBottom = 150;
+		rowLayout.spacing = 5;
 		textGroup.setLayout(rowLayout);
 
 		if (leftItems != null)
@@ -135,7 +137,7 @@ public class ListElementsExchangeDialog {
 		// multi.setItems(ITEMS);
 
 		Button enter = new Button(shell, SWT.PUSH);
-		enter.setText("   OK   ");
+		enter.setText(LocaleMessage.getString("OK"));
 		gridData = new GridData(GridData.END, GridData.CENTER, false, false);
 		enter.setLayoutData(gridData);
 
@@ -214,7 +216,7 @@ public class ListElementsExchangeDialog {
 
 		String[] ITEMS = { "Alpha", "Bravo", "Charlie", "Delta", "Echo",
 				"Foxtrot", "Golf" };
-		new ListElementsExchangeDialog(shell, "标题", "左标题", "右标题", ITEMS, ITEMS)
+		new ListElementsExchangeDialog(shell, "Dialog", "left ", "right", ITEMS, ITEMS)
 				.open();
 		shell.open();
 		while (!shell.isDisposed()) {

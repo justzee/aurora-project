@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Configuration Editor Plug-in
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: uncertain_ide;singleton:=true
-Bundle-Version: 1.1.7
+Bundle-Version: 1.1.8
 Bundle-Activator: uncertain.ide.Activator
-Bundle-Vendor: Uncertain Framework
+Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
@@ -15,9 +15,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- bin/,
- lib/uncertain.jar,
- lib/aurora.jar,
  lib/classes12.jar,
  lib/c3p0-0.9.1.2.jar,
  lib/jotm-1.5.3.jar,
@@ -28,28 +25,109 @@ Bundle-ClassPath: .,
  lib/sqlserverjdbc.jar,
  lib/xapool.jar,
  lib/servlet.jar,
- lib/xerces.jar
+ lib/uncertain.jar,
+ lib/aurora.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: 
- aurora.application.util,
- aurora.bm,
- aurora.database,
- aurora.database.actions,
- aurora.database.features,
- aurora.database.service,
+ aurora.application.util;uses:="aurora.service,uncertain.composite",
+ aurora.bm;
+  uses:="aurora.service.validation,
+   aurora.database.service,
+   uncertain.datatype,
+   uncertain.ocm,
+   aurora.application,
+   aurora.events,
+   aurora.database.profile,
+   aurora.database.sql,
+   aurora.service,
+   uncertain.composite",
+ aurora.database;
+  uses:="aurora.service.validation,
+   aurora.database.service,
+   uncertain.datatype,
+   aurora.service.exception,
+   uncertain.event,
+   uncertain.logging,
+   aurora.service,
+   uncertain.core,
+   uncertain.util,
+   uncertain.composite,
+   aurora.bm",
+ aurora.database.actions;
+  uses:="aurora.database,
+   uncertain.logging,
+   aurora.database.service,
+   uncertain.core,
+   uncertain.composite,
+   uncertain.ocm,
+   uncertain.proc",
+ aurora.database.features;
+  uses:="aurora.database.profile,
+   aurora.database.sql,
+   uncertain.logging,
+   aurora.database.service,
+   uncertain.composite,
+   aurora.bm,
+   uncertain.ocm",
+ aurora.database.service;
+  uses:="uncertain.proc,
+   uncertain.ocm,
+   aurora.database.profile,
+   aurora.database.sql,
+   aurora.database,
+   javax.sql,
+   uncertain.event,
+   aurora.service,
+   uncertain.logging,
+   uncertain.core,
+   aurora.bm,
+   uncertain.composite",
  aurora.database.service.bm,
- aurora.database.sql,
- aurora.database.sql.builder,
- aurora.presentation,
- aurora.presentation.component,
- aurora.presentation.component.std,
- aurora.presentation.features,
- aurora.presentation.markup,
+ aurora.database.sql;uses:="aurora.database.profile,aurora.service.validation",
+ aurora.database.sql.builder;uses:="aurora.database.profile,aurora.database.sql",
+ aurora.presentation;
+  uses:="uncertain.util.template,
+   uncertain.proc,
+   uncertain.ocm,
+   aurora.application.features,
+   uncertain.pkg,
+   javax.servlet,
+   uncertain.event,
+   uncertain.logging,
+   uncertain.core,
+   aurora.i18n,
+   uncertain.composite,
+   javax.servlet.http",
+ aurora.presentation.component;
+  uses:="uncertain.core,
+   uncertain.util.template,
+   aurora.bm,
+   uncertain.composite,
+   aurora.presentation,
+   uncertain.ocm",
+ aurora.presentation.component.std;uses:="uncertain.composite,aurora.presentation,uncertain.ocm",
+ aurora.presentation.features;uses:="uncertain.composite,aurora.presentation,uncertain.ocm",
+ aurora.presentation.markup;uses:="aurora.presentation",
  aurora.resource.script,
- aurora.service,
- aurora.service.exception,
- aurora.service.json,
- aurora.service.validation,
- aurora.util.template
+ aurora.service;
+  uses:="uncertain.event,
+   uncertain.logging,
+   uncertain.composite,
+   uncertain.proc",
+ aurora.service.exception;
+  uses:="aurora.service.validation,
+   aurora.service,
+   uncertain.core,
+   uncertain.composite,
+   uncertain.proc,
+   uncertain.ocm",
+ aurora.service.json;
+  uses:="aurora.database,
+   aurora.service,
+   org.json,
+   javax.servlet.http",
+ aurora.service.validation;uses:="uncertain.datatype,uncertain.composite",
+ aurora.util.template;uses:="javax.servlet"
 Import-Package: org.eclipse.core.expressions,
+ org.eclipse.ui.texteditor.templates,
  org.eclipse.ui.views.contentoutline

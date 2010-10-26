@@ -74,7 +74,7 @@ public class AddFieldAction extends Action {
 			target_items[i] = (String)target_array.get(i);
 		}
 		
-		ListElementsExchangeDialog dialog = new ListElementsExchangeDialog("GetFields",source.getName(),
+		ListElementsExchangeDialog dialog = new ListElementsExchangeDialog(LocaleMessage.getString("get.fields"),source.getName(),
 				target.getName(),source_items,target_items);
 		dialog.open();
 

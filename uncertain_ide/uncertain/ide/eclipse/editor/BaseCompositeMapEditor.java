@@ -99,7 +99,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	
 	protected void pageChange(int newPageIndex) {
 		int currentPage = getCurrentPage();
-		if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
+		if(currentPage==textPageIndex){
 			try {
 				sycMainViewerPageWithTextPage();
 			} catch (Exception e) {
@@ -108,7 +108,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			}
 		}
 		super.pageChange(newPageIndex);
-		if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
+		if(currentPage==mainViewerIndex){
 			sycTextPageWithMainViewerPage();
 		} 
 	}

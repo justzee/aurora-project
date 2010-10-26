@@ -40,7 +40,6 @@ import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemovePropertyAction;
 import uncertain.ide.eclipse.celleditor.CellEditorFactory;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
-import uncertain.ide.eclipse.editor.CategoryLabel;
 import uncertain.ide.eclipse.editor.ICategoryTableViewer;
 import uncertain.ide.eclipse.editor.IViewer;
 import uncertain.ide.eclipse.editor.PropertyViewer;
@@ -117,7 +116,9 @@ public class PropertyHashViewer extends PropertyViewer implements
 		tableViewer = new TableViewer(viewForm, SWT.BORDER | SWT.FULL_SELECTION);
 		Table mTable = tableViewer.getTable();
 		tableViewer.setLabelProvider(new PropertyHashLabelProvider());
-		tableViewer.setContentProvider(new PropertyHashContentProvider(this));
+		
+		PropertyHashContentProvider contentProvider = new PropertyHashContentProvider(this);
+		tableViewer.setContentProvider(contentProvider);
 		tableViewer.setCellModifier(new PropertyHashCellModifier(this));
 		tableViewer.setColumnProperties(TABLE_COLUMN_PROPERTIES);
 		// set default editor is textCellEditor
@@ -134,7 +135,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 				.getString("description"));
 		viewForm.setContent(tableViewer.getControl());
 		addKeyListener();
-		tableViewer.setSorter(new PropertyHashSorter(this));
+		tableViewer.setSorter(new PropertyHashSorter(this,contentProvider));
 		propertycolumn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				((PropertyHashSorter) tableViewer.getSorter()).doSort(0);
@@ -162,6 +163,12 @@ public class PropertyHashViewer extends PropertyViewer implements
 
 	public void setCategory(boolean isCategory) {
 		this.isCategory = isCategory;
+		try {
+			clear();
+			setData(getInput());
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
+		}
 	}
 
 	public void refresh() {
@@ -226,7 +233,6 @@ public class PropertyHashViewer extends PropertyViewer implements
 	}
 
 	public Control getControl() {
-		// return tableViewer.getControl();
 		return sashForm;
 	}
 
@@ -258,7 +264,6 @@ public class PropertyHashViewer extends PropertyViewer implements
 			ed.dispose();
 		}
 		customerEditors.clear();
-
 	}
 
 	public void setCellEditors() {

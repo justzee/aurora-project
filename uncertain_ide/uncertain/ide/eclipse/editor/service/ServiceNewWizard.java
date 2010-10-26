@@ -1,7 +1,6 @@
 package uncertain.ide.eclipse.editor.service;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
@@ -29,6 +28,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -45,6 +46,7 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 	private ServiceNewWizardPage page;
 	private ISelection selection;
 	private CompositeMap rootElement;
+	private NewScreenTemplatesWizardPage templatesWizardPage;
 	/**
 	 * Constructor for SampleNewWizard.
 	 */
@@ -59,7 +61,9 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 
 	public void addPages() {
 		page = new ServiceNewWizardPage(selection);
+		templatesWizardPage = new NewScreenTemplatesWizardPage(); 
 		addPage(page);
+		addPage(templatesWizardPage);
 	}
 
 	/**
@@ -107,15 +111,14 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 		throws CoreException {
 		// create a sample file
 		
-		//����û�û��ָ���ļ����׺���Զ���service��׺
 		if(fileName.indexOf(".")==-1){
-			fileName = fileName+".service";
+			fileName = fileName+".screen";
 		}
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
+			throwCoreException(LocaleMessage.getString("container")+" \"" + containerName + "\" "+LocaleMessage.getString("not.exist"));
 		}
 		IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
@@ -127,7 +130,8 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 				file.create(stream, true, monitor);
 			}
 			stream.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
@@ -149,8 +153,13 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() {
-		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		String contents =xmlHint+rootElement.toXML();
+		String contents = "";
+		if(templatesWizardPage.getTemplateContent() != null && !templatesWizardPage.getTemplateContent().equals("")){
+			contents = templatesWizardPage.getTemplateContent();
+		}else{
+			String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+			contents =xmlHint+rootElement.toXML();
+		}
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 

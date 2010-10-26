@@ -1,6 +1,3 @@
-/*
- * Created on 2009-7-3
- */
 package uncertain.ide.eclipse.editor.widgets;
 
 import java.util.HashMap;
@@ -12,7 +9,6 @@ import org.eclipse.jface.viewers.Viewer;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.CategoryLabel;
 import uncertain.ide.eclipse.editor.ICategory;
 import uncertain.schema.Attribute;
 import uncertain.schema.Category;
@@ -22,21 +18,14 @@ import uncertain.schema.editor.CompositeMapEditor;
 
 public class PropertyHashContentProvider implements IStructuredContentProvider {
 
-	/**
-	 * @todo add attributes cache // Map<QName, Attribute[]>
-	 * 
-	 *       /**
-	 * @param schemaManager
-	 */
-	public static HashMap Categorys = new HashMap();
+	private HashMap Categorys = new HashMap();
+	
 	ICategory mViewer;
 
 	public PropertyHashContentProvider(ICategory mViewer) {
 		super();
 		this.mViewer = mViewer;
 	}
-
-	// ISchemaManager mSchemaManager;
 
 	public Object[] getElements(Object inputElement) {
 		Categorys.clear();
@@ -72,7 +61,6 @@ public class PropertyHashContentProvider implements IStructuredContentProvider {
 			newAttrv[i] = attrv;
 			i++;
 		}
-
 		return newAttrv;
 	}
 
@@ -82,6 +70,13 @@ public class PropertyHashContentProvider implements IStructuredContentProvider {
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 
+	}
+	public HashMap getCategorys() {
+		return Categorys;
+	}
+
+	public void setCategorys(HashMap categorys) {
+		Categorys = categorys;
 	}
 
 }

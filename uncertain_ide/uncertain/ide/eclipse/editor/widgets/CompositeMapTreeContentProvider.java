@@ -1,6 +1,3 @@
-/*
- * Created on 2009-7-3
- */
 package uncertain.ide.eclipse.editor.widgets;
 
 import java.util.Iterator;
@@ -33,9 +30,9 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		CompositeMap map = (CompositeMap) parentElement;
 		List childs = new LinkedList(map.getChildsNotNull());
 
-//		System.out.println(map.toXML());
 		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (element != null) {
+			//列示所有数组子节点
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
 				Iterator ite = arrays.iterator();
@@ -45,10 +42,10 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 					CompositeMap newCM = new CompositeMap(map.getPrefix(),
 							map.getNamespaceURI(), name);
 					QualifiedName nm = newCM.getQName();
+					//如果发现不存在此数组节点，则在显示元素上增加此节点，但在核心数据结构中并不添加
 					if(CompositeUtil.findChild(map, nm)==null){
 						newCM.setParent(map);
 						childs.add(newCM);
-//						System.out.println(map.toXML());
 					}
 				}
 			}
@@ -56,19 +53,15 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		if (childs == null)
 			return null;
 		else{
-//			Collections.sort(childs);   
 			return childs.toArray();
 		}
 	}
 
 	public Object getParent(Object element) {
-//		System.out.println("getParent...");
 		if (element == null)
 			return null;
 		CompositeMap map = (CompositeMap) element;
-//		return map.getParent();
 		CompositeMap parent= map.getParent();
-//		System.out.println("parent:"+parent.toXML());
 		return parent;
 	}
 
@@ -94,17 +87,13 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (inputElement == null)
 			return null;
-
+//		return new Object[] { rootElement };
+		
 		CompositeMap map = (CompositeMap) inputElement;
-//		if (map.getChild(rootElement) != null && !map.equals(rootElement)) {
-//			return new Object[] { rootElement };
-//		}
 		if (map.equals(rootElement.getParent())&& !map.equals(rootElement)) {
 			return new Object[] { rootElement };
 		}
 		List childs = new LinkedList(map.getChildsNotNull());
-
-//		System.out.println(map.toXML());
 		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (element != null) {
 			List arrays = element.getAllArrays();
@@ -120,7 +109,6 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 					if(CompositeUtil.findChild(map, nm)==null){
 						newCM.setParent(map);
 						childs.add(newCM);
-//						System.out.println(map.toXML());
 					}
 				}
 			}
@@ -128,7 +116,6 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		if (childs == null)
 			return null;
 		else{
-//			Collections.sort(childs);   
 			return childs.toArray();
 		}
 	}

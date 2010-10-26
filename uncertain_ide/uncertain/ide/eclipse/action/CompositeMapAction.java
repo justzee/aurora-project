@@ -18,6 +18,7 @@ import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.schema.Array;
+import uncertain.schema.Attribute;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
@@ -46,10 +47,10 @@ public class CompositeMapAction {
 
 	}
 
-	public static String getElementFullName(CompositeMap cm, QualifiedName qName) {
+	public static String getContextFullName(CompositeMap context, QualifiedName qn) {
 		String text = null;
-		String prefix = getPrefix(cm, qName);
-		String localName = qName.getLocalName();
+		String prefix = getContextPrefix(context, qn);
+		String localName = qn.getLocalName();
 		if (prefix != null)
 			text = prefix + ":" + localName;
 		else
@@ -57,32 +58,43 @@ public class CompositeMapAction {
 		return text;
 	}
 
-	public static String getPrefix(CompositeMap cm, QualifiedName qName) {
-		if (qName == null) {
+	public static String getContextPrefix(CompositeMap context, QualifiedName qn) {
+		if(qn == null)
+			return null;
+		String prefix = getContextPrefix(context,qn.getNameSpace());
+		if(prefix == null){
+			prefix = qn.getPrefix();
+		}
+		return prefix;
+	}
+	public static String getContextPrefix(CompositeMap context, String uri) {
+		if (uri == null || context == null){
 			return null;
 		}
-		if (cm == null) {
-			return qName.getPrefix();
-		}
-		Map prefix_mapping = CompositeUtil.getPrefixMapping(cm);
-		String getNameSpace = qName.getNameSpace();
-		Object uri_ot = prefix_mapping.get(getNameSpace);
+		Map prefix_mapping = CompositeUtil.getPrefixMapping(context);
+		Object uri_ot = prefix_mapping.get(uri);
 		if (uri_ot != null)
 			return (String) uri_ot;
 		else
-			return qName.getPrefix();
+			return null;
 	}
 
+	public static CompositeMap addElement(CompositeMap parent, QualifiedName childQN) {
+		String prefix = getContextPrefix(parent, childQN);
+		return addElement(parent,prefix,childQN.getNameSpace(),childQN.getLocalName());
+	}
+	
 	public static CompositeMap addElement(CompositeMap parent, String prefix,
 			String uri, String name) {
-
 		CompositeMap child = new CompositeMap(prefix, uri, name);
 		parent.addChild(child);
 		addArrayNode(parent);
 		return child;
 	}
+
 	public static void addArrayNode(CompositeMap parent) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(
+				parent);
 		if (element != null && element.isArray()) {
 			QualifiedName qName = parent.getQName();
 			if (CompositeUtil.findChild(parent.getParent(), qName) == null) {
@@ -92,7 +104,8 @@ public class CompositeMapAction {
 	}
 
 	public static void addElementArray(CompositeMap parentCM) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCM);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(
+				parentCM);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
@@ -107,29 +120,36 @@ public class CompositeMapAction {
 			}
 		}
 	}
-	public static List getAvailableChildElements(Element element,
-			CompositeMap selectedCM) {
+
+	public static List getAvailableChildElements(CompositeMap parent) {
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
 		if (element == null)
 			return null;
 		List childElements = new LinkedList();
+		// 判断及节点是否是数组
 		if (element.isArray()) {
 			IType type = element.getElementType();
-			if (type instanceof ComplexType){
-				childElements.addAll(LoadSchemaManager.getSchemaManager().getElementsOfType(type));
-			}	
-			if(type instanceof Element){
-				Element arrayType = LoadSchemaManager.getSchemaManager().getElement(
-						type.getQName());
+			// 如果数组成员类型是元素
+			if (type instanceof Element) {
+				Element arrayType = LoadSchemaManager.getSchemaManager()
+						.getElement(type.getQName());
 				childElements.add(arrayType);
+			}// 判断数组成员类型是否是基类
+			else if (type instanceof ComplexType) {
+				childElements.addAll(LoadSchemaManager.getSchemaManager()
+						.getElementsOfType(type));
 			}
 			return childElements;
 		}
-		childElements = getChildElements(element,selectedCM);
+		// 如果节点是元素
+		childElements = getChildElements(parent);
 		return childElements;
 	}
 
-	private static List getChildElements(Element element, CompositeMap selectedCM) {
-		Set schemaChilds = getSchemaChilds(element,LoadSchemaManager.getSchemaManager());
+	private static List getChildElements(CompositeMap parent) {
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
+		Set schemaChilds = getSchemaChilds(element, LoadSchemaManager
+				.getSchemaManager());
 		List availableChilds = new ArrayList();
 
 		if (schemaChilds != null) {
@@ -139,13 +159,13 @@ public class CompositeMapAction {
 				if (!(object instanceof Element))
 					continue;
 				Element ele = (Element) object;
-				final QualifiedName qName = ele.getQName();
+				final QualifiedName childQN = ele.getQName();
 				if (ele.getMaxOccurs() == null) {
 					availableChilds.add(ele);
 					continue;
 				}
 				int maxOccurs = Integer.valueOf(ele.getMaxOccurs()).intValue();
-				int nowOccurs = getCountOfChildElement(selectedCM, qName);
+				int nowOccurs = getCountOfChildElement(parent, childQN);
 				if (nowOccurs < maxOccurs) {
 					availableChilds.add(ele);
 				}
@@ -153,91 +173,95 @@ public class CompositeMapAction {
 		}
 		return availableChilds;
 	}
-	public static Set getSchemaChilds(Element element,SchemaManager manager){
+
+	public static Set getSchemaChilds(Element element, SchemaManager manager) {
 		Set childs = new HashSet();
-		
 		Set childElements = element.getChilds();
-		for(Iterator cit = childElements.iterator(); cit!=null && cit.hasNext();){
+		if(childElements == null){
+			return childs;
+		}
+		for (Iterator cit = childElements.iterator(); cit != null
+				&& cit.hasNext();) {
 			Object node = cit.next();
-			if(!(node instanceof ComplexType))
+			if (!(node instanceof ComplexType))
 				continue;
-			ComplexType context = (ComplexType)node;
+			ComplexType context = (ComplexType) node;
 			ComplexType original = manager.getComplexType(context.getQName());
 			if (original instanceof Element) {
 				Element new_name = (Element) context;
 				childs.add(new_name);
-			}
-			else{
+			} else {
 				childs.addAll(manager.getElementsOfType(original));
 			}
 		}
 		List complexTypes = element.getAllExtendedTypes();
-		if(complexTypes == null)
+		if (complexTypes == null)
 			return childs;
-		for(Iterator cit = complexTypes.iterator(); cit!=null && cit.hasNext();){
-			ComplexType ct = (ComplexType)cit.next();
-//			System.out.println("ExtendedTypes:"+ct.getLocalName());
+		for (Iterator cit = complexTypes.iterator(); cit != null
+				&& cit.hasNext();) {
+			ComplexType ct = (ComplexType) cit.next();
 			if (ct instanceof Element) {
 				Element new_name = (Element) ct;
-				childs.addAll(getSchemaChilds(new_name,manager));
+				childs.addAll(getSchemaChilds(new_name, manager));
 			}
-//			else{
-//				complexTypes.addAll(manager.getElementsOfType(ct));
-//			}
-				
 		}
 		return childs;
 	}
 
-	public static int getCountOfChildElement(CompositeMap cm, QualifiedName qName) {
-		List childs = cm.getChildsNotNull();
+	public static int getCountOfChildElement(CompositeMap parent,
+			QualifiedName childQN) {
+		List childs = parent.getChildsNotNull();
 		int count = 0;
 		Iterator it = childs.iterator();
 		for (; it.hasNext();) {
 			CompositeMap node = (CompositeMap) it.next();
-			if (node.getQName().equals(qName)) {
+			if (node.getQName().equals(childQN)) {
 				count++;
 			}
 		}
 		return count;
 	}
 
-	public static boolean validNextNodeLegalWithAction(CompositeMap element,
+	public static boolean validNextNodeLegalWithAction(CompositeMap parent,
 			CompositeMap child) {
-		if (!validNextNodeLegal(element, child)) {
+		if (!validNextNodeLegal(parent, child)) {
 			String warning = "";
-			if (element == null) {
+			if (parent == null) {
 				warning = LocaleMessage.getString("parent.element.is.null");
-			} else if (element == null) {
+			} else if (child == null) {
 				warning = LocaleMessage.getString("child.element.is.null");
 			} else {
-				warning = " " + element.getQName().getLocalName() + " "+LocaleMessage.getString("undefined")
-						 +child.getQName().getLocalName() + " "+LocaleMessage.getString("child.element");
+				warning = " " + parent.getQName().getLocalName() + " "
+						+ LocaleMessage.getString("undefined")
+						+ child.getQName().getLocalName() + " "
+						+ LocaleMessage.getString("child.element");
 			}
-			CustomDialog.showWarningMessageBox(null, warning);
+			CustomDialog.showWarningMessageBox(warning);
 			return false;
 		}
 		return true;
 	}
 
-	public static boolean validNextNodeLegal(CompositeMap element,
+	public static boolean validNextNodeLegal(CompositeMap parent,
 			CompositeMap child) {
-		if (element == null || child == null)
+		if (parent == null || child == null)
 			return false;
-		Element em = LoadSchemaManager.getSchemaManager().getElement(element);
-		return validNextNodeLegal(em, child.getQName());
+		Element parentElement = LoadSchemaManager.getSchemaManager().getElement(parent);
+		return validNextNodeLegal(parentElement, child.getQName());
 	}
 
-	public static boolean validNextNodeLegal(Element element, QualifiedName child) {
-		if (element == null || child == null)
+	public static boolean validNextNodeLegal(Element parent,
+			QualifiedName childQN) {
+		if (parent == null || childQN == null)
 			return false;
-		if (element.isArray()) {
-			QualifiedName array = element.getElementType().getQName();
-			if (array.equals(child)) {
+		if (parent.isArray()) {
+			QualifiedName array = parent.getElementType().getQName();
+			if (childQN.equals(array)) {
 				return true;
 			}
 		}
-		List childElements = element.getChildElements(LoadSchemaManager.getSchemaManager());
+		List childElements = parent.getChildElements(LoadSchemaManager
+				.getSchemaManager());
 		if (childElements != null) {
 			Iterator ite = childElements.iterator();
 			while (ite.hasNext()) {
@@ -245,12 +269,13 @@ public class CompositeMapAction {
 				if (!(object instanceof Element))
 					continue;
 				Element ele = (Element) object;
-				if (child.equals(ele.getQName()))
+				if (childQN.equals(ele.getQName()))
 					return true;
 			}
 		}
 		return false;
 	}
+
 	// TODO 未使用
 	public Set getMaxOcuss(Element element, SchemaManager manager) {
 		Set allChildElements = new HashSet();
@@ -274,28 +299,24 @@ public class CompositeMapAction {
 		for (Iterator cit = complexTypes.iterator(); cit != null
 				&& cit.hasNext();) {
 			ComplexType ct = (ComplexType) cit.next();
-			// System.out.println("ExtendedTypes:"+ct.getLocalName());
 			if (ct instanceof Element) {
 				Element new_name = (Element) ct;
 				allChildElements.addAll(getMaxOcuss(new_name, manager));
 			}
-			// else{
-			// complexTypes.addAll(manager.getElementsOfType(ct));
-			// }
-
 		}
 		return allChildElements;
 	}
 
-	public static Namespace getQualifiedName(CompositeMap root,String prefix) throws Exception{
-		 Map namespace_mapping = CompositeUtil.getPrefixMapping(root);
-		 Schema schema = new Schema();
-		 Namespace[] ns = getNameSpaces(namespace_mapping);
-		 schema.addNameSpaces(ns);
-		 Namespace nameSpace = schema.getNamespace(prefix);
-		 return nameSpace;
+	public static Namespace getQualifiedName(CompositeMap root, String prefix)
+			throws Exception {
+		Map namespace_mapping = CompositeUtil.getPrefixMapping(root);
+		Schema schema = new Schema();
+		Namespace[] ns = getNameSpaces(namespace_mapping);
+		schema.addNameSpaces(ns);
+		Namespace nameSpace = schema.getNamespace(prefix);
+		return nameSpace;
 	}
-	
+
 	private static Namespace[] getNameSpaces(Map namespaceToPrefix) {
 		if (namespaceToPrefix == null)
 			return null;
@@ -313,7 +334,52 @@ public class CompositeMapAction {
 		}
 		return namespaces;
 	}
-	public static void main(String[] args) {
+	public static void collectAttribueValues(Set set, String attribueName,
+			CompositeMap root) {
+		String attribueValue = root.getString(attribueName);
+		if (attribueValue != null) {
+			set.add(attribueValue);
+		}
+		if (root.getChildsNotNull().size() > 0) {
+			Iterator it = root.getChildsNotNull().iterator();
+			for (; it.hasNext();) {
+				CompositeMap child = (CompositeMap) it.next();
+				collectAttribueValues(set, attribueName, child);
+			}
+		}
 	}
-
+	public static List getArrayAttrs(CompositeMap arrayData) throws IllegalArgumentException{
+		if(arrayData == null)
+			throw new IllegalArgumentException("CompositeMap data can not be null!");
+		Element element = LoadSchemaManager.getSchemaManager().getElement(arrayData);
+		if (element == null)
+			throw new IllegalArgumentException("Can't get element schema from "
+					+ arrayData.toXML());
+		if (!(element instanceof Array))
+			throw new IllegalArgumentException("Type " + element.getQName()
+					+ " is not array");
+		Array array = (Array) element;
+		IType type = array.getElementType();
+		if (type == null)
+			throw new IllegalArgumentException("Can't get array type from "
+					+ array.getQName());
+		if (!(type instanceof ComplexType))
+			throw new IllegalArgumentException("Type " + type.getQName()
+					+ " is not ComplexType");
+		ComplexType type_element = (ComplexType) type;
+		List attrib_list = type_element.getAllAttributes();
+		return attrib_list;
+	}
+	public static String[] getArrayAttrNames(CompositeMap arrayData) throws IllegalArgumentException{
+		List attrib_list = getArrayAttrs(arrayData);
+		if(attrib_list == null)
+			return null;
+		String[] column_index = new String[attrib_list.size()];
+		int id = 0;
+		for (Iterator it = attrib_list.iterator(); it.hasNext();) {
+			Attribute attrib = (Attribute) it.next();
+			column_index[id++] = attrib.getLocalName();
+		}
+		return column_index;
+	}
 }

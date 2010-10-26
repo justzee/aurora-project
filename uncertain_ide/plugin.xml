@@ -5,42 +5,42 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.eclipse.wizards.UncertainProjectWizard"
+            class="uncertain.ide.eclipse.wizards.ProjectWizard"
             icon="icons/uncertain.gif"
             id="uncertain.ide.eclipse.editor.ProjectWizard"
-            name="Uncertain Project"
+            name="%aurora.project"
             project="true"/>
       <category
             id="uncertain_ide"
-            name="Uncertain Wizards">
+            name="%category.name">
       </category>
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.editor.service.ServiceNewWizard"
             icon="icons/service.gif"
             id="uncertain_ide.wizards.SampleNewWizard"
-            name="Service File">
+            name="%wizard.screen.file">
       </wizard>
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.editor.sxsd.SxsdNewWizard"
             icon="icons/sxsd.gif"
             id="uncertain_ide.wizards.SxsdNewWizard"
-            name="Simple XSD File">
+            name="%wizard.sxsd.file">
       </wizard>
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.editor.bm.BmNewWizard"
             icon="icons/bm.gif"
             id="uncertain.ide.eclipse.wizards.BmNewWizard"
-            name="BussinessModel File From DataBase">
+            name="%wizard.create.bm.from.database">
       </wizard>
       <wizard
             category="uncertain_ide"
             class="uncertain.ide.eclipse.editor.bm.BMNewWizardFromSQL"
             icon="icons/sql.gif"
             id="uncertain.ide.eclipse.wizards.BmNewWizard"
-            name="BussinessModel File From SQL">
+            name="%wizard.create.bm.from.sql">
       </wizard>
    </extension>
    <extension
@@ -52,14 +52,14 @@
             filenames="*.xml,*.service,*.screen"
             icon="icons/service.gif"
             id="uncertain.ide.eclipse.editor.ServiceEditor"
-            name="Service Editor"/>
+            name="%editor.screen"/>
       <editor
             class="uncertain.ide.eclipse.editor.sxsd.SxsdEditor"
             default="false"
             filenames="*.sxsd"
             icon="icons/sxsd.gif"
             id="uncertain.ide.eclipse.editor.SxsdEditor"
-            name="Sxsd Editor">
+            name="%editor.sxsd">
       </editor>
       <editor
             class="uncertain.ide.eclipse.editor.bm.BussinessModelEditor"
@@ -67,27 +67,33 @@
             filenames="*.bm"
             icon="icons/bm.gif"
             id="uncertain.ide.eclipse.editor.bm.BussinessModelEditor"
-            name="BussinessModel Editor">
+            name="%editor.bm">
       </editor>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            class="uncertain.ide.eclipse.preferencepages.SxsdDirectoryPreferencePage"
+            class="uncertain.ide.eclipse.preferencepages.SxsdDirPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
-            name="Builtin-Package Paths">
+            name="%page.builtin.package">
       </page>
       <page
             category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
             class="uncertain.ide.eclipse.preferencepages.BrowserPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.BrowserPreferencePage"
-            name="Service Preview Config">
+            name="%page.screen.preview">
       </page>
       <page
-            class="uncertain.ide.eclipse.preferencepages.RootPreferencePage"
+            class="uncertain.ide.eclipse.preferencepages.AuroraPreferencePage"
             id="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            name="Uncertain">
+            name="%page.root">
+      </page>
+      <page
+            category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
+            class="uncertain.ide.eclipse.preferencepages.AuroraTemplatePreferencePage"
+            id="uncertain.ide.eclipse.preferencePage.TemplatesPage"
+            name="%page.templates">
       </page>
    </extension>
    <extension
@@ -100,7 +106,7 @@
                class="uncertain.ide.eclipse.action.SxsdPackageValidAction"
                icon="icons/sxsd.gif"
                id="uncertain.ide.eclipse.action.SxsdPackageValidAction"
-               label="Validate Builtin-Packages">
+               label="%action.validate.builtin.package">
          </action>
          <enablement>
             <test
@@ -119,5 +125,18 @@
    class ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTester" 
    id ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTeste" >   
     </propertyTester >       
-    </extension > 
+    </extension >
+       <extension
+             point="org.eclipse.ui.editors.templates">
+          <contextType
+                class="uncertain.ide.eclipse.preferencepages.AuroraTemplateContextType"
+                id="uncertain_ide.new_screen"
+                name="%contextType.new.screen">
+          </contextType>
+          <include
+                file="templates/default-templates.xml"
+                translations="templates/default-templates.properties">
+          </include>
+          
+       </extension> 
 </plugin>
