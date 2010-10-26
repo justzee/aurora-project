@@ -5,28 +5,27 @@ package uncertain.ide.eclipse.editor.widgets;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
-import uncertain.schema.Attribute;
 
-public class PropertyGridLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+public class PropertyGridLabelProvider extends BaseLabelProvider implements IGridLabelProvider {
 
     /**
      * @param attribArray
      */
 	int nodeIndex;
 	int nodeCount;
-	Object[]     mAttribArray;
-	private PropertyGridCellModifier mCellModifier;
+	String[]     gridPropties;
+	private GridViewer viewer;
 	
-	public PropertyGridLabelProvider(Object[] attribArray,PropertyGridCellModifier cellModifier) {
+	public PropertyGridLabelProvider(String[] gridPropties,GridViewer viewer) {
 		super();
-		this.mAttribArray = attribArray;
-		this.mCellModifier = cellModifier;
+		this.gridPropties = gridPropties;
+		this.viewer = viewer;
 	}
 
     
@@ -48,21 +47,17 @@ public class PropertyGridLabelProvider extends BaseLabelProvider implements ITab
     	if(columnIndex == 0){
     		return null;
     	}
-        if(mAttribArray==null || mAttribArray.length==0)
+        if(gridPropties==null || gridPropties.length==0)
         	return null;
-        Attribute attrib = (Attribute)mAttribArray[columnIndex-1];
         
-        Object cellEditor_object = mCellModifier.getCellEditor(attrib.getLocalName());
+        ICellEditor cellEditor = viewer.getCellEditor(gridPropties[columnIndex-1]);
         
-		if(cellEditor_object != null && cellEditor_object instanceof CheckboxCellEditor){
+		if(cellEditor != null && cellEditor instanceof CheckboxCellEditor){
 			CompositeMap data = (CompositeMap)element;
-			String returnValue = data.getString(attrib.getLocalName());
-//			ICellEditor cellEditor= (ICellEditor)cellEditor_object;
-//			String value = cellEditor.getSelection();
-//			if(value != null && value.equals("true"))
+			String returnValue = data.getString(gridPropties[columnIndex-1]);
 			if(returnValue != null && returnValue.equals("true"))	
-				return Activator.getImageDescriptor("icons/checked.gif").createImage();
-			return Activator.getImageDescriptor("icons/unchecked.gif").createImage();
+				return Activator.getImageDescriptor(LocaleMessage.getString("checked.icon")).createImage();
+			return Activator.getImageDescriptor(LocaleMessage.getString("unchecked.icon")).createImage();
 		}
 
         return null;
@@ -78,18 +73,20 @@ public class PropertyGridLabelProvider extends BaseLabelProvider implements ITab
     	}
     	//the first column is sequence.
     	if(columnIndex == 0){
+    		if((viewer.getGridStyle()&IGridViewer.NoSeqColumn)!=0){
+    			return ""; 
+    		}
     		return String.valueOf(++nodeIndex);
     	}
     	
-        if(mAttribArray==null || mAttribArray.length==0)
+        if(gridPropties==null || gridPropties.length==0)
         	return null;
-        Attribute attrib = (Attribute)mAttribArray[columnIndex-1];
+        String  attrName = gridPropties[columnIndex-1];
         
-        Object cellEditor_object = mCellModifier.getCellEditor(attrib.getLocalName());
-        String returnValue = data.getString(attrib.getLocalName());
+        ICellEditor cellEditor = viewer.getCellEditor(attrName);
+        String returnValue = data.getString(attrName);
         
-		if(cellEditor_object != null){
-			ICellEditor cellEditor= (ICellEditor)cellEditor_object;
+		if(cellEditor != null){
 			if(returnValue !=null)
 				cellEditor.SetSelection(returnValue);
 		}

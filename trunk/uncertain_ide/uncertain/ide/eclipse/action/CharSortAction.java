@@ -25,7 +25,6 @@ public class CharSortAction extends Action {
 
 	public void run() {
 		viewer.setCategory(false);
-		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
 		return Activator.getImageDescriptor(LocaleMessage.getString("asc.icon"));

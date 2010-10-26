@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:model xmlns:ns1="http://www.aurora-framework.org/schema/bm" baseTable="table1" alias="c">
+    <ns1:fields>
+        <ns1:field dataType="java.lang.String" name="pk_id"/>
+        <ns1:field forDisplay="false" name="name"/>
+        <ns1:field name="description"/>
+        <ns1:ref-field sourceField="code1" relationName="fk_code" name="code1_name"/>
+        <ns1:ref-field sourceField="code2" relationName="fk_code" name="code2_name"/>
+        <ns1:field name="code_id"/>
+        <ns1:ref-field sourceField="code3" relationName="fk_code" name="code3_name"/>
+        <ns1:field name="desc_id"/>
+        <ns1:field name="desc2_id"/>
+        <ns1:ref-field sourceField="desc2" relationName="fk_desc" name="desc2_name"/>
+        <ns1:ref-field sourceField="desc3" relationName="fk_desc" name="desc3_name"/>
+        <ns1:ref-field sourceField="desc1" relationName="fk_desc2" name="desc1_name"/>
+        <ns1:field name="long_desc_id"/>
+        <ns1:ref-field sourceField="desc1" relationName="fk_desc3" name="long_desc_name"/>
+    </ns1:fields>
+    <ns1:relations>
+        <ns1:relation refAlias="cd" joinType="LEFT OUTER" refModel="aurora.testcase.model.join_test2" name="fk_code">
+            <ns1:reference foreignField="record_id" localField="code_id"/>
+        </ns1:relation>
+        <ns1:relation refAlias="dt" joinType="RIGHT OUTER" refModel="aurora.testcase.model.join_test3" name="fk_desc">
+            <ns1:reference foreignField="record_id" localField="desc_id"/>
+        </ns1:relation>
+        <ns1:relation joinType="FULL OUTER" refModel="aurora.testcase.model.join_test3" name="fk_desc2">
+            <ns1:reference foreignField="record_id" localField="desc_id"/>
+        </ns1:relation>
+        <ns1:relation joinType="INNER" refModel="aurora.testcase.model.join_test3" name="fk_desc3">
+            <ns1:reference foreignField="record_id" localField="long_desc_id"/>
+        </ns1:relation>
+    </ns1:relations>
+    <ns1:primary-key>
+        <field name="pk_id"/>
+    </ns1:primary-key>
+    <ns1:data-filters>
+        <ns1:data-filter expression="c.name not like &apos;D%&apos;" name="ValidItems"/>
+    </ns1:data-filters>
+</ns1:model>

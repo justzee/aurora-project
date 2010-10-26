@@ -17,11 +17,12 @@ import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.ide.Common;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.IViewer;
 
 public class TextPage extends TextEditor implements IViewer {
 	protected static final String textPageId = "textPage";
-	public static final String textPageTitle = "Source File";
+	public static final String textPageTitle = LocaleMessage.getString("source.file");
 	private boolean syc = false;
 	private ColorManager colorManager;
 	private FormEditor editor;

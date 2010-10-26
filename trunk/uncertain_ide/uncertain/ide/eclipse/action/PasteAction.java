@@ -5,12 +5,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.CompositeMapViewer;
+import uncertain.ide.eclipse.editor.AbstractCMViewer;
 
 public class PasteAction extends Action {
-	CompositeMapViewer viewer;
+	AbstractCMViewer viewer;
 
-	public PasteAction(CompositeMapViewer viewer, ImageDescriptor imageDescriptor,
+	public PasteAction(AbstractCMViewer viewer, ImageDescriptor imageDescriptor,
 			String text) {
 		this.setHoverImageDescriptor(getImageDescriptor());
 		if (imageDescriptor != null)

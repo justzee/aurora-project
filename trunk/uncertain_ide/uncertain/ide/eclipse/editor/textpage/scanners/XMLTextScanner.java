@@ -42,17 +42,6 @@ public class XMLTextScanner extends RuleBasedScanner
 	public IToken nextToken()
 	{
 		IToken token = super.nextToken();
-//		System.out.println("xxx:"+((TextAttribute)token.getData()).);
-//		while(currentToken == CDATA_START)
-//		{
-//	
-////			this.currentToken = CDATA_TEXT;
-//			token = super.nextToken();
-//			if(token == CDATA_END){
-//				this.currentToken = CDATA_END;
-//				return CDATA_TEXT;
-//			}
-//		}
 		if (currentToken == CDATA_START || currentToken == CDATA_TEXT && token != CDATA_END)
 		{
 			this.currentToken = CDATA_TEXT;

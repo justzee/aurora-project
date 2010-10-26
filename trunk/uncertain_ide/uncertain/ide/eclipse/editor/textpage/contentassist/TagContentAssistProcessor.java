@@ -88,7 +88,7 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 		String name = "xmlns:"+qualifiedName.getPrefix()+"=\"\"";
 		result[0] = new CompletionProposal(name,
 				currentText.documentOffset, 0,
-				name.length()-1, null, name+"  -  NameSpace of this Element", null, "Please define the namespace first.");
+				name.length()-1, null, name+"  - "+LocaleMessage.getString("namespace.of.this.element"), null, LocaleMessage.getString("please.define.the.namespace.first"));
 		return result;
 	}
 	public Namespace[] getNameSpaces(Map namespaceToPrefix) {
@@ -135,8 +135,7 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 			String partitionText = document.get(partitionOffset,
 					partitionLength);
 
-//			System.out.println("Partition text: "
-//					+ document.get(partitionOffset, region.getLength()));
+
 			char c = partitionText.charAt(index);
 
 			if (Character.isWhitespace(c)
@@ -203,7 +202,6 @@ private QualifiedName getElementQualifiedName(int documentOffset,
 						prefix = splits[0];
 						name = splits[1];
 						uri =  getElementUrl(document,scanner,splits[0]);
-//						System.out.println("uri:"+uri);
 					}else{
 						name = tagName;
 					}

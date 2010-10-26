@@ -1,7 +1,5 @@
 package uncertain.ide.eclipse.editor.service;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -22,7 +20,6 @@ import org.eclipse.swt.browser.VisibilityWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -40,14 +37,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-
 public class BrowserShell {
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("uncertain");
 	int index;
 	boolean busy;
-	Image images[];
 	Image icon = null;
 	boolean title = false;
 	Composite parent;
@@ -59,12 +52,6 @@ public class BrowserShell {
 	Label status;
 	ProgressBar progressBar;
 	SWTError error = null;
-
-	static final String[] imageLocations = { "icons/browser/eclipse01.bmp", "icons/browser/eclipse02.bmp",
-		"icons/browser/eclipse03.bmp", "icons/browser/eclipse04.bmp", "icons/browser/eclipse05.bmp", "icons/browser/eclipse06.bmp",
-		"icons/browser/eclipse07.bmp", "icons/browser/eclipse08.bmp", "icons/browser/eclipse09.bmp", "icons/browser/eclipse10.bmp",
-		"icons/browser/eclipse11.bmp", "icons/browser/eclipse12.bmp", };
-	static final String iconLocation = "icons/browser/document.gif";
 		
 	public BrowserShell(Composite parent, boolean top) {
 		this.parent = parent;
@@ -79,7 +66,6 @@ public class BrowserShell {
 			parent.layout(true);
 			return;
 		}
-		initResources();
 		final Display display = parent.getDisplay();
 		browser.setData("org.eclipse.swt.examples.browserexample.BrowserApplication", this);
 		browser.addOpenWindowListener(new OpenWindowListener() {
@@ -120,7 +106,6 @@ public class BrowserShell {
 	 * instance of the BrowserApplication.
 	 */	
 	public void dispose() {
-		freeResources();
 	}
 	
 	/**
@@ -196,13 +181,6 @@ public class BrowserShell {
 			data.right = new FormAttachment(100, -5);
 			canvas.setLayoutData(data);
 			
-			final Rectangle rect = images[0].getBounds();
-			canvas.addListener(SWT.Paint, new Listener() {
-				public void handleEvent(Event e) {
-					Point pt = ((Canvas)e.widget).getSize();
-					e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);			
-				}
-			});
 			canvas.addListener(SWT.MouseDown, new Listener() {
 				public void handleEvent(Event e) {
 					browser.setUrl(getResourceString("Startup"));
@@ -214,8 +192,6 @@ public class BrowserShell {
 				public void run() {
 					if (canvas.isDisposed()) return;
 					if (busy) {
-						index++;
-						if (index == images.length) index = 0;
 						canvas.redraw();
 					}
 					display.timerExec(150, this);
@@ -277,7 +253,10 @@ public class BrowserShell {
 				public void changed(ProgressEvent event) {
 					if (event.total == 0) return;                            
 					int ratio = event.current * 100 / event.total;
-					if (progressBar != null) progressBar.setSelection(ratio);
+					if (progressBar != null) {
+						progressBar.setSelection(ratio);
+						progressBar.setVisible(true);
+					}
 					busy = event.current != event.total;
 					if (!busy) {
 						index = 0;
@@ -285,7 +264,10 @@ public class BrowserShell {
 					}
 				}
 				public void completed(ProgressEvent event) {
-					if (progressBar != null) progressBar.setSelection(0);
+					if (progressBar != null) {
+						progressBar.setSelection(0);
+						progressBar.setVisible(false);
+					}
 					busy = false;
 					index = 0;
 					if (canvas != null) {
@@ -326,61 +308,20 @@ public class BrowserShell {
 		else parent.setFocus();
 	}
 	
-	/**
-	 * Frees the resources
-	 */
-	void freeResources() {
-		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
-				if (image != null) image.dispose();
-			}
-			images = null;
-		}
-	}
 	
-	/**
-	 * Loads the resources
-	 */
-	void initResources() {
-		if (resourceBundle != null) {
-			try {
-				if (images == null) {
-					images = new Image[imageLocations.length];
-					for (int i = 0; i < imageLocations.length; ++i) {
-						images[i]=Activator.getImageDescriptor(imageLocations[i]).createImage();
-					}
-				}
-				return;
-			} catch (Throwable t) {
-			}
-		}
-		String error = (resourceBundle != null) ? getResourceString("error.CouldNotLoadResources") : "Unable to load resources";
-		freeResources();
-		throw new RuntimeException(error);
-	}
-	
+
 	public static void main(String [] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText(getResourceString("window.title"));
-		InputStream stream = BrowserPage.class.getResourceAsStream(iconLocation);
-		Image icon = new Image(display, stream);
-		shell.setImage(icon);
-		try {
-			stream.close();
-		} catch (IOException e) {
-			CustomDialog.showExceptionMessageBox(e);
-		}
+
 		BrowserShell app = new BrowserShell(shell, true);
-		app.setShellDecoration(icon, true);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		icon.dispose();
 		app.dispose();
 		display.dispose();
 	}

@@ -9,18 +9,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.schema.Attribute;
-import uncertain.schema.Editor;
 
 /**
  * @author linjinxiao
@@ -28,33 +25,23 @@ import uncertain.schema.Editor;
  */
 public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 
-	Button button;
+	private Button button;
 	private boolean hasSelection = false;
-	protected Editor editor;
-	protected ITableViewer tableViewer;
-	protected CompositeMap record;
-	protected Attribute property;
-	protected TableItem item;
-	private boolean required = false;
-	/**
-	 * @param tableViewer
-	 * @param property
-	 * @param record it can be null in grid table
-	 * @param item it can be null in grid table
-	 */
-	public BoolCellEditor(ITableViewer tableViewer, Attribute property,CompositeMap record,TableItem item) {
-		this.tableViewer = tableViewer;
-		this.record = record;
-		this.property = property;
-		this.item = item;
+
+	protected CellProperties cellProperties;
+
+	public BoolCellEditor(CellProperties cellProperties) {
+		this.cellProperties = cellProperties;
 	}
 	protected Control createControl(Composite parent) {
-//		button = new Button(parent, SWT.CHECK);
-//		return button;
-		if(record !=null){
-			button = new Button(parent, SWT.CHECK);
+		if(isTableItemEditor()){
+			Composite content = new NewButton(parent, SWT.NONE);
+			content.setLayout(new FillLayout());
+			button = new Button(content, SWT.CHECK);
+//			button.setLayoutData(gridData);
 			button.setBackground(parent.getBackground());
-			return button;
+			content.setBackground(parent.getBackground());
+			return content;
 		}
 		else{
 			return super.createControl(parent);
@@ -64,13 +51,13 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 	public boolean validValue(String value) {
 		boolean validValue = true;
 		String errorMessage = "";
-		if(required && value == null){
+		if(cellProperties.isRequired() && value == null){
 			validValue = false;
-			errorMessage = "this field <"+property.getLocalName()+"> is required! can't be not null";
+			errorMessage = LocaleMessage.getString("this.field")+"<"+cellProperties.getColumnName()+"> "+LocaleMessage.getString("is.required");
 		}
 		if(value != null && (!value.equals("true")) &&(!value.equals("false"))){
 			validValue = false;
-			errorMessage = "this field <"+property.getLocalName()+">  value must be 'true' or 'false' ! Can not be "+value+" !";
+			errorMessage =  LocaleMessage.getString("this.field")+"<"+cellProperties.getColumnName()+">"+LocaleMessage.getString("value.must.be.true.or.false");
 		}
 		if(!validValue){
 			CustomDialog.showErrorMessageBox(null, errorMessage);
@@ -86,7 +73,6 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 	}
 
 	public String getSelection() {
-		// System.out.println("button.getSelection():"+button.getSelection());
 		if (button != null) {
 			if(!hasSelection)
 				return null;
@@ -94,7 +80,6 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 				return "true";
 			} else
 				return "false";
-//			return record.getString(property.getLocalName());
 		} else {
 			if (super.getValue() == null)
 				return null;
@@ -105,15 +90,12 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 		Boolean showValue = null;
 		if ("true".equals(value))
 			showValue = new Boolean(true);
-//		if ("false".equals(value))
 		else
 			showValue = new Boolean(false);
 		return showValue;
 	}
 
 	public void SetSelection(String dataValue) {
-//		if(dataValue == null)
-//			return;
 		if(dataValue == null)
 			dataValue = "false";
 		Boolean showValue = (Boolean)valueToShow(dataValue);
@@ -134,16 +116,15 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 
 	}
 	public void init() {
-		Table parent = tableViewer.getViewer().getTable();
+		Table parent = cellProperties.getTable();
 		createCellEditor(parent);
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-		if (property.getUse() != null && property.getUse().equals("required")) {
-			required = true;
+		if (cellProperties.isRequired()) {
 			if(getCellControl() != null)
 				getCellControl().setBackground(bg);
 		}
-		if(record != null){
-			SetSelection(record.getString(property.getLocalName()));
+		if(isTableItemEditor()){
+			SetSelection(cellProperties.getRecord().getString(cellProperties.getColumnName()));
 			addCellListener();
 		}
 	}
@@ -155,8 +136,8 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 				if(!hasSelection)
 					hasSelection = true;
 				String dataValue = getSelection();
-				record.put(property.getLocalName(), dataValue);
-				tableViewer.refresh(true);
+				cellProperties.getRecord().put(cellProperties.getColumnName(), dataValue);
+				cellProperties.getTableViewer().refresh(true);
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -170,11 +151,18 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 		super.create(parent);
 	}
 
-	public TableItem getTableItem() {
-		return item;
-	}
-
 	public CellEditor getCellEditor() {
 		return this;
+	}
+	private boolean isTableItemEditor(){
+		return cellProperties.getTableItem() != null;
+	}
+	class NewButton extends Composite{
+		public NewButton(Composite parent, int style) {
+			super(parent, SWT.NONE);
+		}
+		public String toString(){
+			return "ok"+button.toString();
+		}		
 	}
 }

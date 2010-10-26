@@ -15,7 +15,7 @@ public class BmPageFilter extends ViewerFilter {
 	
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		CompositeMap p = (CompositeMap) element;
-		return p.getString(filterColumn).startsWith(filterString);
+		return p.getString(filterColumn).toLowerCase().startsWith(filterString.toLowerCase());
 	}
 	public void setFilterString(String filterString){
 		this.filterString = filterString;

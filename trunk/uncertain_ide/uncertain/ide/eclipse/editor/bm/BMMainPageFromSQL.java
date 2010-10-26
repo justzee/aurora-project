@@ -46,8 +46,8 @@ public class BMMainPageFromSQL extends WizardPage {
 	 */
 	public BMMainPageFromSQL(ISelection selection) {
 		super("wizardPage");
-		setTitle("Uncetain bussiness Model Editor File");
-		setDescription("This wizard creates a new file with *.bm extension that can be opened by a multi-page editor.");
+		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
+		setDescription(LocaleMessage.getString("bm.wizard.desc"));
 		this.selection = selection;
 	}
 
@@ -61,7 +61,7 @@ public class BMMainPageFromSQL extends WizardPage {
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 		Label label = new Label(container, SWT.NULL);
-		label.setText("&Container:");
+		label.setText(LocaleMessage.getString("container"));
 
 		containerText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -73,14 +73,14 @@ public class BMMainPageFromSQL extends WizardPage {
 		});
 
 		Button button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
+		button.setText(LocaleMessage.getString("openBrowse"));
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				handleBrowse();
 			}
 		});
 		label = new Label(container, SWT.NULL);
-		label.setText("&File name:");
+		label.setText(LocaleMessage.getString("file.name"));
 
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -96,7 +96,7 @@ public class BMMainPageFromSQL extends WizardPage {
 		gd = new GridData(GridData.FILL,GridData.FILL,true,true);
 		gd.horizontalSpan=3;
 		SQLText.setLayoutData(gd);
-		SQLText.setText("Enter your SQL:");
+		SQLText.setText(LocaleMessage.getString("enter.sql"));
 		SQLText.setLayout(new FillLayout());
 		innerText = new StyledText(SQLText, SWT.WRAP|SWT.V_SCROLL);
 		innerText.setFont(new Font(SQLText.getDisplay(), "Courier New", 10,
@@ -140,7 +140,7 @@ public class BMMainPageFromSQL extends WizardPage {
 	private void handleBrowse() {
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(
 				getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
-				"Select new file container");
+				LocaleMessage.getString("select.new.file.container"));
 		if (dialog.open() == ContainerSelectionDialog.OK) {
 			Object[] result = dialog.getResult();
 			if (result.length == 1) {
@@ -158,12 +158,12 @@ public class BMMainPageFromSQL extends WizardPage {
 		String fileName = getFileName();
 
 		if (getContainerName().length() == 0) {
-			updateStatus("File container must be specified");
+			updateStatus(LocaleMessage.getString("file.container.must.be.specified"));
 			return;
 		}
 		if (container == null
 				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			updateStatus("File container must exist");
+			updateStatus(LocaleMessage.getString("file.container.must.exist"));
 			return;
 		}
 		if(fileName !=null &&!fileName.equals("")&&container.getProject().getFile(fileName).exists()){
@@ -171,28 +171,28 @@ public class BMMainPageFromSQL extends WizardPage {
 			return;
 		}
 		if (!container.isAccessible()) {
-			updateStatus("Project must be writable");
+			updateStatus(LocaleMessage.getString("project.must.be.writable"));
 			return;
 		}
 		if (fileName.length() == 0) {
-			updateStatus("File name must be specified");
+			updateStatus(LocaleMessage.getString("file.name.must.be.specified"));
 			return;
 		}
 		
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
-			updateStatus("File name must be valid");
+			updateStatus(LocaleMessage.getString("file.name.must.be.valid"));
 			return;
 		}
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
 			if (ext.equalsIgnoreCase("bm") == false) {
-				updateStatus("File extension must be \"bm\"");
+				updateStatus(LocaleMessage.getString("file.extension.must.be.bm"));
 				return;
 			}
 		}
 		if (getSQL().length() == 0) {
-			updateStatus("SQL must be specified!");
+			updateStatus(LocaleMessage.getString("sql.must.be.specified"));
 			return;
 		}
 		updateStatus(null);

@@ -5,16 +5,16 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.CompositeMapViewer;
+import uncertain.ide.eclipse.editor.AbstractCMViewer;
 
 public class RemoveElementAction extends Action {
-	private CompositeMapViewer viewer;
+	private AbstractCMViewer viewer;
 
-	public RemoveElementAction(CompositeMapViewer viewer) {
+	public RemoveElementAction(AbstractCMViewer viewer) {
 		this.viewer = viewer;
 	}
 
-	public RemoveElementAction(CompositeMapViewer viewer,
+	public RemoveElementAction(AbstractCMViewer viewer,
 			ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setImageDescriptor(imageDescriptor);

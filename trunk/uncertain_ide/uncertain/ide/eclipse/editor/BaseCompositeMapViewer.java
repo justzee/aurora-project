@@ -7,11 +7,15 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -24,7 +28,8 @@ import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.textpage.JavaScriptLineStyler;
 import uncertain.ide.eclipse.editor.widgets.CompositeMapTreeViewer;
-import uncertain.ide.eclipse.editor.widgets.PropertyGridViewer;
+import uncertain.ide.eclipse.editor.widgets.GridViewer;
+import uncertain.ide.eclipse.editor.widgets.IGridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
 import uncertain.schema.Element;
 
@@ -35,6 +40,7 @@ public class BaseCompositeMapViewer implements IViewer {
 	private CompositeMap data;
 	IViewer viewer;
 	SashForm control;
+
 	public BaseCompositeMapViewer(IViewer viewer, CompositeMap data) {
 		this.viewer = viewer;
 		this.data = data;
@@ -54,6 +60,7 @@ public class BaseCompositeMapViewer implements IViewer {
 		treeViewer.create(mContent);
 
 	}
+
 	protected void createPropertyContent(Composite mContent) {
 		propertySection = new PropertySection(this);
 		propertySection.create(mContent);
@@ -91,7 +98,8 @@ public class BaseCompositeMapViewer implements IViewer {
 		return data;
 
 	}
-	public Control getControl(){
+
+	public Control getControl() {
 		return control;
 	}
 
@@ -108,19 +116,18 @@ public class BaseCompositeMapViewer implements IViewer {
 	}
 
 	public void refresh(boolean isDirty) {
-		if(isDirty){
+		if (isDirty) {
 			viewer.refresh(isDirty);
-		}
-		else{
+		} else {
 			treeViewer.refresh();
 			propertySection.refresh(false);
 		}
 	}
 
-	class PropertySection implements IViewer{
+	class PropertySection implements IViewer {
 		private CTabFolder mTabFolder;
 		private PropertyHashViewer mPropertyEditor;
-		private PropertyGridViewer mPropertyArrayEditor;
+		private GridViewer gridViewer;
 		private StyledText mInnerText;
 		private JavaScriptLineStyler lineStyler = new JavaScriptLineStyler();
 
@@ -129,6 +136,7 @@ public class BaseCompositeMapViewer implements IViewer {
 		PropertySection(IViewer viewer) {
 			this.viewer = viewer;
 		}
+
 		public void create(Composite parent) {
 
 			createTabFolder(parent);
@@ -137,16 +145,20 @@ public class BaseCompositeMapViewer implements IViewer {
 			createTextTab(mTabFolder);
 
 		}
+
 		private void createPropertyHashTab(Composite parent) {
 			mPropertyEditor = new PropertyHashViewer(viewer, parent);
 			mPropertyEditor.createEditor();
 			mTabFolder.getItem(0).setControl(mPropertyEditor.getControl());
 		}
+
 		private void createPropertyGridTab(Composite parent) {
-			mPropertyArrayEditor = new PropertyGridViewer(viewer);
-			mPropertyArrayEditor.createEditor(parent);
-			mTabFolder.getItem(1).setControl(mPropertyArrayEditor.viewForm);
+			gridViewer = new GridViewer(null, IGridViewer.fullEditable);
+			gridViewer.setParent(this);
+			gridViewer.createViewer(parent);
+			mTabFolder.getItem(1).setControl(gridViewer.getControl());
 		}
+
 		private void createTextTab(Composite parent) {
 			mInnerText = new StyledText(parent, SWT.MULTI | SWT.V_SCROLL
 					| SWT.H_SCROLL);
@@ -157,9 +169,9 @@ public class BaseCompositeMapViewer implements IViewer {
 			spec.grabExcessVerticalSpace = true;
 			mInnerText.setLayoutData(spec);
 			mInnerText.addLineStyleListener(lineStyler);
-			mInnerText.setFont(new Font(mTabFolder.getDisplay(), "Courier New", 10,
-					SWT.NORMAL));
-			
+			mInnerText.setFont(new Font(mTabFolder.getDisplay(), "Courier New",
+					10, SWT.NORMAL));
+
 			mInnerText.addFocusListener(new FocusListener() {
 
 				public void focusGained(FocusEvent e) {
@@ -188,12 +200,17 @@ public class BaseCompositeMapViewer implements IViewer {
 			});
 			mTabFolder.getItem(2).setControl(mInnerText);
 		}
-		public void setInput(CompositeMap data){
+
+		public void setInput(CompositeMap data) {
 			Element em = LoadSchemaManager.getSchemaManager().getElement(data);
 			if (em != null && em.isArray()) {
-				mPropertyArrayEditor.createEditor(mTabFolder, data);
-				mTabFolder.getItem(1).setControl(
-						mPropertyArrayEditor.getControl());
+				// gridViewer = new
+				// GridViewer(null,IGridViewer.isEditable|IGridViewer.showToolBar);
+				// gridViewer.setParent(viewer);
+				// gridViewer.createViewer(parent);
+
+				gridViewer.createViewer(mTabFolder, data);
+				mTabFolder.getItem(1).setControl(gridViewer.getControl());
 				mTabFolder.setSelection(1);
 				mTabFolder.layout(true);
 
@@ -213,19 +230,21 @@ public class BaseCompositeMapViewer implements IViewer {
 				mInnerText.setText("");
 			}
 		}
-		
-		public void clear() throws Exception{
+
+		public void clear() throws Exception {
 			mPropertyEditor.clear();
-			mPropertyArrayEditor.clearAll();
+			gridViewer.clearAll();
 		}
+
 		public void refresh(boolean isDirty) {
-			if(isDirty)
+			if (isDirty)
 				viewer.refresh(isDirty);
-			else{	
+			else {
 				mPropertyEditor.refresh();
-				mPropertyArrayEditor.refresh(false);
+				gridViewer.refresh(false);
 			}
 		}
+
 		private void createTabFolder(final Composite parent) {
 			mTabFolder = new CTabFolder(parent, SWT.TOP);
 			mTabFolder.setMaximizeVisible(true);
@@ -236,7 +255,8 @@ public class BaseCompositeMapViewer implements IViewer {
 			CTabItem tabItem1 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
 					| SWT.V_SCROLL);
 			String tab = "         ";
-			tabItem1.setText(tab + LocaleMessage.getString("property.name") + tab);
+			tabItem1.setText(tab + LocaleMessage.getString("property.name")
+					+ tab);
 
 			CTabItem tabItem2 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
 					| SWT.V_SCROLL);
@@ -246,34 +266,57 @@ public class BaseCompositeMapViewer implements IViewer {
 					| SWT.V_SCROLL);
 			tabItem3.setText(tab + LocaleMessage.getString("value") + tab);
 
-//			CTabItem tabItem4 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
-//					| SWT.V_SCROLL);
-//			tabItem4.setText(tab + LocaleMessage.getString("editor") + tab);
-/*			mTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-				public void minimize(CTabFolderEvent event) {
-					mTabFolder.setMinimized(true);
-					mTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-							false));
-					parent.layout(true);
-				}
+			// CTabItem tabItem4 = new CTabItem(mTabFolder, SWT.None | SWT.MULTI
+			// | SWT.V_SCROLL);
+			// tabItem4.setText(tab + LocaleMessage.getString("editor") + tab);
+			if (parent instanceof SashForm) {
+				final SashForm sashForm = (SashForm) parent;
+				mTabFolder.addMouseListener(new MouseListener() {
+					public void mouseUp(MouseEvent e) {
+					}
 
-				public void maximize(CTabFolderEvent event) {
-					mTabFolder.setMaximized(true);
-					sashForm.setMaximizedControl(mTabFolder);
-					parent.layout(true);
-				}
+					public void mouseDown(MouseEvent e) {
+					}
 
-				public void restore(CTabFolderEvent event) {
-					mTabFolder.setMaximized(false);
-					sashForm.setMaximizedControl(null);
-					parent.layout(true);
-				}
-			});*/
+					public void mouseDoubleClick(MouseEvent e) {
+						if (mTabFolder.getMaximized()) {
+							mTabFolder.setMaximized(false);
+							sashForm.setMaximizedControl(null);
+							sashForm.layout(true);
+						} else {
+							mTabFolder.setMaximized(true);
+							sashForm.setMaximizedControl(mTabFolder);
+							sashForm.layout(true);
+						}
+					}
+				});
+				mTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+					public void minimize(CTabFolderEvent event) {
+						mTabFolder.setMinimized(true);
+						mTabFolder.setLayoutData(new GridData(SWT.FILL,
+								SWT.FILL, true, false));
+						parent.layout(true);
+					}
+
+					public void maximize(CTabFolderEvent event) {
+						mTabFolder.setMaximized(true);
+						sashForm.setMaximizedControl(mTabFolder);
+						parent.layout(true);
+					}
+
+					public void restore(CTabFolderEvent event) {
+						mTabFolder.setMaximized(false);
+						sashForm.setMaximizedControl(null);
+						parent.layout(true);
+					}
+				});
+			}
 		}
 	}
 
 	class ElementSelectionListener implements ISelectionChangedListener {
 		private boolean validError = false;
+
 		public void selectionChanged(SelectionChangedEvent event) {
 			if (validError) {
 				validError = false;

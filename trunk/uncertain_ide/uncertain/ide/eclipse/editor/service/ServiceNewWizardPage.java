@@ -43,8 +43,8 @@ public class ServiceNewWizardPage extends WizardPage {
 	 */
 	public ServiceNewWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle("Service Editor File");
-		setDescription("This wizard creates a new file with *.service extension that can be opened by a Service editor.");
+		setTitle(LocaleMessage.getString("screen.file"));
+		setDescription(LocaleMessage.getString("screen.wizard.desc"));
 		this.selection = selection;
 	}
 
@@ -58,7 +58,7 @@ public class ServiceNewWizardPage extends WizardPage {
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 		Label label = new Label(container, SWT.NULL);
-		label.setText("&Container:");
+		label.setText(LocaleMessage.getString("container"));
 
 		containerText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -70,14 +70,14 @@ public class ServiceNewWizardPage extends WizardPage {
 		});
 
 		Button button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
+		button.setText(LocaleMessage.getString("openBrowse"));
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				handleBrowse();
 			}
 		});
 		label = new Label(container, SWT.NULL);
-		label.setText("&File name:");
+		label.setText(LocaleMessage.getString("file.name"));
 
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -123,7 +123,7 @@ public class ServiceNewWizardPage extends WizardPage {
 	private void handleBrowse() {
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(
 				getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
-				"Select new file container");
+				LocaleMessage.getString("select.new.file.container"));
 		if (dialog.open() == ContainerSelectionDialog.OK) {
 			Object[] result = dialog.getResult();
 			if (result.length == 1) {
@@ -142,12 +142,12 @@ public class ServiceNewWizardPage extends WizardPage {
 		String fileName = getFileName();
 
 		if (getContainerName().length() == 0) {
-			updateStatus("File container must be specified");
+			updateStatus(LocaleMessage.getString("file.container.must.be.specified"));
 			return;
 		}
 		if (container == null
 				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			updateStatus("File container must exist");
+			updateStatus(LocaleMessage.getString("file.container.must.exist"));
 			return;
 		}
 		if(fileName !=null &&!fileName.equals("")&&container.getProject().getFile(fileName).exists()){
@@ -155,22 +155,22 @@ public class ServiceNewWizardPage extends WizardPage {
 			return;
 		}
 		if (!container.isAccessible()) {
-			updateStatus("Project must be writable");
+			updateStatus(LocaleMessage.getString("project.must.be.writable"));
 			return;
 		}
 		if (fileName.length() == 0) {
-			updateStatus("File name must be specified");
+			updateStatus(LocaleMessage.getString("file.name.must.be.specified"));
 			return;
 		}
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
-			updateStatus("File name must be valid");
+			updateStatus(LocaleMessage.getString("file.name.must.be.valid"));
 			return;
 		}
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("service") == false) {
-				updateStatus("File extension must be \"service\"");
+			if (ext.equalsIgnoreCase("screen") == false) {
+				updateStatus(LocaleMessage.getString("file.extension.must.be.screen"));
 				return;
 			}
 		}

@@ -61,11 +61,11 @@ public class AddPropertyAction extends Action {
 		valueText.setBounds(80, 50, 300, 20);
 
 		final Button ok = new Button(shell, SWT.PUSH);
-		ok.setText("OK");
+		ok.setText(LocaleMessage.getString("OK"));
 		ok.setBounds(220, 120, 70, 25);
 
 		final Button cancel = new Button(shell, SWT.PUSH);
-		cancel.setText("Cancel");
+		cancel.setText(LocaleMessage.getString("Cancel"));
 		cancel.setBounds(300, 120, 70, 25);
 		SelectionListener listener = getListener(data, shell, propertyText,
 				valueText, ok, cancel);

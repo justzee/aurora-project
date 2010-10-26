@@ -1,6 +1,3 @@
-/*
- * Created on 2009-7-21
- */
 package uncertain.ide.eclipse.editor.widgets;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -9,7 +6,6 @@ import org.eclipse.swt.graphics.Image;
 
 import uncertain.ide.Activator;
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.CategoryLabel;
 import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 

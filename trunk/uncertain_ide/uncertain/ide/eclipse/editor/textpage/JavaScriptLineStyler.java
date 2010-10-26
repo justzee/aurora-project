@@ -229,22 +229,6 @@ public class JavaScriptLineStyler implements LineStyleListener {
 		boolean xml_tag = false;
 		boolean xml_cdata = false;
 		private String[] fgKeywords = {
-				// "abstract",
-				// "boolean", "break", "byte",
-				// "case", "catch", "char", "class", "continue",
-				// "default", "do", "double",
-				// "else", "extends",
-				// "false", "final", "finally", "float", "for",
-				// "if", "implements", "import", "instanceof", "int",
-				// "interface",
-				// "long",
-				// "native", "new", "null",
-				// "package", "private", "protected", "public",
-				// "return",
-				// "short", "static", "super", "switch", "synchronized",
-				// "this", "throw", "throws", "transient", "true", "try",
-				// "void", "volatile",
-				// "while"
 				"abstract", "boolean", "break", "byte", "case", "catch",
 				"char", "class", "const", "continue", "debugger", "default",
 				"delete", "do", "double", "else", "enum", "export", "extends",

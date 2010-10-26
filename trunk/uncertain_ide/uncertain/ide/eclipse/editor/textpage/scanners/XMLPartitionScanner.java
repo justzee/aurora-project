@@ -15,14 +15,14 @@ import uncertain.ide.eclipse.editor.textpage.rules.XMLTextPredicateRule;
 public class XMLPartitionScanner extends RuleBasedPartitionScanner
 {
 
-	public final static String XML_DEFAULT = "__xml_default";
-	public final static String XML_COMMENT = "__xml_comment";
-	public final static String XML_PI = "__xml_pi";
-	public final static String XML_DOCTYPE = "__xml_doctype";
-	public final static String XML_CDATA = "__xml_cdata";
-	public final static String XML_START_TAG = "__xml_start_tag";
-	public final static String XML_END_TAG = "__xml_end_tag";
-	public final static String XML_TEXT = "__xml_text";
+	public final static String XML_DEFAULT = "XML_DEFAULT";
+	public final static String XML_COMMENT = "XML_COMMENT";
+	public final static String XML_PI = "XML_PI";
+	public final static String XML_DOCTYPE = "XML_DOCTYPE";
+	public final static String XML_CDATA = "XML_CDATA";
+	public final static String XML_START_TAG = "XML_START_TAG";
+	public final static String XML_END_TAG = "XML_END_TAG";
+	public final static String XML_TEXT = "XML_TEXT";
 
 public XMLPartitionScanner()
 {

@@ -1,12 +1,14 @@
 package uncertain.ide;
 
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.eclipse.preferencepages.SxsdDirectoryPreferencePage;
+import uncertain.ide.eclipse.preferencepages.SxsdDirPreferencePage;
 import uncertain.pkg.PackageManager;
 import uncertain.schema.SchemaManager;
 
 public class LoadSchemaManager {
 
+	private static SchemaManager schemaManager;
+	
 	public static boolean refeshSchemaManager(String[] sxsdPaths){
 		PackageManager pkgManager = new PackageManager();
 		try {
@@ -32,13 +34,7 @@ public class LoadSchemaManager {
 	
 			PackageManager pkgManager = new PackageManager();
 			try {
-	//			String sxsdDir = Activator.getDefault().getPreferenceStore()
-	//					.getString(SxsdDirectoryPreferencePage.SXSD_DIRECTORY);
-	//			if (sxsdDir == null || sxsdDir.equals("")) {
-	//				Common.showSxsdDirHint();
-	//			}
-	//			pkgManager.loadPackgeDirectory(sxsdDir);
-				String[] sxsdPaths = SxsdDirectoryPreferencePage.getSxsdPaths();
+				String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
 				if (sxsdPaths == null || sxsdPaths.length ==0) {
 					LoadSchemaManager.showSxsdDirHint();
 				}
@@ -65,12 +61,7 @@ public class LoadSchemaManager {
 				return LoadSchemaManager.schemaManager;
 			PackageManager pkgManager = new PackageManager();
 			try {
-	//			String sxsdDir = Activator.getDefault().getPreferenceStore()
-	//					.getString(SxsdDirectoryPreferencePage.SXSD_DIRECTORY);
-	//			if (sxsdDir == null || sxsdDir.equals("")) {
-	//				showSxsdDirHint();
-	//			}
-				String[] sxsdPaths = SxsdDirectoryPreferencePage.getSxsdPaths();
+				String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
 				if (sxsdPaths == null || sxsdPaths.length ==0) {
 					showSxsdDirHint();
 				}
@@ -86,6 +77,6 @@ public class LoadSchemaManager {
 			return LoadSchemaManager.schemaManager;
 		}
 
-	static SchemaManager schemaManager;
+
 
 }

@@ -29,6 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.action.CompositeMapAction;
 
 /**
@@ -107,7 +108,6 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		IProgressMonitor monitor)
 		throws CoreException {
 		
-		//����û�û��ָ���ļ����׺���Զ���sxsd��׺
 		if(fileName.indexOf(".")==-1){
 			fileName = fileName+".sxsd";
 		}
@@ -116,7 +116,7 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
+			throwCoreException(LocaleMessage.getString("container")+" \"" + containerName + "\" "+LocaleMessage.getString("not.exist"));
 		}
 		IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));

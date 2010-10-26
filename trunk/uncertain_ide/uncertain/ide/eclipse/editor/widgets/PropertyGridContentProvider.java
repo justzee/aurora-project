@@ -16,10 +16,7 @@ public class PropertyGridContentProvider implements IStructuredContentProvider {
 	 * 
 	 */
 	public Object[] getElements(Object inputElement) {
-//    	System.out.println("PropertyArrayContentProvider:getElements");
-//    	labelProvider.addListener(listener)
         CompositeMap data = (CompositeMap)inputElement;
-//        System.out.println(data.toXML());
         List childs = data.getChilds();
         if(childs!=null){
             return childs.toArray();

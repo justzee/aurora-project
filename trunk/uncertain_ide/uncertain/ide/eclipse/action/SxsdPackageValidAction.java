@@ -62,7 +62,7 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 			if(!fileList.equals("")){
 				fileList = LocaleMessage.getString("valid.sxsd.file.window.title")+"\r\n"+fileList;
 			}else{
-				fileList = "No file is valid!";
+				fileList = LocaleMessage.getString("no.file.is.valid");
 			}
 			CustomDialog.showMessageBox(SWT.ICON_INFORMATION,"Result",fileList);
 		} catch (Exception e) {

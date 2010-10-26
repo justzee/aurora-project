@@ -4,11 +4,48 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 
 public class XMLDoubleClickStrategy implements ITextDoubleClickStrategy {
 	protected ITextViewer fText;
+	StyleRange[] oldStyles;
+	boolean register = false; 
+	String oldContent;
+	Color highLight= Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
+	public void doubleClicked(final ITextViewer part) {
+		if(!register){
+			part.getTextWidget().addCaretListener(new CaretListener() {
+				public void caretMoved(CaretEvent event) {
+					if(oldStyles == null)
+						return ;
+					String newContent = part.getTextWidget().getText();
+					if(oldContent != null&& !oldContent.equals(newContent)){
+						StyleRange[] nowStyleRanges = part.getTextWidget().getStyleRanges();
+						for(int i=0;i<nowStyleRanges.length;i++){
+							StyleRange sr = nowStyleRanges[i];
+							if(highLight.equals(sr.background)){
+								sr.background = null;
+								fText.getTextWidget().replaceStyleRanges(sr.start, sr.length,new StyleRange[]{sr});
+							}
+						}
+					}else{
+						if(oldStyles != null){
+							part.getTextWidget().setStyleRanges(oldStyles);
+						}
+					}
+					oldStyles = null;
+				}
 
-	public void doubleClicked(ITextViewer part) {
+			});
+
+		}
+		oldContent = part.getTextWidget().getText();
+		
 		int pos = part.getSelectedRange().x;
 
 		if (pos < 0)
@@ -100,6 +137,10 @@ public class XMLDoubleClickStrategy implements ITextDoubleClickStrategy {
 
 			endPos = pos;
 			selectRange(startPos, endPos);
+			int offset = startPos + 1;
+			int wordLength = endPos - offset;
+			String keyword = fText.getDocument().get(offset, wordLength);
+			setHighLight(keyword);
 			return true;
 
 		} catch (BadLocationException x) {
@@ -107,8 +148,24 @@ public class XMLDoubleClickStrategy implements ITextDoubleClickStrategy {
 
 		return false;
 	}
+	private void setHighLight(String keyword){
+		if(oldStyles != null){
+			fText.getTextWidget().setStyleRanges(oldStyles);
 
-	private void selectRange(int startPos, int stopPos) {
+		}else{
+			oldStyles = fText.getTextWidget().getStyleRanges();
+		}
+		String line = fText.getTextWidget().getText();
+		int cursor = -1;
+		while ((cursor = line.indexOf(keyword, cursor + 1)) >= 0) {
+			StyleRange[] srs = fText.getTextWidget().getStyleRanges(cursor, keyword.length());
+			for(int i=0;i<srs.length;i++){
+				srs[i].background = highLight;
+			}
+			fText.getTextWidget().replaceStyleRanges(cursor, keyword.length(),srs);
+		}
+	}
+	protected void selectRange(int startPos, int stopPos) {
 		int offset = startPos + 1;
 		int length = stopPos - offset;
 		fText.setSelectedRange(offset, length);

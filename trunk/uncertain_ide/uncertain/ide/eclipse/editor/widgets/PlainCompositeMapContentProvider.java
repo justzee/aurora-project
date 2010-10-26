@@ -9,7 +9,6 @@ import uncertain.composite.CompositeMap;
 public class PlainCompositeMapContentProvider implements IStructuredContentProvider {
 		public Object[] getElements(Object inputElement) {
 	        CompositeMap data = (CompositeMap)inputElement;
-//	        System.out.println(data.toXML());
 	        List childs = data.getChilds();
 	        if(childs!=null){
 	            return childs.toArray();
