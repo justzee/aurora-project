@@ -50,7 +50,8 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
     public static final String KEY_USE_POOL = "use-pool";
     public static final String KEY_NAME = "name";
     public static final String KEY_INIT_SQL = "init-sql";
-
+    public static final String KEY_CACHE_SCHEME = "cache-scheme";
+    
     OracleConnectionCacheImpl occi;
     SimpleDataSource simple_ds;
     IConnectionInitializer connection_initializer;
@@ -62,6 +63,7 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
     String user;
     String password;
     String name;
+    int cacheScheme;
 
     List named_datasource_list;
     WebApplication application;
@@ -88,6 +90,12 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
         password = datasource_config.getString(KEY_DB_PASSWORD);
         if (use_pool) {
             System.out.println("Using pooled connection:" + url + ":" + user);
+            /**
+             *   public static final int DYNAMIC_SCHEME = 1;
+             *   public static final int FIXED_WAIT_SCHEME = 2;
+             *   public static final int FIXED_RETURN_NULL_SCHEME = 3;
+             */
+            cacheScheme = datasource_config.getInt(KEY_CACHE_SCHEME, OracleConnectionCacheImpl.FIXED_RETURN_NULL_SCHEME);
             try {
                 occi = new OracleConnectionCacheImpl();
                 occi.setURL(url);
@@ -95,9 +103,8 @@ public class OracleDataSourceCreator implements ApplicationInitializer {
                 occi.setPassword(password);
                 occi.setMaxLimit(datasource_config.getInt(KEY_MAX_CONN, 10));
                 occi.setMinLimit(datasource_config.getInt(KEY_MIN_CONN, 1));
-                occi.setCacheScheme(OracleConnectionCacheImpl.FIXED_RETURN_NULL_SCHEME);
+                occi.setCacheScheme(cacheScheme);
                 occi.setCacheInactivityTimeout(60*60*1000);
-                
             } catch (SQLException ex) {
                 throw new ApplicationInitializeException(ex);
             }
