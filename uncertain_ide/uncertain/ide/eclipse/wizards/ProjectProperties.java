@@ -16,6 +16,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
@@ -42,9 +44,7 @@ public class ProjectProperties {
 			setPropertyValue(project, ProjectProperties.web_base_dir,
 					propertyValue);
 		}
-		propertyValue = ResourcesPlugin.getWorkspace().getRoot().getLocation()
-				.toOSString()
-				+ propertyValue;
+		propertyValue = getProjectFileLocalPath(propertyValue);
 		return propertyValue;
 	}
 
@@ -63,9 +63,7 @@ public class ProjectProperties {
 			setPropertyValue(project, ProjectProperties.bm_base_dir,
 					propertyValue);
 		}
-		propertyValue = ResourcesPlugin.getWorkspace().getRoot().getLocation()
-				.toOSString()
-				+ propertyValue;
+		propertyValue = getProjectFileLocalPath(propertyValue);
 		return propertyValue;
 	}
 
@@ -77,7 +75,7 @@ public class ProjectProperties {
 		IProject project = ifile.getProject();
 		return getWebBaseDir(project);
 	}
-	
+
 	public static String getBMBaseDir() throws Exception {
 		IEditorInput input = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActiveEditor()
@@ -86,9 +84,11 @@ public class ProjectProperties {
 		IProject project = ifile.getProject();
 		return getBMBaseDir(project);
 	}
-	public static IProject getProject(){
-		IEditorInput input = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor()
-		.getEditorInput();
+
+	public static IProject getProject() {
+		IEditorInput input = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage().getActiveEditor()
+				.getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		IProject project = ifile.getProject();
 		return project;
@@ -149,6 +149,24 @@ public class ProjectProperties {
 		props.store(out, "aurora project properties");
 		out.close();
 		file.refreshLocal(IResource.DEPTH_ONE, null);
+	}
+
+	public static String getProjectFileLocalPath(String filePath) {
+		String fileSeparator = File.separator;
+		IPath ip = new Path(filePath);
+		String projectName = ip.segment(0);
+		String newFilePath = fileSeparator;
+		for (int i = 1; i < ip.segmentCount(); i++) {
+			newFilePath = newFilePath +ip.segment(i)+fileSeparator;
+		}
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				projectName);
+		IResource resource = project;
+		if (!newFilePath.equals(fileSeparator)) {
+			resource = project.getFile(newFilePath);
+		}
+		String path = resource.getLocation().toOSString();
+		return path;
 	}
 
 	/**
