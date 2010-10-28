@@ -80,9 +80,9 @@ public class BmTableFieldsPage extends WizardPage {
 					BmNewWizard.bm_uri, "field");
 			field.put("name", record.getString("COLUMN_NAME").toLowerCase());
 			field.put("physicalName", record.getString("COLUMN_NAME"));
-			String required = record.getString("IS_NULLABLE").equals("YES") ? "false"
-					: "true";
-			field.put("required", required);
+//			String required = record.getString("IS_NULLABLE").equals("YES") ? "false"
+//					: "true";
+//			field.put("required", required);
 			String dataType = record.getString("TYPE_NAME");
 			field.put("databaseType", dataType);
 			Integer db_data_type = record.getInt("DATA_TYPE");
