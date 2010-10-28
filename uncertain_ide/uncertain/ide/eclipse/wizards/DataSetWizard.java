@@ -153,7 +153,7 @@ public class DataSetWizard extends Wizard {
 	public void configCompositeMap(CompositeMap data, String bmName,
 			boolean justForInput, boolean fromServer, boolean canSave, Set ids) {
 		String fileName = bmName.substring(bmName.lastIndexOf(".") + 1);
-		data.put("href", bmName);
+		data.put("model", bmName);
 		data.put("id", getId(ids, fileName));
 		if (justForInput) {
 			data.put("canQuery", "false");
