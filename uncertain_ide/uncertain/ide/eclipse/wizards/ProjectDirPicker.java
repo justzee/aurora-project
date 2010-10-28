@@ -2,7 +2,6 @@ package uncertain.ide.eclipse.wizards;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
@@ -20,7 +19,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-import uncertain.ide.Common;
 import uncertain.ide.LocaleMessage;
 
 /**
@@ -113,16 +111,7 @@ public class ProjectDirPicker {
 			if (result.length == 1) {
 				Path path = (Path) result[0];
 				String pathStr = path.toOSString() + File.separator;
-				IProject project = ProjectProperties.getProject();
-				String projectName = project.getName() + File.separator;
-				int index = pathStr.indexOf(projectName);
-				String relativeFilePath = pathStr.substring(index
-						+ projectName.length());
-				if (relativeFilePath != null && !(relativeFilePath.equals(""))) {
-					localePath = Common.getIfileLocalPath(project
-							.getFile(relativeFilePath));
-				} else
-					localePath = project.getLocation().toOSString();
+				localePath = ProjectProperties.getProjectFileLocalPath(pathStr);
 				dirText.setText(path.toString());
 			}
 		}
