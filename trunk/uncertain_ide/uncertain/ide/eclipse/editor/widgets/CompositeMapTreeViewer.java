@@ -263,6 +263,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 									prefix,
 									"http://www.aurora-framework.org/application",
 									"dataSets");
+							view.addChild(dataSets);
 							dataSets.setParent(view);
 						}
 						DataSetWizard wizard = new DataSetWizard(
