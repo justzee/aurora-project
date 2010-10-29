@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
-<template name="%Templates.html5.name" description="%Templates.html5.desc" id="org.eclipse.wst.html.ui.templates.html5" context="html_new" enabled="true">%Templates.html5.content</template>
-<template name="desc" description="name" id="uncertain_ide.new_screen" context="uncertain_ide.new_screen" enabled="true">%Templates.new_screen</template>
+	<template name="%screenName" description="%screenDesc" id="uncertain_ide.new_screen" context="uncertain_ide.new_screen" enabled="true">%Templates.new_screen</template>
 </templates>
