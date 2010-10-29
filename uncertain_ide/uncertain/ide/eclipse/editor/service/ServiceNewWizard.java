@@ -27,7 +27,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import aurora.ide.AuroraConstant;
+
 import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
@@ -37,7 +40,7 @@ import uncertain.ide.eclipse.editor.widgets.CustomDialog;
  * (a folder or a project) is selected in the workspace 
  * when the wizard is opened, it will accept it as the target
  * container. The wizard creates one file with the extension
- * "service". If a sample multi-page editor (also available
+ * "screen". If a sample multi-page editor (also available
  * as a template) is registered for the same extension, it will
  * be able to open it.
  */
@@ -165,8 +168,8 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 
 	private CompositeMap createRootElement() {
 		
-		String rootElementName = "service";
-		CompositeMap rootElement = new CompositeMap(rootElementName);
+		QualifiedName screenQN = AuroraConstant.screenQN;
+		CompositeMap rootElement = new CompositeMap("a",screenQN.getNameSpace(),screenQN.getLocalName());
 		return rootElement;
 	}
 	
