@@ -11,8 +11,7 @@ public class Common {
 	}
 
 	public static String getIfileLocalPath(IFile ifile) {
-		String fileFullPath = ifile.getProject().getLocation().toString() + "/"
-				+ ifile.getProjectRelativePath().toString();
+		String fileFullPath = ifile.getLocation().toOSString();
 		return fileFullPath;
 	}
 
