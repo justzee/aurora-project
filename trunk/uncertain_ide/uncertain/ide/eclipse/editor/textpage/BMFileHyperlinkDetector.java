@@ -32,7 +32,7 @@ public class BMFileHyperlinkDetector implements IHyperlinkDetector {
 		
 		try {
 			String columnName =  getColumnName(region.getOffset(),doc);
-			if(columnName != null && (columnName.toLowerCase().indexOf("model") != -1)||columnName.toLowerCase().indexOf("extend") != -1){
+			if(columnName != null && ((columnName.toLowerCase().indexOf("model") != -1)||columnName.toLowerCase().indexOf("extend") != -1)){
 				return new IHyperlink[] {
 						new BMFileHyperlink(columnValue,textViewer)};
 				}
