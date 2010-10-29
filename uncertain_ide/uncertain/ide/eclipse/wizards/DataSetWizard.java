@@ -56,6 +56,7 @@ public class DataSetWizard extends Wizard {
 
 	private NavigationPage navigationPage;
 	private String nextPageName;
+	final static String spliteStr = ",";
 	public DataSetWizard(CompositeMap parentCM, String prefix,
 			String uri, String cmName) {
 		super();
@@ -492,7 +493,7 @@ class BMSelectionPage extends WizardPage {
 				StringBuffer sb = new StringBuffer();
 				for(;it.hasNext();){
 					CompositeMap cm = (CompositeMap)it.next();
-					sb.append(cm.getString("fullpath"));
+					sb.append(cm.getString("fullpath")).append(DataSetWizard.spliteStr);
 				}
 				bmselectionsText.setText(sb.toString());
 			}
