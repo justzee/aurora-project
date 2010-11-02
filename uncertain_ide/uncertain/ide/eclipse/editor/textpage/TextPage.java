@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.jface.text.ITextListener;
+import org.eclipse.jface.text.TextEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
@@ -42,16 +42,16 @@ public class TextPage extends TextEditor implements IViewer {
 
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		getSourceViewer().getTextWidget().addModifyListener(
-				new ModifyListener() {
-					public void modifyText(ModifyEvent e) {
-						if (syc) {
-							syc = false;
-							return;
-						}
-						refresh(true);
-					}
-				});
+		getSourceViewer().addTextListener(new ITextListener() {
+			public void textChanged(TextEvent event) {
+				if (syc) {
+					syc = false;
+					return;
+				}
+				refresh(true);
+			}
+		});
+		
 	}
 
 	public void refresh(boolean dirty) {
