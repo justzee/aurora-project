@@ -1,5 +1,9 @@
 package uncertain.ide;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.preferencepages.SxsdDirPreferencePage;
 import uncertain.pkg.PackageManager;
@@ -8,21 +12,23 @@ import uncertain.schema.SchemaManager;
 public class LoadSchemaManager {
 
 	private static SchemaManager schemaManager;
-	
-	public static boolean refeshSchemaManager(String[] sxsdPaths){
+
+	public static boolean refeshSchemaManager(String[] sxsdPaths) {
 		PackageManager pkgManager = new PackageManager();
 		try {
-			if (sxsdPaths == null || sxsdPaths.length ==0) {
-				LoadSchemaManager.showSxsdDirHint();
-			}
-			for(int i=0;i<sxsdPaths.length;i++){
-				pkgManager.loadPackgeDirectory(sxsdPaths[i]);
+			loadBuildinSchema(pkgManager);
+			if (sxsdPaths != null){
+				for (int i = 0; i < sxsdPaths.length; i++) {
+					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
+				}
 			}
 			LoadSchemaManager.schemaManager = new SchemaManager();
 			String pkg_name = SchemaManager.class.getPackage().getName();
 			String schema_name = pkg_name + ".SchemaForSchema";
-			LoadSchemaManager.schemaManager.loadSchemaFromClassPath(schema_name);
-			LoadSchemaManager.schemaManager.addAll(pkgManager.getSchemaManager());
+			LoadSchemaManager.schemaManager
+					.loadSchemaFromClassPath(schema_name);
+			LoadSchemaManager.schemaManager.addAll(pkgManager
+					.getSchemaManager());
 		} catch (Exception e) {
 			CustomDialog.showExceptionMessageBox(e);
 			return false;
@@ -31,52 +37,57 @@ public class LoadSchemaManager {
 	}
 
 	public static SchemaManager refeshSchemaManager() {
-	
-			PackageManager pkgManager = new PackageManager();
-			try {
-				String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
-				if (sxsdPaths == null || sxsdPaths.length ==0) {
-					LoadSchemaManager.showSxsdDirHint();
-				}
-				for(int i=0;i<sxsdPaths.length;i++){
+
+		PackageManager pkgManager = new PackageManager();
+		try {
+			loadBuildinSchema(pkgManager);
+			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
+			if (sxsdPaths != null){
+				for (int i = 0; i < sxsdPaths.length; i++) {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
-				LoadSchemaManager.schemaManager = new SchemaManager();
-				String pkg_name = SchemaManager.class.getPackage().getName();
-				String schema_name = pkg_name + ".SchemaForSchema";
-				LoadSchemaManager.schemaManager.loadSchemaFromClassPath(schema_name);
-				LoadSchemaManager.schemaManager.addAll(pkgManager.getSchemaManager());
-			} catch (Exception e) {
-				CustomDialog.showExceptionMessageBox(e);
 			}
-			return LoadSchemaManager.schemaManager;
+			loadBuildinSchema(pkgManager);
+			LoadSchemaManager.schemaManager = new SchemaManager();
+			String pkg_name = SchemaManager.class.getPackage().getName();
+			String schema_name = pkg_name + ".SchemaForSchema";
+			LoadSchemaManager.schemaManager
+					.loadSchemaFromClassPath(schema_name);
+			LoadSchemaManager.schemaManager.addAll(pkgManager
+					.getSchemaManager());
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
 		}
+		return LoadSchemaManager.schemaManager;
+	}
 
 	static void showSxsdDirHint() {
-		CustomDialog.showWarningMessageBox(null, LocaleMessage.getString("undefined.sxsd.dir"));
+		CustomDialog.showWarningMessageBox(null, LocaleMessage
+				.getString("undefined.sxsd.dir"));
 	}
 
 	public static SchemaManager getSchemaManager() {
-			if (LoadSchemaManager.schemaManager != null)
-				return LoadSchemaManager.schemaManager;
-			PackageManager pkgManager = new PackageManager();
-			try {
-				String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
-				if (sxsdPaths == null || sxsdPaths.length ==0) {
-					showSxsdDirHint();
-				}
-				for(int i=0;i<sxsdPaths.length;i++){
+		if (LoadSchemaManager.schemaManager != null)
+			return LoadSchemaManager.schemaManager;
+		PackageManager pkgManager = new PackageManager();
+		try {
+			loadBuildinSchema(pkgManager);
+			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
+			if (sxsdPaths != null){
+				for (int i = 0; i < sxsdPaths.length; i++) {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
-			} catch (Exception e) {
-				CustomDialog.showExceptionMessageBox(e);
 			}
-	
-			LoadSchemaManager.schemaManager = SchemaManager.getDefaultInstance();
-			LoadSchemaManager.schemaManager.addAll(pkgManager.getSchemaManager());
-			return LoadSchemaManager.schemaManager;
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
 		}
 
-
-
+		LoadSchemaManager.schemaManager = SchemaManager.getDefaultInstance();
+		LoadSchemaManager.schemaManager.addAll(pkgManager.getSchemaManager());
+		return LoadSchemaManager.schemaManager;
+	}
+	public static void  loadBuildinSchema(PackageManager pkgManager) throws Exception {
+		URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("aurora_builtin_package/")); 
+		pkgManager.loadPackgeDirectory(url.getFile());
+	}
 }
