@@ -30,7 +30,7 @@ public class LoadSchemaManager {
 			LoadSchemaManager.schemaManager.addAll(pkgManager
 					.getSchemaManager());
 		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+			CustomDialog.showErrorMessageBox(CustomDialog.getExceptionMessage(e));
 			return false;
 		}
 		return true;
@@ -56,7 +56,7 @@ public class LoadSchemaManager {
 			LoadSchemaManager.schemaManager.addAll(pkgManager
 					.getSchemaManager());
 		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+			CustomDialog.showErrorMessageBox(CustomDialog.getExceptionMessage(e));
 		}
 		return LoadSchemaManager.schemaManager;
 	}
@@ -78,8 +78,8 @@ public class LoadSchemaManager {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
 			}
-		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+		} catch (Throwable e) {
+			CustomDialog.showErrorMessageBox(CustomDialog.getExceptionMessage(e));
 		}
 
 		LoadSchemaManager.schemaManager = SchemaManager.getDefaultInstance();
@@ -87,7 +87,13 @@ public class LoadSchemaManager {
 		return LoadSchemaManager.schemaManager;
 	}
 	public static void  loadBuildinSchema(PackageManager pkgManager) throws Exception {
-		URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("aurora_builtin_package/")); 
-		pkgManager.loadPackgeDirectory(url.getFile());
+//		URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("aurora_builtin_package/"));
+//		pkgManager.loadPackgeDirectory(url.getFile());
+		String[] packages = new String[]{"aurora_builtin_package/aurora.base/","aurora_builtin_package/aurora.database/","aurora_builtin_package/aurora.presentation/"}; 
+		for (int i = 0; i < packages.length; i++) {
+			String packageName = packages[i];
+			URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource(packageName));
+			pkgManager.loadPackage(url.getFile());
+		}
 	}
 }
