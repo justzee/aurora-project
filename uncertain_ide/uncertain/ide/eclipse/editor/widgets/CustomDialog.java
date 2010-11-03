@@ -51,7 +51,7 @@ public class CustomDialog {
 		messageBox.open();
 	}
 
-	public static void showExceptionMessageBox(String title, Exception e) {
+	public static void showExceptionMessageBox(String title, Throwable e) {
 		Shell shell = new Shell();
 		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK
 				| SWT.APPLICATION_MODAL);
@@ -71,11 +71,11 @@ public class CustomDialog {
 		throw new RuntimeException(e);
 	}
 
-	public static void showExceptionMessageBox(Exception e) {
+	public static void showExceptionMessageBox(Throwable e) {
 		showExceptionMessageBox(null,e);
 	}
 
-	public static String getExceptionMessage(Exception e) {
+	public static String getExceptionMessage(Throwable e) {
 		String message = null;
 		if (e.getCause() != null) {
 			message = e.getCause().getLocalizedMessage();
