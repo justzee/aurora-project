@@ -63,8 +63,8 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public void refresh(String newContent) {
-		syc = true;
 		if (!newContent.equals(getSourceViewer().getTextWidget().getText())) {
+			syc = true;
 			getSourceViewer().getTextWidget().setText(newContent);
 		}
 	}
