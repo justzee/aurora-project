@@ -47,7 +47,6 @@ public class LoadSchemaManager {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
 			}
-			loadBuildinSchema(pkgManager);
 			LoadSchemaManager.schemaManager = new SchemaManager();
 			String pkg_name = SchemaManager.class.getPackage().getName();
 			String schema_name = pkg_name + ".SchemaForSchema";
