@@ -69,7 +69,7 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 		Element elm = LoadSchemaManager.getSchemaManager().getElement(element);
 		String elemDesc = null;
 		if (elm != null && !elm.isArray()) {
-			if (elm.getDisplayMask() == null) {
+			if (elm.getDisplayMask() != null) {
 				elemDesc = TextParser.parse(elm.getDisplayMask(), element);
 			}
 			if (elemDesc != null)
