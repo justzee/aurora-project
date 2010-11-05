@@ -4,6 +4,7 @@
 package uncertain.ide.eclipse.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -139,10 +140,13 @@ public class CompositeMapAction {
 				childElements.addAll(LoadSchemaManager.getSchemaManager()
 						.getElementsOfType(type));
 			}
-			return childElements;
 		}
 		// 如果节点是元素
-		childElements = getChildElements(parent);
+		else{
+			childElements = getChildElements(parent);
+		}
+		if(childElements != null)
+			Collections.sort(childElements);
 		return childElements;
 	}
 
