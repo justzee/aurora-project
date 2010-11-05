@@ -896,9 +896,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 					validError = false;
 					return;
 				}
-				try {
-					hashViewer.clear();
-				} catch (Exception e) {
+				String errorMessage = hashViewer.clear(true);
+				if(errorMessage != null){
 					validError = true;
 					grid.getViewer().setSelection(
 							new StructuredSelection(grid.getFocus()));
