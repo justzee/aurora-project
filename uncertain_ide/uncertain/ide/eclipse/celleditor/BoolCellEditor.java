@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 /**
  * @author linjinxiao
@@ -53,17 +52,17 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 		String errorMessage = "";
 		if(cellProperties.isRequired() && value == null){
 			validValue = false;
-			errorMessage = LocaleMessage.getString("this.field")+"<"+cellProperties.getColumnName()+"> "+LocaleMessage.getString("is.required");
+			errorMessage = "<"+cellProperties.getColumnName()+">"+LocaleMessage.getString("field")+LocaleMessage.getString("is.required");
 		}
 		if(value != null && (!value.equals("true")) &&(!value.equals("false"))){
 			validValue = false;
-			errorMessage =  LocaleMessage.getString("this.field")+"<"+cellProperties.getColumnName()+">"+LocaleMessage.getString("value.must.be.true.or.false");
+			errorMessage = "<"+cellProperties.getColumnName()+">"+LocaleMessage.getString("field")+LocaleMessage.getString("value.must.be.true.or.false");
 		}
 		if(!validValue){
-			CustomDialog.showErrorMessageBox(null, errorMessage);
+			setErrorMessage(errorMessage);
 			if(getCellControl() != null)
 				getCellControl().setFocus();
-			throw new IllegalArgumentException(errorMessage);
+			return false;
 		}
 		return true;
 	}
