@@ -48,6 +48,10 @@ public class TextPage extends TextEditor implements IViewer {
 					syc = false;
 					return;
 				}
+				//过滤超链接等事件触发
+				if(event.getDocumentEvent() == null){
+					return ;
+				}
 				refresh(true);
 			}
 		});
