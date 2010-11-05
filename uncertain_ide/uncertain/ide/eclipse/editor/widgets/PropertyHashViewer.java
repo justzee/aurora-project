@@ -91,12 +91,15 @@ public class PropertyHashViewer extends PropertyViewer implements
 		}
 	}
 
-	public void clear() throws Exception {
+	public String clear(boolean validation){
 		if (tableViewer != null) {
-			clearCellEditor();
+			String errorMessage = clearCellEditor(validation);
+			if(errorMessage != null)
+				return errorMessage;
 			tableViewer.getTable().removeAll();
 			elementDocument.setText("");
 		}
+		return null;
 	}
 
 	public void createEditor() {
@@ -169,7 +172,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 	}
 	private void repaint(){
 		try {
-			clear();
+			clear(false);
 			setData(getInput());
 		} catch (Exception e) {
 			CustomDialog.showExceptionMessageBox(e);
@@ -258,17 +261,22 @@ public class PropertyHashViewer extends PropertyViewer implements
 		customerEditors.put(property, cellEditor);
 	}
 
-	public void clearCellEditor() throws Exception {
+	public String clearCellEditor(boolean validation){
 		Object[] editors = customerEditors.values().toArray();
 		for (int i = 0; i < editors.length; i++) {
 			ICellEditor ed = (ICellEditor) editors[i];
-			ed.validValue(ed.getSelection());
+			if(validation){
+				if (!ed.validValue(ed.getSelection())) {
+					return ed.getErrorMessage();
+				}
+			}
 		}
 		for (int i = 0; i < editors.length; i++) {
 			ICellEditor ed = (ICellEditor) editors[i];
 			ed.dispose();
 		}
 		customerEditors.clear();
+		return null;
 	}
 
 	public void setCellEditors() {
