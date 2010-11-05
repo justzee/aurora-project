@@ -86,6 +86,8 @@ public class LoadSchemaManager {
 		return LoadSchemaManager.schemaManager;
 	}
 	public static void  loadBuildinSchema(PackageManager pkgManager) throws Exception {
+		URL uncertainUrl = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("uncertain_builtin_package/"));
+		pkgManager.loadPackgeDirectory(uncertainUrl.getFile());
 //		URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("aurora_builtin_package/"));
 //		pkgManager.loadPackgeDirectory(url.getFile());
 		String[] packages = new String[]{"aurora_builtin_package/aurora.base/","aurora_builtin_package/aurora.database/","aurora_builtin_package/aurora.presentation/"}; 
