@@ -155,7 +155,7 @@ public class BaseCompositeMapViewer implements IViewer {
 		}
 
 		private void createPropertyGridTab(Composite parent) {
-			gridViewer = new GridViewer(null, IGridViewer.fullEditable);
+			gridViewer = new GridViewer(null, IGridViewer.fullEditable|IGridViewer.isColumnPacked);
 			gridViewer.setParent(this);
 			gridViewer.createViewer(parent);
 			mTabFolder.getItem(1).setControl(gridViewer.getControl());
