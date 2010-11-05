@@ -74,7 +74,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 		tableViewer.setInput(data);
 		int xWidth = parent.getBounds().width;
 		if (xWidth == 0)
-			xWidth = 600;
+			xWidth = 800;
 		Table table = tableViewer.getTable();
 		int columnWidth = xWidth / table.getColumnCount();
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
