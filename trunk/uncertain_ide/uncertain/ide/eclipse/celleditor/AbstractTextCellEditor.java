@@ -20,17 +20,17 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		ICellEditor {
 
 	protected CellProperties cellProperties;
-	
+	protected String oldInput;
 	public AbstractTextCellEditor(CellProperties cellProperties) {
 		this.cellProperties = cellProperties;
 	}
 
 	public boolean validValue(String value) {
 		if(cellProperties.isRequired() && (value == null || value.equals(""))){
-			String message = LocaleMessage.getString("this.field")+"<"+cellProperties.getColumnName()+"> "+LocaleMessage.getString("is.required");
-			CustomDialog.showErrorMessageBox(null, message);
+			String message = "<"+cellProperties.getColumnName()+"> "+LocaleMessage.getString("field")+LocaleMessage.getString("is.required");
+			setErrorMessage(message);
 			getCellControl().setFocus();
-			throw new IllegalArgumentException(message);
+			return false;
 		}
 		return true;
 	}
@@ -72,6 +72,7 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 			SetSelection(cellProperties.getRecord().getString(cellProperties.getColumnName()));
 			addCellListener();
 		}
+		oldInput = getSelection();
 	}
 	
 	protected void addCellListener() {
@@ -79,6 +80,14 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 
 			public void editorValueChanged(boolean oldValidState,
 					boolean newValidState) {
+				cellProperties.getTableViewer().refresh(true);
+				String input = getSelection();
+				 if(validValue(input)){
+					 oldInput = input;
+				 }else{
+					 CustomDialog.showErrorMessageBox(getErrorMessage());
+					 SetSelection(oldInput);
+				 }
 			}
 
 			public void cancelEditor() {
@@ -87,15 +96,14 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 			public void applyEditorValue() {
 				String dataValue = getSelection();
 				cellProperties.getRecord().put(cellProperties.getColumnName(), dataValue);
-				cellProperties.getTableViewer().refresh(true);
 			}
 		});
 		getCellControl().addFocusListener(new FocusListener() {
 			
 			public void focusLost(FocusEvent e) {
-				if(isTableItemEditor())
+				if(isTableItemEditor()){
 					fillTableCellEditor(cellProperties.getTableItem());
-			
+				}
 			}
 			
 			public void focusGained(FocusEvent e) {
