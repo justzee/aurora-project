@@ -111,10 +111,9 @@ public class BussinessModelPage extends CompositeMapPage {
 				parent);
 		childViews.add(mPropertyEditor);
 		mPropertyEditor.createEditor();
-		try {
-			mPropertyEditor.clear();
-		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+		String errorMessage = mPropertyEditor.clear(true);
+		if(errorMessage != null){
+			CustomDialog.showErrorMessageBox(errorMessage);
 		}
 		mPropertyEditor.setData(data);
 	}
