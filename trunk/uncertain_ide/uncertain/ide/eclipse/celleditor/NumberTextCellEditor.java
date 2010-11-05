@@ -11,7 +11,6 @@ import uncertain.datatype.ConvertionException;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 /**
  * @author linjinxiao
@@ -37,9 +36,9 @@ public class NumberTextCellEditor extends AbstractTextCellEditor {
 			errorMessage = LocaleMessage.getString("this.value")+"'" + value + "' can not for this field <"
 					+ cellProperties.getColumnName() + "> !  "
 					+ e.getLocalizedMessage();
-			CustomDialog.showErrorMessageBox(null, errorMessage);
+			setErrorMessage(errorMessage);
 			getCellControl().setFocus();
-			throw new IllegalArgumentException(errorMessage);
+			return false;
 		}
 		return super.validValue(value);
 	}
