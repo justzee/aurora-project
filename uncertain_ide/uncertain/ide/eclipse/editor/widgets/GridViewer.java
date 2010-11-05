@@ -72,6 +72,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	protected CellEditor[] cellEditors;
 
 	protected int gridStyle;
+
 	public int getGridStyle() {
 		return gridStyle;
 	}
@@ -151,10 +152,12 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		return records;
 	}
 
-	public void clearAll() throws Exception {
+	public String clearAll(boolean validation) {
 		if (tableViewer.getTable() != null) {
 			// validate values;
-			clearEditors();
+			String errorMessage = clearEditors(validation);
+			if (errorMessage != null)
+				return errorMessage;
 			columnNames = null;
 			data = null;
 			isColumnPacked = false;
@@ -162,16 +165,20 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			viewForm.dispose();
 			container.dispose();
 		}
-
+		return null;
 	}
 
-	public void clearEditors() throws Exception {
+	public String clearEditors(boolean validation) {
 		Object[] editors = columnEditors.values().toArray();
 		// Not validate the null grid properties.
 		if (getInput() != null && getInput().getChildsNotNull().size() > 0) {
 			for (int i = 0; i < editors.length; i++) {
 				ICellEditor ed = (ICellEditor) editors[i];
-				ed.validValue(ed.getSelection());
+				if(validation){
+					if (!ed.validValue(ed.getSelection())) {
+						return ed.getErrorMessage();
+					}
+				}
 			}
 		}
 		for (int i = 0; i < editors.length; i++) {
@@ -179,6 +186,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			ed.dispose();
 		}
 		columnEditors.clear();
+		return null;
 
 	}
 
@@ -190,7 +198,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		toolBarManager = createToolBar();
 		tableViewer = createTableViewer();
 
-		if ((gridStyle&IGridViewer.NoToolBar) == 0)
+		if ((gridStyle & IGridViewer.NoToolBar) == 0)
 			viewForm.setTopLeft(toolBarManager.getControl());
 		viewForm.setContent(tableViewer.getControl());
 
@@ -201,12 +209,13 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
 			}
 		});
-		 if(data != null){
-			 setData(data);
-		 }
+		if (data != null) {
+			setData(data);
+		}
 		return container;
 	}
-	public void setTableSorter(ViewerSorter viewSorter){
+
+	public void setTableSorter(ViewerSorter viewSorter) {
 		tableViewer.setSorter(viewSorter);
 	}
 
@@ -266,7 +275,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
 	public CompositeMap getFocus() {
 		IStructuredSelection selection = (IStructuredSelection) getViewer()
-		.getSelection();
+				.getSelection();
 		CompositeMap record = (CompositeMap) selection.getFirstElement();
 		return record;
 	}
@@ -319,13 +328,13 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
 	public void setData(CompositeMap data) {
 		this.data = data;
-		if (tableViewer  != null) {
+		if (tableViewer != null) {
 			if (tableViewer.getColumnProperties() == null)
 				createTableColumns();
 			if (data.getChilds() != null) {
 				tableViewer.setInput(data);
 				if (isAllChecked())
-					setAllChecked(tableViewer.getTable(),true);
+					setAllChecked(tableViewer.getTable(), true);
 			}
 		}
 	}
@@ -353,26 +362,33 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	protected void createDefaultActions() {
 		toolBarManager.removeAll();
 		if ((gridStyle & IGridViewer.NoToolBar) == 0) {
-			if((gridStyle & IGridViewer.fullEditable) != 0){
+			if ((gridStyle & IGridViewer.fullEditable) != 0) {
 				Element element = null;
 				try {
-					element = LoadSchemaManager.getSchemaManager().getElement(data);
+					element = LoadSchemaManager.getSchemaManager().getElement(
+							data);
 				} catch (Exception e) {
-					//do nothing
+					// do nothing
 				}
 				if (element != null && element.isArray()) {
-					final QualifiedName qName = element.getElementType().getQName();
+					final QualifiedName qName = element.getElementType()
+							.getQName();
 					Action addAction = new AddElementAction(this, data, qName);
 					addAction.setText("");
-					addAction.setHoverImageDescriptor(Activator.getImageDescriptor(LocaleMessage.getString("add.icon")));
-	
+					addAction.setHoverImageDescriptor(Activator
+							.getImageDescriptor(LocaleMessage
+									.getString("add.icon")));
+
 					Action removeAction = new RemoveElementAction(this,
-							RemovePropertyAction.getDefaultImageDescriptor(), null);
-					Action refreshAction = new RefreshAction(this, RefreshAction
-							.getDefaultImageDescriptor(), null);
+							RemovePropertyAction.getDefaultImageDescriptor(),
+							null);
+					Action refreshAction = new RefreshAction(this,
+							RefreshAction.getDefaultImageDescriptor(), null);
 					toolBarManager.add(createActionContributionItem(addAction));
-					toolBarManager.add(createActionContributionItem(refreshAction));
-					toolBarManager.add(createActionContributionItem(removeAction));
+					toolBarManager
+							.add(createActionContributionItem(refreshAction));
+					toolBarManager
+							.add(createActionContributionItem(removeAction));
 					toolBarManager.update(true);
 					tableViewer.getTable().addKeyListener(new KeyListener() {
 						public void keyPressed(KeyEvent e) {
@@ -380,7 +396,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 								removeElement();
 							}
 						}
-	
+
 						public void keyReleased(KeyEvent e) {
 						}
 					});
@@ -388,25 +404,30 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			}
 
 		}
-		if((gridStyle & IGridViewer.isMulti) != 0){
+		if ((gridStyle & IGridViewer.isMulti) != 0) {
 
-			Action allCheckAction = new Action(LocaleMessage.getString("all.checed"),Activator.getImageDescriptor(LocaleMessage.getString("checked.icon"))) {
+			Action allCheckAction = new Action(LocaleMessage
+					.getString("all.checed"),
+					Activator.getImageDescriptor(LocaleMessage
+							.getString("checked.icon"))) {
 				public void run() {
-					setAllChecked(tableViewer.getTable(),true);
+					setAllChecked(tableViewer.getTable(), true);
 				}
 			};
-			Action unAllCheckAction = new Action(LocaleMessage.getString("non.checed"),Activator.getImageDescriptor(LocaleMessage.getString("unchecked.icon"))) {
+			Action unAllCheckAction = new Action(LocaleMessage
+					.getString("non.checed"), Activator
+					.getImageDescriptor(LocaleMessage
+							.getString("unchecked.icon"))) {
 				public void run() {
-					setAllChecked(tableViewer.getTable(),false);
+					setAllChecked(tableViewer.getTable(), false);
 				}
 			};
 			toolBarManager.add(createActionContributionItem(allCheckAction));
 			toolBarManager.add(createActionContributionItem(unAllCheckAction));
 			toolBarManager.update(true);
 
+		}
 	}
-	}
-
 
 	protected CellEditor[] createCellEditors() {
 		if (cellEditors != null)
@@ -450,7 +471,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	}
 
 	protected void createTableCompoment() {
-		if ((gridStyle & IGridViewer.fullEditable) == 0&&(gridStyle & IGridViewer.isOnlyUpdate) == 0) {
+		if ((gridStyle & IGridViewer.fullEditable) == 0
+				&& (gridStyle & IGridViewer.isOnlyUpdate) == 0) {
 			labelProvider = new PlainCompositeMapLabelProvider(columnNames);
 			tableViewer.setLabelProvider(labelProvider);
 			tableViewer.setCellModifier(new PlainCompositeMapCellModifier());
@@ -487,8 +509,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		if ((gridStyle & IGridViewer.filterBar) != 0) {
 			Label headerLabel = new Label(container, SWT.NONE);
 			String columnText = filterColumn;
-			headerLabel.setText(LocaleMessage.getString("please.input") + columnText
-					+ LocaleMessage.getString("prefix.of.column"));
+			headerLabel.setText(LocaleMessage.getString("please.input")
+					+ columnText + LocaleMessage.getString("prefix.of.column"));
 
 			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 			headerLabel.setLayoutData(gd);
@@ -507,9 +529,9 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		Image idp = Activator.getImageDescriptor(seq_imagePath).createImage();
 		TableColumn seq_column = new TableColumn(tableViewer.getTable(),
 				SWT.LEFT);
-		
+
 		seq_column.setText(LocaleMessage.getString("sequence"));
-		if((gridStyle&IGridViewer.NoSeqColumn) !=0)
+		if ((gridStyle & IGridViewer.NoSeqColumn) != 0)
 			seq_column.setText("");
 		seq_column.setImage(idp);
 		seq_column.pack();
@@ -536,9 +558,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 				columnNames.length);
 		tableViewer.setColumnProperties(fullGridProperties);
 
-
 		createDefaultActions();
-		
+
 		createTableCompoment();
 
 		createTableColumn(tableViewer, columnNames);
@@ -562,7 +583,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		tableViewer.getTable().setLinesVisible(true);
 		tableViewer.getTable().setHeaderVisible(true);
 		if (isAllChecked())
-			setAllChecked(tableViewer.getTable(),true);
+			setAllChecked(tableViewer.getTable(), true);
 
 		if (isSerchable()) {
 			final BmPageFilter filter = new BmPageFilter(filterColumn);
@@ -599,7 +620,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		return (gridStyle & IGridViewer.filterBar) != 0;
 	}
 
-	public void setAllChecked(Table table,boolean state) {
+	public void setAllChecked(Table table, boolean state) {
 		TableItem[] children = table.getItems();
 		for (int i = 0; i < children.length; i++) {
 			TableItem item = children[i];
