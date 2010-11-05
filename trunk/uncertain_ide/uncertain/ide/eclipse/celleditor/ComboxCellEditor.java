@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 /**
  * @author linjinxiao
@@ -90,11 +89,11 @@ public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor 
 				return true;
 		}
 		if (!validResult) {
-			errorMessage =  LocaleMessage.getString("this.field")+"<" + cellProperties.getColumnName()
-					+ ">"+LocaleMessage.getString("value.must.be.in")+"'" + selections + "' !";
-			CustomDialog.showErrorMessageBox(null, errorMessage);
+			errorMessage =  "<" + cellProperties.getColumnName()
+					+ ">"+LocaleMessage.getString("field")+LocaleMessage.getString("value.must.be.in")+"'" + selections + "' !";
+			setErrorMessage(errorMessage);
 			getCellControl().setFocus();
-			throw new IllegalArgumentException(errorMessage);
+			return false;
 		}
 		return validResult;
 	}
