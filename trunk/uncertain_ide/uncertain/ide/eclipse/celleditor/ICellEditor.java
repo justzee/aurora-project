@@ -21,5 +21,6 @@ public interface ICellEditor {
 	public Control getCellControl();
 	public void dispose();
 	public boolean validValue(String value);
+	public String getErrorMessage();
 	public CellEditor getCellEditor();
 }
