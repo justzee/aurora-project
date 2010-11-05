@@ -377,7 +377,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 
 	private void creatTableViewer(Composite parent, ResultSet resultSet)
 			throws Exception {
-		tableViewer.clearAll();
+		tableViewer.clearAll(false);
 		tableViewer.createViewer(parent);
 		tableViewer.getControl().setVisible(true);
 		String[] ColumnProperties = createColumnProperties(resultSet);
