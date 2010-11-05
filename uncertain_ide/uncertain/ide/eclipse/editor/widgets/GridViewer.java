@@ -540,11 +540,22 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 					SWT.LEFT);
 			column.setText(attrProperties[i]);
 			column.setImage(idp);
-			int width = tableViewer.getTable().getParent().getBounds().width;
-			if (width == 0) {
-				width = 800;
-			}
-			int columnWidth = width / (attrProperties.length + 1);
+			setColumnWidth(column,tableViewer,attrProperties.length);
+		}
+	}
+	private void setColumnWidth(TableColumn column,TableViewer tableViewer,int propertyLength){
+		int defaultScreenWidth = 800;
+		int defaultColumnWidth = 120;
+		int width = tableViewer.getTable().getParent().getBounds().width;
+		width = width==0?defaultScreenWidth:width;
+		int columnWidth = width / (propertyLength);
+		if(columnWidth>defaultColumnWidth){
+			column.setWidth(columnWidth);
+			return;
+		}
+		if((IGridViewer.isColumnPacked&gridStyle)!= 0){
+			column.pack();
+		}else{
 			column.setWidth(columnWidth);
 		}
 	}
