@@ -28,10 +28,12 @@ import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.textpage.JavaScriptLineStyler;
 import uncertain.ide.eclipse.editor.widgets.CompositeMapTreeViewer;
+import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.IGridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
 import uncertain.schema.Element;
+import uncertain.schema.IType;
 
 public class BaseCompositeMapViewer implements IViewer {
 
@@ -231,9 +233,14 @@ public class BaseCompositeMapViewer implements IViewer {
 			}
 		}
 
-		public void clear() throws Exception {
-			mPropertyEditor.clear();
-			gridViewer.clearAll();
+		public String clear(boolean validation){
+			String errorMessage = mPropertyEditor.clear(validation);
+			if(errorMessage != null)
+				return errorMessage;
+			errorMessage = gridViewer.clearAll(validation);
+			if(errorMessage != null)
+				return errorMessage;
+			return null;
 		}
 
 		public void refresh(boolean isDirty) {
@@ -322,20 +329,42 @@ public class BaseCompositeMapViewer implements IViewer {
 				validError = false;
 				return;
 			}
-			try {
-				propertySection.clear();
-			} catch (Exception e) {
+			TreeSelection selection = (TreeSelection) event.getSelection();
+			CompositeMap data = (CompositeMap) selection.getFirstElement();
+			boolean validation = getValidation(treeViewer.getFocus(),data);
+			String errorMessage = propertySection.clear(validation);
+			if(errorMessage != null){
 				validError = true;
+				CustomDialog.showErrorMessageBox(errorMessage);
 				treeViewer.getTreeViewer().setSelection(
 						new StructuredSelection(treeViewer.getFocus()));
 				return;
 			}
-			TreeSelection selection = (TreeSelection) event.getSelection();
-			CompositeMap data = (CompositeMap) selection.getFirstElement();
 			if (data == null)
 				return;
 			treeViewer.setFocus(data);
 			propertySection.setInput(data);
+		}
+		private boolean getValidation(CompositeMap focus,CompositeMap selection){
+			if(focus == null || selection == null)
+				return true;
+
+			if(isArryRelation(focus,selection)||isArryRelation(selection,focus)){
+				return false; 
+			}
+			return true;
+		}
+		private boolean isArryRelation(CompositeMap parent,CompositeMap child){
+			Element parent_element = LoadSchemaManager.getSchemaManager().getElement(parent);
+			if(parent_element == null ||!parent_element.isArray())
+				return false;
+			Element child_element = LoadSchemaManager.getSchemaManager().getElement(child);
+			if(child_element == null)
+				return false;
+			IType parentIType = parent_element.getElementType();
+			if(child_element.getQName().equals(parentIType.getQName())||child_element.isExtensionOf(parentIType))
+				return true;
+			return false;
 		}
 
 	}
