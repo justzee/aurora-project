@@ -116,8 +116,9 @@ public class PropertyHashViewer extends PropertyViewer implements
 		tableViewer = new TableViewer(viewForm, SWT.BORDER | SWT.FULL_SELECTION);
 		Table mTable = tableViewer.getTable();
 		tableViewer.setLabelProvider(new PropertyHashLabelProvider());
-		
-		PropertyHashContentProvider contentProvider = new PropertyHashContentProvider(this);
+
+		PropertyHashContentProvider contentProvider = new PropertyHashContentProvider(
+				this);
 		tableViewer.setContentProvider(contentProvider);
 		tableViewer.setCellModifier(new PropertyHashCellModifier(this));
 		tableViewer.setColumnProperties(TABLE_COLUMN_PROPERTIES);
@@ -135,10 +136,11 @@ public class PropertyHashViewer extends PropertyViewer implements
 				.getString("description"));
 		viewForm.setContent(tableViewer.getControl());
 		addKeyListener();
-		tableViewer.setSorter(new PropertyHashSorter(this,contentProvider));
+		tableViewer.setSorter(new PropertyHashSorter(this, contentProvider));
 		propertycolumn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				((PropertyHashSorter) tableViewer.getSorter()).doSort(0);
+				repaint();
 				refresh();
 			}
 		});
@@ -163,6 +165,9 @@ public class PropertyHashViewer extends PropertyViewer implements
 
 	public void setCategory(boolean isCategory) {
 		this.isCategory = isCategory;
+		repaint();
+	}
+	private void repaint(){
 		try {
 			clear();
 			setData(getInput());
