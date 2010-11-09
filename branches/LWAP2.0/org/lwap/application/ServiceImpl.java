@@ -92,7 +92,17 @@ public abstract class ServiceImpl implements Service {
 		this.response = response;
 		JSONObject dm=getParameterString(request);
         CompositeMap r = service_context.createChild(KEY_REQUEST);
-        r.put(KEY_ADDRESS, request.getRemoteAddr());
+        String ip = request.getHeader("x-forwarded-for");   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+			ip = request.getHeader("Proxy-Client-IP");   
+		}   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+			ip = request.getHeader("WL-Proxy-Client-IP");   
+		}   
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {   
+			ip = request.getRemoteAddr();   
+		}
+        r.put(KEY_ADDRESS, ip);
         r.put("url", getServiceName());
         if(dm.length()!=0){
         	r.put("params", dm);
