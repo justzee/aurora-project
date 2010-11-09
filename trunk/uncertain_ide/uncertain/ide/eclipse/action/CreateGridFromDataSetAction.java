@@ -582,7 +582,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 				celleditors[i + 1] = new TextCellEditor(tableView.getTable());
 			}
 			// CompositeMap editors = wizard.getEditors();
-			QualifiedName qn = new QualifiedName(uri, "BaseEditorComponent");
+			QualifiedName qn = new QualifiedName(uri, "Component");
 			ComplexType type = LoadSchemaManager.getSchemaManager()
 					.getComplexType(qn);
 			List editors = LoadSchemaManager.getSchemaManager()

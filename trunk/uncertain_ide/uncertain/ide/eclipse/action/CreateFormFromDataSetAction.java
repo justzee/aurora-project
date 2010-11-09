@@ -76,7 +76,10 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 	}
 
 	public void run() {
-		CompositeMap dataSets = getAvailableDataSets(parent);
+		
+		CompositeMap view = parent.getParent().getParent();
+		
+		CompositeMap dataSets = getAvailableDataSets(view);
 		if (dataSets == null || dataSets.getChildsNotNull().size() == 0) {
 			CustomDialog.showWarningMessageBox("no.dataSet.available");
 			return;
@@ -610,7 +613,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				celleditors[i + 1] = new TextCellEditor(tableView.getTable());
 			}
 			// CompositeMap editors = wizard.getEditors();
-			QualifiedName qn = new QualifiedName(uri, "BaseEditorComponent");
+			QualifiedName qn = new QualifiedName(uri, "Component");
 			ComplexType type = LoadSchemaManager.getSchemaManager()
 					.getComplexType(qn);
 			List editors = LoadSchemaManager.getSchemaManager()
