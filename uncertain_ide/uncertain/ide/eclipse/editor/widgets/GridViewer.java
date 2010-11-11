@@ -301,7 +301,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			if (tableViewer != null && !tableViewer.getTable().isDisposed()) {
 				if (data != null && data.getChilds() != null) {
 					labelProvider.refresh();
-					tableViewer.refresh();
+//					tableViewer.refresh();
+					tableViewer.setInput(data);
 				}
 			}
 		}
