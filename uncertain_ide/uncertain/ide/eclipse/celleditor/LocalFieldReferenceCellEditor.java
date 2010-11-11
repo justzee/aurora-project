@@ -57,7 +57,7 @@ public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 			filedNames.addChild(newChild);
 
 		}
-		String[] columnProperties = {"seq","name"};
+		String[] columnProperties = {"name"};
 		GridViewer grid = new GridViewer();
 		grid.setData(filedNames);
 		grid.setFilterColumn("name");
