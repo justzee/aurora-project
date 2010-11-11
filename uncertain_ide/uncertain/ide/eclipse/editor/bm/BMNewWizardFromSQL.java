@@ -33,6 +33,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import aurora.ide.AuroraConstant;
+
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
@@ -50,8 +52,7 @@ import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 
 public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 
-	public static String bm_uri = "http://www.aurora-framework.org/schema/bm";
-	public static String bm_pre = "bm";
+	private final static String bm_pre = "bm";
 
 	private BMMainPageFromSQL mainPage;
 	private ISelection selection;
@@ -166,23 +167,23 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 
 	private CompositeMap createInitContent() {
 		CompositeMap model = new CompositeMap(BMNewWizardFromSQL.bm_pre,
-				BMNewWizardFromSQL.bm_uri, "model");
-		CompositeMap operations = new CompositeMap(bm_pre, bm_uri, "operations");
-		CompositeMap operation = new CompositeMap(bm_pre, bm_uri, "operation");
+				AuroraConstant.BMUri, "model");
+		CompositeMap operations = new CompositeMap(bm_pre, AuroraConstant.BMUri, "operations");
+		CompositeMap operation = new CompositeMap(bm_pre, AuroraConstant.BMUri, "operation");
 		operations.addChild(operation);
 		model.addChild(operations);
 		String sql = mainPage.getSQL();
 		String operationName = "update";
 		if (sql.toLowerCase().trim().startsWith("select")) {
-			operationName = "select";
+			operationName = "query";
 		}
 		operation.put("name", operationName);
-		if (operationName.equals("select")) {
-			CompositeMap query = new CompositeMap(bm_pre, bm_uri, "query-sql");
+		if (operationName.equals("query")) {
+			CompositeMap query = new CompositeMap(bm_pre, AuroraConstant.BMUri, "query-sql");
 			query.setText(sql);
 			operation.addChild(query);
 		} else {
-			CompositeMap update = new CompositeMap(bm_pre, bm_uri, "update-sql");
+			CompositeMap update = new CompositeMap(bm_pre, AuroraConstant.BMUri, "update-sql");
 			update.setText(sql);
 			operation.addChild(update);
 		}
@@ -198,7 +199,7 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 		} catch (Exception e) {
 			// do nothing
 		}
-		if (dbConnection == null || !operationName.equals("select"))
+		if (dbConnection == null || !operationName.equals("query"))
 			return model;
 		String fromClause = getSelectClause(sql);
 		if (fromClause == null)
