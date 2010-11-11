@@ -2,25 +2,20 @@ package uncertain.ide.eclipse.celleditor;
 
 import java.util.Iterator;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PlatformUI;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Common;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
+import uncertain.ide.eclipse.wizards.ProjectProperties;
 
 public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 
@@ -68,17 +63,9 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 		if(fileName == null)
 			throw new RuntimeException(LocaleMessage.getString("its.parent's")+"'refModel'"+LocaleMessage.getString("attribute.value.is.null"));
 		CompositeLoader loader = new CompositeLoader();
-		IEditorInput input = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor().getEditorInput();
-		IFile ifile = ((IFileEditorInput) input).getFile();
-		IProject project = ifile.getProject();
-		
 		String path = fileName.replace('.', '/') +'.' + "bm";
-		ifile = project.getFile(path);
-		String fullPath = Common.getIfileLocalPath(ifile);
-		
-		
+		String fullPath = ProjectProperties.getBMBaseDir()+"/"+path;
 		CompositeMap root = loader.loadByFullFilePath(fullPath);
-		
 		CompositeMap fields = root.getChild("fields");
 		CompositeMap filedNames = new CompositeMap();
 		for(Iterator it = fields.getChildsNotNull().iterator();it.hasNext();){
@@ -91,7 +78,7 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 			filedNames.addChild(newChild);
 
 		}
-		String[] columnProperties = {"seq","name"};
+		String[] columnProperties = {"name"};
 		GridViewer grid = new GridViewer();
 		grid.setData(filedNames);
 		grid.setFilterColumn("name");
