@@ -613,7 +613,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				celleditors[i + 1] = new TextCellEditor(tableView.getTable());
 			}
 			// CompositeMap editors = wizard.getEditors();
-			QualifiedName qn = new QualifiedName(uri, "Component");
+			QualifiedName qn = new QualifiedName(uri, "Field");
 			ComplexType type = LoadSchemaManager.getSchemaManager()
 					.getComplexType(qn);
 			List editors = LoadSchemaManager.getSchemaManager()
