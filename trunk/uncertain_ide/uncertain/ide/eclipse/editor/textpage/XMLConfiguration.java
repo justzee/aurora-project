@@ -15,6 +15,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
+import uncertain.ide.eclipse.editor.textpage.Hyperlink.BMFileHyperlinkDetector;
 import uncertain.ide.eclipse.editor.textpage.contentassist.TagContentAssistProcessor;
 import uncertain.ide.eclipse.editor.textpage.format.DefaultFormattingStrategy;
 import uncertain.ide.eclipse.editor.textpage.format.DocTypeFormattingStrategy;
