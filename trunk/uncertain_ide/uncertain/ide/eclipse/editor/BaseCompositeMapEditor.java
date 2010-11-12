@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -71,6 +73,12 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		}
 		mainViewerPage.doSave(monitor);
 		setDirty(false);
+		IFile ifile =((IFileEditorInput)getEditorInput()).getFile();
+		try {
+			ifile.refreshLocal(IResource.DEPTH_ONE, null);
+		} catch (CoreException e) {
+			CustomDialog.showExceptionMessageBox(e);
+		}
 	}
 
 	public void doSaveAs() {
