@@ -31,9 +31,8 @@ import uncertain.schema.Element;
  */
 public class ChildStrategy implements IContentAssistStrategy {
 
-	TokenString tokenString;
-	ITextViewer viewer;
-	int offset;
+	private TokenString tokenString;
+	private ITextViewer viewer;
 
 	public ChildStrategy(TokenString tokenString) {
 		this.tokenString = tokenString;
@@ -42,14 +41,18 @@ public class ChildStrategy implements IContentAssistStrategy {
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
 			int offset) throws BadLocationException {
 		this.viewer = viewer;
-		this.offset = offset;
 		IDocument document = viewer.getDocument();
+
+		ITypedRegion thisRegion = document.getPartition(offset);
+		String thisContent = document.get(thisRegion.getOffset() + 1,
+				thisRegion.getLength());
+		if (thisContent.indexOf("<") < 0) {
+			return null;
+		}
 		int length = offset - tokenString.getDocumentOffset() + 1;
 		String old = document.get(tokenString.getDocumentOffset() - 1, length);
-
 		document.replace(tokenString.getDocumentOffset() - 1, length, "");
 		String content = document.get();
-
 		CompositeLoader cl = new CompositeLoader();
 		cl.setSaveNamespaceMapping(true);
 		ITypedRegion region = document.getPartition(offset - 1);
