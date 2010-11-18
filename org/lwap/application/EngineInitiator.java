@@ -58,8 +58,7 @@ public class EngineInitiator {
             os.registerInstanceOnce(TransactionFactory.class,
                     application.transaction_factory);
         }
-        LoggingUtil.setHandleLevels(uncertainEngine.getLogger().getParent(),
-                Level.INFO);
+        //LoggingUtil.setHandleLevels(uncertainEngine.getLogger(),Level.INFO);
         uncertainEngine.scanConfigFiles(pattern);
     }
 
