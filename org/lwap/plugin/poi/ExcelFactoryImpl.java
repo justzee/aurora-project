@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +21,9 @@ import uncertain.composite.TextParser;
 
 public class ExcelFactoryImpl {
 	CompositeMap dataModel;
-	public File createExcel(CompositeMap dataModel, ExcelReport config)throws Exception {
+
+	public File createExcel(CompositeMap dataModel, ExcelReport config)
+			throws Exception {
 		File f = null;
 		Workbook wb = null;
 		Sheet sheet = null;
@@ -32,19 +35,19 @@ public class ExcelFactoryImpl {
 		this.dataModel = dataModel;
 		boolean is_xls = "xls".equalsIgnoreCase(config.getFileFormat()) ? true
 				: false;
-		String template=config.getTemplate();	
-		if(template!=null)
-			template = is_xls? template + ".xlt" : config
-				.getTemplate() + ".xlsx";
-		String templatePath=config.getTemplatePath();	
-		File filePath=new File(templatePath);
-		if(!filePath.exists()&&template!=null)
+		String template = config.getTemplate();
+		if (template != null)
+			template = is_xls ? template + ".xlt" : config.getTemplate()
+					+ ".xlsx";
+		String templatePath = config.getTemplatePath();
+		File filePath = new File(templatePath);
+		if (!filePath.exists() && template != null)
 			throw new Exception("excel template path undefined");
-		try {			
-			File file = new File(filePath,template);
+		try {
+			File file = new File(filePath, template);
 			is = new FileInputStream(file);
 		} catch (Exception e) {
-			if(template!=null)
+			if (template != null)
 				throw new Exception("excel template not exist");
 		}
 		if (is != null)
@@ -66,31 +69,31 @@ public class ExcelFactoryImpl {
 			}
 		}
 		File tempPath = null;
-		try{
+		try {
 			tempPath = new File(config.getTempPath());
-			if(!tempPath.exists())
+			if (!tempPath.exists())
 				throw new Exception();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new Exception("temp path undefined");
-		}			
-		String filename = String.valueOf(System.currentTimeMillis())
-				+ ".xls";
+		}
+		String filename = String.valueOf(System.currentTimeMillis()) + ".xls";
 		if (!is_xls) {
 			filename = filename + "x";
 		}
-		f = new File(tempPath,filename);
+		f = new File(tempPath, filename);
 		FileOutputStream out = new FileOutputStream(f);
-		try{		
-			wb.write(out);	
-		}finally{
-			if(out!=null)
+		try {
+			wb.write(out);
+		} finally {
+			if (out != null)
 				out.close();
 		}
 		return f;
 	}
 
 	void createExcelTable(Sheet sheet, ExcelTable tableConfig) {
-		String context=null;
+		String context = null;
+		CompositeMap record = null;
 		Row r = null;
 		Cell c = null;
 		boolean createTableHead = tableConfig.getCreateTableHead();
@@ -114,7 +117,7 @@ public class ExcelFactoryImpl {
 				if (tableHeadEachRow && count % 2 == 1) {
 					createExcelTableHead(r, columnConfigs, colnum);
 				} else {
-					CompositeMap record = (CompositeMap) it.next();
+					record = (CompositeMap) it.next();
 					Iterator iterator = columnConfigs.getChildIterator();
 					if (iterator != null) {
 						int j = -1;
@@ -123,11 +126,21 @@ public class ExcelFactoryImpl {
 									.next();
 							if ((c = r.getCell(j + colnum)) == null)
 								c = r.createCell(j + colnum);
-							context=object.getString("datafield");
-							if(context.indexOf("@")!=0){
-								c.setCellValue(TextParser.parse(context, dataModel));
-							}else{
-								c.setCellValue(record.getString(context.replace("@", "")));
+							context = object.getString("datafield");
+							if (context.indexOf("@") != 0) {
+								context = TextParser.parse(context, dataModel);
+							} else {
+								context = record.getString(context.replace("@",
+										""));
+							}
+							String dataType = object.getString("datatype");
+							if (dataType == null)
+								c.setCellValue(context);
+							if ("java.lang.Long".equals(dataType)){
+								if(context==null||"".equals(context))
+									c.setCellValue("");
+								else
+									c.setCellValue(Double.valueOf(context));
 							}
 							j++;
 						}
@@ -147,7 +160,8 @@ public class ExcelFactoryImpl {
 				CompositeMap object = (CompositeMap) iterator.next();
 				if ((c = r.getCell(j + colnum)) == null)
 					c = r.createCell(j + colnum);
-				c.setCellValue(TextParser.parse(object.getString("prompt"), dataModel));
+				c.setCellValue(TextParser.parse(object.getString("prompt"),
+						dataModel));
 				j++;
 			}
 		}
@@ -162,7 +176,15 @@ public class ExcelFactoryImpl {
 			r = sheet.createRow(rownum - 1);
 		if ((c = r.getCell(colnum - 1)) == null)
 			c = r.createCell(colnum - 1);
-		c.setCellValue(value);
+		String dataType = labelConfig.getDataType();
+		if (dataType == null)
+			c.setCellValue(value);
+		if ("java.lang.Long".equals(dataType)){
+			if(value==null||"".equals(value))
+				c.setCellValue("");
+			else
+				c.setCellValue(Double.valueOf(value));
+		}
 	}
 
 	public CompositeMap extractionExcel(File file) throws Exception {
@@ -180,7 +202,7 @@ public class ExcelFactoryImpl {
 			wb = new HSSFWorkbook(is);
 		} else if (".xlsx".equalsIgnoreCase(suffix)) {
 			wb = new XSSFWorkbook(is);
-		}		
+		}
 		for (int i = 0, sheetLength = wb.getNumberOfSheets(); i < sheetLength; i++) {
 			sheet = wb.getSheetAt(i);
 			CompositeMap sheetData = new CompositeMap("sheet");
