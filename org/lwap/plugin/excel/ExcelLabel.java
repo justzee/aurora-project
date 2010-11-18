@@ -2,9 +2,16 @@ package org.lwap.plugin.excel;
 
 public class ExcelLabel {
 	String content;
+	String dataType;
 	int row=1;
 	int col=1;
 	String style;
+	public String getDataType() {
+		return dataType;
+	}
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
 	public String getContent() {
 		return content;
 	}
