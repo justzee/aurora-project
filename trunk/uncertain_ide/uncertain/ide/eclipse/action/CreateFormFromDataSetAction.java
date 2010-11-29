@@ -76,9 +76,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 	}
 
 	public void run() {
-		
+
 		CompositeMap view = parent.getParent().getParent();
-		
 		CompositeMap dataSets = getAvailableDataSets(view);
 		if (dataSets == null || dataSets.getChildsNotNull().size() == 0) {
 			CustomDialog.showWarningMessageBox("no.dataSet.available");
@@ -144,78 +143,102 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		public boolean performFinish() {
 			String prefix = dataSets.getPrefix();
 			String uri = dataSets.getNamespaceURI();
-			CompositeMap form = new CompositeMap(prefix,uri,"form");
+			CompositeMap form = new CompositeMap(prefix, uri, "form");
 
 			int columnCount = mainConfigPage.getColumnCount();
 			form.put("column", new Integer(columnCount));
-			
+
 			HashMap columnFields = fieldPage.getColumnFields();
 			HashMap changeData = fieldPage.getChangeData();
 			HashMap allfields = getAllFields();
 			HashMap fieldProperties = fieldPage.getFieldProperties();
 			CompositeMap dataSet = mainConfigPage.getDataSet();
 			Set names = allfields.keySet();
-			if(names.size() == 0)
+			if (names.size() == 0)
 				return true;
 			parent.addChild(form);
-			for(int i=0;i<columnCount;i++){
-				CompositeMap vBox = new CompositeMap(prefix,uri,"vBox");
-				ArrayList  fields = (ArrayList)columnFields.get(new Integer(i+1));
+			for (int i = 0; i < columnCount; i++) {
+				CompositeMap vBox = new CompositeMap(prefix, uri, "vBox");
+				ArrayList fields = (ArrayList) columnFields.get(new Integer(
+						i + 1));
 				Iterator iterator = fields.iterator();
-				for(;iterator.hasNext();){
-					String field = (String)iterator.next();
-					if(names.contains(field)){
-						CompositeMap record =(CompositeMap)allfields.get(field);
+				for (; iterator.hasNext();) {
+					String field = (String) iterator.next();
+					if (names.contains(field)) {
+						CompositeMap record = (CompositeMap) allfields
+								.get(field);
 						String editorString = record.getString("editor");
-						CompositeMap editorMap = new CompositeMap(prefix,uri,editorString);
-						if(changeData.get(field)!=null){
-							record = (CompositeMap)changeData.get(field);
+						CompositeMap editorMap = new CompositeMap(prefix, uri,
+								editorString);
+						if (changeData.get(field) != null) {
+							record = (CompositeMap) changeData.get(field);
 						}
 						editorMap.put("name", record.getString("name"));
 						editorMap.put("bindTarget", dataSet.getString("id"));
 						editorMap.put("prompt", record.getString("prompt"));
-						CompositeMap editorProperties = (CompositeMap)fieldProperties.get(field);
-						if(editorProperties != null){
-							CompositeMapEditor cmEditor = new CompositeMapEditor(LoadSchemaManager.getSchemaManager(), editorProperties);
+						CompositeMap editorProperties = (CompositeMap) fieldProperties
+								.get(field);
+						if (editorProperties != null) {
+							CompositeMapEditor cmEditor = new CompositeMapEditor(
+									LoadSchemaManager.getSchemaManager(),
+									editorProperties);
 							AttributeValue[] abvs = cmEditor.getAttributeList();
-							for(int k=0;k<abvs.length;k++){
+							for (int k = 0; k < abvs.length; k++) {
 								AttributeValue abv = abvs[k];
-								editorMap.put(abv.getAttribute().getName(), abv.getValue());
+								if (abv.getValue() != null)
+									editorMap.put(abv.getAttribute().getName(),
+											abv.getValue());
 							}
 						}
 						vBox.addChild(editorMap);
 					}
 				}
-				form.addChild(vBox);	
+				form.addChild(vBox);
 			}
-			if(mainConfigPage.isCreateButton()){
+			if (mainConfigPage.isCreateButton()) {
 				String type = mainConfigPage.getType();
-				CompositeMap js = parent.getChild("script");
+				CompositeMap js = parent.getParent().getParent().getChild(
+						"script");
 				String jsString = js.getText();
-				if(jsString == null)
-					jsString ="";
-				String functionName =  dataSet.getString("id")+"_"+type;
-				jsString = jsString+"\n"+"  function  "+functionName+"{\n";
-				if("query".equals(type)){
-					Object[] objs = getAvailableDataSets(parent,dataSet.getString("id"));
-					for(int i=0;i<objs.length;i++){
-						jsString = jsString+" $('"+(String)objs[i]+"').query();"+"\n";
+				if (jsString == null)
+					jsString = "";
+				String functionName = dataSet.getString("id") + "_" + type;
+				jsString = jsString + "\n" + "  function  " + functionName
+						+ "{\n";
+				if ("query".equals(type)) {
+					Object[] objs = getAvailableDataSets(parent, dataSet
+							.getString("id"));
+					if (objs != null) {
+						for (int i = 0; i < objs.length; i++) {
+							jsString = jsString + " $('" + (String) objs[i]
+									+ "').query();" + "\n";
+						}
+					} else {
+						jsString = null;
 					}
-				}else{
-					jsString = jsString+" $('"+ dataSet.getString("id")+"').submit();"+"\n";
+
+				} else {
+					jsString = jsString + " $('" + dataSet.getString("id")
+							+ "').submit();" + "\n";
 				}
-				jsString = jsString+"}"+"\n";
-				js.setText(jsString);
-				CompositeMap buttons = new CompositeMap(prefix,uri,"hBox");
-				CompositeMap button = new CompositeMap(prefix,uri,"Button");
-				button.put("click",functionName);
-				buttons.addChild(button);
-				parent.addChild(buttons);
+				if (jsString != null) {
+					jsString = jsString + "}" + "\n";
+					js.setText(jsString);
+					CompositeMap buttons = new CompositeMap(prefix, uri, "hBox");
+					CompositeMap button = new CompositeMap(prefix, uri,
+							"Button");
+					button.put("click", functionName);
+					buttons.addChild(button);
+					parent.addChild(buttons);
+				}
+
 			}
 			successful = true;
 			return true;
 		}
-		private Object[] getAvailableDataSets(CompositeMap parentCM,String dataSetId) {
+
+		private Object[] getAvailableDataSets(CompositeMap parentCM,
+				String dataSetId) {
 			List dataSetUse = new ArrayList();
 			CompositeMap dataSets = parentCM.getChild("dataSets");
 			if (dataSets == null || dataSets.getChildsNotNull().size() == 0)
@@ -223,21 +246,22 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			Iterator childs = dataSets.getChildsNotNull().iterator();
 			for (; childs.hasNext();) {
 				CompositeMap child = (CompositeMap) childs.next();
-				if (dataSetId.equals(child.getString("model"))){
+				if (dataSetId.equals(child.getString("model"))) {
 					dataSetUse.add(child.getString("id"));
 				}
 			}
 			return dataSetUse.toArray();
 		}
-		public HashMap getAllFields(){
+
+		public HashMap getAllFields() {
 			HashMap allFields = new HashMap();
 			CompositeMap selection = fieldPage.getSelection();
 			Iterator iterator = selection.getChildIterator();
-			if(iterator!=null){
-				for(;iterator.hasNext();){
-					CompositeMap record = (CompositeMap)iterator.next();
-					allFields.put(record.getString("name"),record);
-					
+			if (iterator != null) {
+				for (; iterator.hasNext();) {
+					CompositeMap record = (CompositeMap) iterator.next();
+					allFields.put(record.getString("name"), record);
+
 				}
 			}
 			return allFields;
@@ -279,6 +303,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		private CompositeMap fields;
 		private int columnCount;
 		private String type;
+
 		protected MainConfigPage(IViewer parent, CompositeMap dataSets) {
 			super(PAGE_NAME);
 			setTitle(LocaleMessage.getString("mainpage"));
@@ -385,7 +410,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			});
 
 			Label columnLabel = new Label(content, SWT.CANCEL);
-			columnLabel.setText(LocaleMessage.getString("please.input.column.num"));
+			columnLabel.setText(LocaleMessage
+					.getString("please.input.column.num"));
 
 			final Text columnText = new Text(content, SWT.NONE);
 			gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -400,7 +426,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 							columnCount = Integer
 									.parseInt(columnText.getText());
 						} catch (NumberFormatException e2) {
-							CustomDialog.showErrorMessageBox("please.input.number");
+							CustomDialog
+									.showErrorMessageBox("please.input.number");
 							columnText.setText("");
 							return;
 						}
@@ -414,7 +441,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 			final Button submitButton = new Button(content, SWT.CHECK);
 			submitButton.setText(LocaleMessage.getString("auto.sumbit.button"));
-			
+
 			Label formTypeLabel = new Label(content, SWT.NONE);
 			final Button queryFormButton = new Button(content, SWT.RADIO);
 			final Button sumbitFormButton = new Button(content, SWT.RADIO);
@@ -426,7 +453,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 						queryFormButton.setEnabled(true);
 						sumbitFormButton.setEnabled(true);
 						content.redraw();
-					} else{
+					} else {
 						submit = false;
 						queryFormButton.setEnabled(false);
 						sumbitFormButton.setEnabled(false);
@@ -440,41 +467,42 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			});
 
 			formTypeLabel.setText(LocaleMessage.getString("form.type"));
-			
+
 			sumbitFormButton.setText(LocaleMessage.getString("save"));
-			sumbitFormButton.addSelectionListener(new SelectionListener(
-					) {
-				
+			sumbitFormButton.addSelectionListener(new SelectionListener() {
+
 				public void widgetSelected(SelectionEvent e) {
-					if(sumbitFormButton.getSelection()){
-						type ="save";
+					if (sumbitFormButton.getSelection()) {
+						type = "save";
 					}
 				}
+
 				public void widgetDefaultSelected(SelectionEvent e) {
 					widgetSelected(e);
 				}
 			});
-			
+
 			queryFormButton.setText(LocaleMessage.getString("query"));
 
-			queryFormButton.addSelectionListener(new SelectionListener(
-					) {
-				
+			queryFormButton.addSelectionListener(new SelectionListener() {
+
 				public void widgetSelected(SelectionEvent e) {
-					if(queryFormButton.getSelection()){
-						type ="query";
+					if (queryFormButton.getSelection()) {
+						type = "query";
 					}
 				}
+
 				public void widgetDefaultSelected(SelectionEvent e) {
 					widgetSelected(e);
 				}
 			});
 			queryFormButton.setSelection(true);
+			type = "query";
 			queryFormButton.setEnabled(false);
 			sumbitFormButton.setEnabled(false);
 			setControl(content);
 		}
-		
+
 		public CompositeMap getFields() {
 			return fields;
 		}
@@ -498,7 +526,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			}
 			return null;
 		}
-		public CompositeMap getDataSet(){
+
+		public CompositeMap getDataSet() {
 			return bindBM;
 		}
 
@@ -510,14 +539,16 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			}
 
 			if (bindTarget == null || bindTarget.equals("")) {
-				return LocaleMessage.getString("DataSet.selection.can.not.be.null");
+				return LocaleMessage
+						.getString("DataSet.selection.can.not.be.null");
 
 			}
 			if (id == null || id.equals("")) {
 				return LocaleMessage.getString("id.can.not.be.null");
 			}
 			if (allIds.contains(id)) {
-				return LocaleMessage.getString("This.id.has.exists.please.change.it");
+				return LocaleMessage
+						.getString("This.id.has.exists.please.change.it");
 			}
 			return null;
 		}
@@ -644,7 +675,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 			RowLayout rowLayout = new RowLayout();
 			rowLayout.type = SWT.VERTICAL;
-			rowLayout.marginTop=30;
+			rowLayout.marginTop = 30;
 			rowLayout.pack = false;
 			buttonGroup.setLayout(rowLayout);
 
@@ -668,7 +699,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		public HashMap getChangeData() {
 			return newCompositeMap.getChangeData();
 		}
-		public HashMap getFieldProperties(){
+
+		public HashMap getFieldProperties() {
 			return field_properties;
 		}
 
@@ -708,7 +740,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			field_properties.clear();
 			// grid.refresh(false);
 		}
-		public HashMap getColumnFields(){
+
+		public HashMap getColumnFields() {
 			return sorter.getColumnFields();
 		}
 
@@ -732,34 +765,39 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 						try {
 							column = Integer.parseInt(value);
 						} catch (NumberFormatException e2) {
-							CustomDialog.showErrorMessageBox("please.input.number");
+							CustomDialog
+									.showErrorMessageBox("please.input.number");
 							return;
 						}
 						if (column > sorter.getColumnCount() || column < 1) {
-							throw new RuntimeException(LocaleMessage.getString("column.number.warning")
-									+ sorter.getColumnCount() + LocaleMessage.getString("between"));
+							throw new RuntimeException(LocaleMessage
+									.getString("column.number.warning")
+									+ sorter.getColumnCount()
+									+ LocaleMessage.getString("between"));
 						}
 					}
 					if (column == 0)
 						column = 1;
 					sorter.changeColumn(record, column);
-				}else if("editor".equals(property)){
-						
-					    String field = record.getString("name");
-						Object proObject = field_properties.get(field);
-						if (proObject != null) {
-							 CompositeMap editor =(CompositeMap) proObject;
-							 if(value.equals(editor.getName())){
-								 return;
-								 
-							 }
+				} else if ("editor".equals(property)) {
+
+					String field = record.getString("name");
+					Object proObject = field_properties.get(field);
+					if (proObject != null) {
+						CompositeMap editor = (CompositeMap) proObject;
+						if (value.equals(editor.getName())) {
+							return;
+
 						}
-						hashViewer.setData(getEditorData(record,value));
+					}
+					hashViewer.setData(getEditorData(record, value));
 				}
 				newRecord.put(property, value);
 			}
-			private CompositeMap getEditorData(CompositeMap data,String editorName){
-				 String field = data.getString("name");
+
+			private CompositeMap getEditorData(CompositeMap data,
+					String editorName) {
+				String field = data.getString("name");
 				QualifiedName editorQualified = new QualifiedName(
 						AuroraCellEditor.aurorUri, editorName);
 				String prefix = CompositeMapAction.getContextPrefix(data,
@@ -886,7 +924,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				result = getComparator().compare(field1, field2);
 				return result;
 			}
-			public HashMap getColumnFields(){
+
+			public HashMap getColumnFields() {
 				return column_fields;
 			}
 		}
@@ -900,7 +939,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 					return;
 				}
 				String errorMessage = hashViewer.clear(true);
-				if(errorMessage != null){
+				if (errorMessage != null) {
 					validError = true;
 					grid.getViewer().setSelection(
 							new StructuredSelection(grid.getFocus()));
