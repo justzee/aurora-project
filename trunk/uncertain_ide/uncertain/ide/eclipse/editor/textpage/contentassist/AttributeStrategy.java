@@ -129,7 +129,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			Namespace namespace = new Namespace();
 			namespace.setPrefix(namespaceToPrefix.get(element).toString());
 			namespace.setUrl(element.toString());
-			namespaces[i] = namespace;
+			namespaces[i++] = namespace;
 		}
 		return namespaces;
 	}
