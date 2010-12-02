@@ -4,6 +4,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -95,7 +97,15 @@ public class Activator extends AbstractUIPlugin {
 	public static IWorkspace getWorkspace() {
 		return ResourcesPlugin.getWorkspace();
 	}
-
+	public static IFile getActiveIFile(){
+		IEditorInput input = getActivePage().getActiveEditor().getEditorInput();
+		IFile ifile = ((IFileEditorInput) input).getFile();
+		return ifile;
+	}
+	public static IWorkbenchPage getActivePage(){
+		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
+	}
+	
 	public static void main(String[] args) {
 
 	}
