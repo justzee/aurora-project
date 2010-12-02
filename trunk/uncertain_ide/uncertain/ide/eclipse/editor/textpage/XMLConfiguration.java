@@ -15,7 +15,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
-import uncertain.ide.eclipse.editor.textpage.Hyperlink.BMFileHyperlinkDetector;
+import uncertain.ide.eclipse.editor.textpage.Hyperlink.FileHyperlinkDetector;
 import uncertain.ide.eclipse.editor.textpage.contentassist.TagContentAssistProcessor;
 import uncertain.ide.eclipse.editor.textpage.format.DefaultFormattingStrategy;
 import uncertain.ide.eclipse.editor.textpage.format.DocTypeFormattingStrategy;
@@ -195,7 +195,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	}
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
 		return new IHyperlinkDetector[] {
-				new BMFileHyperlinkDetector()
+				new FileHyperlinkDetector()
 		};
 	}
 }
