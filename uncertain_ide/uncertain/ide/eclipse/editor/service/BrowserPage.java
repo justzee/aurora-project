@@ -566,7 +566,6 @@ public class BrowserPage extends FormPage {
 
 
 	protected String getFileName() {
-		//TODO test
 		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
 				.getFile();
 		String fileName = Common.getIfileLocalPath(ifile);
