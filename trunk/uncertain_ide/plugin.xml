@@ -49,7 +49,7 @@
       <editor
             class="uncertain.ide.eclipse.editor.service.ServiceEditor"
             default="false"
-            filenames="*.xml,*.service,*.screen"
+            filenames="*.xml,*.service,*.screen,*.svc"
             icon="icons/service.gif"
             id="uncertain.ide.eclipse.editor.ServiceEditor"
             name="%editor.screen"/>
