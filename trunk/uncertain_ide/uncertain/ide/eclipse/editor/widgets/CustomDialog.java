@@ -40,6 +40,9 @@ public class CustomDialog {
 	public static void showErrorMessageBox(String message) {
 		showErrorMessageBox(null,message);
 	}
+	public static void showErrorMessageBox(Throwable e) {
+		showErrorMessageBox(getExceptionMessage(e));
+	}
 	public static void showErrorMessageBox(String title, String message) {
 		message = getLocalMessage(message);
 		Shell shell = Display.getCurrent().getActiveShell();
