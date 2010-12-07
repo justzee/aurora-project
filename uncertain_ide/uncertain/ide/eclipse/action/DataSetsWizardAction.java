@@ -13,7 +13,7 @@ public class DataSetsWizardAction implements IWizardAction{
 		IViewer viewer = actionProperties.getViewer();
 		CompositeMap parent = actionProperties.getParent();
 		QualifiedName  gridQN = new QualifiedName(AuroraConstant.ApplicationUri,"dataSet");
-		actions[0] =new AddDataSetAction(viewer, parent,gridQN);
+		actions[0] =new AddDataSetAction(viewer, parent,gridQN,ActionListener.defaultIMG);
 		actions[0].setText(LocaleMessage.getString("dataset.wizard"));
 		return actions;
 	}

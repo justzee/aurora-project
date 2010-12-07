@@ -11,12 +11,12 @@ import uncertain.ide.eclipse.wizards.DataSetWizard;
 public class AddDataSetAction extends AddElementAction {
 
 	public AddDataSetAction(IViewer viewer, CompositeMap parentCM,
-			String prefix, String uri, String cmName,String text) {
-		super(viewer,parentCM,prefix,uri,cmName,text);
+			String prefix, String uri, String cmName,String text, int actionStyle) {
+		super(viewer,parentCM,prefix,uri,cmName,text,actionStyle);
 	}
 
-	public AddDataSetAction(IViewer viewer, CompositeMap parentCM,QualifiedName qName) {
-		super(viewer,parentCM,qName);
+	public AddDataSetAction(IViewer viewer, CompositeMap parentCM,QualifiedName qName,int actionStyle) {
+		super(viewer,parentCM,qName,actionStyle);
 	}
 
 	public void run() {

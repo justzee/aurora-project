@@ -64,14 +64,14 @@ import uncertain.schema.editor.CompositeMapEditor;
 public class CreateFormFromDataSetAction extends AddElementAction {
 
 	public CreateFormFromDataSetAction(IViewer viewer, CompositeMap parentCM,
-			String prefix, String uri, String cmName, String text) {
-		super(viewer, parentCM, prefix, uri, cmName, text);
+			String prefix, String uri, String cmName, String text,int actionStyle) {
+		super(viewer, parentCM, prefix, uri, cmName, text,actionStyle);
 
 	}
 
 	public CreateFormFromDataSetAction(IViewer viewer, CompositeMap parentCM,
-			QualifiedName qName) {
-		super(viewer, parentCM, qName);
+			QualifiedName qName,int actionStyle) {
+		super(viewer, parentCM, qName,actionStyle);
 
 	}
 

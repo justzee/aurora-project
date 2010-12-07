@@ -19,21 +19,28 @@ public class AddFieldAction extends Action {
 	private CompositeMap source;
 	private CompositeMap target;
 
-	private String localName="field";
+	private String localName;
 	private String prefix;
 	private String uri;
-	public AddFieldAction(IViewer viewer,CompositeMap source,CompositeMap target,ImageDescriptor imageDescriptor, String text) {
+	private final static String primary_key = "primary-key";
+	private final static String order_by = "order-by";
+	private final static String primaryKeyChild = "pk-field";
+	private final static String orderField = "order-field";
+	private final static String defaultChild = "field";
+	public AddFieldAction(IViewer viewer,CompositeMap source,CompositeMap target) {
 		this.viewer = viewer;
 		this.source = source;
 		this.target = target;
-		if (imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if (text != null)
-			setText(text);
-
+		setHoverImageDescriptor(getDefaultImageDescriptor());
 	}
-
 	public void run() {
+		if(primary_key.equals(target.getName())){
+			localName = primaryKeyChild;
+		}else if(order_by.equals(target.getName())){
+			localName = orderField;
+		}else{
+			localName = defaultChild;
+		}
 		String sourceMainAttribute = "name";
 		String targetMainAttribute = "name";
 		List source_childs_list = source.getChildsNotNull();
@@ -76,8 +83,8 @@ public class AddFieldAction extends Action {
 		
 		ListElementsExchangeDialog dialog = new ListElementsExchangeDialog(LocaleMessage.getString("get.fields"),source.getName(),
 				target.getName(),source_items,target_items);
-		dialog.open();
-
+		if(dialog.open()==ListElementsExchangeDialog.CANCEL)
+			return;
 		String[] result = dialog.getRightItems();
 		target.getChilds().clear();
 		for(int i=0;i<result.length;i++){
@@ -90,6 +97,6 @@ public class AddFieldAction extends Action {
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon"));
+		return Activator.getImageDescriptor(LocaleMessage.getString("add.icon"));
 	}
 }

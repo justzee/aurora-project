@@ -50,14 +50,14 @@ import uncertain.schema.Element;
 public class CreateGridFromDataSetAction extends AddElementAction {
 
 	public CreateGridFromDataSetAction(IViewer viewer, CompositeMap parentCM,
-			String prefix, String uri, String cmName, String text) {
-		super(viewer, parentCM, prefix, uri, cmName, text);
+			String prefix, String uri, String cmName, String text,int actionStyle) {
+		super(viewer, parentCM, prefix, uri, cmName, text,actionStyle);
 
 	}
 
 	public CreateGridFromDataSetAction(IViewer viewer, CompositeMap parentCM,
-			QualifiedName qName) {
-		super(viewer, parentCM, qName);
+			QualifiedName qName,int actionStyle) {
+		super(viewer, parentCM, qName,actionStyle);
 
 	}
 

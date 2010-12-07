@@ -1,6 +1,5 @@
 package uncertain.ide.eclipse.action;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -16,19 +15,11 @@ import uncertain.ide.Activator;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.PropertyViewer;
 
-public class AddPropertyAction extends Action {
+public class AddPropertyAction extends ActionListener {
 	PropertyViewer viewer;
 
-	public AddPropertyAction(PropertyViewer viewer) {
-		this.viewer = viewer;
-	}
-
-	public AddPropertyAction(PropertyViewer viewer,
-			ImageDescriptor imageDescriptor, String text) {
-		if (imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if (text != null)
-			setText(text);
+	public AddPropertyAction(PropertyViewer viewer,int actionStyle) {
+		setActionStyle(actionStyle);
 		this.viewer = viewer;
 	}
 
@@ -36,9 +27,8 @@ public class AddPropertyAction extends Action {
 		showInputDialog();
 	}
 
-	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator
-				.getImageDescriptor(LocaleMessage.getString("add.icon"));
+	public ImageDescriptor getDefaultImageDescriptor() {
+		return Activator.getImageDescriptor(LocaleMessage.getString("add.icon"));
 	}
 
 	private void showInputDialog() {
