@@ -42,11 +42,11 @@ import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.AddElementAction;
 import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemoveElementAction;
-import uncertain.ide.eclipse.action.RemovePropertyAction;
 import uncertain.ide.eclipse.celleditor.CellEditorFactory;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
@@ -374,17 +374,14 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 				if (element != null && element.isArray()) {
 					final QualifiedName qName = element.getElementType()
 							.getQName();
-					Action addAction = new AddElementAction(this, data, qName);
+					Action addAction = new AddElementAction(this, data, qName,ActionListener.NONE);
 					addAction.setText("");
 					addAction.setHoverImageDescriptor(Activator
 							.getImageDescriptor(LocaleMessage
 									.getString("add.icon")));
 
-					Action removeAction = new RemoveElementAction(this,
-							RemovePropertyAction.getDefaultImageDescriptor(),
-							null);
-					Action refreshAction = new RefreshAction(this,
-							RefreshAction.getDefaultImageDescriptor(), null);
+					Action removeAction = new RemoveElementAction(this,ActionListener.defaultIMG);
+					Action refreshAction = new RefreshAction(this,ActionListener.defaultIMG);
 					toolBarManager.add(createActionContributionItem(addAction));
 					toolBarManager
 							.add(createActionContributionItem(refreshAction));
@@ -545,11 +542,12 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 	}
 	private void setColumnWidth(TableColumn column,TableViewer tableViewer,int propertyLength){
-		int defaultScreenWidth = 800;
-		int defaultColumnWidth = 120;
+		final int defaultScreenWidth = 800;
+		final int defaultColumnWidth = 120;
+		final int appendWidth = 100;
 		int width = tableViewer.getTable().getParent().getBounds().width;
 		width = width==0?defaultScreenWidth:width;
-		int columnWidth = width / (propertyLength);
+		int columnWidth = (width-appendWidth) / (propertyLength);
 		if(columnWidth>defaultColumnWidth){
 			column.setWidth(columnWidth);
 			return;
