@@ -30,7 +30,9 @@ public class ListElementsExchangeDialog {
 	private List leftList;
 	private List rightList;
 	Shell shell;
-
+	public final static int OK = 0;
+	public final static int CANCEL=1;
+	private int result;
 	public ListElementsExchangeDialog(Shell shell, String dialogTitle,
 			String leftGroupTitle, String rightGroupTitle, String[] leftItems,
 			String[] rightItems) {
@@ -52,11 +54,14 @@ public class ListElementsExchangeDialog {
 		this.rightItems = rightItems;
 	}
 
-	public void open() {
-		if (shell == null)
+	public int open() {
+		result = CANCEL;
+		if (shell == null){
 			shell = new Shell(SWT.MIN | SWT.MAX | SWT.DIALOG_TRIM
 					| SWT.APPLICATION_MODAL);
-
+//			shell.setSize(600, 500);
+		}
+		
 		GridLayout gridLayout = new GridLayout();
 		shell.setLayout(gridLayout);
 		if (dialogTitle != null)
@@ -68,75 +73,72 @@ public class ListElementsExchangeDialog {
 		mainGroup.setLayoutData(gridData);
 
 		gridLayout = new GridLayout();
-		gridLayout.numColumns = 10;
+		gridLayout.numColumns = 8;
 		mainGroup.setLayout(gridLayout);
 
 		Group leftGroup = new Group(mainGroup, SWT.NONE);
 		if (leftGroupTitle != null)
 			leftGroup.setText(leftGroupTitle);
 		gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
-		gridData.horizontalSpan = 4;
+		gridData.horizontalSpan = 3;
 		leftGroup.setLayoutData(gridData);
-
 		leftGroup.setLayout(new FillLayout());
-
-		leftList = new List(leftGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		// gridData = new GridData(GridData.FILL, GridData.CENTER, true, false);
-		// gridData.horizontalSpan = 4;
-		// leftList.setLayoutData(gridData);
-
-		Group textGroup = new Group(mainGroup, SWT.NONE);
+		leftList = new List(leftGroup,SWT.MULTI | SWT.V_SCROLL);
+		
+		Group actionGroup = new Group(mainGroup, SWT.NONE);
 		gridData = new GridData(GridData.FILL, GridData.FILL, false, true);
 		gridData.horizontalSpan = 2;
-		textGroup.setLayoutData(gridData);
+		actionGroup.setLayoutData(gridData);
 
 		RowLayout rowLayout = new RowLayout();
 		rowLayout.wrap = false;
 		rowLayout.pack = false;
 		rowLayout.justify = false;
 		rowLayout.type = SWT.VERTICAL;
-		rowLayout.marginLeft = 15;
-		rowLayout.marginTop = 150;
-		rowLayout.marginRight = 15;
-		rowLayout.marginBottom = 150;
+		rowLayout.marginLeft = 10;
+		rowLayout.marginTop = 80;
+		rowLayout.marginRight = 10;
+		rowLayout.marginBottom = 80;
 		rowLayout.spacing = 5;
-		textGroup.setLayout(rowLayout);
+		actionGroup.setLayout(rowLayout);
 
 		if (leftItems != null)
 			leftList.setItems(leftItems);
-		// else
-		// leftList.setItems(ITEMS);
 
-		Button toRightAll = new Button(textGroup, SWT.NONE);
+		Button toRightAll = new Button(actionGroup, SWT.NONE);
 		toRightAll.setText("=>");
-		Button toRight = new Button(textGroup, SWT.NONE);
+		Button toRight = new Button(actionGroup, SWT.NONE);
 		toRight.setText("->");
-		Button toleft = new Button(textGroup, SWT.NONE);
+		Button toleft = new Button(actionGroup, SWT.NONE);
 		toleft.setText("<-");
-		Button toleftAll = new Button(textGroup, SWT.NONE);
+		Button toleftAll = new Button(actionGroup, SWT.NONE);
 		toleftAll.setText("<=");
 
 		Group rightGroup = new Group(mainGroup, SWT.NONE);
 		if (rightGroupTitle != null)
 			rightGroup.setText(rightGroupTitle);
 		gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
-		gridData.horizontalSpan = 4;
+		gridData.horizontalSpan = 3;
 		rightGroup.setLayoutData(gridData);
 
 		rightGroup.setLayout(new FillLayout());
-		// Create a multiple-selection list
 		rightList = new List(rightGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		// gridData = new GridData(GridData.FILL, GridData.CENTER, true, false);
-		// gridData.horizontalSpan = 4;
-		// multi.setLayoutData(gridData);
 
-		// Add the items all at once
 		if (rightItems != null)
 			rightList.setItems(rightItems);
-		// else
-		// multi.setItems(ITEMS);
 
-		Button enter = new Button(shell, SWT.PUSH);
+		Group buttonGroup = new Group(shell, SWT.NONE);
+		gridData = new GridData(GridData.END, GridData.FILL, false, false);
+		buttonGroup.setLayoutData(gridData);
+		gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		buttonGroup.setLayout(gridLayout);
+		
+		Button cancel = new Button(buttonGroup, SWT.PUSH);
+		cancel.setText(LocaleMessage.getString("Cancel"));
+		gridData = new GridData(GridData.END, GridData.CENTER, false, false);
+		cancel.setLayoutData(gridData);
+		Button enter = new Button(buttonGroup, SWT.PUSH);
 		enter.setText(LocaleMessage.getString("OK"));
 		gridData = new GridData(GridData.END, GridData.CENTER, false, false);
 		enter.setLayoutData(gridData);
@@ -185,16 +187,20 @@ public class ListElementsExchangeDialog {
 				rightList.removeAll();
 			}
 		});
-
+		cancel.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				shell.close();
+				result = CANCEL;
+			}
+		});
 		enter.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				shell.close();
+				result = OK;
 			}
 		});
-		// shell.pack();
 		shell.open();
 		shell.addDisposeListener(new DisposeListener() {
-
 			public void widgetDisposed(DisposeEvent e) {
 				leftItems = leftList.getItems();
 				rightItems = rightList.getItems();
@@ -207,18 +213,16 @@ public class ListElementsExchangeDialog {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+		return result;
 	}
 
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		// new DogShowRegistrationWindow().createShell(display);
-
 		String[] ITEMS = { "Alpha", "Bravo", "Charlie", "Delta", "Echo",
 				"Foxtrot", "Golf" };
 		new ListElementsExchangeDialog(shell, "Dialog", "left ", "right", ITEMS, ITEMS)
 				.open();
-		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
