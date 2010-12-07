@@ -96,18 +96,22 @@ public class BussinessModelPage extends CompositeMapPage {
 				temp.dispose();
 			}
 		}
+		
 		sashForm = new SashForm(shell, SWT.VERTICAL);
+		initChildViews();
 		createMasterContent(sashForm);
 		createDetailContent(sashForm);
 		sashForm.setWeights(new int[] { 30, 70 });
 		shell.layout(true);
 	}
-
-	protected void createMasterContent(Composite parent) {
+	private void initChildViews(){
 		if (childViews != null)
 			childViews.clear();
 		else
 			childViews = new ArrayList();
+	}
+
+	protected void createMasterContent(Composite parent) {
 		PropertyHashViewer mPropertyEditor = new PropertyHashViewer(this,
 				parent);
 		childViews.add(mPropertyEditor);
