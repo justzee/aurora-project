@@ -12,17 +12,9 @@ public class CharSortAction extends Action {
 	
 	private ICategoryViewer viewer;
 	public CharSortAction(ICategoryViewer viewer) {
-
 		this.viewer = viewer;
+		setHoverImageDescriptor(getDefaultImageDescriptor());
 	}
-	public CharSortAction(ICategoryViewer viewer,ImageDescriptor imageDescriptor,String text) {
-		if(imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if(text != null)
-			setText(text);
-		this.viewer = viewer;
-	}
-
 	public void run() {
 		viewer.setCategory(false);
 	}

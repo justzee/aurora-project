@@ -17,26 +17,27 @@ public class AddElementAction extends ActionListener{
 	protected String uri;
 	protected String localName;
 
-	public AddElementAction(IViewer viewer, CompositeMap parent, QualifiedName childQN) {
+	private String text = "";
+	public AddElementAction(IViewer viewer, CompositeMap parent, QualifiedName childQN,int actionStyle) {
 		this.viewer = viewer;
 		this.parent = parent;
 		this.prefix = CompositeMapAction.getContextPrefix(parent,childQN);
 		childQN.setPrefix(prefix);
 		this.uri = childQN.getNameSpace();
 		this.localName = childQN.getLocalName();
-		setHoverImageDescriptor(getDefaultImageDescriptor());
-		setText(childQN.getFullName());
+		text = childQN.getFullName();
+		setActionStyle(actionStyle);
 	}
 	
 	public AddElementAction(IViewer viewer, CompositeMap parent,
-			String prefix, String uri, String localName,String text) {
+			String prefix, String uri, String localName,String text,int actionStyle) {
 		this.viewer = viewer;
 		this.parent = parent;
 		this.prefix = prefix;
 		this.uri = uri;
 		this.localName = localName;
-		setHoverImageDescriptor(getDefaultImageDescriptor());
-		setText(text);
+		this.text = text;
+		setActionStyle(actionStyle);
 	}
 	
 	public void run() {
@@ -52,6 +53,9 @@ public class AddElementAction extends ActionListener{
 
 	public ImageDescriptor getDefaultImageDescriptor() {
 		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon"));
+	}
+	public String getDefaultText() {
+		return text;
 	}
 
 }

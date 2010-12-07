@@ -14,11 +14,11 @@ public class DataSetWizardAction implements IWizardAction{
 		CompositeMap parent = actionProperties.getParent();
 		QualifiedName  gridQN = new QualifiedName(AuroraConstant.ApplicationUri,"grid");
 		
-		actions[0] =new CreateGridFromDataSetAction(viewer, parent,gridQN);
+		actions[0] =new CreateGridFromDataSetAction(viewer, parent,gridQN,ActionListener.defaultIMG);
 		actions[0].setText(LocaleMessage.getString("create.grid.from.dataset"));
 		
 		QualifiedName  formQN = new QualifiedName(AuroraConstant.ApplicationUri,"form");
-		actions[1] = new CreateFormFromDataSetAction(viewer, parent,formQN);
+		actions[1] = new CreateFormFromDataSetAction(viewer, parent,formQN,ActionListener.defaultIMG);
 		actions[1].setText(LocaleMessage.getString("create.form.from.dataset"));
 		return actions;
 	}

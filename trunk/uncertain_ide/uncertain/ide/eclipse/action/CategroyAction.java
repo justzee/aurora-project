@@ -12,16 +12,8 @@ public class CategroyAction extends Action {
 	private ICategoryViewer viewer;
 	public CategroyAction(ICategoryViewer viewer) {
 		this.viewer = viewer;
+		setHoverImageDescriptor(getDefaultImageDescriptor());
 	}
-	public CategroyAction(ICategoryViewer viewer,ImageDescriptor imageDescriptor,String text) {
-		if(imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if(text != null)
-			setText(text);
-		this.viewer = viewer;
-	}
-
-
 	public void run() {
 		viewer.setCategory(true);
 	}

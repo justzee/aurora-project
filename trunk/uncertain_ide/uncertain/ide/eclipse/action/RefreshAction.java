@@ -1,25 +1,16 @@
 package uncertain.ide.eclipse.action;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.IViewer;
 
-public class RefreshAction extends Action {
+public class RefreshAction extends ActionListener {
 	IViewer viewer;
 
-	public RefreshAction(IViewer viewer) {
-		this.viewer = viewer;
-	}
-
-	public RefreshAction(IViewer viewer, ImageDescriptor imageDescriptor,
-			String text) {
-		if (imageDescriptor != null)
-			setImageDescriptor(imageDescriptor);
-		if (text != null)
-			setText(text);
+	public RefreshAction(IViewer viewer,int actionStyle) {
+		setActionStyle(actionStyle);
 		this.viewer = viewer;
 	}
 
@@ -27,7 +18,11 @@ public class RefreshAction extends Action {
 		viewer.refresh(false);
 	}
 
-	public static ImageDescriptor getDefaultImageDescriptor() {
+	public ImageDescriptor getDefaultImageDescriptor() {
 		return Activator.getImageDescriptor(LocaleMessage.getString("refresh.icon"));
 	}
+	public String getDefaultTitle(){
+		return LocaleMessage.getString("refresh");
+	}
+	 
 }
