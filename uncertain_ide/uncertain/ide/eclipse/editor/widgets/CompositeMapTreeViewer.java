@@ -47,6 +47,7 @@ import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.ActionProperties;
 import uncertain.ide.eclipse.action.ActionsFactory;
 import uncertain.ide.eclipse.action.CompositeMapAction;
@@ -352,16 +353,9 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 				manager.add(new CopyElementAction(CompositeMapTreeViewer.this,
 						CopyElementAction.getDefaultImageDescriptor(),
 						CopyElementAction.getDefaultText()));
-				manager.add(new PasteAction(CompositeMapTreeViewer.this,
-						PasteAction.getDefaultImageDescriptor(), PasteAction
-								.getDefaultText()));
-				manager.add(new RemoveElementAction(
-						CompositeMapTreeViewer.this, RemoveElementAction
-								.getDefaultImageDescriptor(),
-						RemoveElementAction.getDefaultText()));
-				manager.add(new RefreshAction(CompositeMapTreeViewer.this,
-						RefreshAction.getDefaultImageDescriptor(),
-						LocaleMessage.getString("refresh")));
+				manager.add(new PasteAction(CompositeMapTreeViewer.this,ActionListener.defaultIMG|ActionListener.defaultTitle));
+				manager.add(new RemoveElementAction(CompositeMapTreeViewer.this,ActionListener.defaultIMG|ActionListener.defaultTitle));
+				manager.add(new RefreshAction(CompositeMapTreeViewer.this,ActionListener.defaultIMG|ActionListener.defaultTitle));
 			}
 		});
 
