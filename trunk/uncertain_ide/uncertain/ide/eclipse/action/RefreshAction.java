@@ -21,7 +21,7 @@ public class RefreshAction extends ActionListener {
 	public ImageDescriptor getDefaultImageDescriptor() {
 		return Activator.getImageDescriptor(LocaleMessage.getString("refresh.icon"));
 	}
-	public String getDefaultTitle(){
+	public String getDefaultText(){
 		return LocaleMessage.getString("refresh");
 	}
 	 
