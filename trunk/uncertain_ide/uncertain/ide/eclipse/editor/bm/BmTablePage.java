@@ -95,7 +95,7 @@ public class BmTablePage extends WizardPage {
 				.getUserName(), getTableName());
 		while (tableRet.next()) {
 			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,
-					BmNewWizard.bm_uri, "field");
+					BmNewWizard.bm_uri, "pk-field");
 			field.put("name", tableRet.getString("COLUMN_NAME").toLowerCase());
 			primaryKeyArray.addChild(field);
 		}
