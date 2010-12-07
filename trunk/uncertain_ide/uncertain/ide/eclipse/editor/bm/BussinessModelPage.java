@@ -28,26 +28,26 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
 import uncertain.composite.XMLOutputter;
 import uncertain.ide.Common;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.AddFieldAction;
-import uncertain.ide.eclipse.action.AddPropertyAction;
+import uncertain.ide.eclipse.action.AddRefFieldAction;
 import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemoveElementAction;
-import uncertain.ide.eclipse.action.RemovePropertyAction;
 import uncertain.ide.eclipse.editor.BaseCompositeMapViewer;
 import uncertain.ide.eclipse.editor.CompositeMapPage;
 import uncertain.ide.eclipse.editor.IViewer;
-import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.IGridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
+import aurora.ide.AuroraConstant;
 
 public class BussinessModelPage extends CompositeMapPage {
 	private static final String PageId = "BussinessModelPage";
@@ -58,9 +58,10 @@ public class BussinessModelPage extends CompositeMapPage {
 	private boolean modify = false;
 	Composite shell;
 	private ArrayList childViews;
-	private QualifiedName bm_model = new QualifiedName(
-			"http://www.aurora-framework.org/schema/bm", "model");
 
+	private static final String[] customTabs = new String[]{"primary-key","order-by","ref-fields"};
+	private static final String ref_fields = "ref-fields"; 
+	
 	public BussinessModelPage(FormEditor editor) {
 		super(editor, PageId, PageTitle);
 	}
@@ -71,7 +72,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		FillLayout layout = new FillLayout();
 		shell.setLayout(layout);
 		Element schemaElement = LoadSchemaManager.getSchemaManager()
-				.getElement(bm_model);
+				.getElement(AuroraConstant.modelQN);
 		if (schemaElement == null) {
 			throw new RuntimeException(LocaleMessage.getString("please.add.bm.schema.file"));
 		}
@@ -82,8 +83,8 @@ public class BussinessModelPage extends CompositeMapPage {
 		} catch (Exception e) {
 			throw new RuntimeException(e.getLocalizedMessage(), e.getCause());
 		}
-		if (!data.getQName().equals(bm_model))
-			throw new RuntimeException(LocaleMessage.getString("this.root.element.is.not") + bm_model+ " !");
+		if (!data.getQName().equals(AuroraConstant.modelQN))
+			throw new RuntimeException(LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.modelQN+ " !");
 		createContent(shell);
 	}
 
@@ -120,8 +121,7 @@ public class BussinessModelPage extends CompositeMapPage {
 
 	private void createDetailContent(Composite parent) {
 		mTabFolder = createTabFolder(parent);
-		Element model_em = LoadSchemaManager.getSchemaManager().getElement(
-				bm_model);
+		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.modelQN);
 		Iterator arrays = model_em.getAllArrays().iterator();
 		String TabHeighGrab = "     ";
 		for (int i = 0; arrays.hasNext(); i++) {
@@ -152,9 +152,10 @@ public class BussinessModelPage extends CompositeMapPage {
 				gridViewer.setParent(this);
 				gridViewer.createViewer(mTabFolder, array_data);
 
-				if (array.getLocalName().equals("primary-key")
-						|| array.getLocalName().equals("order-by")) {
-					createCustomerActions(gridViewer);
+				for(int j= 0;j<customTabs.length;j++){
+					if (customTabs[j].equals(array.getLocalName())){
+						createCustomerActions(gridViewer);
+					}
 				}
 
 				mTabFolder.getItem(i).setText(
@@ -194,21 +195,22 @@ public class BussinessModelPage extends CompositeMapPage {
 	}
 
 	public void createCustomerActions(GridViewer pae) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(
-				pae.getInput());
+		Element element = LoadSchemaManager.getSchemaManager().getElement(pae.getInput());
 		if (element == null) {
 			return;
 		}
+		Action[] actions = new Action[3];
 		if (element.isArray()) {
-			Action addAction = new AddFieldAction(pae, data.getChild("fields"),
-					pae.getInput(), AddPropertyAction
-							.getDefaultImageDescriptor(), null);
-			Action removeAction = new RemoveElementAction(pae,
-					RemovePropertyAction.getDefaultImageDescriptor(), null);
-			Action refreshAction = new RefreshAction(pae, RefreshAction
-					.getDefaultImageDescriptor(), null);
-			pae.setActions(new Action[] { addAction, removeAction,
-					refreshAction });
+			Action addAction = null;
+			if(ref_fields.equals(element.getLocalName())){
+				 addAction = new AddRefFieldAction(pae,pae.getInput().getParent(),ActionListener.defaultIMG);
+			}else{
+				addAction = new AddFieldAction(pae, data.getChild("fields"),pae.getInput());
+			}
+			actions[0]= addAction;
+			actions[1]= new RefreshAction(pae,ActionListener.defaultIMG);
+			actions[2] = new RemoveElementAction(pae,ActionListener.defaultIMG);
+			pae.setActions(actions);
 		}
 	}
 
@@ -256,8 +258,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		tabFolder.setSimple(false);
 		tabFolder.setTabHeight(23);
 
-		Element model_em = LoadSchemaManager.getSchemaManager().getElement(
-				bm_model);
+		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.modelQN);
 		for (int i = 0; i < model_em.getAllArrays().size(); i++) {
 			new CTabItem(tabFolder, SWT.None | SWT.MULTI | SWT.V_SCROLL);
 		}
