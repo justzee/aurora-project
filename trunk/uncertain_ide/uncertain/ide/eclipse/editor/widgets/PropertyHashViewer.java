@@ -33,6 +33,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.AddPropertyAction;
 import uncertain.ide.eclipse.action.CategroyAction;
 import uncertain.ide.eclipse.action.CharSortAction;
@@ -73,10 +74,11 @@ public class PropertyHashViewer extends PropertyViewer implements
 		Assert.isTrue(tableViewer != null, "The viewer has not been created!");
 		tableViewer.setInput(data);
 		int xWidth = parent.getBounds().width;
-		if (xWidth == 0)
+		if (xWidth < 100)
 			xWidth = 800;
+		final int appendWidth = 100;
 		Table table = tableViewer.getTable();
-		int columnWidth = xWidth / table.getColumnCount();
+		int columnWidth = (xWidth-appendWidth) / table.getColumnCount();
 		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
 			table.getColumn(i).setWidth(columnWidth);
 		}
@@ -198,18 +200,12 @@ public class PropertyHashViewer extends PropertyViewer implements
 	}
 
 	private void fillActionToolBars(ToolBarManager actionBarManager) {
-		Action addAction = new AddPropertyAction(this, AddPropertyAction
-				.getDefaultImageDescriptor(), null);
+		Action addAction = new AddPropertyAction(this, ActionListener.defaultIMG);
+		Action removeAction = new RemovePropertyAction(this,ActionListener.defaultIMG);
+		Action refreshAction = new RefreshAction(this,ActionListener.defaultIMG);
 
-		Action removeAction = new RemovePropertyAction(this,
-				RemovePropertyAction.getDefaultImageDescriptor(), null);
-		Action refreshAction = new RefreshAction(this, RefreshAction
-				.getDefaultImageDescriptor(), null);
-
-		CategroyAction categroyAction = new CategroyAction(this, CategroyAction
-				.getDefaultImageDescriptor(), null);
-		CharSortAction charSortAction = new CharSortAction(this, CharSortAction
-				.getDefaultImageDescriptor(), null);
+		CategroyAction categroyAction = new CategroyAction(this);
+		CharSortAction charSortAction = new CharSortAction(this);
 
 		actionBarManager.add(createActionContributionItem(addAction));
 		actionBarManager.add(createActionContributionItem(refreshAction));
