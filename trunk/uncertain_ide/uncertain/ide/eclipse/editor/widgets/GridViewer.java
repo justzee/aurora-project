@@ -615,8 +615,6 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	protected ViewForm createViewForm() {
 		ViewForm viewForm = new ViewForm(container, SWT.NONE);
 		GridData gd = new GridData(GridData.FILL_BOTH);
-		gd.heightHint = 500;
-		gd.widthHint = 800;
 		viewForm.setLayoutData(gd);
 		viewForm.setLayout(new FillLayout());
 		return viewForm;
