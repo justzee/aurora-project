@@ -361,6 +361,55 @@ public class CompositeUtil {
 		return root;
 	}
 
+	public static CompositeMap expand(CompositeMap root){
+
+		List childs = root.getChilds();
+		if (childs!=null){
+			ListIterator it = childs.listIterator();
+			while (it.hasNext()) {
+				CompositeMap child = (CompositeMap) it.next();
+				
+					expand(child);
+			}
+		}
+			Set keyset=root.keySet();
+			Iterator it =keyset.iterator();
+			while (it.hasNext()){
+				String key = it.next().toString();
+				CompositeMap keychild = new CompositeMap(key);
+				keychild.setText(root.getString(key));
+				//root.remove(key);
+				root.addChild(keychild);
+			}
+			
+			
+		
+		return root;
+		
+	}
+
+	   public static CompositeMap ignorePrompt(CompositeMap root){
+		   
+		   CompositeMap returnTarget = new CompositeMap(root.getName());
+		   List childs = root.getChilds();
+			if (childs!=null){
+				ListIterator it = childs.listIterator();
+				while (it.hasNext()) {
+					CompositeMap child = (CompositeMap) it.next();
+					List childchilds = child.getChilds();
+					if (childs!=null){
+						returnTarget.addChild(ignorePrompt(child));
+					}else{
+						returnTarget.addChild(child);
+					}
+				}
+			}else{
+				returnTarget.setText(root.getText());
+			}
+		   
+		   
+		   return returnTarget;
+	   } 
 	public static int uniqueHashCode(CompositeMap m) {
 		return System.identityHashCode(m);
 	}
