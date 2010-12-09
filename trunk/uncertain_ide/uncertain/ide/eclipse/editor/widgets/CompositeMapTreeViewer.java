@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -326,8 +327,9 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 	}
 
 	public MenuManager addChildElements() {
-		MenuManager childElementMenus = new MenuManager(LocaleMessage
-				.getString("add.element.label"));
+		String text = LocaleMessage.getString("add.element.label");
+		ImageDescriptor imageDes = Activator.getImageDescriptor(LocaleMessage.getString("add.icon"));
+		MenuManager childElementMenus = new MenuManager(text,imageDes,null);
 		final CompositeMap comp = focusData;
 		
 		ActionProperties actionProperties = new ActionProperties(this,comp);
