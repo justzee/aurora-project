@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Text;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
+import uncertain.ide.Activator;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.celleditor.CellProperties;
@@ -60,7 +62,9 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		super(viewer, parentCM, qName,actionStyle);
 
 	}
-
+	public ImageDescriptor getDefaultImageDescriptor() {
+		return Activator.getImageDescriptor(LocaleMessage.getString("wizard.icon"));
+	}
 	public void run() {
 		
 		CompositeMap view = parent.getParent().getParent();
@@ -227,7 +231,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			this.dataSets = dataSets;
 			this.parentViewer = parent;
 		}
-
+		
 		public boolean canFlipToNextPage() {
 			if (bindBM != null) {
 				CompositeLoader loader = new CompositeLoader();
