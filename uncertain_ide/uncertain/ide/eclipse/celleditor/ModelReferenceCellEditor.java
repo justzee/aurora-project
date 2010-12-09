@@ -68,7 +68,7 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 		CompositeMap bmFiles = getAllBMFiles(baseDir,fullPath);
 		
 		String[] columnProperties = {"name","fullpath"};
-		GridViewer grid = new GridViewer(null,IGridViewer.filterBar);
+		GridViewer grid = new GridViewer(null,IGridViewer.filterBar|IGridViewer.NoToolBar);
 		grid.setData(bmFiles);
 		grid.setFilterColumn("name");
 		grid.setGridProperties(columnProperties);
