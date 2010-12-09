@@ -1,10 +1,13 @@
 package uncertain.ide.eclipse.action;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
+import uncertain.ide.Activator;
+import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.IViewer;
 import uncertain.ide.eclipse.wizards.DataSetWizard;
 
@@ -30,5 +33,8 @@ public class AddDataSetAction extends AddElementAction {
 		DataSetWizard  wizard = new DataSetWizard(parent,prefix,uri,localName);
 		WizardDialog dialog = new WizardDialog(new Shell(),wizard);
 		dialog.open();
+	}
+	public ImageDescriptor getDefaultImageDescriptor() {
+		return Activator.getImageDescriptor(LocaleMessage.getString("wizard.icon"));
 	}
 }
