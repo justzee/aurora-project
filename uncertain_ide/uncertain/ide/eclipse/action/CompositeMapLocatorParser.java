@@ -24,6 +24,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.NameProcessor;
+import uncertain.composite.XMLOutputter;
 
 /**
  * 
@@ -168,21 +169,22 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 		uri_mapping.remove(prefix);
 	}
 
-	public void characters(char ch[], int start, int length)
-			throws SAXException {
+    public void characters(char ch[], int start, int length)
+	    throws SAXException {
 		if (ch == null)
-			return;
+		    return;
 		if (start == length)
-			return;
+		    return;
 		if (current_node != null) {
-			String t = current_node.getText();
-			if (t != null)
-				t += new String(ch, start, length);
-			else
-				t = new String(ch, start, length);
-			current_node.setText(t);
+		    String t = current_node.getText();
+		    if (t != null)
+		        t += new String(ch, start, length);
+		    else
+		        t = new String(ch, start, length);
+		    t = handleNewLine(t);
+		    current_node.setText(t);
 		}
-	}
+    }
 
 	/** get root CompositeMap parsed */
 	public CompositeMap getRoot() {
@@ -262,15 +264,27 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 			return;
 		if (current_node != null) {
 			String t = current_node.getComment();
-			String now = "<!--" + new String(ch, start, length) + "-->";
+			String now = new String(ch, start, length);
 			if (t != null)
-				t += "," + now;
+				t += "-->" + now;
 			else
 				t = now;
+			t = handleNewLine(t);
 			current_node.setComment(t);
 		} else {
-			globalComment = "<!--" + new String(ch, start, length) + "-->";
+			globalComment = globalComment == null ? "" : globalComment
+					+ XMLOutputter.LINE_SEPARATOR;
+			globalComment = globalComment + "<!--"
+					+ new String(ch, start, length) + "-->";
+			globalComment = handleNewLine(globalComment);
 		}
+	}
+	private String handleNewLine(String src){
+		if(src == null)
+			return null;
+		String result = src.replaceAll("\r", "");
+		result = result.replaceAll("\n", "\r\n");
+		return result;
 	}
 
 	public void endCDATA() throws SAXException {}
