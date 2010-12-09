@@ -378,10 +378,15 @@ public class CompositeUtil {
 				String key = it.next().toString();
 				CompositeMap keychild = new CompositeMap(key);
 				keychild.setText(root.getString(key));
-				//root.remove(key);
 				root.addChild(keychild);
 			}
-			
+	    	HashSet hs = new HashSet();
+	    	hs.addAll(keyset);
+	    	Iterator its = hs.iterator();
+	    	while (its.hasNext()){
+	    		Object key = its.next();
+	    		root.remove(key);
+	    	}			
 			
 		
 		return root;
