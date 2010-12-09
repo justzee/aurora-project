@@ -12,7 +12,7 @@
         <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" name="parameter_2_type"/>
         <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" name="parameter_2_desc"/>
         <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" name="parameter_2_url"/>
-        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" forInsert="true" name="parameter_3_type"/>
+        <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forInsert="true" forUpdate="false" name="parameter_3_type"/>
         <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" name="parameter_3_desc"/>
         <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" name="parameter_3_url"/>
         <ns1:field databaseType="VARCHAR" datatype="java.lang.String" forUpdate="false" name="parameter_4_type"/>
@@ -23,7 +23,8 @@
         <ns1:field name="rule_code"/>
     </ns1:order-by>
     <ns1:primary-key>
-        <field name="rule_code"/>
-        <field name="name"/>
+        <pk-field name="rule_code"/>
+        <pk-field name="name"/>
     </ns1:primary-key>
+    <ns1:ref-fields/>
 </ns1:model>

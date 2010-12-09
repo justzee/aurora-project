@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns1:model xmlns:ns1="http://www.aurora-framework.org/schema/bm" baseTable="EMP" alias="e">
+<ns1:model xmlns:ns1="http://www.aurora-framework.org/schema/bm" alias="e" baseTable="EMP">
     <ns1:fields>
         <ns1:field databaseType="BIGINT" datatype="long" insertExpression="EMP_S.nextval" name="empno"/>
         <ns1:field databaseType="VARCHAR" datatype="string" name="ename"/>
@@ -9,27 +9,25 @@
         <ns1:field databaseType="BIGINT" datatype="long" name="deptno"/>
         <ns1:field databaseType="FLOAT" datatype="long" name="sal"/>
         <ns1:field databaseType="FLOAT" datatype="long" name="comm"/>
-        <ns1:field databaseType="DATE" datatype="date" insertExpression="sysdate" updateExpression="sysdate" name="creation_date"/>
+        <ns1:field databaseType="DATE" datatype="date" insertExpression="sysdate" name="creation_date" updateExpression="sysdate"/>
         <ns1:field databaseType="DATE" datatype="date" expression="sysdate" forInsert="false" name="NOW_DATE"/>
-        <ns1:ref-field sourceField="dname" relationName="d" name="dname"/>
-        <ns1:ref-field sourceField="ename" relationName="MGR" name="mgr_name"/>
     </ns1:fields>
     <ns1:primary-key>
-        <ns1:field sequenceName="EMP_S" name="empno"/>
+        <ns1:pk-field name="empno" sequenceName="EMP_S"/>
     </ns1:primary-key>
     <ns1:relations>
-        <ns1:relation joinType="INNER" refModel="testcase.HR.DEPT" name="d">
+        <ns1:relation joinType="INNER" name="d" refModel="testcase.HR.DEPT">
             <ns1:reference foreignField="DEPTNO" localField="DEPTNO"/>
         </ns1:relation>
-        <ns1:relation joinType="LEFT OUTER" refAlias="M1" refModel="testcase.HR.EMP" name="MGR">
+        <ns1:relation joinType="LEFT OUTER" name="MGR" refAlias="M1" refModel="testcase.HR.EMP">
             <ns1:reference foreignField="EMPNO" localField="MGR"/>
             <ns1:reference expression="M1.DEPTNO is not null"/>
         </ns1:relation>
     </ns1:relations>
     <ns1:query-fields>
-        <ns1:query-field queryOperator="like" matchMode="full" field="ename"/>
-        <ns1:query-field queryOperator="=" field="deptno"/>
-        <ns1:query-field queryExpression="exists (select * from emp t1 where t1.mgr=e.mgr)" field="mgr"/>
+        <ns1:query-field field="ename" matchMode="full" queryOperator="like"/>
+        <ns1:query-field field="deptno" queryOperator="="/>
+        <ns1:query-field field="mgr" queryExpression="exists (select * from emp t1 where t1.mgr=e.mgr)"/>
     </ns1:query-fields>
     <ns1:data-filters>
         <ns1:data-filter enforceActions="query" expression="e.deptno is not null" name="MustInDepartment"/>
@@ -37,6 +35,10 @@
     </ns1:data-filters>
     <ns1:order-by>
         <ns1:field name="DNAME"/>
-        <ns1:field order="desc" name="hiredate"/>
+        <ns1:field name="hiredate" order="desc"/>
     </ns1:order-by>
+    <ns1:ref-fields>
+        <ns1:ref-field name="dname" relationName="d" sourceField="dname"/>
+        <ns1:ref-field name="mgr_name" relationName="MGR" sourceField="ename"/>
+    </ns1:ref-fields>
 </ns1:model>

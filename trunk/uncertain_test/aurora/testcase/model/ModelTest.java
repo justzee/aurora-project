@@ -49,7 +49,7 @@ public class ModelTest extends AbstractModelServiceTest {
         
         Field[] fields = model.getFields();
         assertNotNull(fields);
-        assertEquals(fields.length, 13);
+        assertEquals(fields.length, 12);
         assertNotNull(model.getField("ENAME"));
         Field[] f2 = model.getFields();
         assertTrue(fields==f2);
