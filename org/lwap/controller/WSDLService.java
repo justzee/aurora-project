@@ -38,26 +38,16 @@ public class WSDLService implements IController {
 	}
 
 	public void setServiceInstance(MainService serviceInst) {
-
+		response =serviceInst.getResponse();
 	}
 
-	public int preParseParameter(JSONServiceContext ct) throws Exception {
+	public int preParseParameter(ServiceContext ct) throws Exception {
 		service_context = ct;
-		response = ct.getResponse();
 		return EventModel.HANDLE_NORMAL;
 
 	}
 
-	void prepareResponse(HttpServletResponse response)
-
-	{
-		System.out.println(" i am prepare");
-	}
-
-	public void writeResponse() throws IOException, JSONException {
-	}
-
-	public void onCreateSuccessResponse() throws IOException, JSONException {
+	public void onCreateSuccessResponse() throws IOException {
 		response.setContentType(DEFAULT_WSDL_CONTENT_TYPE);
 		response.setHeader("Cache-Control", "no-cache, must-revalidate");
 		CompositeMap result=null;
@@ -70,17 +60,16 @@ public class WSDLService implements IController {
                     output);
             if (!(obj instanceof CompositeMap))
                 throw new IllegalArgumentException(
-                        "Target for JSON output is not instance of CompositeMap: "
+                        "Target for WSDL output is not instance of CompositeMap: "
                                 + obj);
             result = (CompositeMap) obj;
         } else
             result = service_context.getModel();
         if (result != null) {
         	CompositeMap cmt = CompositeUtil.expand(result);
-        	CompositeMap cmtt = CompositeUtil.ignorePrompt(cmt);
             XMLOutputter xo = new XMLOutputter();
             xo.setGenerateCdata(false);
-          out.println(xo.toXML(cmtt));
+          out.println(xo.toXML(cmt));
         }
         out.write("</soap:Body>");
 		out.write("</soap:Envelope>");
@@ -91,7 +80,19 @@ public class WSDLService implements IController {
 		response.setContentType(DEFAULT_WSDL_CONTENT_TYPE);
 		response.setHeader("Cache-Control", "no-cache, must-revalidate");
 		PrintWriter out = response.getWriter();
-		out.write(context.toString());
+		out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		out.write("<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">");
+		out.write("<soap:Body>");
+		out.write("<errorcode>");
+    	out.write(context.getError().getString("code"));
+		out.write("</errorcode>");
+		out.write("<errormsg>");
+		out.write(context.getError().getString("message"));
+		out.write("</errormsg>");
+		out.write("</soap:Body>");
+		out.write("</soap:Envelope>");
+		
+//		out.write(((CompositeMap)context.getObjectContext().getObject("/error code")).toXML());
 	}
     public String getOutput() {
         return output;
@@ -104,6 +105,4 @@ public class WSDLService implements IController {
     public void setOutput(String output) {
         this.output = output;
     }
-
-   
 }
