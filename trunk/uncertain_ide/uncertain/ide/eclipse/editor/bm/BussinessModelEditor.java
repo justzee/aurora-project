@@ -1,10 +1,16 @@
 package uncertain.ide.eclipse.editor.bm;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.eclipse.ui.PartInitException;
 
+import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.action.CompositeMapLocatorParser;
 import uncertain.ide.eclipse.editor.BaseCompositeMapEditor;
 import uncertain.ide.eclipse.editor.CompositeMapPage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import aurora.ide.AuroraConstant;
 
 
 public class BussinessModelEditor extends BaseCompositeMapEditor {
@@ -13,7 +19,7 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 	private SQLExecutePage sqlPage  = new SQLExecutePage(this);
 	int SQLPageIndex;
 	public CompositeMapPage initMainViewerPage() {
-		BussinessModelPage mainFormPage = new BussinessModelPage(this);
+		mainFormPage = new BussinessModelPage(this);
 		return mainFormPage;
 	}
 	
@@ -31,6 +37,7 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 		sqlPage.setModify(true);
 	}
 	protected void pageChange(int newPageIndex) {
+		int currentPage = getCurrentPage();
 		super.pageChange(newPageIndex);
 		if(newPageIndex ==SQLPageIndex){
 			try {
@@ -38,6 +45,50 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 			} catch (Exception e) {
 				CustomDialog.showExceptionMessageBox(e);
 			}
+		}else if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
+			locateTextPage();
+		}else if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
+			locateMainPage();
 		}
+	}
+
+	private void locateMainPage() {
+		CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
+
+		try {
+			InputStream content = new ByteArrayInputStream(textPage.getContent()
+					.getBytes("UTF-8"));
+			CompositeMap  cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
+			if(cm != null){
+				while(cm.getParent() != null){
+					CompositeMap parent = cm.getParent();
+					if(AuroraConstant.modelQN.equals(parent.getQName())){
+						mainFormPage.setSelectionTab(cm.getName());
+					}
+					cm = parent;
+				}
+			}
+		} catch (Exception e){
+			CustomDialog.showExceptionMessageBox(e);
+		}
+		
+	}
+
+	private void locateTextPage() {
+		CompositeMap selection = mainFormPage.getSelectionTab();
+		if(selection == null)
+			return;
+		CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
+		int line = 0;
+		try {
+			InputStream content = new ByteArrayInputStream(mainFormPage.getFullContent()
+					.getBytes("UTF-8"));
+			line = parser.LocateCompositeMapLine(content, selection);
+		} catch (Exception e) {
+			CustomDialog.showExceptionMessageBox(e);
+		}
+		int offset = textPage.getOffsetFromLine(line);
+		textPage.setHighlightRange(offset, 10, true);
+		
 	}
 }

@@ -3,6 +3,7 @@ package uncertain.ide.eclipse.editor.bm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -61,7 +62,7 @@ public class BussinessModelPage extends CompositeMapPage {
 
 	private static final String[] customTabs = new String[]{"primary-key","order-by","ref-fields"};
 	private static final String ref_fields = "ref-fields"; 
-	
+	private List tabFolerNameList; 
 	public BussinessModelPage(FormEditor editor) {
 		super(editor, PageId, PageTitle);
 	}
@@ -105,6 +106,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		shell.layout(true);
 	}
 	private void initChildViews(){
+		tabFolerNameList = new  ArrayList();
 		if (childViews != null)
 			childViews.clear();
 		else
@@ -121,6 +123,9 @@ public class BussinessModelPage extends CompositeMapPage {
 			CustomDialog.showErrorMessageBox(errorMessage);
 		}
 		mPropertyEditor.setData(data);
+	}
+	private void registerTabFolder(int i,String tabFolerName){
+		tabFolerNameList.add(i, tabFolerName);
 	}
 
 	private void createDetailContent(Composite parent) {
@@ -143,6 +148,7 @@ public class BussinessModelPage extends CompositeMapPage {
 			if (!(type instanceof Element)) {
 				childViews.add(createBaseViewer(TabHeighGrab, i, array,
 						array_data));
+				registerTabFolder(i,array.getLocalName());
 				continue;
 			}
 			Element arrayType = LoadSchemaManager.getSchemaManager()
@@ -150,6 +156,7 @@ public class BussinessModelPage extends CompositeMapPage {
 			if (arrayType.getAllElements().size() > 0) {
 				childViews.add(createBaseViewer(TabHeighGrab, i, array,
 						array_data));
+				registerTabFolder(i,array.getLocalName());
 				continue;
 			} else {
 				final GridViewer gridViewer = new GridViewer(null,IGridViewer.fullEditable);
@@ -168,6 +175,7 @@ public class BussinessModelPage extends CompositeMapPage {
 				mTabFolder.getItem(i).setControl(
 						gridViewer.getControl());
 				childViews.add(gridViewer);
+				registerTabFolder(i,array.getLocalName());
 				final int  itemIndex = i;
 				mTabFolder.addSelectionListener(new SelectionListener() {
 
@@ -333,5 +341,25 @@ public class BussinessModelPage extends CompositeMapPage {
 		this.data = content;
 		createContent(shell);
 
+	}
+
+	public CompositeMap getSelectionTab() {
+		int SelectionIndex = mTabFolder.getSelectionIndex();
+		if(SelectionIndex == -1)
+			return null;
+		Object nameObject = tabFolerNameList.get(SelectionIndex);
+		if(nameObject == null)
+			return null;
+		String tabFolderName = (String)nameObject;
+		CompositeMap tabFoler = data.getChild(tabFolderName);
+		return tabFoler;
+	}
+	public void setSelectionTab(String tabName){
+		if(tabName == null)
+			return ;
+		int tabIndex = tabFolerNameList.indexOf(tabName);
+		if(tabIndex == -1 || tabIndex>mTabFolder.getItemCount())
+			return;
+		mTabFolder.setSelection(tabIndex);
 	}
 }
