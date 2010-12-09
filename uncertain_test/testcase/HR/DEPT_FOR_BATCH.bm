@@ -6,9 +6,10 @@
         <bm:field databaseType="VARCHAR" datatype="java.lang.String" name="LOC"/>
     </bm:fields>
     <bm:primary-key>
-        <bm:field name="DEPTNO"/>
+        <bm:pk-field name="DEPTNO"/>
     </bm:primary-key>
     <bm:cascade-operations>
         <bm:cascade-operation inputPath="emp-list" model="testcase.HR.EMP_FOR_INSERT" operations="insert,delete"/>
     </bm:cascade-operations>
+    <bm:ref-fields/>
 </bm:model>
