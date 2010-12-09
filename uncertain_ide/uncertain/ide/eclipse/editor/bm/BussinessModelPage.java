@@ -360,6 +360,13 @@ public class BussinessModelPage extends CompositeMapPage {
 		int tabIndex = tabFolerNameList.indexOf(tabName);
 		if(tabIndex == -1 || tabIndex>mTabFolder.getItemCount())
 			return;
+		Object view = childViews.get(tabIndex+1);
+		if(view == null)
+			return;
+		if(view instanceof GridViewer){
+			((GridViewer)view).packColumns();
+		}
 		mTabFolder.setSelection(tabIndex);
+		
 	}
 }
