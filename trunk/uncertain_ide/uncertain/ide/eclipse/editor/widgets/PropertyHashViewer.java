@@ -113,8 +113,24 @@ public class PropertyHashViewer extends PropertyViewer implements
 		viewForm.setLayout(new FillLayout());
 		createToolbar(viewForm);
 		createMainContent(viewForm);
-
 		sashForm.setWeights(new int[] { 92, 8 });
+	}
+	public void createEditor(boolean showElementDocument) {
+		Assert.isTrue(tableViewer == null, "The viewer has been created!");
+		sashForm = new SashForm(parent, SWT.VERTICAL);
+		ViewForm viewForm = new ViewForm(sashForm, SWT.NONE);
+		elementDocument = new Label(sashForm, SWT.LEFT);
+
+		viewForm.setLayout(new FillLayout());
+		createToolbar(viewForm);
+		createMainContent(viewForm);
+		if(!showElementDocument){
+			sashForm.SASH_WIDTH = 0;
+			sashForm.setWeights(new int[] { 100, 0 });
+		}
+		else{
+			sashForm.setWeights(new int[] { 92, 8 });
+		}
 	}
 
 	private void createMainContent(ViewForm viewForm) {
