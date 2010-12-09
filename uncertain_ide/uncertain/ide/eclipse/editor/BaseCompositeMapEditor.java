@@ -29,8 +29,8 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	protected TextPage textPage = new TextPage(this);
 	private boolean dirty = false;
 	private File file;
-	int mainViewerIndex ;
-	int textPageIndex;
+	protected int mainViewerIndex ;
+	protected int textPageIndex;
 	public BaseCompositeMapEditor() {
 		super();
 		this.mainViewerPage = initMainViewerPage();
