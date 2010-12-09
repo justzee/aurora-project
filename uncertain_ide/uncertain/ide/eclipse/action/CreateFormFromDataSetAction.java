@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -42,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
+import uncertain.ide.Activator;
 import uncertain.ide.LoadSchemaManager;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.celleditor.AuroraCellEditor;
@@ -74,7 +76,9 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		super(viewer, parentCM, qName,actionStyle);
 
 	}
-
+	public ImageDescriptor getDefaultImageDescriptor() {
+		return Activator.getImageDescriptor(LocaleMessage.getString("wizard.icon"));
+	}
 	public void run() {
 
 		CompositeMap view = parent.getParent().getParent();
