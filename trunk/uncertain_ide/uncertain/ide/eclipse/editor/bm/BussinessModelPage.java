@@ -101,7 +101,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		initChildViews();
 		createMasterContent(sashForm);
 		createDetailContent(sashForm);
-		sashForm.setWeights(new int[] { 30, 70 });
+		sashForm.setWeights(new int[] { 40, 60 });
 		shell.layout(true);
 	}
 	private void initChildViews(){
@@ -115,7 +115,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		PropertyHashViewer mPropertyEditor = new PropertyHashViewer(this,
 				parent);
 		childViews.add(mPropertyEditor);
-		mPropertyEditor.createEditor();
+		mPropertyEditor.createEditor(false);
 		String errorMessage = mPropertyEditor.clear(true);
 		if(errorMessage != null){
 			CustomDialog.showErrorMessageBox(errorMessage);
