@@ -22,7 +22,6 @@ public class CompositeMapTreePage extends CompositeMapPage {
 
 	private CompositeMap data;
 
-	private boolean modify = false;
 	BaseCompositeMapViewer baseCompositeMapPage;
 
 	Composite shell;
@@ -71,7 +70,6 @@ public class CompositeMapTreePage extends CompositeMapPage {
 
 	public void refresh(boolean dirty) {
 		if (dirty) {
-			setModify(true);
 			getEditor().editorDirtyStateChanged();
 		}
 		baseCompositeMapPage.refresh(false);
@@ -80,14 +78,6 @@ public class CompositeMapTreePage extends CompositeMapPage {
 	public void refresh(CompositeMap data) {
 		this.data = data;
 		baseCompositeMapPage.refresh(data);
-	}
-
-	public boolean isModify() {
-		return modify;
-	}
-
-	public void setModify(boolean modify) {
-		this.modify = modify;
 	}
 
 	public CompositeMap getData() {
