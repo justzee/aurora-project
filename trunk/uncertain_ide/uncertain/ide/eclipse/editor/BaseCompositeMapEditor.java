@@ -109,7 +109,10 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		int currentPage = getCurrentPage();
 		if(currentPage==textPageIndex){
 			try {
-				sycMainViewerPageWithTextPage();
+				if(textPage.isModify()){
+					sycMainViewerPageWithTextPage();
+					textPage.setModify(false);
+				}
 			} catch (Exception e) {
 				setActivePage(textPageIndex);
 				CustomDialog.showExceptionMessageBox(e);
