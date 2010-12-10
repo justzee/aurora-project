@@ -27,6 +27,7 @@ public class AddRefFieldAction extends ActionListener {
 	private static final String relations = "relations";
 	private static final String refModel = "refModel";
 	private static final String ref_fields = "ref-fields";
+	private static final String refFieldElement = "ref-field";
 	private static final String specialSeparator = "\"";
 	private static final String[] gridProperties = new String[]{"name","relationName","ref_model"};
 	private static final String[] refFieldProperties = new String[]{"sourceField","name","relationName"};
@@ -115,7 +116,7 @@ public class AddRefFieldAction extends ActionListener {
 			String fieldKey = field_name+specialSeparator+relationName;
 			if(existRefFields.contains(fieldKey))
 				continue;
-			CompositeMap record = new CompositeMap("field");
+			CompositeMap record = new CompositeMap(model.getPrefix(),model.getNamespaceURI(),refFieldElement);
 			record.put(gridProperties[0], field_name);
 			record.put(gridProperties[1], relationName);
 			record.put(gridProperties[2], ref_model);
