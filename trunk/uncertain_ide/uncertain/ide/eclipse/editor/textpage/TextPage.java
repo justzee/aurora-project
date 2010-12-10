@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
 import uncertain.ide.Common;
 import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.IViewer;
@@ -26,6 +27,7 @@ public class TextPage extends TextEditor implements IViewer {
 	private boolean syc = false;
 	private ColorManager colorManager;
 	private FormEditor editor;
+	private boolean modify = false;
 	public TextPage(FormEditor editor, String id, String title) {
 //		super(editor, id, title);
 		this.editor = editor;
@@ -59,8 +61,10 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public void refresh(boolean dirty) {
-		if (dirty)
+		if (dirty){
 			getEditor().editorDirtyStateChanged();
+			setModify(true);
+		}
 	}
 	private FormEditor getEditor(){
 		return editor;
@@ -84,15 +88,17 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	private boolean checkContentFormat() {
+		CompositeMap content = null;
 		CompositeLoader loader = new CompositeLoader();
 		loader.setSaveNamespaceMapping(true);
 		try {
-			loader.loadFromString(getContent());
+			content = loader.loadFromString(getContent());
 		} catch (IOException e) {
 			return false;
 		} catch (SAXException e) {
 			return false;
 		}
+		getSourceViewer().getTextWidget().setText(content.toXML());
 		return true;
 	}
 
@@ -132,5 +138,12 @@ public class TextPage extends TextEditor implements IViewer {
 
 	public IEditorInput getInput() {
 		return getEditorInput();
+	}
+	public boolean isModify() {
+		return modify;
+	}
+
+	public void setModify(boolean modify) {
+		this.modify = modify;
 	}
 }
