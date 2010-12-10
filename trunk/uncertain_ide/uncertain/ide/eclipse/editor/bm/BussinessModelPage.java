@@ -56,8 +56,7 @@ public class BussinessModelPage extends CompositeMapPage {
 	private CTabFolder mTabFolder;
 	private CompositeMap data;
 	private SashForm sashForm;
-	private boolean modify = false;
-	Composite shell;
+	private Composite shell;
 	private ArrayList childViews;
 
 	private static final String[] customTabs = new String[]{"primary-key","order-by","ref-fields"};
@@ -308,14 +307,6 @@ public class BussinessModelPage extends CompositeMapPage {
 
 	public void refresh(CompositeMap data) {
 		this.data = data;
-	}
-
-	public boolean isModify() {
-		return modify;
-	}
-
-	public void setModify(boolean modify) {
-		this.modify = modify;
 	}
 
 	public CompositeMap getData() {
