@@ -344,9 +344,10 @@ public class CompositeMapAction {
 		if (attribueValue != null) {
 			set.add(attribueValue);
 		}
-		if (root.getChildsNotNull().size() > 0) {
-			Iterator it = root.getChildsNotNull().iterator();
-			for (; it.hasNext();) {
+		List childList = root.getChilds();
+		if (childList != null) {
+			Iterator it = childList.iterator();
+			for (;it.hasNext();) {
 				CompositeMap child = (CompositeMap) it.next();
 				collectAttribueValues(set, attribueName, child);
 			}
