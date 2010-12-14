@@ -21,7 +21,6 @@ import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 public class FileHyperlinkDetector implements IHyperlinkDetector {
 
 	private XMLTagScanner scanner;
-	private Region columnValue;
 	private static String[] buildinColumnNames = new String[] { "model",
 			"extend", "lovservice" };
 	private static String[] buildinScreenFile = new String[] { "service",
@@ -57,7 +56,7 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 			for (int i = 0; i < buildinColumnNames.length; i++) {
 				String cName = buildinColumnNames[i];
 				if ((columnName.toLowerCase().indexOf(cName) != -1)) {
-					return new IHyperlink[] { new BMFileHyperlink(columnValue,
+					return new IHyperlink[] { new BMFileHyperlink(token,
 							textViewer) };
 				}
 			}
@@ -80,14 +79,6 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 			int offset = scanner.getTokenOffset();
 			int length = scanner.getTokenLength();
 			if (offset <= documentOffset && (offset + length) >= documentOffset) {
-				if (token.getData() instanceof TextAttribute) {
-					TextAttribute text = (TextAttribute) token.getData();
-					if (text.getForeground().getRGB().equals(
-							IXMLColorConstants.STRING)) {
-						columnValue = new Region(scanner.getTokenOffset() + 1,
-								scanner.getTokenLength() - 2);
-					}
-				}
 				break;
 			}
 			if (token.getData() instanceof TextAttribute) {
