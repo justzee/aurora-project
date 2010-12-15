@@ -70,6 +70,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 	final static String idColumn = "id";
 	final static String modelColumn = "model";
 	final static String queryDataSetColumn = "queryDataSet";
+	final static String title = LocaleMessage.getString("create.form.from.dataset");
 	private final static String lineSeparator = System
 			.getProperty("line.separator");
 	private final static String screenBodyColumn = "screenBody";
@@ -131,6 +132,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 		public FormWizard(CompositeMap dataSet) {
 			super();
+			setText(title);
 			this.dataSet = dataSet;
 		}
 
@@ -149,7 +151,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 			int columnCount = mainConfigPage.getColumnCount();
 			form.put("column", new Integer(columnCount));
-
+			form.put("id", mainConfigPage.getId());
+			
 			HashMap columnFields = fieldPage.getColumnFields();
 			HashMap changeData = fieldPage.getChangeData();
 			HashMap allfields = getAllFields();
@@ -159,7 +162,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			if (names.size() == 0)
 				return true;
 			CompositeMap view = dataSet.getParent().getParent();
-			addForm(form);
+			addToParent(form);
 			for (int i = 0; i < columnCount; i++) {
 				CompositeMap vBox = new CompositeMap(prefix, uri, "vBox");
 				ArrayList fields = (ArrayList) columnFields.get(new Integer(
@@ -248,7 +251,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 							"button");
 					button.put("click", functionName);
 					buttons.addChild(button);
-					addForm(buttons);
+					addToParent(buttons);
 				}
 
 			}
@@ -256,7 +259,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			return true;
 		}
 
-		private void addForm(CompositeMap grid) {
+		private void addToParent(CompositeMap grid) {
 			CompositeMap view = parent.getParent().getParent();
 			CompositeMap screenBody = view.getChild(screenBodyColumn);
 			if (screenBody == null) {
@@ -337,7 +340,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 		protected MainConfigPage(IViewer parent, CompositeMap dataSet) {
 			super(PAGE_NAME);
-			setTitle(LocaleMessage.getString("mainpage"));
+			setTitle(title+"--"+LocaleMessage.getString("mainpage"));
 			this.parentViewer = parent;
 			this.dataSet = dataSet;
 		}
@@ -590,6 +593,9 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			}
 			return availableDataSets;
 		}
+		public String getId(){
+			return id;
+		}
 
 		public CompositeMap getDataSet() {
 			return bindBM;
@@ -641,7 +647,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 		protected FieldPage(FormWizard wizard) {
 			super(PAGE_NAME);
-			setTitle("Filed Page");
+			setTitle(title+"--"+LocaleMessage.getString("filed.page"));
 			this.wizard = wizard;
 		}
 

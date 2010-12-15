@@ -55,6 +55,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 	private final static String idColumn = "id";
 	private final static String modelColumn = "model";
 	private final static String screenBodyColumn = "screenBody";
+	final static String title = LocaleMessage.getString("create.grid.from.dataset");
 	public CreateGridFromDataSetAction(IViewer viewer, CompositeMap dataSet,
 			String prefix, String uri, String cmName, String text,int actionStyle) {
 		super(viewer, dataSet, prefix, uri, cmName, text,actionStyle);
@@ -108,10 +109,10 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 
 		public void addPages() {
 			mainConfigPage = new MainConfigPage(this, dataSet);
-//			mainConfigPage.setPageComplete(false);
 			addPage(mainConfigPage);
 			fieldPage = new FieldPage(this);
 			addPage(fieldPage);
+			fieldPage.setPageComplete(false);
 		}
 
 		public boolean performFinish() {
@@ -213,7 +214,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		private CompositeMap dataSet;
 		protected MainConfigPage(IViewer parentView, CompositeMap dataSet) {
 			super(PAGE_NAME);
-			setTitle(LocaleMessage.getString("mainpage"));
+			setTitle(title+"--"+LocaleMessage.getString("mainpage"));
 			this.parentViewer = parentView;
 			this.dataSet = dataSet;
 		}
@@ -533,7 +534,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 
 		protected FieldPage(GridWizard wizard) {
 			super(PAGE_NAME);
-			setTitle("Filed Page");
+			setTitle(title+"--"+LocaleMessage.getString("filed.page"));
 			this.wizard = wizard;
 		}
 
@@ -589,8 +590,8 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			grid.setData(filedNames);
 			newCompositeMap = new ModifyCompositeMapListener();
 			grid.addCellModifierListener(newCompositeMap);
-
 			setControl(content);
+			setPageComplete(true);
 		}
 
 		public CompositeMap getSelection() {
