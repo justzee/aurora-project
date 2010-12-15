@@ -109,14 +109,16 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 		int index = documentOffset - partitionOffset;
 		String partitionText = document.get(partitionOffset, partitionLength);
 		int start = index - 1;
-		char c = partitionText.charAt(start);
-		while (isOK(c) && start > 0) {
-			start--;
-			c = partitionText.charAt(start);
+		if(start>=0){
+			char c = partitionText.charAt(start);
+			while (isOK(c) && start > 0) {
+				start--;
+				c = partitionText.charAt(start);
+			}
 		}
 		start++;
 		int end = index;
-		c = partitionText.charAt(end);
+		char c = partitionText.charAt(end);
 		while (isOK(c) && (end < partitionLength - 1)) {
 			end++;
 			c = partitionText.charAt(end);
