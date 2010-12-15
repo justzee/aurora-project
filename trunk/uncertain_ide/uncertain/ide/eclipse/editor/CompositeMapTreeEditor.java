@@ -60,13 +60,16 @@ public abstract class CompositeMapTreeEditor extends BaseCompositeMapEditor {
 
 		int line = 0;
 		try {
-			InputStream content = new ByteArrayInputStream(treePage.getFullContent()
-					.getBytes("UTF-8"));
+			InputStream content = new ByteArrayInputStream(textPage.getContent().getBytes("UTF-8"));
 			line = parser.LocateCompositeMapLine(content, selection);
 		} catch (Exception e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
 		int offset = textPage.getOffsetFromLine(line);
-		textPage.setHighlightRange(offset, 10, true);
+		int length = textPage.getLengthOfLine(line);
+		if(offset==0||length==0)
+			return;
+		textPage.resetHighlightRange();
+		textPage.setHighlightRange(offset, length, true);
 	}
 }
