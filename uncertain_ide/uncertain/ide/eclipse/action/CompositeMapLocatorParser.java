@@ -9,8 +9,10 @@ package uncertain.ide.eclipse.action;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -214,12 +216,28 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 		this.targetCompositeMap = targetCompositeMap;
 		compositeMapPositions = new HashMap();
 		parseStream(stream);
-		Object lineOBject = compositeMapPositions.get(targetCompositeMap);
+		Object lineOBject = getLineObject(compositeMapPositions,targetCompositeMap);
 		if (lineOBject != null) {
 			line = ((Integer) lineOBject).intValue();
 		}
 		return line;
-
+	}
+	private Object getLineObject(HashMap map,CompositeMap object){
+//		return compositeMapPositions.get(targetCompositeMap);
+		if(map == null||object == null)
+			return null;
+		Set enterSet = map.keySet();
+		if(enterSet==null)
+			return null;
+		for(Iterator it = enterSet.iterator();it.hasNext();){
+			Object childObject = it.next();
+			Object childValue = map.get(childObject);
+			CompositeMap child = (CompositeMap)childObject;
+			if(object.equals(child)){
+				return childValue;
+			}
+		}
+		return null;
 	}
 
 	public CompositeMap getCompositeMapFromLine(InputStream stream, int line)
