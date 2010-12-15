@@ -241,7 +241,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 							+ lineSeparator;
 				}
 				if (jsString != null) {
-					jsString = jsString + functionIndent + "}" + lineSeparator;
+					jsString = jsString + functionIndent + "}";
 					js.setText(jsString);
 					CompositeMap buttons = new CompositeMap(prefix, uri, "hBox");
 					CompositeMap button = new CompositeMap(prefix, uri,
