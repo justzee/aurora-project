@@ -1,6 +1,3 @@
-/*
- * Created on Oct 11, 2004
- */
 package uncertain.ide.eclipse.editor.textpage.format;
 
 import org.eclipse.jface.text.formatter.IFormattingStrategy;

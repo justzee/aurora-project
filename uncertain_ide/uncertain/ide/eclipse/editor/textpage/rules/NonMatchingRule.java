@@ -1,6 +1,3 @@
-/*
- * Created on Oct 15, 2004
- */
 package uncertain.ide.eclipse.editor.textpage.rules;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;

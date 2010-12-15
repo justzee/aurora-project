@@ -18,6 +18,8 @@ public interface AuroraConstant {
 	public final static String BMUri = "http://www.aurora-framework.org/schema/bm";
 	//qn
 	public final static QualifiedName screenQN = new QualifiedName(ApplicationUri, "screen");
+	public final static QualifiedName viewQN = new QualifiedName(ApplicationUri, "view");
+	public final static QualifiedName dataSetQN = new QualifiedName(ApplicationUri, "dataSet");
 	public static QualifiedName modelQN = new QualifiedName(BMUri, "model");
 	
 	public static String[] buildinFileExtension = new String[]{"screen","bm"};
