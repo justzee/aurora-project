@@ -1,6 +1,3 @@
-/*
- * Created on Oct 10, 2004
- */
 package uncertain.ide.eclipse.editor.textpage;
 
 import org.eclipse.jface.text.BadLocationException;

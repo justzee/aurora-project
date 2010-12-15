@@ -1,7 +1,3 @@
-
-/*
- * Created on Oct 11, 2004
- */
 package uncertain.ide.eclipse.editor.textpage.markers;
 
 import java.util.HashMap;
