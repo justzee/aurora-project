@@ -126,6 +126,25 @@ public class TextPage extends TextEditor implements IViewer {
 		}
 		return offset;
 	}
+	public int getLineOfOffset(int offset){
+		try {
+			return getInputDocument().getLineOfOffset(offset);
+		} catch (BadLocationException e) {
+			return -1;
+		}
+	}
+	public int getLengthOfLine(int lineNumber) {
+		int length = 0;
+		try {
+			length = getInputDocument().getLineLength(lineNumber);
+		} catch (BadLocationException e) {
+			try {
+				length = getInputDocument().getLineLength(lineNumber - 1);
+			} catch (BadLocationException e1) {
+			}
+		}
+		return length;
+	}
 	public void dispose() {
 		colorManager.dispose();
 		super.dispose();
