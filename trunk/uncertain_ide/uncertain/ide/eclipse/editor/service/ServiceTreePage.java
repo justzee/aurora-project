@@ -2,8 +2,8 @@ package uncertain.ide.eclipse.editor.service;
 
 import org.eclipse.ui.forms.editor.FormEditor;
 
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.CompositeMapTreePage;
+import uncertain.ide.util.LocaleMessage;
 
 public class ServiceTreePage extends CompositeMapTreePage{
 	protected static final String PageId = "ServicePage";
