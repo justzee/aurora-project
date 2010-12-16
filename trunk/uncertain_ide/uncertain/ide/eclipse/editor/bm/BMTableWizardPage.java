@@ -14,10 +14,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.IGridViewer;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -25,7 +25,7 @@ import uncertain.ide.eclipse.editor.widgets.IGridViewer;
  * OR with the extension that matches the expected one (bm).
  */
 
-public class BmTablePage extends WizardPage {
+public class BMTableWizardPage extends WizardPage {
 	private Text containerText;
 	private BmNewWizard wizard;
 	private String tableName;
@@ -39,7 +39,7 @@ public class BmTablePage extends WizardPage {
 	DatabaseMetaData m_DBMetaData;
 	GridViewer filterCompoment;
 
-	public BmTablePage(ISelection selection, BmNewWizard bmWizard) {
+	public BMTableWizardPage(ISelection selection, BmNewWizard bmWizard) {
 		super("wizardPage");
 		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
@@ -63,7 +63,7 @@ public class BmTablePage extends WizardPage {
 		// ColumnProperties, ColumnText, "TABLE_NAME", "TABLE_NAME");
 
 		filterCompoment = new GridViewer(ColumnProperties,
-				IGridViewer.filterBar);
+				IGridViewer.filterBar|IGridViewer.NoToolBar);
 		filterCompoment.setData(input);
 		filterCompoment.setFilterColumn("TABLE_NAME");
 		filterCompoment.setGridProperties(ColumnProperties);
@@ -112,7 +112,7 @@ public class BmTablePage extends WizardPage {
 			String tableNamePattern) throws SQLException {
 		CompositeMap input = new CompositeMap();
 		ResultSet tableRet = DBMetaData.getTables(null, DBMetaData
-				.getUserName(), tableNamePattern, new String[] { "TABLE" });
+				.getUserName(), tableNamePattern, new String[] { "TABLE","VIEW" });
 		while (tableRet.next()) {
 			int seq = 0;
 			CompositeMap element = new CompositeMap();

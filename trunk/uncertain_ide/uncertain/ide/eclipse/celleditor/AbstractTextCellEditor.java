@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.LocaleMessage;
 
 public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		ICellEditor {

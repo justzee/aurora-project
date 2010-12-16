@@ -6,10 +6,10 @@ import java.io.InputStream;
 import org.eclipse.ui.PartInitException;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.CompositeMapLocatorParser;
 import uncertain.ide.eclipse.editor.BaseCompositeMapEditor;
 import uncertain.ide.eclipse.editor.CompositeMapPage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.CompositeMapLocatorParser;
 import aurora.ide.AuroraConstant;
 
 

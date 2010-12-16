@@ -10,9 +10,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.ListElementsExchangeDialog;
+import uncertain.ide.util.LocaleMessage;
 
 public class AddFieldAction extends Action {
 	private IViewer viewer;

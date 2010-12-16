@@ -3,8 +3,8 @@ package uncertain.ide.eclipse.action;
 import aurora.ide.AuroraConstant;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class DataSetsWizardAction implements IWizardAction{
 

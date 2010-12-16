@@ -4,8 +4,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public 	class CopyElementAction extends Action {
 	AbstractCMViewer viewer;

@@ -7,6 +7,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.editor.core.IViewer;
 
 /**
  * @author linjinxiao

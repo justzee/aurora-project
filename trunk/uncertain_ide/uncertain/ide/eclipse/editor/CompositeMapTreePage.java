@@ -15,8 +15,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
-import uncertain.ide.Common;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.Common;
 
 public class CompositeMapTreePage extends CompositeMapPage {
 

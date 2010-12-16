@@ -3,8 +3,8 @@ package uncertain.ide.eclipse.action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class RefreshAction extends ActionListener {
 	IViewer viewer;

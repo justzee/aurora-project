@@ -10,7 +10,7 @@ import uncertain.composite.QualifiedName;
 import uncertain.datatype.ConvertionException;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * @author linjinxiao

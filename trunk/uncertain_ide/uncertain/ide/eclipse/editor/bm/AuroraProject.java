@@ -16,10 +16,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import uncertain.core.EngineInitiator;
 import uncertain.core.UncertainEngine;
-import uncertain.ide.Common;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
+import uncertain.ide.util.Common;
+import uncertain.ide.util.LocaleMessage;
 
 public class AuroraProject implements IRunnableWithProgress {
 	private String projectFullPath;

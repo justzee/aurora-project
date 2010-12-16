@@ -6,8 +6,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class GridDialog extends TitleAreaDialog {
 

@@ -7,9 +7,8 @@ import org.eclipse.swt.widgets.Shell;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.IViewer;
-import uncertain.ide.eclipse.wizards.DataSetWizard;
+import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class AddDataSetAction extends AddElementAction {
 

@@ -33,8 +33,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -53,8 +53,8 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	public static String bm_pre = "bm";
 	
 	private BmMainPage mainPage;
-	private BmTablePage tablePage;
-	private BmTableFieldsPage fieldsPage;
+	private BMTableWizardPage tablePage;
+	private BMFieldsWizardPage fieldsPage;
 	private ISelection selection;
 	private CompositeMap initContent;
 	
@@ -76,8 +76,8 @@ public class BmNewWizard extends Wizard implements INewWizard {
 
 	public void addPages() {
 		mainPage = new BmMainPage(selection,this);
-		tablePage= new BmTablePage(selection,this);
-		fieldsPage = new BmTableFieldsPage(selection,this);
+		tablePage= new BMTableWizardPage(selection,this);
+		fieldsPage = new BMFieldsWizardPage(selection,this);
 		fieldsPage.setPageComplete(false);
 		addPage(mainPage);
 		addPage(tablePage);

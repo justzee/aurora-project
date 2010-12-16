@@ -12,11 +12,12 @@ import org.eclipse.swt.widgets.Shell;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.bm.BMUtil;
 import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.IGridViewer;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.util.LocaleMessage;
 import aurora.ide.AuroraConstant;
 
 
