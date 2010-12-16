@@ -133,7 +133,7 @@ public class ModelServiceTest extends AbstractModelServiceTest {
         assertNotNull(depts);
         bc.getParameter().addChild(depts);
         
-        ModelBatchUpdate mbu = new ModelBatchUpdate(svcFactory, uncertainEngine.getOcManager() );
+        ModelBatchUpdate mbu = new ModelBatchUpdate(svcFactory, uncertainEngine.getOcManager(), uncertainEngine.getObjectRegistry() );
         mbu.setModel("testcase.HR.DEPT_FOR_BATCH");
         //mbu.setSourcePath("");
         mbu.doBatchUpdate(depts.getChilds(), context);
