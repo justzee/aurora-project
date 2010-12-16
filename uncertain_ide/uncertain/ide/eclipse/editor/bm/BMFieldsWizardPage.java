@@ -3,6 +3,8 @@ package uncertain.ide.eclipse.editor.bm;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
@@ -13,10 +15,10 @@ import org.eclipse.swt.widgets.Text;
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.IGridViewer;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -24,22 +26,17 @@ import uncertain.ide.eclipse.editor.widgets.IGridViewer;
  * OR with the extension that matches the expected one (bm).
  */
 
-public class BmTableFieldsPage extends WizardPage {
+public class BMFieldsWizardPage extends WizardPage {
 	private Text containerText;
 	BmNewWizard wizard;
-	/**
-	 * Constructor for SampleNewWizardPage.
-	 * 
-	 * @param pageName
-	 */
-	private final String[] columnProperties = {"COLUMN_NAME",
-			"TYPE_NAME", "COLUMN_SIZE", "IS_NULLABLE", "REMARKS" };
+	private final String[] columnProperties = {"COLUMN_NAME","TYPE_NAME", "COLUMN_SIZE", "IS_NULLABLE", "REMARKS" };
+	private final String[] excluedColumns = {"CREATED_BY","CREATION_DATE","LAST_UPDATED_BY","LAST_UPDATE_DATE"};
 	DatabaseMetaData dbMetaData;
 
 	CompositeMap fields = new CompositeMap();
 	GridViewer filterCompoment;
 
-	public BmTableFieldsPage(ISelection selection, BmNewWizard bmWizard) {
+	public BMFieldsWizardPage(ISelection selection, BmNewWizard bmWizard) {
 		super("wizardPage");
 		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
@@ -111,13 +108,23 @@ public class BmTableFieldsPage extends WizardPage {
 
 	private CompositeMap getInput(DatabaseMetaData DBMetaData,
 			String tableNamePattern) throws SQLException {
+		List excluedColumnList = new ArrayList();
+		for(int i= 0;i<excluedColumns.length;i++){
+			String column = excluedColumns[i];
+			if(column != null){
+				excluedColumnList.add(column);
+			}
+		}
 		CompositeMap input = new CompositeMap();
 		ResultSet tableRet = DBMetaData.getColumns(null, DBMetaData
 				.getUserName(), wizard.getTableName(), "%");
 		while (tableRet.next()) {
 			CompositeMap element = new CompositeMap();
-			element.put(columnProperties[0], tableRet
-					.getString(columnProperties[0]));
+			String columnName = tableRet.getString(columnProperties[0]);
+			if(excluedColumnList.contains(columnName)){
+				continue;
+			}
+			element.put(columnProperties[0], columnName);
 			element.put(columnProperties[1], tableRet
 					.getString(columnProperties[1]));
 			element.put(columnProperties[2], new Integer(tableRet

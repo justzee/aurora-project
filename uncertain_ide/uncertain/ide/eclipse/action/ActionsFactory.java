@@ -13,9 +13,9 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Element;
 import uncertain.schema.Wizard;
 

@@ -18,8 +18,8 @@ import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.IGridViewer;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 
 public class ModelReferenceCellEditor extends StringTextCellEditor {
 

@@ -6,8 +6,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LoadSchemaManager;
+import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.LoadSchemaManager;
 import uncertain.schema.SchemaManager;
 
 public class CompositeMapTreeShell implements IViewer {

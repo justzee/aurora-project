@@ -1,10 +1,10 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.editor.bm;
 
 import java.io.File;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 
 public class BMUtil {
 

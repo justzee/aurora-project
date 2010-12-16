@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Widget;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.PropertyViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class AddPropertyAction extends ActionListener {
 	PropertyViewer viewer;

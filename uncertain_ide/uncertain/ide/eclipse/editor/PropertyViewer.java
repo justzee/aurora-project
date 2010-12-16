@@ -6,8 +6,9 @@ package uncertain.ide.eclipse.editor;
 import org.eclipse.swt.SWT;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Attribute;
 
 public abstract class PropertyViewer implements IViewer{

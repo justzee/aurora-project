@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.bm.ModelFactory;

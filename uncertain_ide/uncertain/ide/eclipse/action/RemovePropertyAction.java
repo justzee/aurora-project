@@ -3,8 +3,8 @@ package uncertain.ide.eclipse.action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.PropertyViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class RemovePropertyAction extends ActionListener {
 

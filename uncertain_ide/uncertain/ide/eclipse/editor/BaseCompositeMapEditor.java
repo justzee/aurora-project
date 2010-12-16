@@ -17,10 +17,10 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
 import uncertain.ide.eclipse.action.InputFileListener;
 import uncertain.ide.eclipse.editor.textpage.TextPage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.Common;
 
 
 public abstract class BaseCompositeMapEditor extends FormEditor {

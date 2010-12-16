@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * @author linjinxiao

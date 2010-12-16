@@ -11,11 +11,11 @@ import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
+import uncertain.ide.util.LocaleMessage;
 
 public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 

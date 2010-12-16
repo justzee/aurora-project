@@ -24,14 +24,15 @@ import org.eclipse.swt.widgets.Control;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.textpage.JavaScriptLineStyler;
 import uncertain.ide.eclipse.editor.widgets.CompositeMapTreeViewer;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.IGridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 

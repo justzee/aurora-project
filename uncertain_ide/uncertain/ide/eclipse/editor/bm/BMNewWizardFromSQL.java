@@ -38,8 +38,8 @@ import aurora.ide.AuroraConstant;
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the

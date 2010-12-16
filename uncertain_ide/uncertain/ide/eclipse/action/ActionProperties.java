@@ -4,7 +4,7 @@
 package uncertain.ide.eclipse.action;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.core.IViewer;
 
 /**
  * @author linjinxiao

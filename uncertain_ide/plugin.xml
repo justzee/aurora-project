@@ -5,7 +5,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.eclipse.wizards.ProjectWizard"
+            class="uncertain.ide.eclipse.project.wizard.ProjectWizard"
             icon="icons/uncertain.gif"
             id="uncertain.ide.eclipse.editor.ProjectWizard"
             name="%aurora.project"

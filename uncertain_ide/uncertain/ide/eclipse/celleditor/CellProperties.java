@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.eclipse.editor.ITableViewer;
+import uncertain.ide.eclipse.editor.core.ITableViewer;
+import uncertain.ide.util.LoadSchemaManager;
 import uncertain.schema.Attribute;
 import uncertain.schema.Enumeration;
 import uncertain.schema.IType;

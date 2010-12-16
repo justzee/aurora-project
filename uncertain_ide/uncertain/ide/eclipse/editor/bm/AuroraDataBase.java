@@ -13,7 +13,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.core.UncertainEngine;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.ocm.IObjectRegistry;
 
 public class AuroraDataBase implements IRunnableWithProgress {

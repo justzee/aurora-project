@@ -6,8 +6,8 @@ import java.io.InputStream;
 import org.eclipse.jface.viewers.StructuredSelection;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.CompositeMapLocatorParser;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.CompositeMapLocatorParser;
 
 
 public abstract class CompositeMapTreeEditor extends BaseCompositeMapEditor {
