@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uncertain.ide.eclipse.editor.widgets;
+package uncertain.ide.eclipse.editor.widgets.core;
 
 
 /**

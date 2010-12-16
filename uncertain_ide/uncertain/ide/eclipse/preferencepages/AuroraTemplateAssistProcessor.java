@@ -18,7 +18,7 @@ import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.swt.graphics.Image;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 
 public class AuroraTemplateAssistProcessor extends TemplateCompletionProcessor {
 	protected String extractPrefix(ITextViewer viewer, int offset) {

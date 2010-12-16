@@ -7,9 +7,10 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.ICategory;
+import uncertain.ide.eclipse.editor.core.ICategory;
+import uncertain.ide.eclipse.editor.widgets.core.CategoryLabel;
+import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Attribute;
 import uncertain.schema.Category;
 import uncertain.schema.ISchemaManager;

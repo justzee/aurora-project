@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 
 public class CustomDialog {
 

@@ -46,22 +46,22 @@ import org.eclipse.ui.part.ResourceTransfer;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.ActionProperties;
 import uncertain.ide.eclipse.action.ActionsFactory;
 import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.action.CopyElementAction;
+import uncertain.ide.eclipse.action.DataSetWizard;
 import uncertain.ide.eclipse.action.ElementDoubleClickListener;
 import uncertain.ide.eclipse.action.PasteAction;
 import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemoveElementAction;
 import uncertain.ide.eclipse.action.ToolBarAddElementListener;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
-import uncertain.ide.eclipse.editor.IViewer;
-import uncertain.ide.eclipse.wizards.DataSetWizard;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
+import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Element;
 
 public class CompositeMapTreeViewer extends AbstractCMViewer {

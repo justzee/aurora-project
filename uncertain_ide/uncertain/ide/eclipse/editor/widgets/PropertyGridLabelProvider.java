@@ -9,8 +9,10 @@ import org.eclipse.swt.graphics.Image;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
+import uncertain.ide.eclipse.editor.widgets.core.IGridLabelProvider;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.util.LocaleMessage;
 
 public class PropertyGridLabelProvider extends BaseLabelProvider implements IGridLabelProvider {
 

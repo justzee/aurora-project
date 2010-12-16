@@ -7,8 +7,8 @@ import org.eclipse.swt.graphics.Image;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.ide.Activator;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Element;
 
 public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements

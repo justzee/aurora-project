@@ -7,7 +7,8 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.ide.eclipse.editor.ICategoryViewer;
+import uncertain.ide.eclipse.editor.core.ICategoryViewer;
+import uncertain.ide.eclipse.editor.widgets.core.CategoryLabel;
 import uncertain.schema.editor.AttributeValue;
 
 public class PropertyHashCellModifier implements ICellModifier {

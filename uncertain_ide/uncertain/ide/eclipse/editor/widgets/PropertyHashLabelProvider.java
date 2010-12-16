@@ -5,7 +5,8 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.eclipse.editor.widgets.core.CategoryLabel;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 

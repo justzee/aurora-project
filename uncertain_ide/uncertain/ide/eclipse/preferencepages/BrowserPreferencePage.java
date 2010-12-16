@@ -7,7 +7,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 
 
 /**

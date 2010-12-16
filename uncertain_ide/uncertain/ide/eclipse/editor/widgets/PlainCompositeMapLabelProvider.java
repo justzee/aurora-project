@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.editor.widgets.core.IGridLabelProvider;
 
 public class PlainCompositeMapLabelProvider extends LabelProvider implements IGridLabelProvider  {
 
