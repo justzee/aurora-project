@@ -41,10 +41,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.preferencepages.AuroraTemplateContextType;
 import uncertain.ide.eclipse.preferencepages.AuroraTemplateManager;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * Templates page in new file wizard. Allows users to select a new file template

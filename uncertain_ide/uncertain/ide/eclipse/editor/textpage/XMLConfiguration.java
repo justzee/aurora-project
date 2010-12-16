@@ -15,13 +15,13 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
-import uncertain.ide.eclipse.editor.textpage.Hyperlink.FileHyperlinkDetector;
 import uncertain.ide.eclipse.editor.textpage.contentassist.TagContentAssistProcessor;
 import uncertain.ide.eclipse.editor.textpage.format.DefaultFormattingStrategy;
 import uncertain.ide.eclipse.editor.textpage.format.DocTypeFormattingStrategy;
 import uncertain.ide.eclipse.editor.textpage.format.PIFormattingStrategy;
 import uncertain.ide.eclipse.editor.textpage.format.TextFormattingStrategy;
 import uncertain.ide.eclipse.editor.textpage.format.XMLFormattingStrategy;
+import uncertain.ide.eclipse.editor.textpage.hyperlinks.FileHyperlinkDetector;
 import uncertain.ide.eclipse.editor.textpage.scanners.CDataScanner;
 import uncertain.ide.eclipse.editor.textpage.scanners.JSEditorCodeScanner;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;

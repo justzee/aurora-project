@@ -17,9 +17,9 @@ import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Common;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.util.Common;
+import uncertain.ide.util.LocaleMessage;
 
 public class TextPage extends TextEditor implements IViewer {
 	protected static final String textPageId = "textPage";

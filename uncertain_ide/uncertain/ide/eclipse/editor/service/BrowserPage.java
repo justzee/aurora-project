@@ -49,11 +49,11 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import uncertain.ide.Activator;
-import uncertain.ide.Common;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.eclipse.preferencepages.BrowserPreferencePage;
-import uncertain.ide.eclipse.wizards.ProjectProperties;
+import uncertain.ide.util.Common;
+import uncertain.ide.util.LocaleMessage;
 
 public class BrowserPage extends FormPage {
 	protected static final String textPageId = "uncertain.ide.eclipse.editor.service.browser";

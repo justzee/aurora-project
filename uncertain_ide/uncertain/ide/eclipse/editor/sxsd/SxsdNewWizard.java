@@ -29,8 +29,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.action.CompositeMapAction;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
