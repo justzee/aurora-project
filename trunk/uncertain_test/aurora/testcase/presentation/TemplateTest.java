@@ -51,6 +51,6 @@ public class TemplateTest {
         // 完成界面内容的创建
         session.buildView(model, view);
         out.flush();        
-    }
+    }    
 
 }
