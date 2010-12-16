@@ -17,12 +17,12 @@ import org.eclipse.swt.graphics.Image;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.LoadSchemaManager;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.action.CompositeMapAction;
-import uncertain.ide.eclipse.action.CompositeMapLocatorParser;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.util.CompositeMapLocatorParser;
+import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Element;
 
 /**
