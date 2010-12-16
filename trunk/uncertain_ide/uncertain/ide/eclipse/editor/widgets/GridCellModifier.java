@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
+import uncertain.ide.eclipse.editor.widgets.core.ICellModifierListener;
 
 public class GridCellModifier implements ICellModifier {
 

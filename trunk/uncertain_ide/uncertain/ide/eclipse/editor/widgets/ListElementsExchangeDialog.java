@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
-import uncertain.ide.LocaleMessage;
+import uncertain.ide.util.LocaleMessage;
 
 /**
  * This class demonstrates Lists
