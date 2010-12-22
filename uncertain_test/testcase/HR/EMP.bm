@@ -11,6 +11,7 @@
         <ns1:field databaseType="FLOAT" datatype="long" name="comm"/>
         <ns1:field databaseType="DATE" datatype="date" insertExpression="sysdate" name="creation_date" updateExpression="sysdate"/>
         <ns1:field databaseType="DATE" datatype="date" expression="sysdate" forInsert="false" name="NOW_DATE"/>
+        <ns1:field name="join_time" databaseType="DATE" datatype="date" forSelect="false" queryExpression="trunc(hiredate)"/>        
     </ns1:fields>
     <ns1:primary-key>
         <ns1:pk-field name="empno" sequenceName="EMP_S"/>
