@@ -50,6 +50,8 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 		int index = documentOffset - partitionOffset;
 		String partitionText = document.get(partitionOffset, partitionLength);
 		int start = index - 1;
+		if(start < 0)
+			return null;
 		char c = partitionText.charAt(start);
 		while (beginChar(c, start)) {
 			start--;
