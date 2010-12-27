@@ -56,6 +56,7 @@ public class BlanceQuery extends AbstractEntry {
 			ClientBalanceUtils balanceUtils = new ClientBalanceUtils(ip,port,true);
 			
 			
+			
 			EBHeader header = EBHeaderUtils.createHeader("MBTS",
 					                                     "MBTS6.0",
 					                                     "request",
@@ -65,7 +66,8 @@ public class BlanceQuery extends AbstractEntry {
 					                                     accno,
 					                                     currency,
 					                                     DateUtil.formatDateTime(new Date()));
-
+			
+                System.out.println (header.getAccNo());
 				BalanceResponse balance = null;
 					balance = balanceUtils.callWS(header);
 				
