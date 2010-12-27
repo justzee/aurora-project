@@ -104,6 +104,7 @@ public class BMFieldsWizardPage extends WizardPage {
 			CustomDialog.showExceptionMessageBox(e);
 		}
 		filterCompoment.setData(input);
+		filterCompoment.refresh(false);
 	}
 
 	private CompositeMap getInput(DatabaseMetaData DBMetaData,
@@ -116,8 +117,14 @@ public class BMFieldsWizardPage extends WizardPage {
 			}
 		}
 		CompositeMap input = new CompositeMap();
+		String tableName = wizard.getTableName();
+		if(tableName == null){
+			setPageComplete(false);
+			return input;
+		}
+		setPageComplete(true);
 		ResultSet tableRet = DBMetaData.getColumns(null, DBMetaData
-				.getUserName(), wizard.getTableName(), "%");
+				.getUserName(), tableName, "%");
 		while (tableRet.next()) {
 			CompositeMap element = new CompositeMap();
 			String columnName = tableRet.getString(columnProperties[0]);
