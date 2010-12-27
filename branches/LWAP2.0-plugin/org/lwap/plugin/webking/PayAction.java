@@ -4,18 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
-
 import uncertain.composite.CompositeMap;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
-
-import com.kingdee.bos.ebservice.Balance;
-import com.kingdee.bos.ebservice.BalanceResponse;
-import com.kingdee.bos.ebservice.BalanceResponseBody;
-import com.kingdee.bos.ebservice.Detail;
-import com.kingdee.bos.ebservice.DetailResponse;
-import com.kingdee.bos.ebservice.DetailResponseBody;
 import com.kingdee.bos.ebservice.EBException;
 import com.kingdee.bos.ebservice.EBHeader;
 import com.kingdee.bos.ebservice.PayBody;
@@ -25,8 +16,6 @@ import com.kingdee.bos.ebservice.client.demo.junit.KingdeeEBException;
 import com.kingdee.bos.ebservice.client.demo.utils.DES;
 import com.kingdee.bos.ebservice.client.demo.utils.DateUtil;
 import com.kingdee.bos.ebservice.client.demo.utils.Sequence;
-import com.kingdee.bos.ebservice.client.hand.balance.ClientBalanceUtils;
-import com.kingdee.bos.ebservice.client.hand.detail.ClientDetailUtils;
 import com.kingdee.bos.ebservice.client.hand.pay.ClientPayUtils;
 import com.kingdee.bos.ebservice.client.hand.utils.EBHeaderUtils;
 
@@ -140,29 +129,30 @@ public class PayAction extends AbstractEntry {
 		ClientPayUtils payUtils = new ClientPayUtils(ip, port, true);
 		Iterator it = cmlist.getChildIterator();
 		ArrayList<PaymentDetail> cl = new ArrayList();
-		CompositeMap returnlist = new CompositeMap("returnlist");
+		CompositeMap returnlist = new CompositeMap("returnlist1");
 		while (it.hasNext()) {
 
 			CompositeMap cmrecord = (CompositeMap) it.next();
-			String accNo = this.getAccno();
+			String accNo = cmrecord.getString(this.getAccno());
 			String oppAccNo = cmrecord.get(this.getOppaccno()).toString();
 			String amount = cmrecord.get(this.getAmount()).toString();
 			BigDecimal bd = new BigDecimal(amount);
 			bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 			amount = bd.toString();
 			currency_code = cmrecord.get(this.getCurrency()).toString();
-			;
-			String name = "胡玉玲";
+			
+//			String name = "胡玉玲";
+			String name = cmrecord.get(this.getName()).toString();
 			boolean urgent = false;
 			boolean toIndividual = false;
 			// 同行支付
-			// String bank =cmrecord.get(this.getBank()).toString();;
-			// String address = cmrecord.get(this.getAddress()).toString();
-			String bank = "工商银行";
-			String address = "山东省的某个城市";
+			 String bank =cmrecord.get(this.getBank()).toString();;
+			 String address = cmrecord.get(this.getAddress()).toString();
+//			String bank = "工商银行";
+//			String address = "山东省的某个城市";
 			String useCn = "工资";
 			String detailBizNo = cmrecord.get(this.getDetailbizno()).toString();
-			String desc = "玉柴测试";// cmrecord.get(this.getDesc()).toString();
+		    cmrecord.get(this.getDesc()).toString();
 			String detailSeqID1 = Sequence.genSequence();
 			CompositeMap detail = new CompositeMap(detailSeqID1);
 			detail.put(this.getDetailbizno(), detailBizNo);
@@ -186,6 +176,7 @@ public class PayAction extends AbstractEntry {
 		if (null != ebe) {
 			throw new KingdeeEBException(ebe.getMessage());
 		} else {
+			System.out.println("call end");
 			PayBody detailBody = pay.getBody();
 			PaymentDetail[] paydetail = detailBody.getDetails();
 			for (int i = 0; i < paydetail.length; i++) {
@@ -196,9 +187,10 @@ public class PayAction extends AbstractEntry {
 						.toString());
 				detail.put("BATCH_ID", detailBody.getBatchSeqID());
 				detail.put("BATCH_NO", detailBody.getBatchBizNo());
+				detail.put("DETAILSEQID",paydetail[i].getDetailSeqID());
 			}
 		}
-		CompositeMap cm = new CompositeMap("returnlist1");
+		CompositeMap cm = new CompositeMap("returnlist");
 		Iterator its = returnlist.getChildIterator();
 		while (its.hasNext()) {
 			CompositeMap copy = (CompositeMap) its.next();
@@ -231,7 +223,7 @@ public class PayAction extends AbstractEntry {
 		detail.setUse(useCN);
 		detail.setPayeeBankAddr(address);
 		detail.setUrgent("" + urgent);
-		String keyCode = "CPIC0001";
+		String keyCode = "CPIC0001";;
 		String des = DES.des_encrypt(keyCode, detail.getPayeeAccNo()
 				+ detail.getAmount());
 		detail.setVerifyField(des);
