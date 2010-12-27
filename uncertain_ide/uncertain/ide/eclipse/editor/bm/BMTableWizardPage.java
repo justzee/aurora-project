@@ -36,7 +36,7 @@ public class BMTableWizardPage extends WizardPage {
 	 */
 	private final String[] ColumnProperties = { "TABLE_NAME", "TABLE_CAT",
 			"TABLE_SCHEM", "TABLE_TYPE", "REMARKS" };
-	DatabaseMetaData m_DBMetaData;
+	DatabaseMetaData dbMetaData;
 	GridViewer filterCompoment;
 
 	public BMTableWizardPage(ISelection selection, BmNewWizard bmWizard) {
@@ -54,8 +54,8 @@ public class BMTableWizardPage extends WizardPage {
 
 		try {
 			Connection dbConnection = wizard.getConnection();
-			m_DBMetaData = dbConnection.getMetaData();
-			input = getInput(m_DBMetaData, "%");
+			dbMetaData = dbConnection.getMetaData();
+			input = getInput(dbMetaData, "%");
 		} catch (Exception e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
@@ -72,11 +72,17 @@ public class BMTableWizardPage extends WizardPage {
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 
 					public void selectionChanged(SelectionChangedEvent event) {
+						if(getTableName()==null)
+							setPageComplete(false);
+						else
+							setPageComplete(true);
 						wizard.refresh();
+						
 
 					}
 				});
 		setControl(filterCompoment.getControl());
+		setPageComplete(false);
 
 	}
 
@@ -85,14 +91,17 @@ public class BMTableWizardPage extends WizardPage {
 	}
 
 	public DatabaseMetaData getDBMetaData() {
-		return m_DBMetaData;
+		return dbMetaData;
 	}
 
 	public CompositeMap getPrimaryKeys() throws SQLException {
 		CompositeMap primaryKeyArray = new CompositeMap(BmNewWizard.bm_pre,
 				BmNewWizard.bm_uri, "primary-key");
-		ResultSet tableRet = m_DBMetaData.getPrimaryKeys(null, m_DBMetaData
-				.getUserName(), getTableName());
+		String tableName = getTableName();
+		if(tableName == null)
+			return primaryKeyArray;
+		ResultSet tableRet = dbMetaData.getPrimaryKeys(null, dbMetaData
+				.getUserName(), tableName);
 		while (tableRet.next()) {
 			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,
 					BmNewWizard.bm_uri, "pk-field");
@@ -104,6 +113,9 @@ public class BMTableWizardPage extends WizardPage {
 
 	public String getTableName() {
 		CompositeMap record = filterCompoment.getSelection();
+		if(record == null){
+			return null;
+		}
 		tableName = record.getString("TABLE_NAME");
 		return tableName;
 	}
