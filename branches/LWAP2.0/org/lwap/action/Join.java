@@ -10,6 +10,10 @@ import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 import uncertain.util.StringSplitter;
 
+/**
+ * Join two CompositeMap together
+ * <l:join xmlns:l="org.lwap.action" list1="/model/data1" list2="/model/data2" keys="RECORD_ID,ORG_ID" />
+ */
 public class Join extends AbstractEntry {
     
     public Join(){
