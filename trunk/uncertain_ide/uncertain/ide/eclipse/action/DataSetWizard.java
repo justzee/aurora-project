@@ -51,7 +51,7 @@ public class DataSetWizard extends Wizard {
 	private String prefix;
 	private String uri = "http://www.aurora-framework.org/application";
 	private String cmName="dataSet";
-
+	private final String loadDataColumn = "loadData"; 
 	private String bmFiles;
 
 	private NavigationPage navigationPage;
@@ -162,7 +162,8 @@ public class DataSetWizard extends Wizard {
 			return;
 		} else {
 			if (fromServer) {
-				data.put("canQuery", "false");
+				data.put("canQuery", "true");
+				data.put(loadDataColumn, "true");
 			}
 			if (canSave) {
 				data.put("canSubmit", "true");
@@ -175,6 +176,7 @@ public class DataSetWizard extends Wizard {
 		int i = 1;
 		while(list.contains(suggestId)){
 			suggestId =  bmName+"_ds"+i;
+			i++;
 		}
 		list.add(suggestId);
 		return suggestId;
