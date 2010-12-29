@@ -9,7 +9,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.XMLWhitespaceDetector;
 
 
@@ -20,11 +20,11 @@ public class XMLScanner extends RuleBasedScanner {
 		IToken procInstr =
 			new Token(
 				new TextAttribute(
-					manager.getColor(IXMLColorConstants.PROC_INSTR)));
+					manager.getColor(IColorConstants.PROC_INSTR)));
 		IToken docType =
 			new Token(
 				new TextAttribute(
-					manager.getColor(IXMLColorConstants.DOCTYPE)));
+					manager.getColor(IColorConstants.DOCTYPE)));
 
 		IRule[] rules = new IRule[3];
 		//Add rule for processing instructions and doctype

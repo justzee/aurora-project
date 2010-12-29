@@ -18,7 +18,7 @@ import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.XMLWhitespaceDetector;
 /**
  * A Java code scanner.
@@ -38,11 +38,11 @@ public class JSEditorCodeScanner extends RuleBasedScanner {
 	 */
 	public JSEditorCodeScanner(ColorManager colorManager) {
 
-		IToken keyword= new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.KEYWORD), null, SWT.BOLD));
-		IToken type= new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.TYPE)));
-		IToken string= new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.STRING)));
-		IToken comment= new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.SINGLE_LINE_COMMENT)));
-		IToken other= new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.DEFAULT)));
+		IToken keyword= new Token(new TextAttribute(colorManager.getColor(IColorConstants.KEYWORD), null, SWT.BOLD));
+		IToken type= new Token(new TextAttribute(colorManager.getColor(IColorConstants.TYPE)));
+		IToken string= new Token(new TextAttribute(colorManager.getColor(IColorConstants.STRING)));
+		IToken comment= new Token(new TextAttribute(colorManager.getColor(IColorConstants.SINGLE_LINE_COMMENT)));
+		IToken other= new Token(new TextAttribute(colorManager.getColor(IColorConstants.DEFAULT)));
 
 		List rules= new ArrayList();
 
