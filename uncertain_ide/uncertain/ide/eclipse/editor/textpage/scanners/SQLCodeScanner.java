@@ -17,7 +17,7 @@ import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.widgets.Display;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 
 /**
  * This class implements a RuleBaseScanner for SQL source code text.
@@ -511,24 +511,24 @@ public class SQLCodeScanner extends RuleBasedScanner {
          * use different colors that show up better against a black background.
          */
         if (Display.getDefault().getHighContrast() == true) {
-            commentToken    = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_COMMENT_COLOR )));
-            stringToken     = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_QUOTED_LITERAL_COLOR )));
-            keywordToken    = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_KEYWORD_COLOR )));
-            datatypeToken   = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_KEYWORD_COLOR )));
-            functionToken   = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_KEYWORD_COLOR )));
+            commentToken    = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_COMMENT_COLOR )));
+            stringToken     = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_QUOTED_LITERAL_COLOR )));
+            keywordToken    = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_KEYWORD_COLOR )));
+            datatypeToken   = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_KEYWORD_COLOR )));
+            functionToken   = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_KEYWORD_COLOR )));
 //            identifierToken = new Token( new TextAttribute( colorProvider.getColor( SQLColorProvider.SQL_HC_IDENTIFIER_COLOR )));
-            delimitedIdentifierToken = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_DELIMITED_IDENTIFIER_COLOR )));
-            otherToken      = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_HC_DEFAULT_COLOR )));
+            delimitedIdentifierToken = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_DELIMITED_IDENTIFIER_COLOR )));
+            otherToken      = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_HC_DEFAULT_COLOR )));
         }
         else {
-            commentToken    = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_COMMENT_COLOR )));
-            stringToken     = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_QUOTED_LITERAL_COLOR )));
-            keywordToken    = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_KEYWORD_COLOR )));
-            datatypeToken   = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_KEYWORD_COLOR )));
-            functionToken   = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_KEYWORD_COLOR )));
+            commentToken    = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_COMMENT_COLOR )));
+            stringToken     = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_QUOTED_LITERAL_COLOR )));
+            keywordToken    = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_KEYWORD_COLOR )));
+            datatypeToken   = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_KEYWORD_COLOR )));
+            functionToken   = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_KEYWORD_COLOR )));
 //            identifierToken = new Token( new TextAttribute( colorProvider.getColor( SQLColorProvider.SQL_IDENTIFIER_COLOR )));
-            delimitedIdentifierToken = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_DELIMITED_IDENTIFIER_COLOR )));
-            otherToken      = new Token( new TextAttribute( colorProvider.getColor( IXMLColorConstants.SQL_DEFAULT_COLOR )));
+            delimitedIdentifierToken = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_DELIMITED_IDENTIFIER_COLOR )));
+            otherToken      = new Token( new TextAttribute( colorProvider.getColor( IColorConstants.SQL_DEFAULT_COLOR )));
         }
 
         setDefaultReturnToken( otherToken );

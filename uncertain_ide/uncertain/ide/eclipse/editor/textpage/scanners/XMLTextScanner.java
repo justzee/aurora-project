@@ -7,7 +7,7 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.rules.CDataRule;
 
 
@@ -24,10 +24,10 @@ public class XMLTextScanner extends RuleBasedScanner
 	public XMLTextScanner(ColorManager colorManager)
 	{
 
-		ESCAPED_CHAR = new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.ESCAPED_CHAR)));
-		CDATA_START = new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.CDATA)));
-		CDATA_END = new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.CDATA)));
-		CDATA_TEXT = new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.CDATA_TEXT)));
+		ESCAPED_CHAR = new Token(new TextAttribute(colorManager.getColor(IColorConstants.ESCAPED_CHAR)));
+		CDATA_START = new Token(new TextAttribute(colorManager.getColor(IColorConstants.CDATA)));
+		CDATA_END = new Token(new TextAttribute(colorManager.getColor(IColorConstants.CDATA)));
+		CDATA_TEXT = new Token(new TextAttribute(colorManager.getColor(IColorConstants.CDATA_TEXT)));
 		IRule[] rules = new IRule[2];
 
 		// Add rule to pick up escaped chars

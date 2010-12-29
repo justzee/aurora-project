@@ -7,7 +7,7 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.rules.CDataRule;
 
 
@@ -20,7 +20,7 @@ public class CDataScanner extends RuleBasedScanner
 	public CDataScanner(ColorManager colorManager)
 	{
 		
-		CDATA = new Token(new TextAttribute(colorManager.getColor(IXMLColorConstants.CDATA)));
+		CDATA = new Token(new TextAttribute(colorManager.getColor(IColorConstants.CDATA)));
 
 		IRule[] rules = new IRule[2];
 
