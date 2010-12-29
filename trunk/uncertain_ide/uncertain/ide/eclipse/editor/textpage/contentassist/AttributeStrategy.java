@@ -27,7 +27,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.util.LoadSchemaManager;
@@ -159,7 +159,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			if (token.getData() instanceof TextAttribute) {
 				TextAttribute text = (TextAttribute) token.getData();
 				if (text.getForeground().getRGB().equals(
-						IXMLColorConstants.TAG_NAME)) {
+						IColorConstants.TAG_NAME)) {
 					String tagName = document.get(scanner.getTokenOffset(),
 							scanner.getTokenLength());
 					String[] splits = tagName.split(":");
@@ -221,7 +221,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			if (token.getData() instanceof TextAttribute) {
 				TextAttribute text = (TextAttribute) token.getData();
 				if (text.getForeground().getRGB().equals(
-						IXMLColorConstants.ATTRIBUTE)) {
+						IColorConstants.ATTRIBUTE)) {
 					try {
 						attributeName = document.get(scanner.getTokenOffset(),
 								scanner.getTokenLength());
@@ -247,14 +247,14 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			if (token.getData() instanceof TextAttribute) {
 				TextAttribute text = (TextAttribute) token.getData();
 				if (text.getForeground().getRGB().equals(
-						IXMLColorConstants.STRING)) {
+						IColorConstants.STRING)) {
 					try {
 						return document.get(scanner.getTokenOffset() + 1,
 								scanner.getTokenLength() - 2);
 					} catch (BadLocationException e) {
 						throw new RuntimeException(e);
 					}
-				} else if (IXMLColorConstants.ATTRIBUTE.equals(text
+				} else if (IColorConstants.ATTRIBUTE.equals(text
 						.getForeground().getRGB())) {
 					return null;
 				}
@@ -274,7 +274,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			if (token.getData() instanceof TextAttribute) {
 				TextAttribute text = (TextAttribute) token.getData();
 				if (text.getForeground().getRGB().equals(
-						IXMLColorConstants.ATTRIBUTE)) {
+						IColorConstants.ATTRIBUTE)) {
 					try {
 						attributeName = document.get(scanner.getTokenOffset(),
 								scanner.getTokenLength());
