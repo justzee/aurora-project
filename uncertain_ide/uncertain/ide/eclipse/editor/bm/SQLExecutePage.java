@@ -13,6 +13,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
@@ -25,7 +27,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -43,6 +44,8 @@ import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.ide.eclipse.action.ExecuteSqlAction;
 import uncertain.ide.eclipse.editor.core.ISqlViewer;
+import uncertain.ide.eclipse.editor.textpage.ColorManager;
+import uncertain.ide.eclipse.editor.textpage.SQLConfiguration;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.util.Common;
@@ -59,7 +62,7 @@ import aurora.database.service.SqlServiceContext;
 public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private static final String PageId = "SQLExecutePage";
 	private static final String PageTitle = LocaleMessage.getString("auto.sql.test");
-	private CTabFolder mTabFolder;
+	private CTabFolder tabFolder;
 	private SashForm sashForm;
 
 	private Connection conn;
@@ -100,7 +103,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	}
 
 	public String getSql() {
-		StyledText st = (StyledText) mTabFolder.getSelection().getControl();
+		StyledText st = (StyledText) tabFolder.getSelection().getControl();
 		return st.getText();
 	}
 
@@ -153,7 +156,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 
 		service = svcFactory.getModelService(bm_model, context);
 		for (int i = 0; i < tabs.length; i++) {
-			StyledText st = (StyledText) mTabFolder.getItem(i).getControl();
+			StyledText st = (StyledText) tabFolder.getItem(i).getControl();
 			st.setText(service.getSql(tabs[i]).toString());
 		}
 
@@ -282,38 +285,35 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	}
 
 	private void createSqlContent(Composite parent) throws Exception {
-		mTabFolder = createTabFolder(parent);
-		String TabHeighGrab = "           ";
+		tabFolder = createTabFolder(parent);
+		final String TabHeighGrab = "           ";
 		for (int i = 0; i < tabs.length; i++) {
-			mTabFolder.getItem(i)
+			tabFolder.getItem(i)
 					.setText(TabHeighGrab + tabs[i] + TabHeighGrab);
-			final StyledText st = createStyledText(mTabFolder);
-			mTabFolder.getItem(i).setControl(st);
+			SourceViewer textSection = new SourceViewer(tabFolder, null, SWT.WRAP | SWT.V_SCROLL);
+			textSection.configure(new SQLConfiguration(new ColorManager()));
+			Document document = new Document();
+			textSection.setDocument(document);
+			final StyledText st =textSection.getTextWidget();
+			tabFolder.getItem(i).setControl(textSection.getControl());
 			final int itemIndex = i;
 			StringBuffer sqlbf = service.getSql(tabs[i]);
 			if(sqlbf == null)
 				continue;
 			final String sql = sqlbf.toString();
-			mTabFolder.addSelectionListener(new SelectionListener() {
+			tabFolder.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent e) {
 					widgetSelected(e);
 				}
 				public void widgetSelected(SelectionEvent e) {
-					if (mTabFolder.getSelectionIndex() == itemIndex
+					if (tabFolder.getSelectionIndex() == itemIndex
 							&& (st.getText() == null || st.getText().equals(""))) {
 						st.setText(sql);
 					}
 				}
 			});
 		}
-		mTabFolder.layout(true);
-	}
-
-	private StyledText createStyledText(Composite parent) {
-		StyledText mInnerText = new StyledText(parent, SWT.WRAP | SWT.V_SCROLL);
-		mInnerText.setFont(new Font(mTabFolder.getDisplay(), "Courier New", 10,
-				SWT.NORMAL));
-		return mInnerText;
+		tabFolder.layout(true);
 	}
 
 	private CTabFolder createTabFolder(final Composite parent) {
