@@ -13,7 +13,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
+import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
@@ -30,7 +30,7 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 		ColorManager colorManager = new ColorManager();
 		scanner = new XMLTagScanner(colorManager);
 		scanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager
-				.getColor(IXMLColorConstants.TAG))));
+				.getColor(IColorConstants.TAG))));
 	}
 
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
@@ -84,7 +84,7 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 			if (token.getData() instanceof TextAttribute) {
 				TextAttribute text = (TextAttribute) token.getData();
 				if (text.getForeground().getRGB().equals(
-						IXMLColorConstants.ATTRIBUTE)) {
+						IColorConstants.ATTRIBUTE)) {
 					columnName = document.get(scanner.getTokenOffset(), scanner
 							.getTokenLength());
 				}
