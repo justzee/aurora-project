@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Display;
 
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
 import uncertain.ide.eclipse.editor.textpage.IXMLColorConstants;
-import uncertain.ide.eclipse.editor.textpage.rules.SQLWordDetector;
 
 /**
  * This class implements a RuleBaseScanner for SQL source code text.
