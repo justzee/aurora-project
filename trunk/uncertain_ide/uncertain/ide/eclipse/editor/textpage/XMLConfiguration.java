@@ -68,7 +68,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		if (scanner == null) {
 			scanner = new XMLScanner(colorManager);
 			scanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IXMLColorConstants.DEFAULT))));
+					colorManager.getColor(IColorConstants.DEFAULT))));
 		}
 		return scanner;
 	}
@@ -86,7 +86,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		if (textScanner == null) {
 			textScanner = new JSEditorCodeScanner(colorManager);
 			textScanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IXMLColorConstants.DEFAULT))));
+					colorManager.getColor(IColorConstants.DEFAULT))));
 		}
 		return textScanner;
 	}
@@ -95,7 +95,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		if (cdataScanner == null) {
 			cdataScanner = new CDataScanner(colorManager);
 			cdataScanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IXMLColorConstants.CDATA_TEXT))));
+					colorManager.getColor(IColorConstants.CDATA_TEXT))));
 		}
 		return cdataScanner;
 	}
@@ -104,7 +104,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		if (tagScanner == null) {
 			tagScanner = new XMLTagScanner(colorManager);
 			tagScanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IXMLColorConstants.TAG))));
+					colorManager.getColor(IColorConstants.TAG))));
 		}
 		return tagScanner;
 	}
@@ -143,7 +143,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(dr, XMLPartitionScanner.XML_CDATA);
 
 		TextAttribute textAttribute = new TextAttribute(colorManager
-				.getColor(IXMLColorConstants.XML_COMMENT));
+				.getColor(IColorConstants.XML_COMMENT));
 		NonRuleBasedDamagerRepairer ndr = new NonRuleBasedDamagerRepairer(
 				textAttribute);
 		reconciler.setDamager(ndr, XMLPartitionScanner.XML_COMMENT);
