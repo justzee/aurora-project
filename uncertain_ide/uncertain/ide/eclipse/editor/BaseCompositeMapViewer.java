@@ -1,5 +1,7 @@
 package uncertain.ide.eclipse.editor;
 
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -11,12 +13,10 @@ import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -25,7 +25,8 @@ import org.eclipse.swt.widgets.Control;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.eclipse.editor.textpage.JavaScriptLineStyler;
+import uncertain.ide.eclipse.editor.textpage.ColorManager;
+import uncertain.ide.eclipse.editor.textpage.JavaScriptConfiguration;
 import uncertain.ide.eclipse.editor.widgets.CompositeMapTreeViewer;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
@@ -131,11 +132,8 @@ public class BaseCompositeMapViewer implements IViewer {
 		private CTabFolder mTabFolder;
 		private PropertyHashViewer mPropertyEditor;
 		private GridViewer gridViewer;
-		private StyledText mInnerText;
-		private JavaScriptLineStyler lineStyler = new JavaScriptLineStyler();
-
+		private SourceViewer textSection;
 		IViewer viewer;
-
 		PropertySection(IViewer viewer) {
 			this.viewer = viewer;
 		}
@@ -163,26 +161,18 @@ public class BaseCompositeMapViewer implements IViewer {
 		}
 
 		private void createTextTab(Composite parent) {
-			mInnerText = new StyledText(parent, SWT.MULTI | SWT.V_SCROLL
-					| SWT.H_SCROLL);
-			GridData spec = new GridData();
-			spec.horizontalAlignment = GridData.FILL;
-			spec.grabExcessHorizontalSpace = true;
-			spec.verticalAlignment = GridData.FILL;
-			spec.grabExcessVerticalSpace = true;
-			mInnerText.setLayoutData(spec);
-			mInnerText.addLineStyleListener(lineStyler);
-			mInnerText.setFont(new Font(mTabFolder.getDisplay(), "Courier New",
-					10, SWT.NORMAL));
-
-			mInnerText.addFocusListener(new FocusListener() {
+			textSection = new SourceViewer(parent, null, SWT.MULTI | SWT.V_SCROLL| SWT.H_SCROLL);
+			textSection.configure(new JavaScriptConfiguration(new ColorManager()));
+			Document document = new Document();
+			textSection.setDocument(document);
+			textSection.getTextWidget().addFocusListener(new FocusListener() {
 
 				public void focusGained(FocusEvent e) {
 				}
 
 				public void focusLost(FocusEvent e) {
 
-					String newText = mInnerText.getText();
+					String newText = textSection.getDocument().get();
 					if (newText == null) {
 						newText = "";
 					}
@@ -201,7 +191,7 @@ public class BaseCompositeMapViewer implements IViewer {
 				}
 
 			});
-			mTabFolder.getItem(2).setControl(mInnerText);
+			mTabFolder.getItem(2).setControl(textSection.getControl());
 		}
 
 		public void setInput(CompositeMap data) {
@@ -225,12 +215,12 @@ public class BaseCompositeMapViewer implements IViewer {
 			}
 			String a = data.getText();
 			if (a != null && !a.trim().equals("")) {
-				mInnerText.setText(data.getText());
-				lineStyler.parseBlockComments(data.getText());
+				textSection.getTextWidget().setText(data.getText());
+//				lineStyler.parseBlockComments(data.getText());
 				mTabFolder.setSelection(2);
 				mTabFolder.layout(true);
 			} else {
-				mInnerText.setText("");
+				textSection.getTextWidget().setText("");
 			}
 		}
 
