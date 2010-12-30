@@ -15,6 +15,7 @@ import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 import uncertain.ide.util.LocaleMessage;
 
 public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
@@ -79,12 +80,12 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 
 		}
 		String[] columnProperties = {"name"};
-		GridViewer grid = new GridViewer();
+		GridViewer grid = new GridViewer(IGridViewer.filterBar|IGridViewer.NoToolBar);
 		grid.setData(filedNames);
 		grid.setFilterColumn("name");
 		grid.setGridProperties(columnProperties);
 		GridDialog dialog = new GridDialog(new Shell(),grid);
-		if (dialog.open() == Window.OK) {
+		if (dialog.open() == Window.OK && dialog.getSelected() != null) {
 			String value = dialog.getSelected().getString("name");
 			setValue(value);
 			cellProperties.getRecord().put(cellProperties.getColumnName(), value);
