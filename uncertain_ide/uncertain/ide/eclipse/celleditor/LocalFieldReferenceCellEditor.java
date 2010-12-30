@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
+import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 
 public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 
@@ -58,12 +59,12 @@ public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 
 		}
 		String[] columnProperties = {"name"};
-		GridViewer grid = new GridViewer();
+		GridViewer grid = new GridViewer(IGridViewer.filterBar|IGridViewer.NoToolBar);
 		grid.setData(filedNames);
 		grid.setFilterColumn("name");
 		grid.setGridProperties(columnProperties);
 		GridDialog dialog = new GridDialog(new Shell(),grid);
-		if (dialog.open() == Window.OK) {
+		if (dialog.open() == Window.OK&&dialog.getSelected() != null) {
 			String value = dialog.getSelected().getString("name");
 			setValue(value);
 			cellProperties.getRecord().put(cellProperties.getColumnName(), value);
