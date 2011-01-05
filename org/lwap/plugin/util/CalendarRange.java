@@ -70,7 +70,7 @@ public class CalendarRange extends AbstractEntry{
 			return;
 		}
 		dateTo=TextParser.parse(dateTo,model);
-		CompositeMap child=null;
+		CompositeMap child=new CompositeMap();
 		DateUtil tool=new DateUtil();
 		if(KEY_DAY_OF_MONTH.equalsIgnoreCase(unit))
 			child =tool.getRange(dateFom, dateTo, DateUtil.KEY_DAY_OF_MONTH);
@@ -79,8 +79,7 @@ public class CalendarRange extends AbstractEntry{
 		else if(KEY_MONTH.equalsIgnoreCase(unit))
 			child =tool.getRange(dateFom, dateTo, DateUtil.KEY_MONTH);
 		child.setName(target);
-		if(child!=null)
-			model.addChild(child);
+		model.addChild(child);
 	}
 
 }
