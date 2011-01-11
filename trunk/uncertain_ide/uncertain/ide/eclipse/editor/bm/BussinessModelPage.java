@@ -293,6 +293,7 @@ public class BussinessModelPage extends CompositeMapPage {
 	}
 
 	public void refresh(boolean dirty) {
+		initData();
 		if (dirty) {
 			getEditor().editorDirtyStateChanged();
 		}
@@ -302,6 +303,31 @@ public class BussinessModelPage extends CompositeMapPage {
 				IViewer iViewer = (IViewer) childViewer;
 				iViewer.refresh(false);
 			}
+		}
+	}
+	private void initData(){
+		if(tabFolerNameList == null)
+			return ;
+		Iterator tabIt = tabFolerNameList.iterator();
+		int index = 0;
+		while(tabIt.hasNext()){
+			String tabFolderName = (String)tabIt.next(); 
+			CompositeMap array_data = data.getChild(tabFolderName);
+			if (array_data == null) {
+				array_data = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), tabFolderName);
+				array_data.setParent(data);
+				Object childViewer = childViews.get(index+1);
+				if(childViewer == null)
+					continue;
+				if (childViewer instanceof BaseCompositeMapViewer) {
+					BaseCompositeMapViewer iViewer = (BaseCompositeMapViewer) childViewer;
+					iViewer.refresh(array_data);
+				}else if(childViewer instanceof GridViewer){
+					GridViewer iViewer = (GridViewer) childViewer;
+					iViewer.setData(array_data);
+				}
+			}
+			index++;
 		}
 	}
 
