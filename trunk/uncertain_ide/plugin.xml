@@ -138,5 +138,23 @@
                 translations="templates/default-templates.properties">
           </include>
           
+       </extension>
+       <extension
+             point="org.eclipse.ui.actionSets">
+          <actionSet
+                description="quick open file actionSets"
+                id="uncertain_ide.actionset.quickopenfile"
+                label="quick open file actionSets"
+                visible="true">
+             <action
+                   class="uncertain.ide.eclipse.action.toolbar.OpenFileAction"
+                   icon="icons/openfile.gif"
+                   id="uncertain_ide.action.quickopenfile"
+                   label="quick open file"
+                   style="push"
+                   toolbarPath="additions"
+                   tooltip="open a file with finename">
+             </action>
+          </actionSet>
        </extension> 
 </plugin>
