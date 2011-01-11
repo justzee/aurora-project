@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -14,7 +13,6 @@ import org.eclipse.ui.ide.IDE;
 
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import aurora.ide.AuroraConstant;
 
 public class ScreenFileHyperlink implements IHyperlink {
 	private IRegion region;
@@ -40,10 +38,6 @@ public class ScreenFileHyperlink implements IHyperlink {
 	public void open() {
 
 		IFile currentFile = Activator.getActiveIFile();
-		String currentFullPath = currentFile.getLocation().toOSString();
-		Assert.isLegal(currentFullPath.endsWith("."
-				+ AuroraConstant.screenFileExtension),
-				"This file is not a screen file!");
 		String parentFullPath = currentFile.getParent().getLocation()
 				.toOSString();
 		IDocument doc = viewer.getDocument();
