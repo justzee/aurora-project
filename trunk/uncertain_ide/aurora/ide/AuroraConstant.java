@@ -24,5 +24,7 @@ public interface AuroraConstant {
 	
 	public static String[] buildinFileExtension = new String[]{"screen","bm"};
 	public static String screenFileExtension = "screen";
+	public static String serviceFileExtension = "service";
+	public static String svcFileExtension = "svc";
 
 }
