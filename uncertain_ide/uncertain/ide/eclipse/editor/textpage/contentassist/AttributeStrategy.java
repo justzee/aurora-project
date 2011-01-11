@@ -174,6 +174,8 @@ public class AttributeStrategy implements IContentAssistStrategy {
 							return qn;
 						prefix = splits[0];
 						name = splits[1];
+						//getQualifiedName method will change the document,it will change the scanner . 
+						scanner.setRange(document, partitionOffset, region.getLength());
 						uri = getElementUrl(document, scanner, splits[0]);
 					} else {
 						name = tagName;
@@ -187,8 +189,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		return new QualifiedName(prefix, uri, name);
 	}
 
-	private QualifiedName getQualifiedName(IDocument document, String tagName)
-			throws Exception {
+	private QualifiedName getQualifiedName(IDocument document, String tagName) throws Exception{
 		CompositeLoader csloader = new CompositeLoader();
 		csloader.setSaveNamespaceMapping(true);
 
@@ -196,14 +197,18 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		String old = document.get(tokenString.getDocumentOffset(), length);
 		document.replace(tokenString.getDocumentOffset(), length, "");
 
-		InputStream is = new ByteArrayInputStream(document.get().getBytes(
-				"UTF-8"));
+		InputStream is = new ByteArrayInputStream(document.get().getBytes("UTF-8"));
 
-		CompositeMap root = csloader.loadFromStream(is);
-		document.replace(tokenString.getDocumentOffset(), 0, old);
-		viewer.setSelectedRange(tokenString.getDocumentOffset() + old.length(),
-				0);
-
+		CompositeMap root;
+		try {
+			root = csloader.loadFromStream(is);
+		} catch (Exception e) {
+			return null;
+		}finally{
+			document.replace(tokenString.getDocumentOffset(), 0, old);
+			viewer.setSelectedRange(tokenString.getDocumentOffset() + old.length(),
+					0);
+		}
 		Map namespace_mapping = CompositeUtil.getPrefixMapping(root);
 		Schema schema = new Schema();
 		Namespace[] ns = getNameSpaces(namespace_mapping);
