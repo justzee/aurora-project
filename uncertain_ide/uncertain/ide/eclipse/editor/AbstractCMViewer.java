@@ -80,14 +80,14 @@ public abstract class AbstractCMViewer implements IViewer{
 				CompositeMap parentCM = comp.getParent();
 				Element element = LoadSchemaManager.getSchemaManager().getElement(
 						parentCM);
-				if (element.isArray()) {
+				if (element != null&&element.isArray()) {
 					comp.getParent().removeChild(comp);
 					if (parentCM.getChilds() == null
 							|| parentCM.getChilds().size() == 0) {
 						parentCM.getParent().removeChild(parentCM);
 					}
 				} else {
-					comp.getParent().removeChild(comp);
+					parentCM.removeChild(comp);
 				}
 			}
 			refresh(true);
