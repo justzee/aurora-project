@@ -3,10 +3,12 @@
  */
 package org.lwap.feature;
 
-import java.util.logging.Logger;
+import org.lwap.application.WebApplication;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
+import uncertain.logging.ILogger;
+import uncertain.logging.LoggingContext;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 
@@ -22,14 +24,12 @@ public class Summary extends AbstractEntry {
     public String Field;
     public String Function;
 
-    Logger  logger;
-    
-    public Summary(Logger l){
-        logger = l;
+    public Summary(){
     }
     
     public void run(ProcedureRunner runner) {        
         CompositeMap context = runner.getContext();
+        ILogger logger = LoggingContext.getLogger(context, WebApplication.LWAP_APPLICATION_LOGGING_TOPIC);
         CompositeMap src_part = (CompositeMap)context.getObject(Source);        
         if(src_part==null){
             logger.warning("can't get source model from["+Source+"]");
