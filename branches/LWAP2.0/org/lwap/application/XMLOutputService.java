@@ -44,11 +44,10 @@ public class XMLOutputService extends XMLCheckedService {
 			model = model.getChild(content);
 			if( model == null) return ;
 		}
-		
-		response.setContentType("text/xml");
-		response.setLocale(Locale.CHINESE);
+		response.setContentType("text/xml; charset=\"utf-8\"");
+		//response.setLocale(Locale.CHINESE);
 		PrintWriter writer = response.getWriter();
-		writer.write("<?xml version=\"1.0\" encoding=\"gbk\" ?>");
+		writer.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 		
 		String cs = config.getString(KEY_CASE);
 		if( cs != null)
