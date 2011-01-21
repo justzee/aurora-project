@@ -40,13 +40,15 @@ public class DisplayChartServlet extends HttpServlet {
         boolean isChartPublic = false;
         if (filename.length() >= 6 && filename.substring(0, 6).equals("public"))
             isChartPublic = true;
-       
+        ServletUtilities.sendTempFile(file, response);
+        /*
         if (isChartInUserList || isChartPublic ) {
             ServletUtilities.sendTempFile(file, response);
             
         } else {
             throw new ServletException("Chart image not found");
         }
+        */
     }
 
 }
