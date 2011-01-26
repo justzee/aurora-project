@@ -1,0 +1,34 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />    
+  <title>The source code</title>
+    <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+</head>
+<body  onload="prettyPrint();">
+    <pre class="prettyprint lang-js">$A.TextArea = Ext.extend($A.Field,{
+	constructor: function(config) {
+        $A.TextArea.superclass.constructor.call(this, config);        
+    },
+    initComponent : function(config){
+    	$A.TextArea.superclass.initComponent.call(this, config); 		
+    },
+    initEvents : function(){
+    	$A.TextArea.superclass.initEvents.call(this);    	
+    },
+    initElements : function(){
+    	this.el= this.wrap;
+    },
+    setRawValue : function(v){
+        this.el.update(v === null || v === undefined ? '' : v);
+    },
+    getRawValue : function(){
+        var v = this.el.dom.innerHTML;
+        if(v === this.emptytext || v === undefined){
+            v = '';
+        }
+        return v;
+    }
+})</pre>    
+</body>
+</html>
