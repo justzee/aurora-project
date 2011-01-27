@@ -137,21 +137,9 @@ DocPanel = Ext.extend(Ext.Panel, {
         this.title = ps[ps.length-1];
         Ext.apply(this,{
             tbar: ['->',{
-                text: 'Config Options',
-                handler: this.scrollToMember.createDelegate(this, ['configs']),
-                iconCls: 'icon-config'
-            },'-',{
                 text: 'Properties',
                 handler: this.scrollToMember.createDelegate(this, ['props']),
                 iconCls: 'icon-prop'
-            }, '-',{
-                text: 'Methods',
-                handler: this.scrollToMember.createDelegate(this, ['methods']),
-                iconCls: 'icon-method'
-            }, '-',{
-                text: 'Events',
-                handler: this.scrollToMember.createDelegate(this, ['events']),
-                iconCls: 'icon-event'
             }, '-',{
                 text: 'Direct Link',
                 handler: this.directLink,

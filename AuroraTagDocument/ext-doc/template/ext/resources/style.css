@@ -50,6 +50,12 @@
 .body-wrap .msource-header {
     border-right: 0 none;
 }
+.body-wrap .def-header{
+	width:80px;
+}
+.body-wrap .req-header{
+	width:50px;
+}
 .body-wrap .top-tools{
 	font-size:11px;
 	text-align:right;
@@ -191,6 +197,9 @@
 }
 .member-table td.micon,.member-table td.sig,.member-table td.msource{
 	border-top:1px solid #d0d0d0;
+}
+.member-table td.sig{
+	border-right:1px solid #d0d0d0;
 }
 .body-wrap .optional{
 	color:#444 !important;

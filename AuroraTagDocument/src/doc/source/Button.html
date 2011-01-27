@@ -10,31 +10,41 @@
  * @class Button
  * @constructor
  * @extends Component
+ * @child
  * @author 牛佳庆
  */
-   
-<div id="prop-Button-text"></div>/**
- * 按钮的文本(required)
- * @property text
- * @type String
+
+<div id="prop-Button-click"></div>/**
+ * 按钮点击相应函数
+ * @property click
+ * @type Function
  */
- 
+
+<div id="prop-Button-disabled"></div>/**
+ * 按钮的可用状态
+ * @property disabled
+ * @type Boolean
+ * @default true
+ */
+
 <div id="prop-Button-icon"></div>/**
  * 按钮的图标
  * @property icon
  * @type String
  */
  
+<div id="prop-Button-text"></div>/**
+ * 按钮的文本(required)
+ * @property text
+ * @type String
+ * @requires
+ */
+
 <div id="prop-Button-title"></div>/**
  * 按钮的提示信息
  * @property title
  * @type String
  */
- 
-<div id="prop-Button-click"></div>/**
- * 按钮点击相应函数
- * @property click
- * @type Function
- */</pre>    
+</pre>    
 </body>
 </html>

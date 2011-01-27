@@ -9,9 +9,9 @@
             <xsl:if test="superClasses">
                 <xsl:call-template name="super-classes"/>
             </xsl:if>
-            <h1>Class <a href="source/{href}"><xsl:value-of select="className"/></a></h1>
+            <h1>Tag <a href="source/{href}"><xsl:value-of select="className"/></a></h1>
             <table cellspacing="0">
-                <tr>
+                <!-- <tr>
                     <td class="label">Package:</td>
                     <td class="hd-info">
                         <xsl:choose>
@@ -19,7 +19,7 @@
                             <xsl:otherwise>Global</xsl:otherwise>
                         </xsl:choose>
                     </td>
-                </tr>
+                </tr> -->
                 
                 <tr><td class="label">Defined In:</td><td class="hd-info">
                 <xsl:for-each select="definedIn">
@@ -97,6 +97,8 @@
                         <tbody>
                             <tr>
                                 <th colspan="2" class="sig-header">Property</th>
+                                <th class="req-header">Required</th>
+                                <th class="def-header">Default Value</th>
                                 <th class="msource-header">Defined By</th>
                             </tr>
                             <xsl:for-each select="properties">
@@ -117,10 +119,16 @@
                                                     <div class="short"><xsl:value-of select="description/shortDescr"/></div>
                                                     <div class="long"><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><xsl:call-template name="custom-tags"/></div>
                                                 </xsl:when>
-                                                <xsl:otherwise><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><xsl:call-template name="custom-tags"/></xsl:otherwise>
+                                                <xsl:otherwise><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><!--xsl:call-template name="custom-tags"/--></xsl:otherwise>
                                             </xsl:choose>
                                         </div>
                                     </td>
+                                      <xsl:call-template name="custom-tag">
+                                          <xsl:with-param name="name" select="'requires'"/>
+                                      </xsl:call-template>
+                                      <xsl:call-template name="custom-tag">
+                                          <xsl:with-param name="name" select="'default'"/>
+                                      </xsl:call-template>
                                       <xsl:call-template name="msource">
                                           <xsl:with-param name="inherited" select="$inherited='inherited'"/>
                                       </xsl:call-template>
@@ -132,7 +140,7 @@
                 <xsl:otherwise><div class="no-members">This class has no public properties.</div></xsl:otherwise>
             </xsl:choose>
 
-            <!--Methods-->
+            <!--Methods
             <a id="{className}-methods"> </a>
             <h2>Public Methods</h2>
             <xsl:choose>
@@ -182,9 +190,9 @@
                     </table>
                 </xsl:when>
                 <xsl:otherwise><div class="no-members">This class has no public methods.</div></xsl:otherwise>
-            </xsl:choose>
+            </xsl:choose>-->
 
-            <!--Events-->
+            <!--Events
             <a id="{className}-events"> </a>
             <h2>Public Events</h2>
             <xsl:choose>
@@ -238,7 +246,7 @@
                   </table>
               </xsl:when>
                 <xsl:otherwise><div class="no-members">This class has no public events.</div></xsl:otherwise>
-            </xsl:choose>
+            </xsl:choose>-->
             
         </div>
     </xsl:template>
@@ -392,4 +400,14 @@
         </xsl:if>
     </xsl:template>
 
+	<xsl:template name="custom-tag">
+		<xsl:param name="name"/>
+        	<td class="sig">
+       		  <xsl:if test="customTags">
+                    <xsl:if test="customTags[title=$name]">
+            	            <xsl:value-of select="customTags[title=$name]/value" disable-output-escaping="yes"/>
+                  	</xsl:if>
+      		 </xsl:if>
+            </td>
+    </xsl:template>
 </xsl:stylesheet>
