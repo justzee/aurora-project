@@ -60,5 +60,7 @@
         <tag name="demo" title="Demo" format="&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;" />
         <tag name="xtype" title="xtype"/> 
         <tag name="brick" title="brick-icon"/>
+        <tag name="default" title="default"/>
+        <tag name="requires" title="requires" format="true" />
     </tags>
 </doc>
