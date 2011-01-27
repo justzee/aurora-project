@@ -9,7 +9,7 @@
             <xsl:if test="superClasses">
                 <xsl:call-template name="super-classes"/>
             </xsl:if>
-            <h1>Class <a href="source/{href}"><xsl:value-of select="className"/></a></h1>
+            <h1>Class <xsl:value-of select="className"/></h1>
             <table cellspacing="0">
                 <tr>
                     <td class="label">Package:</td>
@@ -28,7 +28,7 @@
                 </xsl:for-each>
                 </td></tr>
                 
-                <tr><td class="label">Class:</td><td class="hd-info"><a href="source/{href}"><xsl:value-of select="shortClassName"/></a></td></tr>
+                <tr><td class="label">Class:</td><td class="hd-info"><xsl:value-of select="shortClassName"/></td></tr>
                 <xsl:if test="subClasses">
                     <xsl:call-template name="sub-classes"/>
                 </xsl:if>
@@ -71,7 +71,7 @@
                                 <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                 <td class="sig">
                                     <a id="{className}-{name}"/>
-                                    <b><a href="source/{href}"><xsl:value-of select="name"/></a></b> : <xsl:value-of select="type"/>
+                                    <b><xsl:value-of select="name"/></b> : <xsl:value-of select="type"/>
                                     <div class="mdesc">
                                             <xsl:choose>
                                                 <xsl:when test="description/hasShort='true'">
@@ -113,7 +113,7 @@
                                     <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                     <td class="sig">
                                         <a id="{className}-{name}"/>
-                                        <b><a href="source/{href}"><xsl:value-of select="name"/></a></b> : <xsl:value-of select="type"/>
+                                        <b><xsl:value-of select="name"/></b> : <xsl:value-of select="type"/>
                                         <div class="mdesc">
                                             <xsl:choose>
                                                 <xsl:when test="description/hasShort='true'">
@@ -157,7 +157,7 @@
                                     <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                     <td class="sig">
                                         <a id="{className}-{name}"/>
-                                        <b><a href="source/{href}"><xsl:value-of select="name"/></a></b>
+                                        <b><xsl:value-of select="name"/></b>
                                         <xsl:call-template name="method-params"/>:
                                         <xsl:choose>
                                             <xsl:when test="returnType"><xsl:value-of select="returnType"/></xsl:when>
@@ -206,7 +206,7 @@
                                   <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                   <td class="sig">
                                       <a id="{className}-{name}"/>
-                                      <b><a href="source/{href}"><xsl:value-of select="name"/></a></b> :
+                                      <b><xsl:value-of select="name"/></b> :
                                       <xsl:call-template name="method-params"/>
                                       <div class="mdesc">
                                           <div class="short"><xsl:value-of select="description/shortDescr"/></div>
@@ -268,7 +268,7 @@
             <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
             <td class="sig">
                 <a id="{className}-{shortClassName}"/>
-                <b><a href="source/{href}"><xsl:value-of select="shortClassName"/></a></b>
+                <b><xsl:value-of select="shortClassName"/></b>
                 <xsl:call-template name="method-params"/>
                 <div class="mdesc">
                     <div class="short"><xsl:value-of select="constructorDescription/shortDescr"/></div>
