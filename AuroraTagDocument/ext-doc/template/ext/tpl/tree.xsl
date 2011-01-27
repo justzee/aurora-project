@@ -22,11 +22,11 @@
     </xsl:template>
 
 	<xsl:template match="treePackage|packages">
-		<xsl:for-each select="packages">
-                {"id":"pkg-<xsl:value-of select="@fullName"/>","text":"<xsl:value-of select="@name"/>","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[<xsl:apply-templates select="."/>]}
-				<xsl:if test="position()!=last()">,</xsl:if>
+			<xsl:for-each select="packages">
+                <xsl:if test="@name!='Abstract'">{"id":"pkg-<xsl:value-of select="@fullName"/>","text":"<xsl:value-of select="@name"/>","iconCls":"icon-pkg","cls":"package","singleClickExpand":true, children:[<xsl:apply-templates select="."/>]}
+				<xsl:if test="position()!=last()">,</xsl:if></xsl:if>
 			</xsl:for-each>
-			<xsl:if test="count(packages)!=0 and count(classes)!=0">,</xsl:if>
+			<xsl:if test="count(packages)!=1 and count(classes)!=0">,</xsl:if>
 			<xsl:for-each select="classes">			
                 <xsl:variable name="icon">
                     <xsl:choose>

@@ -2,7 +2,6 @@
  * @class Button
  * @constructor
  * @extends Component
- * @child
  * @author 牛佳庆
  */
 
