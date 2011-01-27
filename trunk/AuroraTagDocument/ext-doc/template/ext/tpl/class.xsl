@@ -6,12 +6,12 @@
 <xsl:output method="html" indent="no"/>
     <xsl:template match="/docClass">        
         <div class="body-wrap">
-            <xsl:if test="superClasses">
+            <!--<xsl:if test="superClasses">
                 <xsl:call-template name="super-classes"/>
-            </xsl:if>
+            </xsl:if>-->
             <h1>Tag <a href="source/{href}"><xsl:value-of select="className"/></a></h1>
-            <table cellspacing="0">
-                <!-- <tr>
+            <!--<table cellspacing="0">
+                 <tr>
                     <td class="label">Package:</td>
                     <td class="hd-info">
                         <xsl:choose>
@@ -19,7 +19,7 @@
                             <xsl:otherwise>Global</xsl:otherwise>
                         </xsl:choose>
                     </td>
-                </tr> -->
+                </tr>
                 
                 <tr><td class="label">Defined In:</td><td class="hd-info">
                 <xsl:for-each select="definedIn">
@@ -42,8 +42,8 @@
                         </xsl:choose>
                     </td>
                 </tr>
-                <xsl:call-template name="class-custom-tags"/>    
-            </table>
+                <xsl:call-template name="class-custom-tags"/>   
+            </table> --> 
             <div class="description">
                 <xsl:value-of select="description" disable-output-escaping="yes"/>
                 <xsl:if test="singleton='true'"><br/><br/><i>This class is a singleton and cannot be created directly.</i></xsl:if>
@@ -99,7 +99,6 @@
                                 <th colspan="2" class="sig-header">Property</th>
                                 <th class="req-header">Required</th>
                                 <th class="def-header">Default Value</th>
-                                <th class="msource-header">Defined By</th>
                             </tr>
                             <xsl:for-each select="properties">
                                 <xsl:variable name="inherited">
@@ -112,7 +111,7 @@
                                     <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                     <td class="sig">
                                         <a id="{className}-{name}"/>
-                                        <b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!-- </a>--></b> : <xsl:value-of select="type"/>
+                                        <b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/>
                                         <div class="mdesc">
                                             <xsl:choose>
                                                 <xsl:when test="description/hasShort='true'">
@@ -128,9 +127,6 @@
                                       </xsl:call-template>
                                       <xsl:call-template name="custom-tag">
                                           <xsl:with-param name="name" select="'default'"/>
-                                      </xsl:call-template>
-                                      <xsl:call-template name="msource">
-                                          <xsl:with-param name="inherited" select="$inherited='inherited'"/>
                                       </xsl:call-template>
                                 </tr>
                             </xsl:for-each>
