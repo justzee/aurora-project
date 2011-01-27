@@ -112,7 +112,7 @@
                                     <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                     <td class="sig">
                                         <a id="{className}-{name}"/>
-                                        <b><a href="source/{href}"><xsl:value-of select="name"/></a></b> : <xsl:value-of select="type"/>
+                                        <b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!-- </a>--></b> : <xsl:value-of select="type"/>
                                         <div class="mdesc">
                                             <xsl:choose>
                                                 <xsl:when test="description/hasShort='true'">
