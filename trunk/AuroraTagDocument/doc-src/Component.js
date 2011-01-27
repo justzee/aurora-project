@@ -1,6 +1,7 @@
 /**
  * @class Component
- * @constructor
+ * @namespace Abstract
+ * @constructor 
  * @author 牛佳庆
  */
 
