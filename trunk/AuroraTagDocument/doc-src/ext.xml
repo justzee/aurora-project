@@ -55,6 +55,11 @@
     	<source src="../doc-src/InputField.js"/>
     	<source src="../doc-src/TextField.js"/>
         <source src="../doc-src/Button.js"/>
+        <source src="../doc-src/GridLayout.js"/>
+        <source src="../doc-src/Box.js"/>
+        <source src="../doc-src/HBox.js"/>
+        <source src="../doc-src/VBox.js"/>
+        <source src="../doc-src/Form.js"/>
     </sources>
     <tags>
         <tag name="author" title="Author"/>
