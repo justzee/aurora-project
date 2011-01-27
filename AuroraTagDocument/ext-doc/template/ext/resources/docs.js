@@ -140,27 +140,6 @@ DocPanel = Ext.extend(Ext.Panel, {
                 text: 'Properties',
                 handler: this.scrollToMember.createDelegate(this, ['props']),
                 iconCls: 'icon-prop'
-            }, '-',{
-                text: 'Direct Link',
-                handler: this.directLink,
-                scope: this,
-                iconCls: 'icon-fav'
-            }, '-',{
-                tooltip:'Hide Inherited Members',
-                iconCls: 'icon-hide-inherited',
-                enableToggle: true,
-                scope: this,
-                toggleHandler : function(b, pressed){
-                     this.body[pressed ? 'addClass' : 'removeClass']('hide-inherited');
-                }
-            }, '-', {
-                tooltip:'Expand All Members',
-                iconCls: 'icon-expand-members',
-                enableToggle: true,
-                scope: this,
-                toggleHandler : function(b, pressed){
-                    this.body[pressed ? 'addClass' : 'removeClass']('full-details');
-                }
             }]
         });
         DocPanel.superclass.initComponent.call(this);
