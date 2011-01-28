@@ -54,6 +54,12 @@
     	<source src="../doc-src/Field.js"/>
     	<source src="../doc-src/InputField.js"/>
     	<source src="../doc-src/TextField.js"/>
+    	<source src="../doc-src/TriggerField.js"/>
+    	<source src="../doc-src/ComboBox.js"/>
+    	<source src="../doc-src/DatePicker.js"/>
+    	<source src="../doc-src/DateTimePicker.js"/>
+    	<source src="../doc-src/DateField.js"/>
+    	<source src="../doc-src/Lov.js"/>
         <source src="../doc-src/Button.js"/>
         <source src="../doc-src/GridLayout.js"/>
         <source src="../doc-src/Box.js"/>
@@ -71,5 +77,6 @@
         <tag name="brick" title="brick-icon"/>
         <tag name="default" title="default"/>
         <tag name="requires" title="requires" format="true" />
+        <tag name="deprecated" title="deprecated" format="true"/>
     </tags>
 </doc>
