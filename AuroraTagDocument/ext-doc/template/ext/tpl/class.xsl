@@ -111,7 +111,14 @@
                                     <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
                                     <td class="sig">
                                         <a id="{className}-{name}"/>
-                                        <b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/>
+                                        <xsl:choose>
+                                        	<xsl:when test="customTags[title='deprecated']">
+                                        		<del><b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/></del>
+                                        	</xsl:when>
+                                        	<xsl:otherwise>
+                                        	 	<b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/>
+                                        	</xsl:otherwise>
+                                        </xsl:choose>
                                         <div class="mdesc">
                                             <xsl:choose>
                                                 <xsl:when test="description/hasShort='true'">
