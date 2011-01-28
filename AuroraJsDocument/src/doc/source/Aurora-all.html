@@ -2823,6 +2823,11 @@ $A.Record.Field.prototype = {
     setLovUrl : function(m){
     	this.setPropertity("lovurl",m) 
     },
+    <div id="method-Aurora.Record.Field-setLovPara"></div>/**
+     * 设置Lov的查询参数
+     * @param {String} name
+     * @param {Object} value
+     */
     setLovPara : function(name,value){
         var p = this.getPropertity('lovpara');
         if(!p){
@@ -4260,8 +4265,10 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 		}
 	},	
 	onDataSetLoad: function(){
-		this.rendered=false
-//		this.expand();//?? why expand?
+		this.rendered=false;
+		if(this.isExpanded()) {
+            this.expand();
+		}
 	},
 	onRender:function(){	
         if(!this.view){
