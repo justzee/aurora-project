@@ -60,6 +60,7 @@
         <source src="../doc-src/HBox.js"/>
         <source src="../doc-src/VBox.js"/>
         <source src="../doc-src/Form.js"/>
+        <source src="../doc-src/FieldSet.js"/>
     </sources>
     <tags>
         <tag name="author" title="Author"/>
