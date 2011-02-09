@@ -22,6 +22,7 @@
  * 组件的高度,单位是像素(px)
  * @property height
  * @type Integer
+ * @default 20
  */
  
 /**
@@ -58,4 +59,5 @@
  * 组件的宽度,单位是像素(px)
  * @property width
  * @type Integer
+ * @default 150
  */

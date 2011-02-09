@@ -29,3 +29,10 @@
  * @property dayRenderer
  * @type Function
  */
+ 
+/**
+ * 组件的高度,单位是像素(px)
+ * @property height
+ * @type Integer
+ * @default 150
+ */
