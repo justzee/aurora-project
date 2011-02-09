@@ -168,7 +168,7 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 
 	private CompositeMap createRootElement() {
 		
-		QualifiedName screenQN = AuroraConstant.screenQN;
+		QualifiedName screenQN = AuroraConstant.ScreenQN;
 		CompositeMap rootElement = new CompositeMap("a",screenQN.getNameSpace(),screenQN.getLocalName());
 		return rootElement;
 	}
