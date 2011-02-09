@@ -217,9 +217,9 @@ public class PropertyHashViewer extends PropertyViewer implements
 	}
 
 	private void fillActionToolBars(ToolBarManager actionBarManager) {
-		Action addAction = new AddPropertyAction(this, ActionListener.defaultIMG);
-		Action removeAction = new RemovePropertyAction(this,ActionListener.defaultIMG);
-		Action refreshAction = new RefreshAction(this,ActionListener.defaultIMG);
+		Action addAction = new AddPropertyAction(this, ActionListener.DefaultImage);
+		Action removeAction = new RemovePropertyAction(this,ActionListener.DefaultImage);
+		Action refreshAction = new RefreshAction(this,ActionListener.DefaultImage);
 
 		CategroyAction categroyAction = new CategroyAction(this);
 		CharSortAction charSortAction = new CharSortAction(this);
