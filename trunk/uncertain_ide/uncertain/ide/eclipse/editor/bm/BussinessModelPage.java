@@ -72,7 +72,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		FillLayout layout = new FillLayout();
 		shell.setLayout(layout);
 		Element schemaElement = LoadSchemaManager.getSchemaManager()
-				.getElement(AuroraConstant.modelQN);
+				.getElement(AuroraConstant.ModelQN);
 		if (schemaElement == null) {
 			throw new RuntimeException(LocaleMessage.getString("please.add.bm.schema.file"));
 		}
@@ -83,8 +83,8 @@ public class BussinessModelPage extends CompositeMapPage {
 		} catch (Exception e) {
 			throw new RuntimeException(e.getLocalizedMessage(), e.getCause());
 		}
-		if (!data.getQName().equals(AuroraConstant.modelQN))
-			throw new RuntimeException(LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.modelQN+ " !");
+		if (!data.getQName().equals(AuroraConstant.ModelQN))
+			throw new RuntimeException(LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
 		createContent(shell);
 	}
 
@@ -129,7 +129,7 @@ public class BussinessModelPage extends CompositeMapPage {
 
 	private void createDetailContent(Composite parent) {
 		mTabFolder = createTabFolder(parent);
-		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.modelQN);
+		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.ModelQN);
 		Iterator arrays = model_em.getAllArrays().iterator();
 		String TabHeighGrab = "     ";
 		for (int i = 0; arrays.hasNext(); i++) {
@@ -214,13 +214,13 @@ public class BussinessModelPage extends CompositeMapPage {
 		if (element.isArray()) {
 			Action addAction = null;
 			if(ref_fields.equals(element.getLocalName())){
-				 addAction = new AddRefFieldAction(pae,pae.getInput().getParent(),ActionListener.defaultIMG);
+				 addAction = new AddRefFieldAction(pae,pae.getInput().getParent(),ActionListener.DefaultImage);
 			}else{
 				addAction = new AddFieldAction(pae, data.getChild("fields"),pae.getInput());
 			}
 			actions[0]= addAction;
-			actions[1]= new RefreshAction(pae,ActionListener.defaultIMG);
-			actions[2] = new RemoveElementAction(pae,ActionListener.defaultIMG);
+			actions[1]= new RefreshAction(pae,ActionListener.DefaultImage);
+			actions[2] = new RemoveElementAction(pae,ActionListener.DefaultImage);
 			pae.setActions(actions);
 		}
 	}
@@ -269,7 +269,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		tabFolder.setSimple(false);
 		tabFolder.setTabHeight(23);
 
-		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.modelQN);
+		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.ModelQN);
 		for (int i = 0; i < model_em.getAllArrays().size(); i++) {
 			new CTabItem(tabFolder, SWT.None | SWT.MULTI | SWT.V_SCROLL);
 		}
