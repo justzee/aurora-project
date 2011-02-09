@@ -62,7 +62,7 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 			if(cm != null){
 				while(cm.getParent() != null){
 					CompositeMap parent = cm.getParent();
-					if(AuroraConstant.modelQN.equals(parent.getQName())){
+					if(AuroraConstant.ModelQN.equals(parent.getQName())){
 						mainFormPage.setSelectionTab(cm.getName());
 					}
 					cm = parent;
