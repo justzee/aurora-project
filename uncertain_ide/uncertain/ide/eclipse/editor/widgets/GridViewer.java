@@ -385,8 +385,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 							.getImageDescriptor(LocaleMessage
 									.getString("add.icon")));
 
-					Action removeAction = new RemoveElementAction(this,ActionListener.defaultIMG);
-					Action refreshAction = new RefreshAction(this,ActionListener.defaultIMG);
+					Action removeAction = new RemoveElementAction(this,ActionListener.DefaultImage);
+					Action refreshAction = new RefreshAction(this,ActionListener.DefaultImage);
 					toolBarManager.add(createActionContributionItem(addAction));
 					toolBarManager
 							.add(createActionContributionItem(refreshAction));
