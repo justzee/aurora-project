@@ -13,6 +13,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ViewForm;
@@ -44,7 +45,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ResourceTransfer;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.ActionProperties;
@@ -63,59 +63,49 @@ import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.util.LoadSchemaManager;
 import uncertain.ide.util.LocaleMessage;
 import uncertain.schema.Element;
+import aurora.ide.AuroraConstant;
 
 public class CompositeMapTreeViewer extends AbstractCMViewer {
-	protected TreeViewer mTreeViewer;
-	protected IViewer mParent;
-	private CompositeMap mData;
-
-	public CompositeMapTreeViewer(IViewer parent, CompositeMap data) {
-		this.mParent = parent;
-		this.mData = data;
+	protected TreeViewer treeViewer;
+	protected IViewer parentViewer;
+	private CompositeMap input;
+	public final static String VirtualNode = "VirtualNode";
+	public CompositeMapTreeViewer(IViewer parentViewer, CompositeMap data) {
+		this.parentViewer = parentViewer;
+		this.input = data;
 	}
 
 	public void create(Composite parent) {
 		ViewForm viewForm = new ViewForm(parent, SWT.NONE);
 		viewForm.setLayout(new FillLayout());
-
 		Tree tree = new Tree(viewForm, SWT.NONE);
-
-		mTreeViewer = new TreeViewer(tree);
-		mTreeViewer.setLabelProvider(new CompositeMapTreeLabelProvider());
-		
-		CompositeMap parentData = mData.getParent();
-
+		treeViewer = new TreeViewer(tree);
+		treeViewer.setLabelProvider(new CompositeMapTreeLabelProvider());
+		CompositeMap parentData = input.getParent();
 		if (parentData == null) {
-			CompositeMap root = new CompositeMap("root");
-			root.addChild(mData);
-			parentData = root;
+			parentData = createVirtualParentNode(input);
 		}
-		mTreeViewer.setContentProvider(new CompositeMapTreeContentProvider(
-				mData));
-		
-		mTreeViewer.setInput(parentData);
-		
-
+		treeViewer.setContentProvider(new CompositeMapTreeContentProvider(input));
+		treeViewer.setInput(parentData);
 
 		fillContextMenu();
 		fillDNDListener();
 		fillKeyListener();
-		mTreeViewer
-				.addDoubleClickListener(new ElementDoubleClickListener(this));
-		viewForm.setContent(mTreeViewer.getControl());
+		treeViewer.addDoubleClickListener(new ElementDoubleClickListener(this));
+		viewForm.setContent(treeViewer.getControl());
 		fillElementToolBar(viewForm);
 	}
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		mTreeViewer.addSelectionChangedListener(listener);
+		treeViewer.addSelectionChangedListener(listener);
 	}
 
 	public Control getControl() {
-		return mTreeViewer.getControl();
+		return treeViewer.getControl();
 	}
 
 	public Object getViewer() {
-		return mTreeViewer;
+		return treeViewer;
 	}
 
 	public void setSelection(Object data) {
@@ -124,7 +114,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 	}
 
 	public void refresh() {
-		mTreeViewer.refresh();
+		treeViewer.refresh();
 	}
 
 	public void setFocus(Object data) {
@@ -132,15 +122,15 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 	}
 
 	public void setDirty(boolean dirty) {
-		mParent.refresh(true);
+		parentViewer.refresh(true);
 
 	}
 
 	public void refresh(boolean dirty) {
 		if (dirty) {
-			mParent.refresh(true);
+			parentViewer.refresh(true);
 		} else {
-			mTreeViewer.refresh();
+			treeViewer.refresh();
 		}
 
 	}
@@ -148,31 +138,22 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 	public void setInput(CompositeMap data) {
 
 		CompositeMap parent = data.getParent();
-
 		if (parent == null) {
-			CompositeMap root = new CompositeMap("root");
-			root.addChild(data);
-			parent = root;
+			parent = createVirtualParentNode(data);
 		}
-		
-		mTreeViewer
-		.setContentProvider(new CompositeMapTreeContentProvider(data));
-		mTreeViewer.setInput(parent);
-//		mTreeViewer.setInput(data);
+		treeViewer.setContentProvider(new CompositeMapTreeContentProvider(data));
+		treeViewer.setInput(parent);
 	}
 
 	public CompositeMap getInput() {
-		return mData;
+		return input;
 	}
 
 	public TreeViewer getTreeViewer() {
-		return mTreeViewer;
+		return treeViewer;
 	}
 
 	public void fillDNDListener() {
-		final QualifiedName screenQN = new QualifiedName(
-				"http://www.aurora-framework.org/application", "screen");
-
 		DragSource ds = new DragSource(getControl(), DND.DROP_COPY
 				| DND.DROP_MOVE);
 		ds.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
@@ -216,8 +197,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 					if (data != null) {
 						Element element = LoadSchemaManager.getSchemaManager()
 								.getElement(getInput());
-						if (element == null
-								|| !element.getQName().equals(screenQN)) {
+						if (element == null|| !element.getQName().equals(AuroraConstant.ScreenQN)) {
 							CustomDialog.showErrorMessageBox("this.is.not.screen.file");
 							return;
 						}
@@ -233,38 +213,24 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 							IResource resource = resources[i];
 							String filePath = resource.getLocation()
 									.toOSString();
-							if (!filePath.toLowerCase().endsWith("bm")) {
+							if (!filePath.toLowerCase().endsWith(AuroraConstant.BMFileExtension)) {
 								continue;
 							}
 							String className = getClassName(new java.io.File(
 									filePath), bmfile_dir);
 							bmFiles = bmFiles + className + ",";
 						}
-						CompositeMap view = mData.getChild("view");
+						CompositeMap view = input.getChild(AuroraConstant.ViewQN.getLocalName());
 						if (view == null) {
-							QualifiedName QName = new QualifiedName(
-									"http://www.aurora-framework.org/application",
-									"view");
-							String prefix = CompositeMapAction.getContextPrefix(mData,
-									QName);
-							view = new CompositeMap(
-									prefix,
-									"http://www.aurora-framework.org/application",
-									"dataSets");
-							view.setParent(mData);
-							mData.addChild(view);
+							String prefix = CompositeMapAction.getContextPrefix(input,AuroraConstant.ViewQN);
+							view = new CompositeMap(prefix,AuroraConstant.ViewQN.getNameSpace(),AuroraConstant.ViewQN.getLocalName());
+							view.setParent(input);
+							input.addChild(view);
 						}
-						CompositeMap dataSets = view.getChild("dataSets");
+						CompositeMap dataSets = view.getChild(AuroraConstant.DataSetSQN.getLocalName());
 						if (dataSets == null) {
-							QualifiedName QName = new QualifiedName(
-									"http://www.aurora-framework.org/application",
-									"dataSets");
-							String prefix = CompositeMapAction.getContextPrefix(mData,
-									QName);
-							dataSets = new CompositeMap(
-									prefix,
-									"http://www.aurora-framework.org/application",
-									"dataSets");
+							String prefix = CompositeMapAction.getContextPrefix(input,AuroraConstant.DataSetSQN);
+							dataSets = new CompositeMap(prefix,AuroraConstant.DataSetSQN.getNameSpace(),AuroraConstant.DataSetSQN.getLocalName());
 							view.addChild(dataSets);
 							dataSets.setParent(view);
 						}
@@ -272,8 +238,8 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 								dataSets, bmFiles);
 						WizardDialog dialog = new WizardDialog(new Shell(),
 								wizard);
-						dialog.open();
-						refresh(true);
+						if(dialog.open()==Window.OK)
+							refresh(true);
 					}
 
 				} else if (localSelectionTransfer
@@ -355,9 +321,9 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 				manager.add(new CopyElementAction(CompositeMapTreeViewer.this,
 						CopyElementAction.getDefaultImageDescriptor(),
 						CopyElementAction.getDefaultText()));
-				manager.add(new PasteAction(CompositeMapTreeViewer.this,ActionListener.defaultIMG|ActionListener.defaultTitle));
-				manager.add(new RemoveElementAction(CompositeMapTreeViewer.this,ActionListener.defaultIMG|ActionListener.defaultTitle));
-				manager.add(new RefreshAction(CompositeMapTreeViewer.this,ActionListener.defaultIMG|ActionListener.defaultTitle));
+				manager.add(new PasteAction(CompositeMapTreeViewer.this,ActionListener.DefaultImage|ActionListener.DefaultTitle));
+				manager.add(new RemoveElementAction(CompositeMapTreeViewer.this,ActionListener.DefaultImage|ActionListener.DefaultTitle));
+				manager.add(new RefreshAction(CompositeMapTreeViewer.this,ActionListener.DefaultImage|ActionListener.DefaultTitle));
 			}
 		});
 
@@ -368,7 +334,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 	}
 
 	public void fillKeyListener() {
-		mTreeViewer.getTree().addKeyListener(new KeyListener() {
+		treeViewer.getTree().addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.stateMask == SWT.CTRL && e.keyCode == 'c') {
 					copyElement();
@@ -429,7 +395,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 						.getString("refresh.icon"));
 		refreshItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				mTreeViewer.refresh();
+				treeViewer.refresh();
 				LoadSchemaManager.refeshSchemaManager();
 			}
 		});
@@ -455,5 +421,15 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 			toolItem.setImage(icon);
 		}
 
+	}
+	private CompositeMap createVirtualParentNode(CompositeMap node){
+		if(node == null)
+			return null;
+		CompositeMap parentNode = node.getParent();
+		if (parentNode != null)
+			return parentNode;
+		CompositeMap virtualNode = new CompositeMap(VirtualNode);
+		virtualNode.addChild(node);
+		return virtualNode;
 	}
 }
