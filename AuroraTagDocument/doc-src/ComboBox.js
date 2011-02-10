@@ -1,7 +1,7 @@
 /**
  * @class ComboBox
  * <pre><code>
-    &lt;a:comboBox displayField="dfield" valueField="vfield" options="dsId"
+    &lt;a:comboBox displayField="name" valueField="code" options="dsId"
 	bindTarget="dsId" name="fieldName" prompt="description"/&gt;
    </code></pre>
  * @extends TriggerField
@@ -9,19 +9,21 @@
  */
 
 /**
- * 选项显示的值
+ * 选项集的dataset中用来显示选项描述的field
  * @property displayField
  * @type String
+ * @default name
  */
 
 /**
- * 选项的数据源ID
+ * 选项集的dataset的id
  * @property options
  * @type String
  */
  
 /**
- * 选项的值
+ * 选项集的dataset中用来定义选项被选中后的值的field
  * @property valueField
  * @type String
+ * @default code
  */

@@ -5,7 +5,7 @@
 	width="300" height="300"/&gt;
    </code></pre>
  * @extends Component
- * @author 牛佳庆
+ * @author 吴华真
  */
 
 /**
@@ -26,6 +26,7 @@
  * <p>日期渲染</p> 
  * <p>回调函数function(cell,date,text){return text}</p>
  * <p>当cell.disabled=true时，该日期无法被选择</p>
+ * <p>返回值text是html字符串</p>
  * @property dayRenderer
  * @type Function
  */

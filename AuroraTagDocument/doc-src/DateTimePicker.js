@@ -5,5 +5,5 @@
 	dayRenderer="renderer" viewSize="3"/&gt;
    </code></pre>
  * @extends DatePicker
- * @author 牛佳庆
+ * @author 吴华真
  */

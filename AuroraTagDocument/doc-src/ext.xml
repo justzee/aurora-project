@@ -50,23 +50,33 @@
         -->
 
     <sources>
-    	<source src="../doc-src/Component.js"/>
-    	<source src="../doc-src/Field.js"/>
-    	<source src="../doc-src/InputField.js"/>
-    	<source src="../doc-src/TextField.js"/>
-    	<source src="../doc-src/TriggerField.js"/>
-    	<source src="../doc-src/ComboBox.js"/>
-    	<source src="../doc-src/DatePicker.js"/>
-    	<source src="../doc-src/DateTimePicker.js"/>
-    	<source src="../doc-src/DateField.js"/>
-    	<source src="../doc-src/Lov.js"/>
-        <source src="../doc-src/Button.js"/>
-        <source src="../doc-src/GridLayout.js"/>
-        <source src="../doc-src/Box.js"/>
-        <source src="../doc-src/HBox.js"/>
-        <source src="../doc-src/VBox.js"/>
-        <source src="../doc-src/Form.js"/>
-        <source src="../doc-src/FieldSet.js"/>
+		<source src="../doc-src/Component.js"/>
+		<source src="../doc-src/Field.js"/>
+		<source src="../doc-src/InputField.js"/>
+		<source src="../doc-src/TextField.js"/>
+		<source src="../doc-src/NumberField.js"/>
+		<source src="../doc-src/PassWord.js"/>
+		<source src="../doc-src/TriggerField.js"/>
+		<source src="../doc-src/ComboBox.js"/>
+		<source src="../doc-src/DatePicker.js"/>
+		<source src="../doc-src/DateTimePicker.js"/>
+		<source src="../doc-src/DateField.js"/>
+		<source src="../doc-src/Lov.js"/>
+		<source src="../doc-src/Button.js"/>
+		<source src="../doc-src/Radio.js"/>
+		<source src="../doc-src/CheckBox.js"/>
+		<source src="../doc-src/GridLayout.js"/>
+		<source src="../doc-src/Box.js"/>
+		<source src="../doc-src/HBox.js"/>
+		<source src="../doc-src/VBox.js"/>
+		<source src="../doc-src/Form.js"/>
+		<source src="../doc-src/FieldSet.js"/>
+		<source src="../doc-src/Table.js"/>
+		<source src="../doc-src/Grid.js"/>
+		<source src="../doc-src/Tab.js"/>
+		<source src="../doc-src/Accordion.js"/>
+		<source src="../doc-src/Menu.js"/>
+		<source src="../doc-src/Tree.js"/>
     </sources>
     <tags>
         <tag name="author" title="Author"/>
@@ -78,5 +88,6 @@
         <tag name="default" title="default"/>
         <tag name="requires" title="requires" format="true" />
         <tag name="deprecated" title="deprecated" format="true"/>
+        <tag name="remove" title="remove" format="true"/>
     </tags>
 </doc>
