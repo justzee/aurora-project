@@ -101,41 +101,47 @@
                                 <th class="def-header">Default Value</th>
                             </tr>
                             <xsl:for-each select="properties">
-                                <xsl:variable name="inherited">
-                                    <xsl:if test="/docClass/className!=className">inherited</xsl:if>
-                                </xsl:variable>
-                                <xsl:variable name="cls">
-                                    <xsl:if test="description/hasShort='true'">expandable</xsl:if>
-                                </xsl:variable>
-                                <tr class="property-row {$cls} {$inherited}">
-                                    <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
-                                    <td class="sig">
-                                        <a id="{className}-{name}"/>
-                                        <xsl:choose>
-                                        	<xsl:when test="customTags[title='deprecated']">
-                                        		<del><b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/></del>
-                                        	</xsl:when>
-                                        	<xsl:otherwise>
-                                        	 	<b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/>
-                                        	</xsl:otherwise>
-                                        </xsl:choose>
-                                        <div class="mdesc">
-                                            <xsl:choose>
-                                                <xsl:when test="description/hasShort='true'">
-                                                    <div class="short"><xsl:value-of select="description/shortDescr"/></div>
-                                                    <div class="long"><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><xsl:call-template name="custom-tags"/></div>
-                                                </xsl:when>
-                                                <xsl:otherwise><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><!--xsl:call-template name="custom-tags"/--></xsl:otherwise>
-                                            </xsl:choose>
-                                        </div>
-                                    </td>
-                                      <xsl:call-template name="custom-tag">
-                                          <xsl:with-param name="name" select="'requires'"/>
-                                      </xsl:call-template>
-                                      <xsl:call-template name="custom-tag">
-                                          <xsl:with-param name="name" select="'default'"/>
-                                      </xsl:call-template>
-                                </tr>
+	                            <xsl:choose>
+	                                <xsl:when test="customTags[title='remove']">
+	                                </xsl:when>
+	                                <xsl:otherwise>
+	                                <xsl:variable name="inherited">
+	                                    <xsl:if test="/docClass/className!=className">inherited</xsl:if>
+	                                </xsl:variable>
+	                                <xsl:variable name="cls">
+	                                    <xsl:if test="description/hasShort='true'">expandable</xsl:if>
+	                                </xsl:variable>
+	                                <tr class="property-row {$cls} {$inherited}">
+	                                    <td class="micon"><a href="#expand" class="exi">&nbsp;</a></td>
+	                                    <td class="sig">
+	                                        <a id="{className}-{name}"/>
+	                                        <xsl:choose>
+	                                        	<xsl:when test="customTags[title='deprecated']">
+	                                        		<del><b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/></del>
+	                                        	</xsl:when>
+	                                        	<xsl:otherwise>
+	                                        	 	<b><!-- <a href="source/{href}"> --><xsl:value-of select="name"/><!--</a>--></b> : <xsl:value-of select="type"/>
+	                                        	</xsl:otherwise>
+	                                        </xsl:choose>
+	                                        <div class="mdesc">
+	                                            <xsl:choose>
+	                                                <xsl:when test="description/hasShort='true'">
+	                                                    <div class="short"><xsl:value-of select="description/shortDescr"/></div>
+	                                                    <div class="long"><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><xsl:call-template name="custom-tags"/></div>
+	                                                </xsl:when>
+	                                                <xsl:otherwise><xsl:value-of select="description/longDescr" disable-output-escaping="yes"/><!--xsl:call-template name="custom-tags"/--></xsl:otherwise>
+	                                            </xsl:choose>
+	                                        </div>
+	                                    </td>
+	                                      <xsl:call-template name="custom-tag">
+	                                          <xsl:with-param name="name" select="'requires'"/>
+	                                      </xsl:call-template>
+	                                      <xsl:call-template name="custom-tag">
+	                                          <xsl:with-param name="name" select="'default'"/>
+	                                      </xsl:call-template>
+	                                </tr>
+	                                </xsl:otherwise>
+                                </xsl:choose>
                             </xsl:for-each>
                         </tbody>
                     </table>            

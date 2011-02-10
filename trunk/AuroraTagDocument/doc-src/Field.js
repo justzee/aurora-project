@@ -19,3 +19,13 @@
  * @type Boolean
  * @default false
  */ 
+ 
+/**
+ * @property height
+ * @remove
+ */
+
+ /**
+ * @property marginHeight
+ * @remove
+ */
