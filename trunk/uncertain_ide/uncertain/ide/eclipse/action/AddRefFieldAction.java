@@ -46,7 +46,7 @@ public class AddRefFieldAction extends ActionListener {
 		}
 		gridInput = new CompositeMap("gridInput");
 		QualifiedName modelQN = new QualifiedName(model.getNamespaceURI(),model.getName());
-		Assert.isTrue(AuroraConstant.modelQN.equals(modelQN), "This CompositeMap is not a model element!");
+		Assert.isTrue(AuroraConstant.ModelQN.equals(modelQN), "This CompositeMap is not a model element!");
 		CompositeMap relationsCM = model.getChild(relations);
 		if(relationsCM == null){
 			CustomDialog.showErrorMessageBox("relations is null !");
