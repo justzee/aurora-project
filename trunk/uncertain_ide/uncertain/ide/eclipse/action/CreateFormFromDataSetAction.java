@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import aurora.ide.AuroraConstant;
+import aurora.presentation.component.std.config.DataSetConfig;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
@@ -95,18 +96,21 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 	public void run() {
 		if (parent == null
-				|| !AuroraConstant.dataSetQN.equals(parent.getQName())) {
+				|| !AuroraConstant.DataSetQN.equals(parent.getQName())) {
 			CustomDialog
-					.showErrorMessageBox("Its parent's parent is not a dataSet element!");
+					.showErrorMessageBox("It is not a dataSet element!");
 			return;
 		}
+		DataSetConfig dataSet = DataSetConfig.getInstance(parent);
+		CompositeMap fields = dataSet.getFields();
+		System.out.println(fields.toXML());
 		if (parent.getString(idColumn) == null
 				|| parent.getString(modelColumn) == null) {
 			CustomDialog.showErrorMessageBox("This dataSet is not valid!");
 			return;
 		}
 		CompositeMap view = parent.getParent().getParent();
-		if (view == null || !AuroraConstant.viewQN.equals(view.getQName())) {
+		if (view == null || !AuroraConstant.ViewQN.equals(view.getQName())) {
 			CustomDialog
 					.showErrorMessageBox("Its parent's parent is not a view element!");
 			return;
