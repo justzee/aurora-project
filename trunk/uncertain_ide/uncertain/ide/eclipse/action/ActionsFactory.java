@@ -53,7 +53,7 @@ public class ActionsFactory {
 					continue;
 				Element ele = (Element) object;
 				final QualifiedName qName = ele.getQName();
-				childActionListeners[i] =new AddElementAction(actionProperties.getViewer(), parent, qName,ActionListener.defaultIMG|ActionListener.defaultTitle);
+				childActionListeners[i] =new AddElementAction(actionProperties.getViewer(), parent, qName,ActionListener.DefaultImage|ActionListener.DefaultTitle);
 
 			}
 		}
