@@ -71,7 +71,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		return Activator.getImageDescriptor(LocaleMessage.getString("wizard.icon"));
 	}
 	public void run() {
-		if(parent == null || !AuroraConstant.dataSetQN.equals(parent.getQName())){
+		if(parent == null || !AuroraConstant.DataSetQN.equals(parent.getQName())){
 			CustomDialog.showErrorMessageBox("Its parent's parent is not a dataSet element!");
 			return;
 		}
@@ -80,7 +80,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			return;
 		}
 		CompositeMap view = parent.getParent().getParent();
-		if(view == null || !AuroraConstant.viewQN.equals(view.getQName())){
+		if(view == null || !AuroraConstant.ViewQN.equals(view.getQName())){
 			CustomDialog.showErrorMessageBox("Its parent's parent is not a view element!");
 			return;
 		}
