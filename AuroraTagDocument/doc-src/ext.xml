@@ -48,7 +48,6 @@
                   <b>Author</b>:I'm the author
 
         -->
-
     <sources>
 		<source src="../doc-src/Component.js"/>
 		<source src="../doc-src/Field.js"/>
