@@ -1,5 +1,6 @@
 /**
  * @class Tree
+ * 树控件标签
  * <pre><code>
     &lt;a:tree bindTarget="ds" checkField="checked" expandField="expanded"
 	displayField="function_name" idField="function_id" showCheckBox="true"

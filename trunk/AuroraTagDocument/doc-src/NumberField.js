@@ -1,5 +1,6 @@
 /**
  * @class NumberField
+ * 数字输入框控件标签
  * <pre><code>
     &lt;a:numberField bindTarget="ds" name="fieldName"
 	emptyText="xxx" width="300"

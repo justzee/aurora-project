@@ -1,5 +1,6 @@
 /**
  * @class Radio
+ * 单项选择框控件标签
  * <pre><code>
     &lt;a:radio labelField="label" valueField="value" options="dsId"
 	bindTarget="dsId" name="fieldName" layout="horizontal"

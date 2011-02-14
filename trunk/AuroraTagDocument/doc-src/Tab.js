@@ -1,5 +1,6 @@
 /**
  * @class Tab
+ * 标签式布局标签
  * <pre><code>
     &lt;a:tabPanel width="300" height="250"&gt;
 	&lt;a:tabs&gt;

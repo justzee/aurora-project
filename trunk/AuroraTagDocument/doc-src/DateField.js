@@ -1,5 +1,6 @@
 /**
  * @class DateField
+ * 日期控件标签
  * <pre><code>
     &lt;a:dateField enableBesideDays="pre" enableMonthBtn="next" dayRenderer="renderer"
 	width="300" height="300"/&gt;

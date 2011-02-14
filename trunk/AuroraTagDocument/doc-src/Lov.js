@@ -1,5 +1,6 @@
 /**
  * @class Lov
+ * 弹出窗口式输入框控件标签
  * <pre><code>
     &lt;a:lov displayField="dfield" valueField="vfield"
 	bindTarget="dsId" name="fieldName" prompt="description"

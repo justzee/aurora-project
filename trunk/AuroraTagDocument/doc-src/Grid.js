@@ -1,5 +1,6 @@
 /**
  * @class Grid
+ * 图表控件标签
  * <pre><code>
 &lt;a:grid bindTarget="ds" rowRenderer="fun" navBar="true" width="300" autoFocus="false"&gt;
 	&lt;a:toolBar&gt;

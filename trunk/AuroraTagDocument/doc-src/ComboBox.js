@@ -1,5 +1,6 @@
 /**
  * @class ComboBox
+ * 下拉菜单控件标签
  * <pre><code>
     &lt;a:comboBox displayField="name" valueField="code" options="dsId"
 	bindTarget="dsId" name="fieldName" prompt="description"/&gt;
