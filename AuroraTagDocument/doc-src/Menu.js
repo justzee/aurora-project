@@ -1,5 +1,6 @@
 /**
  * @class Menu
+ * 菜单控件标签
  * <pre><code>
     &lt;a:menuBar bindTarget="ds" iconField="icon"
 	displayField="function_name" idField="function_id"

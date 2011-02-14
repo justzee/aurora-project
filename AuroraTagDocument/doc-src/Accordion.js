@@ -1,5 +1,6 @@
 /**
  * @class Accordion
+ * 可折叠布局标签
  * <pre><code>
     &lt;a:accordionPanel width="300" height="250" singleMode="false"&gt;
 	&lt;a:accordions&gt;

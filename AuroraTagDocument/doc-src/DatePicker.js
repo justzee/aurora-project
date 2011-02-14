@@ -1,5 +1,6 @@
 /**
  * @class DatePicker
+ * 日期选择控件标签
  * <pre><code>
     &lt;a:datePicker enableBesideDays="pre" enableMonthBtn="next"
 	dayRenderer="renderer" viewSize="3"/&gt;

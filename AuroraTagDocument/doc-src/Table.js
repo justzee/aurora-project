@@ -1,5 +1,6 @@
 /**
  * @class Table
+ * 自适应宽度和高度的图表控件标签
  * <pre><code>
     &lt;a:table bindTarget="ds" rowRenderer="fun"
 	width="300" percentWidth="90" title="tt"&gt;

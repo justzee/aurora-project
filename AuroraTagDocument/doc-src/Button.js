@@ -1,5 +1,6 @@
 /**
  * @class Button
+ * 按钮控件标签
  * <pre><code>
     &lt;a:button click="login" height="72" text="登陆" width="72"/&gt;
    </code></pre>
