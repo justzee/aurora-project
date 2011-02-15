@@ -1,7 +1,7 @@
 /**
  * @class Grid
  * <p>图表控件标签</p>
- * <p>列的属性可参阅<a href='output/GridColumn.html' ext:member="" ext:cls="GridColumn">GridColumn</a></p>
+ * <p>列的属性可参阅<a href='output/Grid[Column].html' ext:member="" ext:cls="Grid[Column]">Grid[Column]</a></p>
  * <pre><code>
 &lt;a:grid bindTarget="ds" rowRenderer="fun" navBar="true" width="300" autoFocus="false"&gt;
 	&lt;a:toolBar&gt;
