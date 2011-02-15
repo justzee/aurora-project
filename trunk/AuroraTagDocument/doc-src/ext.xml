@@ -71,9 +71,9 @@
 		<source src="../doc-src/Form.js"/>
 		<source src="../doc-src/FieldSet.js"/>
 		<source src="../doc-src/Table.js"/>
-		<source src="../doc-src/TableColumn.js"/>
+		<source src="../doc-src/Table[Column].js"/>
 		<source src="../doc-src/Grid.js"/>
-		<source src="../doc-src/GridColumn.js"/>
+		<source src="../doc-src/Grid[Column].js"/>
 		<source src="../doc-src/Tab.js"/>
 		<source src="../doc-src/Accordion.js"/>
 		<source src="../doc-src/Menu.js"/>
