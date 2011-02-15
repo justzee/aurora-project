@@ -109,11 +109,17 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		int currentPage = getCurrentPage();
 		if(currentPage==textPageIndex){
 			try {
+				//setActivePage will call pageChage(),we should prevent dead lock.
+				if(textPage.isIgnorceSycOnce()){
+					textPage.setIgnorceSycOnce(false);
+					return;
+				}
 				if(textPage.isModify()){
-					textPage.setModify(false);
 					sycMainViewerPageWithTextPage();
+					textPage.setModify(false);
 				}
 			} catch (Exception e) {
+				textPage.setIgnorceSycOnce(true);
 				setActivePage(textPageIndex);
 				CustomDialog.showExceptionMessageBox(e);
 			}
