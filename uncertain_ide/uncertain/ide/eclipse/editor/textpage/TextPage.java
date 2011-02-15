@@ -28,6 +28,13 @@ public class TextPage extends TextEditor implements IViewer {
 	private ColorManager colorManager;
 	private FormEditor editor;
 	private boolean modify = false;
+	private boolean ignorceSycOnce = false;
+	public boolean isIgnorceSycOnce() {
+		return ignorceSycOnce;
+	}
+	public void setIgnorceSycOnce(boolean ignorceSycOnce) {
+		this.ignorceSycOnce = ignorceSycOnce;
+	}
 	public TextPage(FormEditor editor, String id, String title) {
 //		super(editor, id, title);
 		this.editor = editor;
