@@ -1,7 +1,6 @@
 /**
- * @class Table
- * <p>自适应宽度和高度的图表控件标签</p>
- * <p>列的属性可参阅<a href='output/TableColumn.html' ext:member="" ext:cls="TableColumn">TableColumn</a></p>
+ * @class TableColumn
+ * 自适应宽度和高度的图表下的列标签，必须在<a href="output/Table.html" ext:member="" ext:cls="Table">Table</a>标签下被使用。
  * <pre><code>
     &lt;a:table bindTarget="ds" rowRenderer="fun"
 	width="300" percentWidth="90" title="tt"&gt;
@@ -15,12 +14,11 @@
 	&lt;/a:editors&gt;
 &lt;/a:table&gt;
    </code></pre>
- * @extends Component
  * @author 吴华真
  */
 
 /**
- * 组件的百分比宽度,单位是(%)
+ * 列的百分比宽度,单位是(%)
  * @property percenWidth
  * @type Integer
  */
@@ -40,16 +38,11 @@
  */
  
 /**
- * 组件的宽度,单位是像素(px)
+ * 列的宽度,单位是像素(px)
  * @property width
  * @type Integer
  */
 
-/**
- * @property height
- * @remove
- */
- 
  /**
  * @property marginHeight
  * @remove
