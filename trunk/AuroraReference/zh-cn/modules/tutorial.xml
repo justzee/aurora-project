@@ -1,0 +1,115 @@
+﻿<chapter id="tutorial">
+	<title>
+		Aurora开发概览
+	</title>
+	<sect1 id="tutorial-intro"  revision="1">
+		<title>
+		前言
+		</title>
+        
+		<para>
+	本章是面向Aurora初学者的一个入门教程。
+
+		</para>
+
+		<para>
+	本章面向Aurora初学者，但需要XML,JavaScript和SQL知识。
+		</para>
+	</sect1>
+    
+	<sect1 id="tutorial-install"  revision="2">
+		<title>
+	       安装配置
+		</title>
+		<para>
+	安装配置。
+		</para>
+
+      
+		<sect2 id="tutorial-install-download" revision="1">
+			<title>
+	下载框架程序
+			</title>
+            
+			<para>
+	下载框架程序
+			</para>
+		</sect2>
+
+		<sect2 id="tutorial-install-configuration" revision="1">
+			<title>
+	配置
+			</title>
+			<para>
+	配置文件
+			</para>
+		</sect2>
+	</sect1>
+	<sect1 id="tutorial-base">
+        <title>
+            基本的数据维护表单
+		</title>
+
+		<para>
+	基本的数据维护表单
+		</para>
+	</sect1>
+	<sect1 id="tutorial-query">
+		<title>
+            数据查询及展示界面
+		</title>  	 
+		<para>
+            数据查询及展示界面。
+		</para>  	 
+	</sect1>
+	<sect1 id="tutorial-maintaince">
+        <title>
+            完整的数据维护界面
+        </title>     
+        <para>
+            完整的数据维护界面。
+        </para>      
+    </sect1>
+    <sect1 id="tutorial-master-detail">
+        <title>
+            主从级联界面
+        </title>     
+        <para>
+            主从级联界面。
+        </para>      
+    </sect1>
+    <sect1 id="tutorial-feature">
+        <title>
+            应用Feature
+        </title>     
+        <para>
+            主从级联界面。
+        </para>
+        
+        <sect2 id="feature-mutilanguage">
+            <title>
+                多语言
+            </title>     
+            <para>
+                多语言。
+            </para>      
+        </sect2>
+        
+        <sect2 id="feature-lookup">
+            <title>
+                系统编码
+            </title>     
+            <para>
+                系统编码。
+            </para>      
+        </sect2>      
+    </sect1>
+    <sect1 id="tutorial-summary">
+        <title>
+            总结
+        </title>     
+        <para>
+            总结。
+        </para>      
+    </sect1>
+</chapter>
