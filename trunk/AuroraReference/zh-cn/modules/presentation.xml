@@ -7,7 +7,8 @@
 		<para>
             一个非常简要的Aurora UI组件结构图：
 		</para>
-
+		
+		
 		<mediaobject>
 			<imageobject role="fo">
 				<imagedata fileref="images/architecture.jpg" format="JPG" align="center"/>
