@@ -1,6 +1,6 @@
 <chapter id="presentation">
 
-	<title>Aurora展示层(Aurora Presentation Layer, APL)</title>
+	<title>Aurora展示层(Aurora Presentation Layer)</title>
 	<sect1 id="presentation-overview" revision="1">
 		<title>APL总体架构概述</title>
         
@@ -31,63 +31,49 @@
 		</para>
 
 		<sect2 id="presentation-serverside-ui" revision="1">
-			<title>
-                Aurora如何创建用户界面
-			</title>            
+			<title>Aurora如何创建用户界面</title>            
 			<para>
                 正文...
 			</para>
 		</sect2>
         
 		<sect2 id="presentation-serverside-container" revision="1">
-			<title>
-                数据容器
-			</title>            
+			<title>数据容器</title>            
 			<para>
                 正文...
 			</para>
 		</sect2>
         
 		<sect2 id="presentation-serverside-mapping" revision="1">
-			<title>
-              组件映射
-			</title>            
+			<title>组件映射</title>            
 			<para>
                 正文...
 			</para>
 		</sect2>
         
 		<sect2 id="presentation-serverside-buildsession" revision="1">
-			<title>
-              BuildSession
-			</title>            
+			<title>BuildSession</title>            
 			<para>
                 正文...
 			</para>
 		</sect2>
         
 		<sect2 id="presentation-serverside-events" revision="1">
-			<title>
-              事件机制
-			</title>            
+			<title>事件机制</title>            
 			<para>
                 正文...
 			</para>
 		</sect2>
         
 		<sect2 id="presentation-serverside-resource" revision="1">
-			<title>
-              资源文件处理
-			</title>            
+			<title>资源文件处理</title>            
 			<para>
                 正文...
 			</para>
 		</sect2>
         
 		<sect2 id="presentation-serverside-dynamic" revision="1">
-			<title>
-              动态组件配置
-			</title>            
+			<title>动态组件配置</title>            
 			<para>
                 正文...
 			</para>
@@ -96,34 +82,26 @@
 	</sect1>
 
 	<sect1 id="presentation-client" revision="1">
-		<title>
-              对浏览器客户端界面的支持
-		</title>            
+		<title>对浏览器客户端界面的支持</title>            
 		<para>
                 简介....
 		</para>
 		
 		<sect2 id="presentation-client-lib" revision="1">
-            <title>
-              核心Javascript API
-            </title>            
+            <title>核心Javascript API</title>            
             <para>
                 正文...
             </para>
         </sect2>
         
         <sect2 id="presentation-client-dataset" revision="1">
-            <title>
-              DataSet
-            </title>            
+            <title>DataSet</title>            
             <para>
                 以数据为核心的界面逻辑处理机制
             </para>
             
             <sect3 id="presentation-client-dataset-action" revision="1">
-                <title>
-                  数据的查询、新增、更新和删除操作
-                </title>            
+                <title>数据的查询、新增、更新和删除操作</title>            
                 <para>
                     正文 ...
                 </para>
@@ -220,7 +198,269 @@
                 </para>
             </sect3>
         </sect2>
+        
+        <sect2 id="presentation-client-editor" revision="1">
+            <title>
+              编辑组件
+            </title>            
+            <para>
+               编辑组件正文 ...
+            </para>
+            
+            <sect3 id="presentation-client-editor-textfield" revision="1">
+                <title>
+                  TextField
+                </title>            
+                <para>
+                   TextField正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-numberfield" revision="1">
+                <title>
+                  NumberField
+                </title>            
+                <para>
+                   NumberField正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-combobox" revision="1">
+                <title>
+                  Combobox
+                </title>            
+                <para>
+                   Combobox正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-dateField" revision="1">
+                <title>
+                  DateField
+                </title>            
+                <para>
+                   DateField正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-datePicker" revision="1">
+                <title>
+                  DatePicker
+                </title>            
+                <para>
+                   DatePicker正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-lov" revision="1">
+                <title>
+                  Lov
+                </title>            
+                <para>
+                   Lov正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-datetimepicker" revision="1">
+                <title>
+                  DateTimePicker
+                </title>            
+                <para>
+                   正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-textarea" revision="1">
+                <title>
+                  TextArea
+                </title>            
+                <para>
+                   正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-radio" revision="1">
+                <title>
+                  Radio
+                </title>            
+                <para>
+                   正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-editor-checkbox" revision="1">
+                <title>
+                  CheckBox
+                </title>            
+                <para>
+                   正文 ...
+                </para>
+            </sect3>
+        </sect2>
+        
+        
+        <sect2 id="presentation-client-tab" revision="1">
+            <title>
+              Tab组件
+            </title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
+        
+        <sect2 id="presentation-client-tree" revision="1">
+            <title>
+              Tree组件
+            </title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
+        
+        <sect2 id="presentation-client-grid" revision="1">
+            <title>
+              Grid组件
+            </title>            
+            <para>
+               正文 ...
+            </para> 
+            
+            <sect3 id="presentation-client-grid-config" revision="1">
+                <title>
+                  数据绑定，显示
+                </title>            
+                <para>
+                   正文 ...
+                </para>            
+            </sect3> 
+            
+            <sect3 id="presentation-client-grid-head" revision="1">
+                <title>
+                  对齐，排序，多级表头
+                </title>            
+                <para>
+                   正文 ...
+                </para>            
+            </sect3> 
+            
+            <sect3 id="presentation-client-grid-toolbar" revision="1">
+                <title>
+                  工具栏
+                </title>            
+                <para>
+                   正文 ...
+                </para>            
+            </sect3>
+            
+            <sect3 id="presentation-client-grid-renderer" revision="1">
+                <title>
+                  自定义数据的渲染方式
+                </title>            
+                <para>
+                   正文 ...
+                </para>            
+            </sect3> 
+            
+            <sect3 id="presentation-client-grid-other" revision="1">
+                <title>
+                  汇总，行列锁定
+                </title>            
+                <para>
+                   正文 ...
+                </para>            
+            </sect3>          
+        </sect2>
+        
+        <sect2 id="presentation-client-table" revision="1">
+            <title>
+              Table组件
+            </title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
+        
+        
+        <sect2 id="presentation-client-upload" revision="1">
+            <title>
+               上传组件
+            </title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
+        
+        <sect2 id="presentation-client-window" revision="1">
+            <title>
+               窗口组件(window)
+            </title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
+        
+        <sect2 id="presentation-client-treegrid" revision="1">
+            <title>
+               TreeGrid组件
+            </title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
 	</sect1>
+	
+	<sect1 id="presentation-custom" revision="1">
+        <title>个性化及定制</title>
+        
+        <para>
+            个性化及定制：
+        </para>
+        <sect2 id="presentation-custom-theme" revision="1">
+            <title>界面定制</title>
+            <para>
+                界面定制及更改：
+            </para>
+        </sect2>
+        <sect2 id="presentation-custom-component" revision="1">
+            <title>组件样式修改</title>
+            <para>
+                组件样式修改：
+            </para>
+        </sect2>
+        <sect2 id="presentation-custom-site" revision="1">
+            <title>修改网页整体布局</title>
+            <para>
+                修改网页整体布局：
+            </para>
+        </sect2>
+    </sect1>
+    
+    
+    <sect1 id="presentation-language" revision="1">
+        <title>多语言支持</title>
+        
+        <para>
+            个性化及定制：
+        </para>
+        <sect2 id="presentation-language-database" revision="1">
+            <title>基于数据库存储的多语言支持</title>
+            <para>
+                基于数据库存储的多语言支持：
+            </para>
+        </sect2>
+        <sect2 id="presentation-language-custom" revision="1">
+            <title>自定义多语言实现</title>
+            <para>
+                自定义多语言实现：
+            </para>
+        </sect2>
+        <sect2 id="presentation-language-screen" revision="1">
+            <title>Screen及模板资源文件中的多语言支持</title>
+            <para>
+                xxx：
+            </para>
+        </sect2>
+    </sect1>
 </chapter>
 
 
