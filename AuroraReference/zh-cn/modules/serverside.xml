@@ -1,0 +1,41 @@
+<chapter id="serverside">
+
+    <title>Aurora服务层(Aurora Service Layer)</title>
+    <sect1 id="serverside-overview" revision="1">
+        <title>ASL总体架构概述</title>
+        
+        <para>
+            ASL结构图：
+        </para>
+        
+        
+    </sect1>
+
+    <sect1 id="serverside-bm" revision="1">
+        <title>业务模型 (Business Model)</title>
+        
+        <para>
+            业务模型
+        </para>
+
+        <sect2 id="serverside-bm-info" revision="1">
+            <title>
+                BusinessModel概述
+            </title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="serverside-bm-table" revision="1">
+            <title>
+                基础配置：表、字段、主键、筛选条件
+            </title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+    </sect1>
+</chapter>
+
+
