@@ -5,6 +5,7 @@
 <!ENTITY introduction           SYSTEM "modules/introduction.xml">
 <!ENTITY tutorial               SYSTEM "modules/tutorial.xml">
 <!ENTITY presentation           SYSTEM "modules/presentation.xml">
+<!ENTITY serverside             SYSTEM "modules/serverside.xml">
 ]>
 
 <book lang="zh-cn">
@@ -105,6 +106,8 @@
     &tutorial;
 
     &presentation;
+    
+    &serverside;
 
 </book>
 
