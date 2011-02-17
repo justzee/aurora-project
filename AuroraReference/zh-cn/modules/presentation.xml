@@ -1,0 +1,225 @@
+<chapter id="presentation">
+
+	<title>Aurora展示层(Aurora Presentation Layer, APL)</title>
+	<sect1 id="presentation-overview" revision="1">
+		<title>APL总体架构概述</title>
+        
+		<para>
+            一个非常简要的Aurora UI组件结构图：
+		</para>
+
+		<mediaobject>
+			<imageobject role="fo">
+				<imagedata fileref="images/architecture.jpg" format="JPG" align="center"/>
+			</imageobject>
+			<imageobject role="html">
+				<imagedata fileref="../shared/images/architecture.jpg" format="JPG" align="center"/>
+			</imageobject>
+		</mediaobject>
+
+		<para>
+            从这个图可以看出，Aurora的组件继承关系.
+		</para>
+	</sect1>
+
+	<sect1 id="presentation-serverside" revision="1">
+		<title>APL服务端工作原理</title>
+        
+		<para>
+            APL服务端简介
+		</para>
+
+		<sect2 id="presentation-serverside-ui" revision="1">
+			<title>
+                Aurora如何创建用户界面
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+		<sect2 id="presentation-serverside-container" revision="1">
+			<title>
+                数据容器
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+		<sect2 id="presentation-serverside-mapping" revision="1">
+			<title>
+              组件映射
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+		<sect2 id="presentation-serverside-buildsession" revision="1">
+			<title>
+              BuildSession
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+		<sect2 id="presentation-serverside-events" revision="1">
+			<title>
+              事件机制
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+		<sect2 id="presentation-serverside-resource" revision="1">
+			<title>
+              资源文件处理
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+		<sect2 id="presentation-serverside-dynamic" revision="1">
+			<title>
+              动态组件配置
+			</title>            
+			<para>
+                正文...
+			</para>
+		</sect2>
+        
+	</sect1>
+
+	<sect1 id="presentation-client" revision="1">
+		<title>
+              对浏览器客户端界面的支持
+		</title>            
+		<para>
+                简介....
+		</para>
+		
+		<sect2 id="presentation-client-lib" revision="1">
+            <title>
+              核心Javascript API
+            </title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-client-dataset" revision="1">
+            <title>
+              DataSet
+            </title>            
+            <para>
+                以数据为核心的界面逻辑处理机制
+            </para>
+            
+            <sect3 id="presentation-client-dataset-action" revision="1">
+                <title>
+                  数据的查询、新增、更新和删除操作
+                </title>            
+                <para>
+                    正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-metadata" revision="1">
+                <title>
+                  Metadata
+                </title>            
+                <para>
+                    元数据正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-validate" revision="1">
+                <title>
+                  Validate
+                </title>            
+                <para>
+                   基于DataSet的业务逻辑校验正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-dynamic" revision="1">
+                <title>
+                  动态界面逻辑处理
+                </title>            
+                <para>
+                   动态界面逻辑处理正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-event" revision="1">
+                <title>
+                  DataSet常用操作与事件
+                </title>            
+                <para>
+                   DataSet常用操作与事件正文 ...
+                </para>
+            </sect3>
+        </sect2>
+        
+        <sect2 id="presentation-client-layout" revision="1">
+            <title>
+              界面布局(Layout)
+            </title>            
+            <para>
+               界面布局正文 ...
+            </para>
+            
+            <sect3 id="presentation-client-layout-box" revision="1">
+                <title>
+                  Box
+                </title>            
+                <para>
+                   Box正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-layout-vbox" revision="1">
+                <title>
+                  VBox
+                </title>            
+                <para>
+                   VBox正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-layout-hbox" revision="1">
+                <title>
+                  HBox
+                </title>            
+                <para>
+                   HBox正文 ...
+                </para>
+            </sect3>
+            
+            
+            <sect3 id="presentation-client-layout-form" revision="1">
+                <title>
+                  Form
+                </title>            
+                <para>
+                   Form正文 ...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-layout-fieldset" revision="1">
+                <title>
+                  FieldSet
+                </title>            
+                <para>
+                   FieldSet正文 ...
+                </para>
+            </sect3>
+        </sect2>
+	</sect1>
+</chapter>
+
+
