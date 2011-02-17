@@ -1,21 +1,5 @@
 <?xml version="1.0"?>
 
-<!--
-
-    This is the XSL FO configuration file for the Hibernate
-    Reference Documentation. It defines a custom titlepage and
-    the parameters for the A4 sized PDF printable output.
-
-    It took me days to figure out this stuff and fix most of
-    the obvious bugs in the DocBook XSL distribution. Some of
-    the workarounds might not be appropriate with a newer version
-    of DocBook XSL. This file is released as part of Hibernate,
-    hence LGPL licensed.
-
-    christian@hibernate.org
-
--->
-
 <!DOCTYPE xsl:stylesheet [
     <!ENTITY db_xsl_path        "../../support/docbook-xsl/">
 ]>
@@ -82,7 +66,7 @@
                           Custom Footer
         ################################################### -->
 
-    <!-- This footer prints the Hibernate version number on the left side -->
+    <!-- This footer prints the Aurora version number on the left side -->
     <xsl:template name="footer.content">
         <xsl:param name="pageclass" select="''"/>
         <xsl:param name="sequence" select="''"/>
@@ -92,7 +76,7 @@
         <xsl:variable name="Version">
             <xsl:choose>
                 <xsl:when test="//releaseinfo">
-                    <xsl:text>Hibernate </xsl:text>
+                    <xsl:text>Aurora </xsl:text>
                     <xsl:value-of select="//releaseinfo"/>
                 </xsl:when>
                 <xsl:otherwise>
