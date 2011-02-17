@@ -1,13 +1,10 @@
 <chapter id="introduction">
     <title>Aurora 框架简介</title>
     <sect1 id="introduction-info"  revision="1">
-    <title>
-        前言
-    </title>
+    <title>前言</title>
         
         <para>
     Aurora 是一个开源的web框架。
-
         </para>
 
 

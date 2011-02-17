@@ -64,9 +64,9 @@
 
     <target name="clean">
 
-        <!-- Delete build directory. -->
+        <!-- Delete build directory. 
         <delete dir="${build.dir}"/>
-
+-->
     </target>
 
     <target name="lang.all">
