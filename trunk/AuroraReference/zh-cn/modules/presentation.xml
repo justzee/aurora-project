@@ -1,99 +1,99 @@
 <chapter id="presentation">
 
-	<title>Aurora展示层(APL)</title>
-	<sect1 id="presentation-overview" revision="1">
-		<title>APL(Aurora Presentation Layer)概述</title>
+    <title>Aurora展示层(APL)</title>
+    <sect1 id="presentation-overview" revision="1">
+        <title>APL(Aurora Presentation Layer)概述</title>
         
-		<para>
+        <para>
             APL提供了一整套跨浏览器的UI组件库.所有的UI组件都是基于JavaScript和Html构建的,运行在客户端浏览器中.用户可以在客户端通过调用相应的函数改变UI组件的状态和行为.
-		</para>
-		
-		<para>
+        </para>
+        
+        <para>
             APL UI组件结构图:
         </para>
-		<mediaobject>
-			<imageobject role="fo">
-				<imagedata fileref="images/architecture.jpg" format="JPG" align="center"/>
-			</imageobject>
-			<imageobject role="html">
-				<imagedata fileref="../shared/images/architecture.jpg" format="JPG" align="center"/>
-			</imageobject>
-		</mediaobject>
+        <mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/architecture.jpg" format="JPG" align="center"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/architecture.jpg" format="JPG" align="center"/>
+            </imageobject>
+        </mediaobject>
 
-		<para>
+        <para>
             上图展示了所有APL UI组件的继承关系.
-		</para>
-	</sect1>
+        </para>
+    </sect1>
 
-	<sect1 id="presentation-serverside" revision="1">
-		<title>APL服务端工作原理</title>
+    <sect1 id="presentation-serverside" revision="1">
+        <title>APL服务端工作原理</title>
         
-		<para>
+        <para>
             APL服务端简介
-		</para>
+        </para>
 
-		<sect2 id="presentation-serverside-ui" revision="1">
-			<title>Aurora如何创建用户界面</title>            
-			<para>
+        <sect2 id="presentation-serverside-ui" revision="1">
+            <title>Aurora如何创建用户界面</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-		<sect2 id="presentation-serverside-container" revision="1">
-			<title>数据容器</title>            
-			<para>
+        <sect2 id="presentation-serverside-container" revision="1">
+            <title>数据容器</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-		<sect2 id="presentation-serverside-mapping" revision="1">
-			<title>组件映射</title>            
-			<para>
+        <sect2 id="presentation-serverside-mapping" revision="1">
+            <title>组件映射</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-		<sect2 id="presentation-serverside-buildsession" revision="1">
-			<title>BuildSession</title>            
-			<para>
+        <sect2 id="presentation-serverside-buildsession" revision="1">
+            <title>BuildSession</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-		<sect2 id="presentation-serverside-events" revision="1">
-			<title>事件机制</title>            
-			<para>
+        <sect2 id="presentation-serverside-events" revision="1">
+            <title>事件机制</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-		<sect2 id="presentation-serverside-resource" revision="1">
-			<title>资源文件处理</title>            
-			<para>
+        <sect2 id="presentation-serverside-resource" revision="1">
+            <title>资源文件处理</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-		<sect2 id="presentation-serverside-dynamic" revision="1">
-			<title>动态组件配置</title>            
-			<para>
+        <sect2 id="presentation-serverside-dynamic" revision="1">
+            <title>动态组件配置</title>            
+            <para>
                 正文...
-			</para>
-		</sect2>
+            </para>
+        </sect2>
         
-	</sect1>
+    </sect1>
 
-	<sect1 id="presentation-client" revision="1">
-		<title>APL UI组件</title>            
-		<para>
+    <sect1 id="presentation-client" revision="1">
+        <title>APL UI组件</title>            
+        <para>
             APL 提供了各种丰富的UI组件,例如布局组件(HBox,VBox,Form..),数据展现组件(Grid,Table,TreeGrid等),数据容器组件(DataSet等).
-		</para>
-		
-		<para>
+        </para>
+        
+        <para>
             APL UI组件兼容以下类型的浏览器
         </para>
         
-		<mediaobject>
+        <mediaobject>
             <imageobject role="fo">
                 <imagedata fileref="images/browser.jpg" format="JPG"/>
             </imageobject>
@@ -102,99 +102,14 @@
             </imageobject>
         </mediaobject>
         
-		<sect2 id="presentation-client-lib" revision="1">
+        <sect2 id="presentation-client-lib" revision="1">
             <title>核心Javascript API</title>            
             <para>
                 APL采用了第三方的开源库Ext Core 3.0 (http://www.sencha.com/products/extcore/)作为底层的开发库,在此基础上构建了丰富的组件库.
             </para>
         </sect2>
         
-        <sect2 id="presentation-client-dataset" revision="1">
-            <title>DataSet</title>            
-            <para>
-                什么是DataSet?
-            </para>
-            
-            <para>
-                DataSet是一个运行在客户端浏览器中的组件,本质上来说是一个JavaScript构建的对象.
-                DataSet是一个数据容器,他封装了常用的一些数据操作,我们可以通过下面这张图来更深刻的理解DataSet的含义
-            </para>
-            
-            <mediaobject>
-                <imageobject role="fo">
-                    <imagedata fileref="images/dataset.jpg" format="JPG"/>
-                </imageobject>
-                <imageobject role="html">
-                    <imagedata fileref="../shared/images/dataset.jpg" format="JPG"/>
-                </imageobject>
-            </mediaobject>
-            
-            <para>
-                通过上图我们可以看到DataSet是一个数据容器,它包含了一个数组对象用来存放所有的record对象.
-            </para>
-            <para>
-              Record代表一条数据对象,DataSet和Record的关系我们可以这样理解:假如我们把dataset比作数据库中的一张表,
-                那么record就是表中的一行记录.
-            </para>
-            
-            <sect3 id="presentation-client-dataset-action" revision="1">
-                <title>数据的查询、新增、更新和删除操作</title>            
-                <para>
-                    DataSet是一个客户端的JavaScript组件,它封装了相应的ajax操作,用来和服务端进行数据交互.
-                </para>       
-                
-                <programlisting><![CDATA[
-     客户端浏览器                            服务端程序
-    _____________                       __________________
-   |             |                     |                  |     
-   |   DataSet   |                     |   Web Server     |     
-   |_____________|      request        |__________________| 
-   |             | ------------------> |                  | 
-   |  record     |      AJAX           |  query()         |
-   |  record     | <------------------ |  update()        |
-   |  ...        |      JSON           |  delete()        | 
-   |_____________|                     |__________________|                   
-                                                 
-                                                 
- ]]></programlisting>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-metadata" revision="1">
-                <title>
-                  Metadata
-                </title>            
-                <para>
-                    元数据正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-validate" revision="1">
-                <title>
-                  Validate
-                </title>            
-                <para>
-                   基于DataSet的业务逻辑校验正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-dynamic" revision="1">
-                <title>
-                  动态界面逻辑处理
-                </title>            
-                <para>
-                   动态界面逻辑处理正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-event" revision="1">
-                <title>
-                  DataSet常用操作与事件
-                </title>            
-                <para>
-                   DataSet常用操作与事件正文 ...
-                </para>
-            </sect3>
-        </sect2>
+        &dataset;
         
         <sect2 id="presentation-client-layout" revision="1">
             <title>

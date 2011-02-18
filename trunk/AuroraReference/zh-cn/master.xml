@@ -16,6 +16,7 @@
 <!ENTITY textarea				SYSTEM "modules/component/textarea.xml">
 <!ENTITY radio					SYSTEM "modules/component/radio.xml">
 <!ENTITY checkbox				SYSTEM "modules/component/checkbox.xml">
+<!ENTITY dataset                SYSTEM "modules/component/dataset.xml">
 ]>
 
 <book lang="zh-cn">
