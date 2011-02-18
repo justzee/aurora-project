@@ -1,14 +1,16 @@
 <chapter id="presentation">
 
-	<title>Aurora展示层(Aurora Presentation Layer)</title>
+	<title>Aurora展示层(APL)</title>
 	<sect1 id="presentation-overview" revision="1">
-		<title>APL总体架构概述</title>
+		<title>APL(Aurora Presentation Layer)概述</title>
         
 		<para>
-            一个非常简要的Aurora UI组件结构图：
+            APL提供了一整套跨浏览器的UI组件库.所有的UI组件都是基于JavaScript和Html构建的,运行在客户端浏览器中.用户可以在客户端通过调用相应的函数改变UI组件的状态和行为.
 		</para>
 		
-		
+		<para>
+            APL UI组件结构图:
+        </para>
 		<mediaobject>
 			<imageobject role="fo">
 				<imagedata fileref="images/architecture.jpg" format="JPG" align="center"/>
@@ -19,7 +21,7 @@
 		</mediaobject>
 
 		<para>
-            从这个图可以看出，Aurora的组件继承关系.
+            上图展示了所有APL UI组件的继承关系.
 		</para>
 	</sect1>
 
@@ -82,15 +84,28 @@
 	</sect1>
 
 	<sect1 id="presentation-client" revision="1">
-		<title>对浏览器客户端界面的支持</title>            
+		<title>APL UI组件</title>            
 		<para>
-                简介....
+            APL 提供了各种丰富的UI组件,例如布局组件(HBox,VBox,Form..),数据展现组件(Grid,Table,TreeGrid等),数据容器组件(DataSet等).
 		</para>
 		
+		<para>
+            APL UI组件兼容以下类型的浏览器
+        </para>
+        
+		<mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/browser.jpg" format="JPG" align="center"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/browser.jpg" format="JPG" align="center"/>
+            </imageobject>
+        </mediaobject>
+        
 		<sect2 id="presentation-client-lib" revision="1">
             <title>核心Javascript API</title>            
             <para>
-                正文...
+                APL采用了第三方的开源库Ext Core 3.0 (http://www.sencha.com/products/extcore/)作为底层的开发库,在此基础上构建了丰富的组件库.
             </para>
         </sect2>
         
@@ -461,6 +476,8 @@
             </para>
         </sect2>
     </sect1>
+    
+    $dataset
 </chapter>
 
 
