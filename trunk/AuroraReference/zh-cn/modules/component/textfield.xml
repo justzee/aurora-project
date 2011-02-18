@@ -1,0 +1,211 @@
+<sect3 id="presentation-client-editor-textfield" revision="1">
+    <title>
+      TextField
+    </title>            
+    <para>
+       文本输入框，可限制大小写。
+    </para>
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/textfield.jpg" format="JPG"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/images/textfield.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>
+    <para>
+     TextField 标签实例：
+    </para>
+    <programlisting><![CDATA[
+<a:textField bindTarget="login_dataset" id="user_name_tf" name="user_name"
+	prompt="HAP_USERNAME" width="150" typeCase="upper">
+    <a:events>
+        <a:event handler="login" name="enterdown"/>
+    </a:events>
+</a:textField>
+]]></programlisting>
+	<table frame="topbot" id="configuration-optional-properties" revision="8">
+		<title>TextField标签属性</title>
+		<tgroup cols="4">
+			<colspec colname="c1" colwidth="0.5*"/>
+   			<colspec colname="c2" colwidth="2.5*"/>
+   			<colspec colname="c3" colwidth="0.5*"/>
+   			<colspec colname="c4" colwidth="0.5*"/>
+   			<thead>
+                <row>
+                    <entry>
+                        属性名
+                    </entry>
+                    <entry>
+                        用途
+                    </entry>
+                    <entry>
+                       默认值
+                    </entry>
+                    <entry>
+                       是否必输
+                    </entry>
+                </row>
+            </thead>
+            <tbody>
+            	<row>
+                    <entry>
+                        <literal>bindTarget</literal>
+                    </entry>
+                    <entry>
+                        组件所绑定的<literal>dataset</literal>数据集，属性值是<literal>dataset</literal>的ID。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>className</literal>
+                    </entry>
+                    <entry>
+                    	组件的样式表。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>emptyText</literal>
+                    </entry>
+                    <entry>
+                    	当组件没有值的时候显示在组件上的提示信息。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>id</literal>
+                    </entry>
+                    <entry>
+                        组件的唯一标识，可用<literal>$(id)</literal>方法获得组件对象。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>marginWidth</literal>
+                    </entry>
+                    <entry>
+                    	组件与窗口之间的宽度差，单位像素<literal>(px)</literal>，可以根据窗口宽度的改变而改变。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>name</literal>
+                    </entry>
+                    <entry>
+                        组件对应<literal>dataset</literal>数据集中的一个字段<literal>field</literal>，属性值是字段名。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>prompt</literal>
+                    </entry>
+                    <entry>
+                    	输入框前的提示文字，默认调用BM的prompt。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>readOnly</literal>
+                    </entry>
+                    <entry>
+                    	设定组件是否只读。
+                    	<para>
+                    		<emphasis role="strong">取值</emphasis>
+                    		<literal>true</literal> | <literal>false</literal> 
+                    	</para>
+                    </entry>
+                    <entry>false
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>required</literal>
+                    </entry>
+                    <entry>
+                    	设定组件是否必输。
+                    	<para>
+                    		<emphasis role="strong">取值</emphasis>
+                    		<literal>true</literal> | <literal>false</literal> 
+                    	</para>
+                    </entry>
+                    <entry>false
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>style</literal>
+                    </entry>
+                    <entry>
+                    	组件的样式。
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>typeCase</literal>
+                    </entry>
+                    <entry>
+                    	组件的大小写输入限制。
+                    	<para>
+                    		<emphasis role="strong">取值</emphasis>
+                    		<literal>upper</literal> | <literal>lower</literal> 
+                    	</para>
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        <literal>width</literal>
+                    </entry>
+                    <entry>
+                    	组件的宽度，单位像素<literal>(px)</literal>。
+                    </entry>
+                    <entry>150
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            </tbody>
+		</tgroup>
+	</table>
+	
+</sect3>
