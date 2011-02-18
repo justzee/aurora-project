@@ -6,6 +6,16 @@
 <!ENTITY tutorial               SYSTEM "modules/tutorial.xml">
 <!ENTITY presentation           SYSTEM "modules/presentation.xml">
 <!ENTITY serverside             SYSTEM "modules/serverside.xml">
+<!ENTITY textfield				SYSTEM "modules/component/textfield.xml">
+<!ENTITY numberfield			SYSTEM "modules/component/numberfield.xml">
+<!ENTITY combobox				SYSTEM "modules/component/combobox.xml">
+<!ENTITY datefield				SYSTEM "modules/component/datefield.xml">
+<!ENTITY datepicker				SYSTEM "modules/component/datepicker.xml">
+<!ENTITY lov					SYSTEM "modules/component/lov.xml">
+<!ENTITY datetimepicker			SYSTEM "modules/component/datetimepicker.xml">
+<!ENTITY textarea				SYSTEM "modules/component/textarea.xml">
+<!ENTITY radio					SYSTEM "modules/component/radio.xml">
+<!ENTITY checkbox				SYSTEM "modules/component/checkbox.xml">
 ]>
 
 <book lang="zh-cn">

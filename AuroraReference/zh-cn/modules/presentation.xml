@@ -258,96 +258,26 @@
             <para>
                编辑组件正文 ...
             </para>
+            &textfield;
             
-            <sect3 id="presentation-client-editor-textfield" revision="1">
-                <title>
-                  TextField
-                </title>            
-                <para>
-                   TextField正文 ...
-                </para>
-            </sect3>
+            &numberfield;
             
-            <sect3 id="presentation-client-editor-numberfield" revision="1">
-                <title>
-                  NumberField
-                </title>            
-                <para>
-                   NumberField正文 ...
-                </para>
-            </sect3>
+            &combobox;
             
-            <sect3 id="presentation-client-editor-combobox" revision="1">
-                <title>
-                  Combobox
-                </title>            
-                <para>
-                   Combobox正文 ...
-                </para>
-            </sect3>
+            &datefield;
+
+			&datepicker;            
             
-            <sect3 id="presentation-client-editor-dateField" revision="1">
-                <title>
-                  DateField
-                </title>            
-                <para>
-                   DateField正文 ...
-                </para>
-            </sect3>
+            &lov;
             
-            <sect3 id="presentation-client-editor-datePicker" revision="1">
-                <title>
-                  DatePicker
-                </title>            
-                <para>
-                   DatePicker正文 ...
-                </para>
-            </sect3>
+            &datetimepicker;
             
-            <sect3 id="presentation-client-editor-lov" revision="1">
-                <title>
-                  Lov
-                </title>            
-                <para>
-                   Lov正文 ...
-                </para>
-            </sect3>
+            &textarea;
             
-            <sect3 id="presentation-client-editor-datetimepicker" revision="1">
-                <title>
-                  DateTimePicker
-                </title>            
-                <para>
-                   正文 ...
-                </para>
-            </sect3>
+            &radio;
             
-            <sect3 id="presentation-client-editor-textarea" revision="1">
-                <title>
-                  TextArea
-                </title>            
-                <para>
-                   正文 ...
-                </para>
-            </sect3>
+            &checkbox;
             
-            <sect3 id="presentation-client-editor-radio" revision="1">
-                <title>
-                  Radio
-                </title>            
-                <para>
-                   正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-editor-checkbox" revision="1">
-                <title>
-                  CheckBox
-                </title>            
-                <para>
-                   正文 ...
-                </para>
-            </sect3>
         </sect2>
         
         
