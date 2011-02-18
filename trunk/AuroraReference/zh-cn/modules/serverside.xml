@@ -1,8 +1,8 @@
 <chapter id="serverside">
 
-    <title>Aurora服务层(Aurora Service Layer)</title>
+    <title>Aurora服务层(ASL)</title>
     <sect1 id="serverside-overview" revision="1">
-        <title>ASL总体架构概述</title>
+        <title>ASL(Aurora Service Layer)总体架构概述</title>
         
         <para>
             ASL结构图：
