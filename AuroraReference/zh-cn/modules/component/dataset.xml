@@ -120,8 +120,107 @@ function onUpdate(ds,record,name,value){
                     </listitem>
                 </itemizedlist>
  
+                  
+                
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-metadata" revision="1">
+                <title>
+                  元数据(Metadata)
+                </title>            
+                <para>
+                    Metadata元数据主要用来描述field的附加特性,例如是否只读,是否必输等等.
+                </para>
+                
+                <para>
+                    例如:设置某一字段必输,我们可以在配置dataset的时候指定对应field的required值
+                </para>
+                <programlisting><![CDATA[                
+<a:dataSet id="exp_employee_group_result_ds">
+    <a:fields>
+        <a:field name="expense_user_group_code" required="true"/>
+        <a:field name="description" required="true"/>
+    </a:fields>
+</a:dataSet>
+                ]]></programlisting>
+                
+                <para>
+                    例如:设置某一字段只读,我们可以在配置dataset的时候指定对应field的readOnly值
+                </para>
+                <programlisting><![CDATA[                
+<a:dataSet id="exp_employee_group_result_ds">
+    <a:fields>
+        <a:field name="expense_user_group_code" readOnly="true"/>
+        <a:field name="description" required="true"/>
+    </a:fields>
+</a:dataSet>
+                ]]></programlisting>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-validate" revision="1">
+                <title>
+                  校验(Validate)
+                </title>            
+                <para>
+                   很多情况下我们需要对dataset的值进行校验,这个时候我们可以通过在field上配置校验函数(validator)来实现
+                </para>
+                
+                <para>
+                   例如:我们对2个日期字段进行校验,规则是结束日期不得小于开始日期.首先我们在dataset的2个日期field上配置validator
+                </para>
+                <programlisting><![CDATA[                
+<a:dataSet id="fnd_companies_create_ds"  model="fnd.fnd_companies">
+    <a:fields>
+        ...
+        <a:field name="start_date_active" datatype="date" required="true" validator="dateValidator"/>
+        <a:field name="end_date_active" datatype="date" validator="dateValidator"/>        
+    </a:fields>
+</a:dataSet>
+                ]]></programlisting>
+                
+                <para>
+                   接下来我们需要实现校验函数dateValidator
+                </para>
+                
+                <programlisting><![CDATA[                
+function dateValidator(record, name, value){
+    if(name == 'start_date_active' || name == 'end_date_active'){
+        var start_date = record.get('start_date_active');
+        var end_date = record.get('end_date_active');
+        if(typeof(end_date) != 'undefined' && !Ext.isEmpty(end_date)){
+            if(!compareDate(start_date, end_date)){
+                return '开始时间不能大于结束时间';
+            }
+        }
+        return true;
+    }
+}
+                ]]></programlisting>
+                
+                <para>
+                   2个日期field公用了同一个校验函数,所以首先要判断name值,然后分别通过record获取对应的开始和结束日期.
+                   如果校验成功返回true,校验失败返回提示信息.
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-dynamic" revision="1">
+                <title>
+                  动态界面逻辑处理
+                </title>            
+                <para>
+                   待更新...
+                </para>
+            </sect3>
+            
+            <sect3 id="presentation-client-dataset-event" revision="1">
+                <title>
+                  DataSet常用操作与事件
+                </title>
+                <para>
+                  DataSet 常用函数
+                </para>
                 <table frame="topbot" revision="1">
-                    <title>DataSet相关函数说明</title>
+                    <title>DataSet相关函数</title>
                     <tgroup cols="2">
                         <colspec colwidth="1*"/>
                         <colspec colwidth="2.5*"/>
@@ -151,45 +250,47 @@ function onUpdate(ds,record,name,value){
                        </tbody>
                     </tgroup>
                 </table>
+                
+                <para>
+                  DataSet 常用事件
+                </para>
+                <table frame="topbot" revision="1">
+                    <title>DataSet事件</title>
+                    <tgroup cols="2">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="2.5*"/>
+                        <thead>
+                            <row>
+                                <entry>事件名</entry>
+                                <entry>说明</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>add</entry>
+                                <entry>新增一条record后触发</entry>                                
+                            </row>
+                            <row>
+                                <entry>remove</entry>
+                                <entry>删除record后触发</entry>                                
+                            </row>
+                            <row>
+                                <entry>update</entry>
+                                <entry>当dataset中的record被更新后触发</entry>                                
+                            </row>
+                            <row>
+                                <entry>load</entry>
+                                <entry>当dataset成功加载数据后触发</entry>                                
+                            </row>
+                            <row>
+                                <entry>submit</entry>
+                                <entry>当dataset提交请求时触发</entry>                                
+                            </row>
+                       </tbody>
+                    </tgroup>
+                </table>
                 <para>
                     更多详细的函数请参考AuroraJavaScriptDocument
-                </para>  
-                
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-metadata" revision="1">
-                <title>
-                  Metadata
-                </title>            
-                <para>
-                    元数据正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-validate" revision="1">
-                <title>
-                  Validate
-                </title>            
-                <para>
-                   基于DataSet的业务逻辑校验正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-dynamic" revision="1">
-                <title>
-                  动态界面逻辑处理
-                </title>            
-                <para>
-                   动态界面逻辑处理正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-dataset-event" revision="1">
-                <title>
-                  DataSet常用操作与事件
-                </title>            
-                <para>
-                   DataSet常用操作与事件正文 ...
                 </para>
             </sect3>
         </sect2>
