@@ -23,7 +23,7 @@
      TextField定义
     </title>
     <para>
-    	 在screen文件中我们通过&lt;a:textField&gt;标签来定义一个TextField对象
+    	 在screen文件中我们通过&lt;a:textField&gt;标签来定义一个TextField对象。
     </para>
     <programlisting><![CDATA[
 <a:textField bindTarget="login_dataset" id="user_name_tf" name="user_name"

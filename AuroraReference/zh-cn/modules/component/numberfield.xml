@@ -23,7 +23,7 @@
      NumberField定义
     </title>
     <para>
-    	 在screen文件中我们通过&lt;a:numberField&gt;标签来定义一个NumberField对象
+    	 在screen文件中我们通过&lt;a:numberField&gt;标签来定义一个NumberField对象。
     </para>
     <programlisting><![CDATA[
 <a:numberField bindTarget="fnd_tax_type_codes_query_ds" name="tax_type_rate"
