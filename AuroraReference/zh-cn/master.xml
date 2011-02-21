@@ -17,6 +17,11 @@
 <!ENTITY radio					SYSTEM "modules/component/radio.xml">
 <!ENTITY checkbox				SYSTEM "modules/component/checkbox.xml">
 <!ENTITY dataset                SYSTEM "modules/component/dataset.xml">
+<!ENTITY box                    SYSTEM "modules/component/box.xml">
+<!ENTITY vbox                   SYSTEM "modules/component/vbox.xml">
+<!ENTITY hbox                   SYSTEM "modules/component/hbox.xml">
+<!ENTITY form                   SYSTEM "modules/component/form.xml">
+<!ENTITY fieldset               SYSTEM "modules/component/fieldset.xml">
 ]>
 
 <book lang="zh-cn">

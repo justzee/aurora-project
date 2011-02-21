@@ -80,7 +80,7 @@ function onUpdate(ds,record,name,value){
             
             
             <sect3 id="presentation-client-dataset-action" revision="1">
-                <title>数据的查询、新增、更新和删除操作</title>            
+                <title>前言</title>            
                 <para>
                     DataSet是一个客户端的JavaScript组件,它封装了相应的ajax操作,用来和服务端进行数据交互.
                 </para>       

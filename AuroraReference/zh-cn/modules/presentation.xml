@@ -116,54 +116,19 @@
               界面布局(Layout)
             </title>            
             <para>
-               界面布局正文 ...
+               APL的布局是基于服务器端生成,这和其他的基于客户端布局的开源框架有点不同.APL的布局基本上是通过table在服务端事先生成好的,这样的好处在于可以
+               减少客户端机器的压力,充分利用服务器的资源优势.
             </para>
             
-            <sect3 id="presentation-client-layout-box" revision="1">
-                <title>
-                  Box
-                </title>            
-                <para>
-                   Box正文 ...
-                </para>
-            </sect3>
+            <para>
+               APL的布局主要是由Box,VBox,HBox,Form,FieldSet等容器组件组成.
+            </para>
             
-            <sect3 id="presentation-client-layout-vbox" revision="1">
-                <title>
-                  VBox
-                </title>            
-                <para>
-                   VBox正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-layout-hbox" revision="1">
-                <title>
-                  HBox
-                </title>            
-                <para>
-                   HBox正文 ...
-                </para>
-            </sect3>
-            
-            
-            <sect3 id="presentation-client-layout-form" revision="1">
-                <title>
-                  Form
-                </title>            
-                <para>
-                   Form正文 ...
-                </para>
-            </sect3>
-            
-            <sect3 id="presentation-client-layout-fieldset" revision="1">
-                <title>
-                  FieldSet
-                </title>            
-                <para>
-                   FieldSet正文 ...
-                </para>
-            </sect3>
+            &box;
+            &vbox;
+            &hbox;
+            &form;
+            &fieldset;            
         </sect2>
         
         <sect2 id="presentation-client-editor" revision="1">
