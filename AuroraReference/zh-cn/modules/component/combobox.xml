@@ -1,9 +1,7 @@
 <sect3 id="presentation-client-editor-combobox" revision="1">
-    <title>
-    	ComboBox
-    </title>            
+    <title>ComboBox</title>            
     <para>
-    	ComboBox是一个可输入的下拉框组件，继承自TextField组件，拥有TextField标签的属性以及TextField对象的方法。其最大的一个作用就是运用键值对的形式将数据(键)以值的形式来呈现。
+    	ComboBox是一个可输入的下拉框组件，继承自TextField组件，拥有TextField标签的属性以及TextField对象的方法和事件。其主要的功能就是运用键值对的形式将数据(键)以值的形式来呈现。
     </para>
     <mediaobject>
         <imageobject role="fo">
@@ -19,9 +17,7 @@
 		</caption>
     </mediaobject>
     <sect4 id="presentation-client-editor-combobox-tag" revision="1">
-    <title>
-    	ComboBox定义
-    </title>
+    <title>ComboBox定义</title>
     <para>
     	 在screen文件中我们通过&lt;a:comboBox&gt;标签来定义一个ComboBox对象。
     </para>
@@ -55,7 +51,7 @@
     	comboBox所绑定的dataset应该至少有两条字段(field)，一条是对应数据库的数据的隐式字段，另一条是用来显示文字的显示字段。如上代码所示，comboBox的选项是在显示字段(如上代码中name="frozen_flag_display"的field)标签上加上returnField,options,displayField,valueField属性组合实现的。其中returnField属性是隐式字段名，表示comboBox选中选项后用哪个字段来承载这个值，进而通过dataset的方法用来对数据库进行添加修改等操作。options属性是一个选项的数据集的ID，该数据集的所有记录(record)都应该有两条字段(field)，一条字段是选项的值(如上代码中code="Y"的code)，另一条字段是选项显示的文本(如上代码中name="已冻结"的name)，valueField和displayField属性分别指定的就是这两条字段的名称(code和name)。
     </para>
     <para>
-    	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，comboBox会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
+    	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，ComboBox会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
     </para>
     <programlisting><![CDATA[
 function login(){
@@ -74,9 +70,7 @@ function login(){
     	</para>
 	</sect4>
 	<sect4>
-		<title>
-			TextField对象事件
-		</title>
+		<title>ComboBox对象事件</title>
 		<table frame="topbot" id="presentation-client-editor-combobox-events" revision="8">
 			<tgroup cols="2">
 			<colspec colname="c1" colwidth="1*"/>

@@ -1,9 +1,7 @@
 <sect3 id="presentation-client-editor-numberfield" revision="1">
-    <title>
-      NumberField
-    </title>            
+    <title>NumberField</title>            
     <para>
-       NumberField是一个提供数字输入编辑的组件，继承自TextField组件，拥有TextField标签的属性以及TextField对象的方法。
+       NumberField是一个提供数字输入编辑的组件，继承自TextField组件，拥有TextField标签的属性以及TextField对象的方法和事件。
     </para>
     <mediaobject>
         <imageobject role="fo">
@@ -19,9 +17,7 @@
 		</caption>
     </mediaobject>
     <sect4 id="presentation-client-editor-numberfield-tag" revision="1">
-    <title>
-     NumberField定义
-    </title>
+    <title>NumberField定义</title>
     <para>
     	 在screen文件中我们通过&lt;a:numberField&gt;标签来定义一个NumberField对象。
     </para>
@@ -40,7 +36,7 @@
     	numberField标签的bindTarget属性可指定一个dataset对象的id，name属性可指定该dataset其中一个field的名字。这两个属性必须联合使用，其功能是将NumberField对象绑定到dataset中的一个field上，进而我们只要对dataset进行操作就能即时反映在NumberField上，另外NumberField上的文字编辑也会立刻修改dataset中的数据。
     </para>
     <para>
-    	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，numberField会触发enterdown事件，这样我们可以通过配置一个客户端函数queryTaxTypeCodes来响应。
+    	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，NumberField会触发enterdown事件，这样我们可以通过配置一个客户端函数queryTaxTypeCodes来响应。
     </para>
     <programlisting><![CDATA[
 function queryTaxTypeCodes(){
@@ -75,67 +71,67 @@ function queryTaxTypeCodes(){
             <tbody>
             	<row>
                     <entry>
-                        <literal>allowDecimals</literal>
+                        allowDecimals
                     </entry>
                     <entry>
-                    	是否允许<literal>NumberField</literal>的值为小数。
+                    	是否允许NumberField的值为小数。
                     	<para>
                     		<emphasis role="strong">取值</emphasis>
                     		<literal>true</literal> | <literal>false</literal> 
                     	</para>
                     </entry>
-                    <entry>true
+                    <entry><literal>true</literal>
                     </entry>
                     <entry>
                     </entry>
                 </row>
             	<row>
                     <entry>
-                        <literal>allowNegative</literal>
+                        allowNegative
                     </entry>
                     <entry>
-                    	是否允许<literal>NumberField</literal>的值为负数。
+                    	是否允许NumberField的值为负数。
                     	<para>
                     		<emphasis role="strong">取值</emphasis>
                     		<literal>true</literal> | <literal>false</literal> 
                     	</para>
                     </entry>
-                    <entry>true
+                    <entry><literal>true</literal>
                     </entry>
                     <entry>
                     </entry>
                 </row>
             	<row>
                     <entry>
-                        <literal>allowFormat</literal>
+                        allowFormat
                     </entry>
                     <entry>
-                    	是否允许<literal>NumberField</literal>的值按照千分位显示。
+                    	是否允许NumberField的值按照千分位显示。
                     	<para>
                     		<emphasis role="strong">取值</emphasis>
                     		<literal>true</literal> | <literal>false</literal> 
                     	</para>
                     </entry>
-                    <entry>true
+                    <entry><literal>true</literal>
                     </entry>
                     <entry>
                     </entry>
                 </row>
             	<row>
                     <entry>
-                        <literal>decimalPrecision</literal>
+                        decimalPrecision
                     </entry>
                     <entry>
-                    	组件的小数位精度，必须在<literal>allowDecimals</literal>为<literal>true</literal>的情况下才能使用。
+                    	组件的小数位精度，必须在allowDecimals为<literal>true</literal>的情况下才能使用。
                     </entry>
-                    <entry>2
+                    <entry><literal>2</literal>
                     </entry>
                     <entry>
                     </entry>
                 </row>
                 <row>
                     <entry>
-                        <literal>其他</literal>
+                        其他
                     </entry>
                     <entry>
                        参阅TextField标签属性。
@@ -150,9 +146,7 @@ function queryTaxTypeCodes(){
 	</table>
 	</sect4>
 	<sect4>
-		<title>
-			NumberField对象事件
-		</title>
+		<title>NumberField对象事件</title>
 		<para>
 			请参阅TextField的对象事件。
 		</para>
