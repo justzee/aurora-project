@@ -233,7 +233,7 @@ function summaryRenderer(datas,name){
             在Grid组件上提供了一个工具栏,Grid本身提供了内置的几个按钮,我们还可以自定义新的按钮.
         </para>  
         <programlisting><![CDATA[                
-<a:grid id="grid" bindTarget="sys_function_result_ds" height="300" marginHeight="210" marginWidth="30" navBar="true" width="500">
+<a:grid id="grid" bindTarget="sys_function_result_ds" height="300" navBar="true" width="500">
     <a:toolBar>
         <a:button type="add"/>
         <a:button type="delete"/>
