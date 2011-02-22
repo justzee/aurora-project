@@ -179,59 +179,7 @@
             </para>            
         </sect2>
         
-        <sect2 id="presentation-client-grid" revision="1">
-            <title>
-              Grid组件
-            </title>            
-            <para>
-               正文 ...
-            </para> 
-            
-            <sect3 id="presentation-client-grid-config" revision="1">
-                <title>
-                  数据绑定，显示
-                </title>            
-                <para>
-                   正文 ...
-                </para>            
-            </sect3> 
-            
-            <sect3 id="presentation-client-grid-head" revision="1">
-                <title>
-                  对齐，排序，多级表头
-                </title>            
-                <para>
-                   正文 ...
-                </para>            
-            </sect3> 
-            
-            <sect3 id="presentation-client-grid-toolbar" revision="1">
-                <title>
-                  工具栏
-                </title>            
-                <para>
-                   正文 ...
-                </para>            
-            </sect3>
-            
-            <sect3 id="presentation-client-grid-renderer" revision="1">
-                <title>
-                  自定义数据的渲染方式
-                </title>            
-                <para>
-                   正文 ...
-                </para>            
-            </sect3> 
-            
-            <sect3 id="presentation-client-grid-other" revision="1">
-                <title>
-                  汇总，行列锁定
-                </title>            
-                <para>
-                   正文 ...
-                </para>            
-            </sect3>          
-        </sect2>
+        &grid;
         
         <sect2 id="presentation-client-table" revision="1">
             <title>
