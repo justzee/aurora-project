@@ -159,14 +159,8 @@
             
         </sect2>
         
-        
-        <sect2 id="presentation-client-tab" revision="1">
-            <title>Tab组件</title>            
-            <para>
-               正文 ...
-            </para>            
-        </sect2>
-        
+        &tab;
+                    
         <sect2 id="presentation-client-tree" revision="1">
             <title>Tree组件</title>            
             <para>
@@ -176,13 +170,8 @@
         
         &grid;
         
-        <sect2 id="presentation-client-table" revision="1">
-            <title>Table组件</title>            
-            <para>
-               正文 ...
-            </para>            
-        </sect2>
-        
+        &table;
+            
         &window;
         
         <sect2 id="presentation-client-upload" revision="1">

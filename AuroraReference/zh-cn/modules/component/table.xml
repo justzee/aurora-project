@@ -1,0 +1,98 @@
+<sect2 id="presentation-client-table" revision="1">
+    <title>Table组件</title>                   
+    <para>
+        Table组件是一个数据UI组件，类似于Grid组件。
+    </para>
+    
+    <para>
+        我们通过&lt;a:table&gt;标签来定义一个table对象.
+    </para>
+<programlisting><![CDATA[
+<a:table id="sys_user_define_grid" bindTarget="sys_user_result_ds" percentWidth="90"
+	style="margin:7px;" title="SYS_USER.USER_SEARCH">
+    <a:columns>
+        <a:column>
+            <a:column name="user_name" footerRenderer="frdr" percentWidth="10"/>
+            <a:column name="description" editor="description_tf" percentWidth="20"/>
+        </a:column>
+        <a:column name="start_date" align="center" footerRenderer="frdr"
+		percentWidth="10" renderer="Aurora.formatDate"/>
+        <a:column name="end_date" align="center" percentWidth="10" renderer="Aurora.formatDate"/>
+        <a:column name="frozen_flag_display" align="center" percentWidth="10"/>
+        <a:column name="frozen_date" align="center" editor="frozen_date_table_dp"
+		percentWidth="10" renderer="Aurora.formatDate"/>
+        <a:column name="assign_role" align="center" percentWidth="10" prompt="SYS_USER.ROLE_ASSIGN"
+		renderer="assignRole"/>
+        <a:column name="set_password" align="center" percentWidth="10" prompt="MODIFY_PASSWORD"
+		renderer="setPassword"/>
+        <a:column name="edit" align="center" percentWidth="10" prompt="HAP_EDIT" renderer="editUser"/>
+    </a:columns>
+    <a:editors>
+        <a:datePicker id="frozen_date_table_dp"/>
+        <a:textField id="description_tf"/>
+    </a:editors>
+</a:table>            
+]]></programlisting> 
+    
+    <para>
+        生成的界面如下:
+    </para>
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/table.jpg" format="JPG" width="569" depth="345" contentwidth="569" contentdepth="345"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/images/table.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>           
+    <sect3 id="presentation-client-table-differences" revision="1">
+        <title>Table与Grid的异同</title>
+        <itemizedlist>
+	        <listitem>
+		        <para>
+        			Table没有高度height属性，其高度是自适应高度，随着行数的增加而增高。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table和Table有绝对宽度width属性的同时，还有百分比宽度percentWidth属性。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table有title属性，可为table增加一个标题。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table没有列锁定功能。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table没有调整列宽功能。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table没有排序功能。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table没有工具栏toolBar。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table没有导航栏navBar。
+        		</para>
+	        </listitem>
+	        <listitem>
+		        <para>
+        			Table没有分页，所有数据将成列在一页中。
+        		</para>
+	        </listitem>
+	    </itemizedlist> 
+    </sect3>     
+</sect2>

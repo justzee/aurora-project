@@ -23,6 +23,8 @@
 <!ENTITY form                   SYSTEM "modules/component/form.xml">
 <!ENTITY fieldset               SYSTEM "modules/component/fieldset.xml">
 <!ENTITY grid                   SYSTEM "modules/component/grid.xml">
+<!ENTITY table                  SYSTEM "modules/component/table.xml">
+<!ENTITY tab              	    SYSTEM "modules/component/tab.xml">
 <!ENTITY window                 SYSTEM "modules/component/window.xml">
 ]>
 
