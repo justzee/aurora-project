@@ -1,0 +1,48 @@
+<sect2 id="presentation-client-tab" revision="1">
+    <title>Tab组件</title>         
+    <para>
+        Tab组件是一个标签容器组件，每个标签对应一个页面。
+    </para>
+    
+    <para>
+        我们通过&lt;a:tabPanel&gt;标签来定义一个tab对象.
+    </para>
+<programlisting><![CDATA[                
+<a:tabPanel height="300" width="400">
+    <a:tabs>
+        <a:tab prompt="1" selected="true">
+            <a:hBox>
+                <a:form id="window" title="sys.sys_menu">
+                    <div style="height:200px;width:200px;border:1px solid #000000">
+                    </div>
+                </a:form>
+                <a:form id="window2" title="hard code menu">
+                    <div style="height:200px;width:300px;border:1px solid #000000">
+                    </div>
+                </a:form>
+            </a:hBox>
+        </a:tab>
+        <a:tab prompt="2" ref="datepicker.screen"/>
+        <a:tab prompt="3"><span>tab demo!</span></a:tab>
+    </a:tabs>
+</a:tabPanel>
+]]></programlisting> 
+    
+    <para>
+        生成的界面如下:
+    </para>
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/tab.jpg" format="JPG" width="406" depth="307" contentwidth="569" contentdepth="345"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/images/tab.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>
+    <para>
+    	tabPanel标签下定义了tabs标签，tabs标签中每个tab标签即一个标签页。tab标签的属性prompt定义了标签的标题，selected属性定义了标签页是否被选中。
+    </para>
+    <para>
+    	tab标签下可以直接编写screen标签代码，也可以通过属性ref指定引用screen页面的路径，引用页面是延迟加载的，只有当页面被选中时，才会首次加载。
+    </para>
+</sect2>
