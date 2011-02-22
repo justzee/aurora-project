@@ -1,7 +1,5 @@
 <sect2 id="presentation-client-grid" revision="1">
-    <title>
-        Grid组件
-    </title>            
+    <title>Grid组件</title>            
     <para>
         Grid组件是APL中非常重要的一个数据UI组件,它支持锁定,复合表头,排序等特性.
     </para>
@@ -38,9 +36,7 @@
         </imageobject>
     </mediaobject>           
     <sect3 id="presentation-client-grid-config" revision="1">
-        <title>
-                  数据绑定
-        </title>            
+        <title>数据绑定</title>            
         <para>
            Grid的数据来源是通过DataSet来获取的,所以Grid需要绑定到一个DataSet上才能正常显示数据.
         </para>
@@ -52,9 +48,7 @@
         </para>
     </sect3> 
     <sect3 id="presentation-client-grid-column-align" revision="1">
-        <title>
-                  列对齐
-        </title>
+        <title>列对齐</title>
         <para>
             column上的align属性,可以指定为center,left,right,对应列中的文字排列方式分别为居中,靠左,靠右.默认值是center
         </para>          
@@ -71,9 +65,7 @@
     </sect3>
     
     <sect3 id="presentation-client-grid-column-lock" revision="1">
-        <title>
-                  列锁定
-        </title>
+        <title>列锁定</title>
         <para>
             column上的lock属性,可以指定为true或者false,当指定为true的时候当前列将会被锁定.默认值是false
         </para>          
@@ -90,9 +82,7 @@
     </sect3>
     
     <sect3 id="presentation-client-grid-column-resizable" revision="1">
-        <title>
-                  调整列宽
-        </title>
+        <title>调整列宽</title>
         <para>
             column上的resizable属性,可以指定为true或者false,当指定为true的时候当前列可以动态改变宽度.默认值是true
         </para>  
@@ -108,9 +98,7 @@
     </sect3>
     
     <sect3 id="presentation-client-grid-column-sortable" revision="1">
-        <title>
-                  排序
-        </title>
+        <title>排序</title>
         <para>
             column上的sortable属性,我们可以指定为true或者false来指定当前列是否可以排序.默认值是false
         </para>
@@ -129,9 +117,7 @@
     </sect3>
     
     <sect3 id="presentation-client-grid-column-muticolumn" revision="1">
-        <title>
-                  复合表头
-        </title>
+        <title>复合表头</title>
         <para>
             很多情况下我们需要对表头进行组合,这个时候我们可以通过嵌套column列来实现
         </para>
@@ -166,9 +152,7 @@
     
     
     <sect3 id="presentation-client-grid-column-renderer" revision="1">
-        <title>
-           列渲染
-        </title>
+        <title>列渲染</title>
         <para>
           渲染函数(renderer)
         </para>
@@ -203,9 +187,7 @@ function moneyRenderer(value,record, name){
     </sect3>
     
     <sect3 id="presentation-client-grid-column-footer" revision="1">
-        <title>
-           汇总列
-        </title>
+        <title>汇总列</title>
         <para>
             grid提供了汇总的功能,我们可以通过在列上配置footerRenderer来实现.
         </para>  
@@ -246,9 +228,7 @@ function summaryRenderer(datas,name){
             
    
     <sect3 id="presentation-client-grid-toolbar" revision="1">
-        <title>
-             工具栏
-        </title>            
+        <title>工具栏</title>            
         <para>
             在Grid组件上提供了一个工具栏,Grid本身提供了内置的几个按钮,我们还可以自定义新的按钮.
         </para>  
@@ -307,9 +287,7 @@ function summaryRenderer(datas,name){
             
            
     <sect3 id="presentation-client-grid-editor" revision="1">
-        <title>
-              编辑器
-        </title>            
+        <title>编辑器</title>            
         <para>
               大部分情况下我们需要对数据进行编辑,APL的Grid组件可以集成编辑器,只需要在列中配置editor.
         </para> 
