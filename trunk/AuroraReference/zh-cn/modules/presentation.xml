@@ -136,7 +136,10 @@
               编辑组件
             </title>            
             <para>
-               编辑组件正文 ...
+               编辑组件是提供文本输入编辑及选择功能的组件，主要是由TextField,NumberField,ComboBox,DatePicker,Lov,DateTimePicker,TextArea,Radio,CheckBox等组件组成。
+            </para>
+            <para>
+               编辑组件也可作为Grid组件的Editor，具体请参阅Grid的编辑器。
             </para>
             &textfield;
             
