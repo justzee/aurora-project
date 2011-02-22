@@ -1,7 +1,5 @@
 <sect3 id="presentation-client-layout-box" revision="1">
-	<title>
-        Box
-	</title>
+	<title>Box</title>
 	<para>
 		Box组件类似html中的table标签,通过行(row)和列(column)的配置来构建一个表格.
 	</para>

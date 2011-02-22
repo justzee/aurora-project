@@ -23,6 +23,7 @@
 <!ENTITY form                   SYSTEM "modules/component/form.xml">
 <!ENTITY fieldset               SYSTEM "modules/component/fieldset.xml">
 <!ENTITY grid                   SYSTEM "modules/component/grid.xml">
+<!ENTITY window                 SYSTEM "modules/component/window.xml">
 ]>
 
 <book lang="zh-cn">

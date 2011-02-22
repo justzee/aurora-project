@@ -1,0 +1,29 @@
+<sect2 id="presentation-client-window" revision="1">
+	<title>窗口组件(window)</title>            
+	<para>
+        APL中提供的窗口组件不同于html中的原生window,它是通过div模拟出来的.本质上和父页面是在同一个dom树中.
+	</para>            
+	<para>
+        window组件的内容是通过ajax动态加载进来的.所以加载页面中的所有对象在父页面中都可以直接获取到,反过来window也可以直接获取父页面的所有对象.
+    </para>
+    <para>
+        window组件的创建都是通过JavaScript脚本创建的.
+    </para>
+    <programlisting><![CDATA[                
+function openWindow(){
+    var win = new Aurora.Window({id:'mywin', url:'user.screen',title:'窗口', height:400,width:700});
+}
+]]></programlisting> 
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/window.jpg" format="JPG" />
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/images/window.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>
+    <para>
+        通过new Aurora.Window我们可以创建出一个window窗口.id是窗口的唯一标识,url指定当前窗口需要加载的screen文件.title指定打开窗口的标题,height和width分别指定窗口的大小.
+    </para>
+    
+</sect2>

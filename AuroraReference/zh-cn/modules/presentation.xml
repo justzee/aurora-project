@@ -112,9 +112,7 @@
         &dataset;
         
         <sect2 id="presentation-client-layout" revision="1">
-            <title>
-              界面布局(Layout)
-            </title>            
+            <title>界面布局(Layout)</title>            
             <para>
                APL的布局是基于服务器端生成,这和其他的基于客户端布局的开源框架有点不同.APL的布局基本上是通过table在服务端事先生成好的,这样的好处在于可以
                减少客户端机器的压力,充分利用服务器的资源优势.
@@ -132,9 +130,7 @@
         </sect2>
         
         <sect2 id="presentation-client-editor" revision="1">
-            <title>
-              编辑组件
-            </title>            
+            <title>编辑组件</title>            
             <para>
                编辑组件是提供文本输入编辑及选择功能的组件，主要是由TextField,NumberField,ComboBox,DatePicker,Lov,DateTimePicker,TextArea,Radio,CheckBox等组件组成。
             </para>
@@ -149,7 +145,7 @@
             
             &datefield;
 
-			&datepicker;            
+            &datepicker;            
             
             &lov;
             
@@ -165,18 +161,14 @@
         
         
         <sect2 id="presentation-client-tab" revision="1">
-            <title>
-              Tab组件
-            </title>            
+            <title>Tab组件</title>            
             <para>
                正文 ...
             </para>            
         </sect2>
         
         <sect2 id="presentation-client-tree" revision="1">
-            <title>
-              Tree组件
-            </title>            
+            <title>Tree组件</title>            
             <para>
                正文 ...
             </para>            
@@ -185,44 +177,32 @@
         &grid;
         
         <sect2 id="presentation-client-table" revision="1">
-            <title>
-              Table组件
-            </title>            
+            <title>Table组件</title>            
             <para>
                正文 ...
             </para>            
         </sect2>
         
+        &window;
         
         <sect2 id="presentation-client-upload" revision="1">
-            <title>
-               上传组件
-            </title>            
+            <title>上传组件</title>            
             <para>
                正文 ...
             </para>            
         </sect2>
         
-        <sect2 id="presentation-client-window" revision="1">
-            <title>
-               窗口组件(window)
-            </title>            
-            <para>
-               正文 ...
-            </para>            
-        </sect2>
+        
         
         <sect2 id="presentation-client-treegrid" revision="1">
-            <title>
-               TreeGrid组件
-            </title>            
+            <title>TreeGrid组件</title>            
             <para>
                正文 ...
             </para>            
         </sect2>
-	</sect1>
-	
-	<sect1 id="presentation-custom" revision="1">
+    </sect1>
+    
+    <sect1 id="presentation-custom" revision="1">
         <title>个性化及定制</title>
         
         <para>
