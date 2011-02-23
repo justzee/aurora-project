@@ -29,7 +29,7 @@
     </para>
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/grid.jpg" format="JPG" width="569" depth="345" contentwidth="569" contentdepth="345"/>
+            <imagedata fileref="images/grid.jpg" format="JPG" width="374" depth="227" contentwidth="374" contentdepth="227"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/grid.jpg" format="JPG"/>
@@ -142,7 +142,7 @@
         </para> 
         <mediaobject>
             <imageobject role="fo">
-                <imagedata fileref="images/muticolumn.jpg" format="JPG"/>
+                <imagedata fileref="images/muticolumn.jpg" format="JPG" width="275" depth="90" contentwidth="275" contentdepth="90"/>
             </imageobject>
             <imageobject role="html">
                 <imagedata fileref="../shared/images/muticolumn.jpg" format="JPG"/>

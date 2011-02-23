@@ -16,7 +16,7 @@ function openWindow(){
 ]]></programlisting> 
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/window.jpg" format="JPG" />
+            <imagedata fileref="images/window.jpg" format="JPG" width="344" depth="196" contentwidth="344" contentdepth="196"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/window.jpg" format="JPG"/>

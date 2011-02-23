@@ -20,7 +20,7 @@
 ]]></programlisting>
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/treegrid.jpg" format="JPG"/>
+            <imagedata fileref="images/treegrid.jpg" format="JPG" width="430" depth="291" contentwidth="430" contentdepth="291"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/treegrid.jpg" format="JPG"/>
