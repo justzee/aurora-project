@@ -5,7 +5,7 @@
     </para>
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/textfield.jpg" format="JPG"/>
+            <imagedata fileref="images/textfield.jpg" format="JPG" width="143" depth="22" contentwidth="143" contentdepth="22"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/textfield.jpg" format="JPG"/>

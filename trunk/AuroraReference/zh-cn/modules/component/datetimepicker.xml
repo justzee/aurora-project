@@ -5,7 +5,7 @@
     </para>
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/datetimepicker.jpg" format="JPG"/>
+            <imagedata fileref="images/datetimepicker.jpg" format="JPG" width="254" depth="137" contentwidth="254" contentdepth="137"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/datetimepicker.jpg" format="JPG"/>

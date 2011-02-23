@@ -33,7 +33,7 @@
 	    </para>
 	    <mediaobject>
 	        <imageobject role="fo">
-	            <imagedata fileref="images/tab.jpg" format="JPG" width="406" depth="307" contentwidth="569" contentdepth="345"/>
+	            <imagedata fileref="images/tab.jpg" format="JPG" width="267" depth="202" contentwidth="267" contentdepth="202"/>
 	        </imageobject>
 	        <imageobject role="html">
 	            <imagedata fileref="../shared/images/tab.jpg" format="JPG"/>

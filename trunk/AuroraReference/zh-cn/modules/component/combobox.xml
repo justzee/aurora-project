@@ -5,7 +5,7 @@
     </para>
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/combobox.jpg" format="JPG"/>
+            <imagedata fileref="images/combobox.jpg" format="JPG" width="148" depth="48" contentwidth="148" contentdepth="48"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/combobox.jpg" format="JPG"/>

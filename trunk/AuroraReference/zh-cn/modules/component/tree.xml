@@ -18,7 +18,7 @@ expandField="expanded" style="margin:5px;" width="300"/>
 	    </para>
 	    <mediaobject>
 	        <imageobject role="fo">
-	            <imagedata fileref="images/tree.jpg" format="JPG" width="406" depth="307" contentwidth="569" contentdepth="345"/>
+	            <imagedata fileref="images/tree.jpg" format="JPG" width="178" depth="172" contentwidth="178" contentdepth="172"/>
 	        </imageobject>
 	        <imageobject role="html">
 	            <imagedata fileref="../shared/images/tree.jpg" format="JPG"/>
