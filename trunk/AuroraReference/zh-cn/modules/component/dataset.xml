@@ -11,7 +11,7 @@
             
             <mediaobject>
                 <imageobject role="fo">
-                    <imagedata fileref="images/dataset.jpg" format="JPG" contentwidth="569" contentdepth="345"/>
+                    <imagedata fileref="images/dataset.jpg" format="JPG" width="370" depth="247" contentwidth="370" contentdepth="247"/>
                 </imageobject>
                 <imageobject role="html">
                     <imagedata fileref="../shared/images/dataset.jpg" format="JPG"/>
