@@ -27,6 +27,7 @@
 <!ENTITY tab              	    SYSTEM "modules/component/tab.xml">
 <!ENTITY tree              	    SYSTEM "modules/component/tree.xml">
 <!ENTITY window                 SYSTEM "modules/component/window.xml">
+<!ENTITY treegrid               SYSTEM "modules/component/treegrid.xml">
 ]>
 
 <book lang="zh-cn">
