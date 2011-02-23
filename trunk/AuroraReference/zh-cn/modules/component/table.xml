@@ -3,9 +3,10 @@
     <para>
         Table组件是一个数据UI组件，类似于Grid组件。
     </para>
-    
+    <sect3 id="presentation-client-table-tag" revision="1">
+    	<title>Table定义</title>
     <para>
-        我们通过&lt;a:table&gt;标签来定义一个table对象.
+        在screen文件中我们通过&lt;a:table&gt;标签来定义一个table对象.
     </para>
 <programlisting><![CDATA[
 <a:table id="sys_user_define_grid" bindTarget="sys_user_result_ds" percentWidth="90"
@@ -45,54 +46,129 @@
             <imagedata fileref="../shared/images/table.jpg" format="JPG"/>
         </imageobject>
     </mediaobject>           
+    </sect3>
     <sect3 id="presentation-client-table-differences" revision="1">
         <title>Table与Grid的异同</title>
-        <itemizedlist>
-	        <listitem>
-		        <para>
-        			Table没有高度height属性，其高度是自适应高度，随着行数的增加而增高。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table和Table有绝对宽度width属性的同时，还有百分比宽度percentWidth属性。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table有title属性，可为table增加一个标题。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table没有列锁定功能。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table没有调整列宽功能。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table没有排序功能。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table没有工具栏toolBar。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table没有导航栏navBar。
-        		</para>
-	        </listitem>
-	        <listitem>
-		        <para>
-        			Table没有分页，所有数据将成列在一页中。
-        		</para>
-	        </listitem>
-	    </itemizedlist> 
+        <table frame="topbot" id="presentation-client-table-differences-table" revision="8">
+		<tgroup cols="3">
+			<colspec colname="c1" colwidth="3*"/>
+   			<colspec colname="c2" colwidth="0.5*"/>
+   			<colspec colname="c3" colwidth="0.5*"/>
+   			<thead>
+                <row>
+                    <entry>
+                    	异同项
+                    </entry>
+                    <entry>
+                        Grid
+                    </entry>
+                    <entry>
+                       Tab
+                    </entry>
+                </row>
+            </thead>
+            <tbody>
+            	<row>
+                    <entry>
+没有height属性，高度是自适应高度，随着行数的增加而增高。           
+                    </entry>
+                    <entry>
+                        ×
+                    </entry>
+                    <entry>
+                    	√
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+通过percentWidth属性，宽度能设成百分比宽度。
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                    <entry>
+                    	√
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+通过title属性能设置标题。
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                    <entry>
+                    	√
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        有锁定列的功能。
+                    </entry>
+                    <entry>
+                        √
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+有调整列宽的功能。
+                    </entry>
+                    <entry>
+                        √
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+有排序功能。
+                    </entry>
+                    <entry>
+                        √
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+有分页功能。
+                    </entry>
+                    <entry>
+                        √
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+有工具栏toolBar。
+                    </entry>
+                    <entry>
+                        √
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+有导航栏navBar。
+                    </entry>
+                    <entry>
+                        √
+                    </entry>
+                    <entry>
+                    	×
+                    </entry>
+                </row>
+            </tbody>
+		</tgroup>
+	</table>
     </sect3>     
 </sect2>

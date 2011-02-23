@@ -49,6 +49,33 @@ function login(){
 ]]></programlisting>
     </sect4>
     <sect4>
+    	<title>日期渲染</title>
+    	<para>
+    		渲染函数(dayRenderer)
+    	</para>
+    	<para>
+很多情况下我们需要将显示的日期表进行一些特殊处理，例如我们需要将今天之前的日期设为不能选择状态。这个时候我们就需要 在datepicker标签上指定dayRenderer渲染函数来实现.
+    	</para>
+    	<para>
+首先我们需要实现一个dayRenderer函数，来判断当前日期，然后返回一段html代码。 
+    	</para>
+    	<programlisting><![CDATA[
+function rendererDay(cell,date,text){
+	var today=new Date();
+	if(date < new Date(today.getFullYear(),today.getMonth(),today.getDate())){
+		cell.disabled=true;
+	}
+	return text;
+}
+		]]></programlisting> 
+		<para>
+接下来在datepicker标签上指定dayRenderer属性为rendererDay. 
+		</para>
+		    	<programlisting><![CDATA[
+<a:tree renderer="rendererDay"/>
+		]]></programlisting>
+    </sect4>
+    <sect4>
 	<title>DatePicker标签属性</title>
 	<table frame="topbot" id="presentation-client-editor-datepicker-properties" revision="8">
 		<tgroup cols="4">
@@ -78,15 +105,15 @@ function login(){
                         dayRenderer
                     </entry>
                     <entry>
-                        日期渲染函数。<literal>dayRenderer</literal>属性指定一个回调函数的函数名，该函数可带三个参数，依次为<literal>cell</literal>,<literal>date</literal>,<literal>text</literal>。
+                        日期渲染函数。<literal>dayRenderer</literal>属性指定一个回调函数的函数名，该函数可带三个参数，依次为cell,date,text。
 						<para>
-                    		<literal>cell</literal> - 显示日期的单元格，当cell.disabled=true时，该日期无法被选择。
+                    		cell - 显示日期的单元格，当cell.disabled=true时，该日期无法被选择。
 						</para> 
 						<para>
-                    		<literal>date</literal> -  日期对应的date对象。
+                    		date -  日期对应的date对象。
 						</para> 
 						<para>
-                    		<literal>text</literal> - 日期所显示的文本，函数的反回值需为包含此参数的HTML字符串。
+                    		text - 日期所显示的文本，函数的反回值需为包含此参数的HTML字符串。
 						</para> 
                     </entry>
                     <entry>
