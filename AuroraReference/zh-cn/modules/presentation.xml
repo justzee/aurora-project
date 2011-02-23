@@ -160,13 +160,8 @@
         </sect2>
         
         &tab;
-                    
-        <sect2 id="presentation-client-tree" revision="1">
-            <title>Tree组件</title>            
-            <para>
-               正文 ...
-            </para>            
-        </sect2>
+		
+        &tree;
         
         &grid;
         

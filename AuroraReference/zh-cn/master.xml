@@ -25,6 +25,7 @@
 <!ENTITY grid                   SYSTEM "modules/component/grid.xml">
 <!ENTITY table                  SYSTEM "modules/component/table.xml">
 <!ENTITY tab              	    SYSTEM "modules/component/tab.xml">
+<!ENTITY tree              	    SYSTEM "modules/component/tree.xml">
 <!ENTITY window                 SYSTEM "modules/component/window.xml">
 ]>
 
