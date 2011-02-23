@@ -78,6 +78,7 @@
 		<source src="../doc-src/Accordion.js"/>
 		<source src="../doc-src/Menu.js"/>
 		<source src="../doc-src/Tree.js"/>
+		<source src="../doc-src/TreeGrid.js"/>
     </sources>
     <tags>
         <tag name="author" title="Author"/>
