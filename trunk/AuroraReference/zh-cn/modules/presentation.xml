@@ -176,14 +176,7 @@
             </para>            
         </sect2>
         
-        
-        
-        <sect2 id="presentation-client-treegrid" revision="1">
-            <title>TreeGrid组件</title>            
-            <para>
-               正文 ...
-            </para>            
-        </sect2>
+        &treegrid;
     </sect1>
     
     <sect1 id="presentation-custom" revision="1">
