@@ -7,7 +7,7 @@
     </para>
     <mediaobject>
         <imageobject role="fo">
-            <imagedata fileref="images/lov.jpg" format="JPG"/>
+            <imagedata fileref="images/lov.jpg" format="JPG" width="481" depth="325" contentwidth="481" contentdepth="325"/>
         </imageobject>
         <imageobject role="html">
             <imagedata fileref="../shared/images/lov.jpg" format="JPG"/>
