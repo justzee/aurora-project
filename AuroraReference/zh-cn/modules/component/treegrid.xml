@@ -37,6 +37,7 @@
        column的配合和grid相同,也可以定义renderer,lock等特性.同样TreeGrid也支持可编辑组件.
     </para>
     <table frame="topbot" id="presentation-client-treegrid-properties" revision="8">
+    	<title>TreeGrid标签属性</title>
         <tgroup cols="4">
             <colspec colname="c1" colwidth="1*"/>
             <colspec colname="c2" colwidth="2*"/>
@@ -59,7 +60,102 @@
                 </row>
             </thead>
             <tbody>
-                
+                <row>
+                    <entry>
+                        checkField
+                    </entry>
+                    <entry>
+                        record中用来显示树节点是否被选中的field。只有在属性showCheckBox为true的情况下才有效果。
+                    </entry>
+                    <entry><literal>checked</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        displayField
+                    </entry>
+                    <entry>
+                    	record中用来显示树节点文本信息的field。
+                    </entry>
+                    <entry><literal>name</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        expandField
+                    </entry>
+                    <entry>
+                    	record中用来表示树节点是否被伸展的field。
+                    </entry>
+                    <entry><literal>expanded</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        idField
+                    </entry>
+                    <entry>
+                       record中用来指定树节点唯一标识的field。
+                    </entry>
+                    <entry><literal>id</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        parentField
+                    </entry>
+                    <entry>
+                    	record中用来指定树节点的父节点唯一标识的field。
+                    </entry>
+                    <entry><literal>pid</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        renderer
+                    </entry>
+                    <entry>
+                    	节点渲染器
+                    </entry>
+                    <entry>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        sequenceField
+                    </entry>
+                    <entry>
+                      record中用来指定树节点序号的field。
+                    </entry>
+                    <entry><literal>sequence</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        showCheckBox
+                    </entry>
+                    <entry>
+                    	是否显示多选框
+                    </entry>
+                    <entry><literal>false</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
             </tbody>
         </tgroup>
     </table>
