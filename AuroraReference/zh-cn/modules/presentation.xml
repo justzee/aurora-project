@@ -13,7 +13,7 @@
         </para>
         <mediaobject>
             <imageobject role="fo">
-                <imagedata fileref="images/architecture.jpg" format="JPG" align="center" width="704" depth="369" contentwidth="704" contentdepth="369"/>
+                <imagedata fileref="images/architecture.jpg" format="JPG" align="center" width="555" depth="369" contentwidth="555" contentdepth="369"/>
             </imageobject>
             <imageobject role="html">
                 <imagedata fileref="../shared/images/architecture.jpg" format="JPG" align="center"/>
