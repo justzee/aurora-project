@@ -1,5 +1,27 @@
 /**
- * @class DateSet
+ * @class DataSet
+ * <p>数据集组件</p>
+ * <p>数据集下的字段可参阅{@link DataSet[Field]}</p>
+ * <p>数据集下的数据项可参阅{@link DataSet[Record]}</p>
+ * <pre><code>
+&lt;a:dataSets&gt;
+    &lt;a:dataSet id="evt_event_query_ds"&gt;
+        &lt;a:datas&gt;
+            &lt;a:record name="aaa"/&gt;
+        &lt;a:record name="bbb"/&gt;
+        &lt;/a:datas&gt;
+    &lt;/a:dataSet&gt;
+    &lt;a:dataSet id="evt_event_result_ds" autoCount="true" autoQuery="true"
+		fetchAll="false" model="sys.evt_event" queryDataSet="evt_event_query_ds"
+		selectable="true"&gt;
+        &lt;a:fields&gt;
+            &lt;a:field name="enabled_flag" checkedValue="Y" defaultValue="Y"
+				uncheckedValue="N"/&gt;
+            &lt;a:field name="event_name" required="true"/&gt;
+        &lt;/a:fields&gt;
+    &lt;/a:dataSet&gt;
+&lt;/a:dataSets&gt;
+   </code></pre>
  * @constructor 
  * @author 牛佳庆
  */
