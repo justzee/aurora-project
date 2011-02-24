@@ -72,7 +72,7 @@ function rendererDay(cell,date,text){
 接下来在datepicker标签上指定dayRenderer属性为rendererDay. 
 		</para>
 		    	<programlisting><![CDATA[
-<a:tree renderer="rendererDay"/>
+<a:datePicker dayRenderer="rendererDay"/>
 		]]></programlisting>
     </sect4>
     <sect4>
