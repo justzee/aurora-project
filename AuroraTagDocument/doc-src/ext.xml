@@ -50,6 +50,7 @@
         -->
     <sources>
 		<source src="../doc-src/Component.js"/>
+		<source src="../doc-src/DataSet.js"/>
 		<source src="../doc-src/Field.js"/>
 		<source src="../doc-src/InputField.js"/>
 		<source src="../doc-src/TextField.js"/>

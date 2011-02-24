@@ -11,7 +11,7 @@
  */
 
 /**
- * dataset中用来显示树节点前是否有选择框的field
+ * 是否显示多选框
  * @property showCheckBox
  * @type String
  * @default false
@@ -60,7 +60,7 @@
  */
 
 /**
- * <p>列渲染</p> 
+ * <p>树节点渲染</p> 
  * <p>回调函数function(value,record){return value}</p>
  * <p>返回值value是html字符串</p>
  * @property renderer
