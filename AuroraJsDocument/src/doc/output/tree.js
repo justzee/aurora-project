@@ -27,6 +27,12 @@
 				,
                 {"href":"output/Aurora.Lov.html","text":"Lov","id":"Aurora.Lov","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Aurora.Menu.html","text":"Menu","id":"Aurora.Menu","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Aurora.MenuBar.html","text":"MenuBar","id":"Aurora.MenuBar","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Aurora.MenuItem.html","text":"MenuItem","id":"Aurora.MenuItem","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Aurora.NumberField.html","text":"NumberField","id":"Aurora.NumberField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Radio.html","text":"Radio","id":"Aurora.Radio","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -121,6 +127,12 @@
 			"Aurora.Label":"icon-cls"
 			,
 			"Aurora.Lov":"icon-cls"
+			,
+			"Aurora.Menu":"icon-cls"
+			,
+			"Aurora.MenuBar":"icon-cls"
+			,
+			"Aurora.MenuItem":"icon-cls"
 			,
 			"Aurora.NumberField":"icon-cls"
 			,
