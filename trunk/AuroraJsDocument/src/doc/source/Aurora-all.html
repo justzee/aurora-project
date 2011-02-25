@@ -19,7 +19,7 @@
  * @author 牛佳庆
  * @singleton
  */
-$A = Aurora = {version: '1.0',revision:'$Rev: 1940 $'};
+$A = Aurora = {version: '1.0',revision:'$Rev: 2033 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
 	if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -673,8 +673,8 @@ $A.Masker = function(){
         	msg = msg||_lang['mask.loading'];
         	var el = Ext.get(el);
             var w = el.getWidth();
-            var h = el.getHeight();//display:none;
-            var p = '<div class="aurora-mask"  style="left:0px;top:0px;width:'+w+'px;height:'+h+'px;position: absolute;"><div unselectable="on"></div><span style="top:'+(h/2-11)+'px">'+msg+'</span></div>';
+            var h = el.getHeight();//leftp:0px;top:0px; 是否引起resize?
+            var p = '<div class="aurora-mask"  style="left:-1000px;top:-1000px;width:'+w+'px;height:'+h+'px;position: absolute;"><div unselectable="on"></div><span style="top:'+(h/2-11)+'px">'+msg+'</span></div>';
             var masker = Ext.get(Ext.DomHelper.append(el.parent(),p));
             var zi = el.getStyle('z-index') == 'auto' ? 0 : el.getStyle('z-index');
             masker.setStyle('z-index', zi + 1);
@@ -1436,8 +1436,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Aurora.Record} record 选择的record.
              */ 
 	        'select',
-	        <div id="event-Aurora.DataSet-select"></div>/**
-             * @event select
+	        <div id="event-Aurora.DataSet-unselect"></div>/**
+             * @event unselect
              * 取消选择数据事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 取消选择的record.
@@ -1452,8 +1452,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Object} value 重置的值.
              */
 	        'reject',
-	        <div id="event-Aurora.DataSet-submit"></div>/**
-             * @event submit
+	        <div id="event-Aurora.DataSet-beforesubmit"></div>/**
+             * @event beforesubmit
              * 数据提交前事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */
@@ -4008,7 +4008,8 @@ $A.NumberField = Ext.extend($A.TextField,{
     	$A.NumberField.superclass.onFocus.call(this,e);
     },
     parseValue : function(value){
-    	value = String(value) 
+    	value = String(value);
+		if(value.indexOf(",")!=-1)value=value.replace(/,/g,"");
     	if(!this.allownegative)value = value.replace('-','');
     	if(!this.allowdecimals)value = value.indexOf(".")==-1?value:value.substring(0,value.indexOf("."));
         value = parseFloat(value.replace(this.decimalSeparator, "."));
@@ -4624,9 +4625,12 @@ $A.DateField = Ext.extend($A.Component, {
 			arr.push((this.enablebesidedays=="both"||this.enablebesidedays=="next")?new Date(year, month, i,hour,minute,second):null);
 		}
 		//先清空内容再插入(ie的table不能用innerHTML)
-		while(this.body.dom.tBodies[0].firstChild){
-			this.body.dom.tBodies[0].removeChild(this.body.dom.tBodies[0].firstChild);
-		}
+		//while(this.body.dom.tBodies[0].firstChild){
+			//this.body.dom.tBodies[0].removeChild(this.body.dom.tBodies[0].firstChild);
+			//Ext.fly(this.body.dom.tBodies[0].firstChild).remove();
+		//}
+		Ext.fly(this.body.dom.tBodies[0]).remove();
+		this.body.dom.appendChild(document.createElement("tbody"));
 		//插入日期
 		var k=0;
 		while(arr.length){
