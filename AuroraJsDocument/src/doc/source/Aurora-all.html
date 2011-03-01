@@ -19,7 +19,7 @@
  * @author 牛佳庆
  * @singleton
  */
-$A = Aurora = {version: '1.0',revision:'$Rev: 2033 $'};
+$A = Aurora = {version: '1.0',revision:'$Rev: 2075 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
 	if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -36,6 +36,11 @@ $A.onReady = Ext.onReady;
 $A.get = Ext.get;
 $A.focusWindow;
 $A.defaultDateFormat="isoDate";
+
+<div id="method-Aurora-center"></div>/**
+ * 将对象居中
+ * @param {Object/String} el Aurora组件对象或者是DOM对象或者是对象的ID字符串
+ */
 $A.center = function(el){
 	var ele;
 	if(typeof(el)=="string"){
@@ -58,6 +63,10 @@ $A.center = function(el){
     ele.moveTo(x,y);
 }
 
+<div id="method-Aurora-setTheme"></div>/**
+ * 设置主题
+ * @param {String} theme 主题名
+ */
 $A.setTheme = function(theme){
 	if(theme) {
 		var exp  = new Date();   
@@ -153,6 +162,11 @@ Ext.Ajax.on("requestexception", function(conn, response, options) {
 			break;
 	}	
 }, this);
+
+<div id="method-Aurora-getCmp"></div>/**
+ * 获取Aurora控件的对象，可以使用简写方式的$()方法
+ * @param {String} id Aurora控件的id
+ */
 $ = $A.getCmp = function(id){
 	var cmp = $A.CmpManager.get(id)
 	if(cmp == null) {
@@ -160,14 +174,30 @@ $ = $A.getCmp = function(id){
 	}
 	return cmp;
 }
+
+<div id="method-Aurora-setCookie"></div>/**
+ * 设置cookie
+ * @param {String} name cookie名
+ * @param {String} value cookie值
+ */
 $A.setCookie = function(name,value){
     document.cookie = name + "="+ escape (value);
 }
+
+<div id="method-Aurora-getCookie"></div>/**
+ * 根据cookie名获取cookie值
+ * @param {String} name cookie名
+ */
 $A.getCookie = function(name){
     var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
      if(arr != null) return unescape(arr[2]); return null;
 
 }
+
+<div id="method-Aurora-getViewportHeight"></div>/**
+ * 获取页面可视高度
+ * @return {Number} 页面可视高度
+ */
 $A.getViewportHeight = function(){
     if(Ext.isIE){
         return Ext.isStrict ? document.documentElement.clientHeight :
@@ -176,6 +206,10 @@ $A.getViewportHeight = function(){
         return self.innerHeight;
     }
 }
+<div id="method-Aurora-getViewportWidth"></div>/**
+ * 获取页面可视宽度
+ * @return {Number} 页面可视宽度
+ */
 $A.getViewportWidth = function() {
     if(Ext.isIE){
         return Ext.isStrict ? document.documentElement.clientWidth :
@@ -191,6 +225,11 @@ $A.getViewportWidth = function() {
 //    document.cookie = "vh="+h;
 //}
 //$A.recordSize();
+<div id="method-Aurora-post"></div>/**
+ * post的方式提交数据，同{@link Aurora.DataSet#post}
+ * @param {String} action 提交的url地址
+ * @param {Object} data 数据集合
+ */
 $A.post = function(action,data){
     var form = Ext.getBody().createChild({style:'display:none',tag:'form',method:'post',action:action});
     for(var key in data){
@@ -202,6 +241,26 @@ $A.post = function(action,data){
     }
     form.dom.submit();
 }
+<div id="method-Aurora-request"></div>/**
+ * POST方式的Ajax请求
+ * <p>
+ * opt对象的属性:
+ * <div class="mdetail-params"><ul>
+ * <li><code>url</code>
+ * <div class="sub-desc">提交的url地址</div></li>
+ * <li><code>para</code>
+ * <div class="sub-desc">提交的参数</div></li>
+ * <li><code>scope</code>
+ * <div class="sub-desc">作用域</div></li>
+ * <li><code>success</code>
+ * <div class="sub-desc">成功的回调函数</div></li>
+ * <li><code>error</code>
+ * <div class="sub-desc">错误的回调函数</div></li>
+ * <li><code>failure</code>
+ * <div class="sub-desc">ajax调用失败的回调函数</div></li>
+ * </ul></div></p>
+ * @param {Object} opt 参数对象
+ */
 $A.request = function(opt){
 	var url = opt.url,para = opt.para,successCall = opt.success,errorCall = opt.error,scope = opt.scope,failureCall = opt.failure;
 	var opts = Ext.apply({},opt.opts);
@@ -928,17 +987,33 @@ $A.getRenderer = function(renderer){
     }
     return rder;
 }
-
+<div id="method-Aurora-formatDate"></div>/**
+ * 将日期转换成默认格式的字符串，默认格式是根据Aurora.defaultDateFormat来定义的.如果没有特殊指定,默认格式为yyyy-mm-dd
+ * @param {Date} date 转换的日期
+ * @return {String}
+ */
 $A.formatDate = function(date){
 	if(!date)return '';
 	if(date.format)return date.format($A.defaultDateFormat);
 	return date;
 }
+<div id="method-Aurora-formatDateTime"></div>/**
+ * 将日期转换成yyyy-mm-dd HH:MM:ss格式的字符串
+ * @param {Date} date 需要转换的日期
+ * @return {String} 转换后的字符串
+ */
 $A.formatDateTime = function(date){
 	if(!date)return '';
 	if(date.format)return date.format('yyyy-mm-dd HH:MM:ss');
 	return date;
 }
+<div id="method-Aurora-formatNumber"></div>/**
+ * 将数值根据精度转换成带有千分位的字符串
+ * 
+ * @param {Number} value 数值
+ * @param {Number} decimalprecision 小数点位数
+ * @return {String}
+ */
 $A.formatNumber = function(value,decimalprecision){
 	if(value!==0&&(!value||isNaN(value)))return '';
 	if(decimalprecision||decimalprecision===0) value=Number(value).toFixed(decimalprecision);
@@ -952,6 +1027,12 @@ $A.formatNumber = function(value,decimalprecision){
     v = whole + sub;
     return v;   
 }
+<div id="method-Aurora-removeNumberFormat"></div>/**
+ * 将字符串的千分位去除
+ * @param {Number} value 数值
+ * @param {String} rv 带有千分位的数值字符串
+ * @return {Number} 数值
+ */
 $A.removeNumberFormat = function(rv){
     rv = String(rv||'');
     while (rv.indexOf(',')!=-1) {
@@ -4129,9 +4210,11 @@ $A.TriggerField = Ext.extend($A.TextField,{
     	this.syncPopup();
     },
     syncPopup:function(){
-    	var xy = this.wrap.getXY();
-    	this.popup.moveTo(xy[0],xy[1]+23);
-    	this.shadow.moveTo(xy[0]+3,xy[1]+26);
+    	var xy = this.wrap.getXY(),
+    		H=this.popup.getHeight(),PH=this.wrap.getHeight(),BH=$A.getViewportHeight()-3,
+    		y=(xy[1]+PH+H)>BH?((xy[1]-H)<0?(xy[1]+PH):(xy[1]-H)):(xy[1]+PH);
+    	this.popup.moveTo(xy[0],y);
+    	this.shadow.moveTo(xy[0]+3,y+3);
     },
     onTriggerClick : function(){
     	if(this.readonly) return;
@@ -4929,14 +5012,37 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     	this.currentPage = this.wrap.child('div[atype=currentPage]');
     	this.pageInfo = this.wrap.child('div[atype=pageInfo]');//Ext.get(this.pageId);
     	this.navInfo = this.wrap.child('div[atype=displayInfo]');//Ext.get(this.infoId);
-    	this.pageInput.setValue(1)
+    	this.pageInput.setValue(1);
     	
+    	if(this.comboBoxId){
+    		var pageSize=[10,20,50,100];
+    		if(pageSize.indexOf(this.dataSet.pagesize)==-1){
+    			pageSize.unshift(this.dataSet.pagesize);
+    			pageSize.sort(function(a,b){return a-b});
+    		}
+    		var datas=[];
+    		while(Ext.isDefined(pageSize[0])){
+    			var ps=pageSize.shift();
+    			datas.push({'code':ps,'name':ps});
+    		}
+    		var dataset=new $A.DataSet({'datas':datas});
+	    	this.pageSizeInput = $(this.comboBoxId);
+	    	this.pageSizeInput.setOptions(dataset);
+	    	this.pageSizeInput.setValue(this.dataSet.pagesize);
+    		this.pageSizeInfo = this.wrap.child('div[atype=pageSizeInfo]');
+    		this.pageSizeInfo2 = this.wrap.child('div[atype=pageSizeInfo2]');
+    		this.pageSizeInfo.update(_lang['toolbar.pageSize']);
+    		this.pageSizeInfo2.update(_lang['toolbar.pageSize2']);
+    	}
     	this.currentPage.update(_lang['toolbar.ctPage']);
     },
     processListener: function(ou){
     	$A.NavBar.superclass.processListener.call(this,ou);
     	this.dataSet[ou]('load', this.onLoad,this);
     	this.pageInput[ou]('keydown', this.onInputKeyPress, this);
+    	if(this.pageSizeInput){
+    		this.pageSizeInput[ou]('select', this.onInputSelect, this);
+    	}
     },
     initEvents : function(){
     	$A.NavBar.superclass.initEvents.call(this);    	
@@ -4966,6 +5072,10 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     			}
     		}
     	}    	
+    },
+    onInputSelect : function(combo,value){
+    	this.dataSet.pagesize=value;
+    	this.dataSet.query();
     }
 })
 $A.WindowManager = function(){
@@ -5542,7 +5652,7 @@ $A.Lov = Ext.extend($A.TextField,{
     constructor: function(config) {
         this.isWinOpen = false;
         this.fetching = false;
-        this.keeperror = false;
+        this.fetchremote = true;
         this.context = config.context||'';
         $A.Lov.superclass.constructor.call(this, config);        
     },
@@ -5594,6 +5704,7 @@ $A.Lov = Ext.extend($A.TextField,{
         this.el.setStyle("width",(w-20)+"px");
     },
     onChange : function(e){
+    	if(this.fetchremote == true)
         this.fetchRecord();
     },
 //  onKeyDown : function(e){
@@ -5687,19 +5798,14 @@ $A.Lov = Ext.extend($A.TextField,{
         this.setRawValue(_lang['lov.query'])
         $A.request({url:url, para:p, success:function(res){
             var r = new $A.Record({});
-            var find = false;
             if(res.result.record){
                 var datas = [].concat(res.result.record);
                 if(datas.length>0){
                     var data = datas[0];
                     r = new $A.Record(data);
-                    find = true;
                 }
             }
             this.fetching = false;
-            if(!find && this.keeperror==true) {
-            	r.data[this.binder.name] =v;
-            }
             this.commit(r,record);
             record.isReady=true;
             $A.SideBar.enable = $A.slideBarEnable;
