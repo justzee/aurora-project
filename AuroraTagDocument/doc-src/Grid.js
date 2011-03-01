@@ -40,7 +40,13 @@
  * @default false
  */
  
-
+/**
+ * 导航条中是否有控制每页显示条数的下拉框
+ * @property enablePageSize
+ * @type Boolean
+ * @default true
+ */
+ 
 /**
  * <p>通过回调函数返回的样式表渲染指定行</p> 
  * <p>回调函数function(record,rowIndex){return css}</p>
