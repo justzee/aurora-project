@@ -10,6 +10,14 @@
 				,
                 {"href":"output/ComboBox.html","text":"ComboBox","id":"ComboBox","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/DataSet.html","text":"DataSet","id":"DataSet","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/DataSet[Field[Map]].html","text":"DataSet[Field[Map]]","id":"DataSet[Field[Map]]","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/DataSet[Field].html","text":"DataSet[Field]","id":"DataSet[Field]","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/DataSet[Record].html","text":"DataSet[Record]","id":"DataSet[Record]","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/DateField.html","text":"DateField","id":"DateField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/DatePicker.html","text":"DatePicker","id":"DatePicker","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -71,6 +79,14 @@
 			"CheckBox":"icon-cls"
 			,
 			"ComboBox":"icon-cls"
+			,
+			"DataSet":"icon-cls"
+			,
+			"DataSet[Field[Map]]":"icon-cls"
+			,
+			"DataSet[Field]":"icon-cls"
+			,
+			"DataSet[Record]":"icon-cls"
 			,
 			"DateField":"icon-cls"
 			,

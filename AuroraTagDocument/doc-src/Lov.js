@@ -18,10 +18,10 @@
  */
  
 /**
- * 是否保持错误信息
- * @property keepError
+ * 手工输入后是否自动查询数据
+ * @property fetchRemote
  * @type Boolean
- * default false
+ * default true
  */
  
 /**
