@@ -17,12 +17,12 @@ import org.eclipse.swt.graphics.Image;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.CompositeMapLocatorParser;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CompositeMapLocatorParser;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Element;
 
 /**
@@ -89,7 +89,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 			viewer.setSelectedRange(tokenString.getDocumentOffset() - 1
 					+ old.length(), 0);
 		}
-		List childs = CompositeMapAction.getAvailableChildElements(data);
+		List childs = CompositeMapUtil.getAvailableChildElements(data);
 		if (childs == null)
 			childs = new ArrayList();
 		Element ele = LoadSchemaManager.getSchemaManager().getElement(data);
@@ -102,7 +102,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 		String preString = tokenString.getStrBeforeCursor();
 		for (Iterator iter = childs.iterator(); iter.hasNext();) {
 			Element element = (Element) iter.next();
-			String name = CompositeMapAction.getContextFullName(data, element
+			String name = CompositeMapUtil.getContextFullName(data, element
 					.getQName());
 			if (preString != null && !name.startsWith(preString)) {
 				continue;

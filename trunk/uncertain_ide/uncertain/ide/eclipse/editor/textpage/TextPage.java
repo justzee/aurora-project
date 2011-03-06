@@ -18,10 +18,24 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.util.Common;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.LocaleMessage;
 
 public class TextPage extends TextEditor implements IViewer {
+	/** The ID of this editor as defined in plugin.xml */
+    public static final String EDITOR_ID = "uncertain.ide.eclipse.editor.textpage.TextPage";
+
+    /** The ID of the editor context menu */
+    public static final String EDITOR_CONTEXT = EDITOR_ID + ".context";
+
+    /** The ID of the editor ruler context menu */
+    public static final String RULER_CONTEXT = EDITOR_CONTEXT + ".ruler";
+
+    protected void initializeEditor() {
+            super.initializeEditor();
+            setEditorContextMenuId(EDITOR_CONTEXT);
+            setRulerContextMenuId(RULER_CONTEXT);
+    }
 	protected static final String textPageId = "textPage";
 	public static final String textPageTitle = LocaleMessage.getString("source.file");
 	private boolean syc = false;
@@ -83,6 +97,9 @@ public class TextPage extends TextEditor implements IViewer {
 			getSourceViewer().getTextWidget().setText(newContent);
 		}
 	}
+	public void setSyc(boolean isSyc){
+		syc = isSyc;
+	}
 	public String getContent() {
 		return getSourceViewer().getTextWidget().getText();
 	}
@@ -117,7 +134,7 @@ public class TextPage extends TextEditor implements IViewer {
 	protected File getFile() {
 		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
 				.getFile();
-		String fileName = Common.getIfileLocalPath(ifile);
+		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
 		return new File(fileName);
 	}
 
@@ -157,7 +174,7 @@ public class TextPage extends TextEditor implements IViewer {
 		super.dispose();
 	}
 
-	private IDocument getInputDocument() {
+	public IDocument getInputDocument() {
 		IDocument document = getDocumentProvider().getDocument(getInput());
 		return document;
 	}

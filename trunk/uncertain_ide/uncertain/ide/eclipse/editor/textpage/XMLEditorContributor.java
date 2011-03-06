@@ -12,7 +12,7 @@ import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.LocaleMessage;
 
 
 /**

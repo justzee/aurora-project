@@ -11,7 +11,7 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.help.CustomDialog;
 
 public class TagContentAssistProcessor implements IContentAssistProcessor {
 

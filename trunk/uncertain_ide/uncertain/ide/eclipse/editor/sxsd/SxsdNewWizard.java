@@ -29,8 +29,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.CompositeMapAction;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.LocaleMessage;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -159,7 +159,7 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		String namespaceUrl = page.getNamespaceUrl();
 		String rootElementName = "schema";
 		CompositeMap rootElement = new CompositeMap(namespacePrefix,namespaceUrl,rootElementName);
-		CompositeMapAction.addElementArray(rootElement);
+		CompositeMapUtil.addElementArray(rootElement);
 		return rootElement;
 	}
 
