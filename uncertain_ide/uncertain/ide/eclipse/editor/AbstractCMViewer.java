@@ -6,11 +6,11 @@ package uncertain.ide.eclipse.editor;
 import org.eclipse.swt.SWT;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Element;
 
 public abstract class AbstractCMViewer implements IViewer{
@@ -30,14 +30,14 @@ public abstract class AbstractCMViewer implements IViewer{
 		if (selectedCm == null)
 			return;
 		CompositeMap parentComp = getFocus();
-		if (!CompositeMapAction.validNextNodeLegalWithAction(parentComp, selectedCm)) {
+		if (!CompositeMapUtil.validNextNodeLegalWithAction(parentComp, selectedCm)) {
 			return;
 		}
 		CompositeMap child = new CompositeMap(selectedCm);
 		if (child != null) {
 			parentComp.addChild(child);
 			selectedCm.getParent().removeChild(selectedCm);
-			CompositeMapAction.addArrayNode(parentComp);
+			CompositeMapUtil.addArrayNode(parentComp);
 		}
 		selectedCm = null;
 		refresh(true);

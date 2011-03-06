@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -19,8 +17,9 @@ import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.action.InputFileListener;
 import uncertain.ide.eclipse.editor.textpage.TextPage;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.Common;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CustomDialog;
 
 
 public abstract class BaseCompositeMapEditor extends FormEditor {
@@ -56,7 +55,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		Activator.getWorkspace().addResourceChangeListener(
 				new InputFileListener(this));
 		IFile ifile = ((IFileEditorInput) input).getFile();
-		file = new File(Common.getIfileLocalPath(ifile));
+		file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
 		String fileName = file.getName();
 		setPartName(fileName);
 	
@@ -67,18 +66,16 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		if(currentPage == textPageIndex){
 			try {
 				sycMainViewerPageWithTextPage();
-			} catch (Exception e) {
-				throw new RuntimeException(CustomDialog.getExceptionMessage(e));
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+				return;
 			}
+		}else if(currentPage == mainViewerIndex){
+			//ifile.refreshLocal will cause textChanged event,so prevent it;
+			textPage.setSyc(true);
 		}
 		mainViewerPage.doSave(monitor);
 		setDirty(false);
-		IFile ifile =((IFileEditorInput)getEditorInput()).getFile();
-		try {
-			ifile.refreshLocal(IResource.DEPTH_ONE, null);
-		} catch (CoreException e) {
-			CustomDialog.showExceptionMessageBox(e);
-		}
 	}
 
 	public void doSaveAs() {
@@ -129,10 +126,17 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			sycTextPageWithMainViewerPage();
 		} 
 	}
-	private boolean sycMainViewerPageWithTextPage() throws IOException, SAXException {
+	private boolean sycMainViewerPageWithTextPage() throws ApplicationException{
 		CompositeLoader loader = new CompositeLoader();
 		loader.setSaveNamespaceMapping(true);
-		CompositeMap cm = loader.loadFromString(textPage.getContent(),"UTF-8");
+		CompositeMap cm;
+		try {
+			cm = loader.loadFromString(textPage.getContent(),"UTF-8");
+		} catch (IOException e) {
+			throw new ApplicationException("文件路径错误",e);
+		} catch (SAXException e) {
+			throw new ApplicationException("文件解析错误",e);
+		}
 		mainViewerPage.setContent(cm);
 		return true;
 	}
