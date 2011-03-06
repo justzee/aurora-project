@@ -1,5 +1,6 @@
 package uncertain.ide.eclipse.celleditor;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.eclipse.jface.window.Window;
@@ -8,15 +9,18 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Shell;
+import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.bm.GridDialog;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 
 public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 
@@ -58,15 +62,22 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 			}
 		});
 	}
-	private void fireEvent() throws Exception{
+	private void fireEvent() throws ApplicationException{
 		CompositeMap parent = cellProperties.getRecord().getParent();
 		String fileName = parent.getString("refModel");
 		if(fileName == null)
-			throw new RuntimeException(LocaleMessage.getString("its.parent's")+"'refModel'"+LocaleMessage.getString("attribute.value.is.null"));
+			throw new ApplicationException(LocaleMessage.getString("its.parent's")+"'refModel'"+LocaleMessage.getString("attribute.value.is.null"));
 		CompositeLoader loader = new CompositeLoader();
 		String path = fileName.replace('.', '/') +'.' + "bm";
-		String fullPath = ProjectProperties.getBMBaseDir()+"/"+path;
-		CompositeMap root = loader.loadByFullFilePath(fullPath);
+		String fullPath = ProjectPropertyPage.getBMBaseLocalDir(AuroraResourceUtil.getIProjectFromSelection())+"/"+path;
+		CompositeMap root;
+		try {
+			root = loader.loadByFullFilePath(fullPath);
+		} catch (IOException e) {
+			throw new ApplicationException("文件路径："+fullPath+"不正确", e);
+		} catch (SAXException e) {
+			throw new ApplicationException("文件解析不正确", e);
+		}
 		CompositeMap fields = root.getChild("fields");
 		CompositeMap filedNames = new CompositeMap();
 		for(Iterator it = fields.getChildsNotNull().iterator();it.hasNext();){

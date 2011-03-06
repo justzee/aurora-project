@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 
 public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		ICellEditor {
@@ -70,12 +70,14 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		}
 		if(isTableItemEditor()){
 			SetSelection(cellProperties.getRecord().getString(cellProperties.getColumnName()));
-			addCellListener();
 		}
+		addCellListener();
 		oldInput = getSelection();
 	}
 	
 	protected void addCellListener() {
+		if(!isTableItemEditor())
+			return ;
 		this.addListener(new ICellEditorListener() {
 
 			public void editorValueChanged(boolean oldValidState,

@@ -1,14 +1,17 @@
 package uncertain.ide.eclipse.celleditor;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.swt.widgets.TableItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.eclipse.editor.core.ITableViewer;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
+import uncertain.ide.help.SystemException;
 import uncertain.schema.Attribute;
 import uncertain.schema.Editor;
 import uncertain.schema.Enumeration;
@@ -39,9 +42,11 @@ public class CellEditorFactory {
 	public final static QualifiedName localFieldReference = new QualifiedName(
 			"http://www.aurora-framework.org/schema/bm", "LocalFieldReference");
 	public final static QualifiedName foreignFieldReference = new QualifiedName(
-			"http://www.aurora-framework.org/schema/bm", "ForeignFieldReference");
+			"http://www.aurora-framework.org/schema/bm",
+			"ForeignFieldReference");
 	public final static QualifiedName modelReference = new QualifiedName(
 			"http://www.aurora-framework.org/schema/bm", "ModelReference");
+
 	private CellEditorFactory() {
 	}
 
@@ -51,38 +56,41 @@ public class CellEditorFactory {
 		return editorFactory;
 	}
 
-	public ICellEditor createCellEditor(ITableViewer viewer,
-			Attribute attribute) {
-		return createCellEditor(viewer,attribute,null,null);
+	public ICellEditor createCellEditor(ITableViewer viewer, Attribute attribute) throws ApplicationException {
+		return createCellEditor(viewer, attribute, null, null);
 	}
+
 	public ICellEditor createCellEditor(ITableViewer viewer,
-			Attribute attribute, CompositeMap record, TableItem tableItem) {
+			Attribute attribute, CompositeMap record, TableItem tableItem) throws ApplicationException {
 		ICellEditor cellEditor = null;
 		if (attribute == null)
 			return cellEditor;
 
-		CellProperties  cellProperties = createCellProperties(viewer, attribute,record,tableItem);
-		//个性化编辑器
-		cellEditor = createDefinedEditor(attribute,cellProperties);
-		//如果没有定义个性化编辑，采取内建编辑器
+		CellProperties cellProperties = createCellProperties(viewer, attribute,
+				record, tableItem);
+		// 个性化编辑器
+		cellEditor = createDefinedEditor(attribute, cellProperties);
+		// 如果没有定义个性化编辑，采取内建编辑器
 		if (cellEditor == null)
-			cellEditor = createDefaultEditor(attribute,cellProperties);
+			cellEditor = createDefaultEditor(attribute, cellProperties);
 
 		if (cellEditor != null) {
 			cellEditor.init();
 		}
 		return cellEditor;
 	}
+
 	private CellProperties createCellProperties(ITableViewer viewer,
-			Attribute attribute, CompositeMap record, TableItem tableItem){
-		return new CellProperties(viewer, attribute,record,tableItem);
+			Attribute attribute, CompositeMap record, TableItem tableItem) {
+		return new CellProperties(viewer, attribute, record, tableItem);
 	}
 
-	private ICellEditor createDefaultEditor(Attribute attribute,CellProperties cellProperties) {
+	private ICellEditor createDefaultEditor(Attribute attribute,
+			CellProperties cellProperties) {
 		ICellEditor cellEditor = null;
 		QualifiedName typeQname = attribute.getTypeQName();
 
-		//如果定义了SimpleType的Enumerations，显示为Combox
+		// 如果定义了SimpleType的Enumerations，显示为Combox
 		IType attributeType = LoadSchemaManager.getSchemaManager().getType(
 				typeQname);
 		if (attributeType != null && attributeType instanceof SimpleType) {
@@ -96,7 +104,7 @@ public class CellEditorFactory {
 				}
 			}
 		}
-		//没有定义类型的，但自定为必输，采用必输字符串编辑器
+		// 没有定义类型的，但自定为必输，采用必输字符串编辑器
 		if (typeQname == null) {
 			if (required.equals(attribute.getUse())) {
 				cellEditor = new StringTextCellEditor(cellProperties);
@@ -104,20 +112,19 @@ public class CellEditorFactory {
 			}
 			return cellEditor;
 		}
-		//bool型采取checkbox
+		// bool型采取checkbox
 		if (typeQname.equals(boolean_qn)) {
 			cellEditor = new BoolCellEditor(cellProperties);
 			return cellEditor;
 		}
-		
+
 		if (typeQname.equals(string_qn)) {
 			cellEditor = new StringTextCellEditor(cellProperties);
 			return cellEditor;
-		//数字型采取number型，数字靠右	
+			// 数字型采取number型，数字靠右
 		} else if (typeQname.equals(int_qn) || typeQname.equals(integer_qn)
 				|| typeQname.equals(double_qn) || typeQname.equals(long_qn)
-				|| typeQname.equals(float_qn)
-				|| typeQname.equals(double_qn)) {
+				|| typeQname.equals(float_qn) || typeQname.equals(double_qn)) {
 			cellEditor = new NumberTextCellEditor(cellProperties);
 			return cellEditor;
 		}
@@ -125,13 +132,14 @@ public class CellEditorFactory {
 
 	}
 
-	private ICellEditor createDefinedEditor(Attribute attribute,CellProperties cellProperties) {
+	private ICellEditor createDefinedEditor(Attribute attribute,
+			CellProperties cellProperties) throws ApplicationException {
 		Object editor;
 		QualifiedName typeQname = attribute.getTypeQName();
 		if (typeQname == null)
 			return null;
 		IType type = LoadSchemaManager.getSchemaManager().getType(typeQname);
-		if (type == null ||!( type instanceof SimpleType)) {
+		if (type == null || !(type instanceof SimpleType)) {
 			return null;
 		}
 		SimpleType simpleType = (SimpleType) type;
@@ -144,22 +152,31 @@ public class CellEditorFactory {
 		try {
 			cls = Class.forName(cls_name);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			throw new RuntimeException(LocaleMessage.getString("editor.class") + cls_name
-					+ LocaleMessage.getString("not.valid"));
+			throw new ApplicationException(LocaleMessage
+					.getString("editor.class")
+					+ cls_name + LocaleMessage.getString("not.valid"), e);
 		}
 		Constructor constructor = null;
 		try {
-			Class[] constructorClasses = new Class[] { CellProperties.class};
+			Class[] constructorClasses = new Class[] { CellProperties.class };
 			constructor = cls.getConstructor(constructorClasses);
-			Object[] constructorObjects = new Object[] {cellProperties};
+
+			Object[] constructorObjects = new Object[] { cellProperties };
 			editor = constructor.newInstance(constructorObjects);
 			ICellEditor cellEditor = (ICellEditor) editor;
 			return cellEditor;
-		} catch (Exception e) {
-			throw new RuntimeException(LocaleMessage.getString("create.instance") + cls_name
-					+ "(CellProperties) "+LocaleMessage.getString("failure"),
-					e);
+		} catch (SecurityException e) {
+			throw new SystemException(e);
+		} catch (NoSuchMethodException e) {
+			throw new SystemException(e);
+		} catch (IllegalArgumentException e) {
+			throw new SystemException(e);
+		} catch (InstantiationException e) {
+			throw new SystemException(e);
+		} catch (IllegalAccessException e) {
+			throw new SystemException(e);
+		} catch (InvocationTargetException e) {
+			throw new SystemException(e);
 		}
 	}
 }

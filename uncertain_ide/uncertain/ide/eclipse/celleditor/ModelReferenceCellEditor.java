@@ -10,16 +10,18 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 
 import uncertain.composite.CompositeMap;
-import uncertain.ide.eclipse.editor.bm.GridDialog;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CustomDialog;
 
 public class ModelReferenceCellEditor extends StringTextCellEditor {
 
@@ -54,15 +56,20 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 			}
 			
 			public void focusGained(FocusEvent e) {
+				try {
+//					fireEvent();
+				} catch (Exception e1) {
+					CustomDialog.showExceptionMessageBox(e1);
+				}
 			}
 		});
 	}
-	private void fireEvent() throws Exception{
+	private void fireEvent() throws ApplicationException{
 
 		IEditorInput input = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor().getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		IProject project = ifile.getProject();
-		String bmFilesDir = ProjectProperties.getBMBaseDir(project);
+		String bmFilesDir = ProjectPropertyPage.getBMBaseLocalDir(project);
 		File baseDir = new File(bmFilesDir);
 		String fullPath = baseDir.getAbsolutePath();
 		CompositeMap bmFiles = getAllBMFiles(baseDir,fullPath);
@@ -76,7 +83,13 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 		if (dialog.open() == Window.OK) {
 			String value = dialog.getSelected().getString("fullpath");
 			setValue(value);
-			cellProperties.getRecord().put(cellProperties.getColumnName(), value);
+			if(isTableItemEditor()){
+				cellProperties.getRecord().put(cellProperties.getColumnName(), value);
+			}else{
+				TableItem item =cellProperties.getTableViewer().getViewer().getTable().getSelection()[0];
+				CompositeMap data = (CompositeMap)item.getData();
+				data.put(cellProperties.getColumnName(), value);
+			}
 			cellProperties.getTableViewer().refresh(true);
 		}
 	}
