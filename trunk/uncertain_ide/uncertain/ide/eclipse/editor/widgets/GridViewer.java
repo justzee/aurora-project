@@ -42,20 +42,20 @@ import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.AddElementAction;
-import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.action.RefreshAction;
 import uncertain.ide.eclipse.action.RemoveElementAction;
 import uncertain.ide.eclipse.celleditor.CellEditorFactory;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
-import uncertain.ide.eclipse.editor.bm.BmPageFilter;
 import uncertain.ide.eclipse.editor.core.ITableViewer;
 import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.core.ICellModifierListener;
 import uncertain.ide.eclipse.editor.widgets.core.IGridLabelProvider;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 
@@ -193,7 +193,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
 	}
 
-	public Composite createViewer(Composite parent) {
+	public Composite createViewer(Composite parent) throws ApplicationException {
 
 		container = createContainer(parent);
 		filterText = createSerchBar();
@@ -222,7 +222,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		tableViewer.setSorter(viewSorter);
 	}
 
-	public void createViewer(Composite parent, CompositeMap data) {
+	public void createViewer(Composite parent, CompositeMap data) throws ApplicationException {
 		createViewer(parent);
 		setData(data);
 	}
@@ -256,7 +256,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
 	public String[] getGridProperties() {
 		if (columnNames == null)
-			columnNames = CompositeMapAction.getArrayAttrNames(data);
+			columnNames = CompositeMapUtil.getArrayAttrNames(data);
 		return columnNames;
 	}
 
@@ -332,7 +332,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		this.cellEditors = cellEditors;
 	}
 
-	public void setData(CompositeMap data) {
+	public void setData(CompositeMap data) throws ApplicationException {
 		this.data = data;
 		if (tableViewer != null) {
 			if (tableViewer.getColumnProperties() == null)
@@ -432,7 +432,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 	}
 
-	protected CellEditor[] createCellEditors() {
+	protected CellEditor[] createCellEditors() throws ApplicationException {
 		if (cellEditors != null)
 			return cellEditors;
 		CellEditor[] editors;
@@ -446,7 +446,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 				editors[i + 1] = tce;
 			}
 		} else {
-			List attrib_list = CompositeMapAction.getArrayAttrs(data);
+			List attrib_list = CompositeMapUtil.getArrayAttrs(data);
 			editors = new CellEditor[attrib_list.size() + 1];
 			int id = 1;
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {
@@ -564,7 +564,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 	}
 
-	protected void createTableColumns() {
+	protected void createTableColumns() throws ApplicationException {
 		columnNames = getGridProperties();
 
 		String[] fullGridProperties = new String[columnNames.length + 1];
@@ -601,7 +601,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			setAllChecked(tableViewer.getTable(), true);
 
 		if (isSerchable()) {
-			final BmPageFilter filter = new BmPageFilter(filterColumn);
+			final CompositeMapFilter filter = new CompositeMapFilter(filterColumn);
 			tableViewer.addFilter(filter);
 			filterText.addModifyListener(new ModifyListener() {
 

@@ -12,7 +12,7 @@ import uncertain.ide.Activator;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
 import uncertain.ide.eclipse.editor.widgets.core.IGridLabelProvider;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.LocaleMessage;
 
 public class PropertyGridLabelProvider extends BaseLabelProvider implements IGridLabelProvider {
 

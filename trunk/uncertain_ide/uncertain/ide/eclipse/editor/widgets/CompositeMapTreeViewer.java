@@ -49,7 +49,6 @@ import uncertain.ide.Activator;
 import uncertain.ide.eclipse.action.ActionListener;
 import uncertain.ide.eclipse.action.ActionProperties;
 import uncertain.ide.eclipse.action.ActionsFactory;
-import uncertain.ide.eclipse.action.CompositeMapAction;
 import uncertain.ide.eclipse.action.CopyElementAction;
 import uncertain.ide.eclipse.action.DataSetWizard;
 import uncertain.ide.eclipse.action.ElementDoubleClickListener;
@@ -59,9 +58,12 @@ import uncertain.ide.eclipse.action.RemoveElementAction;
 import uncertain.ide.eclipse.action.ToolBarAddElementListener;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Element;
 import aurora.ide.AuroraConstant;
 
@@ -222,14 +224,14 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 						}
 						CompositeMap view = input.getChild(AuroraConstant.ViewQN.getLocalName());
 						if (view == null) {
-							String prefix = CompositeMapAction.getContextPrefix(input,AuroraConstant.ViewQN);
+							String prefix = CompositeMapUtil.getContextPrefix(input,AuroraConstant.ViewQN);
 							view = new CompositeMap(prefix,AuroraConstant.ViewQN.getNameSpace(),AuroraConstant.ViewQN.getLocalName());
 							view.setParent(input);
 							input.addChild(view);
 						}
 						CompositeMap dataSets = view.getChild(AuroraConstant.DataSetSQN.getLocalName());
 						if (dataSets == null) {
-							String prefix = CompositeMapAction.getContextPrefix(input,AuroraConstant.DataSetSQN);
+							String prefix = CompositeMapUtil.getContextPrefix(input,AuroraConstant.DataSetSQN);
 							dataSets = new CompositeMap(prefix,AuroraConstant.DataSetSQN.getNameSpace(),AuroraConstant.DataSetSQN.getLocalName());
 							view.addChild(dataSets);
 							dataSets.setParent(view);
@@ -255,7 +257,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 							&& objectCm.toXML().equals(sourceCm.toXML())) {
 						return;
 					}
-					if (!CompositeMapAction.validNextNodeLegalWithAction(
+					if (!CompositeMapUtil.validNextNodeLegalWithAction(
 							objectCm, sourceCm)) {
 						return;
 					}
@@ -280,30 +282,26 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		return path;
 	}
 
-	private String getFullPath() throws Exception {
+	private String getFullPath() throws ApplicationException{
 		IEditorInput input = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActiveEditor()
 				.getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		IProject project = ifile.getProject();
-		String bmFilesDir = ProjectProperties.getBMBaseDir(project);
+		String bmFilesDir = ProjectPropertyPage.getBMBaseLocalDir(project);
 		java.io.File baseDir = new java.io.File(bmFilesDir);
 		String fullPath = baseDir.getAbsolutePath();
 		return fullPath;
 	}
 
-	public MenuManager addChildElements() {
+	public MenuManager addChildElements() throws ApplicationException {
 		String text = LocaleMessage.getString("add.element.label");
 		ImageDescriptor imageDes = Activator.getImageDescriptor(LocaleMessage.getString("add.icon"));
 		MenuManager childElementMenus = new MenuManager(text,imageDes,null);
 		final CompositeMap comp = focusData;
 		
 		ActionProperties actionProperties = new ActionProperties(this,comp);
-		try {
-			ActionsFactory.getInstance().addActionsToMenuManager(childElementMenus, actionProperties);
-		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
-		}
+		ActionsFactory.getInstance().addActionsToMenuManager(childElementMenus, actionProperties);
 		return childElementMenus;
 	}
 
@@ -316,8 +314,13 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 			public void menuAboutToShow(IMenuManager manager) {
 				manager.add(new Separator(
 						IWorkbenchActionConstants.MB_ADDITIONS));
-				MenuManager childElements = addChildElements();
-				manager.add(childElements);
+				MenuManager childElements;
+				try {
+					childElements = addChildElements();
+					manager.add(childElements);
+				} catch (ApplicationException e) {
+					CustomDialog.showErrorMessageBox(e);
+				}
 				manager.add(new CopyElementAction(CompositeMapTreeViewer.this,
 						CopyElementAction.getDefaultImageDescriptor(),
 						CopyElementAction.getDefaultText()));

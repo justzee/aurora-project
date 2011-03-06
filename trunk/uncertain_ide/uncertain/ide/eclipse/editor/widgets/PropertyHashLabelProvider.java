@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Image;
 
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.widgets.core.CategoryLabel;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 
