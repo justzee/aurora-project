@@ -10,8 +10,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.core.ISqlViewer;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 
 public class ExecuteSqlAction extends Action {
 	ISqlViewer viewer;
@@ -49,7 +49,8 @@ public class ExecuteSqlAction extends Action {
 				resultCount = resultSet.getFetchSize();
 			}
 		} catch (SQLException e) {
-			CustomDialog.showExceptionMessageBox(e);
+			CustomDialog.showErrorMessageBox(e);
+			return;
 		}
 		viewer.refresh(resultSet, resultCount);
 	}

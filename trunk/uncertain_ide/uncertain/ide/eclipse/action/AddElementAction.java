@@ -7,7 +7,8 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.LocaleMessage;
 
 public class AddElementAction extends ActionListener{
 	
@@ -21,7 +22,7 @@ public class AddElementAction extends ActionListener{
 	public AddElementAction(IViewer viewer, CompositeMap parent, QualifiedName childQN,int actionStyle) {
 		this.viewer = viewer;
 		this.parent = parent;
-		this.prefix = CompositeMapAction.getContextPrefix(parent,childQN);
+		this.prefix = CompositeMapUtil.getContextPrefix(parent,childQN);
 		childQN.setPrefix(prefix);
 		this.uri = childQN.getNameSpace();
 		this.localName = childQN.getLocalName();
@@ -41,7 +42,7 @@ public class AddElementAction extends ActionListener{
 	}
 	
 	public void run() {
-		CompositeMapAction.addElement(parent, prefix, uri, localName);
+		CompositeMapUtil.addElement(parent, prefix, uri, localName);
 		if (viewer != null) {
 			viewer.refresh(true);
 		}

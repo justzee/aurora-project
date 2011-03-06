@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CustomDialog;
 
 public class ToolBarAddElementListener implements Listener {
 	private ToolBar toolBar;
@@ -38,8 +40,8 @@ public class ToolBarAddElementListener implements Listener {
 			ActionProperties actionProperties = new ActionProperties(viewer,parent);
 			try {
 				ActionsFactory.getInstance().addActionsToMenu(menu, actionProperties);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
 			}
 			Rectangle rect = item.getBounds();
 			Point pt = new Point(rect.x, rect.y + rect.height);

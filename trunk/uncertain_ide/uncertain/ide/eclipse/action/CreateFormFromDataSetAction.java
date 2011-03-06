@@ -40,38 +40,41 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import aurora.ide.AuroraConstant;
-import aurora.presentation.component.std.config.DataSetConfig;
-
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.composite.XMLOutputter;
 import uncertain.ide.Activator;
+import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.celleditor.AuroraCellEditor;
 import uncertain.ide.eclipse.celleditor.CellProperties;
 import uncertain.ide.eclipse.celleditor.ComboxCellEditor;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
-import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
-import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.eclipse.editor.widgets.core.ICellModifierListener;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
 import uncertain.schema.editor.AttributeValue;
 import uncertain.schema.editor.CompositeMapEditor;
+import aurora.ide.AuroraConstant;
+import aurora.presentation.component.std.config.DataSetConfig;
 
 public class CreateFormFromDataSetAction extends AddElementAction {
 	final static String idColumn = "id";
 	final static String modelColumn = "model";
 	final static String queryDataSetColumn = "queryDataSet";
-	final static String title = LocaleMessage.getString("create.form.from.dataset");
+	final static String title = LocaleMessage
+			.getString("create.form.from.dataset");
 	private final static String lineSeparator = System
 			.getProperty("line.separator");
 	private final static String screenBodyColumn = "screenBody";
@@ -97,8 +100,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 	public void run() {
 		if (parent == null
 				|| !AuroraConstant.DataSetQN.equals(parent.getQName())) {
-			CustomDialog
-					.showErrorMessageBox("It is not a dataSet element!");
+			CustomDialog.showErrorMessageBox("It is not a dataSet element!");
 			return;
 		}
 		DataSetConfig dataSet = DataSetConfig.getInstance(parent);
@@ -156,7 +158,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			int columnCount = mainConfigPage.getColumnCount();
 			form.put("column", new Integer(columnCount));
 			form.put("id", mainConfigPage.getId());
-			
+
 			HashMap columnFields = fieldPage.getColumnFields();
 			HashMap changeData = fieldPage.getChangeData();
 			HashMap allfields = getAllFields();
@@ -316,7 +318,11 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		}
 
 		public void refresh(boolean isDirty) {
-			fieldPage.repaint();
+			try {
+				fieldPage.repaint();
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+			}
 		}
 
 		public int getColumnCount() {
@@ -344,7 +350,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 		protected MainConfigPage(IViewer parent, CompositeMap dataSet) {
 			super(PAGE_NAME);
-			setTitle(title+"--"+LocaleMessage.getString("mainpage"));
+			setTitle(title + "--" + LocaleMessage.getString("mainpage"));
 			this.parentViewer = parent;
 			this.dataSet = dataSet;
 		}
@@ -377,7 +383,9 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		private String getBMFileDir() {
 			if (bmDir == null) {
 				try {
-					bmDir = ProjectProperties.getBMBaseDir();
+					bmDir = ProjectPropertyPage
+							.getBMBaseLocalDir(AuroraResourceUtil
+									.getIProjectFromSelection());
 				} catch (Exception e) {
 					CustomDialog.showExceptionMessageBox(e);
 				}
@@ -597,7 +605,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			}
 			return availableDataSets;
 		}
-		public String getId(){
+
+		public String getId() {
 			return id;
 		}
 
@@ -608,7 +617,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		private String outputErrorMessage() {
 			if (allIds == null) {
 				allIds = new HashSet();
-				CompositeMapAction.collectAttribueValues(allIds, "id", dataSet
+				CompositeMapUtil.collectAttribueValues(allIds, "id", dataSet
 						.getRoot());
 			}
 
@@ -651,7 +660,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 		protected FieldPage(FormWizard wizard) {
 			super(PAGE_NAME);
-			setTitle(title+"--"+LocaleMessage.getString("filed.page"));
+			setTitle(title + "--" + LocaleMessage.getString("filed.page"));
 			this.wizard = wizard;
 		}
 
@@ -659,7 +668,12 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			Composite content = new Composite(parent, SWT.NONE);
 			content.setLayout(new FillLayout());
 			SashForm sashForm = new SashForm(content, SWT.VERTICAL);
-			createGridViewer(sashForm);
+			try {
+				createGridViewer(sashForm);
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+				return;
+			}
 			createHashViewer(sashForm);
 			grid.addSelectionChangedListener(new ElementSelectionListener());
 			sashForm.setWeights(new int[] { 5, 5 });
@@ -676,7 +690,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			return grid.getSelection();
 		}
 
-		private void createGridViewer(Composite parent) {
+		private void createGridViewer(Composite parent) throws ApplicationException {
 			Composite content = new Composite(parent, SWT.NONE);
 
 			GridLayout gridLayout = new GridLayout();
@@ -782,7 +796,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			grid.refresh(false);
 		}
 
-		public void repaint() {
+		public void repaint() throws ApplicationException {
 
 			// if this page not init
 			if (newCompositeMap == null)
@@ -844,10 +858,11 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 							return;
 						}
 						if (column > sorter.getColumnCount() || column < 1) {
-							throw new RuntimeException(LocaleMessage
+							CustomDialog.showErrorMessageBox(LocaleMessage
 									.getString("column.number.warning")
 									+ sorter.getColumnCount()
 									+ LocaleMessage.getString("between"));
+							return;
 						}
 					}
 					if (column == 0)
@@ -864,7 +879,11 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 						}
 					}
-					hashViewer.setData(getEditorData(record, value));
+					try {
+						hashViewer.setData(getEditorData(record, value));
+					} catch (ApplicationException e) {
+						CustomDialog.showErrorMessageBox(e);
+					}
 				}
 				newRecord.put(property, value);
 			}
@@ -874,7 +893,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				String field = data.getString("name");
 				QualifiedName editorQualified = new QualifiedName(
 						AuroraCellEditor.aurorUri, editorName);
-				String prefix = CompositeMapAction.getContextPrefix(data,
+				String prefix = CompositeMapUtil.getContextPrefix(data,
 						editorQualified);
 				CompositeMap editor = new CompositeMap(prefix, editorQualified
 						.getNameSpace(), editorQualified.getLocalName());
@@ -1025,7 +1044,11 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				if (data == null)
 					return;
 				grid.setFocus(data);
-				hashViewer.setData(getEditorData(data));
+				try {
+					hashViewer.setData(getEditorData(data));
+				} catch (ApplicationException e) {
+					CustomDialog.showErrorMessageBox(e);
+				}
 			}
 
 			private CompositeMap getEditorData(CompositeMap data) {
@@ -1036,7 +1059,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				}
 				QualifiedName editorQualified = new QualifiedName(
 						AuroraCellEditor.aurorUri, data.getString("editor"));
-				String prefix = CompositeMapAction.getContextPrefix(data,
+				String prefix = CompositeMapUtil.getContextPrefix(data,
 						editorQualified);
 				CompositeMap editor = new CompositeMap(prefix, editorQualified
 						.getNameSpace(), editorQualified.getLocalName());
