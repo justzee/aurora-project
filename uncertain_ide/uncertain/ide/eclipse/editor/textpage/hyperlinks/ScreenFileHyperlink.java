@@ -12,7 +12,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.help.CustomDialog;
 
 public class ScreenFileHyperlink implements IHyperlink {
 	private IRegion region;

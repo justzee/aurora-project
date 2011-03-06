@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.Viewer;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.util.LoadSchemaManager;
+import uncertain.ide.help.LoadSchemaManager;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
 

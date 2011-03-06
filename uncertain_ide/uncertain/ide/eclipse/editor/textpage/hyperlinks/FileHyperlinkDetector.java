@@ -16,7 +16,8 @@ import uncertain.ide.eclipse.editor.textpage.ColorManager;
 import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.SystemException;
 
 public class FileHyperlinkDetector implements IHyperlinkDetector {
 
@@ -66,10 +67,14 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 		return null;
 	}
 
-	private String getColumnName(int documentOffset, IDocument document)
-			throws Exception {
+	private String getColumnName(int documentOffset, IDocument document) throws SystemException{
 		String columnName = null;
-		ITypedRegion region = document.getPartition(documentOffset);
+		ITypedRegion region;
+		try {
+			region = document.getPartition(documentOffset);
+		} catch (BadLocationException e) {
+			throw new SystemException(e);
+		}
 		if (!XMLPartitionScanner.XML_START_TAG.equals(region.getType()))
 			return null;
 		int partitionOffset = region.getOffset();
@@ -85,8 +90,12 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 				TextAttribute text = (TextAttribute) token.getData();
 				if (text.getForeground().getRGB().equals(
 						IColorConstants.ATTRIBUTE)) {
-					columnName = document.get(scanner.getTokenOffset(), scanner
-							.getTokenLength());
+					try {
+						columnName = document.get(scanner.getTokenOffset(), scanner
+								.getTokenLength());
+					} catch (BadLocationException e) {
+						throw new SystemException(e);
+					}
 				}
 
 			}

@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ViewerSorter;
 
 import uncertain.ide.eclipse.editor.core.ICategory;
 import uncertain.ide.eclipse.editor.widgets.core.CategoryLabel;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Category;
 import uncertain.schema.editor.AttributeValue;
 

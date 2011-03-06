@@ -43,8 +43,10 @@ import uncertain.ide.eclipse.editor.PropertyViewer;
 import uncertain.ide.eclipse.editor.core.ICategoryTableViewer;
 import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.core.CategoryLabel;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import uncertain.schema.editor.AttributeValue;
@@ -71,7 +73,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 		this.parent = parent;
 	}
 
-	public void setData(CompositeMap data) {
+	public void setData(CompositeMap data) throws ApplicationException {
 		Assert.isTrue(tableViewer != null, "The viewer has not been created!");
 		tableViewer.setInput(data);
 		int xWidth = parent.getBounds().width;
@@ -176,7 +178,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 		viewForm.setTopLeft(toolBar);
 	}
 
-	public void createEditor(CompositeMap data) {
+	public void createEditor(CompositeMap data) throws ApplicationException {
 		createEditor();
 		setData(data);
 	}
@@ -292,7 +294,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 		return null;
 	}
 
-	public void setCellEditors() {
+	public void setCellEditors() throws ApplicationException {
 		Table table = tableViewer.getTable();
 		TableItem[] items = table.getItems();
 		for (int i = 0; i < items.length; i++) {
@@ -301,9 +303,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 			if (av instanceof CategoryLabel) {
 				continue;
 			}
-			ICellEditor cellEditor = CellEditorFactory
-					.getInstance()
-					.createCellEditor(this, av.getAttribute(), getInput(), item);
+			ICellEditor cellEditor = CellEditorFactory.getInstance().createCellEditor(this, av.getAttribute(), getInput(), item);
 			if (cellEditor != null) {
 				addEditor(av.getAttribute().getLocalName(), cellEditor);
 				fillTableCellEditor(table, item, av.getAttribute().getQName(),
