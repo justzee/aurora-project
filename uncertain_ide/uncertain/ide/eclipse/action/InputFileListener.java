@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.EditorPart;
 
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.help.CustomDialog;
 
 public class InputFileListener implements IResourceChangeListener, IResourceDeltaVisitor {
 	private EditorPart editor;

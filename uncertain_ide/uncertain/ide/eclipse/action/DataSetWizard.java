@@ -34,12 +34,14 @@ import org.eclipse.ui.PlatformUI;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.eclipse.editor.bm.GridDialog;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 
 /**
  * @author linjinxiao
@@ -69,7 +71,7 @@ public class DataSetWizard extends Wizard {
 		super();
 		QualifiedName QName = new QualifiedName(uri,cmName);
 		this.parentCM = parentCM;
-		this.prefix = CompositeMapAction.getContextPrefix(parentCM,QName);
+		this.prefix = CompositeMapUtil.getContextPrefix(parentCM,QName);
 		this.bmFiles = bmFiles;
 	}
 
@@ -119,11 +121,11 @@ public class DataSetWizard extends Wizard {
 
 	public boolean performFinish() {
 		Set ids = new HashSet();
-		CompositeMapAction.collectAttribueValues(ids, "id", parentCM.getRoot());
+		CompositeMapUtil.collectAttribueValues(ids, "id", parentCM.getRoot());
 		WizardPage nextPage = (WizardPage)getPage(nextPageName);
 		if (LoopupCodePage.PAGE_NAME.equals(nextPageName)) {
 			LoopupCodePage loopupCodePage  = (LoopupCodePage)nextPage;
-			CompositeMap child = CompositeMapAction.addElement(parentCM,
+			CompositeMap child = CompositeMapUtil.addElement(parentCM,
 					prefix, uri, cmName);
 			String loopupCode = loopupCodePage.getLookUpCode();
 			child.put("loopupCode", loopupCodePage.getLookUpCode());
@@ -132,7 +134,7 @@ public class DataSetWizard extends Wizard {
 		}
 		if (ManualDataSetPage.PAGE_NAME.equals(nextPageName)) {
 			ManualDataSetPage manualDataSetPage  = (ManualDataSetPage)nextPage;
-			CompositeMap child = CompositeMapAction.addElement(parentCM,
+			CompositeMap child = CompositeMapUtil.addElement(parentCM,
 					prefix, uri, cmName);
 			child.put("id", manualDataSetPage.getId());
 			return true;
@@ -141,7 +143,7 @@ public class DataSetWizard extends Wizard {
 			BMSelectionPage bmSelectionPage  = (BMSelectionPage)nextPage;
 			String[] names = bmSelectionPage.getSelection().split(",");
 			for (int i = 0; i < names.length; i++) {
-				CompositeMap child = CompositeMapAction.addElement(parentCM,
+				CompositeMap child = CompositeMapUtil.addElement(parentCM,
 						prefix, uri, cmName);
 				configCompositeMap(child, names[i], bmSelectionPage
 						.getJustForInput(), bmSelectionPage.getFromServer(),
@@ -321,7 +323,7 @@ class ManualDataSetPage extends WizardPage {
 			public void modifyText(ModifyEvent e) {
 				if (text.getText() != null && !(text.getText().equals(""))) {
 					Set ids = new HashSet();
-					CompositeMapAction.collectAttribueValues(ids, "id",
+					CompositeMapUtil.collectAttribueValues(ids, "id",
 							parentCM.getRoot());
 					if (ids.contains(text.getText())) {
 						setErrorMessage(LocaleMessage.getString("This.id.has.exists.please.change.it"));
@@ -472,14 +474,14 @@ class BMSelectionPage extends WizardPage {
 		this.bmselections = bmselections;
 	}
 
-	private void fireEvent() throws Exception {
+	private void fireEvent() throws ApplicationException{
 
 		IEditorInput input = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActiveEditor()
 				.getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		IProject project = ifile.getProject();
-		String bmFilesDir = ProjectProperties.getBMBaseDir(project);
+		String bmFilesDir = ProjectPropertyPage.getBMBaseLocalDir(project);
 		File baseDir = new File(bmFilesDir);
 		String fullPath = baseDir.getAbsolutePath();
 		CompositeMap bmFiles = getAllBMFiles(baseDir, fullPath);

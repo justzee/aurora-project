@@ -12,7 +12,9 @@ import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.ListElementsExchangeDialog;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 
 public class AddFieldAction extends Action {
 	private IViewer viewer;
@@ -33,6 +35,10 @@ public class AddFieldAction extends Action {
 		setHoverImageDescriptor(getDefaultImageDescriptor());
 	}
 	public void run() {
+		if(allFields == null){
+			CustomDialog.showErrorMessageBox("没有可用的字段!");
+			return ;
+		}
 		List source_childs_list = allFields.getChildsNotNull();
 		if(source_childs_list.size()==0)
 			return ;
@@ -52,7 +58,7 @@ public class AddFieldAction extends Action {
 		String[] result = dialog.getRightItems();
 		target.getChildsNotNull().clear();
 		for(int i=0;i<result.length;i++){
-			CompositeMap newNode = CompositeMapAction.addElement(target, fieldQN.getPrefix(), fieldQN.getNameSpace(), fieldQN.getLocalName());
+			CompositeMap newNode = CompositeMapUtil.addElement(target, fieldQN.getPrefix(), fieldQN.getNameSpace(), fieldQN.getLocalName());
 			newNode.put(mainAttribute, result[i]);
 		}
 		if (viewer != null) {

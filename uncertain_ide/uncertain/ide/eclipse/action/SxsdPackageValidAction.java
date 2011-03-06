@@ -10,8 +10,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.pkg.PackageManager;
 import uncertain.schema.SchemaManager;
 

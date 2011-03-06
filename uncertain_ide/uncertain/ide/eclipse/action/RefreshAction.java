@@ -4,7 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.LocaleMessage;
 
 public class RefreshAction extends ActionListener {
 	IViewer viewer;

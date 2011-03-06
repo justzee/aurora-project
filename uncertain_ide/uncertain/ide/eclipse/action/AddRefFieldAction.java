@@ -12,12 +12,13 @@ import org.eclipse.swt.widgets.Shell;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.bm.BMUtil;
-import uncertain.ide.eclipse.editor.bm.GridDialog;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.eclipse.bm.BMUtil;
+import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
 import aurora.ide.AuroraConstant;
 
 
@@ -70,7 +71,13 @@ public class AddRefFieldAction extends ActionListener {
 				gridInput.addChilds(fields.getChildsNotNull());
 			}
 		}
-		CompositeMap selectFileds = selectFileds();
+		CompositeMap selectFileds = null;
+		try {
+			selectFileds = selectFileds();
+		} catch (ApplicationException e) {
+			CustomDialog.showErrorMessageBox(e);
+			return;
+		}
 		CompositeMap refFields = createRefFields(selectFileds);
 		if(refFields == null){
 			return ;
@@ -125,7 +132,7 @@ public class AddRefFieldAction extends ActionListener {
 		}
 		return input;
 	}
-	private CompositeMap selectFileds(){
+	private CompositeMap selectFileds() throws ApplicationException{
 		CompositeMap selectResult = null;
 		GridViewer grid = new GridViewer(IGridViewer.isMulti);
 		grid.setData(gridInput);

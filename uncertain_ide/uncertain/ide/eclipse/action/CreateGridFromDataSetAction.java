@@ -34,18 +34,21 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
+import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.celleditor.CellProperties;
 import uncertain.ide.eclipse.celleditor.ComboxCellEditor;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
-import uncertain.ide.eclipse.editor.bm.GridDialog;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
-import uncertain.ide.eclipse.editor.widgets.config.ProjectProperties;
 import uncertain.ide.eclipse.editor.widgets.core.ICellModifierListener;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
 import aurora.ide.AuroraConstant;
@@ -189,7 +192,11 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		}
 
 		public void refresh(boolean isDirty) {
-			fieldPage.repaint();
+			try {
+				fieldPage.repaint();
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+			}
 		}
 
 	}
@@ -242,7 +249,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		private String getBMFileDir() {
 			if (bmDir == null) {
 				try {
-					bmDir = ProjectProperties.getBMBaseDir();
+					bmDir = ProjectPropertyPage.getBMBaseLocalDir(AuroraResourceUtil.getIProjectFromSelection());
 				} catch (Exception e) {
 					CustomDialog.showExceptionMessageBox(e);
 				}
@@ -473,7 +480,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		private String outputErrorMessage() {
 			if (allIds == null) {
 				allIds = new HashSet();
-				CompositeMapAction.collectAttribueValues(allIds, "id", dataSet.getRoot());
+				CompositeMapUtil.collectAttribueValues(allIds, "id", dataSet.getRoot());
 			}
 
 			if (bindTarget == null || bindTarget.equals("")) {
@@ -560,7 +567,11 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			grid = new GridViewer(columnProperties, IGridViewer.isMulti
 					| IGridViewer.fullEditable | IGridViewer.isAllChecked);
 			grid.setParent(this);
-			grid.createViewer(content);
+			try {
+				grid.createViewer(content);
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+			}
 
 			TableViewer tableView = grid.getViewer();
 			CellEditor[] celleditors = new CellEditor[columnProperties.length + 1];
@@ -587,7 +598,11 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			celleditors[columnProperties.length] = cellEditor.getCellEditor();
 			grid.addEditor("editor", cellEditor);
 			grid.setCellEditors(celleditors);
-			grid.setData(filedNames);
+			try {
+				grid.setData(filedNames);
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+			}
 			newCompositeMap = new ModifyCompositeMapListener();
 			grid.addCellModifierListener(newCompositeMap);
 			setControl(content);
@@ -606,7 +621,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			grid.refresh(false);
 		}
 
-		public void repaint() {
+		public void repaint() throws ApplicationException {
 
 			// if this page not init
 			if (newCompositeMap == null)

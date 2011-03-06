@@ -1,10 +1,10 @@
 package uncertain.ide.eclipse.action;
 
-import aurora.ide.AuroraConstant;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.eclipse.editor.core.IViewer;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.LocaleMessage;
+import aurora.ide.AuroraConstant;
 
 public class DataSetsWizardAction implements IWizardAction{
 
