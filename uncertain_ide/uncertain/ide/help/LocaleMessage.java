@@ -1,4 +1,4 @@
-package uncertain.ide.util;
+package uncertain.ide.help;
 
 import java.util.Locale;
 import java.util.MissingResourceException;

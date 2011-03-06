@@ -4,7 +4,7 @@
  * Created on 2002��1��5��, ����2:12
  */
 
-package uncertain.ide.util;
+package uncertain.ide.help;
 
 import java.io.IOException;
 import java.io.InputStream;
