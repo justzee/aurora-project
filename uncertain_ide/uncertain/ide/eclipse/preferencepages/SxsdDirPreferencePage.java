@@ -28,9 +28,9 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.action.SxsdValidVisablePropertyTester;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 
 public class SxsdDirPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {

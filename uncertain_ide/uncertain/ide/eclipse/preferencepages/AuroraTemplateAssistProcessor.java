@@ -18,7 +18,9 @@ import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.swt.graphics.Image;
 
 import uncertain.ide.Activator;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LocaleMessage;
+import uncertain.ide.help.SystemException;
 
 public class AuroraTemplateAssistProcessor extends TemplateCompletionProcessor {
 	protected String extractPrefix(ITextViewer viewer, int offset) {
@@ -46,7 +48,12 @@ public class AuroraTemplateAssistProcessor extends TemplateCompletionProcessor {
 
 	protected Template[] getTemplates(String contextTypeId) {
 		AuroraTemplateManager manager = AuroraTemplateManager.getInstance();
-		return manager.getTemplateStore().getTemplates();
+		try {
+			return manager.getTemplateStore().getTemplates();
+		} catch (SystemException e) {
+			CustomDialog.showErrorMessageBox(e);
+			return null;
+		}
 	}
 
 	protected TemplateContextType getContextType(ITextViewer viewer,
