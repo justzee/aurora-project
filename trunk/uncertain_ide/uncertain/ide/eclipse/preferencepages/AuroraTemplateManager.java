@@ -2,6 +2,7 @@ package uncertain.ide.eclipse.preferencepages;
 
 import java.io.IOException;
 
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
@@ -9,6 +10,7 @@ import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 
 import uncertain.ide.Activator;
+import uncertain.ide.help.SystemException;
 
 public class AuroraTemplateManager {
 	private static final String CUSTOM_TEMPLATES_KEY = Activator.PLUGIN_ID
@@ -27,8 +29,7 @@ public class AuroraTemplateManager {
 		return instance;
 	}
 
-	public TemplateStore getTemplateStore() {
-
+	public TemplateStore getTemplateStore() throws SystemException {
 		if (store == null) {
 			store = new ContributionTemplateStore(getContextTypeRegistry(),
 					Activator.getDefault().getPreferenceStore(),
@@ -36,8 +37,7 @@ public class AuroraTemplateManager {
 			try {
 				store.load();
 			} catch (IOException e) {
-				e.printStackTrace();
-
+				throw new SystemException(e);
 			}
 		}
 		return store;
