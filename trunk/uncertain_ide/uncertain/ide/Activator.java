@@ -14,7 +14,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
+import uncertain.ide.help.CustomDialog;
 
 
 /**

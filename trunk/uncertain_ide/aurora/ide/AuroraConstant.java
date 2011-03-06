@@ -17,14 +17,19 @@ public interface AuroraConstant {
 	public final static String ApplicationUri = "http://www.aurora-framework.org/application";
 	public final static String BMUri = "http://www.aurora-framework.org/schema/bm";
 	//qn
-	public final static QualifiedName screenQN = new QualifiedName(ApplicationUri, "screen");
-	public final static QualifiedName viewQN = new QualifiedName(ApplicationUri, "view");
-	public final static QualifiedName dataSetQN = new QualifiedName(ApplicationUri, "dataSet");
-	public static QualifiedName modelQN = new QualifiedName(BMUri, "model");
+	public final static QualifiedName ScreenQN = new QualifiedName(ApplicationUri, "screen");
+	public final static QualifiedName ViewQN = new QualifiedName(ApplicationUri, "view");
+	public final static QualifiedName DataSetQN = new QualifiedName(ApplicationUri, "dataSet");
+	public final static QualifiedName DataSetSQN = new QualifiedName(ApplicationUri, "dataSets");
+	public static QualifiedName ModelQN = new QualifiedName(BMUri, "model");
 	
-	public static String[] buildinFileExtension = new String[]{"screen","bm"};
-	public static String screenFileExtension = "screen";
-	public static String serviceFileExtension = "service";
-	public static String svcFileExtension = "svc";
+	public static String[] BuildinFileExtension = new String[]{"screen","bm"};
+	public static String ScreenFileExtension = "screen";
+	public static String ServiceFileExtension = "service";
+	public static String SvcFileExtension = "svc";
+	public static String BMFileExtension = "bm";
+	public static String DbConfigFileName = "0.datasource.config";
+	public static String CoreConfigFileName = "uncertain.xml";
+	public static String LogConfigFileName = "service-logging.config";
 
 }
