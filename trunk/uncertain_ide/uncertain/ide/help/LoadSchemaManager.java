@@ -1,11 +1,11 @@
-package uncertain.ide.util;
+package uncertain.ide.help;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.preferencepages.SxsdDirPreferencePage;
 import uncertain.pkg.PackageManager;
 import uncertain.schema.SchemaManager;
@@ -18,7 +18,7 @@ public class LoadSchemaManager {
 		PackageManager pkgManager = new PackageManager();
 		try {
 			loadBuildinSchema(pkgManager);
-			if (sxsdPaths != null){
+			if (sxsdPaths != null) {
 				for (int i = 0; i < sxsdPaths.length; i++) {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
@@ -31,7 +31,8 @@ public class LoadSchemaManager {
 			LoadSchemaManager.schemaManager.addAll(pkgManager
 					.getSchemaManager());
 		} catch (Exception e) {
-			CustomDialog.showErrorMessageBox(CustomDialog.getExceptionMessage(e));
+			CustomDialog.showErrorMessageBox(CustomDialog
+					.getExceptionMessage(e));
 			return false;
 		}
 		return true;
@@ -43,7 +44,7 @@ public class LoadSchemaManager {
 		try {
 			loadBuildinSchema(pkgManager);
 			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
-			if (sxsdPaths != null){
+			if (sxsdPaths != null) {
 				for (int i = 0; i < sxsdPaths.length; i++) {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
@@ -56,7 +57,8 @@ public class LoadSchemaManager {
 			LoadSchemaManager.schemaManager.addAll(pkgManager
 					.getSchemaManager());
 		} catch (Exception e) {
-			CustomDialog.showErrorMessageBox(CustomDialog.getExceptionMessage(e));
+			CustomDialog.showErrorMessageBox(CustomDialog
+					.getExceptionMessage(e));
 		}
 		return LoadSchemaManager.schemaManager;
 	}
@@ -73,29 +75,40 @@ public class LoadSchemaManager {
 		try {
 			loadBuildinSchema(pkgManager);
 			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
-			if (sxsdPaths != null){
+			if (sxsdPaths != null) {
 				for (int i = 0; i < sxsdPaths.length; i++) {
 					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
 				}
 			}
 		} catch (Throwable e) {
-			CustomDialog.showErrorMessageBox(CustomDialog.getExceptionMessage(e));
+			CustomDialog.showErrorMessageBox(CustomDialog
+					.getExceptionMessage(e));
 		}
 
 		LoadSchemaManager.schemaManager = SchemaManager.getDefaultInstance();
 		LoadSchemaManager.schemaManager.addAll(pkgManager.getSchemaManager());
 		return LoadSchemaManager.schemaManager;
 	}
-	public static void  loadBuildinSchema(PackageManager pkgManager) throws Exception {
-		URL uncertainUrl = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("uncertain_builtin_package/"));
-		pkgManager.loadPackgeDirectory(uncertainUrl.getFile());
-//		URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource("aurora_builtin_package/"));
-//		pkgManager.loadPackgeDirectory(url.getFile());
-		String[] packages = new String[]{"aurora_builtin_package/aurora.base/","aurora_builtin_package/aurora.database/","aurora_builtin_package/aurora.presentation/"}; 
-		for (int i = 0; i < packages.length; i++) {
-			String packageName = packages[i];
-			URL url = FileLocator.toFileURL(Activator.getDefault().getBundle().getResource(packageName));
-			pkgManager.loadPackage(url.getFile());
+
+	public static void loadBuildinSchema(PackageManager pkgManager) throws SystemException {
+		URL uncertainUrl;
+		try {
+			uncertainUrl = FileLocator.toFileURL(Activator.getDefault()
+					.getBundle().getResource("uncertain_builtin_package/"));
+
+			pkgManager.loadPackgeDirectory(uncertainUrl.getFile());
+			String[] packages = new String[] {
+					"aurora_builtin_package/aurora.base/",
+					"aurora_builtin_package/aurora.database/",
+					"aurora_builtin_package/aurora.presentation/" };
+			for (int i = 0; i < packages.length; i++) {
+				String packageName = packages[i];
+				URL url = FileLocator.toFileURL(Activator.getDefault()
+						.getBundle().getResource(packageName));
+				pkgManager.loadPackage(url.getFile());
+			}
+		} catch (IOException e) {
+			throw new SystemException(e);
 		}
 	}
 }
