@@ -15,8 +15,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
-import uncertain.ide.util.Common;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CustomDialog;
 
 public class CompositeMapTreePage extends CompositeMapPage {
 
@@ -48,11 +49,11 @@ public class CompositeMapTreePage extends CompositeMapPage {
 	protected File getFile() {
 		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
 				.getFile();
-		String fileName = Common.getIfileLocalPath(ifile);
+		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
 		return new File(fileName);
 	}
 	
-	protected void createContent(Composite shell) {
+	protected void createContent(Composite shell) throws ApplicationException {
 
 		baseCompositeMapPage = new BaseCompositeMapViewer(this,data);
 		baseCompositeMapPage.createFormContent(shell);

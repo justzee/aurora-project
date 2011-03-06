@@ -28,12 +28,13 @@ import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.textpage.ColorManager;
 import uncertain.ide.eclipse.editor.textpage.JavaScriptConfiguration;
 import uncertain.ide.eclipse.editor.widgets.CompositeMapTreeViewer;
-import uncertain.ide.eclipse.editor.widgets.CustomDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
-import uncertain.ide.util.LoadSchemaManager;
-import uncertain.ide.util.LocaleMessage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CustomDialog;
+import uncertain.ide.help.LoadSchemaManager;
+import uncertain.ide.help.LocaleMessage;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 
@@ -50,7 +51,7 @@ public class BaseCompositeMapViewer implements IViewer {
 		this.data = data;
 	}
 
-	public void createFormContent(Composite parent) {
+	public void createFormContent(Composite parent) throws ApplicationException {
 		parent.setLayout(new FillLayout());
 		control = new SashForm(parent, SWT.NONE);
 		createElementContent(control);
@@ -65,7 +66,7 @@ public class BaseCompositeMapViewer implements IViewer {
 
 	}
 
-	protected void createPropertyContent(Composite mContent) {
+	protected void createPropertyContent(Composite mContent) throws ApplicationException {
 		propertySection = new PropertySection(this);
 		propertySection.create(mContent);
 
@@ -138,7 +139,7 @@ public class BaseCompositeMapViewer implements IViewer {
 			this.viewer = viewer;
 		}
 
-		public void create(Composite parent) {
+		public void create(Composite parent) throws ApplicationException {
 
 			createTabFolder(parent);
 			createPropertyHashTab(mTabFolder);
@@ -153,7 +154,7 @@ public class BaseCompositeMapViewer implements IViewer {
 			mTabFolder.getItem(0).setControl(mPropertyEditor.getControl());
 		}
 
-		private void createPropertyGridTab(Composite parent) {
+		private void createPropertyGridTab(Composite parent) throws ApplicationException {
 			gridViewer = new GridViewer(null, IGridViewer.fullEditable|IGridViewer.isColumnPacked);
 			gridViewer.setParent(this);
 			gridViewer.createViewer(parent);
@@ -194,7 +195,7 @@ public class BaseCompositeMapViewer implements IViewer {
 			mTabFolder.getItem(2).setControl(textSection.getControl());
 		}
 
-		public void setInput(CompositeMap data) {
+		public void setInput(CompositeMap data) throws ApplicationException {
 			Element em = LoadSchemaManager.getSchemaManager().getElement(data);
 			if (em != null && em.isArray()) {
 				// gridViewer = new
@@ -334,7 +335,11 @@ public class BaseCompositeMapViewer implements IViewer {
 			if (data == null)
 				return;
 			treeViewer.setFocus(data);
-			propertySection.setInput(data);
+			try {
+				propertySection.setInput(data);
+			} catch (ApplicationException e) {
+				CustomDialog.showErrorMessageBox(e);
+			}
 		}
 		private boolean getValidation(CompositeMap focus,CompositeMap selection){
 			if(focus == null || selection == null)
