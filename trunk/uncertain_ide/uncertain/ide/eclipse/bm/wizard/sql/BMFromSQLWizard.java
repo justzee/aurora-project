@@ -35,7 +35,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
 import uncertain.ide.eclipse.bm.AuroraDataBase;
-import uncertain.ide.eclipse.bm.wizard.db.BmNewWizard;
+import uncertain.ide.eclipse.bm.wizard.db.BMFromDBWizard;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
@@ -50,18 +50,18 @@ import aurora.ide.AuroraConstant;
  * same extension, it will be able to open it.
  */
 
-public class BMNewWizardFromSQL extends Wizard implements INewWizard {
+public class BMFromSQLWizard extends Wizard implements INewWizard {
 
 	private final static String bm_pre = "bm";
 
-	private BMMainPageFromSQL mainPage;
+	private BMFromSQLWizardPage mainPage;
 	private ISelection selection;
 	private CompositeMap initContent;
 
 	/**
 	 * Constructor for BmNewWizard.
 	 */
-	public BMNewWizardFromSQL() {
+	public BMFromSQLWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -71,7 +71,7 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		mainPage = new BMMainPageFromSQL(selection);
+		mainPage = new BMFromSQLWizardPage(selection);
 		addPage(mainPage);
 	}
 
@@ -165,7 +165,7 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 	}
 
 	private CompositeMap createInitContent() {
-		CompositeMap model = new CompositeMap(BMNewWizardFromSQL.bm_pre,
+		CompositeMap model = new CompositeMap(BMFromSQLWizard.bm_pre,
 				AuroraConstant.BMUri, "model");
 		CompositeMap operations = new CompositeMap(bm_pre, AuroraConstant.BMUri, "operations");
 		CompositeMap operation = new CompositeMap(bm_pre, AuroraConstant.BMUri, "operation");
@@ -266,11 +266,11 @@ public class BMNewWizardFromSQL extends Wizard implements INewWizard {
 
 	public CompositeMap getSelectedFields(ResultSetMetaData resultSetMetaData)
 			throws SQLException {
-		CompositeMap fieldsArray = new CompositeMap(BmNewWizard.bm_pre,
-				BmNewWizard.bm_uri, "fields");
+		CompositeMap fieldsArray = new CompositeMap(BMFromDBWizard.bm_pre,
+				BMFromDBWizard.bm_uri, "fields");
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,
-					BmNewWizard.bm_uri, "field");
+			CompositeMap field = new CompositeMap(BMFromDBWizard.bm_pre,
+					BMFromDBWizard.bm_uri, "field");
 			String columnName = resultSetMetaData.getColumnName(i);
 			field.put("name", columnName.toLowerCase());
 			field.put("physicalName", columnName);

@@ -1,5 +1,6 @@
-package uncertain.ide.eclipse.editor.textpage;
+package uncertain.ide.eclipse.editor.textpage.action;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.dnd.Clipboard;
@@ -8,7 +9,11 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 
+import uncertain.ide.eclipse.editor.textpage.TextPage;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
 
 public class GetFileNameAction implements IEditorActionDelegate {
@@ -26,9 +31,17 @@ public class GetFileNameAction implements IEditorActionDelegate {
 			CustomDialog.showErrorMessageBox("这个类不是" + TextPage.class.getName());
 			return;
 		}
-		TextPage tp = (TextPage) activeEditor;
+//		TextPage tp = (TextPage) activeEditor;
 		Clipboard cb = new Clipboard(Display.getCurrent());
-		String textData = tp.getEditorInput().getName();;
+		IFile ifile = ((IFileEditorInput) activeEditor.getEditorInput()).getFile();
+		String textData = "";
+		try {
+			textData = AuroraResourceUtil.getRegisterPath(ifile);
+		} catch (ApplicationException e) {
+			CustomDialog.showErrorMessageBox(e);
+			return;
+		}
+//		String textData = tp.getEditorInput().getName();;
 		TextTransfer textTransfer = TextTransfer.getInstance();
 		cb.setContents(new Object[]{textData}, new Transfer[]{textTransfer});
 

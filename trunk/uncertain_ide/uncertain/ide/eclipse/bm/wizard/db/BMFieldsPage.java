@@ -27,9 +27,9 @@ import uncertain.ide.help.LocaleMessage;
  * OR with the extension that matches the expected one (bm).
  */
 
-public class BMFieldsWizardPage extends WizardPage {
+public class BMFieldsPage extends WizardPage {
 	private Text containerText;
-	BmNewWizard wizard;
+	BMFromDBWizard wizard;
 	private final String[] columnProperties = { "COLUMN_NAME", "TYPE_NAME",
 			"COLUMN_SIZE", "IS_NULLABLE", "REMARKS" };
 	private final String[] excluedColumns = { "CREATED_BY", "CREATION_DATE",
@@ -39,7 +39,7 @@ public class BMFieldsWizardPage extends WizardPage {
 	CompositeMap fields = new CompositeMap();
 	GridViewer filterCompoment;
 
-	public BMFieldsWizardPage(ISelection selection, BmNewWizard bmWizard) {
+	public BMFieldsPage(ISelection selection, BMFromDBWizard bmWizard) {
 		super("wizardPage");
 		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
@@ -76,13 +76,13 @@ public class BMFieldsWizardPage extends WizardPage {
 	}
 
 	public CompositeMap getSelectedFields() {
-		CompositeMap fieldsArray = new CompositeMap(BmNewWizard.bm_pre,
-				BmNewWizard.bm_uri, "fields");
+		CompositeMap fieldsArray = new CompositeMap(BMFromDBWizard.bm_pre,
+				BMFromDBWizard.bm_uri, "fields");
 		Object[] elements = filterCompoment.getCheckedElements();
 		for (int j = 0; j < elements.length; j++) {
 			CompositeMap record = (CompositeMap) elements[j];
-			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,
-					BmNewWizard.bm_uri, "field");
+			CompositeMap field = new CompositeMap(BMFromDBWizard.bm_pre,
+					BMFromDBWizard.bm_uri, "field");
 			field.put("name", record.getString("COLUMN_NAME").toLowerCase());
 			field.put("physicalName", record.getString("COLUMN_NAME"));
 			// String required = record.getString("IS_NULLABLE").equals("YES") ?

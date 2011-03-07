@@ -47,14 +47,14 @@ import uncertain.ide.help.LocaleMessage;
  * be able to open it.
  */
 
-public class BmNewWizard extends Wizard implements INewWizard {
+public class BMFromDBWizard extends Wizard implements INewWizard {
 	
 	public static String bm_uri = "http://www.aurora-framework.org/schema/bm";
 	public static String bm_pre = "bm";
 	
-	private BmMainPage mainPage;
-	private BMTableWizardPage tablePage;
-	private BMFieldsWizardPage fieldsPage;
+	private BMMainConfigPage mainPage;
+	private BMTablePage tablePage;
+	private BMFieldsPage fieldsPage;
 	private ISelection selection;
 	private CompositeMap initContent;
 	
@@ -65,7 +65,7 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	/**
 	 * Constructor for BmNewWizard.
 	 */
-	public BmNewWizard() {
+	public BMFromDBWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -75,9 +75,9 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		mainPage = new BmMainPage(selection,this);
-		tablePage= new BMTableWizardPage(selection,this);
-		fieldsPage = new BMFieldsWizardPage(selection,this);
+		mainPage = new BMMainConfigPage(selection,this);
+		tablePage= new BMTablePage(selection,this);
+		fieldsPage = new BMFieldsPage(selection,this);
 		fieldsPage.setPageComplete(false);
 		addPage(mainPage);
 		addPage(tablePage);
@@ -177,7 +177,7 @@ public class BmNewWizard extends Wizard implements INewWizard {
 	}
 	private CompositeMap createInitContent() {
 
-		CompositeMap model = new CompositeMap(BmNewWizard.bm_pre,BmNewWizard.bm_uri,"model");
+		CompositeMap model = new CompositeMap(BMFromDBWizard.bm_pre,BMFromDBWizard.bm_uri,"model");
 		model.put("baseTable", getTableName());
 		model.addChild(getSelectedFields());
 		
