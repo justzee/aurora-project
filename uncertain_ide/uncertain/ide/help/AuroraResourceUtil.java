@@ -144,4 +144,26 @@ public class AuroraResourceUtil {
 		}
 		return conn;
 	}
+	public static String getRegisterPath(IFile file) throws ApplicationException{
+		if(file == null)
+			return null;
+		char fileSeparatorChar = '/';
+		if(file.getName().endsWith("."+AuroraConstant.ScreenFileExtension)){
+			String fileName = AuroraResourceUtil.getIfileLocalPath(file);
+			String rootDir = ProjectPropertyPage.getWebBaseLocalDir(file.getProject());
+			int webLocation = fileName.indexOf(rootDir);
+			String registerPath = fileName.substring(webLocation + rootDir.length()+1);
+			registerPath = registerPath.replace(File.separatorChar, fileSeparatorChar);
+			return registerPath;
+		}else if(file.getName().endsWith("."+AuroraConstant.BMFileExtension)){
+				String fileName = AuroraResourceUtil.getIfileLocalPath(file);
+				String rootDir = ProjectPropertyPage.getBMBaseLocalDir(file.getProject());
+				int webLocation = fileName.indexOf(rootDir);
+				String registerPath = fileName.substring(webLocation + rootDir.length()+1);
+				registerPath = registerPath.replace(File.separatorChar, '.');
+				return registerPath;
+			}
+	  return file.getName();
+			
+	}
 }

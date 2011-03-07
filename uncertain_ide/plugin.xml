@@ -30,14 +30,14 @@
       </wizard>
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.eclipse.bm.wizard.db.BmNewWizard"
+            class="uncertain.ide.eclipse.bm.wizard.db.BMFromDBWizard"
             icon="icons/bm.gif"
             id="uncertain.ide.eclipse.wizards.BmNewWizard"
             name="%wizard.create.bm.from.database">
       </wizard>
       <wizard
             category="uncertain_ide"
-            class="uncertain.ide.eclipse.bm.wizard.sql.BMNewWizardFromSQL"
+            class="uncertain.ide.eclipse.bm.wizard.sql.BMFromSQLWizard"
             icon="icons/sql.gif"
             id="uncertain.ide.eclipse.wizards.BmNewWizard"
             name="%wizard.create.bm.from.sql">
@@ -125,10 +125,10 @@
 	         id="uncertain.ide.eclipse.editor.textpage.FormatAction" 
 	         label="格式化"
 	         menubarPath="additions" 
-	         class="uncertain.ide.eclipse.editor.textpage.FormatAction"> 
+	         class="uncertain.ide.eclipse.editor.textpage.action.FormatAction"> 
 	      </action>
        <action
-             class="uncertain.ide.eclipse.editor.textpage.GetFileNameAction"
+             class="uncertain.ide.eclipse.editor.textpage.action.GetFileNameAction"
              id="uncertain.ide.eclipse.editor.textpage.GetFileNameAction"
              label="复制文件名"
              menubarPath="additions">

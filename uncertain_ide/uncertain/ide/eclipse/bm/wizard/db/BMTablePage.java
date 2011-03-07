@@ -26,9 +26,9 @@ import uncertain.ide.help.LocaleMessage;
  * OR with the extension that matches the expected one (bm).
  */
 
-public class BMTableWizardPage extends WizardPage {
+public class BMTablePage extends WizardPage {
 	private Text containerText;
-	private BmNewWizard wizard;
+	private BMFromDBWizard wizard;
 	private String tableName;
 	/**
 	 * Constructor for SampleNewWizardPage.
@@ -40,7 +40,7 @@ public class BMTableWizardPage extends WizardPage {
 	DatabaseMetaData dbMetaData;
 	GridViewer filterCompoment;
 
-	public BMTableWizardPage(ISelection selection, BmNewWizard bmWizard) {
+	public BMTablePage(ISelection selection, BMFromDBWizard bmWizard) {
 		super("wizardPage");
 		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
@@ -105,16 +105,16 @@ public class BMTableWizardPage extends WizardPage {
 	}
 
 	public CompositeMap getPrimaryKeys() throws SQLException {
-		CompositeMap primaryKeyArray = new CompositeMap(BmNewWizard.bm_pre,
-				BmNewWizard.bm_uri, "primary-key");
+		CompositeMap primaryKeyArray = new CompositeMap(BMFromDBWizard.bm_pre,
+				BMFromDBWizard.bm_uri, "primary-key");
 		String tableName = getTableName();
 		if (tableName == null)
 			return primaryKeyArray;
 		ResultSet tableRet = dbMetaData.getPrimaryKeys(null, dbMetaData
 				.getUserName(), tableName);
 		while (tableRet.next()) {
-			CompositeMap field = new CompositeMap(BmNewWizard.bm_pre,
-					BmNewWizard.bm_uri, "pk-field");
+			CompositeMap field = new CompositeMap(BMFromDBWizard.bm_pre,
+					BMFromDBWizard.bm_uri, "pk-field");
 			field.put("name", tableRet.getString("COLUMN_NAME").toLowerCase());
 			primaryKeyArray.addChild(field);
 		}

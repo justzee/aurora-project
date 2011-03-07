@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage;
+package uncertain.ide.eclipse.editor.textpage.action;
 
 import java.io.IOException;
 
@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
+import uncertain.ide.eclipse.editor.textpage.TextPage;
 import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
 

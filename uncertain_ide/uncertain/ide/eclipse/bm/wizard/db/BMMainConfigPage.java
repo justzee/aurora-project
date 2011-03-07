@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.bm.wizard.sql;
+package uncertain.ide.eclipse.bm.wizard.db;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -9,18 +9,14 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
@@ -33,22 +29,29 @@ import uncertain.ide.help.LocaleMessage;
  * OR with the extension that matches the expected one (bm).
  */
 
-public class BMMainPageFromSQL extends WizardPage {
+public class BMMainConfigPage extends WizardPage {
 	private Text containerText;
+
 	private Text fileText;
-	private ISelection selection;
-	private StyledText innerText; 
 	
+	private ISelection selection;
+	
+//	Text uncetainText;
+
+	
+	BMFromDBWizard wizard;
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public BMMainPageFromSQL(ISelection selection) {
+	public BMMainConfigPage(ISelection selection,BMFromDBWizard bmWizard) {
 		super("wizardPage");
 		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
 		this.selection = selection;
+		this.wizard = bmWizard;
 	}
 
 	/**
@@ -87,21 +90,6 @@ public class BMMainPageFromSQL extends WizardPage {
 		gd.horizontalSpan=2;
 		fileText.setLayoutData(gd);
 		fileText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-		
-		Group SQLText = new Group(container,SWT.NONE);
-		gd = new GridData(GridData.FILL,GridData.FILL,true,true);
-		gd.horizontalSpan=3;
-		SQLText.setLayoutData(gd);
-		SQLText.setText(LocaleMessage.getString("enter.sql"));
-		SQLText.setLayout(new FillLayout());
-		innerText = new StyledText(SQLText, SWT.WRAP|SWT.V_SCROLL);
-		innerText.setFont(new Font(SQLText.getDisplay(), "Courier New", 10,
-				SWT.NORMAL));
-		innerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}
@@ -191,10 +179,6 @@ public class BMMainPageFromSQL extends WizardPage {
 				return;
 			}
 		}
-		if (getSQL().length() == 0) {
-			updateStatus(LocaleMessage.getString("sql.must.be.specified"));
-			return;
-		}
 		updateStatus(null);
 	}
 
@@ -210,8 +194,4 @@ public class BMMainPageFromSQL extends WizardPage {
 	public String getFileName() {
 		return fileText.getText();
 	}
-	public String getSQL(){
-		return innerText.getText();
-	}
-	
 }
