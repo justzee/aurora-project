@@ -86,10 +86,11 @@ public class BussinessModelPage extends CompositeMapPage{
 			CustomDialog.showErrorMessageBox(LocaleMessage.getString("please.add.bm.schema.file"));
 			return;
 		}
+		String filePath = getFile().getAbsolutePath();
 		try {
 			CompositeLoader loader = new CompositeLoader();
 			loader.setSaveNamespaceMapping(true);
-			data = loader.loadByFile(getFile().getAbsolutePath());
+			data = loader.loadByFile(filePath);
 		} catch (IOException e) {
 			CustomDialog.showErrorMessageBox(e);
 			return;
@@ -98,7 +99,7 @@ public class BussinessModelPage extends CompositeMapPage{
 			return;
 		}
 		if (!data.getQName().equals(AuroraConstant.ModelQN)){
-			CustomDialog.showErrorMessageBox(LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
+			CustomDialog.showErrorMessageBox("文件"+filePath+"的"+LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
 			return;
 		}
 		try {

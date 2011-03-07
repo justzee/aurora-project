@@ -1,20 +1,19 @@
 package uncertain.ide.eclipse.navigator;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.xml.sax.SAXException;
+import org.eclipse.ui.ISharedImages;
 
-import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
+import aurora.ide.AuroraConstant;
 
 public class BMFileLabelProvider extends LabelProvider {
 
@@ -23,13 +22,16 @@ public class BMFileLabelProvider extends LabelProvider {
 		IResource resource = resolveObject(element);
 		if(resource != null){
 			String resourceName = resource.getName();
+			if(!resourceName.toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)){
+				return resourceName;
+			}
 			try {
 				String text = getBMDescription(resource);
 				if(text != null){
 					resourceName =resourceName+ text;
 				}
 				return resourceName;
-			} catch (ApplicationException e) {
+			} catch (final ApplicationException e) {
 				CustomDialog.showErrorMessageBox(e);
 				return resourceName;
 			}
@@ -39,12 +41,19 @@ public class BMFileLabelProvider extends LabelProvider {
 
 	public Image getImage(Object element) {
 		IResource resource = resolveObject(element);
+		if(resource == null)
+			return null;
+		String resourceName = resource.getName();
+		if(!resourceName.toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)){
+			return  Activator.getImageDescriptor(ISharedImages.IMG_OBJ_FILE).createImage();
+		}
 		try {
 			if(isHasOperation(resource)){
 				return Activator.getImageDescriptor(LocaleMessage.getString("sql.icon")).createImage();
 			}
-		} catch (ApplicationException e) {
+		} catch (final ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
+			return  Activator.getImageDescriptor(ISharedImages.IMG_OBJS_ERROR_TSK).createImage();
 		}
 		return Activator.getImageDescriptor(LocaleMessage.getString("bm.icon")).createImage();
 	}
@@ -60,8 +69,7 @@ public class BMFileLabelProvider extends LabelProvider {
 		return resource;
 	}
 	private String getBMDescription(IResource file) throws ApplicationException{
-		CompositeMap bmData = loadFromResource(file);
-		String bmDesc = BMUtil.getBMDescription(bmData);
+		String bmDesc = BMUtil.getBMDescription(file);
 		if(bmDesc == null)
 			return null;
 		if(LimitDescLength>=bmDesc.length())
@@ -72,26 +80,8 @@ public class BMFileLabelProvider extends LabelProvider {
 	}
 	private boolean isHasOperation(IResource file) throws ApplicationException{
 		String OperationsNode = "operations";
-		CompositeMap bmData = loadFromResource(file);
+		CompositeMap bmData = AuroraResourceUtil.loadFromResource(file);
 		return bmData.getChild(OperationsNode)!=null;
-	}
-
-	private CompositeMap loadFromResource(IResource file) throws ApplicationException {
-		if(file == null || !file.exists()){
-			return null;
-		}
-		String fullLocationPath =file.getLocation().toOSString();
-		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
-		cl.setSaveNamespaceMapping(true);
-		CompositeMap bmData;
-		try {
-			bmData = cl.loadByFile(fullLocationPath);
-		} catch (IOException e) {
-			throw new ApplicationException("文件路径"+fullLocationPath+"不存在!",e);
-		} catch (SAXException e) {
-			throw new ApplicationException("文件"+fullLocationPath+"格式不正确!",e);
-		}
-		return bmData;
 	}
 	private String formatDesc(String desc){
 		if(desc == null)

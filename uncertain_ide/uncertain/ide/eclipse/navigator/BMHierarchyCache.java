@@ -21,6 +21,7 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
 import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.SystemException;
 import aurora.ide.AuroraConstant;
 
@@ -43,7 +44,6 @@ public class BMHierarchyCache {
 			throw new ApplicationException("请检查BM目录设置！");
 		}
 		IResource bmDir = ResourcesPlugin.getWorkspace().getRoot().findMember(bmBaseDir);
-//		IResource bmDir = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(bmBaseDir));
 		if(bmDir == null){
 			throw new ApplicationException(bmBaseDir+"资源不存在");
 		}
@@ -90,7 +90,13 @@ public class BMHierarchyCache {
 
 	}
 	private BMFile createLinkFile(IResource bmFile) throws ApplicationException{
-		String extendValue = getExtendValue(bmFile);
+		String extendValue = "";
+		try {
+			extendValue = getExtendValue(bmFile);
+		} catch (ApplicationException e) {
+			CustomDialog.showErrorMessageBox(e);
+			return null;
+		}
 		IPath thisKey = bmFile.getFullPath();
 		Map ifileMap = getProjectBMNotNull(bmFile.getProject());
 		Object obj = ifileMap.get(thisKey);
@@ -106,7 +112,8 @@ public class BMHierarchyCache {
 		ifileMap.put(bmFile.getFullPath(), thisFile);
 		
 		BMFile parentFile = createLinkFile(parent);
-		parentFile.addSubBMFile(thisFile);
+		if(parentFile != null)
+			parentFile.addSubBMFile(thisFile);
 		return thisFile;
 	}
 	private IResource getBMResourceFromClassPath(IProject project,String bmClassPath) throws ApplicationException{
@@ -129,7 +136,7 @@ public class BMHierarchyCache {
 			return searchBMLinkFile((IResource)file);
 		}
 		else {
-			throw new ApplicationException("请检查对象是"+"IFile或者BMLinkFile类型!");
+			throw new ApplicationException("请检查对象是"+"IFile或者BMFile类型!");
 		}
 	}
 	private BMFile searchBMLinkFile(IResource resource) throws ApplicationException{

@@ -4,6 +4,7 @@
 package uncertain.ide.help;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -27,7 +28,10 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
 import uncertain.core.EngineInitiator;
 import uncertain.core.UncertainEngine;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
@@ -165,5 +169,22 @@ public class AuroraResourceUtil {
 			}
 	  return file.getName();
 			
+	}
+	public static CompositeMap loadFromResource(IResource file) throws ApplicationException {
+		if(file == null || !file.exists()){
+			return null;
+		}
+		String fullLocationPath =file.getLocation().toOSString();
+		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
+		cl.setSaveNamespaceMapping(true);
+		CompositeMap bmData;
+		try {
+			bmData = cl.loadByFile(fullLocationPath);
+		} catch (IOException e) {
+			throw new ApplicationException("文件路径"+fullLocationPath+"不存在!",e);
+		} catch (SAXException e) {
+			throw new ApplicationException("文件"+fullLocationPath+"格式不正确!",e);
+		}
+		return bmData;
 	}
 }
