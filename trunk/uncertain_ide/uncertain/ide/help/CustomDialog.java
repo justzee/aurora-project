@@ -14,7 +14,7 @@ public class CustomDialog {
 
 	public static void showMessageBox(int style, String title, String message) {
 		message = getLocalMessage(message);
-		Shell shell = Display.getCurrent().getActiveShell();
+		Shell shell = getShell();
 		MessageBox messageBox = new MessageBox(shell, style);
 		messageBox.setText(title);
 		messageBox.setMessage(message);
@@ -27,7 +27,7 @@ public class CustomDialog {
 	
 	public static void showWarningMessageBox(String title, String message) {
 		message = getLocalMessage(message);
-		Shell shell = Display.getCurrent().getActiveShell();
+		Shell shell = getShell();
 		MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK
 				| SWT.APPLICATION_MODAL);
 		if (title == null)
@@ -41,12 +41,16 @@ public class CustomDialog {
 	public static void showErrorMessageBox(String message) {
 		showErrorMessageBox(null,message);
 	}
-	public static void showErrorMessageBox(Throwable e) {
-		showErrorMessageBox(getExceptionMessage(e));
+	public static void showErrorMessageBox(final Throwable e) {
+		Display.getCurrent().asyncExec(new Runnable() {
+			public void run() {
+				showErrorMessageBox(getExceptionMessage(e));
+			}
+		});
 	}
 	public static void showErrorMessageBox(String title, String message) {
 		message = getLocalMessage(message);
-		Shell shell = Display.getCurrent().getActiveShell();
+		Shell shell = getShell();
 		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK
 				| SWT.APPLICATION_MODAL);
 		if (title == null)
@@ -57,7 +61,7 @@ public class CustomDialog {
 	}
 
 	public static void showExceptionMessageBox(String title, Throwable e) {
-		Shell shell = Display.getCurrent().getActiveShell();
+		Shell shell = getShell();
 		MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK
 				| SWT.APPLICATION_MODAL);
 		if (title == null)
@@ -140,7 +144,7 @@ public class CustomDialog {
 	
 	public static int showConfirmDialogBox(String title, String message) {
 		message = getLocalMessage(message);
-		Shell shell = Display.getCurrent().getActiveShell();
+		Shell shell = getShell();
 		MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION
 				| SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL);
 		if (title == null)
@@ -152,6 +156,13 @@ public class CustomDialog {
 	}
 	private static String getLocalMessage( String message){
 		return LocaleMessage.getString(message);
+	}
+	private static Shell getShell(){
+		Shell shell = Display.getCurrent().getActiveShell();
+		if(shell == null){
+			shell = new Shell(Display.getCurrent());
+		}
+		return shell;
 	}
 
 }

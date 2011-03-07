@@ -29,7 +29,7 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 			super.addPages();
 			SQLPageIndex = addPage(sqlPage);
 		} catch (PartInitException e) {
-			CustomDialog.showExceptionMessageBox(e);
+			CustomDialog.showErrorMessageBox(e);
 		}
 	}
 

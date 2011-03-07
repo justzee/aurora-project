@@ -3,6 +3,7 @@ package uncertain.ide.eclipse.bm;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.resources.IResource;
 import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
@@ -34,12 +35,15 @@ public class BMUtil {
 		CompositeMap fields = root.getChild(childName);
 		return fields;
 	}
-	public static String getBMDescription(CompositeMap bm) throws ApplicationException{
+	public static String getBMDescription(IResource file) throws ApplicationException{
+		if(file == null)
+			return null;
+		CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
 		final String bmDescNodeName = "descripiton";
 		if(bm == null)
 			return null;
 		if (!bm.getQName().equals(AuroraConstant.ModelQN)){
-			throw new ApplicationException(LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
+			throw new ApplicationException("文件:"+file.getFullPath().toOSString()+"的"+LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
 		}
 		CompositeMap bmCm = bm.getChild(bmDescNodeName);
 		if(bmCm != null){

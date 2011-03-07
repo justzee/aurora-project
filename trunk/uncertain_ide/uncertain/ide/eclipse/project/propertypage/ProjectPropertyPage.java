@@ -304,6 +304,8 @@ public class ProjectPropertyPage extends PropertyPage {
 
 	}
 	public static boolean isDebugMode(IProject project){
+		if(project == null)
+			return false;
 		try {
 			if("true".equals(project.getPersistentProperty(DebugModeQN)))
 				return true;
