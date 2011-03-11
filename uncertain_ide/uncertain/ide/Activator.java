@@ -1,12 +1,18 @@
 package uncertain.ide;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -20,7 +26,7 @@ import uncertain.ide.help.CustomDialog;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements ISelectionListener{
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "uncertain_ide";
@@ -28,6 +34,7 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 
+	private IStructuredSelection selection;
 	/**
 	 * The constructor
 	 */
@@ -44,6 +51,8 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		getWorkbench().getActiveWorkbenchWindow().getSelectionService().addSelectionListener(this);
+		
 	}
 
 	/*
@@ -98,14 +107,28 @@ public class Activator extends AbstractUIPlugin {
 		return ResourcesPlugin.getWorkspace();
 	}
 	public static IFile getActiveIFile(){
-		IEditorInput input = getActivePage().getActiveEditor().getEditorInput();
+		IWorkbenchPage workbenchPage = getActivePage();
+		if(workbenchPage == null)
+			return null;
+		IEditorPart editorPart = workbenchPage.getActiveEditor();
+		IEditorInput input = editorPart.getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		return ifile;
 	}
 	public static IWorkbenchPage getActivePage(){
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
 	}
-	
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if(!(selection instanceof IStructuredSelection))
+			return;
+		Object element = ((IStructuredSelection)selection).getFirstElement();
+	    if (element instanceof IResource) {
+	    	this.selection = (IStructuredSelection)selection;
+	    }
+	}
+	public IStructuredSelection getStructuredSelection(){
+		return selection;
+	}
 	public static void main(String[] args) {
 
 	}

@@ -67,7 +67,7 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 		String fileName = parent.getString("refModel");
 		if(fileName == null)
 			throw new ApplicationException(LocaleMessage.getString("its.parent's")+"'refModel'"+LocaleMessage.getString("attribute.value.is.null"));
-		CompositeLoader loader = new CompositeLoader();
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 		String path = fileName.replace('.', '/') +'.' + "bm";
 		String fullPath = ProjectPropertyPage.getBMBaseLocalDir(AuroraResourceUtil.getIProjectFromSelection())+"/"+path;
 		CompositeMap root;

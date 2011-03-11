@@ -26,8 +26,8 @@ Bundle-ClassPath: .,
  lib/sqlserverjdbc.jar,
  lib/xapool.jar,
  lib/servlet.jar,
- lib/uncertain.jar,
- lib/aurora.jar
+ lib/aurora.jar,
+ lib/uncertain.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Export-Package: 
  aurora.application.util;uses:="aurora.service,uncertain.composite",

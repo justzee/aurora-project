@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.bm.editor.toolbar.action;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

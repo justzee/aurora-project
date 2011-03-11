@@ -30,8 +30,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import aurora.ide.AuroraConstant;
+
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.bm.AuroraDataBase;
+import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
@@ -49,21 +52,14 @@ import uncertain.ide.help.LocaleMessage;
 
 public class BMFromDBWizard extends Wizard implements INewWizard {
 	
-	public static String bm_uri = "http://www.aurora-framework.org/schema/bm";
-	public static String bm_pre = "bm";
-	
-	private BMMainConfigPage mainPage;
+	private BMMainConfigPage mainConfigPage;
 	private BMTablePage tablePage;
 	private BMFieldsPage fieldsPage;
 	private ISelection selection;
 	private CompositeMap initContent;
 	
-	
-	
-
-	
 	/**
-	 * Constructor for BmNewWizard.
+	 * Constructor for BMFromDBWizard
 	 */
 	public BMFromDBWizard() {
 		super();
@@ -75,11 +71,11 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		mainPage = new BMMainConfigPage(selection,this);
+		mainConfigPage = new BMMainConfigPage(selection,this);
 		tablePage= new BMTablePage(selection,this);
 		fieldsPage = new BMFieldsPage(selection,this);
 		fieldsPage.setPageComplete(false);
-		addPage(mainPage);
+		addPage(mainConfigPage);
 		addPage(tablePage);
 		addPage(fieldsPage);
 	}
@@ -90,8 +86,8 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String containerName = mainPage.getContainerName();
-		final String fileName = mainPage.getFileName();
+		final String containerName = mainConfigPage.getContainerName();
+		final String fileName = mainConfigPage.getFileName();
 		initContent = createInitContent();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
@@ -177,17 +173,17 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	}
 	private CompositeMap createInitContent() {
 
-		CompositeMap model = new CompositeMap(BMFromDBWizard.bm_pre,BMFromDBWizard.bm_uri,"model");
+		CompositeMap model = new CompositeMap(BMUtil.BMPrefix,AuroraConstant.BMUri,"model");
 		model.put("baseTable", getTableName());
-		model.addChild(getSelectedFields());
-		
+		model.put("alias", "t1");
+		addFieldsAndFeatures(model);
 		try {
 			CompositeMap pks = getPrimaryKeys();
 			if(pks != null && pks.getChilds() != null){
 				model.addChild(pks);
 			}
 		} catch (SQLException e) {
-			CustomDialog.showExceptionMessageBox(e);
+			CustomDialog.showErrorMessageBox(e);
 		}
 		return model;
 	}
@@ -200,9 +196,6 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 	}
-/*	public String getUncertainProjectDir() {
-		return mainPage.getUncertainProjectDir();
-	}*/
 	public String getTableName(){
 		return tablePage.getTableName();
 	}
@@ -215,11 +208,35 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	public void createPageControls(Composite pageContainer) {
 		// super.createPageControls(pageContainer); 
 	}
-	public CompositeMap getSelectedFields(){
-		return fieldsPage.getSelectedFields();
+	private CompositeMap addFieldsAndFeatures(CompositeMap model){
+		if(model == null)
+			return null;
+		CompositeMap features = new CompositeMap(BMUtil.BMPrefix,AuroraConstant.BMUri,"features");
+		CompositeMap standardWho = new CompositeMap(BMUtil.FeaturesPrefex,BMUtil.FeaturesUri,"standard-who"); 
+		features.addChild(standardWho);
+		CompositeMap fields =  fieldsPage.getSelectedFields();
+		//handle multi language
+		String descIdFieldName = "description_id";
+		if(fields == null)
+			return model;
+		model.addChild(fields);
+		model.addChild(features);
+		CompositeMap descIdField = fields.getChildByAttrib("name", descIdFieldName);
+		if(descIdField == null)
+			return model;
+		descIdField.put("multiLanguage", "true");
+		descIdField.put("multiLanguageDescField", "description");
+		CompositeMap descField = new CompositeMap(fields.getPrefix(),fields.getNamespaceURI(),"field");
+		descField.put("name", "description");
+		descField.put("databaseType", "VARCHAR");
+		descField.put("datatype", "java.lang.String");
+		fields.addChild(descField);
+		CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefex,BMUtil.FeaturesUri,"multi-language-storage");
+		features.addChild(multiLanguage);
+		return model;
 	}
 	public Connection getConnection() throws ApplicationException{
-		String containerName = mainPage.getContainerName();
+		String containerName = mainConfigPage.getContainerName();
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {

@@ -23,8 +23,7 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 
 	}
 
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
-			int offset) {
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
 
 		IDocument document = viewer.getDocument();
 		IContentAssistStrategy strategy = null;
@@ -39,55 +38,27 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
-	private IContentAssistStrategy getAssistStrategy(IDocument document,
-			int documentOffset) throws BadLocationException {
+	private IContentAssistStrategy getAssistStrategy(IDocument document, int documentOffset)
+			throws BadLocationException {
 		ITypedRegion region = document.getPartition(documentOffset);
 		if (!XMLPartitionScanner.XML_START_TAG.equals(region.getType()))
 			return null;
-		int partitionOffset = region.getOffset();
-		int partitionLength = region.getLength();
-		char beginChar = ' ';
-		int index = documentOffset - partitionOffset;
-		String partitionText = document.get(partitionOffset, partitionLength);
-		int start = index - 1;
-		if(start < 0)
-			return null;
-		char c = partitionText.charAt(start);
-		while (beginChar(c, start)) {
-			start--;
-			c = partitionText.charAt(start);
+		scanner.setRange(document, region.getOffset(), region.getLength());
+		scanner.nextToken();
+		scanner.nextToken();
+		int tokenEndOffset = scanner.getTokenOffset() + scanner.getTokenLength();
+		if (tokenEndOffset >= documentOffset) {
+			return new ChildStrategy(scanner);
 		}
-		start++;
-		beginChar = c;
-
-		int end = index;
-		c = partitionText.charAt(end);
-		while (endChar(c, end, partitionLength)) {
-			end++;
-			c = partitionText.charAt(end);
-		}
-		String substring = partitionText.substring(start, end);
-		if (beginChar == '"' || c == '"') {
-			return null;
-		}
-		TokenString ts = new TokenString(substring, partitionOffset + start,
-				documentOffset);
-		if (beginChar == '<') {
-			return new ChildStrategy(ts);
-		}
-		return new AttributeStrategy(scanner, ts);
-
-		// }
-
+		return new AttributeStrategy(scanner);
 	}
 
-	public IContextInformation[] computeContextInformation(ITextViewer viewer,
-			int offset) {
+	public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
 		return null;
 	}
 
 	public char[] getCompletionProposalAutoActivationCharacters() {
-		return null;
+		return new String("< ").toCharArray();
 	}
 
 	public char[] getContextInformationAutoActivationCharacters() {
@@ -100,15 +71,6 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 
 	public IContextInformationValidator getContextInformationValidator() {
 		return null;
-	}
-
-	private boolean beginChar(char c, int start) {
-		return !Character.isWhitespace(c) && c != '<' && start >= 0 && c != '"';
-	}
-
-	private boolean endChar(char c, int end, int partitionLength) {
-		return !Character.isWhitespace(c) && c != '>' && c != '/' && c != '<'
-				&& (end < partitionLength - 1) && c != '"';
 	}
 
 }

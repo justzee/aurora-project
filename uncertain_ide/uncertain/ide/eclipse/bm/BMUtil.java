@@ -1,12 +1,10 @@
 package uncertain.ide.eclipse.bm;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.resources.IResource;
-import org.xml.sax.SAXException;
+import org.eclipse.core.resources.ResourcesPlugin;
 
-import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
 import uncertain.ide.help.ApplicationException;
@@ -15,25 +13,18 @@ import uncertain.ide.help.LocaleMessage;
 import aurora.ide.AuroraConstant;
 
 public class BMUtil {
-
-	public static CompositeMap getFields(String classPath) throws ApplicationException{
-		String fileExtension = "bm";
-		String childName = "fields";
+	public static String BMPrefix = "bm";
+	public static String FeaturesUri = "aurora.database.features";
+	public static String FeaturesPrefex = "f";
+	public static String OracleUri = "aurora.database.local.oracle";
+	public static String OraclePrefex = "ora";
+	public static IResource getBMFromClassPath(String classPath) throws ApplicationException{
 		if(classPath == null)
 			return null;
-		CompositeLoader loader = new CompositeLoader();
-		String path = classPath.replace('.', File.separatorChar) +'.' + fileExtension;
-		String fullPath = ProjectPropertyPage.getBMBaseLocalDir(AuroraResourceUtil.getIProjectFromSelection())+File.separatorChar+path;
-		CompositeMap root;
-		try {
-			root = loader.loadByFullFilePath(fullPath);
-		} catch (IOException e) {
-			throw new ApplicationException("文件路径"+fullPath+"不正确!",e);
-		} catch (SAXException e) {
-			throw new ApplicationException("文件"+fullPath+"解析不正确!",e);
-		}
-		CompositeMap fields = root.getChild(childName);
-		return fields;
+		String path = classPath.replace('.', File.separatorChar) +'.' + AuroraConstant.BMFileExtension;
+		String fullPath = ProjectPropertyPage.getBMBaseDir(AuroraResourceUtil.getIProjectFromSelection())+File.separatorChar+path;
+		IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(fullPath);
+		return file;
 	}
 	public static String getBMDescription(IResource file) throws ApplicationException{
 		if(file == null)
@@ -42,7 +33,7 @@ public class BMUtil {
 		final String bmDescNodeName = "descripiton";
 		if(bm == null)
 			return null;
-		if (!bm.getQName().equals(AuroraConstant.ModelQN)){
+		if (!bm.getQName().getLocalName().equals(AuroraConstant.ModelQN.getLocalName())){
 			throw new ApplicationException("文件:"+file.getFullPath().toOSString()+"的"+LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
 		}
 		CompositeMap bmCm = bm.getChild(bmDescNodeName);

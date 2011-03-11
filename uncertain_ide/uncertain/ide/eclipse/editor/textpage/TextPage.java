@@ -1,6 +1,5 @@
 package uncertain.ide.eclipse.editor.textpage;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -113,8 +112,7 @@ public class TextPage extends TextEditor implements IViewer {
 
 	private boolean checkContentFormat() {
 		CompositeMap content = null;
-		CompositeLoader loader = new CompositeLoader();
-		loader.setSaveNamespaceMapping(true);
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();;
 		try {
 			content = loader.loadFromString(getContent());
 		} catch (IOException e) {
@@ -131,11 +129,9 @@ public class TextPage extends TextEditor implements IViewer {
 				getSourceViewer().getSelectedRange().x);
 	}
 
-	protected File getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
-				.getFile();
-		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
-		return new File(fileName);
+	public IFile getFile() {
+		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
+		return ifile;
 	}
 
 	public int getOffsetFromLine(int lineNumber) {

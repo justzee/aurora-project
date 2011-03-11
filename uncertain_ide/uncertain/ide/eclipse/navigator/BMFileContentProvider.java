@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 
 import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
 
 
@@ -24,7 +25,6 @@ import uncertain.ide.help.CustomDialog;
  */
 public class BMFileContentProvider implements ITreeContentProvider,IResourceChangeListener, IResourceDeltaVisitor {
 	private  StructuredViewer viewer;
-	private IProject project; 
 	private static final Object[]  NO_CHILD = new Object[0]; 
 	public BMFileContentProvider() {
 		super();
@@ -33,9 +33,6 @@ public class BMFileContentProvider implements ITreeContentProvider,IResourceChan
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		if(project == null && parentElement instanceof IResource){
-			project = ((IResource)parentElement).getProject();
-		}
 		if(parentElement instanceof IContainer){
 			try {
 				Object[] bmFiles = BMHierarchyCache.getInstance().getBMFilesFromResources(((IContainer)parentElement).members());
@@ -142,6 +139,7 @@ public class BMFileContentProvider implements ITreeContentProvider,IResourceChan
 	}
 
 	public boolean visit(IResourceDelta delta) throws CoreException {
+		IProject project = AuroraResourceUtil.getIProjectFromSelection();
 		BMHierarchyCache.getInstance().removeInitProject(project);
 		try {
 			BMHierarchyCache.getInstance().initProject(project);

@@ -361,7 +361,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 
 		public boolean canFlipToNextPage() {
 			if (bindBM != null) {
-				CompositeLoader loader = new CompositeLoader();
+				CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 				String path = bindBM.getString("model").replace('.', '/') + '.'
 						+ "bm";
 				CompositeMap root = null;

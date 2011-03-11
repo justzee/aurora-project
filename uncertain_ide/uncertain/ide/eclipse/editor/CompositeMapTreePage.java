@@ -37,8 +37,7 @@ public class CompositeMapTreePage extends CompositeMapPage {
 		FillLayout layout = new FillLayout();
 		shell.setLayout(layout);
 		try {
-			CompositeLoader loader = new CompositeLoader();
-			loader.setSaveNamespaceMapping(true);
+			CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 			data = loader.loadByFile(getFile().getAbsolutePath());
 			createContent(shell);
 		} catch (Exception e) {
@@ -64,6 +63,7 @@ public class CompositeMapTreePage extends CompositeMapPage {
 		try {
 			File file = getFile();
 			XMLOutputter.saveToFile(file, data);
+			super.doSave(monitor);
 		} catch (Exception e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
