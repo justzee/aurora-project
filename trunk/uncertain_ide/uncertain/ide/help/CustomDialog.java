@@ -38,15 +38,19 @@ public class CustomDialog {
 		messageBox.open();
 	}
 
-	public static void showErrorMessageBox(String message) {
-		showErrorMessageBox(null,message);
-	}
-	public static void showErrorMessageBox(final Throwable e) {
+	public static void showErrorMessageBox(final String message) {
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
-				showErrorMessageBox(getExceptionMessage(e));
+				showErrorMessageBox(null,message);
 			}
 		});
+		
+	}
+	public static void showErrorMessageBox(final Throwable e) {
+		showErrorMessageBox(getExceptionMessage(e));
+	}
+	public static void showErrorMessageBox(String title,final Throwable e) {
+		showErrorMessageBox(title,getExceptionMessage(e));
 	}
 	public static void showErrorMessageBox(String title, String message) {
 		message = getLocalMessage(message);

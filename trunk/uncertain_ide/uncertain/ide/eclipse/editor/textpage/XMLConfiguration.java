@@ -11,9 +11,11 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.graphics.RGB;
 
 import uncertain.ide.eclipse.editor.textpage.contentassist.TagContentAssistProcessor;
 import uncertain.ide.eclipse.editor.textpage.format.DefaultFormattingStrategy;
@@ -158,8 +160,10 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 
 		assistant.setContentAssistProcessor(new TagContentAssistProcessor(
 				getXMLTagScanner()), XMLPartitionScanner.XML_START_TAG);
+		assistant.setContentAssistProcessor(new TagContentAssistProcessor(
+				getXMLTagScanner()), IDocument.DEFAULT_CONTENT_TYPE);
 		assistant.enableAutoActivation(true);
-		assistant.setAutoActivationDelay(500);
+		assistant.setAutoActivationDelay(200);
 		assistant
 				.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
 		assistant
@@ -197,5 +201,11 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		return new IHyperlinkDetector[] {
 				new FileHyperlinkDetector()
 		};
+	}
+	public static RGB getTokenType(IToken token) {
+		if (token == null || !(token instanceof TextAttribute))
+			return null;
+		TextAttribute textAttribute = (TextAttribute) token.getData();
+		return textAttribute.getForeground().getRGB();
 	}
 }

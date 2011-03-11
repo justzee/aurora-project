@@ -1,16 +1,12 @@
 package uncertain.ide.eclipse.editor.textpage.contentassist;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -22,52 +18,74 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.graphics.Image;
+import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.CompositeUtil;
-import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.textpage.IColorConstants;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
+import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.CompositeMapLocatorParser;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LoadSchemaManager;
 import uncertain.ide.help.LocaleMessage;
 import uncertain.ide.help.SystemException;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
-import uncertain.schema.Namespace;
-import uncertain.schema.Schema;
 
 public class AttributeStrategy implements IContentAssistStrategy {
 
 	private XMLTagScanner scanner;
 	private TokenString tokenString;
 	private ITextViewer viewer;
-	private int offset;
-
-	public AttributeStrategy(XMLTagScanner scanner, TokenString tokenString) {
+	private int cursorOffset;
+	private IDocument document;
+	public AttributeStrategy(XMLTagScanner scanner) {
 		super();
 		this.scanner = scanner;
-		this.tokenString = tokenString;
 	}
-
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
-			int offset) {
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int cursorOffset)
+			throws BadLocationException {
 		this.viewer = viewer;
-		this.offset = offset;
-		IDocument document = viewer.getDocument();
-		QualifiedName qn = null;
+		this.cursorOffset = cursorOffset;
+		this.document = viewer.getDocument();
 		try {
-			qn = getElementQualifiedName(offset, document);
-			if (qn.getPrefix() != null && qn.getNameSpace() == null) {
-				return getNoNameSpaceProposal(qn);
-			}
-		} catch (SystemException e) {
+			tokenString = createTokenString();
+			if (tokenString == null)
+				return null;
+		} catch (ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
 			return null;
 		}
-		Element element = LoadSchemaManager.getSchemaManager().getElement(qn);
+		String content = document.get();
+		CompositeMap parentCompositeMap = null;
+		try {
+			parentCompositeMap = locateCompositeMap(content, cursorOffset);
+			if (parentCompositeMap != null) {
+				if (tokenString.getLength() == 0)
+					return computeNewAttr(parentCompositeMap);
+				else
+					return computeUpdateAttr(parentCompositeMap);
+			}
+		} catch (ApplicationException e) {
+			String originalContent = document.get();
+			String changedContent = originalContent.substring(0, tokenString.getDocumentOffset())
+					+ originalContent.substring(tokenString.getDocumentOffset() + tokenString.getLength());
+			try {
+				parentCompositeMap = locateCompositeMap(changedContent, cursorOffset);
+				if (parentCompositeMap != null) {
+					return computeNewAttr(parentCompositeMap);
+				}
+			} catch (ApplicationException e1) {
+
+			}
+
+		}
+		return getDefaultCompletionProposal();
+	}
+
+	private ICompletionProposal[] computeUpdateAttr(CompositeMap parentCompositeMap) {
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCompositeMap.getQName());
 		if (element == null)
 			return getDefaultCompletionProposal();
 		List allAttributes = element.getAllAttributes();
@@ -92,14 +110,55 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			}
 			String attributeDocument = attr.getDocument();
 			String description = name;
-			String replaceString = name + "=\"\" ";
+			String replaceString = name;
 			if (attributeDocument != null)
-				description = formateAttributeName(name) + " - "
-						+ attributeDocument;
-			avaliableList.add(new CompletionProposal(replaceString, tokenString
-					.getDocumentOffset(), tokenString.getLength(),
-					replaceString.length() - 2, getDefaultImage(), description,
-					null, attributeDocument));
+				description = formateAttributeName(name) + " - " + attributeDocument;
+			avaliableList.add(new CompletionProposal(replaceString, tokenString.getDocumentOffset(), tokenString
+					.getLength(), replaceString.length() + 2, getDefaultImage(), description, null, attributeDocument));
+
+		}
+		int allLength = avaliableList.size();
+		if (allLength == 0)
+			return getDefaultCompletionProposal();
+		ICompletionProposal[] result = new ICompletionProposal[allLength];
+		int i = 0;
+		for (Iterator iter = avaliableList.iterator(); iter.hasNext();) {
+			result[i] = (CompletionProposal) iter.next();
+			i++;
+		}
+		return result;
+	}
+	private ICompletionProposal[] computeNewAttr(CompositeMap parentCompositeMap) {
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCompositeMap.getQName());
+		if (element == null)
+			return getDefaultCompletionProposal();
+		List allAttributes = element.getAllAttributes();
+
+		List avaliableList = new ArrayList();
+		String preString = tokenString.getStrBeforeCursor();
+		List existsList = null;
+		try {
+			existsList = getExistsAttrs(document);
+		} catch (SystemException e) {
+			CustomDialog.showErrorMessageBox(e);
+			return null;
+		}
+		for (Iterator iter = allAttributes.iterator(); iter.hasNext();) {
+			Attribute attr = (Attribute) iter.next();
+			String name = attr.getName();
+			if (existsList.contains(name)) {
+				continue;
+			}
+			if (preString != null && !name.startsWith(preString)) {
+				continue;
+			}
+			String attributeDocument = attr.getDocument();
+			String description = name;
+			String replaceString = name + "=\"\" ";;
+			if (attributeDocument != null)
+				description = formateAttributeName(name) + " - " + attributeDocument;
+			avaliableList.add(new CompletionProposal(replaceString, tokenString.getDocumentOffset(), tokenString
+					.getLength(), replaceString.length() - 2, getDefaultImage(), description, null, attributeDocument));
 
 		}
 		int allLength = avaliableList.size();
@@ -114,35 +173,6 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		return result;
 	}
 
-	private ICompletionProposal[] getNoNameSpaceProposal(
-			QualifiedName qualifiedName) {
-		ICompletionProposal[] result = new ICompletionProposal[1];
-		String name = "xmlns:" + qualifiedName.getPrefix() + "=\"\"";
-		result[0] = new CompletionProposal(name, tokenString
-				.getDocumentOffset(), 0, name.length() - 1, null, name + "  - "
-				+ LocaleMessage.getString("namespace.of.this.element"), null,
-				LocaleMessage.getString("please.define.the.namespace.first"));
-		return result;
-	}
-
-	private Namespace[] getNameSpaces(Map namespaceToPrefix) {
-		if (namespaceToPrefix == null)
-			return null;
-
-		Namespace[] namespaces = new Namespace[namespaceToPrefix.keySet()
-				.size()];
-		Iterator elements = namespaceToPrefix.keySet().iterator();
-		int i = 0;
-		while (elements.hasNext()) {
-			Object element = elements.next();
-			Namespace namespace = new Namespace();
-			namespace.setPrefix(namespaceToPrefix.get(element).toString());
-			namespace.setUrl(element.toString());
-			namespaces[i++] = namespace;
-		}
-		return namespaces;
-	}
-
 	private String formateAttributeName(String attributeName) {
 		int defaultLength = 20;
 		StringBuffer newAttributeName = new StringBuffer(attributeName);
@@ -155,168 +185,20 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		return newAttributeName.toString();
 	}
 
-	private QualifiedName getElementQualifiedName(int documentOffset,
-			IDocument document) throws SystemException {
-		String prefix = null;
-		String name = null;
-		String uri = null;
-		ITypedRegion region;
-		try {
-			region = document.getPartition(documentOffset);
-		} catch (BadLocationException e) {
-			throw new SystemException(e);
-		}
-		int partitionOffset = region.getOffset();
-		scanner.setRange(document, partitionOffset, region.getLength());
-		IToken token = null;
-		while ((token = scanner.nextToken()) != Token.EOF) {
-			if (token.getData() instanceof TextAttribute) {
-				TextAttribute text = (TextAttribute) token.getData();
-				if (text.getForeground().getRGB().equals(
-						IColorConstants.TAG_NAME)) {
-					String tagName;
-					try {
-						tagName = document.get(scanner.getTokenOffset(),
-								scanner.getTokenLength());
-					} catch (BadLocationException e) {
-						throw new SystemException(e);
-					}
-					String[] splits = tagName.split(":");
-					if (splits.length == 2) {
-						QualifiedName qn = null;
-						try {
-							qn = getQualifiedName(document, tagName);
-						} catch (Exception e) {
-							qn = null;
-						}
-						if (qn != null)
-							return qn;
-						prefix = splits[0];
-						name = splits[1];
-						// getQualifiedName method will change the document,it
-						// will change the scanner .
-						scanner.setRange(document, partitionOffset, region
-								.getLength());
-						uri = getElementUrl(document, scanner, splits[0]);
-					} else {
-						name = tagName;
-					}
-					break;
-				}
-
-			}
-
-		}
-		return new QualifiedName(prefix, uri, name);
-	}
-
-	private QualifiedName getQualifiedName(IDocument document, String tagName)
-			throws SystemException {
-		CompositeLoader csloader = new CompositeLoader();
-		csloader.setSaveNamespaceMapping(true);
-
-		int length = offset - tokenString.getDocumentOffset();
-		String old = null;
-		InputStream is = null;
-		try {
-			old = document.get(tokenString.getDocumentOffset(), length);
-			document.replace(tokenString.getDocumentOffset(), length, "");
-
-			is = new ByteArrayInputStream(document.get().getBytes("UTF-8"));
-		} catch (BadLocationException e) {
-			throw new SystemException(e);
-		} catch (UnsupportedEncodingException e) {
-			throw new SystemException(e);
-		}
-		CompositeMap root;
-		try {
-			root = csloader.loadFromStream(is);
-		} catch (Exception e) {
-			return null;
-		} finally {
-			try {
-				document.replace(tokenString.getDocumentOffset(), 0, old);
-			} catch (BadLocationException e) {
-				throw new SystemException(e);
-			}
-			viewer.setSelectedRange(tokenString.getDocumentOffset()
-					+ old.length(), 0);
-		}
-		Map namespace_mapping = CompositeUtil.getPrefixMapping(root);
-		Schema schema = new Schema();
-		Namespace[] ns = getNameSpaces(namespace_mapping);
-		schema.addNameSpaces(ns);
-		QualifiedName qn = schema.getQualifiedName(tagName);
-		return qn;
-	}
-
-	private String getElementUrl(IDocument document, XMLTagScanner scanner,
-			String prefix) throws SystemException {
-		IToken token = null;
-		String attributeName = null;
-		String namespace = "xmlns:";
-		while ((token = scanner.nextToken()) != Token.EOF) {
-			if (token.getData() instanceof TextAttribute) {
-				TextAttribute text = (TextAttribute) token.getData();
-				if (text.getForeground().getRGB().equals(
-						IColorConstants.ATTRIBUTE)) {
-					try {
-						attributeName = document.get(scanner.getTokenOffset(),
-								scanner.getTokenLength());
-					} catch (BadLocationException e) {
-						throw new SystemException(e);
-					}
-					if (attributeName.startsWith(namespace)) {
-						String[] xmlns = attributeName.split(":");
-						if (xmlns[1].equals(prefix)) {
-							return getNextAttributeContent(document, scanner);
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	private String getNextAttributeContent(IDocument document,
-			XMLTagScanner scanner) throws SystemException {
-		IToken token = null;
-		while ((token = scanner.nextToken()) != Token.EOF) {
-			if (token.getData() instanceof TextAttribute) {
-				TextAttribute text = (TextAttribute) token.getData();
-				if (text.getForeground().getRGB()
-						.equals(IColorConstants.STRING)) {
-					try {
-						return document.get(scanner.getTokenOffset() + 1,
-								scanner.getTokenLength() - 2);
-					} catch (BadLocationException e) {
-						throw new SystemException(e);
-					}
-				} else if (IColorConstants.ATTRIBUTE.equals(text
-						.getForeground().getRGB())) {
-					return null;
-				}
-			}
-		}
-		return null;
-	}
-
 	private List getExistsAttrs(IDocument document) throws SystemException {
 		List existsAttrs = new ArrayList();
 		IToken token = null;
 		String attributeName = null;
 		try {
-			ITypedRegion region = document.getPartition(offset);
+			ITypedRegion region = document.getPartition(cursorOffset);
 			int partitionOffset = region.getOffset();
 			scanner.setRange(document, partitionOffset, region.getLength());
 			while ((token = scanner.nextToken()) != Token.EOF) {
 				if (token.getData() instanceof TextAttribute) {
 					TextAttribute text = (TextAttribute) token.getData();
-					if (text.getForeground().getRGB().equals(
-							IColorConstants.ATTRIBUTE)) {
+					if (text.getForeground().getRGB().equals(IColorConstants.ATTRIBUTE)) {
 
-						attributeName = document.get(scanner.getTokenOffset(),
-								scanner.getTokenLength());
+						attributeName = document.get(scanner.getTokenOffset(), scanner.getTokenLength());
 						if (attributeName != null) {
 							existsAttrs.add(attributeName);
 						}
@@ -335,36 +217,72 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		if (text == null || text.equals(""))
 			return null;
 		String replaceString = tokenString.getText() + "=\"\" ";
-		return new ICompletionProposal[] { new CompletionProposal(
-				replaceString, tokenString.getDocumentOffset(), tokenString
-						.getLength(), text.length() + 1, getDefaultImage(),
-				null, null, null) };
+		return new ICompletionProposal[]{new CompletionProposal(replaceString, tokenString.getDocumentOffset(),
+				tokenString.getLength(), text.length() + 1, getDefaultImage(), null, null, null)};
 	}
 
 	private static Image getDefaultImage() {
-		Image contentImage = Activator.getImageDescriptor(
-				LocaleMessage.getString("contentassit.icon")).createImage();
+		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
 		return contentImage;
 	}
-
-	public static void log(String message) {
-		File file = new File("aurora.log");
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				CustomDialog.showErrorMessageBox("create log File failure");
-				return;
-			}
-		}
+	private TokenString createTokenString() throws ApplicationException {
+		TokenString tokenString = null;
+		IDocument document = viewer.getDocument();
 		try {
-			FileOutputStream os = new FileOutputStream(file, true);
-			String time = Calendar.getInstance().getTime().toGMTString();
-			os.write((time + "\t" + message + "\n").getBytes());
-		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+			ITypedRegion partitionRegion = document.getPartition(cursorOffset);
+			int attrStart = cursorOffset - partitionRegion.getOffset() - 1;
+			int attrEnd = cursorOffset - partitionRegion.getOffset();
+			String partitionText = document.get(partitionRegion.getOffset(), partitionRegion.getLength());
+			int partitionLength = partitionRegion.getLength();
+
+			char c = partitionText.charAt(attrStart);
+			while (beginChar(c, attrStart)) {
+				attrStart--;
+				c = partitionText.charAt(attrStart);
+			}
+			attrStart++;
+			char beginChar = c;
+
+			c = partitionText.charAt(attrEnd);
+			while (endChar(c, attrEnd, partitionLength)) {
+				attrEnd++;
+				c = partitionText.charAt(attrEnd);
+			}
+			if (beginChar == '"' || c == '"') {
+				return null;
+			}
+			String attrName = partitionText.substring(attrStart, attrEnd);
+
+			tokenString = new TokenString(attrName, partitionRegion.getOffset() + attrStart, cursorOffset);
+		} catch (BadLocationException e) {
+			throw new SystemException(e);
 		}
+		return tokenString;
 
 	}
+	private boolean beginChar(char c, int start) {
+		return !Character.isWhitespace(c) && c != '<' && start >= 0 && c != '"';
+	}
 
+	private boolean endChar(char c, int end, int partitionLength) {
+		return !Character.isWhitespace(c) && c != '>' && c != '/' && c != '=' && c != '<'
+				&& (end < partitionLength - 1) && c != '"';
+	}
+	private CompositeMap locateCompositeMap(String content, int offset) throws ApplicationException {
+		try {
+			CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
+			InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"));
+			CompositeMap cm = parser.getCompositeMapFromLine(is, getCursorLine(offset));
+			return cm;
+		} catch (UnsupportedEncodingException e) {
+			throw new SystemException(e);
+		} catch (SAXException e) {
+			throw new ApplicationException("请检查此文件格式是否正确.", e);
+		} catch (IOException e) {
+			throw new ApplicationException("请检查此文件格式是否正确.", e);
+		}
+	}
+	private int getCursorLine(int offset) {
+		return viewer.getTextWidget().getLineAtOffset(offset);
+	}
 }

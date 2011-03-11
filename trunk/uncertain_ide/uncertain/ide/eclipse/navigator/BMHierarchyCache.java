@@ -21,6 +21,7 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
 import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.SystemException;
 import aurora.ide.AuroraConstant;
@@ -73,7 +74,7 @@ public class BMHierarchyCache {
 		if(bmFile == null){
 			throw new ApplicationException(bmFile+"文件不能为空！");
 		}
-		CompositeLoader cl = new CompositeLoader();
+		CompositeLoader cl = AuroraResourceUtil.getCompsiteLoader();
 		String localPath = bmFile.getLocation().toOSString();
 		cl.setSaveNamespaceMapping(true);
 		CompositeMap bmData;
@@ -159,7 +160,7 @@ public class BMHierarchyCache {
 	public void removeResource(IProject project){
 //		projectBMFileMap.remove(project);
 	}
-	private Map getProjectBMNotNull(IProject project){
+	public Map getProjectBMNotNull(IProject project){
 		Object obj = projectBMFileMap.get(project);
 		if(obj == null){
 			obj = new HashMap();

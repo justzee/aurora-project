@@ -13,7 +13,10 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import aurora.ide.AuroraConstant;
+
 import uncertain.composite.CompositeMap;
+import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 import uncertain.ide.help.ApplicationException;
@@ -105,16 +108,14 @@ public class BMTablePage extends WizardPage {
 	}
 
 	public CompositeMap getPrimaryKeys() throws SQLException {
-		CompositeMap primaryKeyArray = new CompositeMap(BMFromDBWizard.bm_pre,
-				BMFromDBWizard.bm_uri, "primary-key");
+		CompositeMap primaryKeyArray = new CompositeMap(BMUtil.BMPrefix,AuroraConstant.BMUri, "primary-key");
 		String tableName = getTableName();
 		if (tableName == null)
 			return primaryKeyArray;
 		ResultSet tableRet = dbMetaData.getPrimaryKeys(null, dbMetaData
 				.getUserName(), tableName);
 		while (tableRet.next()) {
-			CompositeMap field = new CompositeMap(BMFromDBWizard.bm_pre,
-					BMFromDBWizard.bm_uri, "pk-field");
+			CompositeMap field = new CompositeMap(BMUtil.BMPrefix,AuroraConstant.BMUri, "pk-field");
 			field.put("name", tableRet.getString("COLUMN_NAME").toLowerCase());
 			primaryKeyArray.addChild(field);
 		}

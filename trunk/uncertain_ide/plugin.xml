@@ -103,10 +103,12 @@
             id="org.eclipse.aurora.ide.sxsd.valid"
             objectClass="org.eclipse.core.resources.IResource">
          <action
-               class="uncertain.ide.eclipse.action.SxsdPackageValidAction"
+               class="uncertain.ide.eclipse.navigator.action.SxsdPackageValidAction"
                icon="icons/sxsd.gif"
                id="uncertain.ide.eclipse.action.SxsdPackageValidAction"
-               label="%action.validate.builtin.package">
+               label="%action.validate.builtin.package"
+               enablesFor="1"
+               menubarPath="additions">
          </action>
          <enablement>
             <and>
@@ -132,15 +134,41 @@
              id="uncertain.ide.eclipse.editor.textpage.GetFileNameAction"
              label="复制文件名"
              menubarPath="additions">
+       </action>
+       <action
+             class="uncertain.ide.eclipse.editor.textpage.action.AnnotateSeletionAction"
+             id="uncertain.ide.eclipse.editor.textpage.action.annotateseletionaction"
+             label="注释"
+             menubarPath="additions">
+       </action>
+       <action
+             class="uncertain.ide.eclipse.editor.textpage.action.CancelAnnotateSeletionAction"
+             id="uncertain.ide.eclipse.editor.textpage.action.cancelannotateseletionaction"
+             label="取消注释"
+             menubarPath="additions">
        </action> 
-	   </viewerContribution> 
+	   </viewerContribution>
+    <objectContribution
+          adaptable="true"
+          id="uncertain.ide.eclipse.extendbm"
+          nameFilter="*.bm"
+          objectClass="org.eclipse.core.resources.IFile">
+       <action
+             class="uncertain.ide.eclipse.navigator.action.CreateBMByExtendAction"
+             enablesFor="1"
+             icon="icons/bm.gif"
+             id="uncertain.ide.eclipse.navigator.action.createbmbyextendaction"
+             label="继承此BM"
+             menubarPath="additions"> 
+       </action>
+    </objectContribution> 
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
     <propertyTester
     namespace ="uncertain.sxsd.valid" 
    properties ="visable" 
    type ="java.lang.Object" 
-   class ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTester" 
+   class ="uncertain.ide.eclipse.navigator.action.SxsdValidVisablePropertyTester" 
    id ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTeste" >   
     </propertyTester >
     <propertyTester

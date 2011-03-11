@@ -481,8 +481,7 @@ public class ProjectPropertyPage extends PropertyPage {
 		if (!coreConfig.exists())
 			throw new ApplicationException(coreConfigFileLocalPath
 					+ "在文件系统中不存在!");
-		CompositeLoader loader = new CompositeLoader();
-		loader.setSaveNamespaceMapping(true);
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 		CompositeMap data;
 		try {
 			data = loader.loadByFullFilePath(coreConfigFileLocalPath);
@@ -510,8 +509,7 @@ public class ProjectPropertyPage extends PropertyPage {
 		if (!coreConfig.exists())
 			throw new ApplicationException(coreConfigFileLocalPath
 					+ "在文件系统中不存在!");
-		CompositeLoader loader = new CompositeLoader();
-		loader.setSaveNamespaceMapping(true);
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 		CompositeMap data;
 		try {
 			data = loader.loadByFullFilePath(coreConfigFileLocalPath);

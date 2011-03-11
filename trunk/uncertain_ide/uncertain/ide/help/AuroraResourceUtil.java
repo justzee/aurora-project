@@ -8,13 +8,17 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
@@ -34,14 +38,16 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.EngineInitiator;
 import uncertain.core.UncertainEngine;
+import uncertain.ide.Activator;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
 import uncertain.ocm.IObjectRegistry;
 import aurora.ide.AuroraConstant;
 
-public class AuroraResourceUtil {
+public class AuroraResourceUtil{
     
 	public static final String LineSeparator = System.getProperty("line.separator");
 	public static final String xml_decl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	
 	public static String getIfileLocalPath(IFile ifile) {
 		String fileFullPath = ifile.getLocation().toOSString();
 		return fileFullPath;
@@ -81,11 +87,11 @@ public class AuroraResourceUtil {
 		return null;
 	}
 	public static IStructuredSelection getStructuredSelection(){
+		IStructuredSelection selectionToPass = Activator.getDefault().getStructuredSelection();
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		if (window == null)
-			return null;
+			return selectionToPass;
         ISelection selection = window.getSelectionService().getSelection();
-        IStructuredSelection selectionToPass = StructuredSelection.EMPTY;
         if (selection instanceof IStructuredSelection) {
         	selectionToPass = (IStructuredSelection)selection;
         }else{
@@ -163,7 +169,8 @@ public class AuroraResourceUtil {
 				String fileName = AuroraResourceUtil.getIfileLocalPath(file);
 				String rootDir = ProjectPropertyPage.getBMBaseLocalDir(file.getProject());
 				int webLocation = fileName.indexOf(rootDir);
-				String registerPath = fileName.substring(webLocation + rootDir.length()+1);
+				int endIndex = fileName.lastIndexOf(".");
+				String registerPath = fileName.substring(webLocation + rootDir.length()+1,endIndex);
 				registerPath = registerPath.replace(File.separatorChar, '.');
 				return registerPath;
 			}
@@ -186,5 +193,64 @@ public class AuroraResourceUtil {
 			throw new ApplicationException("文件"+fullLocationPath+"格式不正确!",e);
 		}
 		return bmData;
+	}
+	public static List getBMSFromProject(IProject project) throws ApplicationException{
+		List bmList = new LinkedList();
+		if(project == null)
+			return bmList;
+		String bmBaseDir = ProjectPropertyPage.getBMBaseDir(project);
+		if(bmBaseDir == null)
+			return bmList;
+		IResource bmRoot = ResourcesPlugin.getWorkspace().getRoot().findMember(bmBaseDir);
+		if(bmRoot == null || !bmRoot.exists()||(!(bmRoot instanceof IContainer)))
+			return bmList;
+		IContainer parent = (IContainer)bmRoot;
+		iteratorResource(parent,bmList);
+		return bmList;
+	}
+	private static void iteratorResource(IContainer parent,List bmList){
+		try {
+			IResource[] childs =  parent.members();
+			for(int i=0;i<childs.length;i++){
+				IResource child = childs[i];
+				if(child.exists()&&child.getName().toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)){
+					bmList.add(child);
+				}
+				if(child instanceof IContainer){
+					iteratorResource((IContainer)child,bmList);
+				}
+			}
+		} catch (CoreException e) {
+			CustomDialog.showExceptionMessageBox(e);
+		}
+	}
+	public static CompositeLoader getCompsiteLoader(){
+		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
+		cl.setSaveNamespaceMapping(true);
+		cl.setSupportXInclude(false);
+		
+		CompositeLoader projectCl = CompositeLoader.createInstanceForOCM();
+		projectCl.setSaveNamespaceMapping(true);
+		projectCl.setSupportXInclude(false);
+		IProject project = getIProjectFromSelection();
+		if(project != null){
+			projectCl.setBaseDir(project.getLocation().toFile().getParent().toString()+File.separator);
+			cl.addExtraLoader(projectCl);
+		}
+		CompositeLoader curentDircl = CompositeLoader.createInstanceForOCM();
+		curentDircl.setSaveNamespaceMapping(true);
+		curentDircl.setSupportXInclude(false);
+		IFile currentFile = getFileFromSelection();
+		if(currentFile != null){
+			curentDircl.setBaseDir(currentFile.getLocation().toOSString());
+			cl.addExtraLoader(curentDircl);
+		}
+		return cl;
+	}
+	public static IFile getFileFromSelection(){
+		IStructuredSelection selection = Activator.getDefault().getStructuredSelection();
+		if(selection == null || !(selection instanceof IFile))
+			return null;
+		return (IFile)selection;
 	}
 }

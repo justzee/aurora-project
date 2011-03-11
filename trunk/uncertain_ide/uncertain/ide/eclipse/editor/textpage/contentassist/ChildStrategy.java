@@ -1,7 +1,9 @@
 package uncertain.ide.eclipse.editor.textpage.contentassist;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,16 +15,19 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.swt.graphics.Image;
+import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
+import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
+import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CompositeMapLocatorParser;
 import uncertain.ide.help.CompositeMapUtil;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LoadSchemaManager;
 import uncertain.ide.help.LocaleMessage;
+import uncertain.ide.help.SystemException;
 import uncertain.schema.Element;
 
 /**
@@ -31,68 +36,84 @@ import uncertain.schema.Element;
  */
 public class ChildStrategy implements IContentAssistStrategy {
 
+	private XMLTagScanner scanner;
 	private TokenString tokenString;
 	private ITextViewer viewer;
-
-	public ChildStrategy(TokenString tokenString) {
-		this.tokenString = tokenString;
+	private int cursorOffset;
+	public ChildStrategy(XMLTagScanner scanner) {
+		this.scanner = scanner;
 	}
-
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
-			int offset) throws BadLocationException {
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int cursorOffset)
+			throws BadLocationException {
 		this.viewer = viewer;
+		this.cursorOffset = cursorOffset;
 		IDocument document = viewer.getDocument();
-
-		ITypedRegion thisRegion = document.getPartition(offset);
-		String thisContent = document.get(thisRegion.getOffset() + 1,
-				thisRegion.getLength());
-		if (thisContent.indexOf("<") < 0) {
+		ITypedRegion region = document.getPartition(cursorOffset);
+		if (!XMLPartitionScanner.XML_START_TAG.equals(region.getType()))
+			return null;
+		try {
+			tokenString = createTokenString();
+		} catch (ApplicationException e) {
+			CustomDialog.showErrorMessageBox(e);
 			return null;
 		}
-		int length = offset - tokenString.getDocumentOffset() + 1;
-		String old = document.get(tokenString.getDocumentOffset() - 1, length);
-		document.replace(tokenString.getDocumentOffset() - 1, length, "");
+		scanner.setRange(document, region.getOffset(), region.getLength());
 		String content = document.get();
-		CompositeLoader cl = new CompositeLoader();
-		cl.setSaveNamespaceMapping(true);
-		ITypedRegion region = document.getPartition(offset - 1);
-		ITypedRegion endRegion = null;
-		int startCount = 0;
-		int endCount = 0;
-		while (region != null) {
-			if (XMLPartitionScanner.XML_START_TAG.equals(region.getType())) {
-				if (region.getOffset() < offset
-						&& !document.get(
-								region.getOffset() + region.getLength() - 2, 1)
-								.equals("/")) {
-					startCount++;
-					if (startCount > endCount) {
-						break;
-					}
-				}
-			}
-			if (XMLPartitionScanner.XML_END_TAG.equals(region.getType())) {
-				if (endRegion == null) {
-					endRegion = region;
-				}
-				endCount++;
-			}
-			region = document.getPartition(region.getOffset() - 1);
-		}
-		CompositeMap data;
 		try {
-			data = locateCompositeMap(content, region.getOffset());
-		} catch (Exception e) {
+			CompositeMap currentCM = locateCompositeMap(content, cursorOffset);
+			if (currentCM != null && currentCM.getParent() != null)
+				return computeUpdateTag(currentCM.getParent());
 			return getDefaultCompletionProposal();
-		} finally {
-			document.replace(tokenString.getDocumentOffset() - 1, 0, old);
-			viewer.setSelectedRange(tokenString.getDocumentOffset() - 1
-					+ old.length(), 0);
+		} catch (ApplicationException e) {
+			String originalContent = document.get();
+			String changedContent = originalContent.substring(0, region.getOffset())
+					+ originalContent.substring(cursorOffset);
+			try {
+				CompositeMap parentCompositeMap = locateCompositeMap(changedContent, cursorOffset);
+				if (parentCompositeMap != null) {
+					return computeNewTag(parentCompositeMap);
+				}
+			} catch (ApplicationException e1) {
+				Throwable rootCause = CustomDialog.getRootCause(e1);
+				String errorMessage = CustomDialog.getExceptionMessage(rootCause);
+				if (errorMessage != null && errorMessage.indexOf("end-tag") != -1)
+					return computeEndTag(errorMessage);
+				return getDefaultCompletionProposal();
+			}
+			return getDefaultCompletionProposal();
 		}
-		List childs = CompositeMapUtil.getAvailableChildElements(data);
+	}
+
+	private ICompletionProposal[] computeEndTag(String errorMessage) {
+		if (errorMessage == null || errorMessage.indexOf("end-tag") < 0) {
+			return getDefaultCompletionProposal();
+		}
+		int beginIndex = errorMessage.indexOf("element type");
+		int endIndex = errorMessage.indexOf("must", beginIndex);
+		String content = errorMessage.substring(beginIndex, endIndex);
+		beginIndex = content.indexOf("\"");
+		endIndex = content.lastIndexOf("\"");
+		if (beginIndex == -1 || endIndex == beginIndex)
+			return getDefaultCompletionProposal();
+		content = "</" + content.substring(beginIndex + 1, endIndex) + ">";
+		IDocument document = viewer.getDocument();
+		ITypedRegion partitionRegion;
+		try {
+			partitionRegion = document.getPartition(cursorOffset);
+			int length = cursorOffset - partitionRegion.getOffset();
+			document.replace(partitionRegion.getOffset(), length, content);
+			return null;
+		} catch (BadLocationException e) {
+			CustomDialog.showErrorMessageBox(e);
+		}
+		return null;
+	}
+
+	private ICompletionProposal[] computeNewTag(CompositeMap parent) {
+		List childs = CompositeMapUtil.getAvailableChildElements(parent);
 		if (childs == null)
 			childs = new ArrayList();
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(data);
+		Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
 		if (ele != null) {
 			childs.addAll(ele.getAllArrays());
 		} else {
@@ -102,23 +123,18 @@ public class ChildStrategy implements IContentAssistStrategy {
 		String preString = tokenString.getStrBeforeCursor();
 		for (Iterator iter = childs.iterator(); iter.hasNext();) {
 			Element element = (Element) iter.next();
-			String name = CompositeMapUtil.getContextFullName(data, element
-					.getQName());
+			String name = CompositeMapUtil.getContextFullName(parent, element.getQName());
 			if (preString != null && !name.startsWith(preString)) {
 				continue;
 			}
 			String attributeDocument = element.getDocument();
 			String description = name;
-			String replaceString = name + " ></" + name + ">";
+			String replaceString = name + " />";
 			if (attributeDocument != null)
-				description = formateAttributeName(name) + " - "
-						+ attributeDocument;
-			Image contentImage = element.isArray() ? getArrayImage()
-					: getElementImage();
-			avaliableList.add(new CompletionProposal(replaceString, tokenString
-					.getDocumentOffset(), tokenString.getLength(), name
-					.length() + 1, contentImage, description, null,
-					attributeDocument));
+				description = formateAttributeName(name) + " - " + attributeDocument;
+			Image contentImage = element.isArray() ? getArrayImage() : getElementImage();
+			avaliableList.add(new CompletionProposal(replaceString, tokenString.getDocumentOffset(), tokenString
+					.getLength(), name.length() + 1, contentImage, description, null, attributeDocument));
 		}
 		int allLength = avaliableList.size();
 		if (allLength == 0)
@@ -132,18 +148,58 @@ public class ChildStrategy implements IContentAssistStrategy {
 		return result;
 	}
 
-	private CompositeMap locateCompositeMap(String content, int offset) {
-		CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
-
-		try {
-			InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"));
-			CompositeMap cm = parser.getCompositeMapFromLine(is,
-					getCursorLine(offset));
-			return cm;
-		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+	private ICompletionProposal[] computeUpdateTag(CompositeMap parent) {
+		List childs = CompositeMapUtil.getAvailableChildElements(parent);
+		if (childs == null)
+			childs = new ArrayList();
+		Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
+		if (ele != null) {
+			childs.addAll(ele.getAllArrays());
+		} else {
+			return getDefaultCompletionProposal();
 		}
-		return null;
+		List avaliableList = new ArrayList();
+		String preString = null;
+		for (Iterator iter = childs.iterator(); iter.hasNext();) {
+			Element element = (Element) iter.next();
+			String name = CompositeMapUtil.getContextFullName(parent, element.getQName());
+			if (preString != null && !name.startsWith(preString)) {
+				continue;
+			}
+			String attributeDocument = element.getDocument();
+			String description = name;
+			String replaceString = name;
+			if (attributeDocument != null)
+				description = formateAttributeName(name) + " - " + attributeDocument;
+			Image contentImage = element.isArray() ? getArrayImage() : getElementImage();
+			avaliableList.add(new CompletionProposal(replaceString, tokenString.getDocumentOffset(), tokenString
+					.getLength(), name.length() + 1, contentImage, description, null, attributeDocument));
+		}
+		int allLength = avaliableList.size();
+		if (allLength == 0)
+			return getDefaultCompletionProposal();
+		ICompletionProposal[] result = new ICompletionProposal[allLength];
+		int i = 0;
+		for (Iterator iter = avaliableList.iterator(); iter.hasNext();) {
+			result[i] = (CompletionProposal) iter.next();
+			i++;
+		}
+		return result;
+	}
+
+	private CompositeMap locateCompositeMap(String content, int offset) throws ApplicationException {
+		try {
+			CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
+			InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"));
+			CompositeMap cm = parser.getCompositeMapFromLine(is, getCursorLine(offset));
+			return cm;
+		} catch (UnsupportedEncodingException e) {
+			throw new SystemException(e);
+		} catch (SAXException e) {
+			throw new ApplicationException("请检查此文件格式是否正确.", e);
+		} catch (IOException e) {
+			throw new ApplicationException("请检查此文件格式是否正确.", e);
+		}
 	}
 
 	private int getCursorLine(int offset) {
@@ -163,20 +219,17 @@ public class ChildStrategy implements IContentAssistStrategy {
 	}
 
 	private static Image getArrayImage() {
-		Image contentImage = Activator.getImageDescriptor(
-				LocaleMessage.getString("array.icon")).createImage();
+		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
 		return contentImage;
 	}
 
 	private static Image getElementImage() {
-		Image contentImage = Activator.getImageDescriptor(
-				LocaleMessage.getString("element.icon")).createImage();
+		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("element.icon")).createImage();
 		return contentImage;
 	}
 
 	private static Image getDefaultImage() {
-		Image contentImage = Activator.getImageDescriptor(
-				LocaleMessage.getString("contentassit.icon")).createImage();
+		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
 		return contentImage;
 	}
 
@@ -184,10 +237,33 @@ public class ChildStrategy implements IContentAssistStrategy {
 		String text = tokenString.getText();
 		if (text == null || text.equals(""))
 			return null;
-		String replaceString = tokenString.getText() + " ></" + text + ">";
-		return new ICompletionProposal[] { new CompletionProposal(
-				replaceString, tokenString.getDocumentOffset(), tokenString
-						.getLength(), text.length() + 1, getDefaultImage(),
-				null, null, null) };
+		String replaceString = tokenString.getText() + " />";
+		return new ICompletionProposal[]{new CompletionProposal(replaceString, tokenString.getDocumentOffset(),
+				tokenString.getLength(), text.length() + 1, getDefaultImage(), null, null, null)};
+	}
+	private TokenString createTokenString() throws ApplicationException {
+		TokenString tokenString = null;
+		IDocument document = viewer.getDocument();
+		try {
+			ITypedRegion partitionRegion = document.getPartition(cursorOffset);
+			int tagEnd = cursorOffset - partitionRegion.getOffset();
+			String partitionText = document.get(partitionRegion.getOffset(), partitionRegion.getLength());
+			int partitionLength = partitionRegion.getLength();
+			char c = partitionText.charAt(tagEnd);
+			while (endChar(c, tagEnd, partitionLength)) {
+				tagEnd++;
+				c = partitionText.charAt(tagEnd);
+			}
+			String tagName = partitionText.substring(1, tagEnd);
+			tokenString = new TokenString(tagName, partitionRegion.getOffset() + 1, cursorOffset);
+		} catch (BadLocationException e) {
+			throw new SystemException(e);
+		}
+		return tokenString;
+
+	}
+	private boolean endChar(char c, int end, int partitionLength) {
+		return !Character.isWhitespace(c) && c != '>' && c != '/' && c != '<' && (end < partitionLength - 1)
+				&& c != '"';
 	}
 }

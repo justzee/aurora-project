@@ -298,7 +298,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	}
 
 	public void refresh(boolean dirty) {
-		if (dirty)
+		if (dirty && parent!=null)
 			parent.refresh(true);
 		else {
 			if (tableViewer != null && !tableViewer.getTable().isDisposed()) {

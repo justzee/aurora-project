@@ -42,7 +42,6 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 	private CompositeMap targetCompositeMap;
 	private int line;
 	private boolean serchfinished = false;
-	String globalComment;
 
 	/**
 	 * @param composite_loader
@@ -76,6 +75,7 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 
 	Locator locator;
 
+	String comment;
 	// boolean support_xinclude = false;
 	// the default SAXParserFactory instance
 
@@ -130,6 +130,10 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 				namespaceURI, localName);
 		addAttribs(node, atts);
 
+        if(comment != null){
+        	node.setComment(comment);
+        	comment = null;
+        }
 		if (current_node == null) {
 			current_node = node;
 		} else {
@@ -149,6 +153,10 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
+        if(comment != null){
+        	current_node.setEndElementComment(comment);
+        	comment = null;
+        }
 		if (node_stack.size() > 0) {
 			int lineNumber = locator.getLineNumber() - 1;
 			if (!serchfinished && function == lineToCompositeMap) {
@@ -190,8 +198,6 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 
 	/** get root CompositeMap parsed */
 	public CompositeMap getRoot() {
-		if (globalComment != null)
-			current_node.setGlobalComment(globalComment);
 		return current_node;
 	}
 
@@ -280,22 +286,28 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 	public void comment(char ch[], int start, int length) throws SAXException {
 		if (ch == null)
 			return;
-		if (current_node != null) {
-			String t = current_node.getComment();
-			String now = new String(ch, start, length);
-			if (t != null)
-				t += "-->" + now;
-			else
-				t = now;
-			t = handleNewLine(t);
-			current_node.setComment(t);
-		} else {
-			globalComment = globalComment == null ? "" : globalComment
-					+ XMLOutputter.LINE_SEPARATOR;
-			globalComment = globalComment + "<!--"
-					+ new String(ch, start, length) + "-->";
-			globalComment = handleNewLine(globalComment);
-		}
+		String separator = "-->";
+		String now = new String(ch, start, length);
+		if (comment != null)
+			comment += separator + now;
+		else
+			comment = now;
+//		if (current_node != null) {
+//			String t = current_node.getComment();
+//			String now = new String(ch, start, length);
+//			if (t != null)
+//				t += "-->" + now;
+//			else
+//				t = now;
+//			t = handleNewLine(t);
+//			current_node.setComment(t);
+//		} else {
+//			comment = comment == null ? "" : comment
+//					+ XMLOutputter.LINE_SEPARATOR;
+//			comment = comment + "<!--"
+//					+ new String(ch, start, length) + "-->";
+//			comment = handleNewLine(comment);
+//		}
 	}
 	private String handleNewLine(String src){
 		if(src == null)

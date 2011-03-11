@@ -27,7 +27,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.action.SxsdValidVisablePropertyTester;
+import uncertain.ide.eclipse.navigator.action.SxsdValidVisablePropertyTester;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LoadSchemaManager;
 import uncertain.ide.help.LocaleMessage;

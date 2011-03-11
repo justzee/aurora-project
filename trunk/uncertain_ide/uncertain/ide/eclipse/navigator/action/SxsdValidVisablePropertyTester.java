@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.navigator.action;
 
 import java.io.File;
 

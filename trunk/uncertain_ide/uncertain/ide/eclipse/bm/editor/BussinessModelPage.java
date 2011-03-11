@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
@@ -29,7 +26,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -88,8 +84,7 @@ public class BussinessModelPage extends CompositeMapPage{
 		}
 		String filePath = getFile().getAbsolutePath();
 		try {
-			CompositeLoader loader = new CompositeLoader();
-			loader.setSaveNamespaceMapping(true);
+			CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 			data = loader.loadByFile(filePath);
 		} catch (IOException e) {
 			CustomDialog.showErrorMessageBox(e);
@@ -323,23 +318,11 @@ public class BussinessModelPage extends CompositeMapPage{
 		return tabFolder;
 	}
 
-	protected File getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
-				.getFile();
-		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
-		return new File(fileName);
-	}
-
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			File file = getFile();
 			XMLOutputter.saveToFile(file, data);
-			IFile ifile =((IFileEditorInput)getEditorInput()).getFile();
-			try {
-				ifile.refreshLocal(IResource.DEPTH_ZERO, null);
-			} catch (CoreException e) {
-				CustomDialog.showErrorMessageBox(e);
-			}
+			super.doSave(monitor);
 		} catch (IOException e) {
 			CustomDialog.showErrorMessageBox(e);
 		}

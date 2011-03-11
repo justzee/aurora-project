@@ -12,9 +12,12 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import aurora.ide.AuroraConstant;
+
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
+import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 import uncertain.ide.help.ApplicationException;
@@ -76,13 +79,13 @@ public class BMFieldsPage extends WizardPage {
 	}
 
 	public CompositeMap getSelectedFields() {
-		CompositeMap fieldsArray = new CompositeMap(BMFromDBWizard.bm_pre,
-				BMFromDBWizard.bm_uri, "fields");
+		CompositeMap fieldsArray = new CompositeMap(BMUtil.BMPrefix,
+				AuroraConstant.BMUri, "fields");
 		Object[] elements = filterCompoment.getCheckedElements();
 		for (int j = 0; j < elements.length; j++) {
 			CompositeMap record = (CompositeMap) elements[j];
-			CompositeMap field = new CompositeMap(BMFromDBWizard.bm_pre,
-					BMFromDBWizard.bm_uri, "field");
+			CompositeMap field = new CompositeMap(BMUtil.BMPrefix,
+					AuroraConstant.BMUri, "field");
 			field.put("name", record.getString("COLUMN_NAME").toLowerCase());
 			field.put("physicalName", record.getString("COLUMN_NAME"));
 			// String required = record.getString("IS_NULLABLE").equals("YES") ?

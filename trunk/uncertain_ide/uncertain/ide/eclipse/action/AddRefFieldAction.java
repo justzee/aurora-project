@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
@@ -17,6 +18,7 @@ import uncertain.ide.eclipse.bm.editor.GridDialog;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 import uncertain.ide.help.ApplicationException;
+import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
 import aurora.ide.AuroraConstant;
@@ -47,7 +49,7 @@ public class AddRefFieldAction extends ActionListener {
 		}
 		gridInput = new CompositeMap("gridInput");
 		QualifiedName modelQN = new QualifiedName(model.getNamespaceURI(),model.getName());
-		Assert.isTrue(AuroraConstant.ModelQN.equals(modelQN), "This CompositeMap is not a model element!");
+		Assert.isTrue(AuroraConstant.ModelQN.getLocalName().equals(modelQN.getLocalName()), "This CompositeMap is not a model element!");
 		CompositeMap relationsCM = model.getChild(relations);
 		if(relationsCM == null){
 			CustomDialog.showErrorMessageBox("relations is null !");
@@ -103,8 +105,10 @@ public class AddRefFieldAction extends ActionListener {
 			return null;
 		CompositeMap fields = null;
 		try {
-			fields = BMUtil.getFields(ref_model);
-		} catch (Exception e) {
+			IResource bmFile = BMUtil.getBMFromClassPath(ref_model);
+			CompositeMap bmData = AuroraResourceUtil.loadFromResource(bmFile);
+			fields = bmData.getChild("fields");
+		} catch (ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
 			return null;
 		}

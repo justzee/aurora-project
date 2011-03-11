@@ -127,8 +127,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		} 
 	}
 	private boolean sycMainViewerPageWithTextPage() throws ApplicationException{
-		CompositeLoader loader = new CompositeLoader();
-		loader.setSaveNamespaceMapping(true);
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 		CompositeMap cm;
 		try {
 			cm = loader.loadFromString(textPage.getContent(),"UTF-8");
