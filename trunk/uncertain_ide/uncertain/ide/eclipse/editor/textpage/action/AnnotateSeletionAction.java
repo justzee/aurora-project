@@ -42,7 +42,7 @@ public class AnnotateSeletionAction implements IEditorActionDelegate {
 			ITypedRegion  partitionRegion = document.getPartition(ts.getOffset());
 			if(XMLPartitionScanner.XML_TEXT.equals(partitionRegion.getType())){
 				content ="/*"+content+"*/";
-			}else if( IDocument.DEFAULT_CONTENT_TYPE.equals(partitionRegion.getType())){
+			}else if( XMLPartitionScanner.XML_START_TAG.equals(partitionRegion.getType())|| IDocument.DEFAULT_CONTENT_TYPE.equals(partitionRegion.getType())){
 				content ="<!--"+content+"-->";
 			}
 			document.replace(ts.getOffset(), ts.getLength(), content);
