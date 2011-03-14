@@ -1,12 +1,41 @@
 <chapter id="introduction">
     <title>Aurora 框架简介</title>
     <sect1 id="introduction-info"  revision="1">
-    <title>前言</title>
-        
+        <title>前言</title>
         <para>
-    Aurora 是一个开源的web框架。
+        Aurora 是一个开源的web框架。
         </para>
-
-
-    </sect1>        
+    </sect1>
+    <sect1 id="introduction-svn"  revision="1">
+        <title>SVN地址</title>
+        <para>
+        Aurora的所有代码托管在Google Code。
+        </para>
+        <itemizedlist>
+            <listitem>
+            <para>
+               Uncertain  
+            </para>
+            <para>
+               https://aurora-project.googlecode.com/svn/trunk/uncertain
+            </para>
+            </listitem>
+            <listitem>
+            <para>
+               Aurora
+            </para>
+            <para>
+              https://aurora-project.googlecode.com/svn/trunk/aurora
+            </para>
+            </listitem>
+            <listitem>
+            <para>
+               Aurora UI
+            </para>
+            <para>
+              https://aurora-project.googlecode.com/svn/trunk/AuroraUI
+            </para>
+            </listitem>
+        </itemizedlist>
+    </sect1>         
 </chapter>

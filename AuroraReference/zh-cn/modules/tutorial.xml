@@ -1,9 +1,7 @@
 ﻿<chapter id="tutorial">
 	<title>Aurora开发概览</title>
 	<sect1 id="tutorial-intro"  revision="1">
-		<title>
-		前言
-		</title>
+		<title>前言</title>
         
 		<para>
 	本章是面向Aurora初学者的一个入门教程。
@@ -43,15 +41,9 @@
 			</para>
 		</sect2>
 	</sect1>
-	<sect1 id="tutorial-base">
-        <title>
-            基本的数据维护表单
-		</title>
-
-		<para>
-	基本的数据维护表单
-		</para>
-	</sect1>
+	
+	&mantaince;
+	
 	<sect1 id="tutorial-query">
 		<title>
             数据查询及展示界面
