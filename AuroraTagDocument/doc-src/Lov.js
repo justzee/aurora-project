@@ -5,16 +5,10 @@
     &lt;a:lov displayField="dfield" valueField="vfield"
 	bindTarget="dsId" name="fieldName" prompt="description"
 	lovWidth="300" lovHeight="300" lovGridHeight="300"
-	lovService="model" lovUrl="url" keepError="true"/&gt;
+	lovService="model" title="title" fetchRemote="false"/&gt;
    </code></pre>
  * @extends TextField
  * @author 牛佳庆
- */
-
-/**
- * 选项显示的值
- * @property displayField
- * @type String
  */
  
 /**
@@ -60,11 +54,5 @@
 /**
  * Lov弹出窗口的title
  * @property title
- * @type String
- */
- 
-/**
- * 选项的值
- * @property valueField
  * @type String
  */
