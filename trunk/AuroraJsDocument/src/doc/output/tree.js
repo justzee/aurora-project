@@ -33,6 +33,8 @@
 				,
                 {"href":"output/Aurora.MenuItem.html","text":"MenuItem","id":"Aurora.MenuItem","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Aurora.MultiLov.html","text":"MultiLov","id":"Aurora.MultiLov","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Aurora.NumberField.html","text":"NumberField","id":"Aurora.NumberField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Radio.html","text":"Radio","id":"Aurora.Radio","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -133,6 +135,8 @@
 			"Aurora.MenuBar":"icon-cls"
 			,
 			"Aurora.MenuItem":"icon-cls"
+			,
+			"Aurora.MultiLov":"icon-cls"
 			,
 			"Aurora.NumberField":"icon-cls"
 			,

@@ -19,7 +19,7 @@
  * @author 牛佳庆
  * @singleton
  */
-$A = Aurora = {version: '1.0',revision:'$Rev: 2075 $'};
+$A = Aurora = {version: '1.0',revision:'$Rev: 2132 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
 	if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -1468,6 +1468,12 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */
 	        'clear',
+	        <div id="event-Aurora.DataSet-query"></div>/**
+             * @event query
+             * 查询事件.
+             * @param {Aurora.DataSet} dataSet 当前DataSet.
+             */ 
+            'query',
 	        <div id="event-Aurora.DataSet-beforeload"></div>/**
              * @event beforeload
              * 准备加载数据事件.
@@ -1599,6 +1605,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
 	        this.data.add(record);
         }
         if(this.sortInfo) this.sort();
+        
+        this.fireEvent("beforeload", this, this.data);
         
         var needFire = true;
         if(this.bindtarget && options){
@@ -2177,7 +2185,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
 //    				  + '&_rootpath=list'
     	var url = this.queryurl +(this.queryurl.indexOf('?') == -1?'?':'&') + para;
     	this.loading = true;
-    	this.fireEvent("beforeload", this);
+    	this.fireEvent("query", this);
 //    	this.fireBindDataSetEvent("beforeload", this);//主dataset无数据,子dataset一直loading
     	$A.request({url:url, para:q, success:this.onLoadSuccess, error:this.onLoadError, scope:this,failure:this.onAjaxFailed,opts:opts});
     },
@@ -2439,7 +2447,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     		}
     	}else if(records.length == 0){
     		this.currentIndex  = 1
-    	}
+    	}    	
     	this.loading = false;
     	this.loadData(datas, total, options);
     	this.locate(this.currentIndex,true);
@@ -3968,8 +3976,15 @@ $A.TextField = Ext.extend($A.Field,{
     },
     initEvents : function(){
     	$A.TextField.superclass.initEvents.call(this);   
+    },
+    processListener : function(ou){
+    	$A.TextField.superclass.processListener.call(this, ou);
     	if(this.typecase){
-    		this.el.on("paste", this.onPaste, this);
+    		if(!window.clipboardData){
+    			this.el[ou]("change", this.onChange, this);
+    		}else if(this.typecase){
+    			this.el[ou]("paste", this.onPaste, this);
+    		}
     	}
     },
     onPaste : function(e){	
@@ -3980,14 +3995,17 @@ $A.TextField = Ext.extend($A.Field,{
             }else if(this.typecase == 'lower') {
             	window.clipboardData.setData('text',t.toLowerCase());
             }
-    	}else{
-            e.stopEvent();
+            setTimeout(function(){window.clipboardData.setData('text',t);},1);
     	}
     },
-    destroy : function(){
-    	if(this.typecase){
-            this.el.un("paste", this.onPaste, this);
+    onChange : function(e){
+    	if(this.typecase == 'upper'){
+	    	this.setValue(this.getRawValue().toUpperCase());
+        }else if(this.typecase == 'lower') {
+        	this.setValue(this.getRawValue().toLowerCase());
         }
+    },
+    destroy : function(){
         $A.TextField.superclass.destroy.call(this);
     },
     isCapsLock: function(e){
@@ -4006,7 +4024,7 @@ $A.TextField = Ext.extend($A.Field,{
     	if(this.detectCapsLock) this.isCapsLock(e);
 		var keyCode = e.getKey();
 		var code = keyCode;
-		if(this.typecase){
+		if(this.typecase&&!e.ctrlKey){
         	if(this.typecase == 'upper'){
                 if(keyCode>=97 && keyCode<=122) code = keyCode - 32;
             }else if(this.typecase == 'lower') {
@@ -5529,7 +5547,7 @@ $A.showTypeMessage = function(title, msg,width,height,css,callback){
 	var msg = '<div class="win-icon '+css+'"><div class="win-type" style="width:'+(width-60)+'px;height:'+(height-58)+'px;">'+msg+'</div></div>';
 	return $A.showOkWindow(title, msg, width, height,callback);	
 } 
-<div id="method-Aurora.Window-showComfirm"></div>/**
+<div id="method-Aurora.Window-showConfirm"></div>/**
  * 带图标的确定窗口.
  * 
  * @param {String} title 标题
@@ -5540,7 +5558,7 @@ $A.showTypeMessage = function(title, msg,width,height,css,callback){
  * @param {int} height 高度
  * @return {Window} 窗口对象
  */
-$A.showComfirm = function(title, msg, okfun,cancelfun, width, height){
+$A.showConfirm = function(title, msg, okfun,cancelfun, width, height){
 	width = width||300;
 	height = height||100;
     var msg = '<div class="win-icon win-question"><div class="win-type" style="width:'+(width-60)+'px;height:'+(height-58)+'px;">'+msg+'</div></div>';
@@ -5795,6 +5813,7 @@ $A.Lov = Ext.extend($A.TextField,{
         }
         $A.slideBarEnable = $A.SideBar.enable;
         $A.SideBar.enable = false;
+        if(Ext.isEmpty(v)) return;
         this.setRawValue(_lang['lov.query'])
         $A.request({url:url, para:p, success:function(res){
             var r = new $A.Record({});
@@ -5827,7 +5846,6 @@ $A.Lov = Ext.extend($A.TextField,{
 //    },
     showLovWindow : function(){        
         if(this.fetching||this.isWinOpen||this.readonly) return;
-        this.isWinOpen = true;
         
         var v = this.getRawValue();
         this.blur();
@@ -5840,7 +5858,155 @@ $A.Lov = Ext.extend($A.TextField,{
             url = this.context + 'sys_lov.screen?url='+encodeURIComponent(this.context + 'autocrud/'+this.lovmodel+'/query?'+ Ext.urlEncode(this.getLovPara()))+'&service='+this.lovmodel+'&';
         }
         if(url) {
+	        this.isWinOpen = true;
             this.win = new $A.Window({title:this.title||'Lov', url:url+"lovid="+this.id+"&key="+encodeURIComponent(v)+"&gridheight="+(this.lovgridheight||350)+"&innerwidth="+((this.lovwidth||400)-30), height:this.lovheight||400,width:this.lovwidth||400});
+            this.win.on('close',this.onWinClose,this);
+        }
+    }
+});
+<div id="cls-Aurora.MultiLov"></div>/**
+ * @class Aurora.MultiLov
+ * @extends Aurora.Lov
+ * <p>MultiLov 值列表组件.
+ * @author huazhen.wu@hand-china.com
+ * @constructor
+ * @param {Object} config 配置对象. 
+ */
+$A.MultiLov = Ext.extend($A.Lov,{
+    constructor: function(config) {
+    	this.quote="'";
+    	this.localvalues=[];
+        $A.MultiLov.superclass.constructor.call(this, config);        
+    },
+    processListener : function(ou){
+        $A.MultiLov.superclass.processListener.call(this,ou);
+        this.el[ou]('click',this.onClick, this)
+    },
+    initEvents : function(){
+        $A.MultiLov.superclass.initEvents.call(this);
+        <div id="event-Aurora.MultiLov-commit"></div>/**
+         * @event commit
+         * commit事件.
+         * @param {Aurora.Lov} lov 当前Lov组件.
+         * @param {Aurora.Record} r 当前lov绑定的Record
+         * @param {Aurora.Record} rs 选中的Record集合. 
+         */
+    },
+    onChange : function(e){},
+    onClick : function(e){
+        var pos = this.getCursortPosition();
+        var value = this.getRawValue();
+        var strs = value.split(';')
+        var start = 0;
+        for(var i=0;i<strs.length;i++){
+            var end = start + strs[i].length + 1;
+            if(pos>start&&pos<end){
+                if(this.start!=start||this.end!=end){
+                	this.select(start,end);
+                	if(Ext.isGecko||Ext.isOpera){
+                		this.start=start;
+                		this.end=end;
+                	}
+                }else this.start=this.end=0;
+				break;
+            }else{
+                start +=strs[i].length + 1;
+            }
+        }
+    },
+    commit:function(ds,lr){
+        if(this.win) this.win.close();
+        var record = lr ? lr : this.record;
+        if(record){
+    		this.optionDataSet=ds;
+            var records=ds.getAll(),from="";
+	    	for(var j=0;j<records.length;j++){
+	        	if(records[j].get(this.valuefield)){
+	        		var v=records[j].get(this.valuefield);
+	        		from+=this.quote+v+this.quote;
+	        		if(j!=records.length-1)from+=","
+	        	}
+	        }
+        	record.set(this.binder.name,from);
+        }
+        this.fireEvent('commit', this, record, records)
+    },
+    getCursortPosition : function() {
+        var p = 0;
+        if (document.selection) {
+        	this.el.focus();
+            var r = document.selection.createRange();
+            r.moveStart('character', -this.el.dom.value.length);
+            p = r.text.length;
+        }else if (this.el.dom.selectionStart||this.el.dom.selectionStart=='0')
+            p = this.el.dom.selectionStart;
+        return p;
+    },
+    processValue : function(v){
+    	this.localvalues=[];
+    	if(this.optionDataSet){
+	    	this.optionDataSet.removeAll();
+    	}
+    	if(!v)return '';
+    	var values=v.split(';'),rv="",records=[];
+    	for(var i=0;i<values.length;i++){
+    		var vs=values[i].trim();
+    		if(vs||vs=='0'){
+    			var record=this.getRecordByDisplay(vs);
+    			if(record){
+    				vs=record.get(this.valuefield);
+    				records.add(record);
+    			}else{
+    				this.localvalues.add(vs);
+    			}
+	    		rv+=this.quote+vs+this.quote+",";
+    		}
+    	}
+    	for(var i=0;i<records.length;i++){
+    		this.optionDataSet.add(records[i]);
+    	}
+    	return rv.match(/,$/)?rv.slice(0,rv.length-1):rv;
+    },
+    getRecordByDisplay: function(name){
+    	if(!this.optionDataSet)return null;
+    	var datas = this.optionDataSet.getAll();
+		for(var i=0;i<datas.length;i++){
+			var d = datas[i].get(this.displayfield);
+			if(d == name){
+				return datas[i];
+			}
+		}
+		return null;
+    },
+    formatValue : function(v){
+    	var rv="";
+    	if(this.optionDataSet){
+    		var datas=this.optionDataSet.getAll();
+			for(var i=0;i<datas.length;i++){
+				rv+=datas[i].get(this.displayfield)+";";
+			}
+    	}
+		for(var i=0;i<this.localvalues.length;i++){
+			rv+=this.localvalues[i]+";";
+		}
+    	return rv;
+    },
+    showLovWindow : function(){        
+        if(this.fetching||this.isWinOpen||this.readonly) return;
+        
+        var v = this.getRawValue();
+        this.blur();
+        var url;
+        if(!Ext.isEmpty(this.lovurl)){
+            url = this.lovurl+'?' + Ext.urlEncode(this.getLovPara()) + '&';
+        }else if(!Ext.isEmpty(this.lovservice)){
+            url = this.context + 'sys_multiLov.screen?url='+encodeURIComponent(this.context + 'sys_lov.svc?svc='+this.lovservice + '&'+ Ext.urlEncode(this.getLovPara()))+'&service='+this.lovservice+'&';           
+        }else if(!Ext.isEmpty(this.lovmodel)){
+            url = this.context + 'sys_multiLov.screen?url='+encodeURIComponent(this.context + 'autocrud/'+this.lovmodel+'/query?'+ Ext.urlEncode(this.getLovPara()))+'&service='+this.lovmodel+'&';
+        }
+        if(url) {
+	        this.isWinOpen = true;
+            this.win = new $A.Window({title:this.title||'Lov', url:url+"lovid="+this.id+"&key="+encodeURIComponent(v)+"&gridheight="+(this.lovgridheight||350)+"&innerwidth="+((this.lovwidth||400)-30)+"&innergridwidth="+Math.round(((this.lovwidth||400)-90)/2), height:this.lovheight||400,width:this.lovwidth||400});
             this.win.on('close',this.onWinClose,this);
         }
     }
@@ -5866,9 +6032,10 @@ $A.TextArea = Ext.extend($A.Field,{
     initElements : function(){
     	this.el= this.wrap;
     },
-    setRawValue : function(v){
-        this.el.update(v === null || v === undefined ? '' : v);
-    }
+    onKeyDown : function(e){}
+//    ,setRawValue : function(v){
+//        this.el.update(v === null || v === undefined ? '' : v);
+//    }
 //    ,getRawValue : function(){
 //        var v = this.el.dom.innerHTML;
 //        if(v === this.emptytext || v === undefined){
