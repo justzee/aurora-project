@@ -263,7 +263,7 @@ Aurora.showErrorMessage(title, msg,callback,width,height);
                带确定取消按钮的确认窗口
             </para>
             <programlisting><![CDATA[
-Aurora.showComfirm(title, msg, okfun,cancelfun, width, height);    
+Aurora.showConfirm(title, msg, okfun,cancelfun, width, height);    
             ]]></programlisting>
             <table frame="topbot" id="presentation-client-window-okcancel-properties" revision="8">
                 <tgroup cols="4">
