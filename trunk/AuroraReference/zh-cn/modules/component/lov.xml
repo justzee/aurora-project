@@ -58,7 +58,7 @@
     	field标签下的mapping标签定义了弹出窗口选项集的字段和主窗口的字段的联系关系，每条map标签都有from和to属性，from是lov弹出窗口中选项的字段，to是lov在主窗口绑定的dataset中的字段。
     </para>
     <para>
-    	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，TextField会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
+    	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，Lov会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
     </para>
     <programlisting><![CDATA[
 function login(){
