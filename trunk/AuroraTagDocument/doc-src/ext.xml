@@ -65,6 +65,7 @@
 		<source src="../doc-src/DateTimePicker.js"/>
 		<source src="../doc-src/DateField.js"/>
 		<source src="../doc-src/Lov.js"/>
+		<source src="../doc-src/MultiLov.js"/>
 		<source src="../doc-src/Button.js"/>
 		<source src="../doc-src/Radio.js"/>
 		<source src="../doc-src/CheckBox.js"/>

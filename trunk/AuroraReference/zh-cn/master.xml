@@ -12,6 +12,7 @@
 <!ENTITY datefield				SYSTEM "modules/component/datefield.xml">
 <!ENTITY datepicker				SYSTEM "modules/component/datepicker.xml">
 <!ENTITY lov					SYSTEM "modules/component/lov.xml">
+<!ENTITY multilov				SYSTEM "modules/component/multilov.xml">
 <!ENTITY datetimepicker			SYSTEM "modules/component/datetimepicker.xml">
 <!ENTITY textarea				SYSTEM "modules/component/textarea.xml">
 <!ENTITY radio					SYSTEM "modules/component/radio.xml">

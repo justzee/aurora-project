@@ -1,9 +1,9 @@
-<sect3 id="presentation-client-editor-lov" revision="1">
+<sect3 id="presentation-client-editor-multilov" revision="1">
     <title>
-      Lov
+      MultiLov
     </title>            
      <para>
-       Lov是一个提供文本输入编辑和通过弹出窗口提供选项选择的组件，继承自TextField组件，拥有TextField标签的属性以及TextField对象的方法和事件。弹出窗口中为一个固定格式的页面，包含选项集的查询条件输入框和用Grid组件成列的选项集。
+       MultiLov是一个提供文本输入编辑和通过弹出窗口提供选项选择的组件，继承自Lov组件，拥有Lov标签的属性以及Lov对象的方法和事件。弹出窗口中为一个固定格式的页面，包含选项集的查询条件输入框和两个用Grid组件成列的选项集和待选集。
     </para>
     <mediaobject>
         <imageobject role="fo">
@@ -18,8 +18,8 @@
 			</para>
 		</caption>
     </mediaobject>
-    <sect4 id="presentation-client-editor-lov-tag" revision="1">
-    <title>Lov定义</title>
+    <sect4 id="presentation-client-editor-multilov-tag" revision="1">
+    <title>MultiLov定义</title>
     <para>
     	 在screen文件中我们通过&lt;a:lov&gt;标签来定义一个Lov对象。
     </para>
@@ -27,26 +27,21 @@
 <a:dataSet id="gld_exchange_rate_ds" autocreate="true">
     <a:datas dataSource="/model/gerc"/>
     <a:fields>
-    	<a:field name="currency_code_frn" lovGridHeight="300" lovHeight="460"
+    	<a:field displayField="currency_name" valueField="currency_code"  name="currency_code_frn" lovGridHeight="300" lovHeight="460"
 		lovService="gld.gld_currency_lov?currency_code_frn=${/model/gerc/record/@currency_code}"
-		lovWidth="490" title="币种选择">
-            <mapping>
-                <map from="currency_code" to="currency_code_frn"/>
-                <map from="currency_name" to="currency_name_frn"/>
-            </mapping>
-        </a:field>
+		lovWidth="490" title="币种选择"/>
     </a:fields>
     <a:field name="currency_name_frn" readonly="true"/>
 </a:dataSet>
 
-<a:lov name="currency_code_frn" bindTarget="gld_exchange_rate_ds" prompt="GLD_CURRENCY.CURRENCY_CODE_FRN">
+<a:multiLov name="currency_code_frn" bindTarget="gld_exchange_rate_ds" prompt="GLD_CURRENCY.CURRENCY_CODE_FRN">
     <a:events>
         <a:event handler="login" name="enterdown"/>
     </a:events>	
-</a:lov>
+</a:multiLov>
 ]]></programlisting>
 	<para>
-    	lov标签可以设置一个id属性，id是组件的唯一标识，我们可以在页面脚本中用$('id')的方法获得该id对应的组件对象，进而可以调用相应的函数方法。
+    	multiLov标签可以设置一个id属性，id是组件的唯一标识，我们可以在页面脚本中用$('id')的方法获得该id对应的组件对象，进而可以调用相应的函数方法。
     </para>
     <para>
     	lov标签的bindTarget属性可指定一个dataset对象的id，name属性可指定该dataset其中一个field的名字。这两个属性必须联合使用，其功能是将Lov对象绑定到dataset中的一个field上，进而我们只要对dataset进行操作就能即时反映在Lov上，另外Lov上的文字编辑也会立刻修改dataset中的数据。
@@ -55,7 +50,7 @@
     	如上代码，field标签是lov所绑定的dataset中的一条字段(field)，field标签中lovHeight,lovWidth属性可指定弹出窗口的高度和宽度，lovService属性可指定弹出窗口中生成页面的BM，title属性可指定弹出框的标题。注意：以上属性均可定义在lov标签上，效果相同，但是建议定义在field标签上。
     </para>
     <para>
-    	field标签下的mapping标签定义了弹出窗口选项集的字段和主窗口的字段的联系关系，每条map标签都有from和to属性，from是lov弹出窗口中选项的字段，to是lov在主窗口绑定的dataset中的字段。
+    	field标签中displayField和valueField属性定义了弹出窗口选项集的字段和主窗口的字段的联系关系，displayField是将multiLov弹出窗口中选项的对应字段的值显示在主窗口中的输入框中，valueField是将弹出窗口中选项的对应字段的值传递给主窗口的控件，用于数据传递。由于传回的多个数据，显示的格式是以分号分隔，而值是以单引号括起以及逗号分隔
     </para>
     <para>
     	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，TextField会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
@@ -71,8 +66,8 @@ function login(){
 ]]></programlisting>
     </sect4>
     <sect4>
-	<title>Lov标签属性</title>
-	<table frame="topbot" id="presentation-client-editor-lov-properties" revision="8">
+	<title>MultiLov标签属性</title>
+	<table frame="topbot" id="presentation-client-editor-multilov-properties" revision="8">
 		<tgroup cols="4">
 			<colspec colname="c1" colwidth="1*"/>
    			<colspec colname="c2" colwidth="2*"/>
@@ -97,34 +92,10 @@ function login(){
             <tbody>
             	<row>
                     <entry>
-                        lovGridHeight
+                        displayField
                     </entry>
                     <entry>
-                        弹出窗口中Grid的高度。
-                    </entry>
-                    <entry><literal>350</literal>
-                    </entry>
-                    <entry>
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
-                        lovHeight
-                    </entry>
-                    <entry>
-                    	弹出窗口的高度。
-                    </entry>
-                    <entry><literal>400</literal>
-                    </entry>
-                    <entry>
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
-                        lovService
-                    </entry>
-                    <entry>
-                    	弹出窗口中数据对应的BM。
+                       MultiLov弹出框中返回到输入框上用来显示的字段
                     </entry>
                     <entry>
                     </entry>
@@ -133,46 +104,10 @@ function login(){
                 </row>
             	<row>
                     <entry>
-                        lovUrl
+                        valueField
                     </entry>
                     <entry>
-                       弹出窗口中页面的Url。
-                    </entry>
-                    <entry>
-                    </entry>
-                    <entry>
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
-                        lovWidth
-                    </entry>
-                    <entry>
-                    	弹出窗口的宽度。
-                    </entry>
-                    <entry><literal>400</literal>
-                    </entry>
-                    <entry>
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
-                        title
-                    </entry>
-                    <entry>
-                        弹出窗口的标题。
-                    </entry>
-                    <entry>
-                    </entry>
-                    <entry>
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
-                        fetchRemote
-                    </entry>
-                    <entry>
-                        手工输入后是否自动查询数据。
+                      MultiLov弹出框中返回到输入框上用来表示控件值的字段
                     </entry>
                     <entry>
                     </entry>
@@ -184,7 +119,7 @@ function login(){
                         其他
                     </entry>
                     <entry>
-                    	请参阅TextField的标签属性。
+                    	请参阅Lov的标签属性。
                     </entry>
                     <entry>
                     </entry>
@@ -196,8 +131,8 @@ function login(){
 	</table>
 	</sect4>
 	<sect4>
-		<title>Lov对象事件</title>
-		<table frame="topbot" id="presentation-client-editor-lov-events" revision="8">
+		<title>MultiLov对象事件</title>
+		<table frame="topbot" id="presentation-client-editor-multilov-events" revision="8">
 			<tgroup cols="2">
 			<colspec colname="c1" colwidth="1*"/>
    			<colspec colname="c2" colwidth="4*"/>
@@ -217,7 +152,7 @@ function login(){
                         commit
                     </entry>
                     <entry>
-                        窗口的选项被选择后触发的事件，手工输入后自动查询数据(fetchRemote=true)的时候也会触发。
+                        	弹出窗口中选择的选项集提交后触发的事件。
                     </entry>
 				</row>
 				<row>
@@ -225,7 +160,7 @@ function login(){
                         其他
                     </entry>
                     <entry>
-                       请参阅TextField的对象事件
+                       请参阅Lov的对象事件
                     </entry>
 				</row>
 			</tbody>
