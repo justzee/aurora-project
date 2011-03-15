@@ -38,6 +38,8 @@
 				,
                 {"href":"output/Menu.html","text":"Menu","id":"Menu","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/MultiLov.html","text":"MultiLov","id":"MultiLov","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/NumberField.html","text":"NumberField","id":"NumberField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/PassWord.html","text":"PassWord","id":"PassWord","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -107,6 +109,8 @@
 			"Lov":"icon-cls"
 			,
 			"Menu":"icon-cls"
+			,
+			"MultiLov":"icon-cls"
 			,
 			"NumberField":"icon-cls"
 			,
