@@ -15,7 +15,7 @@
  * 手工输入后是否自动查询数据
  * @property fetchRemote
  * @type Boolean
- * default true
+ * @default true
  */
  
 /**
