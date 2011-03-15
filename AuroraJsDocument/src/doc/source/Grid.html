@@ -140,7 +140,7 @@ $A.Grid = Ext.extend($A.Component,{
     },
     handleKeyDown : function(e){
         var key = e.getKey();
-        if(e.ctrlKey&&e.keyCode == 86){
+        if(e.ctrlKey&&e.keyCode == 86&&this.canpaste){
             var text = window.clipboardData.getData('text');
             if(text){
                 var columns = this.columns;
@@ -194,7 +194,7 @@ $A.Grid = Ext.extend($A.Component,{
             ds[ou]('submit', this.onBeforSubmit, this);
             ds[ou]('submitfailed', this.onAfterSuccess, this);
             ds[ou]('submitsuccess', this.onAfterSuccess, this);
-            ds[ou]('beforeload', this.onBeforeLoad, this);
+            ds[ou]('query', this.onBeforeLoad, this);
             ds[ou]('load', this.onLoad, this);
             ds[ou]('loadfailed', this.onAjaxFailed, this);
             ds[ou]('valid', this.onValid, this);
@@ -1247,6 +1247,6 @@ $A.Grid = Ext.extend($A.Component,{
         delete this.sp;
     }
 });
-$A.Grid.revision='$Rev: 1908 $';</pre>    
+$A.Grid.revision='$Rev: 2128 $';</pre>    
 </body>
 </html>
