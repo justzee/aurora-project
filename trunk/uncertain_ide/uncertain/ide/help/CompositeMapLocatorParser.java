@@ -26,7 +26,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.NameProcessor;
-import uncertain.composite.XMLOutputter;
 
 /**
  * 
@@ -60,7 +59,7 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 
 	CompositeMap current_node = null;
 
-	LinkedList node_stack = new LinkedList();
+	LinkedList parentNode_stack = new LinkedList();
 
 	// namespace url -> prefix mapping
 	Map uri_mapping = new HashMap();
@@ -91,12 +90,12 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 	}
 
 	void push(CompositeMap node) {
-		node_stack.addFirst(node);
+		parentNode_stack.addFirst(node);
 	}
 
 	CompositeMap pop() {
-		CompositeMap node = (CompositeMap) node_stack.getFirst();
-		node_stack.removeFirst();
+		CompositeMap node = (CompositeMap) parentNode_stack.getFirst();
+		parentNode_stack.removeFirst();
 		return node;
 	}
 
@@ -114,7 +113,7 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 
 	public void startDocument() {
 		current_node = null;
-		node_stack.clear();
+		parentNode_stack.clear();
 		uri_mapping.clear();
 	}
 
@@ -122,31 +121,30 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 			String rawName, Attributes atts) throws SAXException {
 
 		int lineNumber = locator.getLineNumber() - 1;
-
 		if (name_processor != null)
 			localName = name_processor.getElementName(localName);
-		CompositeMap node = null;
-		node = new CompositeMap((String) uri_mapping.get(namespaceURI),
-				namespaceURI, localName);
+		CompositeMap node = new CompositeMap((String) uri_mapping.get(namespaceURI),namespaceURI, localName);
 		addAttribs(node, atts);
-
         if(comment != null){
         	node.setComment(comment);
         	comment = null;
         }
-		if (current_node == null) {
-			current_node = node;
-		} else {
-			current_node.addChild(node);
-			push(current_node);
-			current_node = node;
-		}
 		if (!serchfinished && function == lineToCompositeMap) {
-			if (lineNumber >= line) {
+			if (lineNumber == line) {
+				targetCompositeMap = node;
+				serchfinished = true;
+			}
+			else if (lineNumber > line) {
 				targetCompositeMap = current_node;
 				serchfinished = true;
 			}
 		}
+		if (current_node != null) {
+			push(current_node);
+			current_node.addChild(node);
+		}
+		current_node = node;
+		
 		if (function == compositeMapToLine)
 			compositeMapPositions.put(current_node, new Integer(lineNumber));
 	}
@@ -157,14 +155,14 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
         	current_node.setEndElementComment(comment);
         	comment = null;
         }
-		if (node_stack.size() > 0) {
-			int lineNumber = locator.getLineNumber() - 1;
-			if (!serchfinished && function == lineToCompositeMap) {
-				if (lineNumber >= line) {
-					targetCompositeMap = current_node;
-					serchfinished = true;
-				}
+        int lineNumber = locator.getLineNumber() - 1;
+		if (!serchfinished && function == lineToCompositeMap) {
+			if (lineNumber >= line) {
+				targetCompositeMap = current_node;
+				serchfinished = true;
 			}
+		}
+		if (parentNode_stack.size() > 0) {
 			current_node = pop();
 		}
 	}
@@ -260,8 +258,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 
 	public void clear() {
 		current_node = null;
-		if (node_stack != null)
-			node_stack.clear();
+		if (parentNode_stack != null)
+			parentNode_stack.clear();
 		if (uri_mapping != null)
 			uri_mapping.clear();
 		name_processor = null;
@@ -292,22 +290,6 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 			comment += separator + now;
 		else
 			comment = now;
-//		if (current_node != null) {
-//			String t = current_node.getComment();
-//			String now = new String(ch, start, length);
-//			if (t != null)
-//				t += "-->" + now;
-//			else
-//				t = now;
-//			t = handleNewLine(t);
-//			current_node.setComment(t);
-//		} else {
-//			comment = comment == null ? "" : comment
-//					+ XMLOutputter.LINE_SEPARATOR;
-//			comment = comment + "<!--"
-//					+ new String(ch, start, length) + "-->";
-//			comment = handleNewLine(comment);
-//		}
 	}
 	private String handleNewLine(String src){
 		if(src == null)

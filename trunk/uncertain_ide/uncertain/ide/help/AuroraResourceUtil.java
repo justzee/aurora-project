@@ -225,11 +225,11 @@ public class AuroraResourceUtil{
 		}
 	}
 	public static CompositeLoader getCompsiteLoader(){
-		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
+		CompositeLoader cl = new CompositeLoader();
 		cl.setSaveNamespaceMapping(true);
 		cl.setSupportXInclude(false);
 		
-		CompositeLoader projectCl = CompositeLoader.createInstanceForOCM();
+		CompositeLoader projectCl = new CompositeLoader();
 		projectCl.setSaveNamespaceMapping(true);
 		projectCl.setSupportXInclude(false);
 		IProject project = getIProjectFromSelection();
@@ -237,7 +237,7 @@ public class AuroraResourceUtil{
 			projectCl.setBaseDir(project.getLocation().toFile().getParent().toString()+File.separator);
 			cl.addExtraLoader(projectCl);
 		}
-		CompositeLoader curentDircl = CompositeLoader.createInstanceForOCM();
+		CompositeLoader curentDircl = new CompositeLoader();
 		curentDircl.setSaveNamespaceMapping(true);
 		curentDircl.setSupportXInclude(false);
 		IFile currentFile = getFileFromSelection();
