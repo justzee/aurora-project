@@ -9,7 +9,10 @@ import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CompositeMapUtil;
 import uncertain.ide.help.LocaleMessage;
+import aurora.bm.BusinessModel;
+import aurora.bm.Field;
 import aurora.ide.AuroraConstant;
 
 public class BMUtil {
@@ -41,5 +44,43 @@ public class BMUtil {
 			return bmCm.getText();
 		}
 		return null;
+	}
+	public static CompositeMap getFieldsFromBM(CompositeMap modelNode){
+		if (modelNode == null)
+			return null;
+		BusinessModel model = BusinessModel.getInstance(modelNode);
+		String prefix = CompositeMapUtil.getContextFullName(modelNode, AuroraConstant.FieldsQN);
+		CompositeMap fieldsNode = new CompositeMap(prefix,AuroraConstant.FieldsQN.getNameSpace(),AuroraConstant.FieldsQN.getLocalName());
+		Field[] fields = model.getFields();
+		if (fields == null || fields.length ==0) {
+			return null;
+		}
+		for(int i=0;i<fields.length;i++){
+			CompositeMap fieldNode = fields[i].getObjectContext();
+			fieldsNode.addChild(fieldNode);
+		}
+		return fieldsNode;
+	}
+	public static CompositeMap getFieldsFromBMPath(String classPath) throws ApplicationException{
+		CompositeMap modelNode = AuroraResourceUtil.loadFromResource(BMUtil.getBMFromClassPath(classPath));
+		if (modelNode == null)
+			return null;
+		return BMUtil.getFieldsFromBM(modelNode);
+	}
+	public static CompositeMap getFieldsFromDS(CompositeMap dataSet) throws ApplicationException{
+		if(dataSet == null)
+			return null;
+		CompositeMap fields = dataSet.getChild("fields");
+		if(fields != null && fields.getChilds() != null && fields.getChilds().size()>0){
+			return fields;
+		}
+		String classPath = dataSet.getString("model");
+		if(classPath == null)
+			return null;
+		return getFieldsFromBMPath(classPath);
+	}
+	public static CompositeMap createBMTopNode(){
+		CompositeMap model = new CompositeMap("bm",AuroraConstant.ModelQN.getNameSpace(),AuroraConstant.ModelQN.getLocalName());
+		return model;
 	}
 }
