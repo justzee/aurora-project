@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
+import uncertain.ide.AuroraProjectNature;
 import uncertain.ide.help.CustomDialog;
 import aurora.ide.AuroraConstant;
 
@@ -14,6 +15,18 @@ public class BMHierarchyViewerTester extends PropertyTester {
 
 	public boolean test(Object receiver, String property, Object[] args,
 			Object expectedValue) {
+		if (!(receiver instanceof IResource))
+			return false;
+		IResource resc = (IResource)receiver;
+		IProject proejct = resc.getProject();
+		try {
+			if(proejct == null || !proejct.isOpen()|| !AuroraProjectNature.hasAuroraNature(proejct)){
+				return false;
+			}
+		} catch (CoreException e) {
+			CustomDialog.showErrorMessageBox(e);
+			return false;
+		}
 		if (receiver instanceof BMFile)
 			return true;
 		if (receiver instanceof IFile){
@@ -26,10 +39,8 @@ public class BMHierarchyViewerTester extends PropertyTester {
 			return false;
 		IContainer container = (IContainer) receiver;
 		//check project is open
-		IProject proejct = container.getProject();
-		if(proejct == null || !proejct.isOpen()){
-			return false;
-		}
+		
+
 		try {
 			return isValidDir(container);
 		} catch (CoreException e) {

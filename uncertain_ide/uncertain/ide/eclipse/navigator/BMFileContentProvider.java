@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 
+import uncertain.ide.AuroraProjectNature;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
@@ -50,7 +51,7 @@ public class BMFileContentProvider implements ITreeContentProvider,IResourceChan
 			bmLinkFile = BMHierarchyCache.getInstance().getBMLinkFile(parentElement);
 		} catch (ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
-			return null;
+			return NO_CHILD;
 		}
 		if(bmLinkFile == null)
 			return NO_CHILD;
@@ -140,31 +141,23 @@ public class BMFileContentProvider implements ITreeContentProvider,IResourceChan
 
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		IProject project = AuroraResourceUtil.getIProjectFromSelection();
+		if(project == null)
+			return false;
+		if(!AuroraProjectNature.hasAuroraNature(project)){
+			return false;
+		}
 		BMHierarchyCache.getInstance().removeInitProject(project);
 		try {
 			BMHierarchyCache.getInstance().initProject(project);
 		} catch (ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
 		}
-		viewer.getControl().getDisplay().syncExec(new Runnable() {
+		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				viewer.refresh();
 				
 			}
 		});
 		return false;
-//		IResource  resource =  delta.getResource();
-//		if(resource instanceof IFile){
-//			IFile file = (IFile)resource;
-//			if(file.getName().toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)){
-//				BMHierarchyCache instance = BMHierarchyCache.getInstance();
-//				BMLinkFile linkFile = instance.searchBMLinkFile(file);
-//			}
-//		}else{
-//			if(resource instanceof IFile){
-//				
-//			}
-//		}
-//		return false;
 	}
 }

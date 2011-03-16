@@ -11,7 +11,6 @@ import uncertain.ide.Activator;
 import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.AuroraResourceUtil;
-import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
 import aurora.ide.AuroraConstant;
 
@@ -32,7 +31,7 @@ public class BMFileLabelProvider extends LabelProvider {
 				}
 				return resourceName;
 			} catch (final ApplicationException e) {
-				CustomDialog.showErrorMessageBox(e);
+//				CustomDialog.showErrorMessageBox(e);
 				return resourceName;
 			}
 		}
@@ -52,7 +51,7 @@ public class BMFileLabelProvider extends LabelProvider {
 				return Activator.getImageDescriptor(LocaleMessage.getString("sql.icon")).createImage();
 			}
 		} catch (final ApplicationException e) {
-			CustomDialog.showErrorMessageBox(e);
+//			CustomDialog.showErrorMessageBox(e);
 			return  Activator.getImageDescriptor(ISharedImages.IMG_OBJS_ERROR_TSK).createImage();
 		}
 		return Activator.getImageDescriptor(LocaleMessage.getString("bm.icon")).createImage();

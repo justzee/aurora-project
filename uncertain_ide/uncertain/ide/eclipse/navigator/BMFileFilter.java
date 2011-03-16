@@ -5,8 +5,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
 import uncertain.ide.help.ApplicationException;
-import uncertain.ide.help.CustomDialog;
-
 import aurora.ide.AuroraConstant;
 
 public class BMFileFilter extends ViewerFilter{
@@ -22,7 +20,7 @@ public class BMFileFilter extends ViewerFilter{
 				try {
 					extendValue = BMHierarchyCache.getInstance().getExtendValue(file);
 				} catch (ApplicationException e) {
-					CustomDialog.showErrorMessageBox(e);
+//					CustomDialog.showErrorMessageBox(e);
 				}
 				if(extendValue !=null){
 					return false;
