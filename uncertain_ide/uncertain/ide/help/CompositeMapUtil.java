@@ -78,21 +78,23 @@ public class CompositeMapUtil {
 	}
 
 	public static CompositeMap addElement(CompositeMap parent, QualifiedName childQN) {
+		if(parent == null || childQN ==null)
+			return null;
 		String prefix = getContextPrefix(parent, childQN);
-		return addElement(parent,prefix,childQN.getNameSpace(),childQN.getLocalName());
-	}
-	
-	public static CompositeMap addElement(CompositeMap parent, String prefix,
-			String uri, String name) {
-		CompositeMap child = new CompositeMap(prefix, uri, name);
+		CompositeMap child = new CompositeMap(prefix, childQN.getNameSpace(), childQN.getLocalName());
 		parent.addChild(child);
 		addArrayNode(parent);
 		return child;
 	}
-
+	public static boolean addElement(CompositeMap node, CompositeMap childNode) {
+		if(node == null || childNode ==null)
+			return false;
+		node.addChild(childNode);
+		addArrayNode(node);
+		return true;
+	}
 	public static void addArrayNode(CompositeMap parent) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(
-				parent);
+		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
 		if (element != null && element.isArray()) {
 			QualifiedName qName = parent.getQName();
 			if (CompositeUtil.findChild(parent.getParent(), qName) == null) {
@@ -349,29 +351,29 @@ public class CompositeMapUtil {
 			}
 		}
 	}
-	public static List getArrayAttrs(CompositeMap arrayData) throws IllegalArgumentException{
+	public static List getArrayAttrs(CompositeMap arrayData) throws ApplicationException{
 		if(arrayData == null)
-			throw new IllegalArgumentException("CompositeMap data can not be null!");
+			throw new ApplicationException("CompositeMap data can not be null!");
 		Element element = LoadSchemaManager.getSchemaManager().getElement(arrayData);
 		if (element == null)
-			throw new IllegalArgumentException("Can't get element schema from "
+			throw new ApplicationException("Can't get element schema from "
 					+ arrayData.toXML());
 		if (!(element instanceof Array))
-			throw new IllegalArgumentException("Type " + element.getQName()
+			throw new ApplicationException("Type " + element.getQName()
 					+ " is not array");
 		Array array = (Array) element;
 		IType type = array.getElementType();
 		if (type == null)
-			throw new IllegalArgumentException("Can't get array type from "
+			throw new ApplicationException("Can't get array type from "
 					+ array.getQName());
 		if (!(type instanceof ComplexType))
-			throw new IllegalArgumentException("Type " + type.getQName()
+			throw new ApplicationException("Type " + type.getQName()
 					+ " is not ComplexType");
 		ComplexType type_element = (ComplexType) type;
 		List attrib_list = type_element.getAllAttributes();
 		return attrib_list;
 	}
-	public static String[] getArrayAttrNames(CompositeMap arrayData) throws IllegalArgumentException{
+	public static String[] getArrayAttrNames(CompositeMap arrayData) throws ApplicationException{
 		List attrib_list = getArrayAttrs(arrayData);
 		if(attrib_list == null)
 			return null;
