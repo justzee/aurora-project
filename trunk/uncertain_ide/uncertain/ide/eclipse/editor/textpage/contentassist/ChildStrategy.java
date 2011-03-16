@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -18,6 +19,8 @@ import org.eclipse.swt.graphics.Image;
 import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.CompositeUtil;
+import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
 import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
@@ -66,7 +69,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 			return getDefaultCompletionProposal();
 		} catch (ApplicationException e) {
 			String originalContent = document.get();
-			String changedContent = originalContent.substring(0, region.getOffset())
+			String changedContent = originalContent.substring(0, region.getOffset())+createSpace(tokenString.getLength())
 					+ originalContent.substring(cursorOffset);
 			try {
 				CompositeMap parentCompositeMap = locateCompositeMap(changedContent, cursorOffset);
@@ -129,7 +132,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 			}
 			String attributeDocument = element.getDocument();
 			String description = name;
-			String replaceString = name + " />";
+			String replaceString = computeNewTagReplaceString(parent,element.getQName());
 			if (attributeDocument != null)
 				description = formateAttributeName(name) + " - " + attributeDocument;
 			Image contentImage = element.isArray() ? getArrayImage() : getElementImage();
@@ -146,6 +149,20 @@ public class ChildStrategy implements IContentAssistStrategy {
 			i++;
 		}
 		return result;
+	}
+	private String computeNewTagReplaceString(CompositeMap context,QualifiedName  childQN){
+		String replaceString = CompositeMapUtil.getContextFullName(context, childQN);
+		Map prefix_mapping = CompositeUtil.getPrefixMapping(context);
+		Object uri_obj = prefix_mapping.get(childQN.getNameSpace());
+		if(uri_obj==null){
+			if(childQN.getPrefix() != null)
+				replaceString=replaceString+" xmlns:"+childQN.getPrefix()+"=\""+childQN.getNameSpace()+"\" ";
+			else{
+				replaceString=replaceString+" xmlns=\""+childQN.getNameSpace()+"\" ";
+			}
+		}
+		replaceString = replaceString+" />";
+		return replaceString;
 	}
 
 	private ICompletionProposal[] computeUpdateTag(CompositeMap parent) {
@@ -265,5 +282,12 @@ public class ChildStrategy implements IContentAssistStrategy {
 	private boolean endChar(char c, int end, int partitionLength) {
 		return !Character.isWhitespace(c) && c != '>' && c != '/' && c != '<' && (end < partitionLength - 1)
 				&& c != '"';
+	}
+	private String createSpace(int length) {
+		StringBuffer space = new StringBuffer("");
+		for(int i=0;i<length;i++){
+			space.append(" ");
+		}
+		return space.toString();
 	}
 }
