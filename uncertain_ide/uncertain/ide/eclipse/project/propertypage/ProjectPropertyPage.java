@@ -261,6 +261,10 @@ public class ProjectPropertyPage extends PropertyPage {
 
 	public boolean performOk() {
 		IProject project = getProject();
+		if (webDirText.getText() == null ||"".equals(webDirText.getText())) {
+			setErrorMessage("请先设置web目录.");
+			return false;
+		}
 		if (webDirText.getText() != null) {
 			try {
 				project.setPersistentProperty(WebQN, webDirText.getText());
@@ -277,11 +281,12 @@ public class ProjectPropertyPage extends PropertyPage {
 		}
 		if (logDirText.getText() != null) {
 			try {
+				IContainer webDir = (IContainer)ResourcesPlugin.getWorkspace().getRoot().findMember(webDirText.getText());
 				String logDir = logDirText.getText();
 				project.setPersistentProperty(LogQN, logDir);
-				IResource coreConfigFile = getResource(project,
+				IResource coreConfigFile = getResource(webDir,
 						AuroraConstant.CoreConfigFileName);
-				IResource logConfigFile = getResource(project,
+				IResource logConfigFile = getResource(webDir,
 						AuroraConstant.LogConfigFileName);
 				if (coreConfigFile != null) {
 					setLogDirToConfigFile(coreConfigFile, logDir);
