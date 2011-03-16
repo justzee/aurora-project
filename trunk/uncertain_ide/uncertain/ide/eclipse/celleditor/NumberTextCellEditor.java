@@ -18,7 +18,7 @@ import uncertain.ide.help.LocaleMessage;
  */
 public class NumberTextCellEditor extends AbstractTextCellEditor {
 
-	public NumberTextCellEditor(CellProperties cellProperties) {
+	public NumberTextCellEditor(CellInfo cellProperties) {
 		super(cellProperties);
 	}
 	/**

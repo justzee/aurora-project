@@ -19,9 +19,9 @@ import uncertain.ide.help.LocaleMessage;
 public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		ICellEditor {
 
-	protected CellProperties cellProperties;
+	protected CellInfo cellProperties;
 	protected String oldInput;
-	public AbstractTextCellEditor(CellProperties cellProperties) {
+	public AbstractTextCellEditor(CellInfo cellProperties) {
 		this.cellProperties = cellProperties;
 	}
 

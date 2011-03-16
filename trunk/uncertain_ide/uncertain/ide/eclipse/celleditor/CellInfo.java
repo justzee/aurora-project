@@ -22,7 +22,7 @@ import uncertain.schema.SimpleType;
  * @author linjinxiao
  *
  */
-public class CellProperties {
+public class CellInfo {
 	
 	protected String[] items;
 	protected ITableViewer tableViewer;
@@ -38,25 +38,25 @@ public class CellProperties {
 		this.typeQname = typeQname;
 	}
 	//for schema grid
-	public CellProperties(ITableViewer tableViewer,Attribute attribute){
+	public CellInfo(ITableViewer tableViewer,Attribute attribute){
 		this.tableViewer = tableViewer;
 		parseAttribute(attribute);
 	}
 	//for schema form
-	public CellProperties(ITableViewer tableViewer,Attribute attribute,CompositeMap record,TableItem tableItem){
+	public CellInfo(ITableViewer tableViewer,Attribute attribute,CompositeMap record,TableItem tableItem){
 		this(tableViewer, attribute);
 		this.record = record;
 		this.tableItem = tableItem;
 			
 	}
 	//for grid
-	public  CellProperties(ITableViewer tableViewer,String  columnName, boolean required){
+	public  CellInfo(ITableViewer tableViewer,String  columnName, boolean required){
 		this.tableViewer = tableViewer;
 		this.columnName = columnName;
 		this.required = required;
 	}
 	//for form
-	public  CellProperties(ITableViewer tableViewer,String  columnName, boolean required,CompositeMap record,TableItem tableItem){
+	public  CellInfo(ITableViewer tableViewer,String  columnName, boolean required,CompositeMap record,TableItem tableItem){
 		this(tableViewer,columnName,required);
 		this.record = record;
 		this.tableItem = tableItem;

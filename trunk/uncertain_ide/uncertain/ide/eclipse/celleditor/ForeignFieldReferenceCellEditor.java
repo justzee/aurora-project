@@ -25,7 +25,7 @@ import uncertain.ide.help.LocaleMessage;
 public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 
 
-	public ForeignFieldReferenceCellEditor(CellProperties cellProperties) {
+	public ForeignFieldReferenceCellEditor(CellInfo cellProperties) {
 		super(cellProperties);
 	}
 
@@ -94,7 +94,7 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 		GridViewer grid = new GridViewer(IGridViewer.filterBar|IGridViewer.NoToolBar);
 		grid.setData(filedNames);
 		grid.setFilterColumn("name");
-		grid.setGridProperties(columnProperties);
+		grid.setColumnNames(columnProperties);
 		GridDialog dialog = new GridDialog(new Shell(),grid);
 		if (dialog.open() == Window.OK && dialog.getSelected() != null) {
 			String value = dialog.getSelected().getString("name");

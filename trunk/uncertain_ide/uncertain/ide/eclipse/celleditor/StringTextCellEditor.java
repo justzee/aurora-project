@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class StringTextCellEditor extends AbstractTextCellEditor {
 
-	StringTextCellEditor(CellProperties cellProperties) {
+	public StringTextCellEditor(CellInfo cellProperties) {
 		super(cellProperties);
 	}
 

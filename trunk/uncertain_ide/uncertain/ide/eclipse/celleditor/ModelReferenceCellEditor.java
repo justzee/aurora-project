@@ -25,7 +25,7 @@ import uncertain.ide.help.CustomDialog;
 
 public class ModelReferenceCellEditor extends StringTextCellEditor {
 
-	public ModelReferenceCellEditor(CellProperties cellProperties) {
+	public ModelReferenceCellEditor(CellInfo cellProperties) {
 		super(cellProperties);
 	}
 
@@ -78,7 +78,7 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 		GridViewer grid = new GridViewer(null,IGridViewer.filterBar|IGridViewer.NoToolBar);
 		grid.setData(bmFiles);
 		grid.setFilterColumn("name");
-		grid.setGridProperties(columnProperties);
+		grid.setColumnNames(columnProperties);
 		GridDialog dialog = new GridDialog(new Shell(),grid);
 		if (dialog.open() == Window.OK) {
 			String value = dialog.getSelected().getString("fullpath");
