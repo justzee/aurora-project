@@ -1,6 +1,7 @@
 package uncertain.ide.eclipse.editor;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,6 +12,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
@@ -39,25 +41,37 @@ public class CompositeMapTreePage extends CompositeMapPage {
 		try {
 			CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 			data = loader.loadByFile(getFile().getAbsolutePath());
-			createContent(shell);
-		} catch (Exception e) {
+
+		} catch (IOException e) {
 			CustomDialog.showExceptionMessageBox(e);
+		} catch (SAXException e) {
+			String emptyExcption = "Premature end of file";
+			if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
+				data = ScreenUtil.createScreenTopNode();
+				data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+			} else {
+				CustomDialog.showErrorMessageBox(e);
+				return;
+			}
+		}
+		try {
+			createContent(shell);
+		} catch (ApplicationException e) {
+			CustomDialog.showErrorMessageBox(e);
 		}
 	}
-	
+
 	protected File getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
-				.getFile();
+		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
 		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
 		return new File(fileName);
 	}
-	
+
 	protected void createContent(Composite shell) throws ApplicationException {
 
-		baseCompositeMapPage = new BaseCompositeMapViewer(this,data);
+		baseCompositeMapPage = new BaseCompositeMapViewer(this, data);
 		baseCompositeMapPage.createFormContent(shell);
 	}
-
 
 	public void doSave(IProgressMonitor monitor) {
 		try {
@@ -88,21 +102,21 @@ public class CompositeMapTreePage extends CompositeMapPage {
 	public void setData(CompositeMap data) {
 		this.data = data;
 	}
-	public TreeViewer getTreeViewer(){
+	public TreeViewer getTreeViewer() {
 		return baseCompositeMapPage.getTreeViewer();
 	}
-	public CompositeMap getSelection(){
+	public CompositeMap getSelection() {
 		return baseCompositeMapPage.getSelection();
 	}
-	public CompositeMap getContent(){
+	public CompositeMap getContent() {
 		return data;
-		
+
 	}
 
 	public String getFullContent() {
-		String encoding = "UTF-8" ;
-		String xml_decl = "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>\n";
-		return xml_decl+XMLOutputter.defaultInstance().toXML(data, true);
+		String encoding = "UTF-8";
+		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n";
+		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
 	}
 
 	public void setContent(CompositeMap content) {
