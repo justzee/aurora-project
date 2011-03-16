@@ -161,6 +161,58 @@
              label="继承此BM"
              menubarPath="additions"> 
        </action>
+    </objectContribution>
+    <objectContribution
+          adaptable="true"
+          id="uncertain.ide.eclipse.add.auroranature"
+          objectClass="org.eclipse.core.resources.IProject">
+       <action
+             class="uncertain.ide.eclipse.navigator.action.AddAuroraNature"
+             enablesFor="1"
+             icon="icons/uncertain.gif"
+             id="uncertain.ide.eclipse.navigator.action.addauroranature"
+             label="设置为Aurora工程"
+             menubarPath="additions">
+       </action>
+       <enablement>
+          <and>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+             <test
+                   args="false"
+                   forcePluginActivation="true"
+                   property="uncertain.ide.eclipse.project.nature"
+                   value="true">
+             </test>
+          </and>
+       </enablement>
+    </objectContribution>
+    <objectContribution
+          adaptable="true"
+          id="uncertain.ide.eclipse.add.auroranature"
+          objectClass="org.eclipse.core.resources.IProject">
+       <action
+             class="uncertain.ide.eclipse.navigator.action.RemoveAuroraNature"
+             enablesFor="1"
+             icon="icons/uncertain.gif"
+             id="uncertain.ide.eclipse.navigator.action.removauroranature"
+             label="取消Aurora工程设置"
+             menubarPath="additions">
+       </action>
+       <enablement>
+          <and>
+             <instanceof
+                   value="org.eclipse.core.resources.IProject">
+             </instanceof>
+             <test
+                   args="true"
+                   forcePluginActivation="true"
+                   property="uncertain.ide.eclipse.project.nature"
+                   value="true">
+             </test>
+          </and>
+       </enablement>
     </objectContribution> 
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
@@ -176,7 +228,14 @@
           id="uncertain.ide.eclipse.navigator.BMHierarchyTester"
           namespace="uncertain.ide.eclipse.navigator.bm.container"
           properties="triggerponits"
-          type="org.eclipse.core.resources.IResource">
+          type="java.lang.Object">
+    </propertyTester>
+    <propertyTester
+          class="uncertain.ide.eclipse.navigator.action.ProjectNatureTester"
+          id="uncertain.ide.eclipse.navigator.action.projectnaturetester"
+          namespace="uncertain.ide.eclipse.project"
+          properties="nature"
+          type="java.lang.Object">
     </propertyTester>
     </extension >
        <extension
@@ -243,7 +302,7 @@
                 id="uncertain.ide.eclipse.navigator.bmhierarchy"
                 labelProvider="uncertain.ide.eclipse.navigator.BMFileLabelProvider"
                 name="BM  Hierarchy"
-                priority="lowest">
+                priority="low">
              	<triggerPoints>
                     <test
                           forcePluginActivation="true"
@@ -271,6 +330,83 @@
          id="uncertain.ide.eclipse.projectproperty"
          name="Aurora工程设置"
          objectClass="org.eclipse.core.resources.IProject">
+      <filter name="nature" value="uncertain_ide.auroranature"/>
 	  </page>
-	</extension>      
+	</extension>
+	<extension  
+      point="org.eclipse.ui.editors.annotationTypes">  
+   		<type  
+         markerSeverity="2"  
+         markerType="org.eclipse.core.resources.textmarker"  
+         name="uncertain.ide.eclipse.word.highlight"  
+         super="org.eclipse.ui.workbench.texteditor.bookmark">  
+  		 </type>
+     <type
+           markerSeverity="2"
+           markerType="org.eclipse.core.resources.problemmarker"
+           name="uncertain.ide.eclipse.text.valid"
+           super="org.eclipse.ui.workbench.texteditor.error">
+     </type>  
+		</extension>  
+	<extension  
+	      point="org.eclipse.ui.editors.markerAnnotationSpecification">  
+	   <specification
+          annotationType="uncertain.ide.eclipse.word.highlight"
+          colorPreferenceKey="color.yellow"
+          colorPreferenceValue="0,128,255"
+          highlightPreferenceKey="highlight.true"
+          highlightPreferenceValue="true"
+          includeOnPreferencePage="true"
+          isGoToNextNavigationTarget="true"
+          isGoToNextNavigationTargetKey="hightlight_isOccurrenceGoToNextNavigationTarget"
+          isGoToPreviousNavigationTarget="true"
+          isGoToPreviousNavigationTargetKey="highlight_isOccurrenceGoToPreviousNavigationTarget"
+          label="Aurora Word Highlight"
+          overviewRulerPreferenceKey="overview.show"
+          overviewRulerPreferenceValue="true"
+          showInNextPrevDropdownToolbarAction="true"
+          showInNextPrevDropdownToolbarActionKey="highlight_showOccurrenceInNextPrevDropdownToolbarAction"
+          textPreferenceKey="text.key"
+          textPreferenceValue="true"
+          verticalRulerPreferenceKey="vertical.show"
+          verticalRulerPreferenceValue="false">
+	  </specification>
+   <specification  
+         annotationType="uncertain.ide.eclipse.text.valid"  
+         colorPreferenceKey="errorColorKey"  
+         colorPreferenceValue="255,0,0"  
+         contributesToHeader="true"  
+         highlightPreferenceKey="errorHightlightKey"  
+         highlightPreferenceValue="false"  
+         icon="icons/error.gif"  
+         includeOnPreferencePage="true"  
+         isGoToNextNavigationTarget="true"  
+         isGoToNextNavigationTargetKey="Error_isOccurrenceGoToNextNavigationTarget"  
+         isGoToPreviousNavigationTarget="true"  
+         isGoToPreviousNavigationTargetKey="Error_isOccurrenceGoToPreviousNavigationTarget"  
+         label="Aurora Text Valid"  
+         overviewRulerPreferenceKey="errorOverviewKey"  
+         overviewRulerPreferenceValue="true"  
+         presentationLayer="4"  
+         quickFixIcon="icons/error.gif"  
+         showInNextPrevDropdownToolbarAction="true"  
+         showInNextPrevDropdownToolbarActionKey="Error_showOccurrenceInNextPrevDropdownToolbarAction"  
+         symbolicIcon="error"  
+         textPreferenceKey="errorTextKey"  
+         textPreferenceValue="true"  
+         textStylePreferenceKey="occurrenceTextStyle"  
+         textStylePreferenceValue="PROBLEM_UNDERLINE"  
+         verticalRulerPreferenceKey="errorVerticalKey"  
+         verticalRulerPreferenceValue="true">  
+   </specification>
+	</extension>
+	<extension  
+      id="auroranature"  
+      point="org.eclipse.core.resources.natures">  
+   <runtime>  
+      <run  
+            class="uncertain.ide.AuroraProjectNature">  
+      </run>  
+   </runtime>  
+</extension>        
 </plugin>
