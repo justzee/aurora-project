@@ -46,18 +46,17 @@ import org.eclipse.ui.part.ResourceTransfer;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.action.ActionListener;
-import uncertain.ide.eclipse.action.ActionProperties;
-import uncertain.ide.eclipse.action.ActionsFactory;
-import uncertain.ide.eclipse.action.CopyElementAction;
-import uncertain.ide.eclipse.action.DataSetWizard;
-import uncertain.ide.eclipse.action.ElementDoubleClickListener;
-import uncertain.ide.eclipse.action.PasteAction;
-import uncertain.ide.eclipse.action.RefreshAction;
-import uncertain.ide.eclipse.action.RemoveElementAction;
-import uncertain.ide.eclipse.action.ToolBarAddElementListener;
+import uncertain.ide.eclipse.component.wizard.ActionsFactory;
+import uncertain.ide.eclipse.component.wizard.DataSetWizard;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
 import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.eclipse.node.action.ActionListener;
+import uncertain.ide.eclipse.node.action.ActionInfo;
+import uncertain.ide.eclipse.node.action.CopyElementAction;
+import uncertain.ide.eclipse.node.action.ElementDoubleClickListener;
+import uncertain.ide.eclipse.node.action.PasteAction;
+import uncertain.ide.eclipse.node.action.RefreshAction;
+import uncertain.ide.eclipse.node.action.RemoveElementAction;
 import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CompositeMapUtil;
@@ -300,7 +299,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		MenuManager childElementMenus = new MenuManager(text,imageDes,null);
 		final CompositeMap comp = focusData;
 		
-		ActionProperties actionProperties = new ActionProperties(this,comp);
+		ActionInfo actionProperties = new ActionInfo(this,comp);
 		ActionsFactory.getInstance().addActionsToMenuManager(childElementMenus, actionProperties);
 		return childElementMenus;
 	}

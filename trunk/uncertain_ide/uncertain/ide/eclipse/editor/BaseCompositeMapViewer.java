@@ -198,11 +198,6 @@ public class BaseCompositeMapViewer implements IViewer {
 		public void setInput(CompositeMap data) throws ApplicationException {
 			Element em = LoadSchemaManager.getSchemaManager().getElement(data);
 			if (em != null && em.isArray()) {
-				// gridViewer = new
-				// GridViewer(null,IGridViewer.isEditable|IGridViewer.showToolBar);
-				// gridViewer.setParent(viewer);
-				// gridViewer.createViewer(parent);
-
 				gridViewer.createViewer(mTabFolder, data);
 				mTabFolder.getItem(1).setControl(gridViewer.getControl());
 				mTabFolder.setSelection(1);

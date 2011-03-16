@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -12,10 +14,12 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.xml.sax.SAXException;
 
+import aurora.ide.AuroraConstant;
+
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.action.InputFileListener;
+import uncertain.ide.AuroraProjectNature;
 import uncertain.ide.eclipse.editor.textpage.TextPage;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.AuroraResourceUtil;
@@ -58,7 +62,21 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
 		String fileName = file.getName();
 		setPartName(fileName);
-	
+		// todo delete
+		autoAddAuroraNatue(ifile);
+		
+	}
+	private void autoAddAuroraNatue(IFile file){
+		if(file.getName().toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)||file.getName().toLowerCase().endsWith("."+AuroraConstant.ScreenFileExtension)){
+			IProject project = file.getProject();
+			try {
+				if(!AuroraProjectNature.hasAuroraNature(project)){
+					AuroraProjectNature.addAuroraNature(project);
+				}
+			} catch (CoreException e) {
+				CustomDialog.showErrorMessageBox(e);
+			}
+		}
 	}
 
 	public void doSave(IProgressMonitor monitor) {

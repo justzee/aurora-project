@@ -40,10 +40,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.action.ActionListener;
-import uncertain.ide.eclipse.action.AddElementAction;
-import uncertain.ide.eclipse.action.RefreshAction;
-import uncertain.ide.eclipse.action.RemoveElementAction;
 import uncertain.ide.eclipse.celleditor.CellEditorFactory;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
 import uncertain.ide.eclipse.editor.AbstractCMViewer;
@@ -52,6 +48,10 @@ import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.core.ICellModifierListener;
 import uncertain.ide.eclipse.editor.widgets.core.IGridLabelProvider;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.eclipse.node.action.ActionListener;
+import uncertain.ide.eclipse.node.action.AddElementAction;
+import uncertain.ide.eclipse.node.action.RefreshAction;
+import uncertain.ide.eclipse.node.action.RemoveElementAction;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CompositeMapUtil;
 import uncertain.ide.help.LoadSchemaManager;
@@ -62,24 +62,19 @@ import uncertain.schema.Element;
 public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
 	protected CompositeMap data;
-
+	protected String[] columnTitles;
 	protected String[] columnNames;
+	protected CellEditor[] cellEditors;
 	protected Composite container;
 	protected ViewForm viewForm;
 	protected TableViewer tableViewer;
 	protected GridCellModifier cellModifiers;
 	protected IGridLabelProvider labelProvider;
-
 	protected ToolBarManager toolBarManager;
-
-	protected CellEditor[] cellEditors;
-
 	protected int gridStyle;
-
 	public int getGridStyle() {
 		return gridStyle;
 	}
-
 	protected String filterColumn;
 	protected Text filterText;
 	private boolean isColumnPacked;
@@ -97,16 +92,16 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		this.gridStyle = gridStyle;
 	}
 
-	public GridViewer(String[] gridProperties, int gridStyle) {
+	public GridViewer(String[] columnNames, int gridStyle) {
 		super();
-		this.columnNames = gridProperties;
+		this.columnNames = columnNames;
 		this.gridStyle = gridStyle;
 	}
 
-	public GridViewer(CompositeMap data, String[] gridProperties, int gridStyle) {
+	public GridViewer(CompositeMap data, String[] columnNames, int gridStyle) {
 		super();
 		this.data = data;
-		this.columnNames = gridProperties;
+		this.columnNames = columnNames;
 		this.gridStyle = gridStyle;
 	}
 
@@ -154,7 +149,9 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 		return records;
 	}
-
+	public void setColumnTitles(String[] columnTitles) {
+		this.columnTitles = columnTitles;
+	}
 	public String clearAll(boolean validation) {
 		if (tableViewer.getTable() != null) {
 			// validate values;
@@ -162,6 +159,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			if (errorMessage != null)
 				return errorMessage;
 			columnNames = null;
+			columnTitles = null;
+			cellEditors = null;
 			data = null;
 			isColumnPacked = false;
 			tableViewer.getTable().dispose();
@@ -254,10 +253,15 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		return filterColumn;
 	}
 
-	public String[] getGridProperties() {
+	public String[] getColumnNames() throws ApplicationException {
 		if (columnNames == null)
 			columnNames = CompositeMapUtil.getArrayAttrNames(data);
 		return columnNames;
+	}
+	public String[] getColumnTitles() throws ApplicationException {
+		if (columnTitles == null)
+			columnTitles = getColumnNames();
+		return columnTitles;
 	}
 
 	public CompositeMap getInput() {
@@ -328,7 +332,6 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	}
 
 	public void setCellEditors(CellEditor[] cellEditors) {
-		// TODO 自动添加忽略seq的编辑器
 		this.cellEditors = cellEditors;
 	}
 
@@ -353,8 +356,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		this.filterColumn = filterColumn;
 	}
 
-	public void setGridProperties(String[] gridProperties) {
-		this.columnNames = gridProperties;
+	public void setColumnNames(String[] columnNames) {
+		this.columnNames = columnNames;
 	}
 
 	public void setGridStyle(int gridStyle) {
@@ -432,36 +435,35 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 	}
 
-	protected CellEditor[] createCellEditors() throws ApplicationException {
+	protected CellEditor[] getCellEditors() throws ApplicationException {
 		if (cellEditors != null)
 			return cellEditors;
-		CellEditor[] editors;
 		if ((gridStyle & IGridViewer.fullEditable) == 0) {
-			String[] gridPros = getGridProperties();
-			editors = new CellEditor[gridPros.length + 1];
-			for (int i = 0; i < gridPros.length; i++) {
+			String[] columnNames = getColumnNames();
+			cellEditors = new CellEditor[columnNames.length];
+			for (int i = 0; i < columnNames.length; i++) {
 				TextCellEditor tce = new TextCellEditor(tableViewer.getTable());
 				Text text = (Text) tce.getControl();
 				text.setEditable(false);
-				editors[i + 1] = tce;
+				cellEditors[i] = tce;
 			}
 		} else {
 			List attrib_list = CompositeMapUtil.getArrayAttrs(data);
-			editors = new CellEditor[attrib_list.size() + 1];
-			int id = 1;
+			cellEditors = new CellEditor[attrib_list.size()];
+			int id = 0;
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
 				ICellEditor cellEditor = CellEditorFactory.getInstance()
 						.createCellEditor(this, attrib, null, null);
 				if (cellEditor != null) {
-					editors[id++] = cellEditor.getCellEditor();
+					cellEditors[id++] = cellEditor.getCellEditor();
 					addEditor(attrib.getLocalName(), cellEditor);
 				} else {
-					editors[id++] = new TextCellEditor(tableViewer.getTable());
+					cellEditors[id++] = new TextCellEditor(tableViewer.getTable());
 				}
 			}
 		}
-		return editors;
+		return cellEditors;
 	}
 
 	protected Composite createContainer(Composite parent) {
@@ -473,14 +475,14 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		return container;
 	}
 
-	protected void createTableCompoment() {
+	protected void createTableCompoment() throws ApplicationException {
 		if ((gridStyle & IGridViewer.fullEditable) == 0
 				&& (gridStyle & IGridViewer.isOnlyUpdate) == 0) {
-			labelProvider = new PlainCompositeMapLabelProvider(columnNames);
+			labelProvider = new PlainCompositeMapLabelProvider(getColumnNames());
 			tableViewer.setLabelProvider(labelProvider);
 			tableViewer.setCellModifier(new PlainCompositeMapCellModifier());
 		} else {
-			labelProvider = new PropertyGridLabelProvider(columnNames, this);
+			labelProvider = new PropertyGridLabelProvider(getColumnNames(), this);
 			tableViewer.setLabelProvider(labelProvider);
 			cellModifiers = new GridCellModifier(this);
 			tableViewer.setCellModifier(cellModifiers);
@@ -526,24 +528,19 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		return filterText;
 	}
 
-	private void createTableColumn(TableViewer tableViewer,
-			String[] attrProperties) {
+	private void createTableColumn(TableViewer tableViewer) throws ApplicationException {
 		String seq_imagePath = LocaleMessage.getString("property.icon");
 		Image idp = Activator.getImageDescriptor(seq_imagePath).createImage();
-		TableColumn seq_column = new TableColumn(tableViewer.getTable(),
-				SWT.LEFT);
-
-		seq_column.setText(LocaleMessage.getString("sequence"));
-		if ((gridStyle & IGridViewer.NoSeqColumn) != 0)
-			seq_column.setText("");
-		seq_column.setImage(idp);
-		seq_column.pack();
-		for (int i = 0; i < attrProperties.length; i++) {
-			TableColumn column = new TableColumn(tableViewer.getTable(),
-					SWT.LEFT);
-			column.setText(attrProperties[i]);
+		String[] fullColumnTitles = getfullColumnTitles();
+		for (int i = 0; i < fullColumnTitles.length; i++) {
+			TableColumn column = new TableColumn(tableViewer.getTable(),SWT.LEFT);
+			column.setText(fullColumnTitles[i]);
 			column.setImage(idp);
-			setColumnWidth(column,tableViewer,attrProperties.length);
+			if(i==0){
+				column.pack();
+			}else{
+				setColumnWidth(column,tableViewer,fullColumnTitles.length-1);
+			}
 		}
 	}
 	private void setColumnWidth(TableColumn column,TableViewer tableViewer,int propertyLength){
@@ -565,23 +562,38 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	}
 
 	protected void createTableColumns() throws ApplicationException {
-		columnNames = getGridProperties();
-
-		String[] fullGridProperties = new String[columnNames.length + 1];
-		fullGridProperties[0] = "seq";
-		System.arraycopy(columnNames, 0, fullGridProperties, 1,
-				columnNames.length);
-		tableViewer.setColumnProperties(fullGridProperties);
-
+		columnNames = getColumnNames();
+		tableViewer.setColumnProperties(getfullColumnNames());
 		createDefaultActions();
-
 		createTableCompoment();
-
-		createTableColumn(tableViewer, columnNames);
-
-		CellEditor[] editors = createCellEditors();
+		createTableColumn(tableViewer);
+		CellEditor[] editors = getfullCellEditor();
 		tableViewer.setCellEditors(editors);
 
+	}
+	private String[] getfullColumnNames() throws ApplicationException{
+		String[] columnNames = getColumnNames();
+		String[] fullColumnNames = new String[columnNames.length + 1];
+		fullColumnNames[0] = "seq";
+		System.arraycopy(columnNames, 0, fullColumnNames, 1,columnNames.length);
+		return fullColumnNames;
+	}
+	private String[] getfullColumnTitles() throws ApplicationException{
+		String[] columnTitles = getColumnTitles();
+		String[] fullColumnTitles = new String[columnTitles.length + 1];
+		if((gridStyle&IGridViewer.NoSeqColumn) ==0){
+			fullColumnTitles[0] = "序号"; 
+		}else{
+			fullColumnTitles[0] = ""; 
+		}
+		System.arraycopy(columnTitles, 0, fullColumnTitles, 1,columnTitles.length);
+		return fullColumnTitles;
+	}
+	private CellEditor[] getfullCellEditor() throws ApplicationException{
+		CellEditor[] cellEditor = getCellEditors();
+		CellEditor[] fullCellEditor = new CellEditor[cellEditor.length + 1];
+		System.arraycopy(cellEditor, 0, fullCellEditor, 1,cellEditor.length);
+		return fullCellEditor;
 	}
 
 	protected TableViewer createTableViewer() {

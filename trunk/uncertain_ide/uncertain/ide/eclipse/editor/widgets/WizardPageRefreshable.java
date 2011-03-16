@@ -13,7 +13,24 @@ public abstract class WizardPageRefreshable extends WizardPage {
 		super(pageName);
 	}
 		
-	public void refresh() {
+	public void refreshPage() {
+		if(!isInit()){
+			return;
+		}
+	}
+	
+	public abstract void checkPageValues();
+	
+	public void initPageValues(){
+		
+	}
+	
+	public void updatePageStatus(String errorMessage){
+		setErrorMessage(errorMessage);
+		setPageComplete(errorMessage == null);
+	}
+	public boolean isInit(){
+		return getControl()!= null;
 	}
 
 }
