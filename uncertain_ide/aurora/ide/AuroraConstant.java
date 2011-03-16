@@ -20,6 +20,8 @@ public interface AuroraConstant {
 	public final static QualifiedName ScreenQN = new QualifiedName(ApplicationUri, "screen");
 	public final static QualifiedName ViewQN = new QualifiedName(ApplicationUri, "view");
 	public final static QualifiedName DataSetQN = new QualifiedName(ApplicationUri, "dataSet");
+	public final static QualifiedName FieldsQN = new QualifiedName(ApplicationUri, "fields");
+	public final static QualifiedName FieldQN = new QualifiedName(ApplicationUri, "field");
 	public final static QualifiedName DataSetSQN = new QualifiedName(ApplicationUri, "dataSets");
 	public static QualifiedName ModelQN = new QualifiedName(BMUri, "model");
 	
