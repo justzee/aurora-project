@@ -49,7 +49,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
 import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.eclipse.bm.editor.GridDialog;
-import uncertain.ide.eclipse.celleditor.CellProperties;
+import uncertain.ide.eclipse.celleditor.CellInfo;
 import uncertain.ide.eclipse.celleditor.ComboxCellEditor;
 import uncertain.ide.eclipse.celleditor.ICellEditor;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
@@ -129,7 +129,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			}
 			IWizardPage nextPage = super.getNextPage(page);
 			if (nextPage instanceof WizardPageRefreshable) {
-				((WizardPageRefreshable) nextPage).refresh();
+				((WizardPageRefreshable) nextPage).refreshPage();
 			}
 			return nextPage;
 		}
@@ -234,7 +234,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 						field.put("name", filterfield.getString("name"));
 						fields.addChild(field);
 					}
-					if ("id".equals(type)) {
+					if ("=".equals(type)) {
 						filterfield.put("queryOperator", "=");
 					} else if ("description".equals(type)) {
 						String queryExpression = "(select 1 from fnd_descriptions fd where op.description_id=fd.description_id and fd.description_text like ${@"
@@ -243,6 +243,8 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 					} else {
 						filterfield.put("queryOperator", "like");
 					}
+					filterfield.put("field", filterfield.getString("name"));
+					filterfield.remove("name");
 				}
 			}
 
@@ -291,7 +293,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			containerText.setLayoutData(gd);
 			containerText.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
-					dialogChanged();
+					checkPageValues();
 				}
 			});
 
@@ -322,7 +324,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			parentBMText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			parentBMText.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
-					dialogChanged();
+					checkPageValues();
 				}
 			});
 			Button uncertainProDirButton = new Button(container, SWT.PUSH);
@@ -351,7 +353,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 					GridViewer grid = new GridViewer(null, IGridViewer.filterBar | IGridViewer.NoToolBar);
 					grid.setData(bms);
 					grid.setFilterColumn("name");
-					grid.setGridProperties(columnProperties);
+					grid.setColumnNames(columnProperties);
 					GridDialog dialog = new GridDialog(new Shell(), grid);
 					if (dialog.open() == Window.OK) {
 						String value = dialog.getSelected().getString("fullpath");
@@ -370,26 +372,20 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			fileText.setLayoutData(gd);
 			fileText.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
-					dialogChanged();
+					checkPageValues();
 				}
 			});
-			try {
-				initialize();
-			} catch (ApplicationException e) {
-				CustomDialog.showErrorMessageBox(e);
-			}
-			dialogChanged();
+			initPageValues();
+			checkPageValues();
 			setControl(container);
 		}
 
 		/**
 		 * Tests if the current workbench selection is a suitable container to
 		 * use.
-		 * 
-		 * @throws ApplicationException
 		 */
 
-		private void initialize() throws ApplicationException {
+		public void initPageValues(){
 			if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection) {
 				IStructuredSelection ssel = (IStructuredSelection) selection;
 				if (ssel.size() > 1)
@@ -399,32 +395,31 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 					IResource bm = (IResource) obj;
 					IContainer container = bm.getParent();
 					containerText.setText(container.getFullPath().toOSString());
-					String registerPath = AuroraResourceUtil.getRegisterPath((IFile) bm);
+					String registerPath;
+					try {
+						registerPath = AuroraResourceUtil.getRegisterPath((IFile) bm);
+					} catch (ApplicationException e) {
+						CustomDialog.showErrorMessageBox(e);
+						return;
+					}
 					parentBMText.setText(registerPath);
 				}
 			}
 		}
-
-		/**
-		 * Ensures that both text fields are set.
-		 * 
-		 * @throws ApplicationException
-		 */
-
-		private void dialogChanged() {
+		public void checkPageValues() {
 			IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(containerText.getText());
 			String containerPath = containerText.getText();
 			if (containerPath == null || "".equals(containerPath)) {
-				updateStatus(LocaleMessage.getString("file.container.must.be.specified"));
+				updatePageStatus(LocaleMessage.getString("file.container.must.be.specified"));
 				return;
 			}
 			if (container == null || (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-				updateStatus(LocaleMessage.getString("file.container.must.exist"));
+				updatePageStatus(LocaleMessage.getString("file.container.must.exist"));
 				return;
 			}
 			String parentBMPath = parentBMText.getText();
 			if (parentBMPath == null || "".equals(parentBMPath)) {
-				updateStatus("必须指定父BM!");
+				updatePageStatus("必须指定父BM!");
 				return;
 			}
 			IResource bmFile = null;
@@ -434,41 +429,36 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 				CustomDialog.showErrorMessageBox(e);
 			}
 			if (bmFile == null) {
-				updateStatus("此BM文件不存在!");
+				updatePageStatus("此BM文件不存在!");
 				return;
 			}
 			String fileName = fileText.getText();
 			if (fileName != null && !fileName.equals("") && container.getProject().getFile(fileName).exists()) {
-				updateStatus(LocaleMessage.getString("filename.used"));
+				updatePageStatus(LocaleMessage.getString("filename.used"));
 				return;
 			}
 			if (!container.isAccessible()) {
-				updateStatus(LocaleMessage.getString("project.must.be.writable"));
+				updatePageStatus(LocaleMessage.getString("project.must.be.writable"));
 				return;
 			}
 			if (fileName.length() == 0) {
-				updateStatus(LocaleMessage.getString("file.name.must.be.specified"));
+				updatePageStatus(LocaleMessage.getString("file.name.must.be.specified"));
 				return;
 			}
 
 			if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
-				updateStatus(LocaleMessage.getString("file.name.must.be.valid"));
+				updatePageStatus(LocaleMessage.getString("file.name.must.be.valid"));
 				return;
 			}
 			int dotLoc = fileName.lastIndexOf('.');
 			if (dotLoc != -1) {
 				String ext = fileName.substring(dotLoc + 1);
 				if (ext.equalsIgnoreCase("bm") == false) {
-					updateStatus(LocaleMessage.getString("file.extension.must.be.bm"));
+					updatePageStatus(LocaleMessage.getString("file.extension.must.be.bm"));
 					return;
 				}
 			}
-			updateStatus(null);
-		}
-
-		private void updateStatus(String message) {
-			setErrorMessage(message);
-			setPageComplete(message == null);
+			updatePageStatus(null);
 		}
 		public IResource getParentBM() throws ApplicationException {
 			String parentBMPath = parentBMText.getText();
@@ -483,7 +473,6 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 		public String getContainerName() {
 			return containerText.getText();
 		}
-
 	}
 	class SelectFieldPage extends WizardPageRefreshable {
 		private GridViewer grid;
@@ -518,9 +507,10 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			setPageComplete(true);
 			setControl(content);
 		}
-		public void refresh() {
-			if (getControl() == null)
+		public void refreshPage() {
+			if(!isInit()){
 				return;
+			}
 			try {
 				IResource resource = wizard.getParentBM();
 				CompositeMap data = AuroraResourceUtil.loadFromResource(resource);
@@ -533,10 +523,16 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			} catch (ApplicationException e) {
 				CustomDialog.showErrorMessageBox(e);
 			}
-			super.refresh();
+			super.refreshPage();
 		}
 		public CompositeMap getSelection() {
 			return grid.getSelection();
+		}
+
+		public void checkPageValues() {
+		}
+
+		public void initPageValues() {
 		}
 	}
 	class FilterFieldPage extends WizardPageRefreshable {
@@ -553,19 +549,21 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			Composite content = new Composite(parent, SWT.NONE);
 			content.setLayout(new GridLayout());
 			String[] columnProperties = {"name", "type"};
+			String[] columnTitles= {"字段名", "过滤操作"};
 			grid = new GridViewer(columnProperties, IGridViewer.isMulti | IGridViewer.isAllChecked
 					| IGridViewer.isOnlyUpdate);
+			grid.setColumnTitles(columnTitles);
 			try {
 				grid.createViewer(content);
 			} catch (ApplicationException e) {
 				CustomDialog.showErrorMessageBox(e);
 			}
-			CellEditor[] celleditors = new CellEditor[columnProperties.length + 1];
-			CellProperties cellProperties = new CellProperties(grid, "type", false);
-			cellProperties.setItems(new String[]{"id", "code", "description"});
+			CellEditor[] celleditors = new CellEditor[columnProperties.length];
+			CellInfo cellProperties = new CellInfo(grid, "type", false);
+			cellProperties.setItems(new String[]{"=", "like", "description"});
 			ICellEditor cellEditor = new ComboxCellEditor(cellProperties);
 			cellEditor.init();
-			celleditors[columnProperties.length] = cellEditor.getCellEditor();
+			celleditors[columnProperties.length-1] = cellEditor.getCellEditor();
 			grid.addEditor("type", cellEditor);
 			grid.setCellEditors(celleditors);
 			try {
@@ -580,7 +578,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			}
 			setControl(content);
 		}
-		public void refresh() {
+		public void refreshPage() {
 			if (getControl() == null)
 				return;
 			try {
@@ -590,17 +588,21 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 					CustomDialog.showErrorMessageBox("此BM不存在!");
 				}
 				CompositeMap field = data.getChild("fields");
-				grid.setData(field);
+				grid.setData(getSimpleFields(field));
 			} catch (ApplicationException e) {
 				CustomDialog.showErrorMessageBox(e);
 			}
-			super.refresh();
+			super.refreshPage();
 		}
 		public CompositeMap getSelection() {
 			if(grid == null)
 				return null;
 			return grid.getSelection();
 		}
+
+		public void checkPageValues() {}
+
+		public void initPageValues() {}
 	}
 	public CompositeMap getSimpleFields(CompositeMap bm) {
 		CompositeMap fields = bm.getChild("fields");
