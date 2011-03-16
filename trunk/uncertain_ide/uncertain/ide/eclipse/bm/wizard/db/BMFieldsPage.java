@@ -7,22 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogPage;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-import aurora.ide.AuroraConstant;
-
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
 import uncertain.ide.eclipse.bm.BMUtil;
+import uncertain.ide.eclipse.celleditor.CellInfo;
+import uncertain.ide.eclipse.celleditor.ICellEditor;
+import uncertain.ide.eclipse.celleditor.StringTextCellEditor;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
+import aurora.ide.AuroraConstant;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -32,16 +35,13 @@ import uncertain.ide.help.LocaleMessage;
 
 public class BMFieldsPage extends WizardPage {
 	private Text containerText;
-	BMFromDBWizard wizard;
-	private final String[] columnProperties = { "COLUMN_NAME", "TYPE_NAME",
-			"COLUMN_SIZE", "IS_NULLABLE", "REMARKS" };
-	private final String[] excluedColumns = { "CREATED_BY", "CREATION_DATE",
-			"LAST_UPDATED_BY", "LAST_UPDATE_DATE" };
-	DatabaseMetaData dbMetaData;
-
-	CompositeMap fields = new CompositeMap();
-	GridViewer filterCompoment;
-
+	private BMFromDBWizard wizard;
+	private final String[] columnNames = { "COLUMN_NAME", "REMARKS", "IS_NULLABLE", "TYPE_NAME","COLUMN_SIZE" };
+	private final String[] columnTitles = { "列名", "描述","可空","类型","大小",};
+	private final int REMARKS_INDEX=1;
+	private final String[] excluedColumns = { "CREATED_BY", "CREATION_DATE","LAST_UPDATED_BY", "LAST_UPDATE_DATE" };
+	private DatabaseMetaData dbMetaData;
+	private GridViewer gridViewer;
 	public BMFieldsPage(ISelection selection, BMFromDBWizard bmWizard) {
 		super("wizardPage");
 		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
@@ -54,19 +54,27 @@ public class BMFieldsPage extends WizardPage {
 	 */
 	public void createControl(Composite parent) {
 		dbMetaData = wizard.getDBMetaData();
-
 		CompositeMap input = null;
 		try {
 			input = getInput(dbMetaData, "%");
 		} catch (SQLException e) {
-			CustomDialog.showExceptionMessageBox(e);
+			CustomDialog.showErrorMessageBox(e);
+			return;
 		}
-		filterCompoment = new GridViewer(columnProperties, IGridViewer.isMulti
-				| IGridViewer.isAllChecked);
+		gridViewer = new GridViewer(columnNames, IGridViewer.isMulti
+				| IGridViewer.isAllChecked|IGridViewer.isOnlyUpdate);
 		Composite container = null;
 		try {
-			filterCompoment.setData(input);
-			container = filterCompoment.createViewer(parent);
+			gridViewer.setColumnTitles(columnTitles);
+			container = gridViewer.createViewer(parent);
+			CellEditor[] celleditors = new CellEditor[columnNames.length];
+			CellInfo cellProperties = new CellInfo(gridViewer, "REMARKS", false);
+			ICellEditor cellEditor = new StringTextCellEditor(cellProperties);
+			celleditors[REMARKS_INDEX] = cellEditor.getCellEditor();
+			cellEditor.init();
+			gridViewer.addEditor("REMARKS", cellEditor);
+			gridViewer.setCellEditors(celleditors);
+			gridViewer.setData(input);
 		} catch (ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
 		}
@@ -78,20 +86,17 @@ public class BMFieldsPage extends WizardPage {
 		return containerText.getText();
 	}
 
-	public CompositeMap getSelectedFields() {
+	public CompositeMap getSelectedFields() throws ApplicationException {
 		CompositeMap fieldsArray = new CompositeMap(BMUtil.BMPrefix,
 				AuroraConstant.BMUri, "fields");
-		Object[] elements = filterCompoment.getCheckedElements();
+		Object[] elements = gridViewer.getCheckedElements();
 		for (int j = 0; j < elements.length; j++) {
 			CompositeMap record = (CompositeMap) elements[j];
 			CompositeMap field = new CompositeMap(BMUtil.BMPrefix,
 					AuroraConstant.BMUri, "field");
-			field.put("name", record.getString("COLUMN_NAME").toLowerCase());
+			String fieldName = record.getString("COLUMN_NAME").toLowerCase();
+			field.put("name", fieldName);
 			field.put("physicalName", record.getString("COLUMN_NAME"));
-			// String required = record.getString("IS_NULLABLE").equals("YES") ?
-			// "false"
-			// : "true";
-			// field.put("required", required);
 			String dataType = record.getString("TYPE_NAME");
 			field.put("databaseType", dataType);
 			Integer db_data_type = record.getInt("DATA_TYPE");
@@ -104,7 +109,12 @@ public class BMFieldsPage extends WizardPage {
 						+ LocaleMessage.getString("is.not.registried"));
 			} else
 				field.put("datatype", dt.getJavaType().getName());
-
+			String prompt = record.getString("REMARKS");
+			String prompt_code = wizard.getTableName().toUpperCase()+"."+fieldName.toUpperCase();
+			field.put("prompt", prompt_code);
+			if(prompt != null){
+				wizard.addPrompt(prompt_code, prompt);
+			}
 			fieldsArray.addChild(field);
 		}
 		return fieldsArray;
@@ -117,8 +127,8 @@ public class BMFieldsPage extends WizardPage {
 		} catch (SQLException e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
-		filterCompoment.setData(input);
-		filterCompoment.refresh(false);
+		gridViewer.setData(input);
+		gridViewer.refresh(false);
 	}
 
 	private CompositeMap getInput(DatabaseMetaData DBMetaData,
@@ -141,19 +151,19 @@ public class BMFieldsPage extends WizardPage {
 				.getUserName(), tableName, "%");
 		while (tableRet.next()) {
 			CompositeMap element = new CompositeMap();
-			String columnName = tableRet.getString(columnProperties[0]);
+			String columnName = tableRet.getString(columnNames[0]);
 			if (excluedColumnList.contains(columnName)) {
 				continue;
 			}
-			element.put(columnProperties[0], columnName);
-			element.put(columnProperties[1], tableRet
-					.getString(columnProperties[1]));
-			element.put(columnProperties[2], new Integer(tableRet
-					.getInt(columnProperties[2])));
-			element.put(columnProperties[3], tableRet
-					.getString(columnProperties[3]));
-			element.put(columnProperties[4], tableRet
-					.getString(columnProperties[4]));
+			element.put(columnNames[0], columnName);
+			element.put(columnNames[1], tableRet
+					.getString(columnNames[1]));
+			element.put(columnNames[2], tableRet
+					.getString(columnNames[2]));
+			element.put(columnNames[3], tableRet
+					.getString(columnNames[3]));
+			element.put(columnNames[4], new Integer(tableRet
+					.getInt(columnNames[4])));
 			element.put("DATA_TYPE", new Integer(tableRet.getInt("DATA_TYPE")));
 			input.addChild(element);
 		}
