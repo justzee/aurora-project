@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.eclipse.jface.dialogs.IDialogPage;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -17,6 +18,9 @@ import aurora.ide.AuroraConstant;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.bm.BMUtil;
+import uncertain.ide.eclipse.celleditor.CellInfo;
+import uncertain.ide.eclipse.celleditor.ICellEditor;
+import uncertain.ide.eclipse.celleditor.StringTextCellEditor;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
 import uncertain.ide.help.ApplicationException;
@@ -33,15 +37,12 @@ public class BMTablePage extends WizardPage {
 	private Text containerText;
 	private BMFromDBWizard wizard;
 	private String tableName;
-	/**
-	 * Constructor for SampleNewWizardPage.
-	 * 
-	 * @param pageName
-	 */
-	private final String[] ColumnProperties = { "TABLE_NAME", "TABLE_CAT",
-			"TABLE_SCHEM", "TABLE_TYPE", "REMARKS" };
+	private String tableRemarks;
+	private final String[] columnNames = { "TABLE_NAME", "REMARKS", "TABLE_TYPE","TABLE_SCHEM","TABLE_CAT"};
+	private final int REMARKS_INDEX=1;
+	private final String[] columnTitles = { "表名", "描述", "类型","模式" , "编目"};
 	DatabaseMetaData dbMetaData;
-	GridViewer filterCompoment;
+	GridViewer gridViewer;
 
 	public BMTablePage(ISelection selection, BMFromDBWizard bmWizard) {
 		super("wizardPage");
@@ -63,21 +64,25 @@ public class BMTablePage extends WizardPage {
 		} catch (Exception e) {
 			CustomDialog.showExceptionMessageBox(e);
 		}
-		// FilterCompositeMap filterCompositeMap = new FilterCompositeMap(input,
-		// ColumnProperties, ColumnText, "TABLE_NAME", "TABLE_NAME");
-
-		filterCompoment = new GridViewer(ColumnProperties,
-				IGridViewer.filterBar | IGridViewer.NoToolBar);
+		gridViewer = new GridViewer(columnNames,
+				IGridViewer.filterBar | IGridViewer.NoToolBar|IGridViewer.isOnlyUpdate);
 		try {
-			filterCompoment.setData(input);
-			filterCompoment.setFilterColumn("TABLE_NAME");
-			filterCompoment.setGridProperties(ColumnProperties);
-			filterCompoment.createViewer(parent);
+			gridViewer.setFilterColumn("TABLE_NAME");
+			gridViewer.setColumnTitles(columnTitles);
+			gridViewer.createViewer(parent);
+			CellEditor[] celleditors = new CellEditor[columnNames.length];
+			CellInfo cellProperties = new CellInfo(gridViewer, "REMARKS", false);
+			ICellEditor cellEditor = new StringTextCellEditor(cellProperties);
+			celleditors[REMARKS_INDEX] = cellEditor.getCellEditor();
+			cellEditor.init();
+			gridViewer.addEditor("REMARKS", cellEditor);
+			gridViewer.setCellEditors(celleditors);
+			gridViewer.setData(input);
 		} catch (ApplicationException e) {
 			CustomDialog.showErrorMessageBox(e);
 			return;
 		}
-		filterCompoment
+		gridViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 
 					public void selectionChanged(SelectionChangedEvent event) {
@@ -94,7 +99,7 @@ public class BMTablePage extends WizardPage {
 
 					}
 				});
-		setControl(filterCompoment.getControl());
+		setControl(gridViewer.getControl());
 		setPageComplete(false);
 
 	}
@@ -123,12 +128,20 @@ public class BMTablePage extends WizardPage {
 	}
 
 	public String getTableName() {
-		CompositeMap record = filterCompoment.getSelection();
+		CompositeMap record = gridViewer.getSelection();
 		if (record == null) {
 			return null;
 		}
 		tableName = record.getString("TABLE_NAME");
 		return tableName;
+	}
+	public String getTableRemarks() {
+		CompositeMap record = gridViewer.getSelection();
+		if (record == null) {
+			return null;
+		}
+		tableRemarks = record.getString("REMARKS");
+		return tableRemarks;
 	}
 
 	private CompositeMap getInput(DatabaseMetaData DBMetaData,
@@ -140,16 +153,16 @@ public class BMTablePage extends WizardPage {
 		while (tableRet.next()) {
 			int seq = 0;
 			CompositeMap element = new CompositeMap();
-			element.put(ColumnProperties[seq], tableRet
-					.getString(ColumnProperties[seq++]));
-			element.put(ColumnProperties[seq], tableRet
-					.getString(ColumnProperties[seq++]));
-			element.put(ColumnProperties[seq], tableRet
-					.getString(ColumnProperties[seq++]));
-			element.put(ColumnProperties[seq], tableRet
-					.getString(ColumnProperties[seq++]));
-			element.put(ColumnProperties[seq], tableRet
-					.getString(ColumnProperties[seq++]));
+			element.put(columnNames[seq], tableRet
+					.getString(columnNames[seq++]));
+			element.put(columnNames[seq], tableRet
+					.getString(columnNames[seq++]));
+			element.put(columnNames[seq], tableRet
+					.getString(columnNames[seq++]));
+			element.put(columnNames[seq], tableRet
+					.getString(columnNames[seq++]));
+			element.put(columnNames[seq], tableRet
+					.getString(columnNames[seq++]));
 			input.addChild(element);
 		}
 		return input;
