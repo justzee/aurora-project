@@ -13,6 +13,8 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.source.DefaultAnnotationHover;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.graphics.RGB;
@@ -62,7 +64,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	public ITextDoubleClickStrategy getDoubleClickStrategy(
 			ISourceViewer sourceViewer, String contentType) {
 		if (doubleClickStrategy == null)
-			doubleClickStrategy = new XMLDoubleClickStrategy();
+			doubleClickStrategy = new XMLDoubleClickStrategy(sourceViewer, contentType);
 		return doubleClickStrategy;
 	}
 
@@ -201,6 +203,9 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		return new IHyperlinkDetector[] {
 				new FileHyperlinkDetector()
 		};
+	}
+	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+		return new DefaultAnnotationHover();
 	}
 	public static RGB getTokenType(IToken token) {
 		if (token == null || !(token instanceof TextAttribute))

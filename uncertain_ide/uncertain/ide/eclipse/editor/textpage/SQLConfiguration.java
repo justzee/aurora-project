@@ -29,7 +29,7 @@ public class SQLConfiguration extends SourceViewerConfiguration {
 	public ITextDoubleClickStrategy getDoubleClickStrategy(
 			ISourceViewer sourceViewer, String contentType) {
 		if (doubleClickStrategy == null)
-			doubleClickStrategy = new XMLDoubleClickStrategy();
+			doubleClickStrategy = new XMLDoubleClickStrategy(sourceViewer,contentType);
 		return doubleClickStrategy;
 	}
 	
