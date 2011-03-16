@@ -425,7 +425,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		tableViewer.createViewer(parent);
 		tableViewer.getControl().setVisible(true);
 		String[] ColumnProperties = createColumnProperties(resultSet);
-		tableViewer.setGridProperties(ColumnProperties);
+		tableViewer.setColumnNames(ColumnProperties);
 		CompositeMap input = getInput(resultSet, ColumnProperties);
 		tableViewer.setData(input);
 		tableViewer.packColumns();

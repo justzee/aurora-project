@@ -34,17 +34,16 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
-import uncertain.ide.eclipse.action.ActionListener;
-import uncertain.ide.eclipse.action.AddFieldAction;
-import uncertain.ide.eclipse.action.AddRefFieldAction;
-import uncertain.ide.eclipse.action.RefreshAction;
-import uncertain.ide.eclipse.action.RemoveElementAction;
+import uncertain.ide.eclipse.bm.BMUtil;
 import uncertain.ide.eclipse.editor.BaseCompositeMapViewer;
 import uncertain.ide.eclipse.editor.CompositeMapPage;
 import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.eclipse.editor.widgets.GridViewer;
 import uncertain.ide.eclipse.editor.widgets.PropertyHashViewer;
 import uncertain.ide.eclipse.editor.widgets.core.IGridViewer;
+import uncertain.ide.eclipse.node.action.ActionListener;
+import uncertain.ide.eclipse.node.action.RefreshAction;
+import uncertain.ide.eclipse.node.action.RemoveElementAction;
 import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.AuroraResourceUtil;
 import uncertain.ide.help.CustomDialog;
@@ -90,8 +89,14 @@ public class BussinessModelPage extends CompositeMapPage{
 			CustomDialog.showErrorMessageBox(e);
 			return;
 		} catch (SAXException e) {
-			CustomDialog.showErrorMessageBox(e);
-			return;
+			String emptyExcption = "Premature end of file";
+			if(e.getMessage() != null && e.getMessage().indexOf(emptyExcption)!= -1){
+				data = BMUtil.createBMTopNode();
+				data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+			}else{
+				CustomDialog.showErrorMessageBox(e);
+				return;
+			}
 		}
 		if (!data.getQName().equals(AuroraConstant.ModelQN)){
 			CustomDialog.showErrorMessageBox("文件"+filePath+"的"+LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
