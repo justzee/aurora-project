@@ -66,7 +66,7 @@ public class CellEditorFactory {
 		if (attribute == null)
 			return cellEditor;
 
-		CellProperties cellProperties = createCellProperties(viewer, attribute,
+		CellInfo cellProperties = createCellProperties(viewer, attribute,
 				record, tableItem);
 		// 个性化编辑器
 		cellEditor = createDefinedEditor(attribute, cellProperties);
@@ -80,13 +80,13 @@ public class CellEditorFactory {
 		return cellEditor;
 	}
 
-	private CellProperties createCellProperties(ITableViewer viewer,
+	private CellInfo createCellProperties(ITableViewer viewer,
 			Attribute attribute, CompositeMap record, TableItem tableItem) {
-		return new CellProperties(viewer, attribute, record, tableItem);
+		return new CellInfo(viewer, attribute, record, tableItem);
 	}
 
 	private ICellEditor createDefaultEditor(Attribute attribute,
-			CellProperties cellProperties) {
+			CellInfo cellProperties) {
 		ICellEditor cellEditor = null;
 		QualifiedName typeQname = attribute.getTypeQName();
 
@@ -133,7 +133,7 @@ public class CellEditorFactory {
 	}
 
 	private ICellEditor createDefinedEditor(Attribute attribute,
-			CellProperties cellProperties) throws ApplicationException {
+			CellInfo cellProperties) throws ApplicationException {
 		Object editor;
 		QualifiedName typeQname = attribute.getTypeQName();
 		if (typeQname == null)
@@ -158,7 +158,7 @@ public class CellEditorFactory {
 		}
 		Constructor constructor = null;
 		try {
-			Class[] constructorClasses = new Class[] { CellProperties.class };
+			Class[] constructorClasses = new Class[] { CellInfo.class };
 			constructor = cls.getConstructor(constructorClasses);
 
 			Object[] constructorObjects = new Object[] { cellProperties };

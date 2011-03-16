@@ -25,9 +25,9 @@ import uncertain.ide.help.LocaleMessage;
  */
 public class ComboxCellEditor extends ComboBoxCellEditor implements ICellEditor {
 
-	protected CellProperties cellProperties;
+	protected CellInfo cellProperties;
 
-	public ComboxCellEditor(CellProperties cellProperties) {
+	public ComboxCellEditor(CellInfo cellProperties) {
 		this.cellProperties = cellProperties;
 	}
 

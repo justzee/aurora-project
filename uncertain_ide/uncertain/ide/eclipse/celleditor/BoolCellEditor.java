@@ -27,9 +27,9 @@ public class BoolCellEditor extends CheckboxCellEditor implements ICellEditor {
 	private Button button;
 	private boolean hasSelection = false;
 
-	protected CellProperties cellProperties;
+	protected CellInfo cellProperties;
 
-	public BoolCellEditor(CellProperties cellProperties) {
+	public BoolCellEditor(CellInfo cellProperties) {
 		this.cellProperties = cellProperties;
 	}
 	protected Control createControl(Composite parent) {
