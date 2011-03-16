@@ -1,30 +1,21 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.node.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.ICategoryViewer;
+import uncertain.ide.eclipse.editor.core.ICategoryViewer;
+import uncertain.ide.help.LocaleMessage;
 
 public class CategroyAction extends Action {
 	
 	private ICategoryViewer viewer;
 	public CategroyAction(ICategoryViewer viewer) {
 		this.viewer = viewer;
+		setHoverImageDescriptor(getDefaultImageDescriptor());
 	}
-	public CategroyAction(ICategoryViewer viewer,ImageDescriptor imageDescriptor,String text) {
-		if(imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if(text != null)
-			setText(text);
-		this.viewer = viewer;
-	}
-
-
 	public void run() {
 		viewer.setCategory(true);
-		viewer.refresh(false);
 	}
 	public static ImageDescriptor getDefaultImageDescriptor(){
 		return Activator.getImageDescriptor(LocaleMessage.getString("category.icon"));

@@ -1,55 +1,56 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.node.action;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Event;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.IViewer;
+import uncertain.ide.eclipse.editor.core.IViewer;
+import uncertain.ide.help.CompositeMapUtil;
+import uncertain.ide.help.LocaleMessage;
 
-public class AddElementAction extends Action {
-	private IViewer viewer;
-
-	private CompositeMap parentCM;
-	private String prefix;
-	private String uri;
-	private String cmName;
-
-	public AddElementAction(IViewer viewer, CompositeMap parentCM,
-			String prefix, String uri, String cmName) {
+public class AddElementAction extends ActionListener{
+	
+	protected IViewer viewer;
+	protected CompositeMap currentNode;
+	protected QualifiedName childQN;
+	private String text = null;
+	public AddElementAction(IViewer viewer, CompositeMap currentNode, QualifiedName childQN,int actionStyle) {
 		this.viewer = viewer;
-		this.parentCM = parentCM;
-		this.prefix = prefix;
-		this.uri = uri;
-		this.cmName = cmName;
-		setText(cmName);
-
+		this.currentNode = currentNode;
+		this.childQN = childQN;
+		setActionStyle(actionStyle);
 	}
-
-	public AddElementAction(IViewer viewer, CompositeMap parentCM,
-			QualifiedName qName, ImageDescriptor imageDescriptor, String text) {
+	public AddElementAction(IViewer viewer, CompositeMap currentNode, QualifiedName childQN,String text,int actionStyle) {
 		this.viewer = viewer;
-		this.parentCM = parentCM;
-		this.uri = qName.getNameSpace();
-		this.prefix = CompositeMapAction.getPrefix(parentCM,qName);
-		this.cmName = qName.getLocalName();
-		if (imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if (text != null)
-			setText(text);
-
+		this.currentNode = currentNode;
+		this.childQN = childQN;
+		this.text = text;
+		setActionStyle(actionStyle);
 	}
-
 	public void run() {
-		CompositeMapAction.addElement(parentCM, prefix, uri, cmName);
+		CompositeMapUtil.addElement(currentNode, childQN);
 		if (viewer != null) {
 			viewer.refresh(true);
 		}
 	}
+	public void handleEvent(Event event) {
+		run();
+	}
 
-	public static ImageDescriptor getDefaultImageDescriptor() {
+	public ImageDescriptor getDefaultImageDescriptor() {
 		return Activator.getImageDescriptor(LocaleMessage.getString("element.icon"));
 	}
+	public String getDefaultText() {
+		if(text == null){
+			if(currentNode == null||childQN==null)
+				return "";
+			String prefix = CompositeMapUtil.getContextPrefix(currentNode, childQN);
+			childQN.setPrefix(prefix);
+			text = childQN.getFullName();
+		}
+		return text;
+	}
+
 }
