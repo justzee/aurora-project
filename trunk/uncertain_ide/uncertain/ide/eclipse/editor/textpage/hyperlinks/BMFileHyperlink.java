@@ -1,22 +1,18 @@
 package uncertain.ide.eclipse.editor.textpage.hyperlinks;
 
-import java.io.File;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.ide.Activator;
-import uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage;
-import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.eclipse.bm.BMUtil;
+import uncertain.ide.help.ApplicationException;
 import uncertain.ide.help.CustomDialog;
 
 public class BMFileHyperlink implements IHyperlink {
@@ -42,30 +38,21 @@ public class BMFileHyperlink implements IHyperlink {
 
 	public void open() {
 		IDocument doc = viewer.getDocument();
-		char ch = File.separatorChar;
-		String classPath = null;
 		try {
-			classPath = doc.get(region.getOffset(), region.getLength());
-			String bmPath = classPath.replace('.', ch) + ".bm";
-			IProject project = AuroraResourceUtil.getIProjectFromActiveEditor();
-			String bmFileDir;
-			bmFileDir = ProjectPropertyPage.getBMBaseDir(project);
-			String fullPath = bmFileDir + File.separator + bmPath;
-			IPath path = new Path(fullPath);
-			IFile file = null;
-			IResource member = ResourcesPlugin.getWorkspace().getRoot()
-					.findMember(path);
-			if (member != null) {
-				path = member.getProjectRelativePath();
-				file = project.getFile(path);
-			}
-			if (file == null) {
-				CustomDialog.showErrorMessageBox("获取文件失败！");
+			String classPath = doc.get(region.getOffset(), region.getLength());
+			IResource file = BMUtil.getBMFromClassPath(classPath);
+			if (!(file instanceof IFile)) {
+				CustomDialog.showErrorMessageBox("资源" + file + "不是一个文件类型");
 				return;
 			}
-			IDE.openEditor(Activator.getActivePage(), file);
-		} catch (Exception e) {
+			IDE.openEditor(Activator.getActivePage(), (IFile) file);
+		} catch (PartInitException e) {
 			CustomDialog.showErrorMessageBox(e);
+		} catch (BadLocationException e) {
+			CustomDialog.showErrorMessageBox(e);
+		} catch (ApplicationException e) {
+			CustomDialog.showErrorMessageBox(e);
+
 		}
 	}
 }
