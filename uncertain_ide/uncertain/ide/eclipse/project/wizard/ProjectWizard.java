@@ -1,7 +1,11 @@
 package uncertain.ide.eclipse.project.wizard;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
+
+import uncertain.ide.AuroraProjectNature;
+import uncertain.ide.help.CustomDialog;
 
 public class ProjectWizard extends BasicNewProjectResourceWizard {
 
@@ -14,6 +18,11 @@ public class ProjectWizard extends BasicNewProjectResourceWizard {
 	public boolean performFinish() {
 		if (!super.performFinish())
 			return false;
+		try {
+			AuroraProjectNature.addAuroraNature(getNewProject());
+		} catch (CoreException e) {
+			CustomDialog.showErrorMessageBox(e);
+		}
 		return true;
 	}
 
