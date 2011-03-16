@@ -1,23 +1,34 @@
 package uncertain.ide.eclipse.editor.textpage;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITextListener;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextEvent;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.AnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ide.eclipse.editor.core.IViewer;
 import uncertain.ide.help.AuroraResourceUtil;
+import uncertain.ide.help.CustomDialog;
 import uncertain.ide.help.LocaleMessage;
 
 public class TextPage extends TextEditor implements IViewer {
@@ -30,6 +41,7 @@ public class TextPage extends TextEditor implements IViewer {
     /** The ID of the editor ruler context menu */
     public static final String RULER_CONTEXT = EDITOR_CONTEXT + ".ruler";
 
+    public static final String AnnotationType ="uncertain.ide.eclipse.text.valid";
     protected void initializeEditor() {
             super.initializeEditor();
             setEditorContextMenuId(EDITOR_CONTEXT);
@@ -42,6 +54,8 @@ public class TextPage extends TextEditor implements IViewer {
 	private FormEditor editor;
 	private boolean modify = false;
 	private boolean ignorceSycOnce = false;
+	private List annotatioList = new LinkedList();
+	private IAnnotationModel  annotationModel;
 	public boolean isIgnorceSycOnce() {
 		return ignorceSycOnce;
 	}
@@ -61,9 +75,57 @@ public class TextPage extends TextEditor implements IViewer {
 	public TextPage(FormEditor editor) {
 		this(editor, textPageId, textPageTitle);
 	}
-
+	private IAnnotationModel getAnnotationModel() {
+		if(annotationModel != null)
+			return annotationModel;
+		annotationModel= getDocumentProvider().getAnnotationModel(getInput());
+		if(annotationModel == null){
+			annotationModel = new AnnotationModel();
+			annotationModel.connect(getInputDocument());
+		}
+		return annotationModel;
+	}
+	private void clearHistory(){
+		for(Iterator it = annotatioList.iterator();it.hasNext();){
+			annotationModel.removeAnnotation((Annotation)it.next());
+		}
+		annotatioList.clear();
+	}
+	private void updateAnnotation(SAXException e){
+		Throwable rootCause = CustomDialog.getRootCause(e);
+		if(rootCause == null ||!( rootCause instanceof SAXParseException))
+			return ;
+		SAXParseException parseEx = (SAXParseException)e;
+		String errorMessage = CustomDialog.getExceptionMessage(e);
+		int lineNum = parseEx.getLineNumber()-1;
+		int lineOffset = getOffsetFromLine(lineNum);
+		int lineLength = Math.max(getLengthOfLine(lineNum),1);
+		Position   pos   =   new   Position(lineOffset,lineLength);
+		Annotation annotation = new Annotation(AnnotationType,false,errorMessage);
+		annotationModel.addAnnotation(annotation,pos);
+		annotatioList.add(annotation);
+	}
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+		getInputDocument().addDocumentListener(new IDocumentListener() {
+			
+			public void documentChanged(DocumentEvent event) {
+				annotationModel = getAnnotationModel();
+				clearHistory();
+				try {
+					AuroraResourceUtil.getCompsiteLoader().loadFromString(getInputDocument().get(),"UTF-8");
+				} catch (IOException e) {
+					CustomDialog.showErrorMessageBox(e);
+				} catch (SAXException e) {
+					updateAnnotation(e);
+				}
+				
+			}
+			
+			public void documentAboutToBeChanged(DocumentEvent event) {
+				
+			}
+		});
 		getSourceViewer().addTextListener(new ITextListener() {
 			public void textChanged(TextEvent event) {
 				if (syc) {
@@ -136,13 +198,14 @@ public class TextPage extends TextEditor implements IViewer {
 
 	public int getOffsetFromLine(int lineNumber) {
 		int offset = 0;
+		if(lineNumber<0)
+			return offset;
 		try {
 			offset = getInputDocument().getLineOffset(lineNumber);
+			if(offset>=getInputDocument().getLength())
+				return getOffsetFromLine(lineNumber - 1);
 		} catch (BadLocationException e) {
-			try {
-				offset = getInputDocument().getLineOffset(lineNumber - 1);
-			} catch (BadLocationException e1) {
-			}
+			return getOffsetFromLine(lineNumber - 1);
 		}
 		return offset;
 	}
@@ -155,6 +218,8 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 	public int getLengthOfLine(int lineNumber) {
 		int length = 0;
+		if(lineNumber<0)
+			return length;
 		try {
 			length = getInputDocument().getLineLength(lineNumber);
 		} catch (BadLocationException e) {
