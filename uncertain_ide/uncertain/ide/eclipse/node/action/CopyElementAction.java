@@ -1,18 +1,18 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.node.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
-import uncertain.ide.eclipse.editor.CompositeMapViewer;
+import uncertain.ide.eclipse.editor.AbstractCMViewer;
+import uncertain.ide.help.LocaleMessage;
 
 public 	class CopyElementAction extends Action {
-	CompositeMapViewer viewer;
-	public CopyElementAction(CompositeMapViewer viewer) {
+	AbstractCMViewer viewer;
+	public CopyElementAction(AbstractCMViewer viewer) {
 		this.viewer = viewer;
 	}
-	public CopyElementAction(CompositeMapViewer viewer,ImageDescriptor imageDescriptor,String text) {
+	public CopyElementAction(AbstractCMViewer viewer,ImageDescriptor imageDescriptor,String text) {
 		if(imageDescriptor != null)
 			setImageDescriptor(imageDescriptor);
 		if(text != null)

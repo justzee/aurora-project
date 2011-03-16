@@ -1,6 +1,5 @@
-package uncertain.ide.eclipse.action;
+package uncertain.ide.eclipse.node.action;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -13,22 +12,14 @@ import org.eclipse.swt.widgets.Widget;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ide.Activator;
-import uncertain.ide.LocaleMessage;
 import uncertain.ide.eclipse.editor.PropertyViewer;
+import uncertain.ide.help.LocaleMessage;
 
-public class AddPropertyAction extends Action {
+public class AddPropertyAction extends ActionListener {
 	PropertyViewer viewer;
 
-	public AddPropertyAction(PropertyViewer viewer) {
-		this.viewer = viewer;
-	}
-
-	public AddPropertyAction(PropertyViewer viewer,
-			ImageDescriptor imageDescriptor, String text) {
-		if (imageDescriptor != null)
-			setHoverImageDescriptor(imageDescriptor);
-		if (text != null)
-			setText(text);
+	public AddPropertyAction(PropertyViewer viewer,int actionStyle) {
+		setActionStyle(actionStyle);
 		this.viewer = viewer;
 	}
 
@@ -36,9 +27,8 @@ public class AddPropertyAction extends Action {
 		showInputDialog();
 	}
 
-	public static ImageDescriptor getDefaultImageDescriptor() {
-		return Activator
-				.getImageDescriptor(LocaleMessage.getString("add.icon"));
+	public ImageDescriptor getDefaultImageDescriptor() {
+		return Activator.getImageDescriptor(LocaleMessage.getString("add.icon"));
 	}
 
 	private void showInputDialog() {
@@ -61,11 +51,11 @@ public class AddPropertyAction extends Action {
 		valueText.setBounds(80, 50, 300, 20);
 
 		final Button ok = new Button(shell, SWT.PUSH);
-		ok.setText("OK");
+		ok.setText(LocaleMessage.getString("OK"));
 		ok.setBounds(220, 120, 70, 25);
 
 		final Button cancel = new Button(shell, SWT.PUSH);
-		cancel.setText("Cancel");
+		cancel.setText(LocaleMessage.getString("Cancel"));
 		cancel.setBounds(300, 120, 70, 25);
 		SelectionListener listener = getListener(data, shell, propertyText,
 				valueText, ok, cancel);
