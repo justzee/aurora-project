@@ -4,7 +4,7 @@
  * <pre><code>
     &lt;a:tabPanel width="300" height="250"&gt;
 	&lt;a:tabs&gt;
-		&lt;a:tab ref="xxx.screen" width="30"
+		&lt;a:tab ref="xxx.screen" width="30" closeable="true" disabled="true"
 			tabClassName="cls" tabStyle="s"/&gt;
 		&lt;a:tab prompt="title" width="30" selected="true"
 			bodyClassName="cls" bodyStyle="s"&gt;
@@ -24,8 +24,22 @@
  */
  
 /**
- * 是否被选中
+ * 标签是否被选中
  * @property selected
+ * @type Boolean
+ * @default false
+ */
+ 
+/**
+ * 标签是否可关闭
+ * @property closeable
+ * @type Boolean
+ * @default false
+ */
+ 
+/**
+ * 标签是否不可用
+ * @property disabled
  * @type Boolean
  * @default false
  */

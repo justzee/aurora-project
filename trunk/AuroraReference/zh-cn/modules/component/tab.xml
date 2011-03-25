@@ -133,6 +133,30 @@
                 </row>
             	<row>
                     <entry>
+                        closeable
+                    </entry>
+                    <entry>
+                    	标签是否可关闭。
+                    </entry>
+                    <entry><literal>false</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
+                        disabled
+                    </entry>
+                    <entry>
+                    	标签是否不可用。
+                    </entry>
+                    <entry><literal>false</literal>
+                    </entry>
+                    <entry>
+                    </entry>
+                </row>
+            	<row>
+                    <entry>
                         tabClassName
                     </entry>
                     <entry>
