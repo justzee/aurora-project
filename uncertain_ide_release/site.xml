@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description name="Aurora IDE update site" url="https://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release">
+   <description name="Aurora IDE update site" url="file:/E:/eclipse/workspace/uncertain_ide_release/">
       Aurora Project in code.goolge.com .
    </description>
-   <feature url="features/aurora.ide.feature_1.2.3.201104011700.jar" id="aurora.ide.feature" version="1.2.3.201104011700">
+   <feature url="features/aurora.ide.feature_1.2.4.201104021416.jar" id="aurora.ide.feature" version="1.2.4.201104021416">
       <category name="aurora.ide"/>
    </feature>
    <category-def name="aurora.ide" label="Aurora IDE">
