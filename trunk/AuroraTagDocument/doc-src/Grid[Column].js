@@ -32,7 +32,9 @@
  */
 
 /**
- * 列编辑器函数,可动态改变编辑器
+ * <p>列编辑器函数,可动态改变编辑器</p>
+ * <p>回调函数function(record,name){return editorid}</p>
+ * <p>返回值editorid是编辑器的id</p>
  * @property editorFunction
  * @type Function
  */
