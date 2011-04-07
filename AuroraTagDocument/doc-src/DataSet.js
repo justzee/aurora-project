@@ -48,6 +48,13 @@
  */
 
 /**
+ * 根据Grid的高度，自动填充行数。注：只在grid初次加载时生效，如果Grid设定了marginHeigt，行数不会根据窗口大小的调整而调整。
+ * @property autoPageSize
+ * @type Boolean
+ * @default false
+ */
+
+/**
  * 是否可查询
  * @property canQuery
  * @type Boolean
