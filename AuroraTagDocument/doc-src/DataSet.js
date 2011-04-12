@@ -144,3 +144,15 @@
  * @property submitUrl
  * @type String
  */
+
+/**
+ * 该Dataset所级联的夫级DataSet
+ * @property bindTarget
+ * @type String
+ */
+
+/**
+ * 绑定夫级DataSet中的field名
+ * @property bindName
+ * @type String
+ */
