@@ -1,6 +1,9 @@
 /**
  * @class Label
- * @namespace Abstract
+ * Label组件.
+ * <pre><code>
+&lt;a:label  id="loginForm" renderer="labekRenderer" bindTarget="ds" name="field"/&gt;
+   </code></pre>
  * @extends Component
  * @author 牛佳庆
  */
