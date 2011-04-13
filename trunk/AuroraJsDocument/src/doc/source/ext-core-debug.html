@@ -72,6 +72,7 @@ Ext.apply = function(o, c, defaults){
         isIE7 = isIE && check(/msie 7/),
         isIE8 = isIE && check(/msie 8/),
         isIE6 = isIE && !isIE7 && !isIE8,
+        isIE = (isIE && check(/msie 9/)) ? false : isIE,
         isGecko = !isWebKit && check(/gecko/),
         isGecko2 = isGecko && check(/rv:1\.8/),
         isGecko3 = isGecko && check(/rv:1\.9/),
@@ -6368,8 +6369,8 @@ el.un('click', this.handlerFn);
         }
         return d[name];
     } : function(name, ns){
-        var d = this.dom;
-        return d.getAttributeNS(ns, name) || d.getAttribute(ns + ":" + name) || d.getAttribute(name) || d[name];
+        var d = this.dom;//TODO:IE9
+        return (d.getAttributeNS) ?  d.getAttributeNS(ns, name) :(d.getAttribute(ns + ":" + name) || d.getAttribute(name) || d[name]);
     },
 
     <div id="method-Ext.Element-update"></div>/**

@@ -19,7 +19,7 @@
  * @author 牛佳庆
  * @singleton
  */
-$A = Aurora = {version: '1.0',revision:'$Rev: 2132 $'};
+$A = Aurora = {version: '1.0',revision:'$Rev: 2292 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
 	if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -35,7 +35,10 @@ $A.cmps = {};
 $A.onReady = Ext.onReady;
 $A.get = Ext.get;
 $A.focusWindow;
+$A.focusTab;
 $A.defaultDateFormat="isoDate";
+$A.defaultDateTimeFormat="yyyy-mm-dd HH:MM:ss";
+$A.defaultChineseLength = 2;
 
 <div id="method-Aurora-center"></div>/**
  * 将对象居中
@@ -78,12 +81,13 @@ $A.setTheme = function(theme){
 $A.CmpManager = function(){
     return {
         put : function(id, cmp){
-        	if($A.focusWindow) $A.focusWindow.cmps[id] = cmp;
         	if(!this.cache) this.cache = {};
         	if(this.cache[id] != null) {
 	        	alert("错误: ID为' " + id +" '的组件已经存在!");
 	        	return;
 	        }
+        	if($A.focusWindow) $A.focusWindow.cmps[id] = cmp;
+        	if($A.focusTab) $A.focusTab.cmps[id] = cmp;
         	this.cache[id]=cmp;
         	cmp.on('mouseover',$A.CmpManager.onCmpOver,$A.CmpManager);
         	cmp.on('mouseout',$A.CmpManager.onCmpOut,$A.CmpManager);
@@ -868,6 +872,9 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
                             window.eval(jst);
                         }
                     }
+                    if(typeof callback == "function"){
+			                callback();
+			        }
                 }else{
                 	var js = jslink[loaded];
                     var s = document.createElement("script");
@@ -922,13 +929,14 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
                    window.eval(jst);
                 }
             }
+            if(typeof callback == "function"){
+	                callback();
+	        }
         }        
         var el = document.getElementById(id);
         if(el){Ext.removeNode(el);} 
 	    Ext.fly(dom).setStyle('display', 'block');
-	    if(typeof callback == "function"){
-                callback();
-        }
+	    
     });
     Ext.fly(dom).setStyle('display', 'none');
     dom.innerHTML = html.replace(/(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)/ig, "").replace(/(?:<link.*?>)((\n|\r|.)*?)/ig, "");
@@ -1004,7 +1012,7 @@ $A.formatDate = function(date){
  */
 $A.formatDateTime = function(date){
 	if(!date)return '';
-	if(date.format)return date.format('yyyy-mm-dd HH:MM:ss');
+	if(date.format)return date.format($A.defaultDateTimeFormat);
 	return date;
 }
 <div id="method-Aurora-formatNumber"></div>/**
@@ -1243,6 +1251,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     	this.selectionmodel = config.selectionmodel||'multiple';
     	this.selectfunction = config.selectfunction;
     	this.autocount = config.autocount;
+    	this.autopagesize = config.autopagesize;
     	this.bindtarget = config.bindtarget;
     	this.bindname = config.bindname;
 		this.loading = false;
@@ -1257,7 +1266,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     	this.initEvents();
     	if(config.fields)this.initFields(config.fields)
     	if(config.datas && config.datas.length != 0) {
-    		this.loadData(config.datas);
+    		this.datas=config.datahead?this.convertData(config.datahead,config.datas):config.datas;
+    		this.loadData(this.datas);
     		//this.locate(this.currentIndex); //不确定有没有影响
     	}
     	if(config.autoquery === true) {
@@ -1270,6 +1280,18 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             if(this.data.length == 0)
             this.create();
     	}
+    },
+    convertData : function(head,datas){
+    	var nds=[];
+    	for(var i=0;i<datas.length;i++){
+    		var d=datas[i],nd={};
+	    	for(var j=0;j<head.length;j++){
+                if(!Ext.isEmpty(d[j], true))
+	    		nd[head[j]]=d[j];
+	    	}
+	    	nds.push(nd);
+    	}
+    	return nds;
     },
     destroy : function(){
     	if(this.bindtarget&&this.bindname){
@@ -1597,7 +1619,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     		for(var key in this.fields){
     			var field = this.fields[key];
     			if(field){
-                    data[key] = this.processData(data[key],field)
+                    data[key] = this.processData(data,key,field)
     			}
     		}
     		var record = new $A.Record(data,datas[i].field);
@@ -1633,6 +1655,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     		if(dv && !data[field.name]){
     			dd[field.name] = dv;
     		}
+            this.processValueListField(dd,k,field);
     	}
     	var data = Ext.apply(data||{},dd);
     	var record = new $A.Record(data);
@@ -1681,6 +1704,13 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.currentIndex = index;
         this.fireEvent("add", this, record, index);
         this.locate(index, true);
+    },
+    <div id="method-Aurora.DataSet-getCurrentObject"></div>/**
+     * 获取当前Record的数据对象
+     * @return {Object}
+     */
+    getCurrentObject : function(){
+        return this.getCurrentRecord().getObject();
     },
     <div id="method-Aurora.DataSet-getCurrentRecord"></div>/**
      * 获取当前指针的Record. 
@@ -1863,7 +1893,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     },
     <div id="method-Aurora.DataSet-indexOf"></div>/**
      * 返回指定record的位置
-     * @return {Number} record所在的位置
+     * @param {Aurora.Record} record
+     * @return {int}
      */
     indexOf : function(record){
         return this.data.indexOf(record);
@@ -2187,7 +2218,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     	this.loading = true;
     	this.fireEvent("query", this);
 //    	this.fireBindDataSetEvent("beforeload", this);//主dataset无数据,子dataset一直loading
-    	$A.request({url:url, para:q, success:this.onLoadSuccess, error:this.onLoadError, scope:this,failure:this.onAjaxFailed,opts:opts});
+    	$A.request({url:url, para:q, success:this.onLoadSuccess, error:this.onLoadError, scope:this,failure:this.onAjaxFailed,opts:opts,ext:opts?opts.ext:null});
     },
     <div id="method-Aurora.DataSet-isModified"></div>/**
      * 判断当前数据集是否发生改变.
@@ -2389,7 +2420,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
 					var nv = data[k]
 					if(field == '_id' || field == '_status'||field=='__parameter_parsed__') continue;
 					if(f){
-					   nv = this.processData(nv,f);
+					   nv = this.processData(data,k,f);
 					}
 					if(ov != nv) {
 						if(fire){
@@ -2404,30 +2435,64 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
 //	       	r.commit();//挪到上面了,record.set的时候会触发update事件,重新渲染.有可能去判断isNew的状态
     	}
     },
-    processData: function(value,field){
-        var dt = field.getPropertity('datatype');
-        dt = dt ? dt.toLowerCase() : '';
-        var v = value;
-        switch(dt){
-            case 'date':
-                v = $A.parseDate(v);
-                break;
-            case 'java.util.date':
-                v = $A.parseDate(v);
-                break;
-            case 'java.sql.date':
-                v = $A.parseDate(v);
-                break;
-            case 'java.sql.timestamp':
-                v = $A.parseDate(v);
-                v.xtype = 'timestamp';
-                break;
-            case 'int':
-                v = parseInt(v);
-                break;
+    processData: function(data,key,field){
+    	var v = data[key];
+        if(v){
+            var dt = field.getPropertity('datatype');
+            dt = dt ? dt.toLowerCase() : '';
+            switch(dt){
+                case 'date':
+                    v = $A.parseDate(v);
+                    break;
+                case 'java.util.date':
+                    v = $A.parseDate(v);
+                    break;
+                case 'java.sql.date':
+                    v = $A.parseDate(v);
+                    break;
+                case 'java.sql.timestamp':
+                    v = $A.parseDate(v);
+                    v.xtype = 'timestamp';
+                    break;
+                case 'int':
+                    v = parseInt(v);
+                    break;
+                case 'float':
+                    v = parseFloat(v);
+                    break;
+                case 'boolean':
+                    v = v=="true";
+                    break;
+            }
+        }
+        //TODO:处理options的displayField
+        return this.processValueListField(data,v,field);
+    }, 
+    processValueListField : function(data,v, field){
+        var op = field.getPropertity('options');
+        var df = field.getPropertity('displayfield');
+        var vf = field.getPropertity('valuefield');
+        var mp = field.getPropertity('mapping')
+        if(df && vf && op && mp && !v){
+            var rf;
+            for(var i=0;i<mp.length;i++){
+                var map = mp[i];
+                if(vf == map.from){
+                    rf = map.to;
+                    break;
+                }
+            }
+            var rv = data[rf];
+            var options = $(op);
+            if(options && rv){
+                var r = options.find(vf,rv);
+                if(r){
+                    v = r.get(df);
+                }
+            }
         }
         return v;
-    },    
+    },
     onSubmitError : function(res){
 //    	$A.showErrorMessage('错误', res.error.message||res.error.stackTrace,null,400,200);
     	this.fireBindDataSetEvent('submitfailed', res);
@@ -2615,6 +2680,11 @@ $A.Record.prototype = {
     setDataSet : function(ds){
         this.ds = ds;
     },
+    <div id="method-Aurora.Record-getField"></div>/**
+     * 获取field对象
+     * @param {String} name
+     * @return {Aurora.Record.Field}
+     */
     getField : function(name){
     	return this.getMeta().getField(name);
     },
@@ -2639,7 +2709,7 @@ $A.Record.prototype = {
      * @param {Boolean} notDirty true 不改变record的dirty状态.
      */
 	set : function(name, value, notDirty){
-        if(!(this.data[name] == value||(Ext.isDate(this.data[name])&&Ext.isDate(value)&&this.data[name].getTime()==value.getTime()))){
+        if(!(this.data[name] === value||(Ext.isDate(this.data[name])&&Ext.isDate(value)&&this.data[name].getTime()==value.getTime()))){
         	if(!notDirty){
                 this.dirty = true;
                 if(!this.modified){
@@ -2664,6 +2734,23 @@ $A.Record.prototype = {
      */
     get : function(name){
         return this.data[name];
+    },
+    <div id="method-Aurora.Record-getObject"></div>/**
+     * 返回record的data对象.
+     * 可以通过obj.xx的方式获取数据
+     * @return {Object}
+     */
+    getObject : function(){
+        return Ext.apply({},thi.data);
+    },
+    <div id="method-Aurora.Record-setObject"></div>/**
+     * 更新data数据.
+     * @param {Object} o
+     */
+    setObject : function(o){
+        for(var key in o){
+            this.set(key,o[key]);
+        }
     },
     reject : function(silent){
         var m = this.modified;
@@ -2803,6 +2890,7 @@ $A.Record.Field.prototype = {
 	 */
 	setRequired : function(r){
 		this.setPropertity('required',r);
+        if(!r)this.record.validate(this.name);
 	},
 	<div id="method-Aurora.Record.Field-isRequired"></div>/**
 	 * 当前Field是否必输.
@@ -2971,7 +3059,17 @@ $A.Component = Ext.extend(Ext.util.Observable,{
     },
     initEvents : function(){
     	this.addEvents(
+        <div id="event-Aurora.Component-focus"></div>/**
+         * @event focus
+         * 获取焦点事件
+         * @param {Component} this 当前组件.
+         */
     	'focus',
+        <div id="event-Aurora.Component-blur"></div>/**
+         * @event blur
+         * 失去焦点事件
+         * @param {Component} this 当前组件.
+         */
     	'blur',
     	<div id="event-Aurora.Component-change"></div>/**
          * @event change
@@ -3322,6 +3420,7 @@ $A.Field = Ext.extend($A.Component,{
     	this.clearInvalid();
     	this.initRequired(this.required);
     	this.initReadOnly(this.readonly);
+    	this.initMaxLength(this.maxlength);
     },
 //    onMouseOver : function(e){
 //    	$A.ToolTip.show(this.id, "测试");
@@ -3334,7 +3433,7 @@ $A.Field = Ext.extend($A.Component,{
         this.fireEvent('keyup', this, e);
     },
     onKeyDown : function(e){
-        this.fireEvent('keydown', this, e);
+        this.fireEvent('keydown', this, e);        
         var keyCode = e.keyCode;
         if(keyCode == 13 || keyCode == 27) {
         	this.blur();
@@ -3376,6 +3475,24 @@ $A.Field = Ext.extend($A.Component,{
     	if(this.hasFocus){
 	        this.hasFocus = false;
 	        var rv = this.getRawValue();
+            var sb = [];
+            if(this.isOverMaxLength(rv)){
+                for (i = 0,k=0; i < rv.length;i++) {
+                    var cr = rv.charAt(i);
+                    var cl = cr.match(/[^\x00-\xff]/g);
+                    if (cl !=null && cl.length>0) {
+                        k=k+$A.defaultChineseLength;
+                    } else {
+                        k=k+1
+                    }
+                    if(k<=this.maxlength) {
+                        sb[sb.length] = cr
+                    }else{
+                        break;
+                    }
+                }
+                rv = sb.join('');
+            }
 	        rv = this.processValue(rv);
 //	        if(String(rv) !== String(this.startValue)){
 //	            this.fireEvent('change', this, rv, this.startValue);
@@ -3394,7 +3511,9 @@ $A.Field = Ext.extend($A.Component,{
         this.applyEmptyText();
     },
     formatValue : function(v){
-    	return v;
+        var rder = null;
+        if(this.renderer) rder = $A.getRenderer(this.renderer);
+        return (rder!=null) ? rder.call(window,v) : v;
     },
     getRawValue : function(){
         var v = this.el.getValue();
@@ -3427,6 +3546,25 @@ $A.Field = Ext.extend($A.Component,{
     	}else{
     		this.wrap.removeClass(this.readOnlyCss);
     	}
+    },
+    isOverMaxLength : function(str){
+        if(!this.maxlength) return false;
+        var c = 0;
+        for (i = 0; i < str.length; i++) {
+            var cr = str.charAt(i);
+            var cl = cr.match(/[^\x00-\xff]/g);
+//            var st = escape(str.charAt(i));
+            if (cl !=null &&cl.length >0) {
+                c=c+$A.defaultChineseLength;
+            } else {
+                c=c+1;
+            }
+        }
+        return c > this.maxlength;
+    },
+    initMaxLength : function(maxlength){
+    	if(maxlength)
+    	this.el.dom.maxLength=maxlength;
     },
     applyEmptyText : function(){
         if(this.emptytext && this.getRawValue().length < 1){
@@ -3876,7 +4014,28 @@ $A.Radio = Ext.extend($A.Component, {
     },
 	initEvents:function(){
 		$A.Radio.superclass.initEvents.call(this); 	
-		this.addEvents('click','keydown','enterdown');    
+		this.addEvents(
+		<div id="event-Aurora.Radio-click"></div>/**
+         * @event click
+         * 点击事件.
+         * @param {Aurora.Tree} Radio对象
+         * @param {Object} 当前选中的值
+         */
+		'click',
+		<div id="event-Aurora.Radio-keydown"></div>/**
+         * @event keydown
+         * 键盘事件.
+         * @param {Aurora.Tree} Radio对象
+         * @param {Event} 键盘事件对象
+         */
+		'keydown',
+		<div id="event-Aurora.Radio-enterdown"></div>/**
+         * @event enterdown
+         * 回车事件.
+         * @param {Aurora.Tree} Radio对象
+         * @param {Event} 键盘事件对象
+         */
+		'enterdown');    
 	},
 	setValue:function(value,silent){
 		if(value=='')return;
@@ -3930,7 +4089,8 @@ $A.Radio = Ext.extend($A.Component, {
 			node.removeClass(this.rcc);
 			node.removeClass(this.ruc);
 			var value = Ext.fly(this.nodes[i]).getAttributeNS("","itemvalue");
-			if((i==0 && !this.value) || value === this.value){
+			//if((i==0 && !this.value) || value === this.value){
+			if(value === this.value){
 				this.readonly?node.addClass(this.rcc):node.addClass(this.ccs);				
 			}else{
 				this.readonly?node.addClass(this.ruc):node.addClass(this.ucs);		
@@ -3999,6 +4159,11 @@ $A.TextField = Ext.extend($A.Field,{
     	}
     },
     onChange : function(e){
+        var str = this.getRawValue();
+        if(this.isDbc(str)){
+            str = this.dbc2sbc(str);
+            this.setRawValue(str)
+        }
     	if(this.typecase == 'upper'){
 	    	this.setValue(this.getRawValue().toUpperCase());
         }else if(this.typecase == 'lower') {
@@ -4024,7 +4189,7 @@ $A.TextField = Ext.extend($A.Field,{
     	if(this.detectCapsLock) this.isCapsLock(e);
 		var keyCode = e.getKey();
 		var code = keyCode;
-		if(this.typecase&&!e.ctrlKey){
+		if(this.typecase&&!e.ctrlKey&&!this.readonly){
         	if(this.typecase == 'upper'){
                 if(keyCode>=97 && keyCode<=122) code = keyCode - 32;
             }else if(this.typecase == 'lower') {
@@ -4038,13 +4203,40 @@ $A.TextField = Ext.extend($A.Field,{
                 var d = this.el.dom
                 var rv = this.getRawValue();
                 var s = d.selectionStart;
-                var e = d.selectionEnd
+                var e = d.selectionEnd;
+//                if(rv.length>=this.maxlength&&s==e)return;
+                if(this.isOverMaxLength(rv) && s==e) return;
                 rv = rv.substring(0,s) + v + rv.substring(e,rv.length);
                 this.setRawValue(rv)
                 d.selectionStart=s+1;
                 d.selectionEnd=d.selectionStart;
             }
     	}
+    },
+    isDbc : function(s){
+        var dbc = false;
+        for(var i=0;i<s.length;i++){
+            var c = s.charCodeAt(i);
+            if((c>65248)||(c==12288)) {
+                dbc = true
+                break;
+            }
+        }
+        return dbc;
+    },
+    dbc2sbc : function(str){
+        var result = '';
+        for(var i=0;i<str.length;i++){
+            code = str.charCodeAt(i);//获取当前字符的unicode编码
+            if (code >= 65281 && code <= 65373) {//在这个unicode编码范围中的是所有的英文字母已及各种字符
+                result += String.fromCharCode(str.charCodeAt(i) - 65248);//把全角字符的unicode编码转换为对应半角字符的unicode码                
+            } else if (code == 12288){//空格
+                result += String.fromCharCode(str.charCodeAt(i) - 12288 + 32);
+            } else {
+                result += str.charAt(i);
+            }
+        }
+        return result;
     }
 })
 <div id="cls-Aurora.NumberField"></div>/**
@@ -4097,7 +4289,7 @@ $A.NumberField = Ext.extend($A.TextField,{
         return rv;
     },
     processValue : function(v){
-    	return this.fixPrecision(this.parseValue(v));
+        return this.parseValue(v);
     },
     onFocus : function(e) {
     	if(this.readonly) return;
@@ -4650,7 +4842,7 @@ $A.DateField = Ext.extend($A.Component, {
 	},
     onMouseOver: function(e){
     	if(this.overTd) Ext.fly(this.overTd).removeClass('dateover');
-    	if((Ext.fly(e.target).hasClass('item-day')||Ext.fly(e.target).hasClass('onToday')) && Ext.fly(e.target).getAttribute('_date') != '0'){
+    	if((Ext.fly(e.target).hasClass('item-day')||Ext.fly(e.target).hasClass('onToday')) && Ext.fly(e.target).getAttributeNS("",'_date') != '0'){
     		this.overTd = e.target; 
     		Ext.fly(this.overTd).addClass('dateover');
     	}
@@ -4794,11 +4986,22 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     },
 	initComponent : function(config){
 		$A.DatePicker.superclass.initComponent.call(this,config);
-    	this.initDateField();
-    	this.initFooter();
+		this.initFormat();
+    	
 	},
+	initFormat : function(){
+		this.format=this.format||$A.defaultDateFormat;
+	},
+    initDatePicker : function(){
+        if(!this.inited){
+            this.initDateField();
+            this.initFooter();
+            this.inited = true;
+            this.processListener('un');
+            this.processListener('on');
+        }
+    },
     initDateField:function(){
-    	this.format=this.format||$A.defaultDateFormat;
     	this.popup.setStyle({'width':150*this.viewsize+'px'})
     	if(this.dateFields.length==0){
     		for(var i=0;i<this.viewsize;i++){
@@ -4853,13 +5056,15 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     	this.shadow.setHeight(this.popup.getHeight());
     },
     onSelect: function(e){
-		if((Ext.fly(e.target).hasClass('item-day')||Ext.fly(e.target).hasClass('onToday')) && Ext.fly(e.target).getAttribute('_date') != '0'){
-    		var date=new Date(parseInt(Ext.fly(e.target).getAttribute('_date')));
+		if((Ext.fly(e.target).hasClass('item-day')||Ext.fly(e.target).hasClass('onToday')) && Ext.fly(e.target).getAttributeNS("",'_date') != '0'){
+    		var date=new Date(parseInt(Ext.fly(e.target).getAttributeNS("",'_date')));
 	    	this.collapse();
+            this.processDate(date);
 	    	this.setValue(date);
 	    	this.fireEvent('select',this, date);
     	}
     },
+    processDate : function(d){},
     onBlur : function(e){
 		$A.DatePicker.superclass.onBlur.call(this,e);
 		if(!this.isExpanded()){
@@ -4875,6 +5080,7 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     	return date;
     },
     expand : function(){
+        this.initDatePicker();
     	$A.DatePicker.superclass.expand.call(this);
     	this.selectDay = this.getValue();
 		this.predraw(this.selectDay);
@@ -4940,15 +5146,18 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
         }
 	}
 });
-/**
- * @class Aurora.DatePicker
- * @extends Aurora.TriggerField
+<div id="cls-Aurora.DateTimePicker"></div>/**
+ * @class Aurora.DateTimePicker
+ * @extends Aurora.DatePicker
  * <p>DatePicker组件.
  * @author njq.niu@hand-china.com
  * @constructor
  * @param {Object} config 配置对象. 
  */
 $A.DateTimePicker = Ext.extend($A.DatePicker,{
+	initFormat : function(){
+		this.format=this.format||$A.defaultDateTimeFormat;
+	},
 	initFooter : function(){
 		this.hourSpan = this.popup.child("input[atype=field.hour]");
     	this.minuteSpan = this.popup.child("input[atype=field.minute]");
@@ -4956,15 +5165,16 @@ $A.DateTimePicker = Ext.extend($A.DatePicker,{
     },
     processListener : function(ou){
     	$A.DateTimePicker.superclass.processListener.call(this,ou);
-    	this.hourSpan[ou]("focus", this.onDateFocus, this);
-		this.hourSpan[ou]("blur", this.onDateBlur, this);
-		this.hourSpan[ou]("keydown", this.onDateKeyDown, this);
-		this.minuteSpan[ou]("focus", this.onDateFocus, this);
-		this.minuteSpan[ou]("blur", this.onDateBlur, this);
-		this.minuteSpan[ou]("keydown", this.onDateKeyDown, this);
-		this.secondSpan[ou]("focus", this.onDateFocus, this);
-		this.secondSpan[ou]("blur", this.onDateBlur, this);
-		this.secondSpan[ou]("keydown", this.onDateKeyDown, this);
+    	if(this.hourSpan){
+	    	this.hourSpan[ou]("focus", this.onDateFocus, this);
+			this.hourSpan[ou]("blur", this.onDateBlur, this);
+			this.minuteSpan[ou]("focus", this.onDateFocus, this);
+			this.minuteSpan[ou]("blur", this.onDateBlur, this);
+			this.secondSpan[ou]("focus", this.onDateFocus, this);
+			this.secondSpan[ou]("blur", this.onDateBlur, this);
+			this.hourSpan.parent()[ou]("keydown", this.onDateKeyDown, this);
+			this.hourSpan.parent()[ou]("keyup", this.onDateKeyUp, this);
+    	}
     },
     onDateKeyDown : function(e) {
 		var c = e.keyCode, el = e.target;
@@ -4976,6 +5186,18 @@ $A.DateTimePicker = Ext.extend($A.DatePicker,{
 		} else if (c != 8 && c!=9 && c!=37 && c!=39 && c != 46 && (c < 48 || c > 57 || e.shiftKey)) {
 			e.stopEvent();
 			return;
+		}
+	},
+	onDateKeyUp : function(e){
+		var c = e.keyCode, el = e.target;
+		if (c != 8 && c!=9 && c!=37 && c!=39 && c != 46 && (c < 48 || c > 57 || e.shiftKey)) {
+			e.stopEvent();
+			return;
+		} else if(this.value&&this.value instanceof Date){
+			var date=new Date(this.value.getTime());
+			this.processDate(date);
+	    	this.setValue(date);
+	    	this.fireEvent('select',this, date);
 		}
 	},
     onDateFocus : function(e) {
@@ -4994,19 +5216,27 @@ $A.DateTimePicker = Ext.extend($A.DatePicker,{
 		this.minuteSpan.dom.oldValue = this.minuteSpan.dom.value = $A.dateFormat.pad(this.dateFields[0].minutes);
 		this.secondSpan.dom.oldValue = this.secondSpan.dom.value = $A.dateFormat.pad(this.dateFields[0].seconds);
 	},
-    collapse : function(){
-    	$A.DateTimePicker.superclass.collapse.call(this);
-    	if(this.getRawValue()){
-    		var d = this.selectDay;
-    		if(d){
-	    		d.setHours((el=this.hourSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
-	    		d.setMinutes((el=this.minuteSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
-	    		d.setSeconds((el=this.secondSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
-    		}
-    		d.xtype = 'timestamp';
-    		this.setValue(d);
-    	}
+    processDate : function(d){
+        if(d){
+            d.setHours((el=this.hourSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+            d.setMinutes((el=this.minuteSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+            d.setSeconds((el=this.secondSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+        }
+        d.xtype = 'timestamp';
     }
+//    ,collapse : function(){
+//    	$A.DateTimePicker.superclass.collapse.call(this);
+//    	if(this.getRawValue()){
+//    		var d = this.selectDay;
+//    		if(d){
+//	    		d.setHours((el=this.hourSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+//	    		d.setMinutes((el=this.minuteSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+//	    		d.setSeconds((el=this.secondSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+//    		}
+//    		d.xtype = 'timestamp';
+//    		this.setValue(d);
+//    	}
+//    }
 });
 $A.ToolBar = Ext.extend($A.Component,{
 	constructor: function(config) {
@@ -5030,28 +5260,15 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     	this.currentPage = this.wrap.child('div[atype=currentPage]');
     	this.pageInfo = this.wrap.child('div[atype=pageInfo]');//Ext.get(this.pageId);
     	this.navInfo = this.wrap.child('div[atype=displayInfo]');//Ext.get(this.infoId);
-    	this.pageInput.setValue(1);
-    	
+
     	if(this.comboBoxId){
-    		var pageSize=[10,20,50,100];
-    		if(pageSize.indexOf(this.dataSet.pagesize)==-1){
-    			pageSize.unshift(this.dataSet.pagesize);
-    			pageSize.sort(function(a,b){return a-b});
-    		}
-    		var datas=[];
-    		while(Ext.isDefined(pageSize[0])){
-    			var ps=pageSize.shift();
-    			datas.push({'code':ps,'name':ps});
-    		}
-    		var dataset=new $A.DataSet({'datas':datas});
-	    	this.pageSizeInput = $(this.comboBoxId);
-	    	this.pageSizeInput.setOptions(dataset);
-	    	this.pageSizeInput.setValue(this.dataSet.pagesize);
+    		this.pageSizeInput = $(this.comboBoxId);
     		this.pageSizeInfo = this.wrap.child('div[atype=pageSizeInfo]');
     		this.pageSizeInfo2 = this.wrap.child('div[atype=pageSizeInfo2]');
     		this.pageSizeInfo.update(_lang['toolbar.pageSize']);
     		this.pageSizeInfo2.update(_lang['toolbar.pageSize2']);
     	}
+    	this.pageInfo.update(_lang['toolbar.total'] + '&#160;&#160;' + _lang['toolbar.page']);
     	this.currentPage.update(_lang['toolbar.ctPage']);
     },
     processListener: function(ou){
@@ -5069,6 +5286,22 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     	this.pageInput.setValue(this.dataSet.currentPage);
     	this.pageInfo.update(_lang['toolbar.total'] + this.dataSet.totalPage + _lang['toolbar.page']);
     	this.navInfo.update(this.creatNavInfo());
+    	if(this.pageSizeInput&&!this.pageSizeInput.optionDataSet){
+    		var pageSize=[10,20,50,100];
+    		if(pageSize.indexOf(this.dataSet.pagesize)==-1){
+    			pageSize.unshift(this.dataSet.pagesize);
+    			pageSize.sort(function(a,b){return a-b});
+    		}
+    		var datas=[];
+    		while(Ext.isDefined(pageSize[0])){
+    			var ps=pageSize.shift();
+    			datas.push({'code':ps,'name':ps});
+    		}
+    		var dataset=new $A.DataSet({'datas':datas});
+	    	this.pageSizeInput.setOptions(dataset);
+	    	this.pageSizeInput.setValue(this.dataSet.pagesize);
+
+    	}
     },
     creatNavInfo : function(){
     	var from = ((this.dataSet.currentPage-1)*this.dataSet.pagesize+1);
@@ -5638,7 +5871,8 @@ $A.showOkWindow = function(title, msg, width, height,callback){
                     if(callback)callback.call(this,cmp);
                     cmp.close()
                 });
-                btn.focus();
+                //btn.focus();
+                btn.focus.defer(10,btn);
 			});
 		}
 	}
@@ -5789,7 +6023,7 @@ $A.Lov = Ext.extend($A.TextField,{
     fetchRecord : function(){
         if(this.readonly == true) return;
         if(!Ext.isEmpty(this.lovurl)){
-            this.showLovWindow();
+//            this.showLovWindow();
             return;
         }
         this.fetching = true;
@@ -5813,7 +6047,7 @@ $A.Lov = Ext.extend($A.TextField,{
         }
         $A.slideBarEnable = $A.SideBar.enable;
         $A.SideBar.enable = false;
-        if(Ext.isEmpty(v)) return;
+        //if(Ext.isEmpty(v)) return;
         this.setRawValue(_lang['lov.query'])
         $A.request({url:url, para:p, success:function(res){
             var r = new $A.Record({});
