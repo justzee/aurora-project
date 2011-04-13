@@ -215,6 +215,9 @@ $A.Grid = Ext.extend($A.Component,{
         }
         var sf = this;
         sf.dataset = ds;
+        if(ds.autopagesize===true){
+        	ds.pagesize=Math.round((this.ub.getHeight()-16)/25);
+        }
         sf.processDataSetLiestener('on');
         this.onLoad();
 //        Ext.onReady(function(){
@@ -486,15 +489,14 @@ $A.Grid = Ext.extend($A.Component,{
                 var col = columns[i];
                 if(col.lock === true){
                     var td = document.createElement("td");
-                    td.recordid=''+record.id;
                     if(col.type == 'rowcheck') {
-                        Ext.fly(td).set({'atype':'grid.rowcheck'})
+                        Ext.fly(td).set({'recordid':record.id,'atype':'grid.rowcheck'})
                         td.className = 'grid-rowbox';
                     }else{
                         td.style.visibility=col.hidden === true ? 'hidden' : 'visible';
                         td.style.textAlign=col.align||'left';
                         if(!this.isFunctionCol(col)) td.dataindex=col.name;
-                        Ext.fly(td).set({'atype':'grid-cell'});           
+                        Ext.fly(td).set({'dataindex':col.name,'recordid':record.id,'atype':'grid-cell'});           
                     }
                     var cell = this.createCell(col,record, false);
                     td.innerHTML = cell;
@@ -1238,7 +1240,41 @@ $A.Grid = Ext.extend($A.Component,{
     },
     remove: function(){
         var selected = this.dataset.getSelected();
-        if(selected.length >0) $A.showComfirm('确认','确认删除选择记录?',this.deleteSelectRows.createDelegate(this));     
+        if(selected.length >0) $A.showConfirm('确认','确认删除选择记录?',this.deleteSelectRows.createDelegate(this));     
+    },
+    clear: function(){
+        var selected = this.dataset.getSelected();
+    	while(selected[0]){
+    		this.dataset.removeLocal(selected[0]);
+    	}
+    },
+    _export : function(){
+    	var p={"ext":{"parameter":{"_column_config_":{}}}},columns=[],parentMap={},
+    	_parentColumn=function(pcl,cl){
+    		var json=Ext.encode(pcl);
+    		var c=parentMap[json];
+    		if(!c)c={prompt:pcl.prompt};
+    		parentMap[json]=c;
+    		(c["column"]=c["column"]||[]).add(cl);
+    		if(pcl._parent){
+    			return _parentColumn(pcl._parent,c)
+    		}
+    		return c;
+    	};
+    	for(var i=0;i<this.columns.length;i++){
+    		var column=this.columns[i];
+    		if(!column.type){
+    			var c={prompt:column.prompt||this.dataset.getField(column.name).pro["prompt"]}
+    			if(column.width)c.width=column.width
+    			if(column.name)c.name=column.name
+	    		columns.add(column._parent?_parentColumn(column._parent,c):c);
+    		}
+    	}
+    	p["ext"]["parameter"]["_column_config_"]["column"]=columns;
+    	p["ext"]["_generate_state"]=true;
+    	p["ext"]["_format"]="xls"
+
+    	this.dataset.query(1,p);
     },
     destroy: function(){
         $A.Grid.superclass.destroy.call(this);
@@ -1247,6 +1283,6 @@ $A.Grid = Ext.extend($A.Component,{
         delete this.sp;
     }
 });
-$A.Grid.revision='$Rev: 2128 $';</pre>    
+$A.Grid.revision='$Rev: 2303 $';</pre>    
 </body>
 </html>
