@@ -68,6 +68,13 @@
  */ 
 
 /**
+ * 是否对该列进行导出
+ * @property forExport
+ * @type Boolean
+ * @default true
+ */ 
+
+/**
  * <p>列渲染</p> 
  * <p>回调函数function(value,record,name){return value}</p>
  * <p>返回值value是html字符串</p>
