@@ -17,6 +17,8 @@
 				,
                 {"href":"output/Aurora.DatePicker.html","text":"DatePicker","id":"Aurora.DatePicker","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Aurora.DateTimePicker.html","text":"DateTimePicker","id":"Aurora.DateTimePicker","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Aurora.Field.html","text":"Field","id":"Aurora.Field","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Grid.html","text":"Grid","id":"Aurora.Grid","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -42,6 +44,8 @@
                 {"href":"output/Aurora.Record.html","text":"Record","id":"Aurora.Record","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Record.Field.html","text":"Record.Field","id":"Aurora.Record.Field","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Aurora.Tab.html","text":"Tab","id":"Aurora.Tab","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Table.html","text":"Table","id":"Aurora.Table","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -120,6 +124,8 @@
 			,
 			"Aurora.DatePicker":"icon-cls"
 			,
+			"Aurora.DateTimePicker":"icon-cls"
+			,
 			"Aurora.Field":"icon-cls"
 			,
 			"Aurora.Grid":"icon-cls"
@@ -145,6 +151,8 @@
 			"Aurora.Record":"icon-cls"
 			,
 			"Aurora.Record.Field":"icon-cls"
+			,
+			"Aurora.Tab":"icon-cls"
 			,
 			"Aurora.Table":"icon-cls"
 			,
