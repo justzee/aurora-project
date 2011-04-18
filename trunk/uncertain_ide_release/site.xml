@@ -3,12 +3,20 @@
    <description name="Aurora IDE update site" url="http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/">
       Aurora Project in code.goolge.com .
    </description>
-   <feature url="features/aurora.ide.feature_1.2.4.201104021519.jar" id="aurora.ide.feature" version="1.2.4.201104021519">
+   <feature url="features/aurora.ide.feature_1.2.4.201104171632.jar" id="aurora.ide.feature" version="1.2.4.201104171632">
       <category name="aurora.ide"/>
+   </feature>
+   <feature url="features/aurora.ide.libs.feature_1.0.0.201104171632.jar" id="aurora.ide.libs.feature" version="1.0.0.201104171632">
+      <category name="aurora.ide.libs"/>
    </feature>
    <category-def name="aurora.ide" label="Aurora IDE">
       <description>
          Aurora IDE
+      </description>
+   </category-def>
+   <category-def name="aurora.ide.libs" label="Aurora IDE Library">
+      <description>
+         Aurora IDE 的外部依赖包
       </description>
    </category-def>
 </site>
