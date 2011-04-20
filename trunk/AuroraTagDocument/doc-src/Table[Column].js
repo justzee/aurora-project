@@ -25,7 +25,7 @@
 
 /**
  * 列的百分比宽度,单位是(%)
- * @property percenWidth
+ * @property percentWidth
  * @type Integer
  */
 
