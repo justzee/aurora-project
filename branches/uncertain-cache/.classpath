@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="LIB_COMMONS_UPLOAD"/>
+	<classpathentry kind="var" path="TOMCAT_HOME"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/uncertain_builtin_package.jar"/>
+	<classpathentry kind="var" path="LIB_SERVLET"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
