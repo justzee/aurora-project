@@ -24,7 +24,7 @@ public class ContextFieldTest extends UncertainEngineTest {
         assertNotNull(database);
         book = database.getTable("book");
         assertNotNull(book);
-        create_query = engine.loadProcedure("uncertain.testcase.dbsample.CreateQuery");
+        create_query = engine.getProcedureManager().loadProcedure("uncertain.testcase.dbsample.CreateQuery");
         assertNotNull(create_query);      
     }
     

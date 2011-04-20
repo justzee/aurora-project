@@ -64,6 +64,7 @@ public class ParticipantManagerTest extends TestCase {
         assertNotNull(data);
         pManager = (ParticipantManager)ocManager.createObject(data);
         assertNotNull(pManager);
+        pManager.onInitialize();
     
     }
     

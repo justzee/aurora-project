@@ -5,8 +5,7 @@
 	<classpathentry kind="src" path="/uncertain"/>
 	<classpathentry kind="var" path="LIB_ORACLE_JDBC"/>
 	<classpathentry kind="var" path="LIB_SERVLET"/>
-	<classpathentry kind="var" path="LIB_XCERCES"/>
-	<classpathentry kind="var" path="LIB_JUNIT"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aurora"/>
+	<classpathentry kind="lib" path="/Applications/eclipse/plugins/org.junit_3.8.2.v3_8_2_v20100427-1100/junit.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
