@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" xmlns:ns2="aurora.database.local.oracle" xmlns:f="aurora.database.features" alias="e" baseTable="EMP">
+    <bm:fields>
+        <bm:field databaseType="BIGINT" datatype="java.lang.Long" name="empno"/>
+        <bm:field databaseType="VARCHAR" datatype="java.lang.String" name="ename"/>
+        <bm:field databaseType="BIGINT" datatype="java.lang.String" name="job"/>
+        <bm:field databaseType="BIGINT" datatype="java.lang.Long" name="mgr"/>
+        <bm:field databaseType="DATE" datatype="java.sql.Date" name="hiredate"/>
+        <bm:field databaseType="BIGINT" datatype="java.lang.Long" name="deptno"/>
+        <bm:field databaseType="FLOAT" datatype="java.lang.Long" name="sal"/>
+        <bm:field databaseType="FLOAT" datatype="java.lang.Long" name="comm"/>
+        <bm:field databaseType="DATE" datatype="java.sql.Date" expression="sysdate" name="NOW_DATE"/>
+    </bm:fields>
+    <bm:ref-fields>
+        <bm:ref-field name="dname" relationName="d" sourceField="dname"/>
+        <bm:ref-field name="mgr_name" relationName="MGR" sourceField="ename"/>
+        <bm:ref-field name="dept_num" relationName="d" sourceField="DEPTNO"/>
+    </bm:ref-fields>
+    <bm:primary-key>
+        <bm:pk-field name="empno"/>
+    </bm:primary-key>
+    <bm:relations>
+        <bm:relation joinType="LEFT OUTER" name="d" refModel="testcase.HR.DEPT">
+            <bm:reference foreignField="DEPTNO" localField="DEPTNO"/>
+        </bm:relation>
+        <bm:relation joinType="LEFT OUTER" name="MGR" refAlias="M1" refModel="testcase.HR.EMP">
+            <bm:reference foreignField="EMPNO" localField="MGR"/>
+            <bm:reference expression="M1.DEPTNO is not null"/>
+        </bm:relation>
+    </bm:relations>
+    <bm:query-fields>
+        <bm:query-field field="empno" queryOperator="="/>
+        <bm:query-field field="sal" queryOperator="&gt;="/>
+        <bm:query-field field="ename" matchMode="full" queryOperator="like"/>
+        <bm:query-field field="deptno" queryOperator="="/>
+        <bm:query-field field="mgr" queryExpression="exists (select * from emp t1 where t1.mgr=e.mgr)"/>
+        <bm:query-field dataType="java.sql.Date" name="hiredate_from" queryExpression="e.hiredate &gt;= ${@hiredate_from}"/>
+        <bm:query-field dataType="java.sql.Date" name="hiredate_to" queryExpression="e.hiredate &lt;= ${@hiredate_to}"/>
+    </bm:query-fields>
+    <bm:data-filters>
+        <bm:data-filter enforceActions="query,update" expression="e.deptno is not null" name="MustInDepartment"/>
+        <bm:data-filter enforceActions="query" expression="e.creation_date is not null"/>
+        <bm:data-filter enforceActions="query" expression="e.empno &gt;= 0"/>
+    </bm:data-filters>
+    <bm:order-by>
+        <bm:order-field name="DNAME"/>
+        <bm:order-field name="hiredate" order="desc"/>
+    </bm:order-by>
+    <bm:features>
+        <ns2:sequence-pk/>
+        <f:standard-who/>
+    </bm:features>
+</bm:model>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uncertain"/>
+	<classpathentry kind="var" path="LIB_SERVLET"/>
+	<classpathentry kind="lib" path="/Users/Shared/Java/lib/freemarker.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/c3p0-0.9.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/classes12.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/jotm-client.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/mysql-connector-java-5.1.12-bin.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/ow2-jta-1.1-spec.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/sqlserverjdbc.jar"/>
+	<classpathentry kind="lib" path="/Users/zhoufan/Work/workspace/aurora/dependency/xapool.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
