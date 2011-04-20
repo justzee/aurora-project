@@ -10,14 +10,15 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import junit.framework.TestCase;
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeMapParser;
 import uncertain.core.UncertainEngine;
 import uncertain.logging.AbstractLoggerProvider;
 import uncertain.logging.BasicStreamHandler;
-import uncertain.logging.LoggerProvider;
 import uncertain.logging.ILogger;
 import uncertain.logging.LoggerList;
+import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingConfig;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.OCManager;
@@ -42,13 +43,16 @@ public class LoggerProviderTest extends TestCase {
         engine = new UncertainEngine();
         engine.initialize(new CompositeMap());
         ocManager = engine.getOcManager();
-        CompositeMap map = engine.loadCompositeMap(LoggingConfig.LOGGING_REGISTRY_PATH);
+        CompositeLoader loader = engine.getCompositeLoader();
+        CompositeMap map = loader.loadFromClassPath(LoggingConfig.LOGGING_REGISTRY_PATH); 
+            //engine.loadCompositeMap(LoggingConfig.LOGGING_REGISTRY_PATH);
         assertNotNull(map);
         ClassRegistry reg = (ClassRegistry)ocManager.createObject(map);        
         assertNotNull(reg);
         ocManager.getClassRegistry().addAll(reg);
         
-        CompositeMap loggerConfig = engine.loadCompositeMap("uncertain.testcase.logging.logging_test");
+        CompositeMap loggerConfig = loader.loadFromClassPath("uncertain.testcase.logging.logging_test");
+            //engine.loadCompositeMap("uncertain.testcase.logging.logging_test");
         assertNotNull(loggerConfig);
         loggingConfig = (LoggingConfig)ocManager.createObject(loggerConfig);
         assertNotNull(loggingConfig);

@@ -182,11 +182,13 @@ public class SchemaManagerBasicTest extends TestCase {
         
     }
     
+    /*
     public void testPackage() throws Exception {
         PackageManager pm = new PackageManager();
         pm.loadPackgeDirectory("G:\\Work\\workspace\\lwap\\builtin-packages");
         SchemaManager sm = pm.getSchemaManager();
         assertNotNull(sm);
     }
+    */
 
 }

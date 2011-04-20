@@ -50,7 +50,7 @@ public class ProcedureRunnerTest extends TestCase {
      */
     public void testRun() throws Exception {
 
-        loadProcedure("ProcTest.xml");
+        loadProcedure("ProcTest.proc");
         participant = new ParticipantTest2(oc_manager);
         config.addParticipant(participant);
         /*

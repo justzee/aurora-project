@@ -6,6 +6,7 @@ package uncertain.testcase.core;
 import junit.framework.TestCase;
 import uncertain.core.*;
 import uncertain.composite.*;
+import uncertain.event.Configuration;
 import uncertain.proc.*;
 import uncertain.ocm.*;
 import uncertain.testcase.proc.ParticipantTest2;
@@ -91,13 +92,25 @@ public class UncertainEngineTest extends TestCase {
     }
     */
 
-    public void testLoadProcedure(){
-        Procedure p = engine.loadProcedure("uncertain.testcase.proc.ProcTest");
+    public void testLoadProcedure()
+        throws Exception
+    {
+        IProcedureManager pm = engine.getProcedureManager();
+        Procedure p = pm.loadProcedure("uncertain.testcase.proc.ProcTest");
         assertNotNull(p);
     }
     
+    
+    private ProcedureRunner createProcedureRunner(String proc_path, String config_path){
+        ProcedureRunner runner = engine.createProcedureRunner(proc_path);
+        Configuration config = engine.loadConfig(config_path);
+        if(config!=null) runner.addConfiguration(config);
+        else throw new IllegalArgumentException("Can't load " + config_path);
+        return runner;
+    }
+    
     public void testRunProcedure(){
-        ProcedureRunner runner = engine.createProcedureRunner(
+        ProcedureRunner runner = createProcedureRunner(
                 "uncertain.testcase.proc.ProcTest",
                 "uncertain.testcase.proc.ProcConfig");
         assertNotNull(runner);
