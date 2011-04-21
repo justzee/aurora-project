@@ -29,7 +29,7 @@
 </dept-list>
 }}}
 
-如果要对多个detail表进行更新，那么在cascade-operations下面设置多条cascade-operation标记就可以了，没条对应一个detail表。
+如果要对多个detail表进行更新，那么在cascade-operations下面设置多条cascade-operation标记就可以了，每条对应一个detail表。
 
 cascade-operation的属性：
 ||属性||说明||
