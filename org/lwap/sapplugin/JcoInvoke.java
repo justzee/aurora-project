@@ -61,7 +61,11 @@ public class JcoInvoke extends AbstractEntry {
     }
     
     public void run(ProcedureRunner runner) throws Exception {
-    	SapInstance sapInstance=sapConfig.getSapInstance(Sid);
+    	SapInstance sapInstance=null;
+    	if(Sid!=null)
+    		sapInstance=sapConfig.getSapInstance(Sid);
+    	else
+    		sapInstance=sapConfig.getDefaultSapInstance();
         CompositeMap context = runner.getContext();
         logger = LoggingContext.getLogger(context, "org.lwap.plugin.sap");
         logger.config("jco-invoke");
