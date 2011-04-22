@@ -7,5 +7,7 @@ public class FieldMapping {
     
     public String   Name;
     public String   Source_name;
+    public String   Source_field;
+    public Object   Value;
 
 }

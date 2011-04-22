@@ -11,7 +11,7 @@ import uncertain.core.IGlobalInstance;
 import com.sap.mw.jco.IRepository;
 import com.sap.mw.jco.JCO;
 
-public class SapInstance implements IGlobalInstance {
+public class SapInstance{
     
     public static final String LOGGING_TOPIC = "org.lwap.pluin.sap";
     

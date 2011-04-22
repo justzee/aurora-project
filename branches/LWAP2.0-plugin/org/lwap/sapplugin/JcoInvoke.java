@@ -24,18 +24,20 @@ import com.sap.mw.jco.JCO.ParameterList;
 
 public class JcoInvoke extends AbstractEntry {
     
-    SapInstance         sapInstance;
+	SapConfig           sapConfig;
     ILogger              logger;
 
     public Parameter[]  Parameters;
     public Table[]      Tables;
+    public Structure[]  Structures;
     public String       Function;
+    public String       Sid;
     public String       Return_target;
     public boolean      Dump = false;
   
-    public JcoInvoke(SapInstance    si){
-        sapInstance = si;
-        //System.out.println(this+" constructed ");
+    public JcoInvoke(SapConfig config){
+    	sapConfig = config;
+//        System.out.println(this+" constructed ");
     }
     
     public String toString(){
@@ -59,6 +61,7 @@ public class JcoInvoke extends AbstractEntry {
     }
     
     public void run(ProcedureRunner runner) throws Exception {
+    	SapInstance sapInstance=sapConfig.getSapInstance(Sid);
         CompositeMap context = runner.getContext();
         logger = LoggingContext.getLogger(context, "org.lwap.plugin.sap");
         logger.config("jco-invoke");
@@ -110,6 +113,17 @@ public class JcoInvoke extends AbstractEntry {
                         logger.log(Level.CONFIG, "parameter {0} -> {1}", new Object[]{ param.Name, value});
                     }
                 }
+                if(Structures!=null){
+                	for(int i=0;i<Structures.length;i++){
+                		Structure structure=Structures[i];
+                		structure.setLogger(logger);
+                		if(structure.isImport()){
+                			JCO.Structure stc=structure.getJCOStructure(input);   
+                			structure.fillJCOStructure(stc, context);                			
+                			input.setValue(stc, structure.Name);                			
+                		}
+                	}                    
+                }
                 // Set import table
                 if(Tables!=null){
                     ParameterList list = function.getTableParameterList();
@@ -133,17 +147,30 @@ public class JcoInvoke extends AbstractEntry {
                 logger.config("call function " + Function);
                 client.execute(function);
 
-                if(Parameters!=null)
-                for(int i=0; i<Parameters.length; i++){
-                    Parameter param = Parameters[i];
-                    if(param.Return_field!=null){
-                        if(target==null) throw new ConfigurationError("<jco-invoke>:must set 'return_target' attribute if there is return field");
-                        String vl = output.getString(param.Name);
-                        if(vl==null && !param.Nullable) throw new IllegalArgumentException("jco-invoke: return field "+param.Name+" is null");
-                        String f = TextParser.parse(param.Return_field,context);
-                        target.putObject(f, vl);
-                            logger.config("return: "+param.Name+ "=" + vl + " -> "+f);
-                    }
+                if(Parameters!=null){
+	                for(int i=0; i<Parameters.length; i++){
+	                    Parameter param = Parameters[i];
+	                    if(param.Return_field!=null){
+	                        if(target==null) throw new ConfigurationError("<jco-invoke>:must set 'return_target' attribute if there is return field");
+	                        String vl = output.getString(param.Name);
+	                        if(vl==null && !param.Nullable) throw new IllegalArgumentException("jco-invoke: return field "+param.Name+" is null");
+	                        String f = TextParser.parse(param.Return_field,context);
+	                        target.putObject(f, vl);
+	                            logger.config("return: "+param.Name+ "=" + vl + " -> "+f);
+	                    }
+	                }
+                }
+                if(Structures!=null){
+                	for(int i=0;i<Structures.length;i++){
+                		Structure structure=Structures[i];
+                		structure.setLogger(logger);
+                		if(structure.isImport())continue;
+                		if(structure.Target==null) throw new ConfigurationError("Must set 'target' attribute for Structures "+structure.Name);
+            			JCO.Structure stc=structure.getJCOStructure(output);
+            			CompositeMap result = (CompositeMap)context.getObject(structure.Target);
+                        if(result==null) result = context.createChildByTag(structure.Target);
+            			structure.fillCompositeMap(stc, result); 
+                	}
                 }
                 // Get export tables
                 if(Tables!=null){
