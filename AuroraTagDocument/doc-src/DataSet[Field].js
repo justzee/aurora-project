@@ -129,3 +129,13 @@
  * @property lovUrl
  * @type String
  */
+
+/**
+ * <p>自定义校验函数</p>
+ * <p>函数参数为 function(record,name,value)</p>
+ * <p>返回值:</p>
+ * <p>(1)校验成功返回true</p>
+ * <p>(2)校验失败返回错误的描述信息(文本格式)</p>
+ * @property validator
+ * @type String
+ */
