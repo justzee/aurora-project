@@ -34,6 +34,8 @@
 				,
                 {"href":"output/HBox.html","text":"HBox","id":"HBox","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Label.html","text":"Label","id":"Label","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Lov.html","text":"Lov","id":"Lov","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Menu.html","text":"Menu","id":"Menu","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -105,6 +107,8 @@
 			"Grid[Column]":"icon-cls"
 			,
 			"HBox":"icon-cls"
+			,
+			"Label":"icon-cls"
 			,
 			"Lov":"icon-cls"
 			,
