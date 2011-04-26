@@ -64,6 +64,7 @@
 		<source src="../doc-src/DatePicker.js"/>
 		<source src="../doc-src/DateTimePicker.js"/>
 		<source src="../doc-src/DateField.js"/>
+        <source src="../doc-src/Label.js"/>
 		<source src="../doc-src/Lov.js"/>
 		<source src="../doc-src/MultiLov.js"/>
 		<source src="../doc-src/Button.js"/>
