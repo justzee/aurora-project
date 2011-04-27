@@ -197,20 +197,12 @@ public class TransactionFactory {
         MainService service = MainService.getServiceInstance(context);
         WebApplication application = (WebApplication) service.getApplication();
         Configuration configuration = runner.getConfiguration();
-
-        if (access_def == null)
-            throw new IllegalArgumentException("database access config is null");
         Iterator it = access_def.getChildIterator();
         Connection conn = null;
         Procedure proc = null;
 
         if (it != null)
             try {
-
-                if (runner == null) {
-                    databaseAccess(access_def, params, target);
-                    return;
-                }
 
                 conn = data_source.getConnection();
                 conn.setAutoCommit(false);
