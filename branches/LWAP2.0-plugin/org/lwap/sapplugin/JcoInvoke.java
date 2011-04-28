@@ -60,11 +60,12 @@ public class JcoInvoke extends AbstractEntry {
         return invoke.toXML();
     }
     
-    public void run(ProcedureRunner runner) throws Exception {    	
-    	if(Sid==null)
+    public void run(ProcedureRunner runner) throws Exception {       	
+        CompositeMap context = runner.getContext();
+        Sid=TextParser.parse(Sid, context);
+        if(Sid==null)
     		throw new IllegalArgumentException("jco-invoke: sid attribute is null");    		
     	SapInstance sapInstance=sapConfig.getSapInstance(Sid);
-        CompositeMap context = runner.getContext();
         logger = LoggingContext.getLogger(context, "org.lwap.plugin.sap");
         logger.config("jco-invoke");
         logger.config("===================================");
