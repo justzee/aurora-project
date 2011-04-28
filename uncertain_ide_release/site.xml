@@ -3,11 +3,11 @@
    <description name="Aurora IDE update site" url="http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/">
       Aurora Project in code.goolge.com .
    </description>
-   <feature url="features/aurora.ide.feature_1.2.4.201104201417.jar" id="aurora.ide.feature" version="1.2.4.201104201417">
-      <category name="aurora.ide"/>
-   </feature>
-   <feature url="features/aurora.ide.libs.feature_1.0.0.201104201448.jar" id="aurora.ide.libs.feature" version="1.0.0.201104201448">
+   <feature url="features/aurora.ide.libs.feature_1.0.0.201104261342.jar" id="aurora.ide.libs.feature" version="1.0.0.201104261342">
       <category name="aurora.ide.libs"/>
+   </feature>
+   <feature url="features/aurora.ide.feature_1.2.4.201104281524.jar" id="aurora.ide.feature" version="1.2.4.201104281524">
+      <category name="aurora.ide"/>
    </feature>
    <category-def name="aurora.ide" label="Aurora IDE">
       <description>
