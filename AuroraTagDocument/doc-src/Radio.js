@@ -2,9 +2,14 @@
  * @class Radio
  * 单项选择框控件标签
  * <pre><code>
-    &lt;a:radio labelField="label" valueField="value" options="dsId"
+	&lt;a:init-procedure&gt;
+        &lt;a:model-query model="sys.sys_user_role_groups" rootPath="role_list"/&gt;
+    &lt;/a:init-procedure&gt;
+	...
+    &lt;a:radio labelField="label" valueField="value" options="/model/role_list"
 	bindTarget="dsId" name="fieldName" layout="horizontal"
 	labelExpression="xxx"/&gt;
+	&lt;br&gt;
 	&lt;a:radio bindTarget="dsId" name="fieldName"&gt;
 		&lt;a:items&gt;
 			&lt;a:item label="yes" value="Y"/&gt;
@@ -24,7 +29,7 @@
  */
 
 /**
- * 选项集的dataset的id
+ * 指定选项集的model地址
  * @property options
  * @type String
  */
