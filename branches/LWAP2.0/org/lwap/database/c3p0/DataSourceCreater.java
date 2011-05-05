@@ -30,6 +30,7 @@ public class DataSourceCreater implements ApplicationInitializer{
 	CompositeMap app_config;
 	WebApplication application;
 	IConnectionInitializer connection_initializer;
+	
 	public void initApplication(Application app, CompositeMap app_config)
 			throws ApplicationInitializeException {
 		this.application = (WebApplication) app;
@@ -37,7 +38,8 @@ public class DataSourceCreater implements ApplicationInitializer{
 		try {
 			doApplicationInit();
 		} catch (Exception e){		
-			e.printStackTrace();
+			//e.printStackTrace();
+		    throw new ApplicationInitializeException(e);
 		}
 	}
 
