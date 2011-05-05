@@ -22,11 +22,11 @@ public class Version {
     }
     
     public static int getMinorVersion(){
-        return 3;
+        return 4;
     }
     
     public static int getBuild(){
-        return 16;
+        return 2;
     }
     
     public static void main(String[] args) throws Exception {
