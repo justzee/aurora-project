@@ -1,6 +1,6 @@
 #summary Aurora Cache机制探讨 【一】Cache Server概述
 
-＝Cache机制概述＝
+==Cache机制概述==
 
 使用Cache server是提高系统性能及并发能力的一个重要手段。理论上说，一切获取代价超过内部网络数据传输的操作，如数据库查询、文件访问、复杂数据的构造等等，都可以通过应用cache server来提高性能。并且，由于cache server减少了对数据库这一类更难扩展的关键节点的直接访问，这种架构也能提高整个系统应对并发访问的能力。
 
@@ -8,7 +8,7 @@
 
 Cache可以在系统架构的任何一层进行。数据库、操作系统通常有自己的cache，Web server也有内部cache。除此之外，还有memcached这样的独立cache server，或者JBoss cache这样的运行于JVM内部的cache服务。相对来说，一般来说，应用系统根据自己的业务逻辑，使用独立的cache组件来管理cache，能获取比数据库cache这样对应用透明的cache机制更好的性能。设想一下，数据库的SQL cache有非常多的限制条件，任何一个细微的原始输入改变，都可能导致cache失效。而应用系统的设计者，通常对于“什么时候需要更新cache”有着更精准的控制。比如，一个电子商务网站，可以接受更新产品数据之后，消费者不是马上看到变化，而是有几秒钟的延迟。这样，就可以通过一个后台线程，定期将更新后的产品数据写入cache server，而不是对产品的任何信息更改后都导致cache失效。
 
-＝Cache server的特性＝
+==Cache server的特性==
 
 以下探讨主要针对memcached进行，因为memcached是目前全世界应用最广泛、认可度最高的产品。
 
