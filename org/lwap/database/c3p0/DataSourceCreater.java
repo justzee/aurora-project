@@ -18,6 +18,8 @@ import org.lwap.database.oracle.OracleDataSourceCreator;
 
 import com.mchange.v2.c3p0.DataSources;
 import com.mchange.v2.c3p0.DriverManagerDataSource;
+import com.mchange.v2.c3p0.PooledDataSource;
+
 import uncertain.composite.CompositeMap;
 
 public class DataSourceCreater implements ApplicationInitializer{
@@ -45,7 +47,12 @@ public class DataSourceCreater implements ApplicationInitializer{
 
 	public void cleanUp(Application app) {
 		// TODO Auto-generated method stub
-		
+		PooledDataSource pds = (PooledDataSource)((WebApplication) app).getDataSource();
+		try{
+			pds.close();
+		}catch(SQLException e){
+			
+		}
 	}
 	
 	public void addProperties(CompositeMap config) throws Exception{
