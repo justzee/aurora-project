@@ -1,8 +1,0 @@
-#labels WeekPlan
-牛佳庆:
-  * 搭建好HAP环境
-  * 完成登陆界面
-
-周凡：
-  * 继续完善数据库本地化特性
-  * 将sql service和bm service统一起来
