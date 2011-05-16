@@ -2,11 +2,11 @@
 
 = Aurora Controller 设计概要 =
 
-== Page ==
+== Screen ==
 
 用途：输出HTML内容
 
-扩展名：.page
+扩展名：.screen
 
 样例：
 {{{
