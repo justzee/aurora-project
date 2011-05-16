@@ -1,4 +1,4 @@
-# 在一个screen中完整包含另一个screen的输出内容
+#summary 在一个screen中完整包含另一个screen的输出内容
 
 = 代码更新 =
 
