@@ -24,7 +24,7 @@ public class C3P0NativeJdbcExtractor {
 		return con;
 	}
 
-	protected Connection getNativeConnection(Connection con) throws Exception {
+	public Connection getNativeConnection(Connection con) throws Exception {
 		if (con instanceof C3P0ProxyConnection) {
 			C3P0ProxyConnection cpCon = (C3P0ProxyConnection) con;
 			return (Connection) cpCon.rawConnectionOperation(
