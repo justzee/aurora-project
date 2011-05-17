@@ -2,6 +2,7 @@
  * Created on 2007-7-6
  */
 package org.lwap.sapplugin;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -12,6 +13,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.lwap.database.c3p0.C3P0NativeJdbcExtractor;
+
+import oracle.jdbc.OracleConnection;
 import oracle.sql.ARRAY;
 import oracle.sql.ArrayDescriptor;
 import oracle.sql.STRUCT;
@@ -20,6 +24,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
 import uncertain.logging.ILogger;
 
+import com.mchange.v2.c3p0.C3P0ProxyConnection;
 import com.sap.mw.jco.IMetaData;
 import com.sap.mw.jco.JCO;
 
@@ -191,7 +196,7 @@ public class Table {
     //add by 1266@hand 2010-7-26
     public void fillJCOTable(JCO.Table table,  CompositeMap context){ 
     	CompositeMap map=(CompositeMap)context.getObject(Source_field);
-    	//判断map是否为空
+    	
     	if(map.getChildIterator()!=null){
 	        List records=map.getChilds();        
 	        table.appendRows(records.size());      
@@ -208,7 +213,7 @@ public class Table {
 	            	String field_name=(String)it.next();
 	            	FieldMapping mapping = (FieldMapping)name_map.get(field_name.toLowerCase());
 	            	Object value=record.getObject(mapping.Source_name);
-	            	if(mapping!=null){ //页面传过来的CompositeMap参数比较多，在页面做参数过滤比较复杂。这个和数据库table有些区别
+	            	if(mapping!=null){ 
 	            		field_name = mapping.Name;
 	            		table.setValue(value, field_name);
 	            	}
@@ -247,15 +252,28 @@ public class Table {
         }
         return result;
     }
-    
+     
     public Array fillArray(JCO.Table records, Connection conn)
         throws SQLException
     {
         if(Collection_type==null) throw new ConfigurationError("Must set 'collection_type' to fetch table as pl/sql collection");
         if(Struct_type==null) throw new ConfigurationError("Must set 'Struct_type' to fetch table as pl/sql collection");
+        Connection oracleConnection=null;       
+        
+        if(conn instanceof C3P0ProxyConnection){
+        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
+        	try {
+				oracleConnection=nativeJdbcExtractor.getNativeConnection(conn);
+			} catch (Exception e) {
+				throw new SQLException(e);			
+			}			
+        }else{
+        	oracleConnection=conn;
+        }
+                
         // Get pl/sql type descriptor
-        ArrayDescriptor adesc = ArrayDescriptor.createDescriptor(Collection_type, conn);
-        StructDescriptor sdesc = StructDescriptor.createDescriptor(Struct_type, conn);        
+        ArrayDescriptor adesc = ArrayDescriptor.createDescriptor(Collection_type, oracleConnection);
+        StructDescriptor sdesc = StructDescriptor.createDescriptor(Struct_type, oracleConnection);        
         // construct a map of pl/sql struct field name -> its field id
         HashMap  struct_map = new HashMap();        
         ResultSetMetaData md = sdesc.getMetaData();
@@ -286,10 +304,10 @@ public class Table {
                 int id = ids[c].intValue();
                 attribs[id] = records.getValue(c);
             }
-            STRUCT rec = new STRUCT(sdesc, conn, attribs);
+            STRUCT rec = new STRUCT(sdesc, oracleConnection, attribs);
             elements[n] = rec;
         }
-        ARRAY result =  new ARRAY(adesc, conn,elements );
+        ARRAY result =  new ARRAY(adesc, oracleConnection,elements );
         
         return result;
     }    
