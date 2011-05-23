@@ -139,3 +139,16 @@
  * @property validator
  * @type String
  */
+ 
+/**
+ * 是否开启autoComplete功能
+ * @property autoComplete
+ * @type Boolean
+ * @default false
+ */
+ 
+/**
+ * autoComplete的查询字段,如果没有设定，默认取mapping中等于field的name属性的to属性对应的from属性的字段。
+ * @property autoCompleteField
+ * @type String
+ */

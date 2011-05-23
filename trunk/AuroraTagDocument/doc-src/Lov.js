@@ -56,3 +56,11 @@
  * @property title
  * @type String
  */
+ 
+/**
+ * <p>autoComplete的渲染函数</p>
+ * <p>函数参数为 function(Lov,record)</p>
+ * <p>返回值:html字符串</p>
+ * @property autoCompleteRenderer
+ * @type Functon
+ */
