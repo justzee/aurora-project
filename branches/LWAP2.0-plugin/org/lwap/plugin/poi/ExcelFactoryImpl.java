@@ -177,7 +177,7 @@ public class ExcelFactoryImpl {
 		if ((c = r.getCell(colnum - 1)) == null)
 			c = r.createCell(colnum - 1);
 		String dataType = labelConfig.getDataType();
-		if ("java.lang.Long".equals(dataType)){
+		if (dataType!=null&&"java.lang.Long".equals(dataType)){
 			if(value==null||"".equals(value))
 				c.setCellValue("");
 			else
