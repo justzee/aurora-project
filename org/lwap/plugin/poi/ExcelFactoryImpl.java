@@ -177,14 +177,15 @@ public class ExcelFactoryImpl {
 		if ((c = r.getCell(colnum - 1)) == null)
 			c = r.createCell(colnum - 1);
 		String dataType = labelConfig.getDataType();
-		if (dataType == null)
-			c.setCellValue(value);
 		if ("java.lang.Long".equals(dataType)){
 			if(value==null||"".equals(value))
 				c.setCellValue("");
 			else
 				c.setCellValue(Double.valueOf(value));
+		}else{		
+			c.setCellValue(value);
 		}
+		
 	}
 
 	public CompositeMap extractionExcel(File file) throws Exception {
