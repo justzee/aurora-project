@@ -51,11 +51,15 @@ public class JSONDispatcher {
 
     public JSONDispatcher() {
     }
-
-    public int preParseParameter(JSONServiceContext ct) throws Exception {
+    
+    protected void saveState(JSONServiceContext ct){
         service_context = ct;
         request = ct.getRequest();
-        response = ct.getResponse();
+        response = ct.getResponse();        
+    }
+
+    public int preParseParameter(JSONServiceContext ct) throws Exception {
+        saveState(ct);
         request.setCharacterEncoding("utf-8");
         String jparam = request.getHeader(HEAD_JSON_PARAMETER);
         if (jparam == null)
