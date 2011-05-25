@@ -46,6 +46,8 @@ import uncertain.proc.IEntry;
 import uncertain.proc.IExceptionHandle;
 import uncertain.proc.Procedure;
 import uncertain.proc.ProcedureRunner;
+import aurora.service.IResourceReleaser;
+import aurora.service.ServiceContext;
 
 /**
  * UncertainService
@@ -81,6 +83,7 @@ implements Configuration.IParticipantListener
     UncertainEngine		uncertainEngine;
     ProcedureRunner		runner;
     LinkedList			controllerList = new LinkedList();
+    LinkedList          resource_realeaser = new LinkedList();
     Configuration       configuration;
     ILogger             mLogger;
     
@@ -97,6 +100,10 @@ implements Configuration.IParticipantListener
         return context.getString(KEY_DISPATCH);
     }
 */
+    
+    public void addResourceReleaser( IResourceReleaser r){
+        resource_realeaser.add(r);
+    }
     /**
      * @see org.lwap.application.BaseService#buildOutputContent()
      */
@@ -387,7 +394,19 @@ implements Configuration.IParticipantListener
         super.setErrorDescription(msg.toString());
     }
     
-    public void cleanUp(){        
+    public void cleanUp(){  
+        if(resource_realeaser.size()>0){
+            ServiceContext sc = ServiceContext.createServiceContext(service_context);
+            Iterator it = resource_realeaser.iterator();
+            while(it.hasNext()){
+                IResourceReleaser r = (IResourceReleaser)it.next();
+                try{
+                    r.doRelease(sc);
+                }catch(Throwable thr){
+                    handleException(thr);
+                }
+            }
+        }
         if(service_context!=null){
             try{
                 uncertainEngine.destroyContext(service_context);
