@@ -14,6 +14,7 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,9 @@ import org.lwap.controller.FormController;
 import org.lwap.controller.IController;
 import org.lwap.controller.MainService;
 import org.lwap.database.DBUtil;
+import org.lwap.database.c3p0.C3P0NativeJdbcExtractor;
+
+import com.mchange.v2.c3p0.C3P0ProxyConnection;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
@@ -244,7 +248,7 @@ public class UploadFileHandle implements IFeature, IController {
                             + aid + " for update");
             if (!rs.next())
                 throw new IllegalArgumentException("attachment_id not set");
-            BLOB blob = ((oracle.jdbc.driver.OracleResultSet) rs).getBLOB(1);
+            BLOB blob = ((oracle.jdbc.OracleResultSet) rs).getBLOB(1);
             rs.close();
 
             if (blob == null) {
@@ -285,6 +289,15 @@ public class UploadFileHandle implements IFeature, IController {
         Connection conn = null;
         try {
             conn = service.getConnection();
+            conn = service.getConnection();
+			if(conn instanceof C3P0ProxyConnection){
+	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
+	        	try {
+	        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+				} catch (Exception e) {
+					throw new SQLException(e);			
+				}			
+	        }
             InputStream in = fileItem.getInputStream();
             String attach_id = aid.toString();
             mLogger.log(Level.CONFIG, "attachment_id="+attach_id);
@@ -342,8 +355,16 @@ public class UploadFileHandle implements IFeature, IController {
         OutputStream os = null;
         InputStream is = null;
 
-        try {
+        try {          
             conn = service.getConnection();
+			if(conn instanceof C3P0ProxyConnection){
+	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
+	        	try {
+	        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+				} catch (Exception e) {
+					throw new SQLException(e);			
+				}			
+	        }
             pst = conn
                     .prepareStatement("select m.content from fnd_atm_attachment m where m.attachment_id="
                             + service.getParameters().get("attachment_id"));
