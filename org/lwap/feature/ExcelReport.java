@@ -3,7 +3,9 @@
  */
 package org.lwap.feature;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.lwap.application.NoPrivilegeException;
 import org.lwap.controller.MainService;
 import org.lwap.database.DBUtil;
+import org.lwap.database.c3p0.C3P0NativeJdbcExtractor;
+import org.lwap.database.c3p0.TestC3P0;
 import org.lwap.database.oracle.BlobUtil;
 import org.lwap.mvc.excel.ExcelDataTable;
+
+import com.mchange.v2.c3p0.C3P0ProxyConnection;
 
 import uncertain.composite.CompositeMap;
 import uncertain.event.Configuration;
@@ -178,8 +184,17 @@ public class ExcelReport  implements IFeature{
 		HttpServletRequest request = service.getRequest();
 		MainService svc = MainService.getServiceInstance(runner.getContext());
 		String excel_table = svc.getApplicationConfig().getString("excel-report-table", EXCEL_REPORT_SESSION);
-		String method = request.getMethod();
+		String method = request.getMethod();		
 		try{
+			conn = service.getConnection();
+			if(conn instanceof C3P0ProxyConnection){
+	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
+	        	try {
+	        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+				} catch (Exception e) {
+					throw new SQLException(e);			
+				}			
+	        }
 			if( is_generate_script){
 			    logger.config("to save model data into database");
 				service.createModel();
@@ -189,15 +204,13 @@ public class ExcelReport  implements IFeature{
 				    return result;
 				}
 				CompositeMap parent = model.getParent();
-				model.setParent(null);
-				conn = service.getConnection();
+				model.setParent(null);				
 				BlobUtil.saveObject(conn,excel_table,"report_data","session_id=" + session_id,model);
 				conn.commit();
 				model.setParent(parent);
 				logger.config("model data saved in "+excel_table+", session_id="+session_id);
 			} else{
-			    logger.config("to fetch data from database and transport to client in CSV format");
-				conn = service.getConnection();
+			    logger.config("to fetch data from database and transport to client in CSV format");				
 				CompositeMap model = 
 				(CompositeMap)BlobUtil.loadObject(conn,"select report_data from " + excel_table  + " s where s.session_id = " + session_id);
 				if( model != null){
@@ -236,6 +249,5 @@ public class ExcelReport  implements IFeature{
 	}
 
     public ExcelReport() {
-    }
-
+    }    
 }
