@@ -92,7 +92,7 @@ public class BlobUtil {
         st.execute("commit");
         rs =  st.executeQuery(sql_select);
         while (rs.next())
-             blob=((oracle.jdbc.driver.OracleResultSet)rs).getBLOB(1);
+             blob=((oracle.jdbc.OracleResultSet)rs).getBLOB(1);
         if(blob==null) throw new IllegalStateException("can't get blob from sql: "+sql_select);
     
         //get InputStream from object
