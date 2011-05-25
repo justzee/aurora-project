@@ -140,6 +140,10 @@ public class ProcedureRunner {
         return true;
     }
     
+    public void setResumeAfterException( boolean flag ){
+        resume_after_exception = flag;
+    }
+    
     public void throwException(Throwable thr){
         procException = thr.getCause();        
         if(procException==null) procException = thr;
