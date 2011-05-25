@@ -133,14 +133,14 @@ public class ExcelFactoryImpl {
 								context = record.getString(context.replace("@",
 										""));
 							}
-							String dataType = object.getString("datatype");
-							if (dataType == null)
-								c.setCellValue(context);
+							String dataType = object.getString("datatype");								
 							if ("java.lang.Long".equals(dataType)){
 								if(context==null||"".equals(context))
 									c.setCellValue("");
 								else
 									c.setCellValue(Double.valueOf(context));
+							}else{
+								c.setCellValue(context);
 							}
 							j++;
 						}
@@ -177,7 +177,7 @@ public class ExcelFactoryImpl {
 		if ((c = r.getCell(colnum - 1)) == null)
 			c = r.createCell(colnum - 1);
 		String dataType = labelConfig.getDataType();
-		if (dataType!=null&&"java.lang.Long".equals(dataType)){
+		if ("java.lang.Long".equals(dataType)){
 			if(value==null||"".equals(value))
 				c.setCellValue("");
 			else
