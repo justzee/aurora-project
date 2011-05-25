@@ -13,8 +13,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.lwap.application.BaseService;
+import org.lwap.database.c3p0.C3P0NativeJdbcExtractor;
 import org.lwap.database.oracle.BlobUtil;
 import org.lwap.mvc.BuildSession;
+
+import com.mchange.v2.c3p0.C3P0ProxyConnection;
 
 import uncertain.composite.CompositeMap;
 
@@ -66,14 +69,24 @@ public class ExcelExportService extends BaseService {
 		String method = request.getMethod();
 		
 		try{
+			try {
+				conn = this.getConnection();
+				if(conn instanceof C3P0ProxyConnection){
+		        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
+		        	
+		        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+							
+		        }
+			} catch (Exception e) {
+				throw new ServletException(e);			
+			}	
 			if( view_id == null && method.equalsIgnoreCase("GET")){
 				super.createModel();
 				CompositeMap model = this.getModel();
 				if( model == null) return;
 				CompositeMap parent = model.getParent();
 				model.setParent(null);
-				try{
-					conn = this.getConnection();
+				try{					
 					BlobUtil.saveObject(conn,"excel_report_session","report_data","session_id=" + session_id,model);
 /*
 					CompositeMap m = 
@@ -86,8 +99,7 @@ public class ExcelExportService extends BaseService {
 				model.setParent(parent);
 				
 			} else{
-				try{
-					conn = this.getConnection();
+				try{					
 					CompositeMap model = 
 					(CompositeMap)BlobUtil.loadObject(conn,"select report_data from excel_report_session s where s.session_id = " + session_id);
 					if( model != null){
