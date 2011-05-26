@@ -80,7 +80,7 @@ public class JSONService extends JSONDispatcher implements IController {
        boolean locked = ss_lock.islocked(lock_key, service_name);
        if(locked){
            ServiceContext svc_context = ServiceContext.createServiceContext(svc.getServiceContext());
-           ErrorMessage msg = new ErrorMessage(null,mLockChecker.getErrorMessage(), null);
+           ErrorMessage msg = new ErrorMessage(null,svc.getLocalizedString(mLockChecker.getErrorMessage()), null);
            svc_context.setError(msg.getObjectContext());
            onCreateFailResponse(svc_context);
            return true;
