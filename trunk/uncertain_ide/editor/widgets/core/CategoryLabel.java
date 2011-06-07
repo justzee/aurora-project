@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.widgets.core;
+package editor.widgets.core;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
