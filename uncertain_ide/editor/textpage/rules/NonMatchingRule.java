@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.rules;
+package editor.textpage.rules;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IPredicateRule;
