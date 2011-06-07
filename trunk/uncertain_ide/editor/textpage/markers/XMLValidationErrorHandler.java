@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.markers;
+package editor.textpage.markers;
 
 import java.util.ArrayList;
 import java.util.List;

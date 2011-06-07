@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.markers;
+package editor.textpage.markers;
 
 import java.util.HashMap;
 import java.util.Map;
