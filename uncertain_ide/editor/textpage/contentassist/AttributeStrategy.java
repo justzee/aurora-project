@@ -1,4 +1,12 @@
-package uncertain.ide.eclipse.editor.textpage.contentassist;
+package editor.textpage.contentassist;
+
+import helpers.ApplicationException;
+import helpers.CompositeMapLocatorParser;
+import helpers.DialogUtil;
+import helpers.LoadSchemaManager;
+import helpers.LocaleMessage;
+import helpers.SystemException;
+import ide.AuroraPlugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,16 +28,10 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.graphics.Image;
 import org.xml.sax.SAXException;
 
+import editor.textpage.IColorConstants;
+import editor.textpage.scanners.XMLTagScanner;
+
 import uncertain.composite.CompositeMap;
-import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.textpage.IColorConstants;
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
-import uncertain.ide.help.ApplicationException;
-import uncertain.ide.help.CompositeMapLocatorParser;
-import uncertain.ide.help.CustomDialog;
-import uncertain.ide.help.LoadSchemaManager;
-import uncertain.ide.help.LocaleMessage;
-import uncertain.ide.help.SystemException;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 
@@ -54,7 +56,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 			if (tokenString == null)
 				return null;
 		} catch (ApplicationException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 			return null;
 		}
 		String content = document.get();
@@ -96,7 +98,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		try {
 			existsList = getExistsAttrs(document);
 		} catch (SystemException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 			return null;
 		}
 		for (Iterator iter = allAttributes.iterator(); iter.hasNext();) {
@@ -140,7 +142,7 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		try {
 			existsList = getExistsAttrs(document);
 		} catch (SystemException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 			return null;
 		}
 		for (Iterator iter = allAttributes.iterator(); iter.hasNext();) {
@@ -222,10 +224,30 @@ public class AttributeStrategy implements IContentAssistStrategy {
 	}
 
 	private static Image getDefaultImage() {
-		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
+		Image contentImage = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
 		return contentImage;
 	}
 	private TokenString createTokenString() throws ApplicationException {
+		IToken token = null;
+		try {
+			ITypedRegion region = document.getPartition(cursorOffset);
+			int partitionOffset = region.getOffset();
+			scanner.setRange(document, partitionOffset, region.getLength());
+			while ((token = scanner.nextToken()) != Token.EOF) {
+				if(scanner.getTokenOffset()<=cursorOffset&&(scanner.getTokenOffset()+scanner.getTokenLength())>=cursorOffset){
+					if (token.getData() instanceof TextAttribute) {
+						TextAttribute text = (TextAttribute) token.getData();
+						if (text.getForeground().getRGB().equals(IColorConstants.STRING)) {
+							return null;
+						}
+					}
+				}
+			}
+		} catch (BadLocationException e) {
+			throw new SystemException(e);
+		}
+		
+		
 		TokenString tokenString = null;
 		IDocument document = viewer.getDocument();
 		try {

@@ -1,4 +1,14 @@
-package uncertain.ide.eclipse.editor.textpage.contentassist;
+package editor.textpage.contentassist;
+
+import helpers.ApplicationException;
+import helpers.CompositeMapLocatorParser;
+import helpers.CompositeMapUtil;
+import helpers.DialogUtil;
+import helpers.ExceptionUtil;
+import helpers.LoadSchemaManager;
+import helpers.LocaleMessage;
+import helpers.SystemException;
+import ide.AuroraPlugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,19 +28,12 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.swt.graphics.Image;
 import org.xml.sax.SAXException;
 
+import editor.textpage.scanners.XMLPartitionScanner;
+import editor.textpage.scanners.XMLTagScanner;
+
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
-import uncertain.ide.Activator;
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
-import uncertain.ide.help.ApplicationException;
-import uncertain.ide.help.CompositeMapLocatorParser;
-import uncertain.ide.help.CompositeMapUtil;
-import uncertain.ide.help.CustomDialog;
-import uncertain.ide.help.LoadSchemaManager;
-import uncertain.ide.help.LocaleMessage;
-import uncertain.ide.help.SystemException;
 import uncertain.schema.Element;
 
 /**
@@ -57,7 +60,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 		try {
 			tokenString = createTokenString();
 		} catch (ApplicationException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 			return null;
 		}
 		scanner.setRange(document, region.getOffset(), region.getLength());
@@ -77,8 +80,8 @@ public class ChildStrategy implements IContentAssistStrategy {
 					return computeNewTag(parentCompositeMap);
 				}
 			} catch (ApplicationException e1) {
-				Throwable rootCause = CustomDialog.getRootCause(e1);
-				String errorMessage = CustomDialog.getExceptionMessage(rootCause);
+				Throwable rootCause = ExceptionUtil.getRootCause(e1);
+				String errorMessage = ExceptionUtil.getExceptionTraceMessage(rootCause);
 				if (errorMessage != null && errorMessage.indexOf("end-tag") != -1)
 					return computeEndTag(errorMessage);
 				return getDefaultCompletionProposal();
@@ -107,7 +110,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 			document.replace(partitionRegion.getOffset(), length, content);
 			return null;
 		} catch (BadLocationException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 		}
 		return null;
 	}
@@ -236,17 +239,17 @@ public class ChildStrategy implements IContentAssistStrategy {
 	}
 
 	private static Image getArrayImage() {
-		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
+		Image contentImage = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
 		return contentImage;
 	}
 
 	private static Image getElementImage() {
-		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("element.icon")).createImage();
+		Image contentImage = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("element.icon")).createImage();
 		return contentImage;
 	}
 
 	private static Image getDefaultImage() {
-		Image contentImage = Activator.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
+		Image contentImage = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
 		return contentImage;
 	}
 
