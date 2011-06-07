@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uncertain.ide.eclipse.editor.core;
+package editor.core;
 
 public interface IViewer {
 	/**
