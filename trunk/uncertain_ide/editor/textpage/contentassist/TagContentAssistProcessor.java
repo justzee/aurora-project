@@ -1,4 +1,6 @@
-package uncertain.ide.eclipse.editor.textpage.contentassist;
+package editor.textpage.contentassist;
+
+import helpers.DialogUtil;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -9,9 +11,9 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
-import uncertain.ide.help.CustomDialog;
+import editor.textpage.scanners.XMLPartitionScanner;
+import editor.textpage.scanners.XMLTagScanner;
+
 
 public class TagContentAssistProcessor implements IContentAssistProcessor {
 
@@ -33,7 +35,7 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 				return null;
 			return strategy.computeCompletionProposals(viewer, offset);
 		} catch (BadLocationException e) {
-			CustomDialog.showExceptionMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 		}
 		return null;
 	}

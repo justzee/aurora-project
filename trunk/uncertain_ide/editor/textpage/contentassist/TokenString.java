@@ -1,7 +1,7 @@
 /**
  * 
  */
-package uncertain.ide.eclipse.editor.textpage.contentassist;
+package editor.textpage.contentassist;
 
 /**
  * @author linjinxiao
