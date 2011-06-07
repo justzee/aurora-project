@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.format;
+package editor.textpage.format;
 
 public class TextFormattingStrategy extends DefaultFormattingStrategy
 {

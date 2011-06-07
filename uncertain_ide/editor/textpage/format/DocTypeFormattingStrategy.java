@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.format;
+package editor.textpage.format;
 
 
 public class DocTypeFormattingStrategy extends DefaultFormattingStrategy
