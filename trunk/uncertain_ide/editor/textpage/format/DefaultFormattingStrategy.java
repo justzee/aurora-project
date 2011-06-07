@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.format;
+package editor.textpage.format;
 
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
 
