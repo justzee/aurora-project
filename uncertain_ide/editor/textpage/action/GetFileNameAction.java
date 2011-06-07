@@ -1,4 +1,8 @@
-package uncertain.ide.eclipse.editor.textpage.action;
+package editor.textpage.action;
+
+import helpers.ApplicationException;
+import helpers.AuroraResourceUtil;
+import helpers.DialogUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
@@ -11,10 +15,8 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 
-import uncertain.ide.eclipse.editor.textpage.TextPage;
-import uncertain.ide.help.ApplicationException;
-import uncertain.ide.help.AuroraResourceUtil;
-import uncertain.ide.help.CustomDialog;
+import editor.textpage.TextPage;
+
 
 public class GetFileNameAction implements IEditorActionDelegate {
 
@@ -28,7 +30,7 @@ public class GetFileNameAction implements IEditorActionDelegate {
 
 	public void run(IAction action) {
 		if (activeEditor == null || !(activeEditor instanceof TextPage)) {
-			CustomDialog.showErrorMessageBox("这个类不是" + TextPage.class.getName());
+			DialogUtil.showErrorMessageBox("这个类不是" + TextPage.class.getName());
 			return;
 		}
 //		TextPage tp = (TextPage) activeEditor;
@@ -38,7 +40,7 @@ public class GetFileNameAction implements IEditorActionDelegate {
 		try {
 			textData = AuroraResourceUtil.getRegisterPath(ifile);
 		} catch (ApplicationException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 			return;
 		}
 //		String textData = tp.getEditorInput().getName();;

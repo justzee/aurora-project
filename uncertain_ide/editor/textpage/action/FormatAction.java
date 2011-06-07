@@ -1,4 +1,7 @@
-package uncertain.ide.eclipse.editor.textpage.action;
+package editor.textpage.action;
+
+import helpers.AuroraResourceUtil;
+import helpers.DialogUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -6,18 +9,18 @@ import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.xml.sax.SAXException;
 
+import editor.textpage.TextPage;
+
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
-import uncertain.ide.eclipse.editor.textpage.TextPage;
-import uncertain.ide.help.AuroraResourceUtil;
-import uncertain.ide.help.CustomDialog;
 
 public class FormatAction implements IEditorActionDelegate {
 
@@ -31,7 +34,7 @@ public class FormatAction implements IEditorActionDelegate {
 
 	public void run(IAction action) {
 		if(activeEditor == null||!(activeEditor instanceof TextPage)){
-			CustomDialog.showErrorMessageBox("这个类不是"+TextPage.class.getName());
+			DialogUtil.showErrorMessageBox("这个类不是"+TextPage.class.getName());
 			return;
 		}
 		TextPage tp = (TextPage)activeEditor;
@@ -41,6 +44,7 @@ public class FormatAction implements IEditorActionDelegate {
 		if(content == null){
 			return;
 		}
+		int cursorLine = tp.getCursorLine();
 		CompositeLoader cl =AuroraResourceUtil.getCompsiteLoader();
 		InputStream is =null;
 		try {
@@ -49,16 +53,27 @@ public class FormatAction implements IEditorActionDelegate {
 			String formatContent = AuroraResourceUtil.xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
 			tp.refresh(formatContent);
 		} catch (IOException e) {
-			CustomDialog.showErrorMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);
+			DialogUtil.showExceptionMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);
 		} catch (SAXException e) {
-			CustomDialog.showErrorMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);
+			DialogUtil.showExceptionMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);
 		}finally{
 			try {
 				if(is != null)
 					is.close();
 			} catch (IOException e) {
-				CustomDialog.showErrorMessageBox("关闭"+is+"错误！",e);
+				DialogUtil.showExceptionMessageBox("关闭"+is+"错误！",e);
 			}
+		}
+		document = tp.getInputDocument();
+		;
+		try {
+			int offset = document.getLineOffset(cursorLine);
+			int length = document.getLineLength(cursorLine);
+			if(offset==0||length==0)
+				return;
+			tp.setHighlightRange(offset, length, true);
+		} catch (BadLocationException e) {
+			DialogUtil.showExceptionMessageBox(e);
 		}
 		
 	}
