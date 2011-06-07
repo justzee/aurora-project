@@ -4,95 +4,111 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            category="uncertain_ide"
-            class="uncertain.ide.eclipse.project.wizard.ProjectWizard"
-            icon="icons/uncertain.gif"
-            id="uncertain.ide.eclipse.editor.ProjectWizard"
+            category="aurora.ide.wizard"
+            class="project.wizard.ProjectWizard"
+            icon="icons/aurora.gif"
+            id="aurora.ide.wizard.ProjectWizard"
             name="%aurora.project"
             project="true"/>
       <category
-            id="uncertain_ide"
+            id="aurora.ide.wizard"
             name="%category.name">
       </category>
       <wizard
-            category="uncertain_ide"
-            class="uncertain.ide.eclipse.screen.wizard.ServiceNewWizard"
+            category="aurora.ide.wizard"
+            class="screen.wizard.ServiceNewWizard"
             icon="icons/service.gif"
-            id="uncertain_ide.wizards.SampleNewWizard"
+            id="aurora.ide.wizard.ServiceNewWizard"
             name="%wizard.screen.file">
       </wizard>
       <wizard
-            category="uncertain_ide"
-            class="uncertain.ide.eclipse.editor.sxsd.SxsdNewWizard"
+            category="aurora.ide.wizard"
+            class="sxsd.editor.SxsdNewWizard"
             icon="icons/sxsd.gif"
-            id="uncertain_ide.wizards.SxsdNewWizard"
+            id="aurora.ide.wizard.SxsdNewWizard"
             name="%wizard.sxsd.file">
       </wizard>
       <wizard
-            category="uncertain_ide"
-            class="uncertain.ide.eclipse.bm.wizard.db.BMFromDBWizard"
+            category="aurora.ide.wizard"
+            class="bm.wizard.table.BMFromDBWizard"
             icon="icons/bm.gif"
-            id="uncertain.ide.eclipse.wizards.BmNewWizard"
+            id="aurora.ide.wizard.BMFromDBWizard"
             name="%wizard.create.bm.from.database">
       </wizard>
       <wizard
-            category="uncertain_ide"
-            class="uncertain.ide.eclipse.bm.wizard.sql.BMFromSQLWizard"
+            category="aurora.ide.wizard"
+            class="bm.wizard.sql.BMFromSQLWizard"
             icon="icons/sql.gif"
-            id="uncertain.ide.eclipse.wizards.BmNewWizard"
+            id="aurora.ide.wizard.BMFromSQLWizard"
             name="%wizard.create.bm.from.sql">
       </wizard>
+      <wizard
+            category="aurora.ide.wizard"
+            class="bm.wizard.procedure.BMFromProcedure"
+            icon="icons/sql.gif"
+            id="aurora.ide.wizard.BMFromProcedure"
+            name="从数据库过程创建BM文件">
+      </wizard>
+   </extension>
+      <extension
+          point="org.eclipse.ui.contexts">
+       <context
+             name="Aurora EditorScope"
+             description="Aurora EditorScope"
+             parentId="org.eclipse.ui.textEditorScope"
+             id="aurora.ide.EditorScope">
+       </context>
    </extension>
    <extension
          id="BussinessModelEditor"
          point="org.eclipse.ui.editors">
       <editor
-            class="uncertain.ide.eclipse.screen.editor.ServiceEditor"
+            class="screen.editor.ServiceEditor"
             default="true"
-            filenames="*.xml,*.service,*.screen,*.svc"
+            filenames="*.service,*.screen,*.svc"
             icon="icons/service.gif"
-            id="uncertain.ide.eclipse.editor.ServiceEditor"
+            id="aurora.ide.ServiceEditor"
             name="%editor.screen"/>
       <editor
-            class="uncertain.ide.eclipse.editor.sxsd.SxsdEditor"
+            class="sxsd.editor.SxsdEditor"
             default="true"
             filenames="*.sxsd"
             icon="icons/sxsd.gif"
-            id="uncertain.ide.eclipse.editor.SxsdEditor"
+            id="aurora.ide.SxsdEditor"
             name="%editor.sxsd">
       </editor>
       <editor
-            class="uncertain.ide.eclipse.bm.editor.BussinessModelEditor"
+            class="bm.editor.BussinessModelEditor"
             default="true"
             filenames="*.bm"
             icon="icons/bm.gif"
-            id="uncertain.ide.eclipse.editor.bm.BussinessModelEditor"
+            id="aurora.ide.BussinessModelEditor"
             name="%editor.bm">
       </editor>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            class="uncertain.ide.eclipse.preferencepages.SxsdDirPreferencePage"
-            id="uncertain.ide.eclipse.preferencePage.SxsdDirectoryPreferencePage"
+            category="aurora.ide.preferencePage"
+            class="preferencepages.SxsdDirPreferencePage"
+            id="aurora.ide.preferencePage.SxsdDirectoryPreferencePage"
             name="%page.builtin.package">
       </page>
       <page
-            category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            class="uncertain.ide.eclipse.preferencepages.BrowserPreferencePage"
-            id="uncertain.ide.eclipse.preferencePage.BrowserPreferencePage"
+            category="aurora.ide.preferencePage"
+            class="preferencepages.BrowserPreferencePage"
+            id="aurora.ide.preferencePage.BrowserPreferencePage"
             name="%page.screen.preview">
       </page>
       <page
-            class="uncertain.ide.eclipse.preferencepages.AuroraPreferencePage"
-            id="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
+            class="preferencepages.AuroraPreferencePage"
+            id="aurora.ide.preferencePage"
             name="%page.root">
       </page>
       <page
-            category="uncertain.ide.eclipse.preferencePage.RootPreferencePage"
-            class="uncertain.ide.eclipse.preferencepages.AuroraTemplatePreferencePage"
-            id="uncertain.ide.eclipse.preferencePage.TemplatesPage"
+            category="aurora.ide.preferencePage"
+            class="preferencepages.AuroraTemplatePreferencePage"
+            id="aurora.ide.preferencePage.TemplatesPage"
             name="%page.templates">
       </page>
    </extension>
@@ -100,12 +116,12 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
-            id="org.eclipse.aurora.ide.sxsd.valid"
+            id="aurora.ide.sxsd.valid"
             objectClass="org.eclipse.core.resources.IResource">
          <action
-               class="uncertain.ide.eclipse.navigator.action.SxsdPackageValidAction"
+               class="navigator.action.SxsdPackageValidAction"
                icon="icons/sxsd.gif"
-               id="uncertain.ide.eclipse.action.SxsdPackageValidAction"
+               id="aurora.ide.action.SxsdPackageValidAction"
                label="%action.validate.builtin.package"
                enablesFor="1"
                menubarPath="additions">
@@ -115,62 +131,68 @@
             	 <instanceof value="org.eclipse.core.resources.IContainer"/>
             	 <test
                   forcePluginActivation="true"
-                  property="uncertain.sxsd.valid.visable"
+                  property="aurora.ide.sxsd.valid.visable"
                   value="true"/>
             </and>
          </enablement>
       </objectContribution>
 	   <viewerContribution 
-	      id="uncertain.ide.eclipse.editor.textpage.TextPage.format"
-	   targetID="uncertain.ide.eclipse.editor.textpage.TextPage.context"> 
+	      id="aurora.ide.editor.textpage.format"
+	   targetID="aurora.ide.editor.textpage.context"> 
 	      <action
-	         id="uncertain.ide.eclipse.editor.textpage.FormatAction" 
-	         label="格式化"
+	         id="aurora.ide.editor.textpage.FormatAction" 
+	         label="格式化XML"
 	         menubarPath="additions" 
-	         class="uncertain.ide.eclipse.editor.textpage.action.FormatAction"> 
+	         class="editor.textpage.action.FormatAction"> 
 	      </action>
        <action
-             class="uncertain.ide.eclipse.editor.textpage.action.GetFileNameAction"
-             id="uncertain.ide.eclipse.editor.textpage.GetFileNameAction"
+             class="editor.textpage.action.GetFileNameAction"
+             id="aurora.ide.editor.textpage.GetFileNameAction"
              label="复制文件名"
              menubarPath="additions">
        </action>
        <action
-             class="uncertain.ide.eclipse.editor.textpage.action.AnnotateSeletionAction"
-             id="uncertain.ide.eclipse.editor.textpage.action.annotateseletionaction"
+             class="editor.textpage.action.AnnotateSeletionAction"
+             id="aurora.ide.editor.textpage.annotateseletionaction"
              label="注释"
              menubarPath="additions">
        </action>
        <action
-             class="uncertain.ide.eclipse.editor.textpage.action.CancelAnnotateSeletionAction"
-             id="uncertain.ide.eclipse.editor.textpage.action.cancelannotateseletionaction"
+             class="editor.textpage.action.CancelAnnotateSeletionAction"
+             id="aurora.ide.editor.textpage.cancelannotateseletionaction"
              label="取消注释"
              menubarPath="additions">
-       </action> 
+       </action>
+       <action
+             class="editor.textpage.action.FormatJS"
+             id="aurora.ide.editor.textpage.FormatJS"
+             label="格式化JS"
+             menubarPath="additions">
+       </action> -->
 	   </viewerContribution>
     <objectContribution
           adaptable="true"
-          id="uncertain.ide.eclipse.extendbm"
+          id="aurora.ide.extendbm"
           nameFilter="*.bm"
           objectClass="org.eclipse.core.resources.IFile">
        <action
-             class="uncertain.ide.eclipse.navigator.action.CreateBMByExtendAction"
+             class="navigator.action.CreateBMByExtendAction"
              enablesFor="1"
              icon="icons/bm.gif"
-             id="uncertain.ide.eclipse.navigator.action.createbmbyextendaction"
+             id="aurora.ide.navigator.createbmbyextendaction"
              label="继承此BM"
              menubarPath="additions"> 
        </action>
     </objectContribution>
     <objectContribution
           adaptable="true"
-          id="uncertain.ide.eclipse.add.auroranature"
+          id="aurora.ide.add.auroranature"
           objectClass="org.eclipse.core.resources.IProject">
        <action
-             class="uncertain.ide.eclipse.navigator.action.AddAuroraNature"
+             class="navigator.action.AddAuroraNature"
              enablesFor="1"
-             icon="icons/uncertain.gif"
-             id="uncertain.ide.eclipse.navigator.action.addauroranature"
+             icon="icons/aurora.gif"
+             id="aurora.ide.navigator.action.addauroranature"
              label="设置为Aurora工程"
              menubarPath="additions">
        </action>
@@ -182,7 +204,7 @@
              <test
                    args="false"
                    forcePluginActivation="true"
-                   property="uncertain.ide.eclipse.project.nature"
+                   property="aurora.ide.project.nature"
                    value="true">
              </test>
           </and>
@@ -190,13 +212,13 @@
     </objectContribution>
     <objectContribution
           adaptable="true"
-          id="uncertain.ide.eclipse.add.auroranature"
+          id="aurora.ide.add.auroranature"
           objectClass="org.eclipse.core.resources.IProject">
        <action
-             class="uncertain.ide.eclipse.navigator.action.RemoveAuroraNature"
+             class="navigator.action.RemoveAuroraNature"
              enablesFor="1"
-             icon="icons/uncertain.gif"
-             id="uncertain.ide.eclipse.navigator.action.removauroranature"
+             icon="icons/aurora.gif"
+             id="aurora.ide.navigator.action.removauroranature"
              label="取消Aurora工程设置"
              menubarPath="additions">
        </action>
@@ -208,7 +230,7 @@
              <test
                    args="true"
                    forcePluginActivation="true"
-                   property="uncertain.ide.eclipse.project.nature"
+                   property="aurora.ide.project.nature"
                    value="true">
              </test>
           </and>
@@ -217,23 +239,23 @@
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
     <propertyTester
-    namespace ="uncertain.sxsd.valid" 
+    namespace ="aurora.ide.sxsd.valid" 
    properties ="visable" 
    type ="java.lang.Object" 
-   class ="uncertain.ide.eclipse.navigator.action.SxsdValidVisablePropertyTester" 
-   id ="uncertain.ide.eclipse.action.SxsdValidVisablePropertyTeste" >   
+   class ="navigator.action.SxsdValidVisablePropertyTester" 
+   id ="aurora.ide.action.SxsdValidVisablePropertyTeste" >   
     </propertyTester >
     <propertyTester
-          class="uncertain.ide.eclipse.navigator.BMHierarchyViewerTester"
-          id="uncertain.ide.eclipse.navigator.BMHierarchyTester"
-          namespace="uncertain.ide.eclipse.navigator.bm.container"
+          class="navigator.BMHierarchyViewerTester"
+          id="aurora.ide.navigator.BMHierarchyTester"
+          namespace="aurora.ide.navigator.bm.container"
           properties="triggerponits"
           type="java.lang.Object">
     </propertyTester>
     <propertyTester
-          class="uncertain.ide.eclipse.navigator.action.ProjectNatureTester"
-          id="uncertain.ide.eclipse.navigator.action.projectnaturetester"
-          namespace="uncertain.ide.eclipse.project"
+          class="navigator.action.ProjectNatureTester"
+          id="aurora.ide.navigator.action.projectnaturetester"
+          namespace="aurora.ide.project"
           properties="nature"
           type="java.lang.Object">
     </propertyTester>
@@ -241,9 +263,14 @@
        <extension
              point="org.eclipse.ui.editors.templates">
           <contextType
-                class="uncertain.ide.eclipse.preferencepages.AuroraTemplateContextType"
-                id="uncertain_ide.new_screen"
+                class="preferencepages.AuroraTemplateContextType"
+                id="aurora.ide.new_screen"
                 name="%contextType.new.screen">
+          </contextType>
+          <contextType
+                class="preferencepages.AuroraTemplateContextType"
+                id="aurora.ide.sign"
+                name="签名">
           </contextType>
           <include
                 file="templates/default-templates.xml"
@@ -255,13 +282,13 @@
              point="org.eclipse.ui.actionSets">
           <actionSet
                 description="quick open file actionSets"
-                id="uncertain_ide.actionset.quickopenfile"
+                id="aurora.ide.actionset.quickopenfile"
                 label="quick open file actionSets"
                 visible="true">
              <action
-                   class="uncertain.ide.eclipse.toolbar.action.OpenFileAction"
+                   class="toolbar.action.OpenFileAction"
                    icon="icons/openfile.gif"
-                   id="uncertain_ide.action.quickopenfile"
+                   id="aurora.ide.action.quickopenfile"
                    label="quick open file"
                    style="push"
                    toolbarPath="additions"
@@ -278,10 +305,10 @@
                 viewerId="org.eclipse.ui.navigator.ProjectExplorer">
              <includes>
                 <contentExtension
-                      pattern="uncertain.ide.eclipse.navigator.bmhierarchy">
+                      pattern="aurora.ide.navigator.filter">
                 </contentExtension>
                 <contentExtension
-                      pattern="uncertain_ide.eclipse.navigator.filter">
+                      pattern="aurora.ide.navigator.bmhierarchy">
                 </contentExtension>
              </includes>
           </viewerContentBinding>
@@ -290,33 +317,33 @@
              point="org.eclipse.ui.navigator.navigatorContent">
           <commonFilter
                 activeByDefault="true"
-                class="uncertain.ide.eclipse.navigator.BMFileFilter"
+                class="navigator.BMFileFilter"
                 description="Filter leaf BM"
-                id="uncertain_ide.eclipse.navigator.filter"
+                id="aurora.ide.navigator.filter"
                 name="Filter leaf BM">
           </commonFilter>
           <navigatorContent
                 activeByDefault="true"
-                contentProvider="uncertain.ide.eclipse.navigator.BMFileContentProvider"
+                contentProvider="navigator.BMFileContentProvider"
                 icon="icons/bm.gif"
-                id="uncertain.ide.eclipse.navigator.bmhierarchy"
-                labelProvider="uncertain.ide.eclipse.navigator.BMFileLabelProvider"
+                id="aurora.ide.navigator.bmhierarchy"
+                labelProvider="navigator.BMFileLabelProvider"
                 name="BM  Hierarchy"
-                priority="low">
+                priority="lowest">
              	<triggerPoints>
                     <test
                           forcePluginActivation="true"
-                          property="uncertain.ide.eclipse.navigator.bm.container.triggerponits"
+                          property="aurora.ide.navigator.bm.container.triggerponits"
                           value="true">
                     </test>
              </triggerPoints>
              <possibleChildren>
                 <or>
                    <instanceof
-                         value="uncertain.ide.eclipse.navigator.BMFile">
+                         value="org.eclipse.core.resources.IFile">
                    </instanceof>
                    <instanceof
-                         value="org.eclipse.core.resources.IFile">
+                         value="navigator.BMFile">
                    </instanceof>
                 </or>
              </possibleChildren>
@@ -325,12 +352,12 @@
 	<extension point="org.eclipse.ui.propertyPages">
 	  <page
          adaptable="true"
-         class="uncertain.ide.eclipse.project.propertypage.ProjectPropertyPage"
-         icon="icons/uncertain.gif"
-         id="uncertain.ide.eclipse.projectproperty"
+         class="project.propertypage.ProjectPropertyPage"
+         icon="icons/aurora.gif"
+         id="aurora.ide.projectproperty"
          name="Aurora工程设置"
          objectClass="org.eclipse.core.resources.IProject">
-      <filter name="nature" value="uncertain_ide.auroranature"/>
+      <filter name="nature" value="aurora.ide.auroranature"/>
 	  </page>
 	</extension>
 	<extension  
@@ -338,66 +365,91 @@
    		<type  
          markerSeverity="2"  
          markerType="org.eclipse.core.resources.textmarker"  
-         name="uncertain.ide.eclipse.word.highlight"  
-         super="org.eclipse.ui.workbench.texteditor.bookmark">  
+         name="aurora.ide.word.highlight"  
+         super="org.eclipse.search.results">  
   		 </type>
      <type
            markerSeverity="2"
            markerType="org.eclipse.core.resources.problemmarker"
-           name="uncertain.ide.eclipse.text.valid"
+           name="aurora.ide.text.valid"
            super="org.eclipse.ui.workbench.texteditor.error">
+     </type>
+     <type
+           markerSeverity="2"
+           markerType="org.eclipse.core.resources.textmarker"
+           name="aurora.ide.braces.match">
      </type>  
 		</extension>  
 	<extension  
 	      point="org.eclipse.ui.editors.markerAnnotationSpecification">  
 	   <specification
-          annotationType="uncertain.ide.eclipse.word.highlight"
-          colorPreferenceKey="color.yellow"
-          colorPreferenceValue="0,128,255"
-          highlightPreferenceKey="highlight.true"
+          annotationType="aurora.ide.word.highlight"
+          colorPreferenceKey="highlight.corlor"
+          colorPreferenceValue="212,212,212"
+          highlightPreferenceKey="highlight.highlight"
           highlightPreferenceValue="true"
           includeOnPreferencePage="true"
           isGoToNextNavigationTarget="true"
-          isGoToNextNavigationTargetKey="hightlight_isOccurrenceGoToNextNavigationTarget"
+          isGoToNextNavigationTargetKey="hightlight.isOccurrenceGoToNextNavigationTarget"
           isGoToPreviousNavigationTarget="true"
           isGoToPreviousNavigationTargetKey="highlight_isOccurrenceGoToPreviousNavigationTarget"
           label="Aurora Word Highlight"
-          overviewRulerPreferenceKey="overview.show"
+          overviewRulerPreferenceKey="highlight.overviewRuler"
           overviewRulerPreferenceValue="true"
           showInNextPrevDropdownToolbarAction="true"
-          showInNextPrevDropdownToolbarActionKey="highlight_showOccurrenceInNextPrevDropdownToolbarAction"
-          textPreferenceKey="text.key"
+          showInNextPrevDropdownToolbarActionKey="highlight.showInNextPrevDropdownToolbarAction"
+          textPreferenceKey="highlight.text"
           textPreferenceValue="true"
-          verticalRulerPreferenceKey="vertical.show"
+          verticalRulerPreferenceKey="highlight.verticalRuler"
           verticalRulerPreferenceValue="false">
 	  </specification>
    <specification  
-         annotationType="uncertain.ide.eclipse.text.valid"  
-         colorPreferenceKey="errorColorKey"  
+         annotationType="aurora.ide.text.valid"  
+         colorPreferenceKey="text.valid.color"  
          colorPreferenceValue="255,0,0"  
          contributesToHeader="true"  
-         highlightPreferenceKey="errorHightlightKey"  
+         highlightPreferenceKey="text.valid.highlight"  
          highlightPreferenceValue="false"  
          icon="icons/error.gif"  
          includeOnPreferencePage="true"  
          isGoToNextNavigationTarget="true"  
-         isGoToNextNavigationTargetKey="Error_isOccurrenceGoToNextNavigationTarget"  
+         isGoToNextNavigationTargetKey="text.valid.isOccurrenceGoToNextNavigationTarget"  
          isGoToPreviousNavigationTarget="true"  
-         isGoToPreviousNavigationTargetKey="Error_isOccurrenceGoToPreviousNavigationTarget"  
+         isGoToPreviousNavigationTargetKey="text.valid.isOccurrenceGoToPreviousNavigationTarget"  
          label="Aurora Text Valid"  
-         overviewRulerPreferenceKey="errorOverviewKey"  
+         overviewRulerPreferenceKey="text.valid.overviewRuler"  
          overviewRulerPreferenceValue="true"  
          presentationLayer="4"  
          quickFixIcon="icons/error.gif"  
          showInNextPrevDropdownToolbarAction="true"  
-         showInNextPrevDropdownToolbarActionKey="Error_showOccurrenceInNextPrevDropdownToolbarAction"  
+         showInNextPrevDropdownToolbarActionKey="text.valid.showInNextPrevDropdownToolbarAction"  
          symbolicIcon="error"  
-         textPreferenceKey="errorTextKey"  
+         textPreferenceKey="text.valid.text"  
          textPreferenceValue="true"  
-         textStylePreferenceKey="occurrenceTextStyle"  
+         textStylePreferenceKey="text.valid.textStyle"  
          textStylePreferenceValue="PROBLEM_UNDERLINE"  
-         verticalRulerPreferenceKey="errorVerticalKey"  
+         verticalRulerPreferenceKey="text.valid.verticalRuler"  
          verticalRulerPreferenceValue="true">  
+   </specification>
+   <specification
+         annotationType="aurora.ide.braces.match"
+         colorPreferenceKey="braces.match.color"
+         colorPreferenceValue="0,128,255"
+         highlightPreferenceKey="braces.match.highlight"
+         highlightPreferenceValue="false"
+         includeOnPreferencePage="true"
+         isGoToNextNavigationTarget="false"
+         isGoToPreviousNavigationTarget="false"
+         label="Aurora Brace Match"
+         overviewRulerPreferenceKey="braces.match.overviewRuler"
+         overviewRulerPreferenceValue="false"
+         showInNextPrevDropdownToolbarAction="false"
+         textPreferenceKey="braces.match.text"
+         textPreferenceValue="true"
+         textStylePreferenceKey="braces.match.textStyle"
+         textStylePreferenceValue="BOX"
+         verticalRulerPreferenceKey="braces.match.verticalRuler"
+         verticalRulerPreferenceValue="false">
    </specification>
 	</extension>
 	<extension  
@@ -405,8 +457,31 @@
       point="org.eclipse.core.resources.natures">  
    <runtime>  
       <run  
-            class="uncertain.ide.AuroraProjectNature">  
+            class="ide.AuroraProjectNature">  
       </run>  
    </runtime>  
-</extension>        
+</extension>
+ <extension
+       point="org.eclipse.ui.commands">
+    <category
+          description="Aurora commands"
+          id="aurora.ide.commands"
+          name="Aurora commands">
+    </category>
+    <command
+          categoryId="aurora.ide.commands"
+          description="Format Aurora Source Code"
+          id="aurora.ide.format"
+          name="aurora format ">
+    </command>
+ </extension>
+ <extension
+       point="org.eclipse.ui.bindings">
+    <key
+          commandId="aurora.ide.format"
+          contextId="aurora.ide.EditorScope"
+          schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+          sequence="M1+M2+P">
+    </key>
+ </extension>
 </plugin>
