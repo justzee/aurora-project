@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.scanners;
+package editor.textpage.scanners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,9 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.widgets.Display;
 
-import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IColorConstants;
+import editor.textpage.ColorManager;
+import editor.textpage.IColorConstants;
+
 
 /**
  * This class implements a RuleBaseScanner for SQL source code text.

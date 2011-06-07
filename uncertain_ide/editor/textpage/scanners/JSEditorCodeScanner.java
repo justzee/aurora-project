@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.scanners;
+package editor.textpage.scanners;
 
 
 import java.util.ArrayList;
@@ -17,9 +17,10 @@ import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
 
-import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IColorConstants;
-import uncertain.ide.eclipse.editor.textpage.XMLWhitespaceDetector;
+import editor.textpage.ColorManager;
+import editor.textpage.IColorConstants;
+import editor.textpage.XMLWhitespaceDetector;
+
 /**
  * A Java code scanner.
  */

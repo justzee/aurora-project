@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.scanners;
+package editor.textpage.scanners;
 
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
@@ -6,9 +6,9 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.Token;
 
-import uncertain.ide.eclipse.editor.textpage.rules.NonMatchingRule;
-import uncertain.ide.eclipse.editor.textpage.rules.StartTagRule;
-import uncertain.ide.eclipse.editor.textpage.rules.XMLTextPredicateRule;
+import editor.textpage.rules.NonMatchingRule;
+import editor.textpage.rules.StartTagRule;
+
 
 
 
@@ -22,7 +22,6 @@ public class XMLPartitionScanner extends RuleBasedPartitionScanner
 	public final static String XML_CDATA = "XML_CDATA";
 	public final static String XML_START_TAG = "XML_START_TAG";
 	public final static String XML_END_TAG = "XML_END_TAG";
-	public final static String XML_TEXT = "XML_TEXT";
 
 public XMLPartitionScanner()
 {
@@ -32,7 +31,7 @@ public XMLPartitionScanner()
 	IToken startTag = new Token(XML_START_TAG);
 	IToken endTag = new Token(XML_END_TAG);
 	IToken docType = new Token(XML_DOCTYPE);
-	IToken text = new Token(XML_TEXT);
+	IToken cData = new Token(XML_CDATA);
 
 	IPredicateRule[] rules = new IPredicateRule[7];
 
@@ -40,9 +39,9 @@ public XMLPartitionScanner()
 	rules[1] = new MultiLineRule("<!--", "-->", xmlComment);
 	rules[2] = new MultiLineRule("<?", "?>", xmlPI);
 	rules[3] = new MultiLineRule("</", ">", endTag);
-	rules[4] = new StartTagRule(startTag);
-	rules[5] = new MultiLineRule("<!DOCTYPE", ">", docType);
-	rules[6] = new XMLTextPredicateRule(text);
+	rules[4] = new MultiLineRule("<!DOCTYPE", ">", docType);
+	rules[5] = new MultiLineRule("<![CDATA[", "]]>", cData);
+	rules[6] = new StartTagRule(startTag);
 
 	setPredicateRules(rules);
 }

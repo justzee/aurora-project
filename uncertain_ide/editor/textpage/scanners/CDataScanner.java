@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.scanners;
+package editor.textpage.scanners;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IRule;
@@ -6,9 +6,10 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 
-import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IColorConstants;
-import uncertain.ide.eclipse.editor.textpage.rules.CDataRule;
+import editor.textpage.ColorManager;
+import editor.textpage.IColorConstants;
+import editor.textpage.rules.CDataRule;
+
 
 
 public class CDataScanner extends RuleBasedScanner

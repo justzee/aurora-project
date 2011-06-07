@@ -1,4 +1,4 @@
-package uncertain.ide.eclipse.editor.textpage.scanners;
+package editor.textpage.scanners;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IRule;
@@ -8,9 +8,10 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 
-import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IColorConstants;
-import uncertain.ide.eclipse.editor.textpage.XMLWhitespaceDetector;
+import editor.textpage.ColorManager;
+import editor.textpage.IColorConstants;
+import editor.textpage.XMLWhitespaceDetector;
+
 
 
 
