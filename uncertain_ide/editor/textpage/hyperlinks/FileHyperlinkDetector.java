@@ -1,4 +1,7 @@
-package uncertain.ide.eclipse.editor.textpage.hyperlinks;
+package editor.textpage.hyperlinks;
+
+import helpers.DialogUtil;
+import helpers.SystemException;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -12,12 +15,11 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
-import uncertain.ide.eclipse.editor.textpage.ColorManager;
-import uncertain.ide.eclipse.editor.textpage.IColorConstants;
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLPartitionScanner;
-import uncertain.ide.eclipse.editor.textpage.scanners.XMLTagScanner;
-import uncertain.ide.help.CustomDialog;
-import uncertain.ide.help.SystemException;
+import editor.textpage.ColorManager;
+import editor.textpage.IColorConstants;
+import editor.textpage.scanners.XMLPartitionScanner;
+import editor.textpage.scanners.XMLTagScanner;
+
 
 public class FileHyperlinkDetector implements IHyperlinkDetector {
 
@@ -62,7 +64,7 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 				}
 			}
 		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 		}
 		return null;
 	}

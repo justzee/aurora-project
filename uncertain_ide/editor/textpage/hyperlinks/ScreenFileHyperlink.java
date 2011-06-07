@@ -1,4 +1,7 @@
-package uncertain.ide.eclipse.editor.textpage.hyperlinks;
+package editor.textpage.hyperlinks;
+
+import helpers.DialogUtil;
+import ide.AuroraPlugin;
 
 import java.io.File;
 
@@ -11,8 +14,6 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.ide.IDE;
 
-import uncertain.ide.Activator;
-import uncertain.ide.help.CustomDialog;
 
 public class ScreenFileHyperlink implements IHyperlink {
 	private IRegion region;
@@ -37,7 +38,7 @@ public class ScreenFileHyperlink implements IHyperlink {
 
 	public void open() {
 
-		IFile currentFile = Activator.getActiveIFile();
+		IFile currentFile = AuroraPlugin.getActiveIFile();
 		String parentFullPath = currentFile.getParent().getLocation()
 				.toOSString();
 		IDocument doc = viewer.getDocument();
@@ -45,7 +46,7 @@ public class ScreenFileHyperlink implements IHyperlink {
 			String path = doc.get(region.getOffset(), region.getLength());
 			char ch = File.separatorChar;
 			String fullPath = parentFullPath + ch + path;
-			IWorkbenchPage page = Activator.getActivePage();
+			IWorkbenchPage page = AuroraPlugin.getActivePage();
 			IProject project = currentFile.getProject();
 			String fullFile = (new File(fullPath)).getAbsolutePath();
 			String projectFile = (new File(project.getLocation().toOSString()))
@@ -57,7 +58,7 @@ public class ScreenFileHyperlink implements IHyperlink {
 			IFile java_file = project.getFile(filePath);
 			IDE.openEditor(page, java_file);
 		} catch (Exception e) {
-			CustomDialog.showExceptionMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 		}
 	}
 }

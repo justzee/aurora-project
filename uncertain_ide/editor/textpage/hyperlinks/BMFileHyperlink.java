@@ -1,4 +1,8 @@
-package uncertain.ide.eclipse.editor.textpage.hyperlinks;
+package editor.textpage.hyperlinks;
+
+import ide.AuroraPlugin;
+import helpers.ApplicationException;
+import helpers.DialogUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -10,10 +14,8 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 
-import uncertain.ide.Activator;
-import uncertain.ide.eclipse.bm.BMUtil;
-import uncertain.ide.help.ApplicationException;
-import uncertain.ide.help.CustomDialog;
+import bm.BMUtil;
+
 
 public class BMFileHyperlink implements IHyperlink {
 	private IRegion region;
@@ -42,16 +44,16 @@ public class BMFileHyperlink implements IHyperlink {
 			String classPath = doc.get(region.getOffset(), region.getLength());
 			IResource file = BMUtil.getBMFromClassPath(classPath);
 			if (!(file instanceof IFile)) {
-				CustomDialog.showErrorMessageBox("资源" + file + "不是一个文件类型");
+				DialogUtil.showErrorMessageBox("资源" + file + "不是一个文件类型");
 				return;
 			}
-			IDE.openEditor(Activator.getActivePage(), (IFile) file);
+			IDE.openEditor(AuroraPlugin.getActivePage(), (IFile) file);
 		} catch (PartInitException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 		} catch (BadLocationException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 		} catch (ApplicationException e) {
-			CustomDialog.showErrorMessageBox(e);
+			DialogUtil.showExceptionMessageBox(e);
 
 		}
 	}
