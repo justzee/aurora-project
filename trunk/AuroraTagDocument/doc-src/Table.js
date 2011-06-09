@@ -46,6 +46,27 @@
  */
 
 /**
+ * 是否具有导航条
+ * @property navBar
+ * @type Boolean
+ * @default false
+ */
+
+/**
+ * 导航条的类型，可选值：complex|simple
+ * @property navBarType
+ * @type String
+ * @default complex
+ */
+
+/**
+ * 导航条的类型simple时，最大可显示的页数，如果总页数超过该值，会以省略号显示。
+ * @property maxPageCount
+ * @type Integer
+ * @default 10
+ */
+
+/**
  * @property height
  * @remove
  */

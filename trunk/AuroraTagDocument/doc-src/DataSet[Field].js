@@ -141,7 +141,7 @@
  */
  
 /**
- * 是否开启autoComplete功能
+ * 是否开启lov的autoComplete功能
  * @property autoComplete
  * @type Boolean
  * @default false
