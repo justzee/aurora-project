@@ -38,3 +38,7 @@
   进入bin目录，双击shutdown.bat文件。
 ==查看日志==
   查看uncertain.xml中定义的log目录。
+
+附：
+startup.bat和shutdown.bat文件在此下载 
+[http://code.google.com/p/aurora-project/downloads/detail?name=bin.zip&can=2&q=]
