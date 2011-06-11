@@ -14,15 +14,16 @@
 
 部署后的主目录有如下结构：
 
- * bin
-  * startup.bat（必须）
-  * shutdown.bat（必须）
+ * bin/
+  * startup.bat（或其它OS脚本，必须）
+  * shutdown.bat（或其它OS脚本，必须）
+  以下是其它特性所需要的辅助文件
   * MYSERVER.jcoServer
   * BCE.jcoDestination
- * web-inf
+ * WEB-INF/
   * lib（必须）
     * aurora.jar
-    * classes12.jar
+    * classes12.jar（JDBC驱动）
     * 其他jar包
   * 0.datasource.config（必须）
   * aurora.config（必须）
@@ -33,9 +34,9 @@
 这个结构跟tomcat的结构基本类似，仅稍有不同：bin目录是跟web-inf目录是同级的，并减少了很多其他目录和文件。用户只需把自定义的config文件放入web-inf下，把jar包放入lib下，并把其他资源（如果需要）放入bin目录下，部署即完成。
 
 ==启动==
-  进入bin目录，双击startup.bat文件
+  进入bin目录，运行startup.bat或startup.sh文件
 ==停止==
-  进入bin目录，双击shutdown.bat文件。
+  进入bin目录，运行shutdown.bat或shutdown.sh文件。
 ==查看日志==
   查看uncertain.xml中定义的log目录。
 
