@@ -63,7 +63,7 @@ responseCacheKeyPrefix="${/session/@lang}.${/session/@theme}"
 <screen cacheEnabled="true" cacheKey="${/session/@user_id}.${/parameter/@product_id}" />
 }}}
 
-表示，该screen启用页面输出cache，并以当前用户id，以及来自参数的product_id, product_version两个参数联合起来作为key。还是以前面的a.screen为例，假设用户1001访问这个界面，传递的参数为product_id=P1111，那么最终生成的key为：
+cacheEnabled设置是否启用页面输出缓存。cacheKey设置这个页面自己的cache key内容。上面的例子表示，该screen启用页面输出cache，并以当前用户id，以及来自参数的product_id, product_version两个参数联合起来作为key。还是以前面的a.screen为例，假设用户1001访问这个界面，传递的参数为product_id=P1111，那么最终生成的key为：
 
 {{{
 <实际物理路径>/a.screen.12346.ZHS.default.1001.P1111
