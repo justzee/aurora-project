@@ -55,7 +55,9 @@ if(map==null){
 
 说明：
 <cache-factories>
-此部分配置系统可用的cache的提供者，并给以命名，供后面需要使用cache的地方选用。其下包含1..n个可以映射为uncertain.cache.INamedCacheFactory的XML tag。目前Aurora提供两种Cache factory，<map-based-cache-factory>是基于HashMap的简单实现，用于可以在内存中缓存的数据。<memcached-client-factory>使用memcached作为后端cache实现，内部使用spymemcached作为memcached的java客户端。在上述配置例子中，分别给这两个cache factory用name属性进行命名，以便区分。
+此部分配置系统可用的cache的提供者，并给以命名，供后面需要使用cache的地方选用。其下包含1..n个可以映射为uncertain.cache.INamedCacheFactory的XML tag。目前Aurora提供两种Cache factory，<map-based-cache-factory>是基于HashMap的简单实现，用于可以在内存中缓存的数据。<memcached-client-factory>使用memcached作为后端cache实现，内部使用spymemcached作为memcached的java客户端。通过serverList属性配置memcached server的ip和端口号，如果有多个memcached server，用空格分开每个server，例如：serverList="10.213.1.21:9000 10.213.1.22:9000 10.213.1.23:9888"
+
+在上述配置例子中，分别给这两个cache factory用name属性进行命名，以便区分。
 
 <cache-mappings>
 此部分配置预先约定的cache名称与INamedCacheFactory实例的对应关系，由此，可以设置某种类型的cache由哪个INamedCacheFactory实例来提供，以及这部分cache是否启用。例如：
