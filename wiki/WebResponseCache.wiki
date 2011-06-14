@@ -8,10 +8,12 @@
 
 ==页面缓存的配置==
 
-# 在WEB-INF/中创建response-cache.config文件，其内容为：
+在WEB-INF/中创建response-cache.config文件，其内容为：
 
 {{{
-<response-cache-provider xmlns="aurora.application.features" responseCacheName="ResponseCache" responseCacheKeyPrefix="${/session/@lang}.${/session/@theme}" />
+<response-cache-provider xmlns="aurora.application.features" 
+                   responseCacheName="ResponseCache"               
+                   responseCacheKeyPrefix="${/session/@lang}.${/session/@theme}" />
 }}}
 
 其中：
