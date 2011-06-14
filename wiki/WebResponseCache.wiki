@@ -75,7 +75,9 @@ cacheEnabled设置是否启用页面输出缓存。cacheKey设置这个页面自
 
 首先，在UI package的components.xml中增加组件配置：
 {{{
-        <view-component elementName="cached-part" nameSpace="http://www.aurora-framework.org/application" builder="aurora.presentation.component.CachedPart" />
+        <view-component elementName="cached-part" 
+                      nameSpace="http://www.aurora-framework.org/application" 
+                      builder="aurora.presentation.component.CachedPart" />
 }}}
 
 然后，在screen文件中，需要进行部分缓存的地方，使用<cached-part>组件：
