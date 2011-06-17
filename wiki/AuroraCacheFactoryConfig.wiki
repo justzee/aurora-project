@@ -1,4 +1,5 @@
 #summary Aurora Cache基础配置
+#labels document
 
 ==基础接口==
 
