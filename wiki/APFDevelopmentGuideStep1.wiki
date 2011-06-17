@@ -1,4 +1,4 @@
-#labels dev_guide
+#labels design
 ===第1步 Hello World===
 
 下面是一个最简单的例子，我们将创建一个组件，并让它在APF的架构中产生输出。
