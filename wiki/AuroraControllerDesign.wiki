@@ -1,4 +1,5 @@
 #summary Aurora controller design
+#labels design
 
 = Aurora Controller 设计概要 =
 
