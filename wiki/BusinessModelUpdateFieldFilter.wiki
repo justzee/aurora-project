@@ -1,4 +1,5 @@
 #summary BM如何控制update字段
+#labels document
 
 = 常规情况 =
 
