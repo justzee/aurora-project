@@ -1,11 +1,11 @@
+#summary Aurora展示层组件开发指南
 #labels design
-==APF ( Aurora Presentation Framework ) Development Guide==
 
-===概述===
+==概述==
 
 APF是一个基于MVC模式的，以输出文本为目标的展示层框架。APF的基本设计理念是：将创建界面的工作视为获取配置（Configuration），并产生输出文本的一个流程；在这个流程中，配置经过一系列参与者（Participant）的加工，演变为最终结果。整个过程是一次性，无状态的。所有参与者之间形成数据耦合的关系，即A的输出作为B的输入，参与者唯一的联系就是作为中间产物的数据结构的约定，除此之外，所有参与者不对彼此的存在有任何感知，进而实现高度的松耦合性、可重用性。
 
 
-===目录===
+=目录==
  * [APFDevelopmentGuideStep1 第1步：Hello, World]
  * [APFDevelopmentGuideStep2 第2步：使用Package进行配置]
