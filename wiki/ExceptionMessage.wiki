@@ -1,4 +1,5 @@
 #summary Exception多语言机制
+#labels design
 
 1.通过静态工厂方法装载预定义的property文件，实现异常信息的code与实际内容的映射。例如：
 
