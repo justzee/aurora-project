@@ -1,5 +1,5 @@
 #summary BM访问权限控制的实现方式
-#labels Phase-Design
+#labels design
 
 = 概述 =
 
