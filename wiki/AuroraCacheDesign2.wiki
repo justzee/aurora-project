@@ -1,4 +1,5 @@
 #summary Aurora Cache机制探讨 【二】Cache的创建与维护
+#labels design
 
 =Cache数据更新检查=
 
