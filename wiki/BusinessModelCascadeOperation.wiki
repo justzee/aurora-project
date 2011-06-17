@@ -1,4 +1,5 @@
 #summary 在BM中实现master-detail层级批量更新.
+#labels document
 
 = BM的层级更新特性 =
 
