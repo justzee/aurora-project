@@ -1,4 +1,5 @@
 #summary 页面内容缓存的配置与使用
+#labels document
 
 ==概述==
 
