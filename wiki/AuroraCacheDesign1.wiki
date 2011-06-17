@@ -1,4 +1,5 @@
 #summary Aurora Cache机制探讨 【一】Cache Server概述
+#labels design
 
 ==Cache机制概述==
 
