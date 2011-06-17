@@ -1,4 +1,4 @@
-#labels 部署独立的Aurora应用
+#labels document
 部署独立的Aurora应用
 
 = 什么是独立的Aurora应用 =
