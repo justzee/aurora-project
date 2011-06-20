@@ -54,6 +54,13 @@
  */
 
 /**
+ * 是否是隐藏列
+ * @property hidden
+ * @type Boolean
+ * @default false
+ */
+
+/**
  * 是否可调整宽度
  * @property resizable
  * @type Boolean
