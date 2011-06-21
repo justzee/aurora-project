@@ -1,7 +1,7 @@
 /*
  * CompositeMap.java
  *
- * Created on 2002Äê1ÔÂ5ÈÕ, ÉÏÎç1:40
+ * Created on 2002ï¿½ï¿½1ï¿½ï¿½5ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½1:40
  */
 
 package uncertain.composite;
@@ -47,7 +47,7 @@ public class CompositeMap extends TypedHashMap implements Cloneable {
     
     
     //protected Locator locator;
-    
+    int[] location = new int[4];
     
     /** Creates new CompositeMap
      */
@@ -635,4 +635,15 @@ public class CompositeMap extends TypedHashMap implements Cloneable {
         this.locator = locator;
     }
     */
+	public void setStartPoint(int line,int column){
+		location[0] = line;
+		location[1] = column;
+	}
+	public void setEndPoint(int line,int column){
+		location[2] = line;
+		location[3] = column;
+	}
+	public int[] getLocation(){
+		return location;
+	}
 }
