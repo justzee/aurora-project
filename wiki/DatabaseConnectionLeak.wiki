@@ -1,8 +1,9 @@
 #summary 数据库连接泄露的诊断
+#labels document
 
-= 使用C3P0连接池 =
+== 使用C3P0连接池的连接泄露诊断方法 ==
 
-== 启用C3P0的连接归还超时设置 ==
+=== 启用C3P0的连接归还超时设置 ===
 
 在C3P0的属性配置文件（0.datasource.config）中，设置以下属性：
 {{{
@@ -16,7 +17,7 @@ unreturnedConnectionTimeout设置多长时间会超时，以秒为单位。
 
 假设系统中怀疑有连接泄露，那么，就可以启用这个功能，评估所有页面执行完成需要的最长时间，例如20分钟，然后将unreturnedConnectionTimeout设置为略大于这个时间。
 
-== 设置C3P0的log输出 ==
+=== 设置C3P0的log输出 ===
 
 为了能看到C3P0抛出的异常信息，还需要设置C3P0的log属性。最简单的方式就是让C3P0使用JDK标准的log API，这样不需要加载额外的jar。在启动JVM时，设置启动参数：
 -Dcom.mchange.v2.log.MLog=com.mchange.v2.log.jdk14logging.Jdk14MLog
