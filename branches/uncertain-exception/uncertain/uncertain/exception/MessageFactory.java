@@ -24,11 +24,12 @@ public class MessageFactory {
 		ResourceBundle resourceBundle = ResourceBundle.getBundle(path, locale);
 		Enumeration keys = resourceBundle.getKeys();
 		while (keys.hasMoreElements()) {
-			String key = generateKey((String) keys.nextElement(),locale);
-			if(messages.containsKey(key)){
+			String key = (String) keys.nextElement();
+			String fullKey = generateFullKey(key,locale);
+			if(messages.containsKey(fullKey)){
 				 throw new RuntimeException("The key:"+key+" from "+path+" has been defined before ! Please try another.");
 			}
-			messages.put(key, resourceBundle.getString(key));
+			messages.put(fullKey, resourceBundle.getString(key));
 		}
 	}
 
@@ -44,8 +45,8 @@ public class MessageFactory {
 
 	public static String getMessage(String msg_code, Locale locale,
 			Object[] args) {
-		String key = generateKey(msg_code,locale);
-		Object message_obj = messages.get(key);
+		String fullKey = generateFullKey(msg_code,locale);
+		Object message_obj = messages.get(fullKey);
 		if(message_obj == null)
 			return msg_code;
 		return MessageFormat.format((String)message_obj, args);
@@ -54,7 +55,7 @@ public class MessageFactory {
 	public static String getMessage(String msg_code, Object[] args) {
 		return getMessage(msg_code,locale,args);
 	}
-	public static String generateKey(String msg_code, Locale locale){
+	public static String generateFullKey(String msg_code, Locale locale){
 		if(msg_code == null || locale == null)
 			return null;
 		return msg_code+locale.getLanguage();
