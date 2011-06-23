@@ -148,7 +148,7 @@ public class CompositeMapParser extends DefaultHandler {
         else
             node = new CompositeMap((String) uri_mapping.get(namespaceURI),
                     namespaceURI, localName);
-        node.setStartPoint(locator.getLineNumber(), locator.getColumnNumber());
+        node.getLocationNotNull().setStartPoint(locator.getLineNumber(), locator.getColumnNumber());
         addAttribs(node, atts);
         /*
         if(last_locator!=null)
@@ -170,7 +170,7 @@ public class CompositeMapParser extends DefaultHandler {
         //last_locator = null;
 
         // test if this is an xinclude instruction
-    	current_node.setEndPoint(locator.getLineNumber(), locator.getColumnNumber());
+    	current_node.getLocationNotNull().setEndPoint(locator.getLineNumber(), locator.getColumnNumber());
         if ( getCompositeLoader().getSupportXInclude() )
             if (localName.equals(INCLUDE_INSTRUCTION) && uri != null)
                 if (uri.equals(XINCLUDE_URI)) {
