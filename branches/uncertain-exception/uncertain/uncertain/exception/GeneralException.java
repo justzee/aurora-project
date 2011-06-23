@@ -43,5 +43,8 @@ public class GeneralException extends RuntimeException implements ICodedExceptio
     public String getCode() {
         return code;
     }
+    public String getMessage() {
+        return getCode()+"=>"+super.getMessage();
+    }
 
 }
