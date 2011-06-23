@@ -33,7 +33,7 @@ public class IDocXMLParser {
 				header_id = iDocServer.getDbUtil().existHeaders(
 						file.getIdocId());
 				insertInterface(file);
-			} finally {
+			}catch(Throwable e){
 				if (idocType != null) {
 					errorIdocTypes.add(idocType);
 				}
@@ -42,28 +42,31 @@ public class IDocXMLParser {
 						+ " " + errorMessage);
 				iDocServer.getDbUtil().updateIdocsStatus(file.getIdocId(),
 						errorMessage);
+				throw new RuntimeException(e);
 			}
 			try {
 				iDocServer.log("insertMiddleTables for idoc:"
 						+ file.getIdocId());
 				insertMiddleTables(file);
-			} finally {
+			} catch(Throwable e) {
 				String errorMessage = "middle failed";
 				iDocServer.log("updateIdocStatus for idoc:" + file.getIdocId()
 						+ " " + errorMessage);
 				iDocServer.getDbUtil().updateIdocStatus(header_id,
 						file.getIdocId(), errorMessage);
+				throw new RuntimeException(e);
 			}
 			try {
 				iDocServer.log("insertFormalTables for idoc:"
 						+ file.getIdocId());
 				insertFormalTables(file);
-			} finally {
+			} catch(Throwable e) {
 				String errorMessage = "formal failed";
 				iDocServer.log("updateIdocStatus for idoc:" + file.getIdocId()
 						+ " " + errorMessage);
 				iDocServer.getDbUtil().updateIdocStatus(header_id,
 						file.getIdocId(), errorMessage);
+				throw new RuntimeException(e);
 
 			}
 			iDocServer.log("idoc:" + file.getIdocId() + " execute successful !");
