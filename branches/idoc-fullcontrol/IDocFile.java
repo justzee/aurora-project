@@ -22,7 +22,7 @@ public class IDocFile {
 	public static final String CRETIM_NODE = "CRETIM";
 	public static final String SERIAL_NODE = "SERIAL";
 	
-	private String path;
+	private String path; 
 	private int idocId;
 	private int serverId;
 	/**
@@ -39,7 +39,7 @@ public class IDocFile {
 	public String getPath() {
 		return path;
 	}
-	public void setPath(String path) {
+	public void setPath(String path ) {
 		this.path = path;
 	}
 	public int getIdocId() {

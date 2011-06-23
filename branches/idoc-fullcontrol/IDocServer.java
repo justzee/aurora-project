@@ -52,14 +52,10 @@ public class IDocServer {
 			// and BCE.jcoDestination
 			log("begin start IDocServer " + serverName + "...");
 			iDocServer = JCoIDoc.getServer(serverName);
-			log("get HistoryIdocs " + iDocServer.getProgramID());
-			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), idocFils);
+//			log("get HistoryIdocs " + iDocServer.getProgramID());
+//			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), idocFils);
 		} catch (JCoException e) {
 			handleException(serverName + " is not valid.", e);
-		} catch (SQLException e) {
-			handleException(" get HistoryIdocs " + iDocServer.getProgramID() + " failure!", e);
-		} catch (ApplicationException e) {
-			handleException(e);
 		}
 		MyIDocHandlerFactory idocHanlerFactory = new MyIDocHandlerFactory();
 		iDocServer.setIDocHandlerFactory(idocHanlerFactory);
@@ -76,7 +72,7 @@ public class IDocServer {
 			server_id = dbUtil.registerSapServers(iDocServer);
 			log("get server_id " + server_id);
 			iDocServer.start();
-			log("idocServer’s status is " + iDocServer.getState());
+			log("idocServer's status is " + iDocServer.getState());
 			if (!JCoServerState.ALIVE.equals(iDocServer.getState())
 					&& !JCoServerState.STARTED.equals(iDocServer.getState())) {
 				log("unRegisterSapServers server_id " + server_id);
@@ -86,9 +82,6 @@ public class IDocServer {
 				}
 				return;
 			}
-			log("start IDocXMLParser ");
-			IDocXMLParser parser = new IDocXMLParser(this);
-			parser.start();
 		} catch (SQLException e) {
 			handleException(e);
 		}
@@ -99,6 +92,9 @@ public class IDocServer {
 	}
 	public void setDbUtil(DataBaseUtil dbUtil) {
 		this.dbUtil = dbUtil;
+	}
+	public IDocServer getIDocServer(){
+		return this;
 	}
 	class MyIDocHandler implements JCoIDocHandler {
 		public void handleRequest(JCoServerContext serverCtx, IDocDocumentList idocList) {
@@ -116,8 +112,12 @@ public class IDocServer {
 				int idoc_id = dbUtil.addIdoc(server_id, filePath);
 				log("add idoc_id " + idoc_id);
 				addIdocFile(new IDocFile(filePath, idoc_id, server_id));
+				log("start IDocXMLParser ");
+				IDocXMLParser parser = new IDocXMLParser(getIDocServer());
+				parser.run();
 			} catch (Throwable thr) {
 				log(thr);
+				throw new RuntimeException(thr);
 			} finally {
 				try {
 					if (osw != null)
