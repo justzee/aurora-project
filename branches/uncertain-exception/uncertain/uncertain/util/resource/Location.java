@@ -14,7 +14,23 @@ public class Location {
 		location[3] = column;
 	}
 
-	public int[] getLocation() {
+	public int[] getRange() {
 		return location;
+	}
+	
+	public int getStartLine(){
+	    return location[0];
+	}
+	
+	public int getStartColumn(){
+	    return location[1];
+	}
+	
+	public int getEndLine(){
+	    return location[2];
+	}
+	
+	public int getEndColumn(){
+	    return location[3];
 	}
 }
