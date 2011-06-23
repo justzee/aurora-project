@@ -33,7 +33,7 @@ public class MessageFactoryTest  extends TestCase {
 				throw ge;
 			} 
 		} catch (Throwable e) {
-			assertEquals("aurora00002=>不能是格式错误，必须是格式正确.",e.getMessage());
+			assertEquals("aurora00002:不能是格式错误，必须是格式正确.",e.getMessage());
 			SAXParseException parseEx = (SAXParseException) e.getCause();
 			assertEquals(11,parseEx.getLineNumber());
 		}
