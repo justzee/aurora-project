@@ -16,6 +16,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import uncertain.util.resource.ISourceFile;
+import uncertain.util.resource.Location;
 
 /** A Map with a list of child maps, and a name and namespace
  * for xml creation
@@ -45,11 +46,9 @@ public class CompositeMap extends TypedHashMap implements Cloneable {
     /** Map<url,prefix> of namespace declare */
     protected Map   namespace_mapping;
     
-    
-    //protected Locator locator;
-    int[] location = new int[4];
-    
-    /** Creates new CompositeMap
+    Location location;
+
+	/** Creates new CompositeMap
      */
     public CompositeMap() {
         super(DEFAULT_HASHMAP_SIZE);
@@ -635,15 +634,16 @@ public class CompositeMap extends TypedHashMap implements Cloneable {
         this.locator = locator;
     }
     */
-	public void setStartPoint(int line,int column){
-		location[0] = line;
-		location[1] = column;
-	}
-	public void setEndPoint(int line,int column){
-		location[2] = line;
-		location[3] = column;
-	}
-	public int[] getLocation(){
+    public Location getLocationNotNull() {
+    	if(location == null)
+    		location = new Location();
 		return location;
+	}
+    public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 }
