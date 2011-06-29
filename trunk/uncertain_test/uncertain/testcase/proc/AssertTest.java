@@ -18,7 +18,7 @@ public class AssertTest extends ProcedureRunnerTest {
     
     
     public void doNormalAssertTest() throws Exception {
-        loadProcedure("AssertTest1.xml");
+        loadProcedure("AssertTest1.proc");
         assertNotNull(test_proc);
         assertNotNull(test_proc.getEntryList());
         ProcedureRunner runner = new ProcedureRunner(test_proc);
@@ -38,7 +38,7 @@ public class AssertTest extends ProcedureRunnerTest {
     
     public void doMessageTest() throws Exception {
         // load test script
-        loadProcedure("AssertTest2.xml");
+        loadProcedure("AssertTest2.proc");
         assertNotNull(test_proc);
         assertNotNull(test_proc.getEntryList());
         ProcedureRunner runner = new ProcedureRunner(test_proc);

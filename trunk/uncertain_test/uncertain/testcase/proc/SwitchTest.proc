@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <procedure xmlns="uncertain.proc">
-	
 	<switch Test="@InitValue">
 		<case Value="Normal match">
 			<action Name="NormalMatch" />

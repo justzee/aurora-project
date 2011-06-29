@@ -3,12 +3,10 @@
  */
 package uncertain.testcase.proc;
 
-import java.io.InputStream;
-
 import junit.framework.TestCase;
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.event.Configuration;
-import uncertain.ocm.LoggingListener;
 import uncertain.ocm.OCManager;
 import uncertain.proc.ParticipantRegistry;
 import uncertain.proc.Procedure;
@@ -27,19 +25,26 @@ public class ProcedureRunnerTest extends TestCase {
     //HandleManager       handle_manager;
     ParticipantTest2    participant;
     Configuration       config;
+    CompositeLoader     loader = CompositeLoader.createInstanceForOCM("proc");
     
     public ProcedureRunnerTest(String n){
         super(n);
         oc_manager = new OCManager();
-        oc_manager.addListener(new LoggingListener());
+        //oc_manager.addListener(new LoggingListener());
         oc_manager.getClassRegistry().registerPackage("uncertain.proc");
         config = new Configuration( new ParticipantRegistry(), oc_manager);
     }
     
     public void loadProcedure(String procName) throws Exception {
+        int id = procName.indexOf(".proc");
+        if(id>0)
+            procName = procName.substring(0,id);
+        /*
         InputStream is = getClass().getClassLoader().getResourceAsStream("uncertain/testcase/proc/"+procName);
         assertNotNull(is);
         proc_config = OCManager.getDefaultCompositeLoader().loadFromStream(is);
+        */
+        proc_config = loader.loadFromClassPath(this.getClass().getPackage().getName()+"."+procName);
         assertNotNull(proc_config);
         test_proc = (Procedure)oc_manager.createObject(proc_config);
         
