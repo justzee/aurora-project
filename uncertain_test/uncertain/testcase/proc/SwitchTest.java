@@ -34,7 +34,7 @@ public class SwitchTest extends ProcedureRunnerTest {
         //runner.setHandleManager(handle_manager);
         
         runner.run();
-        
+        runner.checkAndThrow();
         //oc_manager.getLogger().info(context.toXML());
         Object obj = context.get(KEY_RESULT);
         if(resultValue == null) assertNull(obj);
@@ -42,10 +42,10 @@ public class SwitchTest extends ProcedureRunnerTest {
     }
     
     public void testSwitchTag() throws Exception {
-        doSwitchTest("Normal match", "Normal match", "SwitchTest.xml");
-        doSwitchTest(null,null, "SwitchTest.xml");
-        doSwitchTest("Any words", "NotNullMatch", "SwitchTest.xml");
-        doSwitchTest(null, "DefaultMatch", "SwitchTest2.xml");
+        doSwitchTest("Normal match", "Normal match", "SwitchTest");
+        doSwitchTest(null,null, "SwitchTest");
+        doSwitchTest("Any words", "NotNullMatch", "SwitchTest");
+        doSwitchTest(null, "DefaultMatch", "SwitchTest2");
     }
     
 
