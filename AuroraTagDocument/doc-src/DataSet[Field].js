@@ -89,6 +89,13 @@
  */
 
 /**
+ * Lov弹出窗口是否自动查询
+ * @property lovAutoQuery
+ * @type Boolean
+ * @default true
+ */
+
+/**
  * lov弹出窗口的宽度
  * @property lovWidth
  * @type Integer
