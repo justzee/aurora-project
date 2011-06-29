@@ -188,7 +188,7 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 	public void characters(char ch[], int start, int length) throws SAXException {
 		if (ch == null)
 			return;
-		if (start == length)
+		if (0 == length)
 			return;
 		if (current_node != null) {
 			String t = current_node.getText();
