@@ -115,7 +115,7 @@ public class AuroraResourceUtil{
 		if(file == null)
 			return null;
 		char fileSeparatorChar = '/';
-		if(file.getName().endsWith("."+AuroraConstant.ScreenFileExtension)){
+		if(file.getName().endsWith("."+AuroraConstant.ScreenFileExtension)||file.getName().endsWith("."+AuroraConstant.SvcFileExtension)){
 			String fileName = AuroraResourceUtil.getIfileLocalPath(file);
 			String rootDir = ProjectUtil.getWebHomeLocalPath(file.getProject());
 			int webLocation = fileName.indexOf(rootDir);
