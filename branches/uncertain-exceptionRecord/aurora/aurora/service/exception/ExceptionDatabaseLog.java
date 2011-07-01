@@ -1,131 +1,134 @@
 package aurora.service.exception;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.sql.DataSource;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.DynamicObject;
 import uncertain.core.ConfigurationError;
+import uncertain.core.IGlobalInstance;
 import uncertain.core.UncertainEngine;
-import uncertain.exception.ExceptionNotice;
 import uncertain.exception.IExceptionListener;
-import uncertain.ocm.IConfigurable;
-import uncertain.ocm.IObjectRegistry;
+import uncertain.exception.IExceptionWithContext;
+import aurora.database.service.DatabaseServiceFactory;
+import aurora.database.service.SqlServiceContext;
 import aurora.service.ServiceThreadLocal;
 
-public class ExceptionDatabaseLog extends DynamicObject implements IExceptionListener,IConfigurable {
+public class ExceptionDatabaseLog implements IExceptionListener,IGlobalInstance {
 
-	Set ignoredTypes;
-	UncertainEngine mUncertainEngine;
-	public static final String IGNORED_TYPES = "ignored-types";
-	public static final String INSERT_SQL = "insert-sql";
+	private IgnoredType[] ignoredTypes;
+	private UncertainEngine mUncertainEngine;
 	private String sql;
-	private Connection conn;
-
+	private CompositeMap sqlNode;
 	public ExceptionDatabaseLog(UncertainEngine engine) {
-		ignoredTypes = new HashSet();
 		mUncertainEngine = engine;
-		add2ExceptionNotice();
 	}
-	private void prepare() {
-		CompositeMap types = object_context.getChild(IGNORED_TYPES);
-		if (types != null && types.getChildIterator() != null) {
-			for (Iterator it = types.getChildIterator(); it.hasNext();) {
-				CompositeMap type = (CompositeMap) it.next();
-				if (!"ignored-type".equalsIgnoreCase(type.getName())) {
-					throw new ConfigurationError("ignored-types can contain ignored-type element only!");
-				}
-				String className = type.getString("name");
-				if (className == null) {
-					throw new ConfigurationError("Must set 'name' property");
-				}
-				try {
-					Class.forName(className);
-				} catch (ClassNotFoundException e) {
-					throw new ConfigurationError(e);
-				}
-				if (!ignoredTypes.contains(className))
-					ignoredTypes.add(className);
-			}
-		}
-		CompositeMap sqlNode = object_context.getChild(INSERT_SQL);
+	public void addIgnoredTypes(IgnoredType[] ignoredTypes){
+		this.ignoredTypes = ignoredTypes;
+	}
+	public void setInsertSql(CompositeMap sqlNode){
+		this.sqlNode = sqlNode;
 		if (sqlNode == null) {
-			throw new ConfigurationError("Must has " + INSERT_SQL + " node!");
+			throw new ConfigurationError("Must has insert-sql node!");
 		}
 		sql = sqlNode.getText();
 		if (sqlNode == null || "".equals(sql)) {
 			throw new ConfigurationError("sql can not be empty!");
 		}
 	}
-
-	public void add2ExceptionNotice() {
-		Object exceptionNoticeObject = mUncertainEngine.getObjectRegistry().getInstanceOfType(ExceptionNotice.class);
-		if (exceptionNoticeObject != null) {
-			((ExceptionNotice) exceptionNoticeObject).addListener(this);
-		}
-	}
-
-	public DynamicObject initialize(CompositeMap context) {
-		super.initialize(context);
-		prepare();
-		return this;
+	public CompositeMap getInsertSql(){
+		return sqlNode;
 	}
 
 	public void onException(Throwable exception) {
 		if (exception == null)
 			return;
-		if (ignoredTypes.contains(exception.getClass().getCanonicalName())) {
-			return;
+		if(ignoredTypes != null){
+			for(int i=0;i<ignoredTypes.length;i++){
+				if (exception.getClass().getCanonicalName().equals(ignoredTypes[i].getName())) {
+					return;
+				}
+			}
 		}
-		if (conn == null) {
-			conn = initConnection(mUncertainEngine.getObjectRegistry());
-		}
+		DatabaseServiceFactory databasefactory = (DatabaseServiceFactory) mUncertainEngine.getObjectRegistry().getInstanceOfType(DatabaseServiceFactory.class);
+		SqlServiceContext ssc = null;
 		PreparedStatement ps = null;
 		try {
+			ssc = databasefactory.createContextWithConnection();
+			Connection conn = ssc.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, exception.getClass().getCanonicalName());
 			ps.setString(2, exception.getMessage());
-			StringBuffer sb = new StringBuffer("");
-			ExceptionNotice.getPrintStackTrace(sb, exception);
-			String stackTrace = sb.toString().length()>2000?sb.toString().substring(0, 2000):sb.toString();
-			ps.setString(3, stackTrace);
-			ps.setString(4, ServiceThreadLocal.getCurrentThreadContext().toXML());
+			ps.setString(3, getSource()); 
+			String context = getContext(exception);
+			ps.setString(4, context);
+			String rootStackTrace = getRootStackTrace(exception);
+			ps.setString(5, rootStackTrace);
+			String fullStackTrace = getFullStackTrace(exception);
+			ps.setString(6, fullStackTrace);
 			ps.executeUpdate();
 			ps.close();
 		} catch (Throwable e) {
 			throw new ConfigurationError(e);
 		} finally {
-			if (ps != null) {
-				try {
+			try {
+				if (ps != null) {
 					ps.close();
-				} catch (SQLException e) {
-					mUncertainEngine.logException("close PreparedStatement failed.", e);
 				}
+				if(ssc != null){
+					ssc.freeConnection();
+				}
+			} catch (SQLException e) {
+				mUncertainEngine.logException("close DataBase resource failed.", e);
 			}
 		}
-
 	}
-
-	private Connection initConnection(IObjectRegistry registry) {
-		DataSource ds = (DataSource) registry.getInstanceOfType(DataSource.class);
-		try {
-			if (ds == null)
-				throw new RuntimeException("Can not get DataSource from registry " + registry);
-			return ds.getConnection();
-		} catch (SQLException e) {
-			throw new RuntimeException("Can not get Connection from DataSource", e);
+	private String getSource(){
+		if(ServiceThreadLocal.getSource()!= null)
+			return ServiceThreadLocal.getSource();
+		return "";
+	}
+	private String getContext(Throwable exception){
+		CompositeMap context;
+		if(exception instanceof IExceptionWithContext ){
+			IExceptionWithContext e = (IExceptionWithContext)exception;
+			context = e.getExceptionContext();
+			if(context!= null){
+				return context.toXML();
+			}
 		}
+		context = ServiceThreadLocal.getCurrentThreadContext();
+		if(context!= null)
+			return context.toXML();
+		return null;
 	}
-	public void beginConfigure(CompositeMap config) {
-		 initialize(config);
+	private String getRootStackTrace(Throwable exception){
+		Throwable rootCause = getRootCause(exception);
+		return getExceptionStackTrace(rootCause);
+		
 	}
-	public void endConfigure() {
+	private String getFullStackTrace(Throwable exception){
+		return getExceptionStackTrace(exception);
+		
 	}
-
+	private String getExceptionStackTrace(Throwable exception){
+		if(exception == null)
+			return null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream pw = new PrintStream(baos);
+		exception.printStackTrace(pw);
+		pw.close();
+		return baos.toString();
+		
+	}
+	private Throwable getRootCause(Throwable exception){
+		if(exception == null)
+			return exception;
+		Throwable cause = exception.getCause();
+		if(cause == null)
+			return exception;
+		return getRootCause(cause);
+	}
 }
