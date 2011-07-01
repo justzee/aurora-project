@@ -17,7 +17,6 @@ import javax.transaction.UserTransaction;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.event.IParticipantManager;
-import uncertain.exception.ExceptionNotice;
 import uncertain.ocm.IObjectRegistry;
 import uncertain.proc.IProcedureManager;
 import uncertain.proc.IProcedureRegistry;
@@ -43,7 +42,7 @@ public abstract class AbstractFacadeServlet extends HttpServlet {
 	//Procedure mPostServiceProc;
 	
 	Configuration  mGlobalServiceConfig;
-	ExceptionNotice         mExceptionNotice;
+
 	protected abstract IService createServiceInstance(
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception;
@@ -127,12 +126,8 @@ public abstract class AbstractFacadeServlet extends HttpServlet {
 			}
 		} catch (Exception ex) {
 			is_success = false;
-			if(mExceptionNotice!= null){
-				mExceptionNotice.notice(ex);
-			}else{
-				mUncertainEngine.logException("Error when executing service "
-						+ request.getRequestURI(), ex);
-			}
+			mUncertainEngine.logException("Error when executing service "
+					+ request.getRequestURI(), ex);
 			handleException(request, response, ex);
 		} finally {			
 			if (trans instanceof UserTransactionImpl) {				
@@ -173,7 +168,6 @@ public abstract class AbstractFacadeServlet extends HttpServlet {
 				.getObjectRegistry()
 				.getInstanceOfType(IProcedureRegistry.class);
 		
-		mExceptionNotice = (ExceptionNotice) mUncertainEngine.getObjectRegistry().getInstanceOfType(ExceptionNotice.class);
 		// get global service config
 		IObjectRegistry reg = getObjectRegistry();
 		IParticipantManager pm = (IParticipantManager)reg.getInstanceOfType(IParticipantManager.class);
