@@ -32,6 +32,7 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 	private Annotation[] oldAnnotations;
 	private ProjectionAnnotationModel annotationModel;
 	private ProjectionViewer sourceViewer;
+	private List oldPositions;
 	public XmlReconcilingStrategy(ISourceViewer sourceViewer) {
 		this.sourceViewer = (ProjectionViewer) sourceViewer;
 	}
@@ -57,10 +58,19 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 		try {
 			positions = calculatePositions();
 		} catch (ApplicationException e) {
-			// CustomDialog.showErrorMessageBox(e);
 			updateFoldingStructure(null);
 		}
-		updateFoldingStructure(positions);
+		if(!isListEqual(positions,oldPositions)){
+			updateFoldingStructure(positions);
+			oldPositions = positions;
+		}
+	}
+	private boolean isListEqual(List one,List two){
+		if(one == null && two == null)
+			return true;
+		if(one != null && one.equals(two))
+			return true;
+		return false;
 	}
 
 	protected List calculatePositions() throws ApplicationException {
@@ -104,22 +114,15 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 		if(annotationModel == null)
 			return;
 		if (positions == null) {
-			// annotationModel.modifyAnnotations(oldAnnotations, null, null);
-			// oldAnnotations = null;
 			return;
 		}
-
 		Annotation[] annotations = new Annotation[positions.size()];
-
 		// this will hold the new annotations along
 		// with their corresponding positions
 		HashMap newAnnotations = new HashMap();
-
 		for (int i = 0; i < positions.size(); i++) {
 			ProjectionAnnotation annotation = new ProjectionAnnotation();
-
 			newAnnotations.put(annotation, positions.get(i));
-
 			annotations[i] = annotation;
 		}
 		annotationModel.modifyAnnotations(oldAnnotations, newAnnotations, null);
@@ -129,9 +132,7 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 	public void initialReconcile() {
 		updateAnnotations();
 	}
-
 	public void setProgressMonitor(IProgressMonitor monitor) {
-
 	}
 
 }
