@@ -3,11 +3,75 @@
 
 ==概述==
 
-==异常代码==
+当框架抛出异常时，为便于应用开发人员判断错误的原因，异常信息应尽可能多地自我解释，让开发人员能明白这个异常是怎么回事，为什么会发生，应该怎样处理。为此，Aurora框架内的异常应该做到：
+  # 便于追溯。Aurora是一个面向配置的框架，所以相当多的异常可以追溯到配置源文件。
+  # 异常信息支持多语言。如果异常信息是一段容易理解的中文内容，很多时候应用开发人员就可以自己解决问题。
+  # 精准分类。通过唯一编码，能够准确地在用户、应用开发人员及框架开发人员之间交流异常的准确信息，以便解决问题。有了异常代码，用户或应用开发人员自己就可以查到异常发生的原因及解决方法；如果只是一个包含一段描述信息的RuntimeException，问题就可能需要框架开发人员介入才能解决，而且往往可能是必须由原作者来解决。
+
+以下逐条说明，框架开发者应如何设计异常。
 
 ==多语言==
+原则上，任何异常信息都应支持多语言，在使用时通过代码来获取当前语言环境下的异常信息。
+异常多语言的实现采用JDK的标准多语言机制，将异常信息保存在property文件中，按JDK标准命名规范添加各种语言的Locale后缀。为便于维护、使用大量的异常信息，Aurora框架做以下约定：
+  # 所有异常信息的property文件，应位于一个统一的包名：resources之下。这样，当需要将异常信息翻译为一种新的语言时，可以在每一个项目的resources目录直接找到所有文件。
+  # 原则上每一个package定义一个自己的property文件，文件名为包名，将'.'替换为'_'，再加_exceptions后缀。
+例如，Aurora展示层的异常信息文件名为：
+{{{
+resources/aurora_presentation_exceptions.properties
+}}}
+属于同一个模块的package，可以共用一个exception property文件。
+
+===多语言信息存取的Java API===
+
+在Aurora框架中，统一通过uncertain.exception.MessageFactory这个类来加载多语言信息，及获取某个代码对应的多语言信息。其中：`loadResource( String property_file_name)`静态方法将某个异常信息property文件的内容加载到内存中；`getMessage( String code, Object[] args)`静态方法获取某个代码对应的多语言信息。
+
+例如，在上面的property文件中定义了：
+{{{
+aurora.presentation.component.screen_include_invoke_error=Error when invoking included screen: {0}
+}}}
+
+在aurora展示层的入口类aurora.presentation.PresentationManager中，通过类级的静态代码块，加载这个property文件：
+
+{{{
+    static {
+        MessageFactory.loadResource("resources.aurora_presentation_exceptions");
+    }
+}}}
+
+在需要使用这个异常代码时：
+
+{{{
+   String msg = MessageFactory.getMessage( "aurora.presentation.component.screen_include_invoke_error", new Object[]{ "a.screen" } );
+}}}
+
+就可以获得如下异常信息：
+{{{
+Error when invoking included screen: a.screen
+}}}
+
+每个异常信息property文件，都应该设计一个合适的类，在初始化时加载这个文件，以确保后面引用其中内容的类，能正确获取加载后的信息。
+
+==异常代码==
+如前所述，实现多语言时，已经需要为每个异常信息定义一个代码。在Aurora框架中，异常自己的代码就与异常信息代码一致。在前面的例子中，`aurora.presentation.component.screen_include_invoke_error`这个代码就代表在页面中包含另一个screen文件时出错，可以此代码在相应的文档中检索异常的详细信息。
+
+异常代码的设计应遵循以下约定：
+  * 以使用类的包名作为前缀。
+  * 每个代码必须全局唯一。
+  * 跟在包名之后的代码名，应该是该异常的简要描述的英文词组，以下划线分隔单词。
 
 ==源文件定位==
+在Aurora框架中，定义了一个接口，来抽象一切可以提供源文件来源信息的对象：
+{{{
+public interface ILocatable {
+    
+    public Location getOriginLocation();
+    
+    public String   getOriginSource();
+
+}
+}}}
+其中，getOriginSource()返回源文件资源名。
+
 
 ==异常信息格式化==
 
