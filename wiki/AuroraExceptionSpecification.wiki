@@ -70,11 +70,25 @@ public interface ILocatable {
 
 }
 }}}
-其中，getOriginSource()返回源文件资源名。
+其中，getOriginSource()返回源文件资源名；getOriginLocation()返回一个uncertain.util.resource.Location对象，能标识在源文件中的位置。
 
 
 ==异常信息格式化==
+通过uncertain.exception.MessageFactory.getExceptionMessage() 静态方法，可以为exception信息添加标准的前缀，如异常代码，异常产生的源文件位置等。通常，在自定义的exception中，可以重载getMessage()方法，调用MessageFactory.getExceptionMessage()，来创建标准格式的异常信息。例如：
+{{{
+    public String getMessage() {
+        String msg = super.getMessage();
+        return MessageFactory.getExceptionMessage(this, msg);
+    }
+}}}
+调用此方法时，需要将原始exception message作为参数传递。为避免死循环，MessageFactory不会直接调用exception的getMessage()。
 
 ==标准异常==
+uncertain.exception包中定义了以下标准异常：
+||异常||用途||
+||BaseException||实现ICodedException, ILocatable，重载getMessage()以实现标准异常信息输出。这个类可以作为其它自定义异常的基类。这是抽象类，不能被实例化。||
+||BaseRuntimeException||同BaseException，只是它由RuntimeException派生而来，可作为不需要显示catch的exception的基类。||
+||GeneralException||用于纯描述性、不需要在java代码中通过不同异常类型来分别catch的异常。MessageFactory.createException()是创建此异常的静态工厂方法。||
+||ConfigurationFileException||专门用于表述配置文件错误的异常信息。所有由于配置文件错误导致的错误，都应抛出此异常。||
 
 ==示例==
