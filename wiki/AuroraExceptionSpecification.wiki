@@ -122,6 +122,7 @@ java.lang.RuntimeException
   # 为异常指定一个全局唯一的代码，并在property文件中定义其对应的信息内容；
   # 如不需要为这个异常创建特定的java类，可直接使用某个MessageFactory.createException()方法，传递前面定义的代码，创建一个支持多语言的GeneralException并抛出。如有可能，也可传递一个ILocatable对象（ 如CompositeMap.asLocatable())，以记录异常对应的源文件位置。
   # 如果需要为这个异常单独创建java类，可选择BaseException或BaseRuntimeException作为基类。如果需要完全自己构造，请注意实现ICodedException，ILocatable接口，并调用MessageFactory.getExceptionMessage()方法来创建标准的exception信息。
+  # 对于可能在多处使用的异常代码，需要仿照uncertain.exception.BuiltinExceptionFactory，提供静态方法创建其实例。
 
 ==示例==
 
