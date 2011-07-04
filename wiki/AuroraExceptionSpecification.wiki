@@ -64,7 +64,7 @@ Error when invoking included screen: a.screen
 ==源文件定位==
 在Aurora框架中，定义了一个接口，来抽象一切可以提供源文件来源信息的对象：
 {{{
-package uncertain.util.resource
+package uncertain.util.resource;
 
 public interface ILocatable {
     
