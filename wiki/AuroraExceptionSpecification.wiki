@@ -90,6 +90,7 @@ public interface ILocatable {
 ==标准异常==
 uncertain.exception包中定义了以下标准异常：
 
+{{{
 java.lang.Exception
    +--uncertain.exception.BaseException
 
@@ -97,6 +98,7 @@ java.lang.RuntimeException
    +--uncertain.exception.BaseRuntimeException
          +--GeneralException
          +--ConfigurationFileException
+}}}
 
 ||异常||用途||
 ||BaseException||实现ICodedException, ILocatable，重载getMessage()以实现标准异常信息输出。这个类可以作为其它自定义异常的基类。这是抽象类，不能被实例化。||
