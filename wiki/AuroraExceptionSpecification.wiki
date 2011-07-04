@@ -85,10 +85,74 @@ public interface ILocatable {
 
 ==标准异常==
 uncertain.exception包中定义了以下标准异常：
+
+java.lang.Exception
+   +--uncertain.exception.BaseException
+
+java.lang.RuntimeException
+   +--uncertain.exception.BaseRuntimeException
+         +--GeneralException
+         +--ConfigurationFileException
+
 ||异常||用途||
 ||BaseException||实现ICodedException, ILocatable，重载getMessage()以实现标准异常信息输出。这个类可以作为其它自定义异常的基类。这是抽象类，不能被实例化。||
 ||BaseRuntimeException||同BaseException，只是它由RuntimeException派生而来，可作为不需要显示catch的exception的基类。||
 ||GeneralException||用于纯描述性、不需要在java代码中通过不同异常类型来分别catch的异常。MessageFactory.createException()是创建此异常的静态工厂方法。||
 ||ConfigurationFileException||专门用于表述配置文件错误的异常信息。所有由于配置文件错误导致的错误，都应抛出此异常。||
 
+==异常代码的封装==
+对于经常使用的异常代码，uncertain.exception.BuiltinExceptionFactory提供了一些静态方法用于更加方便地构造。例如，createAttributeMissing()方法返回标识必须属性缺失的异常：
+{{{
+    public static ConfigurationFileException createAttributeMissing( ILocatable locatable, String attrib_name ){
+        return new ConfigurationFileException("uncertain.exception.validation.attribute_missing", new Object[]{attrib_name}, null, locatable);
+    }
+}}}
+
+==总结==
+
+在Aurora框架中，异常的定义及使用的基本步骤：
+
+  # 按前述命名规范创建一个property文件，定义本模块的所有异常信息；
+  # 为异常指定一个全局唯一的代码，并在property文件中定义其对应的信息内容；
+  # 如不需要为这个异常创建特定的java类，可直接使用某个MessageFactory.createException()方法，传递前面定义的代码，创建一个支持多语言的GeneralException并抛出。如有可能，也可传递一个ILocatable对象（ 如CompositeMap.asLocatable())，以记录异常对应的源文件位置。
+  # 如果需要为这个异常单独创建java类，可选择BaseException或BaseRuntimeException作为基类。如果需要完全自己构造，请注意实现ICodedException，ILocatable接口，并调用MessageFactory.getExceptionMessage()方法来创建标准的exception信息。
+
 ==示例==
+
+`uncertain.proc.Set`对象实现`<set>`标记。在run()方法中，执行实际功能之前，先检查必要的属性是否设置。如果没有，就抛出异常：
+
+{{{
+    public void run(ProcedureRunner runner) {
+        // 检查field属性是否设置
+        if(field==null)
+            throw BuiltinExceptionFactory.createAttributeMissing(this, "field");
+        // 检查sourceField或value属性之一是否设置
+        if(sourceField==null && value==null)
+            throw BuiltinExceptionFactory.createOneAttributeMissing(this, "sourceField,value");
+         ...
+}}}
+
+BuiltinExceptionFactory.createAttributeMissing()会获取预定义在<Uncertain项目>/resources/UncertainBuiltinExceptions.properties中定义的，代码为uncertain.exception.validation.attribute_missing的异常信息。在中文环境下，会产生这样的异常：
+
+{{{
+HTTP Status 500 -
+
+type Exception report
+
+message
+
+description The server encountered an internal error () that prevented it from fulfilling this request.
+
+exception
+
+javax.servlet.ServletException: uncertain.exception.ConfigurationFileException: 异常代码：uncertain.exception.validation.attribute_missing 源文件:/Users/zhoufan/Work/workspace/HAP2010/HAP2010/web/footer.screen, 第12行, 第17列 Attribute 属性"field"不能为空。请检查源文件，设置这个属性。
+	aurora.service.http.FacadeServlet.handleException(FacadeServlet.java:70)
+	aurora.service.http.AbstractFacadeServlet.service(AbstractFacadeServlet.java:131)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:722)
+root cause
+
+uncertain.exception.ConfigurationFileException: 异常代码：uncertain.exception.validation.attribute_missing 源文件:/Users/zhoufan/Work/workspace/HAP2010/HAP2010/web/footer.screen, 第12行, 第17列 Attribute 属性"field"不能为空。请检查源文件，设置这个属性。
+	uncertain.exception.BuiltinExceptionFactory.createAttributeMissing(BuiltinExceptionFactory.java:13)
+	uncertain.proc.Set.run(Set.java:65)
+...
+}}}
