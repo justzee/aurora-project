@@ -41,7 +41,9 @@ aurora.presentation.component.screen_include_invoke_error=Error when invoking in
 在需要使用这个异常代码时：
 
 {{{
-   String msg = MessageFactory.getMessage( "aurora.presentation.component.screen_include_invoke_error", new Object[]{ "a.screen" } );
+   String msg = MessageFactory.getMessage(
+     "aurora.presentation.component.screen_include_invoke_error", 
+     new Object[]{ "a.screen" } );
 }}}
 
 就可以获得如下异常信息：
