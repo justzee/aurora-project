@@ -5,10 +5,12 @@ _本文档为临时解决方案，后面将有改动_
 
 
 ==应用级日志==
-修改<WEB-INF>/uncertain.xml，配置以下属性：
+修改`<WEB-INF>/uncertain.xml`，配置以下属性：
+
 {{{
 <uncertain-engine  logPath="/Users/logs" defaultLogLevel="FINE" name="Hand Application Platform" >
 }}}
+
 其中：
 name是应用的名称，
 `logPath`是日志文件存放的目录，日志文件将以`<应用名称><年月日>.log`的命名方式来保存。
@@ -18,7 +20,7 @@ name是应用的名称，
 ==Screen/SVC/Autocrud的日志==
 
 在WEB-INF/目录下创建名为service-logging.config的文件，内容如下：
-{{{ 
+{{{
 <service-logging xmlns="aurora.application.features" logPath="/u01/webapp/hap/logs" pattern="_${/session/@session_id}_" append="false" defaultLogLevel="FINE">
 <!--
 	<topics>
@@ -30,6 +32,7 @@ name是应用的名称，
 	-->
 </service-logging>
 }}}
+
 其中：
 logPath: 设置trace文件存放的目录
 pattern: trace文件名的格式。如果加上`${/request/@address}`，将为每一个来自不同IP的请求创建单独的trace文件，否则按service文件名创建
