@@ -136,10 +136,14 @@ java.lang.RuntimeException
 ||ConfigurationFileException||专门用于表述配置文件错误的异常信息。所有由于配置文件错误导致的错误，都应抛出此异常。||
 
 ==异常代码的封装==
-对于经常使用的异常代码，uncertain.exception.BuiltinExceptionFactory提供了一些静态方法用于更加方便地构造。例如，createAttributeMissing()方法返回标识必须属性缺失的异常：
+对于经常使用的异常代码，uncertain.exception.BuiltinExceptionFactory提供了一些静态方法用于更加方便地构造。例如，createAttributeMissing()方法返回必填属性没有填写的异常：
 {{{
     public static ConfigurationFileException createAttributeMissing( ILocatable locatable, String attrib_name ){
-        return new ConfigurationFileException("uncertain.exception.validation.attribute_missing", new Object[]{attrib_name}, null, locatable);
+        return new ConfigurationFileException(
+   "uncertain.exception.validation.attribute_missing", 
+   new Object[]{attrib_name}, 
+   null, 
+   locatable);
     }
 }}}
 
