@@ -76,6 +76,10 @@ public class ExceptionDatabaseLog implements IExceptionListener, IGlobalInstance
 			}
 		}
 		DataSource ds = (DataSource) mUncertainEngine.getObjectRegistry().getInstanceOfType(DataSource.class);
+		if(ds == null ){
+			System.err.println("Can not get DataSource instance from uncertainEngine. Please check config file.");
+			return;
+		}
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
