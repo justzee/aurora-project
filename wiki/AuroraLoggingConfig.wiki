@@ -34,9 +34,13 @@ name是应用的名称，
 }}}
 
 其中：
+
 logPath: 设置trace文件存放的目录
+
 pattern: trace文件名的格式。如果加上`${/request/@address}`，将为每一个来自不同IP的请求创建单独的trace文件，否则按service文件名创建
-defaultLevel: 缺省的日志级别
+
+defaultLevel: 缺省的日志级别。
+
 根据调试的需要，可以分别将下面的topic的级别设置为WARNING, INFO, CONFIG, FINE等级别
  
 然后，对需要生成trace文件的screen/svc文件，在顶层设置`trace="true"`属性。这样，就可以在logPath指定的目录，看到名为`<screen名><pattern设置的后缀><年月日>.log`的日志文件。
