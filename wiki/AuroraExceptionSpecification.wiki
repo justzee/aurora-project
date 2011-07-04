@@ -74,8 +74,37 @@ public interface ILocatable {
 
 }
 }}}
-其中，getOriginSource()返回源文件资源名；getOriginLocation()返回一个uncertain.util.resource.Location对象，能标识在源文件中的位置。
 
+其中，getOriginSource()返回源文件资源名；getOriginLocation()返回一个uncertain.util.resource.Location对象，能标识在源文件中的位置。如果错误能追溯来来源文件，那么应抛出实现此接口的异常。
+
+特别的，当通过O/C Mapping机制，通过CompositeMap映射到Java对象时，CompositeMap本身已经包含了来源文件及位置信息，Java对象可实现uncertain.ocm.IConfigurable接口，在beginConfigure()方法中接收CompositeMap，读取其中的位置信息，保存在自己的field中，并实现ILocatable接口，以便今后提供位置信息。例如，uncertain.proc.AbstractEntry类是大多数工作流中的entry类的基类，其中：
+
+{{{
+public abstract class AbstractEntry implements IEntry, IConfigurable, ILocatable {
+    ...
+    protected String    source;
+    protected Location  location;
+
+    public void beginConfigure(CompositeMap config){
+        source = config.getSourceFile()==null?null:config.getSourceFile().getAbsolutePath();
+        location = config.getLocation();
+    }
+    public void endConfigure(){
+        
+    }
+    
+    public Location getOriginLocation(){
+        return location;
+    }
+    
+    public String getOriginSource(){
+        return source;
+    }
+   
+   ...
+}}}
+
+这样，当它的子类需要抛出异常时，就可将自己作为ILocatable实例传递给异常类的构造函数，以传递位置信息。
 
 ==异常信息格式化==
 通过uncertain.exception.MessageFactory.getExceptionMessage() 静态方法，可以为exception信息添加标准的前缀，如异常代码，异常产生的源文件位置等。通常，在自定义的exception中，可以重载getMessage()方法，调用MessageFactory.getExceptionMessage()，来创建标准格式的异常信息。例如：
@@ -121,6 +150,7 @@ java.lang.RuntimeException
   # 按前述命名规范创建一个property文件，定义本模块的所有异常信息；
   # 为异常指定一个全局唯一的代码，并在property文件中定义其对应的信息内容；
   # 如不需要为这个异常创建特定的java类，可直接使用某个MessageFactory.createException()方法，传递前面定义的代码，创建一个支持多语言的GeneralException并抛出。如有可能，也可传递一个ILocatable对象（ 如CompositeMap.asLocatable())，以记录异常对应的源文件位置。
+  # 如果错误来源于配置文件，应创建uncertain.exception.ConfigurationFileException实例，传递来源文件位置或配置对应的CompositeMap，并抛出此异常。
   # 如果需要为这个异常单独创建java类，可选择BaseException或BaseRuntimeException作为基类。如果需要完全自己构造，请注意实现ICodedException，ILocatable接口，并调用MessageFactory.getExceptionMessage()方法来创建标准的exception信息。
   # 对于可能在多处使用的异常代码，需要仿照uncertain.exception.BuiltinExceptionFactory，提供静态方法创建其实例。
 
