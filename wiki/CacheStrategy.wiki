@@ -5,7 +5,6 @@
 
   *  `<cache-read cacheName="somecache" key="somekey" dataPath="/model/mypath">` cache读取
   *  `<cache-write cacheName="somecache" key="somekey" dataPath="/model/mypath">` cache写入
-  *  `<svc-invoke name="" >` 调用某个svc
 
 ==自给自足模式==
 
