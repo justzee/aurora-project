@@ -8,11 +8,12 @@ import java.sql.PreparedStatement;
 import javax.sql.DataSource;
 
 import uncertain.composite.CompositeMap;
-import uncertain.core.ConfigurationError;
 import uncertain.core.IGlobalInstance;
 import uncertain.core.UncertainEngine;
+import uncertain.exception.BuiltinExceptionFactory;
 import uncertain.exception.IExceptionListener;
 import uncertain.exception.IExceptionWithContext;
+import uncertain.ocm.IConfigurable;
 import aurora.database.DBUtil;
 import aurora.service.ServiceThreadLocal;
 
@@ -35,13 +36,13 @@ import aurora.service.ServiceThreadLocal;
  </exception-database-log>	
  * 
  */
-public class ExceptionDatabaseLog implements IExceptionListener, IGlobalInstance {
+public class ExceptionDatabaseLog implements IExceptionListener, IGlobalInstance,IConfigurable{
 
 	private IgnoredType[] ignoredTypes;
 	private UncertainEngine mUncertainEngine;
 	private String sql;
 	private CompositeMap sqlNode;
-
+	public static final String INSERT_SQL="insert-sql";
 	public ExceptionDatabaseLog(UncertainEngine engine) {
 		mUncertainEngine = engine;
 	}
@@ -51,13 +52,9 @@ public class ExceptionDatabaseLog implements IExceptionListener, IGlobalInstance
 	}
 
 	public void setInsertSql(CompositeMap sqlNode) {
-		this.sqlNode = sqlNode;
-		if (sqlNode == null) {
-			throw new ConfigurationError("Must has insert-sql node!");
-		}
 		sql = sqlNode.getText();
-		if (sqlNode == null || "".equals(sql)) {
-			throw new ConfigurationError("sql can not be empty!");
+		if (sql == null || "".equals(sql)) {
+			throw BuiltinExceptionFactory.createCDATAMissing(sqlNode.asLocatable(), INSERT_SQL);
 		}
 	}
 
@@ -154,5 +151,17 @@ public class ExceptionDatabaseLog implements IExceptionListener, IGlobalInstance
 		if (cause == null)
 			return exception;
 		return getRootCause(cause);
+	}
+
+	public void beginConfigure(CompositeMap config) {
+		if(config == null){
+			throw new RuntimeException("ExceptionDatabaseLog conifg can not be null!");
+		}
+		if(config.getChild(INSERT_SQL)==null){
+			throw BuiltinExceptionFactory.createNodeMissing(config.asLocatable(), INSERT_SQL);
+		}
+	}
+
+	public void endConfigure() {
 	}
 }
