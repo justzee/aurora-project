@@ -96,6 +96,13 @@
  */
 
 /**
+ * lov弹出窗口查询条件字段描述的宽度
+ * @property lovLabelWidth
+ * @type Number
+ * @default 75
+ */
+
+/**
  * lov弹出窗口的宽度
  * @property lovWidth
  * @type Integer
