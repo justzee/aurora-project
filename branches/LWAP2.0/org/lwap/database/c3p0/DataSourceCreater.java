@@ -51,7 +51,7 @@ public class DataSourceCreater implements ApplicationInitializer{
 		try{
 			pds.close();
 		}catch(SQLException e){
-			
+			throw new RuntimeException(e);
 		}
 	}
 	
