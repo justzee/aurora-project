@@ -1,6 +1,5 @@
 package org.lwap.plugin.excel;
 
-import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +18,8 @@ public class ExcelReportByServer extends AbstractController implements IFeature 
 	final static String KEY_EXCEL_FORMAT="format" ;
 	final static String KEY_EXCEL_TEMPLATE_PATH="excel-template-path" ;
 	final static String KEY_TEMP_PATH="temp-path" ;
+	final static String KEY_FILE_NAME="_filename" ;
+	
 	UncertainEngine mEngine;
 	CompositeMap config;
 
@@ -43,12 +44,19 @@ public class ExcelReportByServer extends AbstractController implements IFeature 
 		CompositeMap parameterMap=ServiceInstance.getParameters();		
 		excelConfig.setFileFormat(parameterMap.getString(KEY_EXCEL_FORMAT));
 		HttpServletRequest request=ServiceInstance.getRequest();
-		excelConfig.setTemplatePath(request.getRealPath(appConfig.getString(KEY_EXCEL_TEMPLATE_PATH)));
-		excelConfig.setTempPath(request.getRealPath(appConfig.getString(KEY_TEMP_PATH)));
-		File file=ExcelFactory.createExcel(model, excelConfig);
+		excelConfig.setTemplatePath(request.getRealPath(appConfig.getString(KEY_EXCEL_TEMPLATE_PATH)));		
+		String fileName = parameterMap.getString(KEY_FILE_NAME, "excel");
 		HttpServletResponse response=ServiceInstance.getResponse();
-		ExcelUtil.printOutExcel(file, response);
-		file.delete();
+		response.setCharacterEncoding("GBK");
+		if("xls".equals(excelConfig.getFileFormat().toLowerCase())){
+			response.setContentType("application/vnd.ms-excel");
+			fileName=fileName+".xls";
+		}else{
+			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");			
+			fileName=fileName+".xlsx";
+		}
+		response.setHeader("Content-Disposition", "attachment; filename=\""+ fileName + "\"");
+		ExcelFactory.createExcel(model, excelConfig,response.getOutputStream());
 		return EventModel.HANDLE_STOP;
 	}
 }
