@@ -1,8 +1,11 @@
 package editor.textpage;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
+import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.ContentFormatter;
@@ -20,6 +23,8 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 import editor.textpage.contentassist.TagContentAssistProcessor;
 import editor.textpage.format.DefaultFormattingStrategy;
@@ -32,7 +37,6 @@ import editor.textpage.scanners.JSEditorCodeScanner;
 import editor.textpage.scanners.XMLPartitionScanner;
 import editor.textpage.scanners.XMLScanner;
 import editor.textpage.scanners.XMLTagScanner;
-
 
 public class XMLConfiguration extends SourceViewerConfiguration {
 
@@ -52,15 +56,12 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE,
-				XMLPartitionScanner.XML_COMMENT, XMLPartitionScanner.XML_PI,
-				XMLPartitionScanner.XML_DOCTYPE,
-				XMLPartitionScanner.XML_START_TAG,
-				XMLPartitionScanner.XML_END_TAG, XMLPartitionScanner.XML_CDATA };
+		return new String[]{IDocument.DEFAULT_CONTENT_TYPE, XMLPartitionScanner.XML_COMMENT,
+				XMLPartitionScanner.XML_PI, XMLPartitionScanner.XML_DOCTYPE, XMLPartitionScanner.XML_START_TAG,
+				XMLPartitionScanner.XML_END_TAG, XMLPartitionScanner.XML_CDATA};
 	}
 
-	public ITextDoubleClickStrategy getDoubleClickStrategy(
-			ISourceViewer sourceViewer, String contentType) {
+	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
 		if (doubleClickStrategy == null)
 			doubleClickStrategy = new XMLDoubleClickStrategy(sourceViewer, contentType);
 		return doubleClickStrategy;
@@ -69,8 +70,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	protected XMLScanner getXMLScanner() {
 		if (scanner == null) {
 			scanner = new XMLScanner(colorManager);
-			scanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IColorConstants.DEFAULT))));
+			scanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager.getColor(IColorConstants.DEFAULT))));
 		}
 		return scanner;
 	}
@@ -78,8 +78,8 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	protected JSEditorCodeScanner getCDataScanner() {
 		if (cdataScanner == null) {
 			cdataScanner = new JSEditorCodeScanner(colorManager);
-			cdataScanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IColorConstants.CDATA_TEXT))));
+			cdataScanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager
+					.getColor(IColorConstants.CDATA_TEXT))));
 		}
 		return cdataScanner;
 	}
@@ -87,18 +87,15 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	protected XMLTagScanner getXMLTagScanner() {
 		if (tagScanner == null) {
 			tagScanner = new XMLTagScanner(colorManager);
-			tagScanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(IColorConstants.TAG))));
+			tagScanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager.getColor(IColorConstants.TAG))));
 		}
 		return tagScanner;
 	}
 
-	public IPresentationReconciler getPresentationReconciler(
-			ISourceViewer sourceViewer) {
+	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(
-				getXMLTagScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getXMLTagScanner());
 		reconciler.setDamager(dr, XMLPartitionScanner.XML_START_TAG);
 		reconciler.setRepairer(dr, XMLPartitionScanner.XML_START_TAG);
 
@@ -122,10 +119,8 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, XMLPartitionScanner.XML_CDATA);
 		reconciler.setRepairer(dr, XMLPartitionScanner.XML_CDATA);
 
-		TextAttribute textAttribute = new TextAttribute(colorManager
-				.getColor(IColorConstants.XML_COMMENT));
-		NonRuleBasedDamagerRepairer ndr = new NonRuleBasedDamagerRepairer(
-				textAttribute);
+		TextAttribute textAttribute = new TextAttribute(colorManager.getColor(IColorConstants.XML_COMMENT));
+		NonRuleBasedDamagerRepairer ndr = new NonRuleBasedDamagerRepairer(textAttribute);
 		reconciler.setDamager(ndr, XMLPartitionScanner.XML_COMMENT);
 		reconciler.setRepairer(ndr, XMLPartitionScanner.XML_COMMENT);
 
@@ -136,17 +131,15 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 
 		ContentAssistant assistant = new ContentAssistant();
 
-		assistant.setContentAssistProcessor(new TagContentAssistProcessor(
-				getXMLTagScanner()), XMLPartitionScanner.XML_START_TAG);
-		assistant.setContentAssistProcessor(new TagContentAssistProcessor(
-				getXMLTagScanner()), IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setContentAssistProcessor(new TagContentAssistProcessor(getXMLTagScanner()),
+				XMLPartitionScanner.XML_START_TAG);
+		assistant.setContentAssistProcessor(new TagContentAssistProcessor(getXMLTagScanner()),
+				IDocument.DEFAULT_CONTENT_TYPE);
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(200);
-		assistant
-				.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
-		assistant
-				.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
-		
+		assistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
+		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
+
 		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 		return assistant;
 
@@ -159,24 +152,17 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		TextFormattingStrategy textStrategy = new TextFormattingStrategy();
 		DocTypeFormattingStrategy doctypeStrategy = new DocTypeFormattingStrategy();
 		PIFormattingStrategy piStrategy = new PIFormattingStrategy();
-		formatter.setFormattingStrategy(defaultStrategy,
-				IDocument.DEFAULT_CONTENT_TYPE);
-		formatter.setFormattingStrategy(doctypeStrategy,
-				XMLPartitionScanner.XML_DOCTYPE);
+		formatter.setFormattingStrategy(defaultStrategy, IDocument.DEFAULT_CONTENT_TYPE);
+		formatter.setFormattingStrategy(doctypeStrategy, XMLPartitionScanner.XML_DOCTYPE);
 		formatter.setFormattingStrategy(piStrategy, XMLPartitionScanner.XML_PI);
-		formatter.setFormattingStrategy(textStrategy,
-				XMLPartitionScanner.XML_CDATA);
-		formatter.setFormattingStrategy(formattingStrategy,
-				XMLPartitionScanner.XML_START_TAG);
-		formatter.setFormattingStrategy(formattingStrategy,
-				XMLPartitionScanner.XML_END_TAG);
+		formatter.setFormattingStrategy(textStrategy, XMLPartitionScanner.XML_CDATA);
+		formatter.setFormattingStrategy(formattingStrategy, XMLPartitionScanner.XML_START_TAG);
+		formatter.setFormattingStrategy(formattingStrategy, XMLPartitionScanner.XML_END_TAG);
 
 		return formatter;
 	}
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-		return new IHyperlinkDetector[] {
-				new FileHyperlinkDetector()
-		};
+		return new IHyperlinkDetector[]{new FileHyperlinkDetector()};
 	}
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new DefaultAnnotationHover();
@@ -187,13 +173,23 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		TextAttribute textAttribute = (TextAttribute) token.getData();
 		return textAttribute.getForeground().getRGB();
 	}
-    /* (non-Javadoc)
-     * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getReconciler(org.eclipse.jface.text.source.ISourceViewer)
-     */
-    public IReconciler getReconciler(ISourceViewer sourceViewer)
-    {
-        XmlReconcilingStrategy strategy = new XmlReconcilingStrategy(sourceViewer);
-        MonoReconciler reconciler = new MonoReconciler(strategy,false);
-        return reconciler;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.jface.text.source.SourceViewerConfiguration#getReconciler
+	 * (org.eclipse.jface.text.source.ISourceViewer)
+	 */
+	public IReconciler getReconciler(ISourceViewer sourceViewer) {
+		XmlReconcilingStrategy strategy = new XmlReconcilingStrategy(sourceViewer);
+		MonoReconciler reconciler = new MonoReconciler(strategy, false);
+		return reconciler;
+	}
+	public IUndoManager getUndoManager(ISourceViewer sourceViewer) {
+		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
+		return new TextViewerUndoManager(generalTextStore
+				.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_UNDO_HISTORY_SIZE));
+		// return new TextViewerUndoManager(200);
+
+	}
 }
