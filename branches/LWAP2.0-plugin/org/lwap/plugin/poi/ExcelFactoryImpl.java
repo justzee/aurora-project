@@ -2,8 +2,11 @@ package org.lwap.plugin.poi;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,74 +24,60 @@ import uncertain.composite.TextParser;
 
 public class ExcelFactoryImpl {
 	CompositeMap dataModel;
-
-	public File createExcel(CompositeMap dataModel, ExcelReport config)
-			throws Exception {
-		File f = null;
+	boolean is_xls=true;
+	public void createExcel(CompositeMap dataModel, ExcelReport config,OutputStream os) throws Exception {
+	
 		Workbook wb = null;
-		Sheet sheet = null;
+		Sheet sheet = null;		
 		ArrayList<ExcelSheet> sheetConfigs = null;
 		ExcelSheet sheetConfig = null;
 		ArrayList<ExcelTable> tableConfigs = null;
 		ArrayList<ExcelLabel> labelConfigs = null;
-		InputStream is = null;
+		InputStream is = null;		
+		
 		this.dataModel = dataModel;
-		boolean is_xls = "xls".equalsIgnoreCase(config.getFileFormat()) ? true
-				: false;
+		this.is_xls = "xls".equals(config.getFileFormat()) ? true : false;		
 		String template = config.getTemplate();
-		if (template != null)
-			template = is_xls ? template + ".xlt" : config.getTemplate()
-					+ ".xlsx";
-		String templatePath = config.getTemplatePath();
-		File filePath = new File(templatePath);
-		if (!filePath.exists() && template != null)
-			throw new Exception("excel template path undefined");
-		try {
-			File file = new File(filePath, template);
-			is = new FileInputStream(file);
-		} catch (Exception e) {
-			if (template != null)
-				throw new Exception("excel template not exist");
-		}
-		if (is != null)
-			wb = is_xls ? new HSSFWorkbook(is) : new XSSFWorkbook(is);
-		else
-			wb = is_xls ? new HSSFWorkbook() : new XSSFWorkbook();
-		sheetConfigs = config.getExcelSheets();
-		for (int i = 0, size = sheetConfigs.size(); i < size; i++) {
-			sheetConfig = sheetConfigs.get(i);
-			if ((sheet = wb.getSheet(sheetConfig.getTitle())) == null)
-				sheet = wb.createSheet(sheetConfig.getTitle());
-			tableConfigs = sheetConfig.getExcelTables();
-			for (int j = 0, l = tableConfigs.size(); j < l; j++) {
-				createExcelTable(sheet, tableConfigs.get(j));
+		try{
+			if (template != null){
+				template = is_xls ? template + ".xlt" : template + ".xlsx";
+				String templatePath = config.getTemplatePath();				
+				File filePath = new File(templatePath);
+				if (!filePath.exists())
+					throw new Exception("excel template path undefined");			
+				try {
+					File file = new File(filePath, template);
+					is = new FileInputStream(file);
+				} catch (FileNotFoundException e) {			
+					if (template != null)
+						throw new Exception("excel template not exist");			
+				}			
 			}
-			labelConfigs = sheetConfig.getExcelLabels();
-			for (int j = 0, l = labelConfigs.size(); j < l; j++) {
-				createExcelLabel(sheet, labelConfigs.get(j));
+			
+			if (is != null){				
+				wb = this.is_xls ? new HSSFWorkbook(is) : new XSSFWorkbook(is);				
 			}
+			else
+				wb = this.is_xls ? new HSSFWorkbook() : new XSSFWorkbook();
+			sheetConfigs = config.getExcelSheets();
+			for (int i = 0, size = sheetConfigs.size(); i < size; i++) {
+				sheetConfig = sheetConfigs.get(i);
+				if ((sheet = wb.getSheet(sheetConfig.getTitle())) == null)
+					sheet = wb.createSheet(sheetConfig.getTitle());
+				tableConfigs = sheetConfig.getExcelTables();
+				for (int j = 0, l = tableConfigs.size(); j < l; j++) {
+					createExcelTable(sheet, tableConfigs.get(j));
+				}
+				labelConfigs = sheetConfig.getExcelLabels();
+				for (int j = 0, l = labelConfigs.size(); j < l; j++) {
+					createExcelLabel(sheet, labelConfigs.get(j));
+				}
+			}
+			wb.write(os);			
+		}finally {				
+			if (os != null)
+				os.close();
 		}
-		File tempPath = null;
-		try {
-			tempPath = new File(config.getTempPath());
-			if (!tempPath.exists())
-				throw new Exception();
-		} catch (Exception e) {
-			throw new Exception("temp path undefined");
-		}
-		String filename = String.valueOf(System.currentTimeMillis()) + ".xls";
-		if (!is_xls) {
-			filename = filename + "x";
-		}
-		f = new File(tempPath, filename);
-		FileOutputStream out = new FileOutputStream(f);
-		try {
-			wb.write(out);
-		} finally {
-			if (out != null)
-				out.close();
-		}
-		return f;
 	}
 
 	void createExcelTable(Sheet sheet, ExcelTable tableConfig) {
@@ -104,16 +93,18 @@ public class ExcelFactoryImpl {
 		CompositeMap tabledata = dataModel.getChild(tableConfig.getDataModel());
 		int count = -1;
 		if (createTableHead) {
-			if ((r = sheet.getRow(rownum + count)) == null)
+			if ((r = sheet.getRow(rownum + count)) == null){				
 				r = sheet.createRow(rownum + count);
+			}
 			createExcelTableHead(r, columnConfigs, colnum);
 			count++;
 		}
 		Iterator it = tabledata.getChildIterator();
 		if (it != null) {
 			while (it.hasNext()) {
-				if ((r = sheet.getRow(count + rownum)) == null)
+				if ((r = sheet.getRow(count + rownum)) == null){					
 					r = sheet.createRow(count + rownum);
+				}
 				if (tableHeadEachRow && count % 2 == 1) {
 					createExcelTableHead(r, columnConfigs, colnum);
 				} else {
@@ -172,8 +163,9 @@ public class ExcelFactoryImpl {
 		String value = TextParser.parse(labelConfig.getContent(), dataModel);
 		Row r = sheet.getRow(rownum - 1);
 		Cell c = null;
-		if (r == null)
+		if (r == null){			
 			r = sheet.createRow(rownum - 1);
+		}
 		if ((c = r.getCell(colnum - 1)) == null)
 			c = r.createCell(colnum - 1);
 		String dataType = labelConfig.getDataType();
@@ -184,8 +176,7 @@ public class ExcelFactoryImpl {
 				c.setCellValue(Double.valueOf(value));
 		}else{		
 			c.setCellValue(value);
-		}
-		
+		}		
 	}
 
 	public CompositeMap extractionExcel(File file) throws Exception {

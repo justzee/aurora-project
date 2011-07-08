@@ -1,12 +1,14 @@
 package org.lwap.plugin.excel;
 
 import java.io.File;
+import java.io.OutputStream;
+
 import org.lwap.plugin.poi.ExcelFactoryImpl;
 import uncertain.composite.CompositeMap;
 
 public class ExcelFactory {
-	public static File createExcel(CompositeMap data, ExcelReport config) throws Exception{
-		return new ExcelFactoryImpl().createExcel(data, config);
+	public static void createExcel(CompositeMap data, ExcelReport config,OutputStream os) throws Exception{
+		new ExcelFactoryImpl().createExcel(data, config,os);
 	}
 
 	public static CompositeMap extractionExcel(File file) throws Exception{
