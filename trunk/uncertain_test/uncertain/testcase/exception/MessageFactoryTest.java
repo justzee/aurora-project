@@ -24,6 +24,7 @@ public class MessageFactoryTest extends TestCase {
 		assertEquals("这是一个测试案例!", MessageFactory.getMessage(messageCode, null));
 	}
 
+	
 	public void testCreateException() {
 		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
 		String notExistFile = "not_Exist";
@@ -31,15 +32,16 @@ public class MessageFactoryTest extends TestCase {
 		try {
 			LoadCompositeMap(notExistFile);
 		} catch (Throwable e) {
-			assertEquals("aurora00002:not_Exist.bm文件不存在!", e.getMessage());
+			assertEquals("异常代码：aurora00002 not_Exist.bm文件不存在!", e.getMessage());
 		}
 		try {
 			LoadCompositeMap(errorFormatFile);
 		} catch (Throwable e) {
-			assertEquals("aurora00004:error_format.bm文件格式不正确，请检查第11行第69列!", e.getMessage());
+		    assertEquals("异常代码：aurora00004 error_format.bm文件格式不正确，请检查第11行第69列!", e.getMessage());
 		}
 		
 	}
+	
 
 	private void LoadCompositeMap(String fileName) {
 		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
@@ -61,8 +63,5 @@ public class MessageFactoryTest extends TestCase {
 		}
 	}
 
-	public static void main(String[] args) {
-		(new MessageFactoryTest()).testLoadResource();
-
-	}
+	
 }
