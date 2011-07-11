@@ -183,7 +183,7 @@ public class DatabaseQuery extends DatabaseAccess {
             throw ex;
         } finally {
             if (rs != null)
-                rs.close();
+                DBUtil.closeResultSet(rs);
             if (stmt != null)
                 stmt.close();
         }
