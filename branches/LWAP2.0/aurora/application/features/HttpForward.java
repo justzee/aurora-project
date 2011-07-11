@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.lwap.action.JspForward;
+
 public class HttpForward extends HttpServlet{
 	public static String KEY_ADDRESS="address"; 
 	protected void service(HttpServletRequest request,
@@ -28,12 +30,12 @@ public class HttpForward extends HttpServlet{
 	public String getHttpUrl(HttpServletRequest request){
 		String address=super.getInitParameter(KEY_ADDRESS),paramName;		
 		String[] paramValues;
-		StringBuffer params=new StringBuffer();
+		StringBuffer params=new StringBuffer();		
 		int i,length;
 		boolean isFirst=true;
-		Enumeration enum=request.getParameterNames();
-		while (enum.hasMoreElements()) {
-			paramName = (String) enum.nextElement();
+		Enumeration enumn=request.getParameterNames();
+		while (enumn.hasMoreElements()) {
+			paramName = (String) enumn.nextElement();
 			paramValues=request.getParameterValues(paramName);
 			for(i=0,length=paramValues.length;i<length;i++){
 				if(isFirst){
@@ -46,7 +48,18 @@ public class HttpForward extends HttpServlet{
 				params.append("=");
 				params.append(paramValues[i].replace(' ', '+'));					
 			}
-		}		
+		}
+		String paramAttri=(String)request.getAttribute(JspForward.KEY_PARAM_ATTRI);
+		if(paramAttri!=null&&!"".equals(paramAttri)){
+			if(isFirst){
+				params.append("?");
+				isFirst=false;
+			}else{
+				params.append("&");
+			}
+			params.append(paramAttri.replace(' ', '+'));
+		}
+		System.out.println("==============="+params+"=====================");
 		return address+params;
 	}
 		

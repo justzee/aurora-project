@@ -17,6 +17,7 @@ import uncertain.proc.ProcedureRunner;
  */
 public class JspForward extends AbstractEntry implements IConfigurable {
 	public static final String KEY_JSP_FORWARD = "jsp-forward";
+	public static final String KEY_PARAM_ATTRI= "param-attri";
 	String tagName;
 	String page;
 	public void run(ProcedureRunner runner) throws Exception {
@@ -27,7 +28,9 @@ public class JspForward extends AbstractEntry implements IConfigurable {
 			HttpServletRequest request = svc.getRequest();
 			HttpServletResponse response = svc.getResponse();
 			page = TextParser.parse(page, context);		
-			request.getRequestDispatcher(page).forward(request, response);
+			String paramAttribute=page.substring(page.lastIndexOf("?")+1);	
+			request.setAttribute(KEY_PARAM_ATTRI,paramAttribute);			
+			request.getRequestDispatcher(page).forward(request, response);			
 		}
 	}
 	
