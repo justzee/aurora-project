@@ -1,0 +1,60 @@
+<sect2 id="business-model-query" revision="1">
+    <title>通过BM执行查询</title>     
+    
+    <sect3>
+        <title>字段,别名与表达式</title>
+    <para>
+    通过BM生成SQL查询的基本逻辑是：
+    </para>
+    <programlisting>
+    select 字段1, 字段2, 字段3, ... , 字段n from {baseTable} as {alias}
+    </programlisting>
+    <para>
+    其中，如果某个字段定义的name和physicalName不一致，对此字段将生成select {physicalName} as {name}这样的SQL语句。 
+    </para>
+    <para>
+    如果某个字段希望定义在BM中，但又不希望让该字段出现在select语句中（例如，只用于更新的字段），可以设置该字段的forSelect=&quot;false&quot;属性。
+    </para>
+    <para>
+    如果某个字段不是基于实际存在表字段，而是一段SQL表达式，或者希望对该字段调用SQL函数进行处理，那么可以设置该字段的expression属性。例如，下面的例子在获取creation_date字段时，调用oracle内建to_char()函数进行格式化：
+    <programlisting><![CDATA[
+    <bm:field name="creation_date" expression="trunc(user_name)" />
+    ]]></programlisting>
+    如果BM可能会用于多种数据库，请谨慎使用自定义的SQL语句，以免带来SQL语法兼容性问题。
+    </para>
+    </sect3>
+    
+    <sect3>
+        <title>SQL Join</title>
+	</sect3>    
+	
+	<para>
+	实际应用中我们经常需要将多个表join在一起查询。在BM中，通过配置基表与其它表的关系，可实现这个需求。
+	</para>
+	
+	<para>
+	在以下的例子中，我们假设有一个dept表存储公司中的部门，emp表存储公司中的员工，每个员工归属于一个特定的部门。首先，对部门表建立BM：
+	</para>
+    
+    <programlisting><![CDATA[
+<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" baseTable="dept" >
+    <bm:fields>
+        <bm:field name="deptno" databaseType="BIGINT" dataType="java.lang.Long"/>
+        <bm:field name="dname" databaseType="VARCHAR" dataType="java.lang.String"/>
+    </bm:fields>
+    <bm:primary-key>
+        <bm:pk-field name="empno"/>
+    </bm:primary-key>
+</bm:model>
+    ]]></programlisting> 
+	
+	然后，对前面一节的例子进行扩展，建立emp与dept表的关联关系，并在emp表中引用
+    
+    <programlisting><![CDATA[
+    ]]></programlisting> 
+    
+    <para>
+    	
+    </para>
+  
+</sect2>
