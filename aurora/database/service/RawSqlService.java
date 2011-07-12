@@ -22,6 +22,7 @@ import aurora.database.Constant;
 import aurora.database.DBUtil;
 import aurora.database.FetchDescriptor;
 import aurora.database.IResultSetConsumer;
+import aurora.database.IResultSetProcessor;
 import aurora.database.ParsedSql;
 import aurora.database.ResultSetLoader;
 import aurora.database.SqlRunner;
@@ -213,11 +214,19 @@ public class RawSqlService implements IConfigurable
             rs = runner.query(context.getCurrentParameter());
             logger.config("query execute time:"+(System.currentTimeMillis()-tick));
             if(rs!=null){
-                if(mModel!=null && mModel.getFields()!=null){
-                    mRsLoader.loadByConfig( rs, desc, mModel, consumer );
+                // -- zhoufan 2011-7-12
+                // check if resultset should be fetched
+                if(consumer instanceof IResultSetProcessor){
+                    IResultSetProcessor rsp = (IResultSetProcessor)consumer;
+                    rsp.processResultSet(rs);
+                // -- end
+                }else{
+                    if(mModel!=null && mModel.getFields()!=null){
+                        mRsLoader.loadByConfig( rs, desc, mModel, consumer );
+                    }
+                    else
+                        mRsLoader.loadByResultSet( rs, desc, consumer );     
                 }
-                else
-                    mRsLoader.loadByResultSet( rs, desc, consumer );                
             }
             exec_time = System.currentTimeMillis() - tick;
             mConfiguration.fireEvent("QueryFinish", context.getObjectContext(), null );
