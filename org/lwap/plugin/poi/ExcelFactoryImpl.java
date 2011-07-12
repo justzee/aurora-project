@@ -3,11 +3,11 @@ package org.lwap.plugin.poi;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -80,17 +80,15 @@ public class ExcelFactoryImpl {
 		}
 	}
 
-	void createExcelTable(Sheet sheet, ExcelTable tableConfig) {
+	void createExcelTable(Sheet sheet, ExcelTable tableConfig) throws SQLException {
 		String context = null;
-		CompositeMap record = null;
 		Row r = null;
 		Cell c = null;
 		boolean createTableHead = tableConfig.getCreateTableHead();
-		boolean tableHeadEachRow = tableConfig.getTableHeadEachRow();
 		int rownum = tableConfig.getRow();
 		int colnum = tableConfig.getCol();
-		CompositeMap columnConfigs = tableConfig.getColumns();
-		CompositeMap tabledata = dataModel.getChild(tableConfig.getDataModel());
+		CompositeMap columnConfigs = tableConfig.getColumns();		
+		ResultSet tabledata=(ResultSet)dataModel.get(tableConfig.getDataModel());		
 		int count = -1;
 		if (createTableHead) {
 			if ((r = sheet.getRow(rownum + count)) == null){				
@@ -98,52 +96,42 @@ public class ExcelFactoryImpl {
 			}
 			createExcelTableHead(r, columnConfigs, colnum);
 			count++;
-		}
-		Iterator it = tabledata.getChildIterator();
-		if (it != null) {
-			while (it.hasNext()) {
-				if ((r = sheet.getRow(count + rownum)) == null){					
-					r = sheet.createRow(count + rownum);
-				}
-				if (tableHeadEachRow && count % 2 == 1) {
-					createExcelTableHead(r, columnConfigs, colnum);
-				} else {
-					record = (CompositeMap) it.next();
-					Iterator iterator = columnConfigs.getChildIterator();
-					if (iterator != null) {
-						int j = -1;
-						while (iterator.hasNext()) {
-							CompositeMap object = (CompositeMap) iterator
-									.next();
-							if ((c = r.getCell(j + colnum)) == null)
-								c = r.createCell(j + colnum);
-							context = object.getString("datafield");
-							if (context.indexOf("@") != 0) {
-								context = TextParser.parse(context, dataModel);
-							} else {
-								context = record.getString(context.replace("@",
-										""));
-							}
-							String dataType = object.getString("datatype");								
-							if ("java.lang.Long".equals(dataType)){
-								if(context==null||"".equals(context))
-									c.setCellValue("");
-								else
-									c.setCellValue(Double.valueOf(context));
-							}else{
-								c.setCellValue(context);
-							}
-							j++;
-						}
+		}	
+		while(tabledata.next()){
+			if(count + rownum==65535)return;
+			if ((r = sheet.getRow(count + rownum)) == null){					
+				r = sheet.createRow(count + rownum);
+			}							
+			Iterator iterator = columnConfigs.getChildIterator();
+			if (iterator != null) {
+				int j = -1;
+				while (iterator.hasNext()) {
+					CompositeMap object = (CompositeMap) iterator.next();
+					if ((c = r.getCell(j + colnum)) == null)
+						c = r.createCell(j + colnum);						
+					context = object.getString("datafield");
+					if (context.indexOf("@") != -1) {
+						context=context.replace("@","");							
+					} 
+					context=tabledata.getString(context);	
+					String dataType = object.getString("datatype");								
+					if ("java.lang.Long".equals(dataType)){
+						if(context==null||"".equals(context))
+							c.setCellValue("");
+						else
+							c.setCellValue(Double.valueOf(context));
+					}else{
+						c.setCellValue(context);
 					}
+					j++;
 				}
-				count++;
-			}
+			}			
+			count++;		
 		}
 	}
 
 	void createExcelTableHead(Row r, CompositeMap columnConfigs, int colnum) {
-		Cell c = null;
+		Cell c = null;		
 		Iterator iterator = columnConfigs.getChildIterator();
 		if (iterator != null) {
 			int j = -1;
@@ -151,8 +139,7 @@ public class ExcelFactoryImpl {
 				CompositeMap object = (CompositeMap) iterator.next();
 				if ((c = r.getCell(j + colnum)) == null)
 					c = r.createCell(j + colnum);
-				c.setCellValue(TextParser.parse(object.getString("prompt"),
-						dataModel));
+				c.setCellValue(TextParser.parse(object.getString("prompt"), dataModel));						
 				j++;
 			}
 		}
@@ -160,7 +147,7 @@ public class ExcelFactoryImpl {
 
 	void createExcelLabel(Sheet sheet, ExcelLabel labelConfig) {
 		int rownum = labelConfig.getRow(), colnum = labelConfig.getCol();
-		String value = TextParser.parse(labelConfig.getContent(), dataModel);
+		String value =TextParser.parse(labelConfig.getContent(), dataModel);		
 		Row r = sheet.getRow(rownum - 1);
 		Cell c = null;
 		if (r == null){			
