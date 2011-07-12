@@ -362,7 +362,8 @@ implements Configuration.IParticipantListener
             runner.call(proc);
             if(runner.getLatestException()==null){
                 //mLogger.info("commited trasaction");
-                conn.commit();
+                //conn.commit();
+                resource_realeaser.addFirst(new ConnectionCommiter(conn, this));
             }
         }catch(Throwable ex){
             if(conn!=null){
@@ -376,7 +377,7 @@ implements Configuration.IParticipantListener
             throw new ServletException(ex);
         }finally{
             //runner.fireEvent("ConnectionClose", new Object[]{conn} );
-            DBUtil.closeConnection(conn);
+            //DBUtil.closeConnection(conn);
             closeConnectionSet();
             getServiceContext().remove(KEY_CURRENT_CONNECTION);
             if(proc!=null)
