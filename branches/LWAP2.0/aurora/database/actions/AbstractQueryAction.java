@@ -24,6 +24,8 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
     boolean     fetchAll = false;
     boolean     trace = false;
     boolean     autoCount = false;
+    boolean     saveResultSet = false;
+
     Integer     pageSize;
     String      fieldNameCase = "unassigned";
     byte        fieldNameCaseValue = Character.UNASSIGNED;
@@ -77,10 +79,17 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
             // ResultSet consumer
             consumer = (IResultSetConsumer)context.getInstanceOfType(IResultSetConsumer.class);            
             if(consumer==null){
-                CompositeMap result = context.getModel();
-                if(rootPath!=null) result = result.createChildByTag(rootPath);
-                compositeCreator = new CompositeMapCreator(result);
-                consumer = compositeCreator;
+                
+                // -- zhoufan 2011-07-12
+                // check if save resultset
+                if(getSaveResultSet()){
+                    consumer = new ResultSetSaver(context.getModel(), rootPath);                    
+                }else{
+                    CompositeMap result = context.getModel();
+                    if(rootPath!=null) result = result.createChildByTag(rootPath);
+                    compositeCreator = new CompositeMapCreator(result);
+                    consumer = compositeCreator;
+                }
             }
             context.setResultsetConsumer(consumer);
             doQuery(param, consumer, desc);
@@ -230,5 +239,14 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
     protected byte getFieldNameCaseValue(){
         return fieldNameCaseValue;
     }
+    
+    public boolean getSaveResultSet() {
+        return saveResultSet;
+    }
+
+    public void setSaveResultSet(boolean saveResultSet) {
+        this.saveResultSet = saveResultSet;
+    }
+    
 
 }
