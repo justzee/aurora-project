@@ -218,7 +218,8 @@ public class RawSqlService implements IConfigurable
                 // check if resultset should be fetched
                 if(consumer instanceof IResultSetProcessor){
                     IResultSetProcessor rsp = (IResultSetProcessor)consumer;
-                    rsp.processResultSet(rs);
+                    rsp.processResultSet(rs);                  
+                    rs=null;
                 // -- end
                 }else{
                     if(mModel!=null && mModel.getFields()!=null){
