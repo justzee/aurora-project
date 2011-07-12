@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
+import aurora.database.actions.ResultSetSaver;
+
 import uncertain.composite.CompositeMap;
 import uncertain.composite.transform.Transformer;
 
@@ -17,7 +19,7 @@ import uncertain.composite.transform.Transformer;
  */
 public class DatabaseQuery extends DatabaseAccess {
 
-    public static final String KEY_RESULTSET_PROCESSOR = "ResultsetProcessor";
+    public static final String KEY_SAVE_RESULTSET = "saveresultset";
 
     public static final String KEY_TRANSFORM_LIST = "transform-list";
 
@@ -106,19 +108,11 @@ public class DatabaseQuery extends DatabaseAccess {
             mLogger.log(Level.CONFIG, sql);
 
             // begin check if IResultSetProcessor exists - zhoufan 2011-07-11
-            String rspc = getResultsetProcessor();
-            if (rspc != null) {
-                Object obj = parameter.getRoot().getObject(rspc);
-                if (obj == null)
-                    throw new IllegalArgumentException("Object from " + rspc
-                            + " is null, can't invoke IResultsetProcessor");
-                if (!(obj instanceof IResultSetProcessor))
-                    throw new IllegalArgumentException("Object from " + rspc
-                            + " is not instance of IResultsetProcessor, but "
-                            + obj.getClass().getName());
-                IResultSetProcessor processor = (IResultSetProcessor) obj;
-                mLogger.config("invoke "+processor+" to process ResultSet");
+            boolean rspc = getSaveResultSet();
+            if (rspc) {               
+            	ResultSetSaver processor =new ResultSetSaver(target, this.getTarget());                  
                 processor.processResultSet(rs);
+                rs=null;
             // end check
             } else {
 
@@ -314,8 +308,8 @@ public class DatabaseQuery extends DatabaseAccess {
         putString(DatabaseQuery.KEY_PAGESIZE_PARAM_NAME, pagesizeParamName);
     }
 
-    public String getResultsetProcessor() {
-        return getString(KEY_RESULTSET_PROCESSOR);
+    public boolean getSaveResultSet() {
+        return getBoolean(KEY_SAVE_RESULTSET,false);
     }
 
 }
