@@ -30,13 +30,14 @@ public class ConnectionCommiter implements IResourceReleaser {
         this.service = service;
     }
 
-    public void doRelease(ServiceContext context) {
+    public void doRelease(ServiceContext context) {    	
         try{
-            conn.commit();
+        	if(conn!=null&&!conn.isClosed())
+        		conn.commit();
         }catch(SQLException ex){
             ex.printStackTrace();
         }
-        DBUtil.closeConnection(conn);
+        DBUtil.closeConnection(conn);    	
     }
     
 

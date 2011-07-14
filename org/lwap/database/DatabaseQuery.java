@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
+import aurora.database.ResultSetWithStatement;
 import aurora.database.actions.ResultSetSaver;
 
 import uncertain.composite.CompositeMap;
@@ -111,7 +112,8 @@ public class DatabaseQuery extends DatabaseAccess {
             boolean rspc = getSaveResultSet();
             if (rspc) {               
             	ResultSetSaver processor =new ResultSetSaver(target, this.getTarget());                  
-                processor.processResultSet(rs);
+                processor.processResultSet(new ResultSetWithStatement(rs,stmt.getStatement()));
+            	stmt.setAutoCloseStatement(false);
                 rs=null;
             // end check
             } else {
