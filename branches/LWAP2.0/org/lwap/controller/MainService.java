@@ -362,7 +362,7 @@ implements Configuration.IParticipantListener
             runner.call(proc);
             if(runner.getLatestException()==null){
                 //mLogger.info("commited trasaction");
-                //conn.commit();
+//                conn.commit();
                 resource_realeaser.addFirst(new ConnectionCommiter(conn, this));
             }
         }catch(Throwable ex){
