@@ -1,10 +1,8 @@
 package org.lwap.plugin.excel;
 
-import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +22,9 @@ public class ExcelReportByServer extends AbstractController implements IFeature 
 	final static String KEY_EXCEL_FORMAT="format" ;
 	final static String KEY_EXCEL_TEMPLATE_PATH="excel-template-path" ;
 	final static String KEY_TEMP_PATH="temp-path" ;
-	final static String KEY_FILE_NAME="_filename" ;	
+	final static String KEY_FILE_NAME="_filename" ;
+	public static String KEY_EXCEL_EXPORT_STATUS="_excel_export_status";
+	
 	UncertainEngine mEngine;
 	CompositeMap config;
 	ExcelReport excelConfig;
@@ -42,40 +42,35 @@ public class ExcelReportByServer extends AbstractController implements IFeature 
 		return IController.ACTION_NOT_DETECTED;
 	}
 
-	public int preBuildOutputContent(ProcedureRunner runner) throws Exception {
-		CompositeMap dataModel=ServiceInstance.getModel();
-		try{			
-			CompositeMap appConfig=ServiceInstance.getApplicationConfig();	
-			CompositeMap parameterMap=ServiceInstance.getParameters();		
-			excelConfig.setFileFormat(parameterMap.getString(KEY_EXCEL_FORMAT));
-			HttpServletRequest request=ServiceInstance.getRequest();
-			excelConfig.setTemplatePath(request.getRealPath(appConfig.getString(KEY_EXCEL_TEMPLATE_PATH)));		
-			String fileName = parameterMap.getString(KEY_FILE_NAME, "excel");
-			HttpServletResponse response=ServiceInstance.getResponse();
-			response.setCharacterEncoding("GBK");
-			if("xls".equals(excelConfig.getFileFormat().toLowerCase())){
-				response.setContentType("application/vnd.ms-excel");
-				fileName=fileName+".xls";
-			}else{
-				response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");			
-				fileName=fileName+".xlsx";
-			}
-			response.setHeader("Content-Disposition", "attachment; filename=\""+ fileName + "\"");
-			ExcelFactory.createExcel(dataModel, excelConfig,response.getOutputStream());
-		}finally{
-			Set keySet=dataModel.keySet();
-			Iterator iterator=keySet.iterator();
-			while(iterator.hasNext()){
-				String key=(String)iterator.next();
-				Object obj=dataModel.get(key);
-				if(obj instanceof ResultSet)
-					((ResultSet)obj).close();
-			}
+	public int preBuildOutputContent(ProcedureRunner runner) throws Exception {	
+		CompositeMap appConfig=ServiceInstance.getApplicationConfig();			
+		excelConfig=(ExcelReport)mEngine.getOcManager().createObject(config);			
+		CompositeMap model = ServiceInstance.getModel();	
+		CompositeMap parameterMap=ServiceInstance.getParameters();		
+		excelConfig.setFileFormat(parameterMap.getString(KEY_EXCEL_FORMAT));
+		HttpServletRequest request=ServiceInstance.getRequest();
+		excelConfig.setTemplatePath(request.getRealPath(appConfig.getString(KEY_EXCEL_TEMPLATE_PATH)));		
+		String fileName = parameterMap.getString(KEY_FILE_NAME, "excel");
+		HttpServletResponse response=ServiceInstance.getResponse();
+		response.setCharacterEncoding("GBK");
+		if("xls".equals(excelConfig.getFileFormat().toLowerCase())){
+			response.setContentType("application/vnd.ms-excel");
+			fileName=fileName+".xls";
+		}else{
+			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");			
+			fileName=fileName+".xlsx";
 		}
+		response.setHeader("Content-Disposition", "attachment; filename=\""+ fileName + "\"");
+		ExcelFactory.createExcel(model, excelConfig,response.getOutputStream());
+		appConfig.putBoolean("KEY_EXCEL_EXPORT_STATUS",false);
 		return EventModel.HANDLE_STOP;
 	}
 	
 	public void preCreateModel(){
+		CompositeMap appConfig=ServiceInstance.getApplicationConfig();
+		if(appConfig.getBoolean("KEY_EXCEL_EXPORT_STATUS", false))
+			throw new RuntimeException("导出程序正在运行,请稍后再试");
+		appConfig.putBoolean("KEY_EXCEL_EXPORT_STATUS",true);
 		CompositeMap modelConfig;		
 		excelConfig=(ExcelReport)mEngine.getOcManager().createObject(config);
 		List keyList=new LinkedList();
@@ -94,11 +89,15 @@ public class ExcelReportByServer extends AbstractController implements IFeature 
 		while(it.hasNext()){
 			String target=(String)it.next();
 			modelConfig=CompositeUtil.findChild(ServiceInstance.getModelConfig(),"sql-query","rootpath",target);
-			if(modelConfig==null)
+			if(modelConfig!=null){
+				modelConfig.put("pagesize", 65534);
+				modelConfig.put("fetchall", false);
+			}else{
 				modelConfig=CompositeUtil.findChild(ServiceInstance.getModelConfig(),"query","Target",target);
-			if(modelConfig!=null)
-				modelConfig.put("saveresultset", true);
+				if(modelConfig!=null){
+					modelConfig.put("PageSize", 65534);					
+				}
+			}			
 		}
 	}
-		
 }
