@@ -11,7 +11,7 @@
 == 功能部署 ==
 
  * 从[http://www.aurora-framework.org/release/ aurora-framework]上下载2011.07.12后的aurora.jar版本
- * 打开位于[WEB_HOME]/web-inf/aurora.config文件，在文件末尾添加如下配置信息：
+ * 打开位于[[WEB_HOME]]/web-inf/aurora.config文件，在文件末尾添加如下配置信息：
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
 <aurora-config>
