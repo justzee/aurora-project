@@ -5,6 +5,8 @@ package aurora.database.actions;
 
 import java.util.List;
 
+import org.lwap.feature.ExcelResultSetProcessor;
+
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
 import uncertain.composite.transform.Transformer;
@@ -83,7 +85,7 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
                 // -- zhoufan 2011-07-12
                 // check if save resultset
                 if(getSaveResultSet()){
-                    consumer = new ResultSetSaver(context.getModel(), rootPath);                    
+                    consumer = new ExcelResultSetProcessor(context_map);                    
                 }else{
                     CompositeMap result = context.getModel();
                     if(rootPath!=null) result = result.createChildByTag(rootPath);
