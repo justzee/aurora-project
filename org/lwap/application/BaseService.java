@@ -125,12 +125,8 @@ public class BaseService  extends ServiceImpl implements LocalizedStringProvider
 		return this.application.getDataSource();
 	}
 	
-	public Connection getConnection() throws SQLException {
-		Connection conn =(Connection)service_context.get("_connection");
-		if(conn==null){
-			conn = getDataSource().getConnection();
-			service_context.put("_connection", conn);
-		}
+	public Connection getConnection() throws SQLException {	    
+	    Connection conn = getDataSource().getConnection();
         if(conn==null)
             throw new SQLException("Can't get connection");
         IConnectionInitializer ci = application.getConnectionInitializer();
