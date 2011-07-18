@@ -107,7 +107,11 @@ public class ImportExcel implements IController {
 	public void onPrepareService(ProcedureRunner runner) throws Exception {
 		 System.out.println(getProcedureName());
 		try {
-			CompositeMap context = runner.getContext();			
+			CompositeMap context = runner.getContext();		
+			CompositeMap appConfig=service.getApplicationConfig();
+			if(appConfig.getBoolean("KEY_EXCEL_IMPORT_STATUS", false))
+				throw new RuntimeException("导入程序正在运行,请稍后再试");
+			appConfig.putBoolean("KEY_EXCEL_IMPORT_STATUS",true);
 			HttpServletRequest request = service.getRequest();			
 			session_id=TextParser.parse(session_id, context);
 			// RequestContext requestContext = new
@@ -303,6 +307,8 @@ public class ImportExcel implements IController {
 			sb.append(errorFileName);
 			context.putObject(getFile_path(), sb.toString(), true);
 		}
+		CompositeMap appConfig=service.getApplicationConfig();
+		appConfig.putBoolean("KEY_EXCEL_IMPORT_STATUS",false);
 	}
 
 	/**
