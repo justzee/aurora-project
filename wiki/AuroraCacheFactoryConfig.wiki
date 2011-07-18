@@ -60,7 +60,7 @@ if(map==null){
 
 在上述配置例子中，分别给这两个cache factory用name属性进行命名，以便区分。
 
-<cache-mappings>
+`<cache-mappings>`
 此部分配置预先约定的cache名称与INamedCacheFactory实例的对应关系，由此，可以设置某种类型的cache由哪个INamedCacheFactory实例来提供，以及这部分cache是否启用。例如：
 {{{
 <cache-mapping name="WebResource" cacheFactory="InMemory" enabled="true" />
