@@ -1,4 +1,4 @@
-#summary 在记录异常信息到数据库中
+#summary 记录异常信息到数据库中
 #labels document
 
 == 摘要 ==
@@ -21,8 +21,8 @@
            <insert-sql>
 	     begin
 	       insert into fnd_exception_logs ( id,exception_type, 
-               exception_message,source ,context ,root_stack_trace,full_stack_trace)
- 	        values (fnd_exception_logs_s.nextval, ?, ?, ?, ?,?,? );
+               exception_message,source ,context ,root_stack_trace,full_stack_trace,role_id)
+ 	        values (fnd_exception_logs_s.nextval, ?, ?, ?, ?,?,?,'${/session/@role_id}' );
 	     end;
 	   </insert-sql>
 	</exception-database-log>
@@ -40,6 +40,7 @@ create table FND_EXCEPTION_LOGS
   CONTEXT           CLOB,
   ROOT_STACK_TRACE  CLOB,
   FULL_STACK_TRACE  CLOB,
+  ROLE_ID           NUMBER,
   CREATION_DATE     DATE default sysdate not null,
   CREATED_BY        NUMBER default 0 not null,
   LAST_UPDATE_DATE  DATE default sysdate not null,
