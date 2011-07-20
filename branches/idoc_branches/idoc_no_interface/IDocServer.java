@@ -28,7 +28,8 @@ public class IDocServer {
 	public JCoIDocServer iDocServer;
 	private String serverName;
 	private DataBaseUtil dbUtil;
-	public LinkedList idocFils = new LinkedList();
+	public LinkedList syncFils = new LinkedList();
+	public LinkedList backupFils = new LinkedList();
 	private IDocServerInstance iDocServerInstance;
 	private ILogger logger;
 	private int server_id = -1;
@@ -51,7 +52,7 @@ public class IDocServer {
 			log("begin start IDocServer " + serverName + "...");
 			iDocServer = JCoIDoc.getServer(serverName);
 			log("get HistoryIdocs " + iDocServer.getProgramID());
-			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), idocFils);
+			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), syncFils);
 		} catch (JCoException e) {
 			handleException(serverName + " is not valid.", e);
 		} catch (SQLException e) {
@@ -84,9 +85,12 @@ public class IDocServer {
 				}
 				return;
 			}
-			log("start IDocXMLParser ");
-			IDocXMLParser parser = new IDocXMLParser(this);
-			parser.start();
+			log("start IDocSync thread.. ");
+			IDocSync sync = new IDocSync(this);
+			sync.start();
+			log("start backup thread.. ");
+			IDocBackup backup = new IDocBackup(this);
+			backup.start();
 		} catch (SQLException e) {
 			handleException(e);
 		}
@@ -113,7 +117,7 @@ public class IDocServer {
 				osw.flush();
 				int idoc_id = dbUtil.addIdoc(server_id, filePath);
 				log("add idoc_id " + idoc_id);
-				addIdocFile(new IDocFile(filePath, idoc_id, server_id));
+				addSyncFile(new IDocFile(filePath, idoc_id, server_id));
 			} catch (Throwable thr) {
 				handleException(thr);
 			} finally {
@@ -128,15 +132,26 @@ public class IDocServer {
 			}
 		}
 	}
-	public synchronized void addIdocFile(IDocFile file) {
-		idocFils.addLast(file);
+	public synchronized void addSyncFile(IDocFile file) {
+		syncFils.addLast(file);
 	}
-	public synchronized IDocFile getIdocFile() {
-		if (idocFils.size() <= 0) {
+	public synchronized IDocFile getSyncFile() {
+		if (syncFils.size() <= 0) {
 			return null;
 		}
-		IDocFile file = (IDocFile) idocFils.getFirst();
-		idocFils.remove(0);
+		IDocFile file = (IDocFile) syncFils.getFirst();
+		syncFils.remove(0);
+		return file;
+	}
+	public synchronized void addBackupFile(IDocFile file) {
+		backupFils.addLast(file);
+	}
+	public synchronized IDocFile getBckupFile() {
+		if (backupFils.size() <= 0) {
+			return null;
+		}
+		IDocFile file = (IDocFile) backupFils.getFirst();
+		backupFils.remove(0);
 		return file;
 	}
 
@@ -183,7 +198,7 @@ public class IDocServer {
 		return !(JCoServerState.ALIVE.equals(iDocServer.getState()));
 	}
 	public boolean isFinished() {
-		return idocFils.size() <= 0;
+		return syncFils.size() <= 0;
 	}
 	public void log(String message) {
 		if (logger != null) {
