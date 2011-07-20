@@ -11,20 +11,20 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 
-public class IDocXMLParser extends Thread {
+public class IDocBackup extends Thread {
 	public static final String SYNC = "sync";
 	public IDocServer iDocServer;
 	public List errorIdocTypes = new LinkedList();
 	public int header_id;
 	public IdocType idocType;
-	public IDocXMLParser(IDocServer iDocServer) {
+	public IDocBackup(IDocServer iDocServer) {
 		this.iDocServer = iDocServer;
 	}
 	public void run() {
 		while (!isFinished()) {
 			idocType = null;
 			header_id = -1;
-			IDocFile file = iDocServer.getIdocFile();
+			IDocFile file = iDocServer.getBckupFile();
 			if (file == null)
 				continue;
 			try {
@@ -44,41 +44,13 @@ public class IDocXMLParser extends Thread {
 				}
 				continue;
 			}
-			try {
-				iDocServer.log("insertMiddleTables for idoc:" + file.getIdocId());
-				insertMiddleTables(file);
-			} catch (Throwable e) {
-				iDocServer.log(e);
-				try {
-					String errorMessage= "middle failed";
-					iDocServer.log("updateIdocStatus for idoc:" + file.getIdocId()+" "+errorMessage);
-					iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), errorMessage);
-				} catch (SQLException e1) {
-					iDocServer.log(e1);
-				}
-				continue;
-			}
-			try {
-				iDocServer.log("insertFormalTables for idoc:" + file.getIdocId());
-				insertFormalTables(file);
-			} catch (Throwable e) {
-				iDocServer.log(e);
-				try {
-					String errorMessage= "formal failed";
-					iDocServer.log("updateIdocStatus for idoc:" + file.getIdocId()+" "+errorMessage);
-					iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(),errorMessage );
-				} catch (SQLException e1) {
-					iDocServer.log(e1);
-				}
-				continue;
-			}
-			iDocServer.log("idoc:" + file.getIdocId() + " execute successful !");
+			iDocServer.log("idoc:" + file.getIdocId() + " backup successful !");
 		}
 	}
 	private void insertInterface(IDocFile file) throws ApplicationException {
 		try {
-			if (header_id == -1) {
-				iDocServer.log("parser " + file.getPath() + " file");
+			if (header_id != -1) {
+				iDocServer.log("parser " + file.getPath() + " file for backup ");
 				CompositeLoader loader = new CompositeLoader();
 				CompositeMap iDocData = loader.loadByFile(file.getPath());
 				CompositeMap idoc_node = iDocData.getChild(IDocFile.IDOC_NODE);
@@ -91,7 +63,6 @@ public class IDocXMLParser extends Thread {
 					throw new ApplicationException("This idocType:" + idocType + " has error before");
 				}
 				iDocServer.getDbUtil().getConnection().setAutoCommit(false);
-				header_id = iDocServer.getDbUtil().registerInterfaceHeader(file.getIdocId(), control_node);
 				iDocServer.getDbUtil().updateIdocInfo(file.getIdocId(), control_node);
 				for (int i = 1; i < idoc_node.getChilds().size(); i++) {
 					CompositeMap content_node = (CompositeMap) idoc_node.getChilds().get(i);
@@ -120,22 +91,6 @@ public class IDocXMLParser extends Thread {
 				iDocServer.log("delete file " + file.getPath() + " " + deleteFile.delete());
 			}
 		}
-	}
-	private void insertMiddleTables(IDocFile file) throws ApplicationException, SQLException {
-			String executePkg = iDocServer.getDbUtil().getMiddleExecutePkg(file.getIdocId());
-			String errorMessage = iDocServer.getDbUtil().executePkg(executePkg, header_id);
-			if (errorMessage != null && !"".equals(errorMessage)) {
-				throw new ApplicationException("execute middle Pkg " + executePkg + " failed:" + errorMessage);
-			}
-			iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), "middle");
-	}
-	private void insertFormalTables(IDocFile file) throws SQLException, ApplicationException {
-		String executePkg = iDocServer.getDbUtil().getFormalExecutePkg(file.getIdocId());
-		String errorMessage = iDocServer.getDbUtil().executePkg(executePkg, header_id);
-		if (errorMessage != null && !"".equals(errorMessage)) {
-			throw new ApplicationException("execute Formal Pkg " + executePkg + " failed:" + errorMessage);
-		}
-		iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), "done");
 	}
 	public boolean isFinished() {
 		return iDocServer.isShutDown();

@@ -22,10 +22,12 @@ import com.sap.conn.idoc.jco.JCoIDocServer;
 public class DataBaseUtil {
 	private Connection dbConn;
 	private ILogger logger;
+
 	public DataBaseUtil(IObjectRegistry registry, ILogger logger) throws ApplicationException {
 		dbConn = initConnection(registry);
 		this.logger = logger;
 	}
+
 	private Connection initConnection(IObjectRegistry registry) throws ApplicationException {
 		DataSource ds = (DataSource) registry.getInstanceOfType(DataSource.class);
 		try {
@@ -36,6 +38,7 @@ public class DataBaseUtil {
 			throw new ApplicationException("Can not get Connection from DataSource", e);
 		}
 	}
+
 	public int registerSapServers(JCoIDocServer server) throws SQLException {
 		// SERVER_ID,PROGRAM_ID,REPOSITORY_NAME,GATEWAY_HOST,GATEWAY_SERVICE,RESPOSITORY_DESTINATION,STATUS,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,
 		int server_id = -1;
@@ -100,6 +103,7 @@ public class DataBaseUtil {
 
 		return server_id;
 	}
+
 	public void unRegisterSapServers(int serverId) throws SQLException {
 		String delete_sql = "delete from fnd_sap_servers s where s.server_id=" + serverId;
 		Statement statement = null;
@@ -113,6 +117,7 @@ public class DataBaseUtil {
 			}
 		}
 	}
+
 	public int addIdoc(int serverId, String filePath) throws SQLException, ApplicationException {
 		String get_idoc_id_sql = "select fnd_sap_idocs_s.nextval from dual";
 		Statement statement = null;
@@ -150,8 +155,8 @@ public class DataBaseUtil {
 		}
 		return idoc_id;
 	}
+
 	public void updateIdocInfo(int idocId, CompositeMap control_node) throws SQLException {
-		// log("updateIdocInfo where  idocId:" + idocId);
 		if (idocId < 1 || control_node == null)
 			return;
 		String tabnam = getChildNodeText(control_node, IDocFile.TABNAM_NODE);
@@ -208,6 +213,15 @@ public class DataBaseUtil {
 			}
 		}
 	}
+
+	private String getSegmentFieldValue(CompositeMap node, String segment, String filed) {
+		CompositeMap parentSegment = getParentSegment(node, segment);
+		if (parentSegment != null) {
+			return getChildNodeText(parentSegment, filed);
+		}
+		return null;
+	}
+
 	private String getChildNodeText(CompositeMap node, String childName) {
 		if (node == null || childName == null)
 			return null;
@@ -216,6 +230,19 @@ public class DataBaseUtil {
 			return null;
 		return childNode.getText();
 	}
+
+	private CompositeMap getParentSegment(CompositeMap node, String segment) {
+		if (node == null || segment == null)
+			return null;
+		if (segment.equals(node.getName())) {
+			return node;
+		}
+		CompositeMap parentNode = node.getParent();
+		if (parentNode == null)
+			return null;
+		return getParentSegment(parentNode, segment);
+	}
+
 	public int registerInterfaceHeader(int idocId, CompositeMap controlNode) throws SQLException, ApplicationException {
 		if (idocId < 1 || controlNode == null)
 			return -1;
@@ -252,16 +279,15 @@ public class DataBaseUtil {
 			if (statement != null) {
 				statement.close();
 			}
-			if(pstatement != null){
+			if (pstatement != null) {
 				pstatement.close();
 			}
 		}
 		return header_id;
 
 	}
+
 	public String getTemplateCode(String idoctyp, String cimtyp) throws SQLException, ApplicationException {
-		// log("getTemplateCode where  idoctyp:" + idoctyp + " cimtyp:" +
-		// cimtyp);
 		StringBuffer query_sql = new StringBuffer("select TEMPLATE_CODE from FND_SAP_IDOC_TEMPLATES where IDOCTYP=? ");
 		if (cimtyp != null)
 			query_sql.append(" and CIMTYP=?");
@@ -277,8 +303,8 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				templateCode = rs.getString(1);
 			} else {
-				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp
-						+ " execute sql:" + query_sql.toString() + " failed.");
+				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
+						+ query_sql.toString() + " failed.");
 			}
 			rs.close();
 			statement.close();
@@ -292,6 +318,7 @@ public class DataBaseUtil {
 		}
 		return templateCode;
 	}
+
 	public IdocType getIdocType(CompositeMap controlNode) {
 		String idoctyp = getChildNodeText(controlNode, IDocFile.IDOCTYP_NODE);
 		String cimtyp = getChildNodeText(controlNode, IDocFile.CIMTYP_NODE);
@@ -299,8 +326,6 @@ public class DataBaseUtil {
 	}
 
 	public String getHandleModel(String idoctyp, String cimtyp) throws SQLException, ApplicationException {
-		// log("getHandleModel where  idoctyp:" + idoctyp + " cimtyp:" +
-		// cimtyp);
 		StringBuffer query_sql = new StringBuffer("select HANDLE_MODEL from FND_SAP_IDOC_TEMPLATES where IDOCTYP=? ");
 		if (cimtyp != null)
 			query_sql.append(" and CIMTYP=?");
@@ -316,8 +341,8 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				handleModel = rs.getString(1);
 			} else {
-				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp
-						+ " execute sql:" + query_sql.toString() + " failed.");
+				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
+						+ query_sql.toString() + " failed.");
 			}
 			rs.close();
 			statement.close();
@@ -331,12 +356,83 @@ public class DataBaseUtil {
 		}
 		return handleModel;
 	}
+
+	public void registerMiddleLine(int headerId, CompositeMap contentNode) throws SQLException, ApplicationException {
+		if (headerId < 1 || contentNode == null)
+			return;
+		insertIntoMiddleTable(headerId, contentNode);
+	}
+
+	private void insertIntoMiddleTable(int headerId, CompositeMap node) throws SQLException, ApplicationException {
+		PreparedStatement segmentMapsSt = null;
+		PreparedStatement fieldMapsSt = null;
+		PreparedStatement insertSt = null;
+		ResultSet segmentMapsRs = null;
+		ResultSet filedMapsRs = null;
+		String segment = node.getName();
+		String segmentMapsSQL = "select t.header_id, t.table_name from fnd_sap_segment_maps t where t.segment_name = ?";
+		String fieldMapsSQL = "select t.segment_name,t.segment_field,t.table_field from fnd_sap_field_maps t where t.header_id = ?";
+		try {
+			segmentMapsSt = dbConn.prepareStatement(segmentMapsSQL);
+			segmentMapsSt.setString(1, segment);
+			segmentMapsRs = segmentMapsSt.executeQuery();
+			while (segmentMapsRs.next()) {
+				int mapHeaderId = segmentMapsRs.getInt(1);
+				String tableName = segmentMapsRs.getString(2);
+				fieldMapsSt = dbConn.prepareStatement(fieldMapsSQL);
+				fieldMapsSt.setInt(1, mapHeaderId);
+				filedMapsRs = fieldMapsSt.executeQuery();
+				StringBuffer insert_sql = new StringBuffer("insert into " + tableName
+						+ " (BATCH_ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE");
+				StringBuffer values_sql = new StringBuffer("values(" + headerId + ",0,sysdate,0,sysdate");
+				while (filedMapsRs.next()) {
+					String segmentName = filedMapsRs.getString(1);
+					String segmentField = filedMapsRs.getString(2);
+					String tableField = filedMapsRs.getString(3);
+					insert_sql.append("," + tableField);
+					String value = getSegmentFieldValue(node, segmentName, segmentField);
+					values_sql.append(",'" + (value != null ? value : "")+"'");
+				}
+				insert_sql.append(")").append(values_sql).append(")");
+				insertSt = dbConn.prepareStatement(insert_sql.toString());
+				insertSt.executeUpdate();
+				insertSt.close();
+			}
+			segmentMapsRs.close();
+			segmentMapsSt.close();
+			filedMapsRs.close();
+			fieldMapsSt.close();
+		} finally {
+			if (segmentMapsRs != null) {
+				segmentMapsRs.close();
+			}
+			if (segmentMapsSt != null) {
+				segmentMapsSt.close();
+			}
+			if (filedMapsRs != null) {
+				filedMapsRs.close();
+			}
+			if (fieldMapsSt != null) {
+				fieldMapsSt.close();
+			}
+			if (insertSt != null) {
+				insertSt.close();
+			}
+		}
+		for (int i = 0; i < node.getChilds().size(); i++) {
+			CompositeMap child = (CompositeMap) node.getChilds().get(i);
+			if (child.getChilds() != null && child.getChilds().size() > 0) {
+				insertIntoMiddleTable(headerId, child);
+			}
+		}
+	}
+
 	public void registerInterfaceLine(int headerId, CompositeMap contentNode) throws SQLException, ApplicationException {
-		// log("registerInterfaceLine where  headerId:" + headerId);
 		if (headerId < 1 || contentNode == null)
 			return;
 		handleContentNode(headerId, 0, contentNode);
 	}
+
 	private void handleContentNode(int headerId, int parent_id, CompositeMap node) throws SQLException,
 			ApplicationException {
 		StringBuffer insert_sql = new StringBuffer(
@@ -351,7 +447,7 @@ public class DataBaseUtil {
 				handleContentNode(headerId, line_id, child);
 				continue;
 			}
-			if(!isSegment(child)){
+			if (!isSegment(child)) {
 				insert_sql.append(",ATTRIBUTE_" + (getFieldIndex(node.getName(), child.getName())));
 				values_sql.append(",?");
 			}
@@ -370,7 +466,7 @@ public class DataBaseUtil {
 				if (child.getChilds() != null && child.getChilds().size() > 0) {
 					continue;
 				}
-				if(!isSegment(child)){
+				if (!isSegment(child)) {
 					statement.setString(index++, child.getText());
 				}
 			}
@@ -382,17 +478,18 @@ public class DataBaseUtil {
 			}
 		}
 	}
-	private boolean isSegment(CompositeMap node){
-		if(node == null)
+
+	private boolean isSegment(CompositeMap node) {
+		if (node == null)
 			return false;
 		String attribute = "SEGMENT";
-		if(node.getString(attribute) != null){
+		if (node.getString(attribute) != null) {
 			return true;
 		}
 		return false;
 	}
+
 	public int getLineId() throws SQLException, ApplicationException {
-		// log("getLineId ");
 		String query_sql = "select FND_INTERFACE_LINES_s.nextval from dual";
 		Statement statement = null;
 		ResultSet rs = null;
@@ -417,6 +514,7 @@ public class DataBaseUtil {
 		}
 		return lineId;
 	}
+
 	public void updateIdocStatus(int headerId, int idocId, String status) throws SQLException {
 		String header_update_sql = "update FND_INTERFACE_HEADERS t set t.status=? where t.header_id =?";
 		String idoc_update_sql = "update fnd_sap_idocs t set t.handled_status=? where t.idoc_id =?";
@@ -438,6 +536,7 @@ public class DataBaseUtil {
 			}
 		}
 	}
+
 	public void updateIdocsStatus(int idocId, String message) throws SQLException {
 		String idoc_update_sql = "update fnd_sap_idocs t set t.handled_status=? where t.idoc_id =?";
 		PreparedStatement statement = null;
@@ -453,8 +552,8 @@ public class DataBaseUtil {
 			}
 		}
 	}
+
 	public String getMiddleExecutePkg(int idocId) throws SQLException, ApplicationException {
-		// log("getMiddleExecutePkg from idocId:" + idocId);
 		if (idocId < 1)
 			return null;
 		String query_sql = "select i.idoctyp,i.cimtyp from fnd_sap_idocs i where i.idoc_id = " + idocId;
@@ -485,8 +584,8 @@ public class DataBaseUtil {
 		}
 		return getMiddleExecutePkg(templateCode);
 	}
+
 	public String getMiddleExecutePkg(String template_code) throws SQLException, ApplicationException {
-		// log("getMiddleExecutePkg from template_code:" + template_code);
 		String query_sql = "select execute_pkg from fnd_interface_templates where enabled_flag='Y' and template_code='"
 				+ template_code + "'";
 		Statement statement = null;
@@ -513,8 +612,8 @@ public class DataBaseUtil {
 		}
 		return executePkg;
 	}
+
 	public String getFormalExecutePkg(int idocId) throws SQLException, ApplicationException {
-		// log("getFormalExecutePkg from idocId:" + idocId);
 		if (idocId < 1)
 			return null;
 		String query_sql = "select i.idoctyp,i.cimtyp from fnd_sap_idocs i where i.idoc_id = " + idocId;
@@ -534,18 +633,17 @@ public class DataBaseUtil {
 			rs.close();
 			statement.close();
 		} finally {
-			if(rs != null){
+			if (rs != null) {
 				rs.close();
 			}
-			if(statement != null){
+			if (statement != null) {
 				statement.close();
 			}
 		}
 		return getFormalExecutePkg(idoctyp, cimtyp);
 	}
+
 	public String getFormalExecutePkg(String idoctyp, String cimtyp) throws SQLException, ApplicationException {
-		// log("getFormalExecutePkg where  idoctyp:" + idoctyp + " cimtyp:" +
-		// cimtyp);
 		StringBuffer query_sql = new StringBuffer("select execute_pkg from fnd_sap_idoc_transactions where IDOCTYP=? ");
 		if (cimtyp != null)
 			query_sql.append(" and CIMTYP=?");
@@ -561,8 +659,8 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				executePkg = rs.getString(1);
 			} else {
-				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp
-						+ " execute sql:" + query_sql.toString() + " failed.");
+				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
+						+ query_sql.toString() + " failed.");
 			}
 			rs.close();
 			statement.close();
@@ -576,6 +674,7 @@ public class DataBaseUtil {
 		}
 		return executePkg;
 	}
+
 	public String executePkg(String executePkg, int headerId) throws SQLException {
 		String errorMessage = null;
 		CallableStatement proc = null;
@@ -594,7 +693,7 @@ public class DataBaseUtil {
 			proc.close();
 			dbConn.setAutoCommit(true);
 		} finally {
-			if(proc != null)
+			if (proc != null)
 				proc.close();
 			dbConn.rollback();
 			dbConn.setAutoCommit(true);
@@ -602,6 +701,7 @@ public class DataBaseUtil {
 		return errorMessage;
 
 	}
+
 	public void stopSapServers(int serverId) throws SQLException {
 		String delete_sql = "update fnd_sap_servers s set s.status='Error occurred:please check the console or log for details.',last_update_date=sysdate where s.server_id="
 				+ serverId;
@@ -616,9 +716,8 @@ public class DataBaseUtil {
 			}
 		}
 	}
+
 	public int getFieldIndex(String segmenttyp, String fieldname) throws SQLException, ApplicationException {
-		// log("getFieldIndex from segmenttyp:" + segmenttyp + " fieldname:" +
-		// fieldname);
 		String get_field_Index_sql = "select t.field_index from fnd_sap_fields t where t.segmenttyp ='" + segmenttyp
 				+ "' and t.fieldname='" + fieldname + "'";
 		Statement statement = null;
@@ -644,6 +743,7 @@ public class DataBaseUtil {
 		}
 		return fieldIndex;
 	}
+
 	public void getHistoryIdocs(String program_id, List idocList) throws SQLException, ApplicationException {
 		String get_HistoryIdocs_sql = "select i.idoc_id, i.server_id, i.file_path  from "
 				+ " fnd_sap_idocs i, fnd_sap_servers s  where (i.handled_status is null or i.handled_status<>'done') "
@@ -675,6 +775,7 @@ public class DataBaseUtil {
 		}
 
 	}
+
 	public int existHeaders(int idoc_id) throws SQLException {
 		String get_field_Index_sql = "select t.header_id " + " from fnd_interface_headers t, fnd_sap_idocs i "
 				+ " where t.attribute_1 = i.idoc_id and i.idoc_id = " + idoc_id;
@@ -703,6 +804,7 @@ public class DataBaseUtil {
 	public Connection getConnection() {
 		return dbConn;
 	}
+
 	public void dispose() throws SQLException {
 		if (dbConn != null) {
 			dbConn.close();
