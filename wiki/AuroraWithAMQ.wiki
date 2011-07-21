@@ -1,4 +1,4 @@
-#summary 在Aurora中使用 Apache ActiveMQ
+#summary 在Aurora中使用Apache ActiveMQ
 #labels document
 
 == Apache ActiveMQ简介 ==
