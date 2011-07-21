@@ -1,9 +1,9 @@
-#summary 在Aurora中使用[http://activemq.apache.org/ Apache ActiveMQ]
+#summary 在Aurora中使用 Apache ActiveMQ
 #labels document
 
 == Apache ActiveMQ简介 ==
 
-ActiveMQ 是Apache出品，最流行的、功能强劲的开源消息组件。ActiveMQ完全支持JMS1.1和J2EE 1.4规范。
+[http://activemq.apache.org/ Apache ActiveMQ] 是Apache出品，最流行的、功能强劲的开源消息组件。ActiveMQ完全支持JMS1.1和J2EE 1.4规范。
 
 === ActiveMQ特性列表：====
     # 多种语言和协议编写客户端。语言: Java, C, C++, C#, Ruby, Perl, Python, PHP。应用协议: OpenWire,Stomp REST,WS Notification,XMPP,AMQP 　　
@@ -95,18 +95,15 @@ ActiveMQ 是Apache出品，最流行的、功能强劲的开源消息组件。Ac
     <property name="poolPreparedStatements" value="true"/>
   </bean>
 </beans>
-}}} 
+}}}
   在启动amq后，会在数据中自动创建三种表
    * ACTIVEMQ_ACKS 接收应答表
    * ACTIVEMQ_MSGS 发送信息表
    * ACTIVEMQ_LOCK 主机锁表
   amq服务器的重连机制如下：
-  如客户端所配置的，我们有两台主机，一台是localhost，一台是remotehost1。
-
-  两台机器的activemq.xml连接同一个数据库（即配置信息相同）。
-
-   启动服务的时候，同时去数据库中抢夺资源锁，谁先抢到，谁就是主机，没抢到处于等待状态，等这台主机意外宕机后，再去抢锁，同样是谁先抢到，就谁是主机。
- # 在需要调用svc中使用`<amq:jms-message-dispatch event="resource_update" xmlns:amq="aurora.plugin.amq"/>`
+  如客户端所配置的，我们有两台主机，一台是localhost，一台是remotehost1。两台机器的activemq.xml连接同一个数据库（即配置信息相同）。 
+  启动服务的时候，同时去数据库中抢夺资源锁，谁先抢到，谁就是主机，没抢到处于等待状态，等这台主机意外宕机后，再去抢锁，同样是谁先抢到，就谁是主机。
+ # 调用:在svc中输入`<amq:jms-message-dispatch event="resource_update" xmlns:amq="aurora.plugin.amq"/>`
  # 启动
   # 启动activeMQ
   # 重启Web服务
