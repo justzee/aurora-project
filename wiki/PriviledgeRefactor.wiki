@@ -1,3 +1,4 @@
+#labels todo
   # `service-listener.config` 注释掉 `<participant class="aurora.application.action.BMAuthority" />`
   # 修改 `bm-access.config`
   # `uncertain.xml` 增加 `<package-mapping packageName="aurora.bm" />`
