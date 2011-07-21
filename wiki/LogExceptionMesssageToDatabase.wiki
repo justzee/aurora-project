@@ -52,4 +52,5 @@ create sequence fnd_exception_logs_s;
 
 
 }}}
+ 根据需要可以客户化这个表结构，譬如任意添加或减少字段。但注意一点，额外的字段默认处理成 *字符串* 类型，如同上文中的role_id对应的内容${/session/@role_id}需要两个单引号括起来才可以。
  * 配置完毕，重新启动web服务器即可。
