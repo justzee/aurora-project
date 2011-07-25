@@ -10,7 +10,7 @@
     </para>
 <programlisting><![CDATA[
 <a:table id="sys_user_define_grid" bindTarget="sys_user_result_ds" percentWidth="90"
-	style="margin:7px;" title="SYS_USER.USER_SEARCH">
+	style="margin:7px;" navBar="true" navBarType="simple" title="SYS_USER.USER_SEARCH">
     <a:columns>
         <a:column>
             <a:column name="user_name" footerRenderer="frdr" percentWidth="10"/>
@@ -136,29 +136,7 @@
                 </row>
             	<row>
                     <entry>
-有分页功能。
-                    </entry>
-                    <entry>
-                        √
-                    </entry>
-                    <entry>
-                    	×
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
 有工具栏toolBar。
-                    </entry>
-                    <entry>
-                        √
-                    </entry>
-                    <entry>
-                    	×
-                    </entry>
-                </row>
-            	<row>
-                    <entry>
-有导航栏navBar。
                     </entry>
                     <entry>
                         √
