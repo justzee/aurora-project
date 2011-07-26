@@ -65,16 +65,18 @@ public class ExcelExportService extends BaseService {
 	public void createModel() throws IOException, ServletException {
 		String session_id = getSessionID();
 		Connection conn = null;
+		Connection nativeConn=null;
 		HttpServletRequest request = this.getRequest();
 		String method = request.getMethod();
 		
 		try{
 			try {
 				conn = this.getConnection();
+				nativeConn=conn;
 				if(conn instanceof C3P0ProxyConnection){
 		        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
 		        	
-		        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+		        	nativeConn=nativeJdbcExtractor.getNativeConnection(conn);
 							
 		        }
 			} catch (Exception e) {
@@ -87,12 +89,12 @@ public class ExcelExportService extends BaseService {
 				CompositeMap parent = model.getParent();
 				model.setParent(null);
 				try{					
-					BlobUtil.saveObject(conn,"excel_report_session","report_data","session_id=" + session_id,model);
+					BlobUtil.saveObject(nativeConn,"excel_report_session","report_data","session_id=" + session_id,model);
 /*
 					CompositeMap m = 
 					(CompositeMap)BlobUtil.loadObject(conn,"select report_data from excel_report_session s where s.session_id = " + session_id);
 */					
-					conn.commit();
+					nativeConn.commit();
 				} catch(Exception ex){
 					throw new ServletException( ex);
 				}
@@ -101,7 +103,7 @@ public class ExcelExportService extends BaseService {
 			} else{
 				try{					
 					CompositeMap model = 
-					(CompositeMap)BlobUtil.loadObject(conn,"select report_data from excel_report_session s where s.session_id = " + session_id);
+					(CompositeMap)BlobUtil.loadObject(nativeConn,"select report_data from excel_report_session s where s.session_id = " + session_id);
 					if( model != null){
 						CompositeMap context = this.getServiceContext();
 						context.addChild(model);

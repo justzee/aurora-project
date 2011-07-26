@@ -181,16 +181,18 @@ public class ExcelReport  implements IFeature{
 	public int onCreateModel(ProcedureRunner runner) throws Exception {
         int result = EventModel.HANDLE_NO_SAME_SEQUENCE;
 	    Connection conn = null;
+	    Connection nativeConn=null;
 		HttpServletRequest request = service.getRequest();
 		MainService svc = MainService.getServiceInstance(runner.getContext());
 		String excel_table = svc.getApplicationConfig().getString("excel-report-table", EXCEL_REPORT_SESSION);
 		String method = request.getMethod();		
 		try{
 			conn = service.getConnection();
+			nativeConn=conn;
 			if(conn instanceof C3P0ProxyConnection){
 	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
 	        	try {
-	        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+	        		nativeConn=nativeJdbcExtractor.getNativeConnection(conn);
 				} catch (Exception e) {
 					throw new SQLException(e);			
 				}			
@@ -205,14 +207,14 @@ public class ExcelReport  implements IFeature{
 				}
 				CompositeMap parent = model.getParent();
 				model.setParent(null);				
-				BlobUtil.saveObject(conn,excel_table,"report_data","session_id=" + session_id,model);
-				conn.commit();
+				BlobUtil.saveObject(nativeConn,excel_table,"report_data","session_id=" + session_id,model);
+				nativeConn.commit();
 				model.setParent(parent);
 				logger.config("model data saved in "+excel_table+", session_id="+session_id);
 			} else{
 			    logger.config("to fetch data from database and transport to client in CSV format");				
 				CompositeMap model = 
-				(CompositeMap)BlobUtil.loadObject(conn,"select report_data from " + excel_table  + " s where s.session_id = " + session_id);
+				(CompositeMap)BlobUtil.loadObject(nativeConn,"select report_data from " + excel_table  + " s where s.session_id = " + session_id);
 				if( model != null){
 				    logger.config("data fetched from "+excel_table+".report_data, session_id="+session_id);
 					CompositeMap context = service.getServiceContext();
