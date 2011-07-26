@@ -114,6 +114,26 @@ public class MethodInvoke extends AbstractEntry {
 	// return resultPath;
 	// }
 
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getInstanceType() {
+		return instanceType;
+	}
+
+	public void setInstanceType(String instanceType) {
+		this.instanceType = instanceType;
+	}
+
+	public String getResultPath() {
+		return resultPath;
+	}
+
 	public void setResultPath(String resultPath) {
 		this.resultPath = resultPath;
 	}
