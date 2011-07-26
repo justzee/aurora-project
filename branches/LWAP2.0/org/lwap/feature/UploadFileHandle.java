@@ -289,7 +289,7 @@ public class UploadFileHandle implements IFeature, IController {
         Connection conn = null;
         try {
             conn = service.getConnection();
-            conn = service.getConnection();
+//            conn = service.getConnection();
 			if(conn instanceof C3P0ProxyConnection){
 	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
 	        	try {
@@ -354,7 +354,7 @@ public class UploadFileHandle implements IFeature, IController {
         WritableByteChannel wbc = null;
         OutputStream os = null;
         InputStream is = null;
-
+        HttpServletResponse response = service.getResponse();
         try {          
             conn = service.getConnection();
 			if(conn instanceof C3P0ProxyConnection){
@@ -379,7 +379,8 @@ public class UploadFileHandle implements IFeature, IController {
                     return EventModel.HANDLE_NO_SAME_SEQUENCE;
                 }
                 String mime_type = ft.getString("MIME_TYPE");
-                HttpServletResponse response = service.getResponse();
+                
+                //response.reset();
                 response.setLocale(java.util.Locale.CHINESE);
                 if (mime_type != null) {
                     response.setContentType(mime_type);
@@ -388,8 +389,8 @@ public class UploadFileHandle implements IFeature, IController {
                 }
                 int sz = ft.getInt("FILE_SIZE", 0);
                 String file_name = ft.getString("FILE_NAME");
-                if (sz > 0)
-                    response.setContentLength(sz);
+//                if (sz > 0)
+//                    response.setContentLength(sz);
                 if (file_name != null) {
                     response.addHeader("Content-Disposition",
                             //"attachment; filename=" + toUtf8String(file_name));
@@ -423,6 +424,7 @@ public class UploadFileHandle implements IFeature, IController {
                     is.close();
                 if (os != null)
                     os.close();
+                response.flushBuffer();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
