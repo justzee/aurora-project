@@ -349,6 +349,7 @@ public class UploadFileHandle implements IFeature, IController {
         model = service.getModel();
 
         Connection conn = null;
+        Connection nativeConn=null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         ReadableByteChannel rbc = null;
@@ -358,15 +359,16 @@ public class UploadFileHandle implements IFeature, IController {
         HttpServletResponse response = service.getResponse();
         try {          
             conn = service.getConnection();
+            nativeConn=conn;
 			if(conn instanceof C3P0ProxyConnection){
 	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
 	        	try {
-	        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+	        		nativeConn=nativeJdbcExtractor.getNativeConnection(conn);
 				} catch (Exception e) {
 					throw new SQLException(e);			
 				}			
 	        }
-            pst = conn
+            pst = nativeConn
                     .prepareStatement("select m.content from fnd_atm_attachment m where m.attachment_id="
                             + service.getParameters().get("attachment_id"));
             rs = pst.executeQuery();
@@ -390,15 +392,21 @@ public class UploadFileHandle implements IFeature, IController {
                 }
                 int sz = ft.getInt("FILE_SIZE", 0);
                 String file_name = ft.getString("FILE_NAME");
-//                if (sz > 0)
-//                    response.setContentLength(sz);
+                try{                	
+                	Class.forName("org.apache.catalina.startup.Bootstrap");
+                	if (sz > 0)
+                		response.setContentLength(sz);    
+                }catch(ClassNotFoundException e){
+                	
+                }
+           
                 if (file_name != null) {
                     response.addHeader("Content-Disposition",
                             //"attachment; filename=" + toUtf8String(file_name));
                             "attachment; filename=\"" + toUtf8String(file_name) + "\"");
                 }
                 os = response.getOutputStream();
-                is = content.getBinaryStream();
+                is = content.getBinaryStream();               
                 rbc = Channels.newChannel(is);
                 wbc = Channels.newChannel(os);
                 // System.out.println("buffer size:"+Buffer_size);
@@ -414,9 +422,9 @@ public class UploadFileHandle implements IFeature, IController {
 
         } finally {
             try {
+            	DBUtil.closeStatement(pst);
+                DBUtil.closeResultSet(rs);              
                 DBUtil.closeConnection(conn);
-                DBUtil.closeResultSet(rs);
-                DBUtil.closeStatement(pst);
                 if (rbc != null)
                     rbc.close();
                 if (pst != null)
@@ -425,7 +433,7 @@ public class UploadFileHandle implements IFeature, IController {
                     is.close();
                 if (os != null)
                     os.close();
-                response.flushBuffer();
+//                response.flushBuffer();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
