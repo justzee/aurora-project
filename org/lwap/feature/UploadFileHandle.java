@@ -286,14 +286,15 @@ public class UploadFileHandle implements IFeature, IController {
         Object aid = service.getModel().getObject("/model/FILEUPLOAD/@RESULT");
         if (aid == null)
             throw new IllegalStateException("can't get attachment record id");
-        Connection conn = null;
+        Connection conn = null; 
+        Connection nativeConn=null;
         try {
             conn = service.getConnection();
-//            conn = service.getConnection();
+            nativeConn=conn;
 			if(conn instanceof C3P0ProxyConnection){
 	        	C3P0NativeJdbcExtractor nativeJdbcExtractor=new C3P0NativeJdbcExtractor();
 	        	try {
-	        		conn=nativeJdbcExtractor.getNativeConnection(conn);
+	        		nativeConn=nativeJdbcExtractor.getNativeConnection(conn);
 				} catch (Exception e) {
 					throw new SQLException(e);			
 				}			
@@ -301,7 +302,7 @@ public class UploadFileHandle implements IFeature, IController {
             InputStream in = fileItem.getInputStream();
             String attach_id = aid.toString();
             mLogger.log(Level.CONFIG, "attachment_id="+attach_id);
-            long size = writeBLOB(conn, in, attach_id);
+            long size = writeBLOB(nativeConn, in, attach_id);
             mLogger.log(Level.CONFIG, "Database invoke finish");
             fileItem.delete();
             mLogger.log(Level.CONFIG, "Temporary file deleted");
