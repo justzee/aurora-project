@@ -24,6 +24,7 @@ public class Argument extends AbstractLocatableObject {
 		if(path != null && value !=null){
 			throw BuiltinExceptionFactory.createConflictAttributesExcepiton(this, "path,value");
 		}
+		objectValue = value;
 		if(context != null){
 			type = TextParser.parse(type, context);
 			if(value != null)
