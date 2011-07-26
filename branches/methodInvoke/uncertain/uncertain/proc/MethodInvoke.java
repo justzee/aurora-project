@@ -40,7 +40,9 @@ public class MethodInvoke extends AbstractEntry {
 	private Argument[] arguments;
 	private Class[] argumentClasses;
 	private Object[] argumentObjects;
-
+	public MethodInvoke(IObjectRegistry registry){
+		this.mRegistry = registry;
+	}
 	public void run(ProcedureRunner runner) throws Exception {
 		if (methodName == null) {
 			throw BuiltinExceptionFactory.createAttributeMissing(this, "methodName");
