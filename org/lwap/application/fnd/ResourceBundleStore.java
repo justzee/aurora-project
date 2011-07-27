@@ -3,6 +3,8 @@
  */
 package org.lwap.application.fnd;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -66,31 +68,42 @@ public class ResourceBundleStore implements ResourceBundleFactory, IGlobalInstan
 	}
 
 	private void loadSysLanguage() throws Exception {
-		SqlServiceContext sqlServiceContext = SqlServiceContext.createSqlServiceContext(dataSource.getConnection());
-		RawSqlService sqlService = mSvcFactory.getSqlService(FND_LANGUAGE_SERVICE);
-		CompositeMap resultMap = sqlService.queryAsMap(sqlServiceContext, FetchDescriptor.getDefaultInstance());
-		List list = resultMap.getChilds();
-		Iterator it = list.iterator();
-		while (it.hasNext()) {
-			CompositeMap cm = (CompositeMap) it.next();
-			String language_code = cm.getString("LANGUAGE_CODE").toUpperCase();
-			String locale_code = cm.getString("LOCALE_CODE");
-			if(locale_code == null) {
-				mLogger.warning(language_code + "'s locale_code is null.");
-				continue;
+		Connection conn=null;
+		try{
+			conn=dataSource.getConnection();
+			SqlServiceContext sqlServiceContext = SqlServiceContext.createSqlServiceContext(conn);
+			RawSqlService sqlService = mSvcFactory.getSqlService(FND_LANGUAGE_SERVICE);
+			CompositeMap resultMap = sqlService.queryAsMap(sqlServiceContext, FetchDescriptor.getDefaultInstance());
+			List list = resultMap.getChilds();
+			Iterator it = list.iterator();
+			while (it.hasNext()) {
+				CompositeMap cm = (CompositeMap) it.next();
+				String language_code = cm.getString("LANGUAGE_CODE").toUpperCase();
+				String locale_code = cm.getString("LOCALE_CODE");
+				if(locale_code == null) {
+					mLogger.warning(language_code + "'s locale_code is null.");
+					continue;
+				}
+				if (localeCache.get(language_code) == null) {
+					String language = locale_code.substring(0, locale_code.indexOf("_"));
+					String country = locale_code.substring(locale_code.indexOf("_") + 1, locale_code.length());
+					Locale locale = new Locale(language, country);
+					localeCache.put(language_code, locale);
+				}
 			}
-			if (localeCache.get(language_code) == null) {
-				String language = locale_code.substring(0, locale_code.indexOf("_"));
-				String country = locale_code.substring(locale_code.indexOf("_") + 1, locale_code.length());
-				Locale locale = new Locale(language, country);
-				localeCache.put(language_code, locale);
-			}
+		}catch(Exception e){
+			throw e;
+		}finally{
+			if(conn!=null)
+				conn.close();
 		}
 	}
 
 	private void loadResoure() {
+		Connection conn=null;
 		try {
-			SqlServiceContext sqlServiceContext = SqlServiceContext.createSqlServiceContext(dataSource.getConnection());
+			conn=dataSource.getConnection();
+			SqlServiceContext sqlServiceContext = SqlServiceContext.createSqlServiceContext(conn);
 			RawSqlService sqlService = mSvcFactory.getSqlService(SYSTEM_PROMOT_SERVICE);
 			CompositeMap resultMap = sqlService.queryAsMap(sqlServiceContext, FetchDescriptor.getDefaultInstance());
 			List list = resultMap.getChilds();
@@ -109,6 +122,14 @@ public class ResourceBundleStore implements ResourceBundleFactory, IGlobalInstan
 			}
 		} catch (Exception e) {
 			mLogger.warning(e.getMessage());
+		}finally{
+			if(conn!=null){
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					mLogger.warning(e.getMessage());					
+				}
+			}
 		}
 	}
 	
