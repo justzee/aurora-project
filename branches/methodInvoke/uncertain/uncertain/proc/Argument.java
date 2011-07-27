@@ -1,5 +1,8 @@
 package uncertain.proc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.datatype.ConvertionException;
@@ -33,15 +36,15 @@ public class Argument extends AbstractLocatableObject {
 				objectValue = context.getObject(path);
 		}
 		try {
-			DataType dt = DataTypeRegistry.getInstance().getDataType(type);
-			if(dt == null){
-				throw BuiltinExceptionFactory.createDataTypeUnknown(this, type);
-			}
-			classType = dt.getJavaType();
-			objectValue = dt.convert(objectValue);
-		} catch (ConvertionException e) {
+			classType = (Class)primitiveClazz.get(type);
+			if(classType == null)
+				classType = Class.forName(type);
+			objectValue = DataTypeRegistry.getInstance().convert(objectValue,classType);
+		} catch (ClassNotFoundException e) {
+			throw BuiltinExceptionFactory.createClassNotFoundException(this, type);
+		}catch (ConvertionException e) {
 			throw new ConfigurationFileException("uncertain.exception.convertion_exception", new Object[]{objectValue,classType}, e, this);
-		}
+		} 
 		
 	}
 	public String getType() {
@@ -82,5 +85,27 @@ public class Argument extends AbstractLocatableObject {
 	public void setClassType(Class classType) {
 		this.classType = classType;
 	}
-	
+	private static final Map primitiveClazz; // 基本类型的class
+
+	private static final String INTEGER = "int";
+	private static final String BYTE = "byte";
+	private static final String CHARACTOR = "char";
+	private static final String SHORT = "short";
+	private static final String LONG = "long";
+	private static final String FLOAT = "float";
+	private static final String DOUBLE = "double";
+	private static final String BOOLEAN = "boolean";
+
+	static
+	{
+		primitiveClazz = new HashMap();
+		primitiveClazz.put(INTEGER, int.class);
+		primitiveClazz.put(BYTE, byte.class);
+		primitiveClazz.put(CHARACTOR, char.class);
+		primitiveClazz.put(SHORT, short.class);
+		primitiveClazz.put(LONG, long.class);
+		primitiveClazz.put(FLOAT, float.class);
+		primitiveClazz.put(DOUBLE, double.class);
+		primitiveClazz.put(BOOLEAN, boolean.class);
+	}
 }

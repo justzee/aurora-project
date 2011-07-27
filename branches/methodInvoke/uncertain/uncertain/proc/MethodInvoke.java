@@ -59,7 +59,10 @@ public class MethodInvoke extends AbstractEntry {
 		if (className != null) {
 			method = Class.forName(className).getMethod(methodName, argumentClasses);
 		} else if (instanceType != null) {
-			instance = mRegistry.getInstanceOfType(Class.forName(instanceType));
+			instance =getInstanceOfType(mRegistry, Class.forName(instanceType));
+			if(instance == null){
+				throw BuiltinExceptionFactory.createInstanceNotFoundException(this, Class.forName(instanceType));
+			}
 			Class cls = instance.getClass();
 			method = cls.getMethod(methodName, argumentClasses);
 		}
@@ -78,6 +81,29 @@ public class MethodInvoke extends AbstractEntry {
 			argumentClasses[i] = arguments[i].getClassType();
 			argumentObjects[i] = arguments[i].getObjectValue();
 		}
+	}
+	private Object getInstanceOfType(IObjectRegistry registry,Class type){
+		Object instance = null;
+		if(registry == null || type == null)
+			return null;
+		instance = registry.getInstanceOfType(type);
+		if(instance != null)
+			return instance;
+		Class superClass = type.getSuperclass();
+		if(superClass != null){
+			instance = registry.getInstanceOfType(superClass);
+			if(instance != null)
+				return instance;
+		}
+		Class[] interfaces = type.getInterfaces();
+		if(interfaces != null){
+			for(int i=0;i<interfaces.length;i++){
+				instance = registry.getInstanceOfType(interfaces[i]);
+				if(instance != null)
+					return instance;
+			}
+		}
+		return instance;
 	}
 
 	public IObjectRegistry getRegistry() {
