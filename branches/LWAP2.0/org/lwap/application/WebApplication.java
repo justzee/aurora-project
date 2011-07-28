@@ -413,8 +413,7 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   				    	path = item.getString(KEY_PATH);
   				        pathFile = new File(path);
   				}
-  				if(pathFile==null)  continue;
-				if( pathFile.exists()){
+  				if( pathFile.exists()){
 					CompositeLoader loader = new CompositeLoader(pathFile.getPath(), DEFAULT_SERVICE_EXT);
 					loader.setSupportXInclude(true);
 					this.getCompositeLoader().addExtraLoader(loader);
