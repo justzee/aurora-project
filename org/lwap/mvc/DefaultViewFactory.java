@@ -1,7 +1,7 @@
 /*
  * DefaultViewBuilder.java
  *
- * Created on 2002Äê1ÔÂ13ÈÕ, ÏÂÎç2:01
+ * Created on 2002ï¿½ï¿½1ï¿½ï¿½13ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½2:01
  */
 
 package org.lwap.mvc;
@@ -102,11 +102,8 @@ public class DefaultViewFactory implements ViewFactory {
     		            if(text!=null){ 
     		                out.write(getParsedContent(text,model));
     		                out.write(close_tag);
-    		            }
-    		            /*
-    		            else
+    		            }else
     		                out.write(close_tag);
-    		                */
     		            
     		        }
     		        out.flush();
