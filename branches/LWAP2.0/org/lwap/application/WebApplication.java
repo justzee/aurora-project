@@ -557,6 +557,7 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
 	try{
   		init_participant_list( this.application_conf.getChild(KEY_PRE_SERVICE), this.pre_service_list);  		
   	} catch(Exception thr){
+  	    thr.printStackTrace();
   		logger.severe(thr.getMessage()); 
   		throw new ApplicationInitializeException(thr.getCause());
   	}
