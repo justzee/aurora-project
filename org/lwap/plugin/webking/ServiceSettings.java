@@ -1,5 +1,6 @@
 package org.lwap.plugin.webking;
-
+/*
+ * ÍøÒøipºÍportÉèÖÃ*/
 import uncertain.core.IGlobalInstance;
 
 public class ServiceSettings implements IGlobalInstance {
