@@ -1,5 +1,7 @@
 package org.lwap.plugin.webking;
-
+/*
+ * 帐号余额查询，查询条件  帐号，币种，中间件ip，中间件port 
+ */
 import java.util.Date;
 
 import uncertain.composite.CompositeMap;
@@ -62,12 +64,18 @@ public class DetailAction extends AbstractEntry {
 		String path = "success";
 		// // 从form通过get()方法取值
 		String accNo = context.getObject(accno).toString();
+	   /*
+	    *格式化开始时间于结束时间
+	    * */
 		String startDate = context.getObject(startdate).toString().replaceAll(
 				"-", "");
 		String endDate = context.getObject(enddate).toString().replaceAll("-",
 				"");
 
 		String currency = "CNY";
+		/*
+		 * 组织头行结构进行通讯
+		 * */
 		ClientDetailUtils detailUtils = new ClientDetailUtils(ip, port, true);
 
 		EBHeader header = EBHeaderUtils.createHeader("MBTS", "MBTS6.0",

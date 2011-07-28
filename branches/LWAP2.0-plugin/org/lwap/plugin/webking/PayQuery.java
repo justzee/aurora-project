@@ -1,5 +1,6 @@
 package org.lwap.plugin.webking;
-
+/*
+ * 查询支付结果*/
 import java.util.Date;
 
 import com.kingdee.bos.ebservice.EBException;
@@ -79,7 +80,7 @@ public class PayQuery extends AbstractEntry {
 				record.put("PAYEEACCNAME", paydetail[i].getPayeeAccName()
 						.toString());
 				record.put("PAYEETYPE", paydetail[i].getPayeeType().toString());
-				record.put("EBSTATUSMSG", paydetail[i].getEbStatusMsg());
+				record.put("EBSTATUSMSG", paydetail[i].getBankStatusMsg());
 				record.put("BANKNAME", paydetail[i].getPayeeBankName()
 						.toString());
 				record.put("ADDR", paydetail[i].getPayeeBankAddr().toString());
