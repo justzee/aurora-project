@@ -14,7 +14,6 @@ import org.lwap.application.NoPrivilegeException;
 import org.lwap.controller.MainService;
 import org.lwap.database.DBUtil;
 import org.lwap.database.c3p0.C3P0NativeJdbcExtractor;
-import org.lwap.database.c3p0.TestC3P0;
 import org.lwap.database.oracle.BlobUtil;
 import org.lwap.mvc.excel.ExcelDataTable;
 
