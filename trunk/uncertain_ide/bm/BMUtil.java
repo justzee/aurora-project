@@ -8,25 +8,34 @@ import helpers.LocaleMessage;
 import helpers.ProjectUtil;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
+import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import aurora.bm.BusinessModel;
 import aurora.bm.Field;
 
 public class BMUtil {
-	public static String BMPrefix = "bm";
-	public static String FeaturesUri = "aurora.database.features";
-	public static String FeaturesPrefex = "f";
-	public static String OracleUri = "aurora.database.local.oracle";
-	public static String OraclePrefex = "ora";
-	public static IResource getBMFromClassPath(String classPath) throws ApplicationException{
-		if(classPath == null)
+	public static final String ExtendAttrName = "extend";
+	public static final String BMPrefix = "bm";
+	public static final String FeaturesUri = "aurora.database.features";
+	public static final String FeaturesPrefix = "f";
+	public static final String OracleUri = "aurora.database.local.oracle";
+	public static final String OraclePrefix = "ora";
+	public static IResource getBMResourceFromClassPath(String classPath) throws ApplicationException{
+		return getBMResourceFromClassPath(ProjectUtil.getIProjectFromSelection(),classPath);
+	}
+	public static IResource getBMResourceFromClassPath(IProject project, String classPath) throws ApplicationException {
+		if(classPath == null||project==null)
 			return null;
 		String path = classPath.replace('.', File.separatorChar) +'.' + AuroraConstant.BMFileExtension;
-		String fullPath = ProjectUtil.getBMHome(ProjectUtil.getIProjectFromSelection())+File.separatorChar+path;
+		String fullPath = ProjectUtil.getBMHome(project)+File.separatorChar+path;
 		IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(fullPath);
 		return file;
 	}
@@ -63,7 +72,7 @@ public class BMUtil {
 		return fieldsNode;
 	}
 	public static CompositeMap getFieldsFromBMPath(String classPath) throws ApplicationException{
-		CompositeMap modelNode = AuroraResourceUtil.loadFromResource(BMUtil.getBMFromClassPath(classPath));
+		CompositeMap modelNode = AuroraResourceUtil.loadFromResource(BMUtil.getBMResourceFromClassPath(classPath));
 		if (modelNode == null)
 			return null;
 		return BMUtil.getFieldsFromBM(modelNode);
@@ -83,5 +92,22 @@ public class BMUtil {
 	public static CompositeMap createBMTopNode(){
 		CompositeMap model = new CompositeMap("bm",AuroraConstant.ModelQN.getNameSpace(),AuroraConstant.ModelQN.getLocalName());
 		return model;
+	}
+	public static String getExtendValue(IResource bmFile) throws ApplicationException {
+		if (bmFile == null) {
+			throw new ApplicationException(bmFile + "文件不能为空！");
+		}
+		CompositeLoader cl = AuroraResourceUtil.getCompsiteLoader();
+		String localPath = bmFile.getLocation().toOSString();
+		CompositeMap bmData;
+		try {
+			bmData = cl.loadByFile(localPath);
+		} catch (IOException e) {
+			throw new ApplicationException("请查看" + localPath + "文件是否存在.");
+		} catch (SAXException e) {
+			throw new ApplicationException("请查看" + localPath + "文件格式是否正确！");
+		}
+		String extendValue = bmData.getString(ExtendAttrName);
+		return extendValue;
 	}
 }

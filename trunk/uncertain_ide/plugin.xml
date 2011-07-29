@@ -168,7 +168,7 @@
              id="aurora.ide.editor.textpage.FormatJS"
              label="格式化JS"
              menubarPath="additions">
-       </action> -->
+       </action>
 	   </viewerContribution>
     <objectContribution
           adaptable="true"

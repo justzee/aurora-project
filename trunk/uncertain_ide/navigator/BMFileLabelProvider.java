@@ -84,6 +84,8 @@ public class BMFileLabelProvider extends LabelProvider {
 	private boolean isHasOperation(IResource file) throws ApplicationException{
 		String OperationsNode = "operations";
 		CompositeMap bmData = AuroraResourceUtil.loadFromResource(file);
+		if(bmData == null)
+			return false;
 		return bmData.getChild(OperationsNode)!=null;
 	}
 	private String formatDesc(String desc){

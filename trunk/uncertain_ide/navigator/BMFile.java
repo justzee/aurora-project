@@ -1,12 +1,18 @@
 package navigator;
 
+import helpers.ApplicationException;
+import helpers.AuroraConstant;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+
+import bm.BMUtil;
 
 public class BMFile extends File{
 	private IPath parentBMPath;
@@ -37,5 +43,31 @@ public class BMFile extends File{
 	}
 	public void addSubBMFile(BMFile subBMFile){
 		subBMFiles.add(subBMFile);
+	}
+	public void removeSubBMFile(BMFile subBMFile){
+		subBMFiles.remove(subBMFile);
+	}
+	public static BMFile createBMFileFromResource(IResource resource) throws ApplicationException{
+		if(resource == null)
+			return null;
+		if(!resource.getName().toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)){
+			return null;
+		}
+		String extendValue = "";
+		BMFile thisFile = null;
+		extendValue = BMUtil.getExtendValue(resource);
+		if (extendValue == null) {
+			thisFile = new BMFile(null, resource.getFullPath());
+			return thisFile;
+		}
+		IResource parent = BMUtil.getBMResourceFromClassPath(resource.getProject(), extendValue);
+		if (parent == null) {
+//			DialogUtil.showErrorMessageBox(resource.getLocation().toOSString() + "'s parent " + extendValue
+//					+ " can not be found.");
+			thisFile = new BMFile(null, resource.getFullPath());
+			return thisFile;
+		}
+		thisFile = new BMFile(parent.getFullPath(), resource.getFullPath());
+		return thisFile;
 	}
 }

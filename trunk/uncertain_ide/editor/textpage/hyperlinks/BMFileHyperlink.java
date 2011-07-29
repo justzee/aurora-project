@@ -42,7 +42,7 @@ public class BMFileHyperlink implements IHyperlink {
 		IDocument doc = viewer.getDocument();
 		try {
 			String classPath = doc.get(region.getOffset(), region.getLength());
-			IResource file = BMUtil.getBMFromClassPath(classPath);
+			IResource file = BMUtil.getBMResourceFromClassPath(classPath);
 			if (!(file instanceof IFile)) {
 				DialogUtil.showErrorMessageBox("资源" + file + "不是一个文件类型");
 				return;

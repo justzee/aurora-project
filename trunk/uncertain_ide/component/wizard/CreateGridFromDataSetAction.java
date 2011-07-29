@@ -662,7 +662,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			return fields;
 		}
 		String classPath = dataSet.getString(modelColumn);
-		CompositeMap model = AuroraResourceUtil.loadFromResource(BMUtil.getBMFromClassPath(classPath));
+		CompositeMap model = AuroraResourceUtil.loadFromResource(BMUtil.getBMResourceFromClassPath(classPath));
 		if(model == null)
 			return null;
 		fields = model.getChild("fields");
