@@ -13,7 +13,6 @@ import java.io.IOException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
