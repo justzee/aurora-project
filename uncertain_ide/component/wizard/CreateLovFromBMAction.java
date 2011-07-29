@@ -183,7 +183,7 @@ public class CreateLovFromBMAction extends AddElementAction {
 			}
 			IResource bmFile = null;
 			try {
-				bmFile = BMUtil.getBMFromClassPath(parentBMPath);
+				bmFile = BMUtil.getBMResourceFromClassPath(parentBMPath);
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
 			}

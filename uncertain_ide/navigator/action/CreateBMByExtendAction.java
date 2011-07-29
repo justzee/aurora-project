@@ -253,7 +253,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			CompositeMap descIdField = fields.getChildByAttrib("name", "description_id");
 			if (descIdField != null) {
 				CompositeMap features = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "features");
-				CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefex, BMUtil.FeaturesUri,
+				CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri,
 						"multi-language-storage");
 				features.addChild(multiLanguage);
 				model.addChild(features);
@@ -430,7 +430,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			}
 			IResource bmFile = null;
 			try {
-				bmFile = BMUtil.getBMFromClassPath(parentBMPath);
+				bmFile = BMUtil.getBMResourceFromClassPath(parentBMPath);
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
 			}
@@ -468,7 +468,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 		}
 		public IResource getParentBM() throws ApplicationException {
 			String parentBMPath = parentBMText.getText();
-			return BMUtil.getBMFromClassPath(parentBMPath);
+			return BMUtil.getBMResourceFromClassPath(parentBMPath);
 		}
 		public String getParentBMName() {
 			return parentBMText.getText();

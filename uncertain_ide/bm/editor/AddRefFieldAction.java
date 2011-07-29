@@ -109,7 +109,7 @@ public class AddRefFieldAction extends ActionListener {
 			return null;
 		CompositeMap fields = null;
 		try {
-			IResource bmFile = BMUtil.getBMFromClassPath(ref_model);
+			IResource bmFile = BMUtil.getBMResourceFromClassPath(ref_model);
 			CompositeMap bmData = AuroraResourceUtil.loadFromResource(bmFile);
 			fields = bmData.getChild("fields");
 		} catch (ApplicationException e) {

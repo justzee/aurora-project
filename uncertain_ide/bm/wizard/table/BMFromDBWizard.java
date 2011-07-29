@@ -242,7 +242,7 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		if (model == null)
 			return null;
 		CompositeMap features = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "features");
-		CompositeMap standardWho = new CompositeMap(BMUtil.FeaturesPrefex, BMUtil.FeaturesUri, "standard-who");
+		CompositeMap standardWho = new CompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri, "standard-who");
 		features.addChild(standardWho);
 		CompositeMap fields = fieldsPage.getSelectedFields();
 		// handle multi language
@@ -273,7 +273,7 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		}
 
 		fields.addChild(descField);
-		CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefex, BMUtil.FeaturesUri,
+		CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri,
 				"multi-language-storage");
 		features.addChild(multiLanguage);
 		return model;

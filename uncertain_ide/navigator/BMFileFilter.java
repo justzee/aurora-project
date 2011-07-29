@@ -7,6 +7,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
+import bm.BMUtil;
+
 
 public class BMFileFilter extends ViewerFilter{
 
@@ -19,7 +21,7 @@ public class BMFileFilter extends ViewerFilter{
 			if(file.getName().toLowerCase().endsWith("."+AuroraConstant.BMFileExtension)){
 				String extendValue = null;
 				try {
-					extendValue = BMHierarchyCache.getInstance().getExtendValue(file);
+					extendValue = BMUtil.getExtendValue(file);
 				} catch (ApplicationException e) {
 //					CustomDialog.showErrorMessageBox(e);
 				}
