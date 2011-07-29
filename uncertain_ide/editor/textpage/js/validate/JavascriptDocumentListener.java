@@ -18,6 +18,7 @@ import editor.textpage.scanners.XMLPartitionScanner;
 
 public class JavascriptDocumentListener implements IDocumentListener {
 
+	private static final String SCRIPT = "<script>";
 	private TextEditor sourceEditor;
 	private final static String C_DATA_BEGIN = "<![CDATA[";
 	private final static String C_DATA_END = "]]>";
@@ -51,13 +52,17 @@ public class JavascriptDocumentListener implements IDocumentListener {
 		IDocument document = event.getDocument();
 		try {
 			ITypedRegion partition = document.getPartition(offset);
+			ITypedRegion parentRegion = document.getPartition(partition.getOffset()- 1);
+			String parentNode = document.get(parentRegion.getOffset(),
+					parentRegion.getLength());
 			String type = partition.getType();
-			if (XMLPartitionScanner.XML_CDATA.equals(type)) {
+			if (XMLPartitionScanner.XML_CDATA.equals(type)
+					&& SCRIPT.equalsIgnoreCase(parentNode)) {
 				validate(document, partition);
 			}
 		} catch (BadLocationException e) {
 			// donothoing;just log it.
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -69,7 +74,7 @@ public class JavascriptDocumentListener implements IDocumentListener {
 		int beginLine = document.getLineOfOffset(beginOffset);
 		String source = document.get(beginOffset, length);
 		AnnotationReporter reporter = getReporter();
-		reporter.reset(document,beginLine,beginOffset);
+		reporter.reset(document, beginLine, beginOffset);
 		JavascriptValidator validator = new JavascriptValidator(reporter);
 		validator.validate(sourceEditor.getPartName(), source);
 	}
