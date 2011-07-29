@@ -28,16 +28,21 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.editors.text.IEncodingSupport;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import editor.core.IViewer;
+import editor.textpage.js.validate.JavascriptDocumentListener;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
@@ -70,7 +75,17 @@ public class TextPage extends TextEditor implements IViewer {
 		setEditorContextMenuId(EDITOR_CONTEXT);
 		setRulerContextMenuId(RULER_CONTEXT);
 	}
-
+//	add by shiliyan
+	public Object getAdapter(Class adapter) {
+		Object result = super.getAdapter(adapter);
+		if (result == null && Display.getCurrent()!=null) {
+			if (IAnnotationModel.class.equals(adapter)){
+				return this.getAnnotationModel();
+			}
+		}
+		return result;
+	}
+//	add by shiliyan
 	public boolean isIgnorceSycOnce() {
 		return ignorceSycOnce;
 	}
@@ -122,6 +137,9 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+		//add by shiliyan
+		getInputDocument().addDocumentListener(new JavascriptDocumentListener(this));
+		//add by shiliyan
 		getInputDocument().addDocumentListener(new IDocumentListener() {
 
 			public void documentChanged(DocumentEvent event) {
