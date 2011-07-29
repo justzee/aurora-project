@@ -59,7 +59,8 @@ public class TextPage extends TextEditor implements IViewer {
 
 	public static final String AnnotationType = "aurora.ide.text.valid";
 	protected static final String textPageId = "textPage";
-	public static final String textPageTitle = LocaleMessage.getString("source.file");
+	public static final String textPageTitle = LocaleMessage
+			.getString("source.file");
 	private boolean syc = false;
 	private ColorManager colorManager;
 	private FormEditor editor;
@@ -67,31 +68,35 @@ public class TextPage extends TextEditor implements IViewer {
 	private boolean ignorceSycOnce = false;
 	private List annotatioList = new LinkedList();
 	private IAnnotationModel annotationModel;
+
 	public TextPage() {
 		super();
 	}
+
 	protected void initializeEditor() {
 		super.initializeEditor();
 		setEditorContextMenuId(EDITOR_CONTEXT);
 		setRulerContextMenuId(RULER_CONTEXT);
 	}
-//	add by shiliyan
+
+	// add by shiliyan
 	public Object getAdapter(Class adapter) {
-		Object result = super.getAdapter(adapter);
-		if (result == null && Display.getCurrent()!=null) {
-			if (IAnnotationModel.class.equals(adapter)){
-				return this.getAnnotationModel();
-			}
+		if (Display.getCurrent() != null
+				&& IAnnotationModel.class.equals(adapter)) {
+			return this.getAnnotationModel();
 		}
-		return result;
+		return super.getAdapter(adapter);
 	}
-//	add by shiliyan
+
+	// add by shiliyan
 	public boolean isIgnorceSycOnce() {
 		return ignorceSycOnce;
 	}
+
 	public void setIgnorceSycOnce(boolean ignorceSycOnce) {
 		this.ignorceSycOnce = ignorceSycOnce;
 	}
+
 	public TextPage(FormEditor editor, String id, String title) {
 		// super(editor, id, title);
 		this.editor = editor;
@@ -105,6 +110,7 @@ public class TextPage extends TextEditor implements IViewer {
 	public TextPage(FormEditor editor) {
 		this(editor, textPageId, textPageTitle);
 	}
+
 	private IAnnotationModel getAnnotationModel() {
 		if (annotationModel != null)
 			return annotationModel;
@@ -115,12 +121,14 @@ public class TextPage extends TextEditor implements IViewer {
 		}
 		return annotationModel;
 	}
+
 	private void clearHistory() {
 		for (Iterator it = annotatioList.iterator(); it.hasNext();) {
 			annotationModel.removeAnnotation((Annotation) it.next());
 		}
 		annotatioList.clear();
 	}
+
 	private void updateAnnotation(SAXException e) {
 		Throwable rootCause = ExceptionUtil.getRootCause(e);
 		if (rootCause == null || !(rootCause instanceof SAXParseException))
@@ -131,15 +139,18 @@ public class TextPage extends TextEditor implements IViewer {
 		int lineOffset = getOffsetFromLine(lineNum);
 		int lineLength = Math.max(getLengthOfLine(lineNum), 1);
 		Position pos = new Position(lineOffset, lineLength);
-		Annotation annotation = new Annotation(AnnotationType, false, errorMessage);
+		Annotation annotation = new Annotation(AnnotationType, false,
+				errorMessage);
 		annotationModel.addAnnotation(annotation, pos);
 		annotatioList.add(annotation);
 	}
+
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		//add by shiliyan
-		getInputDocument().addDocumentListener(new JavascriptDocumentListener(this));
-		//add by shiliyan
+		// add by shiliyan
+		getInputDocument().addDocumentListener(
+				new JavascriptDocumentListener(this));
+		// add by shiliyan
 		getInputDocument().addDocumentListener(new IDocumentListener() {
 
 			public void documentChanged(DocumentEvent event) {
@@ -150,7 +161,8 @@ public class TextPage extends TextEditor implements IViewer {
 				annotationModel = getAnnotationModel();
 				clearHistory();
 				try {
-					AuroraResourceUtil.getCompsiteLoader().loadFromString(getInputDocument().get(), "UTF-8");
+					AuroraResourceUtil.getCompsiteLoader().loadFromString(
+							getInputDocument().get(), "UTF-8");
 				} catch (IOException e) {
 					DialogUtil.showExceptionMessageBox(e);
 				} catch (SAXException e) {
@@ -163,21 +175,22 @@ public class TextPage extends TextEditor implements IViewer {
 
 			}
 		});
-//		getSourceViewer().addTextListener(new ITextListener() {
-//			public void textChanged(TextEvent event) {
-//				if (syc) {
-//					syc = false;
-//					return;
-//				}
-//				// 过滤超链接等事件触发
-//				if (event.getDocumentEvent() == null) {
-//					return;
-//				}
-//				refresh(true);
-//			}
-//		});
+		// getSourceViewer().addTextListener(new ITextListener() {
+		// public void textChanged(TextEvent event) {
+		// if (syc) {
+		// syc = false;
+		// return;
+		// }
+		// // 过滤超链接等事件触发
+		// if (event.getDocumentEvent() == null) {
+		// return;
+		// }
+		// refresh(true);
+		// }
+		// });
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
-		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer,
+				getAnnotationAccess(), getSharedColors());
 		projectionSupport.install();
 		// turn projection mode on
 		viewer.doOperation(ProjectionViewer.TOGGLE);
@@ -190,6 +203,7 @@ public class TextPage extends TextEditor implements IViewer {
 			setModify(true);
 		}
 	}
+
 	private FormEditor getEditor() {
 		return editor;
 	}
@@ -200,9 +214,11 @@ public class TextPage extends TextEditor implements IViewer {
 			getSourceViewer().getTextWidget().setText(newContent);
 		}
 	}
+
 	public void setSyc(boolean isSyc) {
 		syc = isSyc;
 	}
+
 	public String getContent() {
 		return getSourceViewer().getTextWidget().getText();
 	}
@@ -216,7 +232,8 @@ public class TextPage extends TextEditor implements IViewer {
 
 	private boolean checkContentFormat() {
 		CompositeMap content = null;
-		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();;
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
+		;
 		try {
 			content = loader.loadFromString(getContent());
 		} catch (IOException e) {
@@ -229,14 +246,17 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public int getCursorLine() {
-		return getSourceViewer().getTextWidget().getLineAtOffset(getSourceViewer().getSelectedRange().x);
+		return getSourceViewer().getTextWidget().getLineAtOffset(
+				getSourceViewer().getSelectedRange().x);
 	}
-	public Point getSelectedRange(){
+
+	public Point getSelectedRange() {
 		return getSourceViewer().getSelectedRange();
 	}
 
 	public IFile getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
+		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
+				.getFile();
 		return ifile;
 	}
 
@@ -253,6 +273,7 @@ public class TextPage extends TextEditor implements IViewer {
 		}
 		return offset;
 	}
+
 	public int getLineOfOffset(int offset) {
 		try {
 			return getInputDocument().getLineOfOffset(offset);
@@ -260,6 +281,7 @@ public class TextPage extends TextEditor implements IViewer {
 			return -1;
 		}
 	}
+
 	public int getLengthOfLine(int lineNumber) {
 		int length = 0;
 		if (lineNumber < 0)
@@ -274,6 +296,7 @@ public class TextPage extends TextEditor implements IViewer {
 		}
 		return length;
 	}
+
 	public void dispose() {
 		colorManager.dispose();
 		super.dispose();
@@ -287,6 +310,7 @@ public class TextPage extends TextEditor implements IViewer {
 	public IEditorInput getInput() {
 		return getEditorInput();
 	}
+
 	public boolean isModify() {
 		return modify;
 	}
@@ -294,6 +318,7 @@ public class TextPage extends TextEditor implements IViewer {
 	public void setModify(boolean modify) {
 		this.modify = modify;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -302,20 +327,25 @@ public class TextPage extends TextEditor implements IViewer {
 	 * .swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler,
 	 * int)
 	 */
-	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+	protected ISourceViewer createSourceViewer(Composite parent,
+			IVerticalRuler ruler, int styles) {
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
+				getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 
 		return viewer;
 	}
+
 	protected void createActions() {
 		super.createActions();
 		// 必须手工加，而不能通过pulgin.xml配置，因为textEditor
 		// 作为MultiPageEditorPart后，在点击左侧垂直条的时候，AbstractTextEditor.findContributedAction()中getSite().getId()总是为"",判断失效。
-		Action action = new MarkerRulerAction(ResourceBundle
-				.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"), "Editor.ManageBookmarks.", this,
-				getVerticalRuler(), IMarker.BOOKMARK, true);
+		Action action = new MarkerRulerAction(
+				ResourceBundle
+						.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"),
+				"Editor.ManageBookmarks.", this, getVerticalRuler(),
+				IMarker.BOOKMARK, true);
 		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
 	}
 }
