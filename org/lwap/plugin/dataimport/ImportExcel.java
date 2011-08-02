@@ -106,9 +106,10 @@ public class ImportExcel implements IController {
 
 	public void onPrepareService(ProcedureRunner runner) throws Exception {
 		 System.out.println(getProcedureName());
+		 CompositeMap appConfig=null;
 		try {
 			CompositeMap context = runner.getContext();		
-			CompositeMap appConfig=service.getApplicationConfig();
+			appConfig=service.getApplicationConfig();
 			if(appConfig.getBoolean("KEY_EXCEL_IMPORT_STATUS", false))
 				throw new RuntimeException("导入程序正在运行,请稍后再试");
 			appConfig.putBoolean("KEY_EXCEL_IMPORT_STATUS",true);
@@ -129,6 +130,8 @@ public class ImportExcel implements IController {
 			 * }else System.out.println("Upload content Not multipart");
 			 */
 		} catch (Exception ex) {
+			if(appConfig!=null)
+				appConfig.putBoolean("KEY_EXCEL_IMPORT_STATUS",false);
 			ex.printStackTrace();
 			throw ex;
 		}
@@ -269,46 +272,50 @@ public class ImportExcel implements IController {
 		upload.setHeaderEncoding(settings.getEncoding());
 	}
 
-	public void postDoAction(ProcedureRunner runner) throws Exception {
-
-		CompositeMap context = runner.getContext();
-		CompositeMap parameter = service.getParameters();
-		Boolean isSuccess = (Boolean) context.getObject(getSuccess_flag());
-		if (isSuccess != null && !isSuccess.booleanValue()) {
-			List headers = (List) parameter.get(HEADER_NAME);
-			CompositeMap sourceData = (CompositeMap) parameter
-					.getObject(getTarget());
-			CompositeMap errorData = (CompositeMap) parameter
-					.getObject(getFailed_record());
-
-			CompositeMap errorMap = new CompositeMap();
-			String errorFileName = "error_" + sourceData.getString(FILE_NAME);
-			errorMap.put(FILE_NAME, errorFileName);
-
-			Iterator it = errorData.getChildIterator();
-			while (it.hasNext()) {
-				CompositeMap item = (CompositeMap) it.next();
-				String error = item.getString(getErrorField());
-				if (error != null && !"".equals(error.trim())) {
-					errorMap.addChild(item);
+	public void postDoAction(ProcedureRunner runner) throws Exception  {
+		try{
+			CompositeMap context = runner.getContext();
+			CompositeMap parameter = service.getParameters();
+			Boolean isSuccess = (Boolean) context.getObject(getSuccess_flag());
+			if (isSuccess != null && !isSuccess.booleanValue()) {
+				List headers = (List) parameter.get(HEADER_NAME);
+				CompositeMap sourceData = (CompositeMap) parameter
+						.getObject(getTarget());
+				CompositeMap errorData = (CompositeMap) parameter
+						.getObject(getFailed_record());
+	
+				CompositeMap errorMap = new CompositeMap();
+				String errorFileName = "error_" + sourceData.getString(FILE_NAME);
+				errorMap.put(FILE_NAME, errorFileName);
+	
+				Iterator it = errorData.getChildIterator();
+				while (it.hasNext()) {
+					CompositeMap item = (CompositeMap) it.next();
+					String error = item.getString(getErrorField());
+					if (error != null && !"".equals(error.trim())) {
+						errorMap.addChild(item);
+					}
 				}
+	
+				parameter.putObject(getTarget(), errorMap, true);
+				generateExcel(headers, errorMap);
+	
+				String downPath = settings.getDownLoadPath();
+				StringBuffer sb = new StringBuffer();
+				if (!downPath.startsWith("/"))
+					sb.append("/");
+				sb.append(settings.getDownLoadPath());
+				if (!downPath.endsWith("/"))
+					sb.append("/");
+				sb.append(errorFileName);
+				context.putObject(getFile_path(), sb.toString(), true);
 			}
-
-			parameter.putObject(getTarget(), errorMap, true);
-			generateExcel(headers, errorMap);
-
-			String downPath = settings.getDownLoadPath();
-			StringBuffer sb = new StringBuffer();
-			if (!downPath.startsWith("/"))
-				sb.append("/");
-			sb.append(settings.getDownLoadPath());
-			if (!downPath.endsWith("/"))
-				sb.append("/");
-			sb.append(errorFileName);
-			context.putObject(getFile_path(), sb.toString(), true);
+		}catch(Exception e){
+			throw e;
+		}finally{
+			CompositeMap appConfig=service.getApplicationConfig();
+			appConfig.putBoolean("KEY_EXCEL_IMPORT_STATUS",false);
 		}
-		CompositeMap appConfig=service.getApplicationConfig();
-		appConfig.putBoolean("KEY_EXCEL_IMPORT_STATUS",false);
 	}
 
 	/**
