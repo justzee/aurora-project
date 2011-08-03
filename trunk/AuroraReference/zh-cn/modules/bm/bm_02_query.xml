@@ -214,7 +214,7 @@
 
         </sect4>
         <sect4>
-        	<title>必须查询条件</title>
+        	<title>数据限制条件</title>
         	<para>
         	很多时候，我们需要对查询SQL添加一些限制性的条件。例如，当前用户只能看他所在的部门的员工，或者只列出状态不等于作废的订单。不论用户输入什么查询参数，这些限制条件都是必须加上的。这时，我们可以配置BM的&lt;data-filters&gt;标记，添加必需的数据筛选条件：
 		    <programlisting><![CDATA[
@@ -315,7 +315,7 @@
                         <tbody>
                             <row>
                                 <entry>ORDER_FIELD</entry>
-                                <entry>用与排序的字段，与</entry>                                
+                                <entry>用于排序的字段，与</entry>                                
                             </row>
                             <row>
                                 <entry>ORDER_TYPE</entry>
@@ -428,7 +428,7 @@
 		    group by    rollup(d.dname, e.job)
 		    ORDER BY total_employee asc
 			]]></programlisting>
-			可见，#WHERE_CLAUSE#和#ORDER_BY_CLAUSE#都被框架自动处理成实际的SQL语句。		 
+			其中，#WHERE_CLAUSE#和#ORDER_BY_CLAUSE#经过框架自动处理，将被替代为实际的SQL语句。		 
         	</para>
         </sect4>
     </sect3>
