@@ -59,19 +59,18 @@
  # 在%WEB_HOME%/web-inf/下添加amq.config,内容参考如下
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<amq:AMQ-client-instance xmlns:amq="aurora.plugin.amq" >
- <amq:producer url="failover:(tcp://localhost:61616,tcp://remotehost1:61616)" topic="test"/>
- <amq:consumer url="failover:(tcp://localhost:61616,tcp://remotehost1:61616)" topic="test" client="client1">
-   <amq:messageHandlers>
-   <!--给每个handler定义调用的procedure。
-    甚至可以实现MessageHandler接口，取代defaultMessageHandler-->
-      <amq:defaultMessageHandler name="handler1" procedure="init.load_priviledge_check_data"/> 
-   </amq:messageHandlers>
-   <amq:events>
-       <!--根据不同的message采用不同的handler-->
-       <amq:event message="resource_update" handler="handler1"/>
-   </amq:events>
- </amq:consumer>
+<amq:AMQ-client-instance xmlns:amq="aurora.plugin.amq"  xmlns:jms="aurora.plugin.jms" 
+url="failover:(tcp://localhost:61616,tcp://192.168.11.66:61616)">
+	<jms:messageHandlers>
+		<jms:defaultMessageHandler name="handler1" procedure="init.load_priviledge_check_data"/>
+	</jms:messageHandlers>
+	<jms:consumers >
+		<jms:consumer topic="test1">
+			<jms:events>
+				<jms:event message="resource_update"  handler="handler1"/>
+			</jms:events>
+		</jms:consumer>
+	</jms:consumers>
 </amq:AMQ-client-instance>
  }}}    
   说明 failover是amq内置的一种集群协议，它支持自动重连机制，即如果localhost机器意外中断，会自动重连到remotehost1。此处我们可以定义多台主机。
@@ -103,7 +102,7 @@
   amq服务器的重连机制如下：
   如客户端所配置的，我们有两台主机，一台是localhost，一台是remotehost1。两台机器的activemq.xml连接同一个数据库（即配置信息相同）。 
   启动服务的时候，同时去数据库中抢夺资源锁，谁先抢到，谁就是主机，没抢到处于等待状态，等这台主机意外宕机后，再去抢锁，同样是谁先抢到，就谁是主机。
- # 调用:在svc中输入`<amq:jms-message-dispatch event="resource_update" xmlns:amq="aurora.plugin.amq"/>`
+ # 调用:在svc中输入`<jms:jms-message-dispatch message="resource_update" xmlns:jms="aurora.plugin.jms"/>`
  # 启动
   # 启动activeMQ
   # 重启Web服务
