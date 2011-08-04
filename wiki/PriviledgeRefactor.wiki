@@ -76,3 +76,5 @@ modules/sys/reload.screen
 	loading.screen
 	main.screen
 }}}
+
+  * 所有不需要分配也能访问的BM，设置属性<model needAccessControl="false">
