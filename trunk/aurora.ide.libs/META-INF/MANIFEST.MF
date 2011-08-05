@@ -16,7 +16,7 @@ Bundle-ClassPath: aurora.jar,
  uncertain.jar,
  xapool.jar,
  jco.jar,
- rhino-1.6R7.jar
+ rhino-1.7R3.jar
 Bundle-Vendor: Aurora Framework
 Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,uncertain.ocm",
  aurora.application.action;
@@ -136,13 +136,18 @@ Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,unc
    uncertain.core,
    uncertain.composite,
    uncertain.ocm",
- aurora.plugin.c3p0,
+ aurora.plugin.c3p0;
+  uses:="javax.sql,
+   uncertain.logging,
+   uncertain.core,
+   uncertain.ocm",
  aurora.plugin.sap;
   uses:="com.sap.mw.jco,
    uncertain.logging,
    uncertain.core,
    uncertain.composite,
    uncertain.proc",
+ aurora.plugin.xapool,
  aurora.presentation;
   uses:="uncertain.util.template,
    uncertain.proc,
@@ -157,6 +162,7 @@ Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,unc
    uncertain.cache,
    uncertain.composite,
    javax.servlet.http",
+ aurora.presentation.cache,
  aurora.presentation.component;
   uses:="uncertain.util.template,
    aurora.presentation.cache,
@@ -511,7 +517,33 @@ Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,unc
  org.enhydra.jdbc.util;uses:="org.apache.commons.logging",
  org.gjt.mm.mysql;uses:="com.mysql.jdbc",
  org.json,
- org.mozilla.javascript,
+ org.mozilla.classfile,
+ org.mozilla.javascript;
+  uses:="new org.mozilla.javascript,
+   org.mozilla.javascript.xml,
+   org.mozilla.classfile,
+   org.mozilla.javascript.ast,
+   org.mozilla.javascript.debug",
+ org.mozilla.javascript.annotations,
+ org.mozilla.javascript.ast,
+ org.mozilla.javascript.commonjs.module,
+ org.mozilla.javascript.commonjs.module.provider,
+ org.mozilla.javascript.debug,
+ org.mozilla.javascript.jdk13,
+ org.mozilla.javascript.jdk15,
+ org.mozilla.javascript.json,
+ org.mozilla.javascript.optimizer,
+ org.mozilla.javascript.regexp,
+ org.mozilla.javascript.serialize,
+ org.mozilla.javascript.tools,
+ org.mozilla.javascript.tools.debugger,
+ org.mozilla.javascript.tools.debugger.treetable,
+ org.mozilla.javascript.tools.idswitch,
+ org.mozilla.javascript.tools.jsc,
+ org.mozilla.javascript.tools.shell,
+ org.mozilla.javascript.xml,
+ org.mozilla.javascript.xml.impl.xmlbeans,
+ org.mozilla.javascript.xmlimpl,
  org.objectweb.carol.jndi.ns;uses:="org.ow2.carol.jndi.ns",
  org.objectweb.carol.jndi.spi;uses:="org.ow2.carol.jndi.spi,org.ow2.carol.rmi.jrmp.interceptor.impl",
  org.objectweb.carol.rmi.exception;uses:="org.ow2.carol.rmi.exception",
@@ -600,6 +632,7 @@ Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,unc
  org.ow2.carol.util.mbean;uses:="org.ow2.carol.util.configuration,org.apache.commons.logging",
  org.ow2.carol.util.naming;uses:="javax.naming",
  org.ow2.carol.util.perfs,
+ uncertain.cache,
  uncertain.composite;
   uses:="javax.xml.parsers,
    org.json,
@@ -628,6 +661,7 @@ Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,unc
    uncertain.proc,
    uncertain.ocm",
  uncertain.logging;uses:="uncertain.event,uncertain.composite,uncertain.ocm",
+ uncertain.mbean,
  uncertain.ocm;uses:="uncertain.logging,uncertain.datatype,uncertain.composite",
  uncertain.pkg;
   uses:="uncertain.schema,
@@ -650,5 +684,6 @@ Export-Package: aurora.application;uses:="uncertain.core,uncertain.composite,unc
    uncertain.core,
    uncertain.composite",
  uncertain.util.reflect;uses:="uncertain.composite",
+ uncertain.util.resource,
  uncertain.util.template;uses:="uncertain.composite"
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
