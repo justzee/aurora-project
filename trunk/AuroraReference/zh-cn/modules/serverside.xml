@@ -25,6 +25,7 @@
 
         &business-model-basic;
         &business-model-query;
+        &business-model-update;
 
     </sect1>
 </chapter>
