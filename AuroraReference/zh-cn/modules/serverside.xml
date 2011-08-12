@@ -26,7 +26,9 @@
         &business-model-basic;
         &business-model-query;
         &business-model-update;
-
+		&business-model-operation;
+		&business-model-feature;
+		&business-model-inherit;
     </sect1>
 </chapter>
 
