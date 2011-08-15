@@ -1,6 +1,7 @@
 package aurora.plugin.sap.sync.idoc;
 
 
+
 public class ApplicationException extends Exception {
 	private static final long serialVersionUID = -3184478964424768398L;
 

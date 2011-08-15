@@ -1,6 +1,9 @@
 package aurora.plugin.sap.sync.idoc;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import uncertain.core.IGlobalInstance;
 import uncertain.logging.ILogger;
@@ -16,6 +19,7 @@ public class IDocServerInstance implements IGlobalInstance {
 	public static final String SEPARATOR = ",";
 	public String DeleteImmediately = "Y";
 	private String version = "1.2";
+	private List serverList;
 	public IDocServerInstance(IObjectRegistry registry) {
 		this.registry = registry;
 	}
@@ -38,6 +42,13 @@ public class IDocServerInstance implements IGlobalInstance {
 		logger = LoggingContext.getLogger(PLUGIN, registry);
 		run();
 	}
+	public void onShutdown() throws Exception {
+		if(serverList != null&&!serverList.isEmpty()){
+			for(Iterator it =serverList.iterator();it.hasNext();){
+				((IDocServer)it.next()).shutdown();
+			}
+		}
+	}
 	public String getIdocDir() {
 		return IDOC_DIR;
 	}
@@ -55,7 +66,7 @@ public class IDocServerInstance implements IGlobalInstance {
 				throw new IllegalArgumentException("IDOC_DIR:" + IDOC_DIR + " is not exists!");
 			}
 		}
-
+		serverList = new LinkedList();
 		log("SERVER_NAME_LIST:" + SERVER_NAME_LIST);
 		if (SERVER_NAME_LIST == null || SERVER_NAME_LIST.equals("")) {
 			throw new IllegalArgumentException("SERVER_NAME_LIST can not be null !");
@@ -67,6 +78,7 @@ public class IDocServerInstance implements IGlobalInstance {
 			serverName = servers[i];
 			server = new IDocServer(this, serverName);
 			server.start();
+			serverList.add(server);
 		}
 	}
 	public void setLogger(ILogger logger) {
