@@ -24,8 +24,14 @@ public class IDocSync extends Thread {
 			idocType = null;
 			header_id = -1;
 			IDocFile file = iDocServer.getSyncFile();
-			if (file == null)
+			if (file == null){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					iDocServer.log(e);
+				}
 				continue;
+			}
 			try {
 				header_id = iDocServer.getDbUtil().existHeaders(file.getIdocId());
 				iDocServer.log("insertMiddleTables for idoc:" + file.getIdocId());

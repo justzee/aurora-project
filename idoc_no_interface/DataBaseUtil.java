@@ -394,14 +394,15 @@ public class DataBaseUtil {
 					values_sql.append(",'" + (value != null ? value : "")+"'");
 				}
 				insert_sql.append(")").append(values_sql).append(")");
-				insertSt = dbConn.prepareStatement(insert_sql.toString());
-				insertSt.executeUpdate();
+				try{
+					insertSt = dbConn.prepareStatement(insert_sql.toString());
+					insertSt.executeUpdate();
+				}catch(Throwable e){
+					System.out.println("execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable");
+					throw new ApplicationException("execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable",e);
+				}
 				insertSt.close();
 			}
-			segmentMapsRs.close();
-			segmentMapsSt.close();
-			filedMapsRs.close();
-			fieldMapsSt.close();
 		} finally {
 			if (segmentMapsRs != null) {
 				segmentMapsRs.close();
