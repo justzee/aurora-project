@@ -279,7 +279,7 @@ public class IDocServer {
 	}
 
 	public boolean isShutDown() {
-		return !(JCoServerState.ALIVE.equals(iDocServer.getState()));
+		return !(JCoServerState.ALIVE.equals(iDocServer.getState())||JCoServerState.STARTED.equals(iDocServer.getState()));
 	}
 
 	public boolean isFinished() {
