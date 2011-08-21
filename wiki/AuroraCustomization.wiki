@@ -12,7 +12,7 @@
 
 == 数据结构 ==
 
-个性化配置表：以文件中的某个具有id属性的对象为单位，存储个性化配置信息
+tag个性化配置表：以文件中的某个具有id属性的tag为单位，存储个性化配置信息
 
 ||字段||含义||示例||
 ||record_id||PK||||
@@ -23,6 +23,23 @@
 ||index_value||index_field指定的属性值||sys_user_define_grid||
 ||mod_type||对配置文件进行更改的操作方式||insert: 插入节点 delete：删除此节点 set_attrib: 重新设置属性值||
 ||position||如果是insert操作，要插入的新节点的位置||before:在此节点之前 after:在此节点之后 first_child:第一个子节点 last_child: 最后一个子节点||
-||xml_content||如果是insert操作，要插入的配置的内容||`<a:editors><a:numberField id="cb"/></a:editors>`||
+||config_content||如果是insert操作，要插入的配置的内容||`<a:editors><a:numberField id="cb"/></a:editors>`||
+||attrib_key||如果是set_attrib操作，要设置的属性名||width||
+||attrib_value||如果是set_attrib操作，要设置的属性值||900||
+
+数组元素个性化配置数据集表：以文件中的某个数组集合中的元素为单位，存储个性化配置信息
+||字段||含义||示例||
+||record_id||PK||||
+||source_file||源文件名||/modules/sys/sys_user.screen||
+|| dimension_type||个性化的维度||ROLE||
+|| dimension_value||个性化维值||1001||
+||parent_index_field||父节点用于唯一确定某个标签的属性名称||id||
+||parent_index_value||父节点index_field指定的属性值||sys_user_define_grid||
+||array_name||数组名称||columns||
+||index_field||用于唯一确定数组中某个元素的属性名称||name||
+||index_value||用于唯一确定数组中某个元素的属性值||employee_code||
+||mod_type||对配置文件进行更改的操作方式||insert: 插入节点 delete：删除此节点 set_attrib: 重新设置属性值||
+||position||如果是insert操作，要插入的新节点的位置||before:在此节点之前 after:在此节点之后 first_child:第一个子节点 last_child: 最后一个子节点||
+||config_content||如果是insert操作，要插入的配置的内容||`<a:editors><a:numberField id="cb"/></a:editors>`||
 ||attrib_key||如果是set_attrib操作，要设置的属性名||width||
 ||attrib_value||如果是set_attrib操作，要设置的属性值||900||
