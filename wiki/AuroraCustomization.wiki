@@ -27,7 +27,9 @@
 ||config_content||如果是insert操作，要插入的配置的内容||`<a:editors><a:numberField id="cb"/></a:editors>`||
 ||attrib_key||如果是set_attrib操作，要设置的属性名||width||
 ||attrib_value||如果是set_attrib操作，要设置的属性值||900||
+
 示例：源文件/modules/sys/sys_user.screen，其中包含一个id=sys_user_define_grid的grid，当用户登录角色=1001时，要将宽度设置为500；当用户id=1020时，要将宽度设置为400。那么，会在表中有两条个性化配置记录：
+
 ||record_id||source_file||dimension_type||dimension_value||index_field||index_value||mod_type||attrib_key||attrib_value||
 ||1||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||set_attrib||width||500||
 ||2||/modules/sys/sys_user.screen||USER||1020||id||sys_user_define_grid||set_attrib||width||500||
