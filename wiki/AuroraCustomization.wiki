@@ -13,7 +13,7 @@
 == 基于id的个性化配置 ==
 
 === 表结构 ===
-个性化配置表：fnd_config_customization
+个性化配置表：fnd_config_element_customization
 以文件中的某个具有id属性的tag为单位，存储个性化配置信息
 
 ||字段||含义||示例||
@@ -62,7 +62,7 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 数组元素是指在某个数组中具有唯一属性的元素，如grid的column。这些元素需要通过包含本数组的父节点的id来定位。
 
 === 数据结构 ===
-数组元素个性化配置数据集表：fnd_config_customization_detail
+数组元素个性化配置数据集表：fnd_config_array_item_customization
 以文件中的某个数组集合中的元素为单位，存储个性化配置信息
 与fnd_config_customization_detail非常类似，只是多了三个字段：array_name用于确定是哪一个数组，index_field & index_value用于确定是数组中的哪一个元素。
 
@@ -82,5 +82,8 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 ||attrib_key||如果是set_attrib操作，要设置的属性名||width||
 ||attrib_value||如果是set_attrib操作，要设置的属性值||900||
 
-
 === 示例 ===
+对于sys_user.screen，当角色为1001时，要增加一个名为field1的column，并删除start_date,end_date字段；当用户id=1020时，要设置employee_code的宽度=120
+
+||record_id||source_file||dimension_type||dimension_value||parent_index_field||parent_index_value||array_name||index_field||index_value||mod_type||position||config_content||attrib_key||attrib_value||
+||1||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||null||null||insert||first_child||`<a:column xmlns:a="..." name="field1" />`||null||null||
