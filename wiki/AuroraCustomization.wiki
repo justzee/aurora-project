@@ -10,8 +10,9 @@
 
 配置文件（screen,BM等）加载后，在实际使用之前，去数据库查询是否有对该文件的个性化设置。如果有，就加载个性化配置，根据其中的设定，动态修改配置文件。
 
-== 数据结构 ==
+== 基于id的个性化配置 ==
 
+=== 表结构 ===
 个性化配置表：fnd_config_customization
 以文件中的某个具有id属性的tag为单位，存储个性化配置信息
 
@@ -28,7 +29,8 @@
 ||attrib_key||如果是set_attrib操作，要设置的属性名||width||
 ||attrib_value||如果是set_attrib操作，要设置的属性值||900||
 
-示例：源文件/modules/sys/sys_user.screen，其中包含一个id=sys_user_define_grid的grid，当用户登录角色=1001时，要将宽度设置为500；当用户id=1020时，要将宽度设置为400。那么，会在表中有两条个性化配置记录：
+=== 示例 ===
+源文件/modules/sys/sys_user.screen，其中包含一个id=sys_user_define_grid的grid，当用户登录角色=1001时，要将宽度设置为500；当用户id=1020时，要将宽度设置为400。那么，会在表中有两条个性化配置记录：
 
 ||record_id||source_file||dimension_type||dimension_value||index_field||index_value||mod_type||attrib_key||attrib_value||
 ||1||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||set_attrib||width||500||
@@ -54,10 +56,17 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 这句SQL表示取出系统级、角色级、用户级三个维度的个性化配置，以系统级优先级最低，用户级最高。可以根据实际需求调整这句SQL，来定制维度的种类及优先级次序。
 对这句SQL产生的结果，按dimension_type+dimension_value分类汇总，然后依次执行每一组里面配置的个性化内容。排后面的个性化设置会自动覆盖前面的相同设置。
 
-数组元素个性化配置数据集表：fnd_config_customization_detail
 
+== 数组元素的个性化配置 ==
+
+数组元素是指在某个数组中具有唯一属性的元素，如grid的column。这些元素需要通过包含本数组的父节点的id来定位。
+
+=== 数据结构 ===
+数组元素个性化配置数据集表：fnd_config_customization_detail
 以文件中的某个数组集合中的元素为单位，存储个性化配置信息
-||字段||含义||示例||
+与fnd_config_customization_detail非常类似，只是多了三个字段：array_name用于确定是哪一个数组，index_field & index_value用于确定是数组中的哪一个元素。
+
+||*字段*||*含义*||*示例*||
 ||record_id||PK||||
 ||source_file||源文件名||/modules/sys/sys_user.screen||
 || dimension_type||个性化的维度||ROLE||
@@ -72,3 +81,6 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 ||config_content||如果是insert操作，要插入的配置的内容||`<a:editors><a:numberField id="cb"/></a:editors>`||
 ||attrib_key||如果是set_attrib操作，要设置的属性名||width||
 ||attrib_value||如果是set_attrib操作，要设置的属性值||900||
+
+
+=== 示例 ===
