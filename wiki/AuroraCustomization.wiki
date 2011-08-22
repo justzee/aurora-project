@@ -97,4 +97,4 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 == 个性化之后的配置文件的cache ==
 
 如有必要，对个性化之后的配置文件进行缓存，以提高性能。cache key的设置必须包含所有可能影响个性化内容的因素，如：
-[role=1001][user=1010][file=sys_user.screen]
+`[role=1001][user=1010][file=sys_user.screen]`
