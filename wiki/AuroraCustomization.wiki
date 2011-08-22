@@ -69,8 +69,8 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 ||*字段*||*含义*||*示例*||
 ||record_id||PK||||
 ||source_file||源文件名||/modules/sys/sys_user.screen||
-|| dimension_type||个性化的维度||ROLE||
-|| dimension_value||个性化维值||1001||
+||dimension_type||个性化的维度||ROLE||
+||dimension_value||个性化维值||1001||
 ||parent_index_field||父节点用于唯一确定某个标签的属性名称||id||
 ||parent_index_value||父节点index_field指定的属性值||sys_user_define_grid||
 ||array_name||数组名称||columns||
@@ -87,3 +87,6 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 
 ||record_id||source_file||dimension_type||dimension_value||parent_index_field||parent_index_value||array_name||index_field||index_value||mod_type||position||config_content||attrib_key||attrib_value||
 ||1||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||null||null||insert||first_child||`<a:column xmlns:a="..." name="field1" />`||null||null||
+||2||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||name||start_date||delete||null||null||null||null||
+||3||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||name||end_date||delete||null||null||null||null||
+||4||/modules/sys/sys_user.screen||USER||1001||id||sys_user_define_grid||columns||name||employee_code||set_attrib||null||null||width||120||
