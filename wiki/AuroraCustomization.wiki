@@ -64,18 +64,18 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 === 数据结构 ===
 数组元素个性化配置数据集表：fnd_config_array_item_customization
 以文件中的某个数组集合中的元素为单位，存储个性化配置信息
-与fnd_config_customization_detail非常类似，只是多了三个字段：array_name用于确定是哪一个数组，index_field & index_value用于确定是数组中的哪一个元素。
+与fnd_config_customization_detail非常类似，只是多了三个字段：array_name用于确定是哪一个数组，array_index_field & array_index_value用于确定是数组中的哪一个元素。
 
 ||*字段*||*含义*||*示例*||
 ||record_id||PK||||
 ||source_file||源文件名||/modules/sys/sys_user.screen||
 ||dimension_type||个性化的维度||ROLE||
 ||dimension_value||个性化维值||1001||
-||parent_index_field||父节点用于唯一确定某个标签的属性名称||id||
-||parent_index_value||父节点index_field指定的属性值||sys_user_define_grid||
+||index_field||父节点用于唯一确定某个标签的属性名称||id||
+||index_value||父节点index_field指定的属性值||sys_user_define_grid||
 ||array_name||数组名称||columns||
-||index_field||用于唯一确定数组中某个元素的属性名称||name||
-||index_value||用于唯一确定数组中某个元素的属性值||employee_code||
+||array_index_field||用于唯一确定数组中某个元素的属性名称||name||
+||array_index_value||用于唯一确定数组中某个元素的属性值||employee_code||
 ||mod_type||对配置文件进行更改的操作方式||insert: 插入节点 delete：删除此节点 set_attrib: 重新设置属性值||
 ||position||如果是insert操作，要插入的新节点的位置||before:在此节点之前 after:在此节点之后 first_child:第一个子节点 last_child: 最后一个子节点||
 ||config_content||如果是insert操作，要插入的配置的内容||`<a:editors><a:numberField id="cb"/></a:editors>`||
@@ -85,8 +85,16 @@ and dimension_type='USER' and dimension_value=${/session/@user_id}
 === 示例 ===
 对于sys_user.screen，当角色为1001时，要增加一个名为field1的column，并删除start_date,end_date字段；当用户id=1020时，要设置employee_code的宽度=120
 
-||record_id||source_file||dimension_type||dimension_value||parent_index_field||parent_index_value||array_name||index_field||index_value||mod_type||position||config_content||attrib_key||attrib_value||
+||record_id||source_file||dimension_type||dimension_value||index_field||index_value||array_name||array_index_field||array_index_value||mod_type||position||config_content||attrib_key||attrib_value||
 ||1||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||null||null||insert||first_child||`<a:column xmlns:a="..." name="field1" />`||null||null||
 ||2||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||name||start_date||delete||null||null||null||null||
 ||3||/modules/sys/sys_user.screen||ROLE||1001||id||sys_user_define_grid||columns||name||end_date||delete||null||null||null||null||
 ||4||/modules/sys/sys_user.screen||USER||1001||id||sys_user_define_grid||columns||name||employee_code||set_attrib||null||null||width||120||
+
+=== 数组元素重排序 ===
+如果需要重新设定数组元素的次序，有两种办法：A.在元素中设置顺序号属性，对该属性进行个性化配置；B.单独建一个排序表。待定。
+
+== 个性化之后的配置文件的cache ==
+
+如有必要，对个性化之后的配置文件进行缓存，以提高性能。cache key的设置必须包含所有可能影响个性化内容的因素，如：
+[role=1001][user=1010][file=sys_user.screen]
