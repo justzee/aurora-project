@@ -140,6 +140,7 @@ public class AuroraResourceUtil{
 		}
 		String fullLocationPath =file.getLocation().toOSString();
 		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
+	
 		cl.setSaveNamespaceMapping(true);
 		CompositeMap bmData;
 		try {
