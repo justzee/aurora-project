@@ -81,8 +81,8 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 			return null;
 		}
 		try {
-			if (root.getLocation()[2] > root.getLocation()[0]) {
-				positions.add(createPosition(root.getLocation()));
+			if (root.getLocation().getEndLine()> root.getLocation().getStartLine()) {
+				positions.add(createPosition(root.getLocation().getRange()));
 			}
 			iteratorNodes(root, positions);
 		} catch (BadLocationException e) {
@@ -95,8 +95,8 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy, IReconcilin
 			return;
 		for (Iterator it = node.getChildIterator(); it.hasNext();) {
 			CompositeMap child = (CompositeMap) it.next();
-			if (child.getLocation()[2] - child.getLocation()[0]>4) {
-				positions.add(createPosition(child.getLocation()));
+			if (child.getLocation().getEndLine() - child.getLocation().getStartLine()>4) {
+				positions.add(createPosition(child.getLocation().getRange()));
 			}
 			iteratorNodes(child, positions);
 		}

@@ -236,6 +236,22 @@
           </and>
        </enablement>
     </objectContribution> 
+    
+    <objectContribution
+          adaptable="true"
+          id="aurora.ide.bm.reference"
+          nameFilter="*.bm"
+          objectClass="org.eclipse.core.resources.IFile">
+       <action
+             class="aurora.search.action.BMReferenceAciton"
+             enablesFor="1"
+             icon="icons/bm.gif"
+             id="aurora.search.action.BMReferenceAciton"
+             label="Reference"
+             menubarPath="additions"> 
+       </action>
+    </objectContribution>
+    
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
     <propertyTester
@@ -484,4 +500,17 @@
           sequence="M1+M2+P">
     </key>
  </extension>
+ <!--shiliyan3310-2011-08-08-->
+  
+ 
+ <extension 
+    id="aurora.search.SearchResultPage"
+    point="org.eclipse.search.searchResultViewPages"> 
+    <viewPage 
+    id="aurora.search.AuroraSearchResult"
+	 searchResultClass="aurora.search.core.AuroraSearchResult"
+    class="aurora.search.ui.SearchResultPage"> 
+ 	</viewPage> 
+ </extension>
+ 
 </plugin>
