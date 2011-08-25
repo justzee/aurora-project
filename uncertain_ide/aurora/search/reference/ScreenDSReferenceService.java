@@ -20,7 +20,7 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile resource) {
-		return new TypeFinder(datasetType);
+		return new ReferenceTypeFinder(datasetReference);
 	}
 
 	protected IDataFilter getDataFilter(final IResource scope,

@@ -61,8 +61,6 @@ public class TypeFinder extends CompositeMapIteator {
 	}
 
 	protected boolean isType(Attribute attribute) {
-		System.out.println(attribute.getAttributeType());
-		System.out.println(attribute.getAttributeType().getQName());
 		return type.equals(attribute.getTypeQName());
 	}
 

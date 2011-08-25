@@ -1,7 +1,7 @@
 package aurora.search.reference;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -17,11 +17,11 @@ import aurora.search.core.SearchEngine;
 public class BMFieldReferenceQuery extends AbstractSearchQuery {
 
 	private AuroraSearchResult fResult;
-	private IContainer scope;
+	private IResource scope;
 	private IFile sourceFile;
 	private String fieldName;
 
-	public BMFieldReferenceQuery(IContainer scope, IFile sourceFile,
+	public BMFieldReferenceQuery(IResource scope, IFile sourceFile,
 			String fieldName) {
 		super();
 		this.scope = scope;

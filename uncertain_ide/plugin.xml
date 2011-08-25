@@ -243,10 +243,24 @@
           nameFilter="*.bm"
           objectClass="org.eclipse.core.resources.IFile">
        <action
-             class="aurora.search.action.BMReferenceAciton"
+             class="aurora.search.action.FileReferenceAciton"
              enablesFor="1"
              icon="icons/bm.gif"
              id="aurora.search.action.BMReferenceAciton"
+             label="Reference"
+             menubarPath="additions"> 
+       </action>
+    </objectContribution>
+      <objectContribution
+          adaptable="true"
+          id="aurora.ide.bm.reference"
+          nameFilter="*.screen"
+          objectClass="org.eclipse.core.resources.IFile">
+       <action
+             class="aurora.search.action.FileReferenceAciton"
+             enablesFor="1"
+             icon="icons/service.gif"
+             id="aurora.search.action.ScreenReferenceAciton"
              label="Reference"
              menubarPath="additions"> 
        </action>

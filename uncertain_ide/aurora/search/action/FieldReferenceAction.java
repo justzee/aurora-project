@@ -12,9 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.BadLocationException;
@@ -35,10 +33,10 @@ import uncertain.composite.QualifiedName;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.search.core.AbstractSearchQuery;
 import aurora.search.core.AbstractSearchService;
+import aurora.search.core.SearchQueryFactory;
 import aurora.search.core.Util;
-import aurora.search.reference.BMFieldReferenceQuery;
-import bm.BMUtil;
 import editor.textpage.ColorManager;
 import editor.textpage.IColorConstants;
 import editor.textpage.TextPage;
@@ -50,6 +48,7 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 	private TextPage textPage;
 	private XMLTagScanner tagScanner;
 	private TextSelection selection;
+	private AbstractSearchQuery query;
 
 	private class Attribute {
 		private String name;
@@ -60,16 +59,6 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 	}
 
 	public void run(IAction action) {
-		IProject project = sourceFile.getProject();
-
-		IContainer scope = Util.findWebInf(sourceFile);
-		if (scope == null) {
-			scope = project;
-		} else {
-			scope = scope.getParent();
-		}
-		BMFieldReferenceQuery query = new BMFieldReferenceQuery(scope,
-				sourceFile, selection.getText());
 		NewSearchUI.runQueryInBackground(query);
 	}
 
@@ -93,15 +82,16 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 		if (attribute == null) {
 			return false;
 		}
-		sourceFile = getSourceFile(attribute, selection);
-		if (sourceFile == null) {
+		query = createSearchQuery(attribute, selection);
+		if (query == null) {
 			return false;
 		}
 
 		return true;
 	}
 
-	private IFile getSourceFile(Attribute att, TextSelection selection) {
+	private AbstractSearchQuery createSearchQuery(Attribute att,
+			TextSelection selection) {
 		String content = textPage.getContent();
 		try {
 			CompositeMap map = locateCompositeMap(content,
@@ -117,45 +107,52 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 								.next();
 						if (att.name.equals(attrib.getName())) {
 							IType attributeType = attrib.getAttributeType();
-							if (attributeType instanceof SimpleType) {
-								QualifiedName referenceTypeQName = ((SimpleType) attributeType)
-										.getReferenceTypeQName();
-								if (AbstractSearchService.foreignFieldReference
-										.equals(referenceTypeQName)) {
-
-									return getFile(map.getParent());
-
-								}
-								if (AbstractSearchService.localFieldReference
-										.equals(referenceTypeQName)) {
-									return getFile();
-								}
+							IFile sourceFile = getSourceFile(map, attrib);
+							IResource scope = Util.getScope(sourceFile);
+							if (scope == null || sourceFile == null)
+								return null;
+							QualifiedName referenceTypeQName = ((SimpleType) attributeType)
+									.getReferenceTypeQName();
+							if (AbstractSearchService.datasetReference
+									.equals(referenceTypeQName)) {
+								scope = sourceFile;
 							}
+							return SearchQueryFactory.createSearchQuery(
+									referenceTypeQName, scope, sourceFile,
+									selection.getText());
 						}
 					}
 				}
-
 			}
-
 		} catch (ApplicationException e) {
 		}
 		return null;
 	}
 
-	private IFile getFile(CompositeMap map) {
-		Object pkg = Util.getReferenceModelPKG(map);
-		if (pkg == null) {
-			pkg = Util.getReferenceModelPKG(map.getParent());
-		}
-		if (pkg instanceof String) {
-			try {
-				IResource file = BMUtil
-						.getBMResourceFromClassPath((String) pkg);
-				if (file instanceof IFile
-						&& "bm".equalsIgnoreCase(file.getFileExtension()))
-					return (IFile) file;
-			} catch (ApplicationException e) {
-
+	private IFile getSourceFile(CompositeMap map,
+			uncertain.schema.Attribute attrib) {
+		IType attributeType = attrib.getAttributeType();
+		if (attributeType instanceof SimpleType) {
+			QualifiedName referenceTypeQName = ((SimpleType) attributeType)
+					.getReferenceTypeQName();
+			if (AbstractSearchService.foreignFieldReference
+					.equals(referenceTypeQName)) {
+				return sourceFile = Util.findBMFile(map);
+			}
+			if (AbstractSearchService.localFieldReference
+					.equals(referenceTypeQName)
+					|| AbstractSearchService.datasetReference
+							.equals(referenceTypeQName)) {
+				return sourceFile = getFile();
+			}
+			if (AbstractSearchService.screenReference
+					.equals(referenceTypeQName)) {
+				return sourceFile = Util.findScreenFile(getFile(),
+						map.get(attrib.getName()));
+			}
+			if (AbstractSearchService.bmReference.equals(referenceTypeQName)) {
+				return sourceFile = Util.findBMFileByPKG(map.get(attrib
+						.getName()));
 			}
 		}
 		return null;
@@ -239,8 +236,9 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 
 	public IFile getFile() {
 		IFile file = textPage.getFile();
-		if ("bm".equalsIgnoreCase(file.getFileExtension())) {
-			return textPage == null ? null : file;
+		if ("bm".equalsIgnoreCase(file.getFileExtension())
+				|| "screen".equalsIgnoreCase(file.getFileExtension())) {
+			return file;
 		} else {
 			return null;
 		}

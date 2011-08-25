@@ -14,12 +14,12 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.ide.IDE;
 
 import aurora.search.core.Util;
-import aurora.search.reference.BMReferenceQuery;
+import aurora.search.reference.FileReferenceQuery;
 
-public class BMReferenceAciton implements IObjectActionDelegate {
+public class FileReferenceAciton implements IObjectActionDelegate {
 	private IFile sourceFile;
 
-	public BMReferenceAciton() {
+	public FileReferenceAciton() {
 	}
 
 	public void run(IAction action) {
@@ -31,7 +31,7 @@ public class BMReferenceAciton implements IObjectActionDelegate {
 		} else {
 			scope = scope.getParent();
 		}
-		BMReferenceQuery query = new BMReferenceQuery(scope, sourceFile);
+		FileReferenceQuery query = new FileReferenceQuery(scope, sourceFile);
 		NewSearchUI.runQueryInBackground(query);
 	}
 
