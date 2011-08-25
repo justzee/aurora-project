@@ -4,7 +4,7 @@
 
 因此建议正式环境采取缓存处理.
 
-#(1) 在www.aurora-framework.org上下载最新的程序 . 将resources.zip解压到web目录下
-#(2) 修改web.xml 去掉resource的servelt配置
+    # 在www.aurora-framework.org上下载最新的程序 . 将resources.zip解压到web目录下
+    # 修改web.xml 去掉resource的servelt配置
 
 这样不再通过框架来解析脚本和样式表,而是通过应用服务器来处理,这样可以缓存到本地.
