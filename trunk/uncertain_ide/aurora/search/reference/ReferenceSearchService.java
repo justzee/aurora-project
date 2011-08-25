@@ -6,11 +6,16 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.search.ui.ISearchQuery;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
+import uncertain.schema.IType;
+import uncertain.schema.SimpleType;
 import aurora.search.core.AbstractSearchService;
 import aurora.search.core.CompositeMapIteator;
+import aurora.search.core.Util;
 
-public class ReferenceSearchService extends AbstractSearchService {
+public class ReferenceSearchService extends AbstractSearchService implements
+		IDataFilter {
 
 	public ReferenceSearchService(IResource scope, Object source,
 			ISearchQuery query) {
@@ -29,19 +34,40 @@ public class ReferenceSearchService extends AbstractSearchService {
 			}
 		}
 		return null;
+	}
 
+	public boolean found(CompositeMap map, Attribute attrib) {
+		IType attributeType = attrib.getAttributeType();
+		if (attributeType instanceof SimpleType) {
+			QualifiedName referenceTypeQName = ((SimpleType) attributeType)
+					.getReferenceTypeQName();
+			if (bmReference.equals(referenceTypeQName)) {
+				return bmRefMatch(map, attrib);
+			}
+			if (screenReference.equals(referenceTypeQName)) {
+				return screenRefMatch(map, attrib);
+			}
+		}
+		return false;
+
+	}
+
+	private boolean screenRefMatch(CompositeMap map, Attribute attrib) {
+		IFile file = this.getFile(map.getRoot());
+		Object pkg = map.get(attrib.getName());
+		IFile findScreenFile = Util.findScreenFile(file, pkg);
+		return this.getSource().equals(findScreenFile);
+	}
+
+	private boolean bmRefMatch(CompositeMap map, Attribute attrib) {
+		Object pattern = getSearchPattern(this.getScope(), this.getSource());
+		Object data = map.get(attrib.getName());
+		return pattern == null ? false : pattern.equals(data);
 	}
 
 	protected IDataFilter getDataFilter(final IResource scope,
 			final Object source) {
-		IDataFilter filter = new IDataFilter() {
-			public boolean found(CompositeMap map, Attribute attrib) {
-				Object pattern = getSearchPattern(scope, source);
-				Object data = map.get(attrib.getName());
-				return pattern == null ? false : pattern.equals(data);
-			}
-		};
-		return filter;
+		return this;
 	}
 
 	protected Object createPattern(IResource scope, Object source) {
@@ -60,8 +86,7 @@ public class ReferenceSearchService extends AbstractSearchService {
 	}
 
 	private Object getScreenPKG(IResource scope, IFile file) {
-		// TODO Auto-generated method stub
-		return null;
+		return file.getName();
 	}
 
 	private Object getBMPKG(IResource scope, IFile file) {

@@ -1,7 +1,7 @@
 package aurora.search.reference;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -14,13 +14,13 @@ import aurora.search.core.AuroraSearchResult;
 import aurora.search.core.ISearchService;
 import aurora.search.core.SearchEngine;
 
-public class BMReferenceQuery extends AbstractSearchQuery {
+public class FileReferenceQuery extends AbstractSearchQuery {
 
 	private AuroraSearchResult fResult;
-	private IContainer scope;
+	private IResource scope;
 	private IFile sourceFile;
 
-	public BMReferenceQuery(IContainer scope, IFile sourceFile) {
+	public FileReferenceQuery(IResource scope, IFile sourceFile) {
 		super();
 		this.scope = scope;
 		this.sourceFile = sourceFile;
@@ -37,7 +37,7 @@ public class BMReferenceQuery extends AbstractSearchQuery {
 	}
 
 	public String getLabel() {
-		return "BM Reference : "
+		return "File Reference : "
 				+ sourceFile.getName();
 	}
 

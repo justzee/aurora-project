@@ -37,13 +37,13 @@ abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName bmReference = new QualifiedName(
 			"http://www.aurora-framework.org/schema/bm", "model");
 	public final static QualifiedName screenReference = new QualifiedName(
-			"http://www.uncertain-framework.org/schema/simple-schema", "screen");
+			"http://www.aurora-framework.org/application", "screen");
 	public final static QualifiedName localFieldReference = new QualifiedName(
 			"http://www.aurora-framework.org/schema/bm", "localField");
 	public final static QualifiedName foreignFieldReference = new QualifiedName(
 			"http://www.aurora-framework.org/schema/bm", "foreignField");
-	public final static QualifiedName datasetType = new QualifiedName(
-			"http://www.aurora-framework.org/application", "dataSet");
+	public final static QualifiedName datasetReference = new QualifiedName(
+			"http://www.aurora-framework.org/application", "dataset");
 	private Map documentMap = new HashMap();
 	private Map compositeMap = new HashMap();
 

@@ -35,7 +35,6 @@ public class ScreenDSReferenceQuery extends AbstractSearchQuery {
 		textResult.removeAll();
 		SearchEngine engine = new SearchEngine(this);
 		engine.findDSReference(scope, sourceFile, datasetName, monitor);
-//		engine.findBMFieldReference(scope, sourceFile, datasetName, monitor);
 		return Status.OK_STATUS;
 	}
 
