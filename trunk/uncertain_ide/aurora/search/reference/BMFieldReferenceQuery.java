@@ -19,11 +19,14 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 	private AuroraSearchResult fResult;
 	private IContainer scope;
 	private IFile sourceFile;
+	private String fieldName;
 
-	public BMFieldReferenceQuery(IContainer scope, IFile sourceFile) {
+	public BMFieldReferenceQuery(IContainer scope, IFile sourceFile,
+			String fieldName) {
 		super();
 		this.scope = scope;
 		this.sourceFile = sourceFile;
+		this.fieldName = fieldName;
 	}
 
 	public IStatus run(IProgressMonitor monitor)
@@ -31,13 +34,12 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 		AbstractTextSearchResult textResult = (AbstractTextSearchResult) getSearchResult();
 		textResult.removeAll();
 		SearchEngine engine = new SearchEngine(this);
-		engine.findReference(scope, sourceFile, monitor);
+		engine.findBMFieldReference(scope, sourceFile, fieldName, monitor);
 		return Status.OK_STATUS;
 	}
 
 	public String getLabel() {
-		return "BM Reference : "
-				+ sourceFile.getName();
+		return "BM Reference : " + sourceFile.getName();
 	}
 
 	public boolean canRerun() {
@@ -57,9 +59,9 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 	}
 
 	protected ISearchService getSearchService() {
-		ReferenceSearchService service = new ReferenceSearchService(this);
+		BMFieldReferenceService service = new BMFieldReferenceService(
+				this.scope, this.sourceFile, this, this.fieldName);
 		return service;
 	}
-	
 
 }

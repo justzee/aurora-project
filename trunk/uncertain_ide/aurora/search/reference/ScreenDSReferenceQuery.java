@@ -1,7 +1,7 @@
 package aurora.search.reference;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -14,31 +14,33 @@ import aurora.search.core.AuroraSearchResult;
 import aurora.search.core.ISearchService;
 import aurora.search.core.SearchEngine;
 
-public class BMReferenceQuery extends AbstractSearchQuery {
+public class ScreenDSReferenceQuery extends AbstractSearchQuery {
 
 	private AuroraSearchResult fResult;
-	private IContainer scope;
+	private IResource scope;
 	private IFile sourceFile;
+	private String datasetName;
 
-	public BMReferenceQuery(IContainer scope, IFile sourceFile) {
+	public ScreenDSReferenceQuery(IResource scope, IFile sourceFile,
+			String datasetName) {
 		super();
 		this.scope = scope;
 		this.sourceFile = sourceFile;
+		this.datasetName = datasetName;
 	}
 
 	public IStatus run(IProgressMonitor monitor)
 			throws OperationCanceledException {
 		AbstractTextSearchResult textResult = (AbstractTextSearchResult) getSearchResult();
 		textResult.removeAll();
-
 		SearchEngine engine = new SearchEngine(this);
-		engine.findReference(scope, sourceFile, monitor);
+		engine.findDSReference(scope, sourceFile, datasetName, monitor);
+//		engine.findBMFieldReference(scope, sourceFile, datasetName, monitor);
 		return Status.OK_STATUS;
 	}
 
 	public String getLabel() {
-		return "BM Reference : "
-				+ sourceFile.getName();
+		return "DataSet Reference : " + sourceFile.getName();
 	}
 
 	public boolean canRerun() {
@@ -58,9 +60,9 @@ public class BMReferenceQuery extends AbstractSearchQuery {
 	}
 
 	protected ISearchService getSearchService() {
-		ReferenceSearchService service = new ReferenceSearchService(this.scope,this.sourceFile,this);
+		ScreenDSReferenceService service = new ScreenDSReferenceService(
+				this.scope, this.sourceFile, this, this.datasetName);
 		return service;
 	}
-	
 
 }

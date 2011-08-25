@@ -12,13 +12,11 @@ import uncertain.composite.IterationHandle;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
-import uncertain.schema.IType;
-import uncertain.schema.SimpleType;
 import aurora.search.core.CompositeMapIteator;
 
-public class ReferenceTypeFinder extends CompositeMapIteator {
+public class TypeFinder extends CompositeMapIteator {
 
-	private QualifiedName referenceType;
+	private QualifiedName type;
 
 	public int process(CompositeMap map) {
 		try {
@@ -41,8 +39,7 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 			List attrib_list = element.getAllAttributes();
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
-				IType attributeType = attrib.getAttributeType();
-				boolean referenceOf = isReferenceType(attributeType);
+				boolean referenceOf = isType(attrib);
 				if (referenceOf) {
 					boolean found = true;
 					IDataFilter filter = getFilter();
@@ -63,16 +60,14 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 		return null;
 	}
 
-	protected boolean isReferenceType(IType attributeType) {
-		if (attributeType instanceof SimpleType) {
-			return referenceType.equals(((SimpleType) attributeType)
-					.getReferenceTypeQName());
-		}
-		return false;
+	protected boolean isType(Attribute attribute) {
+		System.out.println(attribute.getAttributeType());
+		System.out.println(attribute.getAttributeType().getQName());
+		return type.equals(attribute.getTypeQName());
 	}
 
-	public ReferenceTypeFinder(QualifiedName referenceType) {
-		this.referenceType = referenceType;
+	public TypeFinder(QualifiedName referenceType) {
+		this.type = referenceType;
 	}
 
 }
