@@ -1,12 +1,14 @@
 package aurora.search.core;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import aurora.search.reference.BMFieldReferenceService;
 import aurora.search.reference.ReferenceSearchService;
+import aurora.search.reference.ScreenDSReferenceService;
 
 public class SearchEngine {
 
@@ -27,10 +29,27 @@ public class SearchEngine {
 		this.query = query;
 	}
 
-	public IStatus findReference(IContainer scope, IFile sourceFile,
+	public IStatus findReference(IResource scope, IFile sourceFile,
 			IProgressMonitor monitor) {
-		ReferenceSearchService service = new ReferenceSearchService(query);
-		service.service(scope, sourceFile, monitor);
+		ReferenceSearchService service = new ReferenceSearchService(scope,
+				sourceFile, query);
+		service.service(monitor);
+		return Status.OK_STATUS;
+	}
+
+	public IStatus findBMFieldReference(IResource scope, IFile sourceFile,
+			String fieldName, IProgressMonitor monitor) {
+		ReferenceSearchService service = new BMFieldReferenceService(scope,
+				sourceFile, query, fieldName);
+		service.service(monitor);
+		return Status.OK_STATUS;
+	}
+
+	public IStatus findDSReference(IResource scope, IFile sourceFile,
+			String datasetName, IProgressMonitor monitor) {
+		ScreenDSReferenceService service = new ScreenDSReferenceService(scope,
+				sourceFile, query, datasetName);
+		service.service(monitor);
 		return Status.OK_STATUS;
 	}
 

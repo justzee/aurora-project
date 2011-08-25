@@ -251,15 +251,25 @@
              menubarPath="additions"> 
        </action>
     </objectContribution>
-    
+    <viewerContribution 
+	      id="aurora.ide.editor.textpage.reference"
+	   	  targetID="aurora.ide.editor.textpage.context"> 
+	      <action
+	         id="aurora.search.action.FieldReferenceAction" 
+	         label="Reference"
+	         menubarPath="additions" 
+	         class="aurora.search.action.FieldReferenceAction"> 
+	      </action>
+	     
+    </viewerContribution>
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
     <propertyTester
-    namespace ="aurora.ide.sxsd.valid" 
-   properties ="visable" 
-   type ="java.lang.Object" 
-   class ="navigator.action.SxsdValidVisablePropertyTester" 
-   id ="aurora.ide.action.SxsdValidVisablePropertyTeste" >   
+  	  namespace ="aurora.ide.sxsd.valid" 
+ 	  properties ="visable" 
+      type ="java.lang.Object" 
+      class ="navigator.action.SxsdValidVisablePropertyTester" 
+      id ="aurora.ide.action.SxsdValidVisablePropertyTeste" >   
     </propertyTester >
     <propertyTester
           class="navigator.BMHierarchyViewerTester"

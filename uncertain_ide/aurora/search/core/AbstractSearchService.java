@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -37,8 +36,14 @@ import editor.textpage.XMLDocumentProvider;
 abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName bmReference = new QualifiedName(
 			"http://www.aurora-framework.org/schema/bm", "model");
-	public final static QualifiedName fieldReference = new QualifiedName(
-			"http://www.aurora-framework.org/schema/bm", "field");
+	public final static QualifiedName screenReference = new QualifiedName(
+			"http://www.uncertain-framework.org/schema/simple-schema", "screen");
+	public final static QualifiedName localFieldReference = new QualifiedName(
+			"http://www.aurora-framework.org/schema/bm", "localField");
+	public final static QualifiedName foreignFieldReference = new QualifiedName(
+			"http://www.aurora-framework.org/schema/bm", "foreignField");
+	public final static QualifiedName datasetType = new QualifiedName(
+			"http://www.aurora-framework.org/application", "dataSet");
 	private Map documentMap = new HashMap();
 	private Map compositeMap = new HashMap();
 
@@ -50,11 +55,11 @@ abstract public class AbstractSearchService implements ISearchService {
 
 		private IProgressMonitor monitor;
 
-		private String pattern;
+		private Object pattern;
 
 		private IDataFilter filter;
 
-		public Visitor(IProgressMonitor monitor, IContainer scope, Object source) {
+		public Visitor(IProgressMonitor monitor, IResource scope, Object source) {
 			this.filter = getDataFilter(scope, source);
 			this.monitor = monitor;
 			this.pattern = getSearchPattern(scope, source);
@@ -88,10 +93,12 @@ abstract public class AbstractSearchService implements ISearchService {
 				monitor.setTaskName(resource.getName());
 				CompositeMap bm;
 				try {
+					CompositeMapIteator finder = createIterationHandle((IFile) resource);
+					if (finder == null)
+						return false;
 					IDocument document = createDocument((IFile) resource);
 					bm = CompositeMapUtil.loaderFromString(document.get());
-					compositeMap.put(resource, bm);
-					CompositeMapIteator finder = createIterationHandle();
+					compositeMap.put(bm, resource);
 					finder.setFilter(filter);
 					bm.iterate(finder, true);
 					List r = finder.getResult();
@@ -109,7 +116,6 @@ abstract public class AbstractSearchService implements ISearchService {
 							result.add(lines.get(i));
 						}
 					}
-					monitor.worked(1);
 				} catch (ApplicationException e) {
 				}
 				return false;
@@ -127,15 +133,21 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	private ISearchQuery query;
+	private Object source;
+	private IResource scope;
 
-	public AbstractSearchService() {
+	public AbstractSearchService(IResource scope, Object source) {
+		this.scope = scope;
+		this.source = source;
 	}
 
-	public AbstractSearchService(ISearchQuery query) {
+	public AbstractSearchService(IResource scope, Object source,
+			ISearchQuery query) {
+		this(scope, source);
 		this.query = query;
 	}
 
-	abstract protected CompositeMapIteator createIterationHandle();
+	abstract protected CompositeMapIteator createIterationHandle(IFile resource);
 
 	protected IDocument createDocument(IFile file) throws CoreException {
 		FileEditorInput element = new FileEditorInput(file);
@@ -147,7 +159,7 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	}
 
-	private List buildMatchLines(IFile file, List r, String pattern)
+	private List buildMatchLines(IFile file, List r, Object pattern)
 			throws CoreException {
 		List lines = new ArrayList();
 		for (int i = 0; i < r.size(); i++) {
@@ -177,7 +189,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	private List createLineMatches(MapFinderResult r, LineElement l,
-			IFile file, String pattern) {
+			IFile file, Object pattern) {
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 				(IDocument) this.documentMap.get(file));
 
@@ -196,8 +208,8 @@ abstract public class AbstractSearchService implements ISearchService {
 					continue;
 				}
 				startOffset = nameRegion.getOffset();
-				IRegion valueRegion = dd.find(startOffset, pattern, true, true,
-						false, false);
+				IRegion valueRegion = dd.find(startOffset, pattern.toString(),
+						true, true, false, false);
 				if (valueRegion == null) {
 					continue;
 				}
@@ -213,10 +225,10 @@ abstract public class AbstractSearchService implements ISearchService {
 		return matches;
 	}
 
-	public List service(IContainer scope, Object source,
-			IProgressMonitor monitor) {
+	public List service(IProgressMonitor monitor) {
 		// searchPattern
-		String pattern = getSearchPattern(scope, source);
+
+		Object pattern = getSearchPattern(scope, source);
 		if (pattern == null)
 			return null;
 		monitor.beginTask("searching for " + pattern, 500);
@@ -232,13 +244,33 @@ abstract public class AbstractSearchService implements ISearchService {
 		return result;
 	}
 
-	protected abstract IDataFilter getDataFilter(IContainer scope, Object source);
+	protected abstract IDataFilter getDataFilter(IResource scope, Object source);
 
-	public String getSearchPattern(IContainer scope, Object source) {
+	public Object getSearchPattern(IResource scope, Object source) {
 		return this.pattern == null ? createPattern(scope, source) : pattern;
 
 	}
 
-	protected abstract String createPattern(IContainer scope, Object source);
+	public ISearchQuery getQuery() {
+		return query;
+	}
+
+	public Object getSource() {
+		return source;
+	}
+
+	public IResource getScope() {
+		return scope;
+	}
+
+	public IFile getFile(CompositeMap map) {
+		return (IFile) this.compositeMap.get(map);
+	}
+
+	public IDocument getDocument(IFile file) {
+		return (IDocument) this.documentMap.get(file);
+	}
+
+	protected abstract Object createPattern(IResource scope, Object source);
 
 }
