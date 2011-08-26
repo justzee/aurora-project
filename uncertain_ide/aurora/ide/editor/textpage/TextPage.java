@@ -2,9 +2,6 @@ package aurora.ide.editor.textpage;
 
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
@@ -14,8 +11,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
-import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -26,27 +21,19 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.editors.text.IEncodingSupport;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.internal.util.Util;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import aurora.ide.editor.core.IViewer;
-import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
-import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.ExceptionUtil;
-import aurora.ide.helpers.LocaleMessage;
-
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import aurora.ide.editor.core.IViewer;
+import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
+import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.LocaleMessage;
 
 public class TextPage extends TextEditor implements IViewer {
 	/** The ID of this editor as defined in plugin.xml */

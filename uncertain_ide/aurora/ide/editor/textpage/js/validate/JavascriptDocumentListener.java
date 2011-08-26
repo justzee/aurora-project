@@ -1,16 +1,11 @@
 package aurora.ide.editor.textpage.js.validate;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITypedRegion;
-import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.editors.text.TextEditor;
 
