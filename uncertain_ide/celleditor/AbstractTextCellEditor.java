@@ -1,7 +1,7 @@
 package celleditor;
 
-import helpers.DialogUtil;
 import helpers.LocaleMessage;
+import ide.AuroraPlugin;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellEditorListener;
@@ -16,21 +16,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-
-public abstract class AbstractTextCellEditor extends TextCellEditor implements
-		ICellEditor {
+public abstract class AbstractTextCellEditor extends TextCellEditor implements ICellEditor {
 
 	protected CellInfo cellProperties;
 	protected String oldInput;
+	protected boolean isRebuilding;
 	public AbstractTextCellEditor(CellInfo cellProperties) {
 		this.cellProperties = cellProperties;
 	}
 
 	public boolean validValue(String value) {
-		if(cellProperties.isRequired() && (value == null || value.equals(""))){
-			String message = "<"+cellProperties.getColumnName()+"> "+LocaleMessage.getString("field")+LocaleMessage.getString("is.required");
+		if (cellProperties.isRequired() && (value == null || value.equals(""))) {
+			String message = "<" + cellProperties.getColumnName() + "> " + LocaleMessage.getString("field")
+					+ LocaleMessage.getString("is.required");
 			setErrorMessage(message);
-			getCellControl().setFocus();
+			getCellControl().forceFocus();
 			return false;
 		}
 		return true;
@@ -42,15 +42,15 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 
 	public String getSelection() {
 		Object value = getValue();
-		if(value == null)
+		if (value == null)
 			return null;
 		return value.toString();
 	}
-	public Object valueToShow(String value){
+	public Object valueToShow(String value) {
 		return value;
 	}
 	public void SetSelection(String value) {
-		if(value != null)
+		if (value != null)
 			super.setValue(value);
 	}
 
@@ -60,7 +60,7 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 	}
 
 	public void init() {
-		if(getCellControl()!=null){
+		if (getCellControl() != null) {
 			return;
 		}
 		Color bg = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
@@ -69,28 +69,19 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 		if (cellProperties.isRequired()) {
 			getCellControl().setBackground(bg);
 		}
-		if(isTableItemEditor()){
+		if (isTableItemEditor()) {
 			SetSelection(cellProperties.getRecord().getString(cellProperties.getColumnName()));
 		}
 		addCellListener();
 		oldInput = getSelection();
 	}
-	
+
 	protected void addCellListener() {
-		if(!isTableItemEditor())
-			return ;
+		if (!isTableItemEditor())
+			return;
 		this.addListener(new ICellEditorListener() {
 
-			public void editorValueChanged(boolean oldValidState,
-					boolean newValidState) {
-				cellProperties.getTableViewer().refresh(true);
-				String input = getSelection();
-				 if(validValue(input)){
-					 oldInput = input;
-				 }else{
-					 DialogUtil.showErrorMessageBox(getErrorMessage());
-					 SetSelection(oldInput);
-				 }
+			public void editorValueChanged(boolean oldValidState, boolean newValidState) {
 			}
 
 			public void cancelEditor() {
@@ -98,22 +89,29 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 
 			public void applyEditorValue() {
 				String dataValue = getSelection();
-				cellProperties.getRecord().put(cellProperties.getColumnName(), dataValue);
+				if (validValue(dataValue)) {
+					oldInput = dataValue;
+					AuroraPlugin.logToStatusLine(null,true);
+				} else {
+					AuroraPlugin.logToStatusLine(getErrorMessage(),true);
+				}
+				if (dataValue == null || "".equals(dataValue))
+					cellProperties.getRecord().remove(cellProperties.getColumnName());
+				else
+					cellProperties.getRecord().put(cellProperties.getColumnName(), dataValue);
 			}
 		});
 		getCellControl().addFocusListener(new FocusListener() {
-			
 			public void focusLost(FocusEvent e) {
-				if(isTableItemEditor()){
-					fillTableCellEditor(cellProperties.getTableItem());
+				if (isTableItemEditor()) {
+					rebuildCellEditor(cellProperties.getTableItem());
 				}
 			}
-			
 			public void focusGained(FocusEvent e) {
 			}
 		});
 	}
-	protected void fillTableCellEditor(TableItem item) {
+	protected void rebuildCellEditor(TableItem item) {
 		TableEditor editor = new TableEditor(item.getParent());
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
@@ -122,11 +120,10 @@ public abstract class AbstractTextCellEditor extends TextCellEditor implements
 	protected boolean dependsOnExternalFocusListener() {
 		return false;
 	}
-	public CellEditor getCellEditor(){
+	public CellEditor getCellEditor() {
 		return this;
 	}
-	private boolean isTableItemEditor(){
+	private boolean isTableItemEditor() {
 		return cellProperties.getTableItem() != null;
 	}
-	
 }

@@ -48,7 +48,7 @@ public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 		getCellControl().addFocusListener(new FocusListener() {
 			public void focusLost(FocusEvent e) {
 				if(isTableItemEditor())
-					fillTableCellEditor(cellProperties.getTableItem());				
+					rebuildCellEditor(cellProperties.getTableItem());				
 			}
 			public void focusGained(FocusEvent e) {
 				

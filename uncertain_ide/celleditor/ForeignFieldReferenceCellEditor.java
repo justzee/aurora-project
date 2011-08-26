@@ -57,7 +57,7 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 			
 			public void focusLost(FocusEvent e) {
 				if(isTableItemEditor())
-					fillTableCellEditor(cellProperties.getTableItem());				
+					rebuildCellEditor(cellProperties.getTableItem());				
 			}
 			
 			public void focusGained(FocusEvent e) {

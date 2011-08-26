@@ -50,23 +50,18 @@ import uncertain.composite.CompositeMap;
 public class TextPage extends TextEditor implements IViewer {
 	/** The ID of this editor as defined in plugin.xml */
 	public static final String EDITOR_ID = "aurora.ide.editor.textpage";
-
 	/** The ID of the editor context menu */
 	public static final String EDITOR_CONTEXT = EDITOR_ID + ".context";
-
 	/** The ID of the editor ruler context menu */
 	public static final String RULER_CONTEXT = EDITOR_CONTEXT + ".ruler";
 
-	public static final String AnnotationType = "aurora.ide.text.valid";
 	protected static final String textPageId = "textPage";
-	public static final String textPageTitle = LocaleMessage
-			.getString("source.file");
+	public static final String textPageTitle = LocaleMessage.getString("source.file");
 	private boolean syc = false;
 	private ColorManager colorManager;
 	private FormEditor editor;
 	private boolean modify = false;
 	private boolean ignorceSycOnce = false;
-	private List annotatioList = new LinkedList();
 	private IAnnotationModel annotationModel;
 
 	public TextPage() {
@@ -81,8 +76,7 @@ public class TextPage extends TextEditor implements IViewer {
 
 	// add by shiliyan
 	public Object getAdapter(Class adapter) {
-		if (Display.getCurrent() != null
-				&& IAnnotationModel.class.equals(adapter)) {
+		if (Display.getCurrent() != null && IAnnotationModel.class.equals(adapter)) {
 			return this.getAnnotationModel();
 		}
 		return super.getAdapter(adapter);
@@ -91,6 +85,16 @@ public class TextPage extends TextEditor implements IViewer {
 	// add by shiliyan
 	public boolean isIgnorceSycOnce() {
 		return ignorceSycOnce;
+	}
+	private IAnnotationModel getAnnotationModel() {
+		if (annotationModel != null)
+			return annotationModel;
+		annotationModel = getDocumentProvider().getAnnotationModel(getInput());
+		if (annotationModel == null) {
+			annotationModel = new AnnotationModel();
+			annotationModel.connect(getInputDocument());
+		}
+		return annotationModel;
 	}
 
 	public void setIgnorceSycOnce(boolean ignorceSycOnce) {
@@ -111,88 +115,27 @@ public class TextPage extends TextEditor implements IViewer {
 		this(editor, textPageId, textPageTitle);
 	}
 
-	private IAnnotationModel getAnnotationModel() {
-		if (annotationModel != null)
-			return annotationModel;
-		annotationModel = getDocumentProvider().getAnnotationModel(getInput());
-		if (annotationModel == null) {
-			annotationModel = new AnnotationModel();
-			annotationModel.connect(getInputDocument());
-		}
-		return annotationModel;
-	}
-
-	private void clearHistory() {
-		for (Iterator it = annotatioList.iterator(); it.hasNext();) {
-			annotationModel.removeAnnotation((Annotation) it.next());
-		}
-		annotatioList.clear();
-	}
-
-	private void updateAnnotation(SAXException e) {
-		Throwable rootCause = ExceptionUtil.getRootCause(e);
-		if (rootCause == null || !(rootCause instanceof SAXParseException))
-			return;
-		SAXParseException parseEx = (SAXParseException) e;
-		String errorMessage = ExceptionUtil.getExceptionTraceMessage(e);
-		int lineNum = parseEx.getLineNumber() - 1;
-		int lineOffset = getOffsetFromLine(lineNum);
-		int lineLength = Math.max(getLengthOfLine(lineNum), 1);
-		Position pos = new Position(lineOffset, lineLength);
-		Annotation annotation = new Annotation(AnnotationType, false,
-				errorMessage);
-		annotationModel.addAnnotation(annotation, pos);
-		annotatioList.add(annotation);
-	}
-
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		// add by shiliyan
 
-		getInputDocument().addDocumentListener(
-				new JavascriptDocumentListener(this));
+		getInputDocument().addDocumentListener(new JavascriptDocumentListener(this));
 
 		// add by shiliyan
 		getInputDocument().addDocumentListener(new IDocumentListener() {
-
 			public void documentChanged(DocumentEvent event) {
 				if (syc) {
 					syc = false;
 					return;
 				}
-				annotationModel = getAnnotationModel();
-				clearHistory();
-				try {
-					AuroraResourceUtil.getCompsiteLoader().loadFromString(
-							getInputDocument().get(), "UTF-8");
-				} catch (IOException e) {
-					DialogUtil.showExceptionMessageBox(e);
-				} catch (SAXException e) {
-					updateAnnotation(e);
-				}
 				refresh(true);
 			}
-
 			public void documentAboutToBeChanged(DocumentEvent event) {
 
 			}
 		});
-		// getSourceViewer().addTextListener(new ITextListener() {
-		// public void textChanged(TextEvent event) {
-		// if (syc) {
-		// syc = false;
-		// return;
-		// }
-		// // 过滤超链接等事件触发
-		// if (event.getDocumentEvent() == null) {
-		// return;
-		// }
-		// refresh(true);
-		// }
-		// });
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
-		ProjectionSupport projectionSupport = new ProjectionSupport(viewer,
-				getAnnotationAccess(), getSharedColors());
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
 		projectionSupport.install();
 		// turn projection mode on
 		viewer.doOperation(ProjectionViewer.TOGGLE);
@@ -234,8 +177,7 @@ public class TextPage extends TextEditor implements IViewer {
 
 	private boolean checkContentFormat() {
 		CompositeMap content = null;
-		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
-		;
+		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();;
 		try {
 			content = loader.loadFromString(getContent());
 		} catch (IOException e) {
@@ -248,8 +190,7 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public int getCursorLine() {
-		return getSourceViewer().getTextWidget().getLineAtOffset(
-				getSourceViewer().getSelectedRange().x);
+		return getSourceViewer().getTextWidget().getLineAtOffset(getSourceViewer().getSelectedRange().x);
 	}
 
 	public Point getSelectedRange() {
@@ -257,8 +198,7 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public IFile getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
-				.getFile();
+		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
 		return ifile;
 	}
 
@@ -329,10 +269,8 @@ public class TextPage extends TextEditor implements IViewer {
 	 * .swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler,
 	 * int)
 	 */
-	protected ISourceViewer createSourceViewer(Composite parent,
-			IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-				getOverviewRuler(), isOverviewRulerVisible(), styles);
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 
@@ -341,13 +279,14 @@ public class TextPage extends TextEditor implements IViewer {
 
 	protected void createActions() {
 		super.createActions();
-		// 必须手工加，而不能通过pulgin.xml配置，因为textEditor
-		// 作为MultiPageEditorPart后，在点击左侧垂直条的时候，AbstractTextEditor.findContributedAction()中getSite().getId()总是为"",判断失效。
-		Action action = new MarkerRulerAction(
-				ResourceBundle
-						.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"),
-				"Editor.ManageBookmarks.", this, getVerticalRuler(),
-				IMarker.BOOKMARK, true);
+		/**
+		 * 只可手工添加，通过plugin.xml配置无效。 因为textEditor作为MultiPageEditorPart时,
+		 * 点击左侧垂直条，AbstractTextEditor
+		 * .findContributedAction()中getSite().getId()总是为"",判断失效。
+		 * */
+		Action action = new MarkerRulerAction(ResourceBundle
+				.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"), "Editor.ManageBookmarks.", this,
+				getVerticalRuler(), IMarker.BOOKMARK, true);
 		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
 	}
 }
