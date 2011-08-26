@@ -1,7 +1,5 @@
 package aurora.ide.search.core;
 
-import helpers.ApplicationException;
-import helpers.LoadSchemaManager;
 
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +19,9 @@ import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
-import bm.BMUtil;
+import aurora.ide.bm.BMUtil;
+import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.LoadSchemaManager;
 
 public class Util {
 	public static Object getReferenceModelPKG(CompositeMap map) {

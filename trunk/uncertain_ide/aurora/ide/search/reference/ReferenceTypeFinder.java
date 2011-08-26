@@ -1,7 +1,5 @@
 package aurora.ide.search.reference;
 
-import helpers.ApplicationException;
-import helpers.LoadSchemaManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,6 +12,8 @@ import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.core.CompositeMapIteator;
 
 public class ReferenceTypeFinder extends CompositeMapIteator {
