@@ -6,9 +6,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -18,6 +20,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.application.ActionBarAdvisor;
+import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -130,7 +134,14 @@ public class AuroraPlugin extends AbstractUIPlugin implements ISelectionListener
 	public IStructuredSelection getStructuredSelection(){
 		return selection;
 	}
-	public static void main(String[] args) {
-
+	public static void logToStatusLine(String message,boolean isError){
+		WorkbenchWindow workbenchWindow = (WorkbenchWindow)PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IActionBars bars = workbenchWindow.getActionBars();
+		IStatusLineManager lineManager = bars.getStatusLineManager();
+		if(isError)
+			lineManager.setErrorMessage(message);
+		else{
+			lineManager.setMessage(message);
+		}
 	}
 }

@@ -1124,7 +1124,9 @@ public class JSBeautifier {
 	public void handle_block_comment(String token_text) {
 
 		String[] lines = token_text.replaceAll("\r", "").split("\n");
-		if (isEq(token_text.substring(0, 3), "/**")) {
+		//auora custom
+//		if (isEq(token_text.substring(0, 3), "/**")) {
+		if (isEq(token_text.substring(0, 3), "/**")||isEq(token_text.substring(0, 2), "/*")) {
 			// javadoc: reformat and reindent
 			append_newline(true);
 			append(lines[0]);

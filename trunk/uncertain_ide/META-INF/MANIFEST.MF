@@ -16,6 +16,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.update.scheduler;bundle-version="3.2.200"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.eclipse.core.expressions,
+ org.eclipse.search.core.text,
+ org.eclipse.search.ui,
+ org.eclipse.search.ui.text,
  org.eclipse.ui.texteditor.templates
