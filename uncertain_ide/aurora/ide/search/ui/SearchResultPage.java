@@ -142,7 +142,8 @@ public class SearchResultPage extends AbstractTextSearchViewPage {
 			if (firstElement instanceof IFile) {
 				if (getDisplayedMatchCount(firstElement) == 0) {
 					try {
-						open(getSite().getPage(), (IFile) firstElement, false);
+//						open(getSite().getPage(), (IFile) firstElement, false);
+						opener.open(getSite().getPage(), (IFile) firstElement, false);
 					} catch (PartInitException e) {
 						ErrorDialog.openError(getSite().getShell(),
 								"Open File", "Opening the file failed.",
