@@ -243,7 +243,7 @@
           nameFilter="*.bm"
           objectClass="org.eclipse.core.resources.IFile">
        <action
-             class="aurora.search.action.FileReferenceAciton"
+             class="aurora.ide.search.action.FileReferenceAciton"
              enablesFor="1"
              icon="icons/bm.gif"
              id="aurora.search.action.BMReferenceAciton"
@@ -257,7 +257,7 @@
           nameFilter="*.screen"
           objectClass="org.eclipse.core.resources.IFile">
        <action
-             class="aurora.search.action.FileReferenceAciton"
+             class="aurora.ide.search.action.FileReferenceAciton"
              enablesFor="1"
              icon="icons/service.gif"
              id="aurora.search.action.ScreenReferenceAciton"
@@ -272,7 +272,7 @@
 	         id="aurora.search.action.FieldReferenceAction" 
 	         label="Reference"
 	         menubarPath="additions" 
-	         class="aurora.search.action.FieldReferenceAction"> 
+	         class="aurora.ide.search.action.FieldReferenceAction"> 
 	      </action>
 	     
     </viewerContribution>
@@ -532,8 +532,8 @@
     point="org.eclipse.search.searchResultViewPages"> 
     <viewPage 
     id="aurora.search.AuroraSearchResult"
-	 searchResultClass="aurora.search.core.AuroraSearchResult"
-    class="aurora.search.ui.SearchResultPage"> 
+	 searchResultClass="aurora.ide.search.core.AuroraSearchResult"
+    class="aurora.ide.search.ui.SearchResultPage"> 
  	</viewPage> 
  </extension>
  
