@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: aurora.ide;singleton:=true
 Bundle-Version: 1.2.6.qualifier
-Bundle-Activator: ide.AuroraPlugin
+Bundle-Activator: aurora.ide.AuroraPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

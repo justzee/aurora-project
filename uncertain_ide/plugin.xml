@@ -5,7 +5,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="aurora.ide.wizard"
-            class="project.wizard.ProjectWizard"
+            class="aurora.ide.project.wizard.ProjectWizard"
             icon="icons/aurora.gif"
             id="aurora.ide.wizard.ProjectWizard"
             name="%aurora.project"
@@ -16,35 +16,35 @@
       </category>
       <wizard
             category="aurora.ide.wizard"
-            class="screen.wizard.ServiceNewWizard"
+            class="aurora.ide.screen.wizard.ServiceNewWizard"
             icon="icons/service.gif"
             id="aurora.ide.wizard.ServiceNewWizard"
             name="%wizard.screen.file">
       </wizard>
       <wizard
             category="aurora.ide.wizard"
-            class="sxsd.editor.SxsdNewWizard"
+            class="aurora.ide.sxsd.editor.SxsdNewWizard"
             icon="icons/sxsd.gif"
             id="aurora.ide.wizard.SxsdNewWizard"
             name="%wizard.sxsd.file">
       </wizard>
       <wizard
             category="aurora.ide.wizard"
-            class="bm.wizard.table.BMFromDBWizard"
+            class="aurora.ide.bm.wizard.table.BMFromDBWizard"
             icon="icons/bm.gif"
             id="aurora.ide.wizard.BMFromDBWizard"
             name="%wizard.create.bm.from.database">
       </wizard>
       <wizard
             category="aurora.ide.wizard"
-            class="bm.wizard.sql.BMFromSQLWizard"
+            class="aurora.ide.bm.wizard.sql.BMFromSQLWizard"
             icon="icons/sql.gif"
             id="aurora.ide.wizard.BMFromSQLWizard"
             name="%wizard.create.bm.from.sql">
       </wizard>
       <wizard
             category="aurora.ide.wizard"
-            class="bm.wizard.procedure.BMFromProcedure"
+            class="aurora.ide.bm.wizard.procedure.BMFromProcedure"
             icon="icons/sql.gif"
             id="aurora.ide.wizard.BMFromProcedure"
             name="从数据库过程创建BM文件">
@@ -63,14 +63,14 @@
          id="BussinessModelEditor"
          point="org.eclipse.ui.editors">
       <editor
-            class="screen.editor.ServiceEditor"
+            class="aurora.ide.screen.editor.ServiceEditor"
             default="true"
             filenames="*.service,*.screen,*.svc"
             icon="icons/service.gif"
             id="aurora.ide.ServiceEditor"
             name="%editor.screen"/>
       <editor
-            class="sxsd.editor.SxsdEditor"
+            class="aurora.ide.sxsd.editor.SxsdEditor"
             default="true"
             filenames="*.sxsd"
             icon="icons/sxsd.gif"
@@ -78,7 +78,7 @@
             name="%editor.sxsd">
       </editor>
       <editor
-            class="bm.editor.BussinessModelEditor"
+            class="aurora.ide.bm.editor.BussinessModelEditor"
             default="true"
             filenames="*.bm"
             icon="icons/bm.gif"
@@ -90,24 +90,24 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="aurora.ide.preferencePage"
-            class="preferencepages.SxsdDirPreferencePage"
+            class="aurora.ide.preferencepages.SxsdDirPreferencePage"
             id="aurora.ide.preferencePage.SxsdDirectoryPreferencePage"
             name="%page.builtin.package">
       </page>
       <page
             category="aurora.ide.preferencePage"
-            class="preferencepages.BrowserPreferencePage"
+            class="aurora.ide.preferencepages.BrowserPreferencePage"
             id="aurora.ide.preferencePage.BrowserPreferencePage"
             name="%page.screen.preview">
       </page>
       <page
-            class="preferencepages.AuroraPreferencePage"
+            class="aurora.ide.preferencepages.AuroraPreferencePage"
             id="aurora.ide.preferencePage"
             name="%page.root">
       </page>
       <page
             category="aurora.ide.preferencePage"
-            class="preferencepages.AuroraTemplatePreferencePage"
+            class="aurora.ide.preferencepages.AuroraTemplatePreferencePage"
             id="aurora.ide.preferencePage.TemplatesPage"
             name="%page.templates">
       </page>
@@ -119,7 +119,7 @@
             id="aurora.ide.sxsd.valid"
             objectClass="org.eclipse.core.resources.IResource">
          <action
-               class="navigator.action.SxsdPackageValidAction"
+               class="aurora.ide.navigator.action.SxsdPackageValidAction"
                icon="icons/sxsd.gif"
                id="aurora.ide.action.SxsdPackageValidAction"
                label="%action.validate.builtin.package"
@@ -143,30 +143,30 @@
 	         id="aurora.ide.editor.textpage.FormatAction" 
 	         label="格式化XML"
 	         menubarPath="additions" 
-	         class="editor.textpage.action.FormatAction"> 
+	         class="aurora.ide.editor.textpage.action.FormatAction"> 
 	      </action>
        <action
-             class="editor.textpage.action.GetFileNameAction"
+             class="aurora.ide.editor.textpage.action.FormatJS"
+             id="aurora.ide.editor.textpage.FormatJS"
+             label="格式化JS"
+             menubarPath="additions">
+       </action>
+       <action
+             class="aurora.ide.editor.textpage.action.GetFileNameAction"
              id="aurora.ide.editor.textpage.GetFileNameAction"
              label="复制文件名"
              menubarPath="additions">
        </action>
        <action
-             class="editor.textpage.action.AnnotateSeletionAction"
+             class="aurora.ide.editor.textpage.action.AnnotateSeletionAction"
              id="aurora.ide.editor.textpage.annotateseletionaction"
              label="注释"
              menubarPath="additions">
        </action>
        <action
-             class="editor.textpage.action.CancelAnnotateSeletionAction"
+             class="aurora.ide.editor.textpage.action.CancelAnnotateSeletionAction"
              id="aurora.ide.editor.textpage.cancelannotateseletionaction"
              label="取消注释"
-             menubarPath="additions">
-       </action>
-       <action
-             class="editor.textpage.action.FormatJS"
-             id="aurora.ide.editor.textpage.FormatJS"
-             label="格式化JS"
              menubarPath="additions">
        </action>
 	   </viewerContribution>
@@ -176,7 +176,7 @@
           nameFilter="*.bm"
           objectClass="org.eclipse.core.resources.IFile">
        <action
-             class="navigator.action.CreateBMByExtendAction"
+             class="aurora.ide.navigator.action.CreateBMByExtendAction"
              enablesFor="1"
              icon="icons/bm.gif"
              id="aurora.ide.navigator.createbmbyextendaction"
@@ -189,7 +189,7 @@
           id="aurora.ide.add.auroranature"
           objectClass="org.eclipse.core.resources.IProject">
        <action
-             class="navigator.action.AddAuroraNature"
+             class="aurora.ide.navigator.action.AddAuroraNature"
              enablesFor="1"
              icon="icons/aurora.gif"
              id="aurora.ide.navigator.action.addauroranature"
@@ -215,7 +215,7 @@
           id="aurora.ide.add.auroranature"
           objectClass="org.eclipse.core.resources.IProject">
        <action
-             class="navigator.action.RemoveAuroraNature"
+             class="aurora.ide.navigator.action.RemoveAuroraNature"
              enablesFor="1"
              icon="icons/aurora.gif"
              id="aurora.ide.navigator.action.removauroranature"
@@ -282,18 +282,18 @@
   	  namespace ="aurora.ide.sxsd.valid" 
  	  properties ="visable" 
       type ="java.lang.Object" 
-      class ="navigator.action.SxsdValidVisablePropertyTester" 
+      class ="aurora.ide.navigator.action.SxsdValidVisablePropertyTester" 
       id ="aurora.ide.action.SxsdValidVisablePropertyTeste" >   
     </propertyTester >
     <propertyTester
-          class="navigator.BMHierarchyViewerTester"
+          class="aurora.ide.navigator.BMHierarchyViewerTester"
           id="aurora.ide.navigator.BMHierarchyTester"
           namespace="aurora.ide.navigator.bm.container"
           properties="triggerponits"
           type="java.lang.Object">
     </propertyTester>
     <propertyTester
-          class="navigator.action.ProjectNatureTester"
+          class="aurora.ide.navigator.action.ProjectNatureTester"
           id="aurora.ide.navigator.action.projectnaturetester"
           namespace="aurora.ide.project"
           properties="nature"
@@ -303,12 +303,12 @@
        <extension
              point="org.eclipse.ui.editors.templates">
           <contextType
-                class="preferencepages.AuroraTemplateContextType"
+                class="aurora.ide.preferencepages.AuroraTemplateContextType"
                 id="aurora.ide.new_screen"
                 name="%contextType.new.screen">
           </contextType>
           <contextType
-                class="preferencepages.AuroraTemplateContextType"
+                class="aurora.ide.preferencepages.AuroraTemplateContextType"
                 id="aurora.ide.sign"
                 name="签名">
           </contextType>
@@ -326,7 +326,7 @@
                 label="quick open file actionSets"
                 visible="true">
              <action
-                   class="toolbar.action.OpenFileAction"
+                   class="aurora.ide.toolbar.action.OpenFileAction"
                    icon="icons/openfile.gif"
                    id="aurora.ide.action.quickopenfile"
                    label="quick open file"
@@ -357,17 +357,17 @@
              point="org.eclipse.ui.navigator.navigatorContent">
           <commonFilter
                 activeByDefault="true"
-                class="navigator.BMFileFilter"
+                class="aurora.ide.navigator.BMFileFilter"
                 description="Filter leaf BM"
                 id="aurora.ide.navigator.filter"
                 name="Filter leaf BM">
           </commonFilter>
           <navigatorContent
                 activeByDefault="true"
-                contentProvider="navigator.BMFileContentProvider"
+                contentProvider="aurora.ide.navigator.BMFileContentProvider"
                 icon="icons/bm.gif"
                 id="aurora.ide.navigator.bmhierarchy"
-                labelProvider="navigator.BMFileLabelProvider"
+                labelProvider="aurora.ide.navigator.BMFileLabelProvider"
                 name="BM  Hierarchy"
                 priority="lowest">
              	<triggerPoints>
@@ -383,7 +383,7 @@
                          value="org.eclipse.core.resources.IFile">
                    </instanceof>
                    <instanceof
-                         value="navigator.BMFile">
+                         value="aurora.ide.navigator.BMFile">
                    </instanceof>
                 </or>
              </possibleChildren>
@@ -392,7 +392,7 @@
 	<extension point="org.eclipse.ui.propertyPages">
 	  <page
          adaptable="true"
-         class="project.propertypage.ProjectPropertyPage"
+         class="aurora.ide.project.propertypage.ProjectPropertyPage"
          icon="icons/aurora.gif"
          id="aurora.ide.projectproperty"
          name="Aurora工程设置"
@@ -497,7 +497,7 @@
       point="org.eclipse.core.resources.natures">  
    <runtime>  
       <run  
-            class="ide.AuroraProjectNature">  
+            class="aurora.ide.AuroraProjectNature">  
       </run>  
    </runtime>  
 </extension>
