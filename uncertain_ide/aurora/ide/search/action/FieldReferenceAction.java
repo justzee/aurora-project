@@ -1,9 +1,5 @@
 package aurora.ide.search.action;
 
-import helpers.ApplicationException;
-import helpers.CompositeMapLocatorParser;
-import helpers.LoadSchemaManager;
-import helpers.SystemException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -33,14 +29,18 @@ import uncertain.composite.QualifiedName;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.editor.textpage.ColorManager;
+import aurora.ide.editor.textpage.IColorConstants;
+import aurora.ide.editor.textpage.TextPage;
+import aurora.ide.editor.textpage.scanners.XMLTagScanner;
+import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.CompositeMapLocatorParser;
+import aurora.ide.helpers.LoadSchemaManager;
+import aurora.ide.helpers.SystemException;
 import aurora.ide.search.core.AbstractSearchQuery;
 import aurora.ide.search.core.AbstractSearchService;
 import aurora.ide.search.core.SearchQueryFactory;
 import aurora.ide.search.core.Util;
-import editor.textpage.ColorManager;
-import editor.textpage.IColorConstants;
-import editor.textpage.TextPage;
-import editor.textpage.scanners.XMLTagScanner;
 
 public class FieldReferenceAction implements IEditorActionDelegate {
 

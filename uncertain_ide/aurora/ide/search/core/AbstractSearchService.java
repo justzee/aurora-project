@@ -1,7 +1,5 @@
 package aurora.ide.search.core;
 
-import helpers.ApplicationException;
-import helpers.CompositeMapUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,11 +25,13 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
+import aurora.ide.editor.textpage.XMLDocumentProvider;
+import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
 import aurora.ide.search.reference.ReferenceMatch;
 import aurora.ide.search.ui.LineElement;
-import editor.textpage.XMLDocumentProvider;
 
 abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName bmReference = new QualifiedName(

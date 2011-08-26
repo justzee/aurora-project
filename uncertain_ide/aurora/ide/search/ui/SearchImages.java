@@ -1,12 +1,13 @@
 package aurora.ide.search.ui;
 
-import ide.AuroraPlugin;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+
+import aurora.ide.AuroraPlugin;
 
 public class SearchImages {
 

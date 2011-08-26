@@ -1,6 +1,5 @@
 package aurora.ide.search.ui;
 
-import ide.AuroraPlugin;
 
 import java.util.HashMap;
 
@@ -19,6 +18,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+
+import aurora.ide.AuroraPlugin;
 
 public class EditorOpener {
 
