@@ -1,12 +1,10 @@
 package aurora.ide.search.core;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.search.core.text.TextSearchEngine;
-import org.eclipse.search.ui.ISearchQuery;
-import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.Match;
 
 
@@ -66,6 +64,26 @@ public class AuroraSearchQuery extends AbstractSearchQuery  {
 	}
 
 	protected ISearchService getSearchService() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	protected void setSearchService(ISearchService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected IResource getScope() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	protected IResource getSourceFile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	protected Object getPattern() {
 		// TODO Auto-generated method stub
 		return null;
 	}

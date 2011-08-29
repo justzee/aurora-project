@@ -2,17 +2,12 @@ package aurora.ide.search.reference;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.search.ui.text.AbstractTextSearchResult;
 
 import aurora.ide.search.core.AbstractSearchQuery;
 import aurora.ide.search.core.AbstractSearchResult;
+import aurora.ide.search.core.AbstractSearchService;
 import aurora.ide.search.core.AuroraSearchResult;
 import aurora.ide.search.core.ISearchService;
-import aurora.ide.search.core.SearchEngine;
 
 public class BMFieldReferenceQuery extends AbstractSearchQuery {
 
@@ -20,6 +15,7 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 	private IResource scope;
 	private IFile sourceFile;
 	private String fieldName;
+	private ISearchService service;
 
 	public BMFieldReferenceQuery(IResource scope, IFile sourceFile,
 			String fieldName) {
@@ -27,15 +23,6 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 		this.scope = scope;
 		this.sourceFile = sourceFile;
 		this.fieldName = fieldName;
-	}
-
-	public IStatus run(IProgressMonitor monitor)
-			throws OperationCanceledException {
-		AbstractTextSearchResult textResult = (AbstractTextSearchResult) getSearchResult();
-		textResult.removeAll();
-		SearchEngine engine = new SearchEngine(this);
-		engine.findBMFieldReference(scope, sourceFile, fieldName, monitor);
-		return Status.OK_STATUS;
 	}
 
 	public String getLabel() {
@@ -59,9 +46,28 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 	}
 
 	protected ISearchService getSearchService() {
-		BMFieldReferenceService service = new BMFieldReferenceService(
-				this.scope, this.sourceFile, this, this.fieldName);
+		if (service == null)
+			service = new BMFieldReferenceService(this.scope, this.sourceFile,
+					this, this.fieldName);
 		return service;
+	}
+
+	protected void setSearchService(ISearchService service) {
+		this.service = service;
+	}
+
+	protected IResource getScope() {
+		return scope;
+	}
+
+	protected IResource getSourceFile() {
+		return sourceFile;
+	}
+
+	protected Object getPattern() {
+
+		return service == null ? null : ((AbstractSearchService) service)
+				.getSearchPattern(scope, sourceFile);
 	}
 
 }
