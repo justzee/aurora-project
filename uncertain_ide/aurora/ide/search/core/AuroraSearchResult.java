@@ -1,6 +1,9 @@
 package aurora.ide.search.core;
 
+import java.text.MessageFormat;
+
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
@@ -11,12 +14,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 
-
 public class AuroraSearchResult extends AbstractSearchResult implements
 		IEditorMatchAdapter, IFileMatchAdapter {
 	private ISearchQuery query;
 	private final Match[] EMPTY_ARR = new Match[0];
-//	private final static String label = "''{0}'' - {1} matches in {2}";
 
 	public AuroraSearchResult(ISearchQuery query) {
 		super();
@@ -24,7 +25,19 @@ public class AuroraSearchResult extends AbstractSearchResult implements
 	}
 
 	public String getLabel() {
-		return ""+getMatchCount()+" matches";
+		int matchCount = getMatchCount();
+		if (query instanceof AbstractSearchQuery) {
+			Object pattern = ((AbstractSearchQuery) query).getPattern();
+			IResource scope = ((AbstractSearchQuery) query).getScope();
+			if (pattern != null && null != scope) {
+
+				String in = scope.getProject().getName();
+				String[] args = { pattern.toString(),
+						String.valueOf(matchCount), in };
+				return MessageFormat.format(Message.result_label, args);
+			}
+		}
+		return "" + matchCount + " matches";
 	}
 
 	public String getTooltip() {

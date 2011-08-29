@@ -3,7 +3,6 @@ package aurora.ide.search.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +11,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
@@ -32,6 +34,8 @@ import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
 import aurora.ide.search.reference.ReferenceMatch;
 import aurora.ide.search.ui.LineElement;
+import aurora.ide.search.ui.MessageFormater;
+
 
 abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName bmReference = new QualifiedName(
@@ -47,34 +51,12 @@ abstract public class AbstractSearchService implements ISearchService {
 	private Map documentMap = new HashMap();
 	private Map compositeMap = new HashMap();
 
-	private String pattern;
+	private Object pattern;
 
-	private class Visitor implements IResourceVisitor {
-
-		private LinkedList result = new LinkedList();
-
-		private IProgressMonitor monitor;
-
-		private Object pattern;
-
-		private IDataFilter filter;
-
-		public Visitor(IProgressMonitor monitor, IResource scope, Object source) {
-			this.filter = getDataFilter(scope, source);
-			this.monitor = monitor;
-			this.pattern = getSearchPattern(scope, source);
-		}
-
-		public LinkedList getResult() {
-			return result;
-		}
+	private class ScopeVisitor implements IResourceVisitor {
+		private List result = new ArrayList();
 
 		public boolean visit(IResource resource) throws CoreException {
-
-			if (monitor.isCanceled()) {
-				return false;
-			}
-
 			if (resource.getType() == IResource.PROJECT) {
 				return true;
 			}
@@ -85,42 +67,16 @@ abstract public class AbstractSearchService implements ISearchService {
 
 			if (resource.getType() == IResource.FILE) {
 				boolean checkExtension = checkExtension(resource);
-				if (!checkExtension) {
-					return false;
-				}
-
-				monitor.worked(1);
-				monitor.setTaskName(resource.getName());
-				CompositeMap bm;
-				try {
-					CompositeMapIteator finder = createIterationHandle((IFile) resource);
-					if (finder == null)
-						return false;
-					IDocument document = createDocument((IFile) resource);
-					bm = CompositeMapUtil.loaderFromString(document.get());
-					compositeMap.put(bm, resource);
-					finder.setFilter(filter);
-					bm.iterate(finder, true);
-					List r = finder.getResult();
-
-					List lines = buildMatchLines((IFile) resource, r, pattern);
-					for (int i = 0; i < lines.size(); i++) {
-						if (query != null) {
-							ISearchResult searchResult = query
-									.getSearchResult();
-							if (searchResult instanceof AbstractSearchResult) {
-								((AbstractSearchResult) searchResult)
-										.addMatch((Match) lines.get(i));
-							}
-						} else {
-							result.add(lines.get(i));
-						}
-					}
-				} catch (ApplicationException e) {
+				if (checkExtension) {
+					result.add(resource);
 				}
 				return false;
 			}
 			return false;
+		}
+
+		public List getResult() {
+			return result;
 		}
 
 		private boolean checkExtension(IResource resource) {
@@ -129,12 +85,14 @@ abstract public class AbstractSearchService implements ISearchService {
 			return "bm".equals(fileExtension) || "screen".equals(fileExtension)
 					|| "svc".equals(fileExtension);
 		}
-
 	}
 
 	private ISearchQuery query;
 	private Object source;
 	private IResource scope;
+	private IFile fCurrentFile;
+	private int fNumberOfScannedFiles;
+	private int fNumberOfFilesToScan;
 
 	public AbstractSearchService(IResource scope, Object source) {
 		this.scope = scope;
@@ -188,6 +146,37 @@ abstract public class AbstractSearchService implements ISearchService {
 		return lines;
 	}
 
+	private List processFile(IResource resource) throws CoreException,
+			ApplicationException {
+
+		List result = new ArrayList();
+		CompositeMap bm;
+		fNumberOfScannedFiles++;
+		CompositeMapIteator finder = createIterationHandle((IFile) resource);
+		finder.setFilter(getDataFilter(scope, source));
+
+		IDocument document = createDocument((IFile) resource);
+		bm = CompositeMapUtil.loaderFromString(document.get());
+		compositeMap.put(bm, resource);
+		bm.iterate(finder, true);
+
+		List r = finder.getResult();
+		List lines = buildMatchLines((IFile) resource, r, pattern);
+		for (int i = 0; i < lines.size(); i++) {
+			if (query != null) {
+				ISearchResult searchResult = query.getSearchResult();
+				if (searchResult instanceof AbstractSearchResult) {
+					((AbstractSearchResult) searchResult)
+							.addMatch((Match) lines.get(i));
+				}
+			} else {
+				result.add(lines.get(i));
+			}
+		}
+
+		return result;
+	}
+
 	private List createLineMatches(MapFinderResult r, LineElement l,
 			IFile file, Object pattern) {
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
@@ -225,23 +214,73 @@ abstract public class AbstractSearchService implements ISearchService {
 		return matches;
 	}
 
-	public List service(IProgressMonitor monitor) {
-		// searchPattern
+	public List service(final IProgressMonitor monitor) {
+		List files = findFilesInScope(scope);
+		fNumberOfFilesToScan = files.size();
+		Job monitorUpdateJob = new Job("Aurora Search progress") {
+			private int fLastNumberOfScannedFiles = 0;
 
-		Object pattern = getSearchPattern(scope, source);
-		if (pattern == null)
-			return null;
-		monitor.beginTask("searching for " + pattern, 500);
-		Visitor visitor = new Visitor(monitor, scope, source);
+			public IStatus run(IProgressMonitor inner) {
+				while (!inner.isCanceled()) {
+					IFile file = fCurrentFile;
+					if (file != null) {
+						String fileName = file.getName();
+						Object[] args = { fileName,
+								new Integer(fNumberOfScannedFiles),
+								new Integer(fNumberOfFilesToScan) };
+						monitor.subTask(MessageFormater.format(
+								Message._scanning, args));
+						int steps = fNumberOfScannedFiles
+								- fLastNumberOfScannedFiles;
+						monitor.worked(steps);
+						fLastNumberOfScannedFiles += steps;
+					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						return Status.OK_STATUS;
+					}
+				}
+				return Status.OK_STATUS;
+			}
+		};
+
+		// searchPattern
+		pattern = getSearchPattern(scope, source);
+
+		monitor.beginTask("Searching for " + pattern.toString(), files.size());
+		monitorUpdateJob.setSystem(true);
+		monitorUpdateJob.schedule();
+		List result = new ArrayList();
 		try {
-			scope.accept(visitor);
-			monitor.done();
+			if (files != null) {
+				for (int i = 0; i < files.size(); i++) {
+					if (monitor.isCanceled())
+						return result;
+					fCurrentFile = (IFile) files.get(i);
+					result.addAll(processFile(fCurrentFile));
+				}
+			}
 		} catch (CoreException e) {
-			e.printStackTrace();
+
+		} catch (ApplicationException e) {
+
+		} finally {
+			monitorUpdateJob.cancel();
+			monitor.done();
 		}
-		LinkedList result = visitor.getResult();
 
 		return result;
+	}
+
+	private List findFilesInScope(IResource scope) {
+		ScopeVisitor visitor = new ScopeVisitor();
+		try {
+			scope.accept(visitor);
+			return visitor.getResult();
+		} catch (CoreException e) {
+		}
+		return null;
 	}
 
 	protected abstract IDataFilter getDataFilter(IResource scope, Object source);

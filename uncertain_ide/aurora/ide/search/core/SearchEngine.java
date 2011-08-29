@@ -1,14 +1,8 @@
 package aurora.ide.search.core;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import java.util.List;
 
-import aurora.ide.search.reference.BMFieldReferenceService;
-import aurora.ide.search.reference.ReferenceSearchService;
-import aurora.ide.search.reference.ScreenDSReferenceService;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 public class SearchEngine {
 
@@ -18,39 +12,37 @@ public class SearchEngine {
 
 	}
 
-	// public IStatus search(IContainer scope, Pattern searchPattern,
-	// IProgressMonitor monitor) {
-	// ReferenceSearchService service = new ReferenceSearchService();
-	// service.search();
-	// return new Status(IStatus.OK, "aa", 0, "aa", null);
-	// }
-
 	public SearchEngine(AbstractSearchQuery query) {
 		this.query = query;
 	}
 
-	public IStatus findReference(IResource scope, IFile sourceFile,
-			IProgressMonitor monitor) {
-		ReferenceSearchService service = new ReferenceSearchService(scope,
-				sourceFile, query);
-		service.service(monitor);
-		return Status.OK_STATUS;
+	public List execute(IProgressMonitor monitor) {
+		ISearchService searchService = query.getSearchService();
+		return searchService.service(monitor);
 	}
 
-	public IStatus findBMFieldReference(IResource scope, IFile sourceFile,
-			String fieldName, IProgressMonitor monitor) {
-		ReferenceSearchService service = new BMFieldReferenceService(scope,
-				sourceFile, query, fieldName);
-		service.service(monitor);
-		return Status.OK_STATUS;
-	}
-
-	public IStatus findDSReference(IResource scope, IFile sourceFile,
-			String datasetName, IProgressMonitor monitor) {
-		ScreenDSReferenceService service = new ScreenDSReferenceService(scope,
-				sourceFile, query, datasetName);
-		service.service(monitor);
-		return Status.OK_STATUS;
-	}
+//	public IStatus findReference(IResource scope, IFile sourceFile,
+//			IProgressMonitor monitor) {
+//		ReferenceSearchService service = new ReferenceSearchService(scope,
+//				sourceFile, query);
+//		service.service(monitor);
+//		return Status.OK_STATUS;
+//	}
+//
+//	public IStatus findBMFieldReference(IResource scope, IFile sourceFile,
+//			String fieldName, IProgressMonitor monitor) {
+//		ReferenceSearchService service = new BMFieldReferenceService(scope,
+//				sourceFile, query, fieldName);
+//		service.service(monitor);
+//		return Status.OK_STATUS;
+//	}
+//
+//	public IStatus findDSReference(IResource scope, IFile sourceFile,
+//			String datasetName, IProgressMonitor monitor) {
+//		ScreenDSReferenceService service = new ScreenDSReferenceService(scope,
+//				sourceFile, query, datasetName);
+//		service.service(monitor);
+//		return Status.OK_STATUS;
+//	}
 
 }
