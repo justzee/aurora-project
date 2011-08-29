@@ -1,6 +1,5 @@
 package aurora.ide.search.action;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -100,6 +99,8 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 			int offset = selection.getOffset();
 			CompositeMap map = locateCompositeMap(content,
 					document.getLineOfOffset(offset));
+			if (map == null)
+				return null;
 			Object value = map.get(att.name);
 			if (att.value.equals(value)) {
 				Element element = LoadSchemaManager.getSchemaManager()
