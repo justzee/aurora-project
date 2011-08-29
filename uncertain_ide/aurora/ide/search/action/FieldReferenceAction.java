@@ -59,12 +59,14 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 	}
 
 	public void run(IAction action) {
-		NewSearchUI.runQueryInBackground(query);
+		if (query != null)
+			NewSearchUI.runQueryInBackground(query);
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
 		boolean isEnable = checkSelection(selection);
-		action.setEnabled(isEnable);
+		if (action != null)
+			action.setEnabled(isEnable);
 	}
 
 	private boolean checkSelection(ISelection sel) {
@@ -94,8 +96,10 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 			TextSelection selection) {
 		String content = textPage.getContent();
 		try {
+			IDocument document = textPage.getInputDocument();
+			int offset = selection.getOffset();
 			CompositeMap map = locateCompositeMap(content,
-					selection.getStartLine());
+					document.getLineOfOffset(offset));
 			Object value = map.get(att.name);
 			if (att.value.equals(value)) {
 				Element element = LoadSchemaManager.getSchemaManager()
@@ -119,12 +123,14 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 							}
 							return SearchQueryFactory.createSearchQuery(
 									referenceTypeQName, scope, sourceFile,
-									selection.getText());
+									document.get(selection.getOffset(),
+											selection.getLength()));
 						}
 					}
 				}
 			}
 		} catch (ApplicationException e) {
+		} catch (BadLocationException e) {
 		}
 		return null;
 	}
@@ -188,7 +194,7 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 								return null;
 							Attribute attribute = new Attribute();
 							attribute.name = name;
-							attribute.value = selection.getText();
+							attribute.value = document.get(offset, length);
 							return attribute;
 						}
 					}
