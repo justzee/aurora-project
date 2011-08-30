@@ -1,10 +1,11 @@
 package aurora.ide.search.core;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -14,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
@@ -21,12 +23,18 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.Match;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
+import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.textpage.XMLDocumentProvider;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
@@ -35,7 +43,6 @@ import aurora.ide.search.reference.MapFinderResult;
 import aurora.ide.search.reference.ReferenceMatch;
 import aurora.ide.search.ui.LineElement;
 import aurora.ide.search.ui.MessageFormater;
-
 
 abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName bmReference = new QualifiedName(
@@ -50,8 +57,19 @@ abstract public class AbstractSearchService implements ISearchService {
 			"http://www.aurora-framework.org/application", "dataset");
 	private Map documentMap = new HashMap();
 	private Map compositeMap = new HashMap();
+	private Map exceptionMap = new HashMap();
 
 	private Object pattern;
+
+	public boolean isPostException() {
+		return isPostException;
+	}
+
+	public void setPostException(boolean isPostException) {
+		this.isPostException = isPostException;
+	}
+
+	private boolean isPostException = true;
 
 	private class ScopeVisitor implements IResourceVisitor {
 		private List result = new ArrayList();
@@ -258,19 +276,76 @@ abstract public class AbstractSearchService implements ISearchService {
 					if (monitor.isCanceled())
 						return result;
 					fCurrentFile = (IFile) files.get(i);
-					result.addAll(processFile(fCurrentFile));
+					try {
+						result.addAll(processFile(fCurrentFile));
+					} catch (CoreException e) {
+					} catch (ApplicationException e) {
+					} catch (Exception e) {
+						handleException(fCurrentFile, e);
+					}
 				}
 			}
-		} catch (CoreException e) {
-
-		} catch (ApplicationException e) {
-
 		} finally {
 			monitorUpdateJob.cancel();
 			monitor.done();
+			if (isPostException)
+				postException();
 		}
 
 		return result;
+	}
+
+	private static Shell getShell() {
+		//index : 0 must the active window.
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchWindow activeWindow = workbench.getActiveWorkbenchWindow();
+		IWorkbenchWindow windowToParentOn = activeWindow == null ? (workbench
+				.getWorkbenchWindowCount() > 0 ? workbench
+				.getWorkbenchWindows()[0] : null) : activeWindow;
+		return windowToParentOn == null ? null : activeWindow.getShell();
+
+	}
+
+	private static Display getDisplay() {
+		Display display = Display.getCurrent();
+		if (display == null)
+			display = Display.getDefault();
+		return display;
+	}
+
+	private void postException() {
+		if (exceptionMap.size() != 0) {
+			getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					Status status = new Status(IStatus.ERROR,
+							AuroraPlugin.PLUGIN_ID, "文件解析异常") {
+						public IStatus[] getChildren() {
+							IStatus[] children = new IStatus[exceptionMap
+									.size()];
+							Set keySet = exceptionMap.keySet();
+							int i = 0;
+							for (Iterator iterator = keySet.iterator(); iterator
+									.hasNext();) {
+								IFile o = (IFile) iterator.next();
+								children[i] = new Status(IStatus.ERROR,
+										AuroraPlugin.PLUGIN_ID, o.getFullPath()
+												.toString(),
+										(Throwable) exceptionMap.get(o));
+								i++;
+							}
+							return children;
+						}
+					};
+					ErrorDialog.openError(getShell(), null, null, status);
+				}
+			});
+
+		}
+
+	}
+
+	private void handleException(IFile file, Exception e) {
+		exceptionMap.put(file, e);
 	}
 
 	private List findFilesInScope(IResource scope) {
