@@ -48,6 +48,7 @@ public class FiledReferenceCommand extends AbstractHandler {
 			FormEditor me = (FormEditor) editor;
 			editor = me.getActiveEditor();
 			if (editor instanceof ITextEditor) {
+				//must be a TextPage
 				return (ITextEditor) editor;
 			}
 		}

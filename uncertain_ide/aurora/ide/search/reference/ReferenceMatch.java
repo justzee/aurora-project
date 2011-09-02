@@ -19,10 +19,11 @@ public class ReferenceMatch extends AbstractMatch {
 		this.file = file;
 	}
 
+
 	public MapFinderResult getMatchs() {
 		return matchs;
 	}
-
+	
 	public void setMatchs(MapFinderResult matchs) {
 		this.matchs = matchs;
 	}
