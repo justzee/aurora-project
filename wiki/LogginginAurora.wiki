@@ -1,0 +1,26 @@
+#summary Aurora日志输出和查看
+
+== 简介 ==
+
+Aurora的日志启用和查看，都将直接在登录系统后直接操作，而不再需要以前那种修改页面源码的那种方式，加快了跟踪、调式和纠错的整个流程。
+
+== 安装 ==
+
+ * 从[http://www.aurora-framework.org/release/ aurora-framework]上下载2011-9-1后的aurora.jar版本
+ * 打开[web-home]/WEB-INF/service-logging.config,在service-logging标签中，添加enablePerServiceConfig="true"，如
+{{{
+<ns1:service-logging xmlns:ns1="aurora.application.features" 
+append="false" defaultLogLevel="FINE" 
+enablePerServiceConfig="true" 
+logPath="[web-home]\logs" pattern="_${/session/@session_id}_">
+}}}
+
+==启用日志==
+ * 登录系统
+ * 打开modules/sys/sys_log.screen,这个页面分为两个标签页。分别是系统标签和明细标签页。
+   * 系统标签页分为两个部分，一个是单独对某个文件进行启用管理，另一个是对所有文件进行启用管理
+    * 单独文件启用
+      * 如果是screen：那么文件路径就是整个screen文件相对于[web-home]目录的值。譬如：modules/sys/sys_user.screen
+      * 如果是bm：那么文件路径就是bm文件相对于[web-home]/WEB-INF/classes的相对值+操作值，其中把目录分隔符以.代替，并去掉文件后缀。譬如需要监听classes/sys/sys_user.bm的查询操作，就输入/sys.sys_user_query。在aurora系统中，目前支持query、update、insert、delete、batch_update、execute。
+    * 系统启用 所有文件访问都会输出日志
+   * 明细标签分为screen、svc和bm，点击查询后，会把所有的相关文件，以及它的日志启用状态查询出来。另提供了一个清除所有配置的按钮，可以一键清除所有设置过的日志，包括screen、svc和bm。
