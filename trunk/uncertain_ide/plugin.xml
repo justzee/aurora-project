@@ -247,7 +247,7 @@
              enablesFor="1"
              icon="icons/bm.gif"
              id="aurora.search.action.BMReferenceAciton"
-             label="References"
+             label="BM-References"
              menubarPath="additions"> 
        </action>
     </objectContribution>
@@ -261,7 +261,7 @@
              enablesFor="1"
              icon="icons/service.gif"
              id="aurora.search.action.ScreenReferenceAciton"
-             label="References"
+             label="Screen-References"
              menubarPath="additions"> 
        </action>
     </objectContribution>
@@ -270,7 +270,7 @@
 	   	  targetID="aurora.ide.editor.textpage.context"> 
 	      <action
 	         id="aurora.search.action.FieldReferenceAction" 
-	         label="References"
+	         label="Field-References"
 	         menubarPath="additions" 
 	         definitionId="aurora.ide.search.command.FiledReferenceCommand"
 	         class="aurora.ide.search.action.FieldReferenceAction"> 
@@ -556,8 +556,6 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
    </extension>
- 
- 
  <extension 
     id="aurora.search.SearchResultPage"
     point="org.eclipse.search.searchResultViewPages"> 
@@ -567,5 +565,4 @@
     class="aurora.ide.search.ui.SearchResultPage"> 
  	</viewPage> 
  </extension>
- 
 </plugin>

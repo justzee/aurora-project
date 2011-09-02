@@ -19,7 +19,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class DecoratingSearchLabelProvider extends DecoratingStyledCellLabelProvider implements IPropertyChangeListener, ILabelProvider {
 
-	private static final String HIGHLIGHT_BG_COLOR_NAME= "org.eclipse.search.ui.match.highlight"; //$NON-NLS-1$
+	private static final String HIGHLIGHT_BG_COLOR_NAME= "org.eclipse.jdt.ui.ColoredLabels.match_highlight"; //$NON-NLS-1$
 
 	public static final Styler HIGHLIGHT_STYLE= StyledString.createColorRegistryStyler(null, HIGHLIGHT_BG_COLOR_NAME);
 

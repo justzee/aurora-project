@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -28,16 +29,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
 import aurora.ide.AuroraPlugin;
-import aurora.ide.editor.textpage.XMLDocumentProvider;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
 import aurora.ide.search.reference.ReferenceMatch;
@@ -55,7 +54,7 @@ abstract public class AbstractSearchService implements ISearchService {
 			"http://www.aurora-framework.org/schema/bm", "foreignField");
 	public final static QualifiedName datasetReference = new QualifiedName(
 			"http://www.aurora-framework.org/application", "dataset");
-	private Map documentMap = new HashMap();
+
 	private Map compositeMap = new HashMap();
 	private Map exceptionMap = new HashMap();
 
@@ -125,16 +124,6 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	abstract protected CompositeMapIteator createIterationHandle(IFile resource);
 
-	protected IDocument createDocument(IFile file) throws CoreException {
-		FileEditorInput element = new FileEditorInput(file);
-		XMLDocumentProvider provider = new XMLDocumentProvider();
-		provider.connect(element);
-		IDocument document = provider.getDocument(element);
-		documentMap.put(file, document);
-		return document;
-
-	}
-
 	private List buildMatchLines(IFile file, List r, Object pattern)
 			throws CoreException {
 		List lines = new ArrayList();
@@ -142,7 +131,7 @@ abstract public class AbstractSearchService implements ISearchService {
 			MapFinderResult result = (MapFinderResult) r.get(i);
 			CompositeMap map = result.getMap();
 			Location location = map.getLocation();
-			IDocument document = (IDocument) documentMap.get(file);
+			IDocument document = getDocument(file);
 			int lineNo = location.getStartLine();
 
 			LineElement l = null;
@@ -155,7 +144,6 @@ abstract public class AbstractSearchService implements ISearchService {
 				l = new LineElement(file, lineNo, lineInformation.getOffset(),
 						lineContent);
 				lines.addAll(createLineMatches(result, l, file, pattern));
-
 			} catch (BadLocationException e1) {
 				continue;
 			}
@@ -173,8 +161,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		CompositeMapIteator finder = createIterationHandle((IFile) resource);
 		finder.setFilter(getDataFilter(scope, source));
 
-		IDocument document = createDocument((IFile) resource);
-		bm = CompositeMapUtil.loaderFromString(document.get());
+		bm = getCompositeMap((IFile) resource);
 		compositeMap.put(bm, resource);
 		bm.iterate(finder, true);
 
@@ -196,9 +183,9 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	private List createLineMatches(MapFinderResult r, LineElement l,
-			IFile file, Object pattern) {
+			IFile file, Object pattern) throws CoreException {
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
-				(IDocument) this.documentMap.get(file));
+				(IDocument) getDocument(file));
 
 		int startOffset = l.getOffset();
 		List matches = new ArrayList();
@@ -221,8 +208,8 @@ abstract public class AbstractSearchService implements ISearchService {
 					continue;
 				}
 				startOffset = valueRegion.getOffset();
-				ReferenceMatch match = new ReferenceMatch(file,
-						valueRegion.getOffset(), valueRegion.getLength(), l);
+				ReferenceMatch match = new ReferenceMatch(file, valueRegion
+						.getOffset(), valueRegion.getLength(), l);
 				match.setMatchs(r);
 				matches.add(match);
 			} catch (BadLocationException e) {
@@ -296,7 +283,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	private static Shell getShell() {
-		//index : 0 must the active window.
+		// index : 0 must the active window.
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow activeWindow = workbench.getActiveWorkbenchWindow();
 		IWorkbenchWindow windowToParentOn = activeWindow == null ? (workbench
@@ -317,31 +304,28 @@ abstract public class AbstractSearchService implements ISearchService {
 		if (exceptionMap.size() != 0) {
 			getDisplay().asyncExec(new Runnable() {
 				public void run() {
-					Status status = new Status(IStatus.ERROR,
-							AuroraPlugin.PLUGIN_ID, "文件解析异常") {
-						public IStatus[] getChildren() {
-							IStatus[] children = new IStatus[exceptionMap
-									.size()];
-							Set keySet = exceptionMap.keySet();
-							int i = 0;
-							for (Iterator iterator = keySet.iterator(); iterator
-									.hasNext();) {
-								IFile o = (IFile) iterator.next();
-								children[i] = new Status(IStatus.ERROR,
-										AuroraPlugin.PLUGIN_ID, o.getFullPath()
-												.toString(),
-										(Throwable) exceptionMap.get(o));
-								i++;
-							}
-							return children;
-						}
-					};
+					MultiStatus status = new MultiStatus(
+							AuroraPlugin.PLUGIN_ID, IStatus.ERROR,
+							getStatusChildren(), "文件解析异常", null);
 					ErrorDialog.openError(getShell(), null, null, status);
 				}
 			});
 
 		}
 
+	}
+
+	public IStatus[] getStatusChildren() {
+		IStatus[] children = new IStatus[exceptionMap.size()];
+		Set keySet = exceptionMap.keySet();
+		int i = 0;
+		for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+			IFile o = (IFile) iterator.next();
+			children[i] = new Status(IStatus.ERROR, AuroraPlugin.PLUGIN_ID, o
+					.getFullPath().toString(), (Throwable) exceptionMap.get(o));
+			i++;
+		}
+		return children;
 	}
 
 	private void handleException(IFile file, Exception e) {
@@ -377,12 +361,17 @@ abstract public class AbstractSearchService implements ISearchService {
 		return scope;
 	}
 
+	public CompositeMap getCompositeMap(IFile file) throws CoreException,
+			ApplicationException {
+		return CacheManager.getCompositeMapCacher().getCompositeMap(file);
+	}
+
 	public IFile getFile(CompositeMap map) {
 		return (IFile) this.compositeMap.get(map);
 	}
 
-	public IDocument getDocument(IFile file) {
-		return (IDocument) this.documentMap.get(file);
+	public IDocument getDocument(IFile file) throws CoreException {
+		return CacheManager.getDocumentCacher().getDocument(file);
 	}
 
 	protected abstract Object createPattern(IResource scope, Object source);

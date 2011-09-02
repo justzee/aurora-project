@@ -23,13 +23,7 @@ public class LineElement {
 		fLineStartOffset = lineStartOffset;
 		fLineContents = lineContents;
 	}
-//
-//	public LineElement(AttributeMatch match) {
-//		match.getMap();
-//		match.getMatchAttribs();
-//		
-//	
-//	}
+
 
 	public IResource getParent() {
 		return fParent;
