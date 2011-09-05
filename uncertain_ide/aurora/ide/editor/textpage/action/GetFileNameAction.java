@@ -51,8 +51,6 @@ public class GetFileNameAction implements IEditorActionDelegate {
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
