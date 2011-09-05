@@ -9,7 +9,7 @@
     <pre class="prettyprint lang-js"><div id="cls-Aurora.Tab"></div>/**
  * @class Aurora.Tab
  * @extends Aurora.Component
- * <p>Tab组件.
+ * Tab组件.
  * @author njq.niu@hand-china.com
  * @constructor
  * @param {Object} config 配置对象. 
@@ -36,14 +36,15 @@ $A.Tab = Ext.extend($A.Component,{
 		this.scrollLeft = this.wrap.child('div[atype=scroll-left]');
 		this.scrollRight = this.wrap.child('div[atype=scroll-right]');
 		this.script = this.head.parent();
+		this.sp = this.script.parent();
 		this.selectTab(config.selected||0)
 	},
 	processListener: function(ou){
     	$A.Tab.superclass.processListener.call(this,ou);
-    	this.script.parent()[ou]('mousedown',this.onMouseDown, this);
-    	this.script.parent()[ou]('mouseup',this.onMouseUp, this);
-    	this.script.parent()[ou]('mouseover',this.onMouseOver, this);
-    	this.script.parent()[ou]('mouseout',this.onMouseOut, this);
+    	this.sp[ou]('mousedown',this.onMouseDown, this);
+    	this.sp[ou]('mouseup',this.onMouseUp, this);
+    	this.sp[ou]('mouseover',this.onMouseOver, this);
+    	this.sp[ou]('mouseout',this.onMouseOut, this);
     	this.script[ou]('click',this.onClick, this);
     	this.script[ou]('mousewheel',this.onMouseWheel, this);
     },
@@ -120,11 +121,11 @@ $A.Tab = Ext.extend($A.Component,{
             this.fireEvent('select', this, index)
 		}
 	},
-	stripTpl:['<div class="strip unactive"  unselectable="on" onselectstart="return false;">'
+	stripTpl:['<div class="strip unactive"  unselectable="on" onselectstart="return false;"><div style="height:26px;width:{stripwidth2}px">'
 				,'<div class="strip-left"></div>',
 				'<div style="width:{stripwidth}px;" class="strip-center"><div class="tab-close"></div>{prompt}</div>',
 				'<div class="strip-right"></div>',
-			'</div>'],
+			'</div></div>'],
 	bodyTpl:'<div style="width:{bodywidth}px;height:{bodyheight}px;left:-10000px;top:-10000px;" class="tab"></div>',
 	<div id="method-Aurora.Tab-openTab"></div>/**
 	 * 打开一个指定引用地址的Tab页，如果该指定的引用地址的页面已经被打开，则选中该Tab页
@@ -150,7 +151,7 @@ $A.Tab = Ext.extend($A.Component,{
 				this.scrollRight.setStyle({'display':'block'});
 				this.script.setStyle('padding-left','1px');
 			}
-			new Ext.Template(this.stripTpl).append(this.head.dom,{'prompt':prompt,'stripwidth':stripwidth});
+			new Ext.Template(this.stripTpl).append(this.head.dom,{'prompt':prompt,'stripwidth':stripwidth,'stripwidth2':stripwidth+6});
 			new Ext.Template(this.bodyTpl).append(this.body.dom,{'bodywidth':this.body.getWidth(),'bodyheight':this.body.getHeight()});
 			this.selectTab(i);
 		}
@@ -191,12 +192,33 @@ $A.Tab = Ext.extend($A.Component,{
         			try{
         				cmp.destroy();
         			}catch(e){
-        				alert('销毁window出错: ' + e)
+        				alert('销毁Tab出错: ' + e)
         			}
         		}
         	}
         },10)
 		this.selectTab(index);
+	},
+	destroy : function(){
+        var bodys = this.body.dom.children;
+//		var bodys = Ext.DomQuery.select('div.tab',this.body.dom);
+    	for(var i=0;i<bodys.length;i++){
+    		var body = Ext.get(bodys[i]),
+    		cmps=body.cmps;
+    		if(cmps){
+	    		for(var key in cmps){
+	        		var cmp = cmps[key];
+	        		if(cmp.destroy){
+	        			try{
+	        				cmp.destroy();
+	        			}catch(e){
+	        				alert('销毁Tab出错: ' + e)
+	        			}
+	        		}
+	        	}
+    		}
+    	}
+		$A.Tab.superclass.destroy.call(this); 
 	},
 	<div id="method-Aurora.Tab-setDisabled"></div>/**
 	 * 将某个Tab页设为不可用。当TabItem有且仅有1个时，该方法无效果。
@@ -222,7 +244,8 @@ $A.Tab = Ext.extend($A.Component,{
 		tab.strip.removeClass(this.sd);
 	},
 	getTab : function(o){
-		var bodys = Ext.DomQuery.select('div.tab',this.body.dom),strips = Ext.DomQuery.select('div.strip',this.head.dom),strip,body;
+		var bodys = this.body.dom.children,//Ext.DomQuery.select('div.tab',this.body.dom),
+        strips = this.head.dom.children;//Ext.DomQuery.select('div.strip',this.head.dom),strip,body;
 		if(Ext.isNumber(o)){
 			if(o<0)o+=strips.length;
 			o=Math.round(o);
@@ -270,7 +293,7 @@ $A.Tab = Ext.extend($A.Component,{
 	},
 	onClick : function(e){
 		var el=Ext.get(e.target);
-		if(el.hasClass(this.tc))this.closeTab(el.parent().parent());
+		if(el.hasClass(this.tc))this.closeTab(el.parent('.strip'));
 	},
 	onMouseWheel : function(e){
 		var delta = e.getWheelDelta();
@@ -283,7 +306,7 @@ $A.Tab = Ext.extend($A.Component,{
         }
 	},
 	onMouseDown : function(e){
-		var el=Ext.get(e.target),strip = el.parent(),sf=this;
+		var el=Ext.get(e.target),strip = el.parent('.strip'),sf=this;
 		if(el.hasClass(sf.tc)){
 			el.removeClass(sf.tbo);
 			el.addClass(sf.tbd);
@@ -297,7 +320,7 @@ $A.Tab = Ext.extend($A.Component,{
 					if(el.hasClass(sf.sd))clearInterval(sf.scrollInterval);
 				}
 			},100);
-		}else if(strip.hasClass('strip') && !strip.hasClass('active') && !strip.hasClass(sf.sd)){
+		}else if(strip && strip.hasClass('strip') && !strip.hasClass('active') && !strip.hasClass(sf.sd)){
 			sf.selectTab(strip);
 		}
 	},
@@ -357,22 +380,44 @@ $A.Tab = Ext.extend($A.Component,{
     	Ext.Ajax.request({
 			url: url,
 		   	success: function(response, options){
+                var res;
+                try {
+                    res = Ext.decode(response.responseText);
+                }catch(e){}            
+                if(res && res.success == false){
+                    if(res.error){
+                        if(res.error.code  && res.error.code == 'session_expired'){
+                            $A.showErrorMessage(_lang['ajax.error'],  _lang['session.expired']);
+                        }else{
+                            $A.manager.fireEvent('ajaxfailed', $A.manager, options.url,options.para,res);
+                            var st = res.error.stackTrace;
+                            st = (st) ? st.replaceAll('\r\n','</br>') : '';
+                            if(res.error.message) {
+                                var h = (st=='') ? 150 : 250;
+                                $A.showErrorMessage(_lang['window.error'], res.error.message+'</br>'+st,null,400,h);
+                            }else{
+                                $A.showErrorMessage(_lang['window.error'], st,null,400,250);
+                            } 
+                        }
+                    }
+                    return;
+                }
 		    	var html = response.responseText;
-	    		sf.intervalIds[index]=setInterval(function(){
-	    			if(!$A.focusTab){
-				    	clearInterval(sf.intervalIds[index]);
+//	    		sf.intervalIds[index]=setInterval(function(){
+//	    			if(!$A.focusTab){
+//				    	clearInterval(sf.intervalIds[index]);
 				    	sf.clearLoading(body);
-						$A.focusTab=body;
-						try{
+//						$A.focusTab=body;
+//						try{
 					    	body.update(html,true,function(){
-					    		$A.focusTab=null;
+//					    		$A.focusTab=null;
 			                    sf.fireEvent('select', sf, index)
-					    	});
-						}catch(e){
-							$A.focusTab=null;
-						}
-	    			}
-		    	},10)
+					    	},body);
+//						}catch(e){
+//							$A.focusTab=null;
+//						}
+//	    			}
+//		    	},10)
 		    }
 		});		
     },
@@ -399,7 +444,8 @@ $A.Tab = Ext.extend($A.Component,{
 			this.script.setStyle('padding-left','0');
 			this.script.scrollTo('left',0);
     	}
-    	var bodys = Ext.DomQuery.select('div.tab',this.body.dom);
+        var bodys = this.body.dom.children;
+//    	var bodys = Ext.DomQuery.select('div.tab',this.body.dom);
     	for(var i=0;i<bodys.length;i++){
     		var body = bodys[i];
     		Ext.fly(body).setWidth(w-4);
@@ -410,7 +456,8 @@ $A.Tab = Ext.extend($A.Component,{
     	if(this.height==h)return;
     	$A.Tab.superclass.setHeight.call(this, h);
     	this.body.setHeight(h-26);
-    	var bodys = Ext.DomQuery.select('div.tab',this.body.dom);
+        var bodys = this.body.dom.children;
+//    	var bodys = Ext.DomQuery.select('div.tab',this.body.dom);
     	for(var i=0;i<bodys.length;i++){
     		var body = bodys[i];
     		Ext.fly(body).setHeight(h-28);

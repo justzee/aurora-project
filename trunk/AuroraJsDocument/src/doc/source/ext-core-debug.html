@@ -71,8 +71,11 @@ Ext.apply = function(o, c, defaults){
         isIE = !isOpera && check(/msie/),
         isIE7 = isIE && check(/msie 7/),
         isIE8 = isIE && check(/msie 8/),
-        isIE6 = isIE && !isIE7 && !isIE8,
-        isIE = (isIE && check(/msie 9/)) ? false : isIE,
+        isIE9 = isIE && check(/msie 9/),			//Add by Hugh
+        //isIE6 = isIE && !isIE7 && !isIE8,
+        isIE6 = isIE && !isIE7 && !isIE8 && !isIE9,	//Modify by Hugh
+        //isIE = (isIE && check(/msie 9/)) ? false : isIE,
+        isIE = isIE9 ? false : isIE,				//Modify by Hugh
         isGecko = !isWebKit && check(/gecko/),
         isGecko2 = isGecko && check(/rv:1\.8/),
         isGecko3 = isGecko && check(/rv:1\.9/),
@@ -718,6 +721,11 @@ function(el){
          * @type Boolean
          */
         isIE8 : isIE8,
+        <div id="prop-Ext-isIE9"></div>/**
+         * True if the detected browser is Internet Explorer 9.x.
+         * @type Boolean
+         */
+        isIE9 : isIE9,
         <div id="prop-Ext-isGecko"></div>/**
          * True if the detected browser uses the Gecko layout engine (e.g. Mozilla, Firefox).
          * @type Boolean
@@ -1516,7 +1524,8 @@ Ext.util.DelayedTask = function(fn, scope, args){
 
             if (tryAgain) {
                 startInterval();
-            } else {
+            //防止clearInterval之前又放入onAvailable,导致丢失不触发
+            } else if(onAvailStack.length == 0){
                 clearInterval(_interval);
                 _interval = null;
             }
@@ -1794,7 +1803,7 @@ Ext.lib.Ajax = function() {
         return {
             tId : tId,
             status : isAbort ? -1 : 0,
-            statusText : isAbort ? 'transaction aborted' : 'communication failure',
+            statusText : isAbort ? '服务器连接中断' : '网络连接中断', //'transaction aborted' : 'communication failure',
             isAbort: isAbort,
             isTimeout: isTimeout,
             argument : callbackArg
@@ -1945,11 +1954,11 @@ Ext.lib.Ajax = function() {
     }
     
     // private
-    function asyncRequest(method, uri, callback, postData) {
-        var o = getConnectionObject() || null;
-
+    function asyncRequest(method, uri, callback, postData,sync) {
+        var o = getConnectionObject() || null,
+        async = sync === true ? false : true;
         if (o) {
-            o.conn.open(method, uri, true);
+            o.conn.open(method, uri, async);
 
             if (pub.useDefaultXhrHeader) {                    
                 initHeader('X-Requested-With', pub.defaultXhrHeader);
@@ -1963,12 +1972,13 @@ Ext.lib.Ajax = function() {
                 setHeader(o);
             }
 
-            handleReadyState(o, callback);
+            if(async)handleReadyState(o, callback);
             o.conn.send(postData || null);
+            if(!async)handleTransactionResponse(o, callback);
         }
         return o;
     }
-    
+
     // private
     function getConnectionObject() {
         var o;          
@@ -2019,9 +2029,8 @@ Ext.lib.Ajax = function() {
                     data = xmlData || (!Ext.isPrimitive(jsonData) ? Ext.encode(jsonData) : jsonData);
                 }
             }                       
-            return asyncRequest(method || options.method || "POST", uri, cb, data);
+            return asyncRequest(method || options.method || "POST", uri, cb, data, options.sync);
         },
-
         serializeForm : function(form) {
             var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements,
                 hasSubmit = false,
@@ -6370,7 +6379,8 @@ el.un('click', this.handlerFn);
         return d[name];
     } : function(name, ns){
         var d = this.dom;//TODO:IE9
-        return (d.getAttributeNS) ?  d.getAttributeNS(ns, name) :(d.getAttribute(ns + ":" + name) || d.getAttribute(name) || d[name]);
+        //return (d.getAttributeNS) ?  d.getAttributeNS(ns, name) :(d.getAttribute(ns + ":" + name) || d.getAttribute(name) || d[name]);
+    	return (d.getAttributeNS ?  d.getAttributeNS(ns, name) :d.getAttribute(ns + ":" + name)) || d.getAttribute(name) || d[name];
     },
 
     <div id="method-Ext.Element-update"></div>/**

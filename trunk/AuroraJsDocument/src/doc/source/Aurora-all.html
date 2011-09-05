@@ -19,7 +19,7 @@
  * @author 牛佳庆
  * @singleton
  */
-$A = Aurora = {version: '1.0',revision:'$Rev: 2292 $'};
+$A = Aurora = {version: '1.0',revision:'$Rev: 3486 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
 	if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -30,15 +30,27 @@ $A.fireWindowResize = function(){
 }
 if(Ext.isIE6)Ext.EventManager.on(window, "resize", $A.fireWindowResize, this);
 
+
+
 $A.cache = {};
 $A.cmps = {};
 $A.onReady = Ext.onReady;
 $A.get = Ext.get;
-$A.focusWindow;
-$A.focusTab;
+//$A.focusWindow;
+//$A.focusTab;
 $A.defaultDateFormat="isoDate";
 $A.defaultDateTimeFormat="yyyy-mm-dd HH:MM:ss";
 $A.defaultChineseLength = 2;
+
+<div id="method-Aurora-go"></div>/**
+ * 页面地址重定向
+ * @param {String} url
+ */
+$A.go=function(url){
+	if(!url)return;
+	var r=Math.random();
+	location.href=url+(url.indexOf('?')==-1?'?':'&')+'__r__='+r;
+}
 
 <div id="method-Aurora-center"></div>/**
  * 将对象居中
@@ -86,8 +98,12 @@ $A.CmpManager = function(){
 	        	alert("错误: ID为' " + id +" '的组件已经存在!");
 	        	return;
 	        }
-        	if($A.focusWindow) $A.focusWindow.cmps[id] = cmp;
-        	if($A.focusTab) $A.focusTab.cmps[id] = cmp;
+            if(window['__host']){
+                    window['__host'].cmps[id] = cmp;
+                    cmp['__host'] = window['__host'];
+            }
+//        	if($A.focusWindow) $A.focusWindow.cmps[id] = cmp;
+//        	if($A.focusTab) $A.focusTab.cmps[id] = cmp;
         	this.cache[id]=cmp;
         	cmp.on('mouseover',$A.CmpManager.onCmpOver,$A.CmpManager);
         	cmp.on('mouseout',$A.CmpManager.onCmpOut,$A.CmpManager);
@@ -132,6 +148,9 @@ $A.CmpManager = function(){
         },
         remove : function(id){
         	var cmp = this.cache[id];
+            if(cmp['__host'] && cmp['__host'].cmps){
+                delete cmp['__host'].cmps[id];        
+            }
         	cmp.un('mouseover',$A.CmpManager.onCmpOver,$A.CmpManager);
         	cmp.un('mouseout',$A.CmpManager.onCmpOut,$A.CmpManager);
         	delete this.cache[id];
@@ -161,6 +180,8 @@ Ext.Ajax.on("requestexception", function(conn, response, options) {
 		case 500:
             $A.showErrorMessage(response.status + _lang['ajax.error'], response.responseText,null,500,300);
             break;
+        case 0:
+            break;
 		default:
 			$A.showErrorMessage(_lang['ajax.error'], response.statusText);
 			break;
@@ -183,9 +204,17 @@ $ = $A.getCmp = function(id){
  * 设置cookie
  * @param {String} name cookie名
  * @param {String} value cookie值
+ * @param {Number} days 有效期(单位是天),默认是sessions
  */
-$A.setCookie = function(name,value){
-    document.cookie = name + "="+ escape (value);
+$A.setCookie = function(name,value,days){
+    var pathname = location.pathname;
+    pathname = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+    var exp = null;
+    if(days){
+        exp  = new Date();
+        exp.setTime(exp.getTime() + days*24*60*60*1000);
+    }
+    document.cookie = name + "="+ escape (value) +';path = ' + pathname + ((exp) ? (';expires=' + exp.toGMTString()) : '');
 }
 
 <div id="method-Aurora-getCookie"></div>/**
@@ -256,6 +285,8 @@ $A.post = function(action,data){
  * <div class="sub-desc">提交的参数</div></li>
  * <li><code>scope</code>
  * <div class="sub-desc">作用域</div></li>
+ * <li><code>sync</code>
+ * <div class="sub-desc">是否同步,默认false</div></li> 
  * <li><code>success</code>
  * <div class="sub-desc">成功的回调函数</div></li>
  * <li><code>error</code>
@@ -274,11 +305,12 @@ $A.request = function(opt){
 		$('HTTPWATCH_DATASET').create({'url':url,'request':Ext.util.JSON.encode({parameter:para})})
 	}
 	var data = Ext.apply({parameter:para},opt.ext);
-	Ext.Ajax.request({
+	return Ext.Ajax.request({
 		url: url,
 		method: 'POST',
 		params:{_request_data:Ext.util.JSON.encode(data)},
 		opts:opts,
+        sync:opt.sync,
 		success: function(response,options){
 			if($A.logWindow){
 				var st = $A['_startTime'];
@@ -301,16 +333,20 @@ $A.request = function(opt){
 				if(res && !res.success){
 					$A.manager.fireEvent('ajaxfailed', $A.manager, url,para,res);
 					if(res.error){
-						var st = res.error.stackTrace;
-						st = (st) ? st.replaceAll('\r\n','</br>') : '';
-						if(res.error.message) {
-							var h = (st=='') ? 150 : 250;
-						    $A.showErrorMessage(_lang['ajax.error'], res.error.message+'</br>'+st,null,400,h);
-						}else{
-						    $A.showErrorMessage(_lang['ajax.error'], st,null,400,250);
-						}
-						if(errorCall)
-                        errorCall.call(scope, res, options);	
+                        if(res.error.code  && res.error.code == 'session_expired'){
+                            $A.showErrorMessage(_lang['ajax.error'],  _lang['session.expired']);
+                        }else{
+    						var st = res.error.stackTrace;
+    						st = (st) ? st.replaceAll('\r\n','</br>') : '';
+    						if(res.error.message) {
+    							var h = (st=='') ? 150 : 250;
+    						    $A.showErrorMessage(_lang['ajax.error'], res.error.message+'</br>'+st,null,400,h);
+    						}else{
+    						    $A.showErrorMessage(_lang['ajax.error'], st,null,400,250);
+    						}
+    						if(errorCall)
+                            errorCall.call(scope, res, options);
+                        }
 					}								    						    
 				} else {
 					$A.manager.fireEvent('ajaxsuccess', $A.manager, url,para,res);
@@ -352,12 +388,13 @@ Aurora.dateFormat = function () {
 	    	return !!String(masks[mask] || mask || masks["default"]).match(token);
         },
         _parseDate=function(string,mask,fun){
-        	for(var i=0,arr=mask.match(token),numbers=string.match(/\d+/g),value;i<arr.length;i++){
+        	for(var i=0,arr=mask.match(token),numbers=string.match(/\d+/g),value,index=0;i<arr.length;i++){
         		if(numbers.length==arr.length)value=numbers[i];
+        		else if(numbers.length == 1)value=parseInt(string.slice(index,index+=arr[i].length),10);
         		else value=parseInt(string.slice(index=mask.search(arr[i]),index+arr[i].length));
         		switch(arr[i]){
         			case "mm":;
-        			case "m":value=value-1;break;
+        			case "m":value--;break;
         		}
         		fun(arr[i],value);
         	}
@@ -494,12 +531,12 @@ Ext.applyIf(String.prototype, {
     }
 }); 
 $A.TextMetrics = function(){
-    var shared;
+    //var shared;
     return {
         measure : function(el, text, fixedWidth){
-            if(!shared){
-                shared = $A.TextMetrics.Instance(el, fixedWidth);
-            }
+            //if(!shared){
+              var shared = $A.TextMetrics.Instance(el, fixedWidth);
+            //}
             shared.bind(el);
             shared.setFixedWidth(fixedWidth || 'auto');
             return shared.getSize(text);
@@ -774,7 +811,144 @@ Ext.util.JSON.encodeDate = function(o){
     r += '"';
     return r
 };
-Ext.Element.prototype.update = function(html, loadScripts, callback){
+$A.evalList = [];
+$A.evaling = false;
+$A.doEvalScript = function(){
+    $A.evaling = true;
+    var list = $A.evalList;
+    var o = list.shift();
+    if(!o) {
+        window['__host'] = null;
+        $A.evaling = false;
+        return;
+    }
+    var sf = o.sf, html=o.html, loadScripts=o.loadScripts, callback=o.callback, host=o.host;
+    var dom = sf.dom;
+    
+    if(host) window['__host'] = host;
+    var links = [];
+    var scripts = [];
+    var hd = document.getElementsByTagName("head")[0];
+    for(var i=0;i<hd.childNodes.length;i++){
+        var he = hd.childNodes[i];
+        if(he.tagName == 'LINK') {
+            links.push(he.href);
+        }else if(he.tagName == 'SCRIPT'){
+            scripts.push(he.src);
+        }
+    }
+    var jsre = /(?:<script([^>]*)?>)((\n|\r|.)*?)(?:<\/script>)/ig;
+    var jsSrcRe = /\ssrc=([\'\"])(.*?)\1/i;
+    
+    var cssre = /(?:<link([^>]*)?>)((\n|\r|.)*?)/ig;
+    var cssHreRe = /\shref=([\'\"])(.*?)\1/i;
+    
+    var cssm;
+    while(cssm = cssre.exec(html)){
+        var attrs = cssm[1];
+        var srcMatch = attrs ? attrs.match(cssHreRe) : false;
+        if(srcMatch && srcMatch[2]){
+            var included = false;
+            for(var i=0;i<links.length;i++){
+                var link = links[i];
+                if(link.indexOf(srcMatch[2]) != -1){
+                    included = true;
+                    break;
+                }
+            }
+            if(!included) {
+                var s = document.createElement("link");
+                s.type = 'text/css';
+                s.rel = 'stylesheet';
+                s.href = srcMatch[2];
+                hd.appendChild(s);
+            }
+        }
+    }
+    var match;
+    var jslink = [];
+    var jsscript = [];
+    while(match = jsre.exec(html)){
+        var attrs = match[1];
+        var srcMatch = attrs ? attrs.match(jsSrcRe) : false;
+        if(srcMatch && srcMatch[2]){
+            var included = false;
+            for(var i=0;i<scripts.length;i++){
+                var script = scripts[i];
+                if(script.indexOf(srcMatch[2]) != -1){
+                    included = true;
+                    break;
+                }
+            }
+            if(!included) {
+                jslink[jslink.length] = {
+                    src:srcMatch[2],
+                    type:'text/javascript'
+                }
+            } 
+        }else if(match[2] && match[2].length > 0){
+            jsscript[jsscript.length] = match[2];
+        }
+    }
+    var loaded = 0;
+    
+    var onReadOnLoad = function(){
+        var isready = Ext.isIE ? (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") : true;
+        if(isready) {
+            loaded ++;
+            if(loaded==jslink.length) {
+                for(j=0,k=jsscript.length;j<k;j++){
+                    var jst = jsscript[j];
+                    if(window.execScript) {
+                        window.execScript(jst);
+                    } else {
+                        window.eval(jst);
+                    }
+                }
+                var el = document.getElementById(id);
+                if(el){Ext.removeNode(el);} 
+                Ext.fly(dom).setStyle('display', 'block');
+                if(typeof callback == "function"){
+                    callback();
+                }
+                $A.doEvalScript();
+            }else{
+                var js = jslink[loaded];
+                var s = document.createElement("script");
+                s.src = js.src;
+                s.type = js.type;
+                s[Ext.isIE ? "onreadystatechange" : "onload"] = onReadOnLoad;
+                hd.appendChild(s);
+            }
+        }
+    }
+    
+    if(jslink.length > 0){
+        var js = jslink[0];
+        var s = document.createElement("script");
+        s.src = js.src;
+        s.type = js.type;
+        s[Ext.isIE ? "onreadystatechange" : "onload"] = onReadOnLoad;
+        hd.appendChild(s);
+    } else if(jslink.length ==0) {
+        for(j=0,k=jsscript.length;j<k;j++){
+            var jst = jsscript[j];
+            if(window.execScript) {
+               window.execScript(jst);
+            } else {
+               window.eval(jst);
+            }
+        }
+        var el = document.getElementById(id);
+        if(el){Ext.removeNode(el);} 
+        Ext.fly(dom).setStyle('display', 'block');
+        if(typeof callback == "function"){
+                callback();
+        }
+        $A.doEvalScript();
+    } 
+}
+Ext.Element.prototype.update = function(html, loadScripts, callback,host){
     if(typeof html == "undefined"){
         html = "";
     }
@@ -785,159 +959,23 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
         }
         return this;
     }
+    
     var id = Ext.id();
+    var sf = this;
     var dom = this.dom;
-
     html += '<span id="' + id + '"></span>';
     Ext.lib.Event.onAvailable(id, function(){
-    	var links = [];
-    	var scripts = [];
-        var hd = document.getElementsByTagName("head")[0];
-        for(var i=0;i<hd.childNodes.length;i++){
-        	var he = hd.childNodes[i];
-        	if(he.tagName == 'LINK') {
-        		links.push(he.href);
-        	}else if(he.tagName == 'SCRIPT'){
-        		scripts.push(he.src);
-        	}
-        }
-        var jsre = /(?:<script([^>]*)?>)((\n|\r|.)*?)(?:<\/script>)/ig;
-        var jsSrcRe = /\ssrc=([\'\"])(.*?)\1/i;
-        
-        var cssre = /(?:<link([^>]*)?>)((\n|\r|.)*?)/ig;
-        var cssHreRe = /\shref=([\'\"])(.*?)\1/i;
-		
-		var cssm;
-		while(cssm = cssre.exec(html)){
-			var attrs = cssm[1];
-			var srcMatch = attrs ? attrs.match(cssHreRe) : false;
-			if(srcMatch && srcMatch[2]){
-				var included = false;
-				for(var i=0;i<links.length;i++){
-					var link = links[i];
-					if(link.indexOf(srcMatch[2]) != -1){
-						included = true;
-						break;
-					}
-				}
-				if(!included) {
-                	var s = document.createElement("link");
-					s.type = 'text/css';
-					s.rel = 'stylesheet';
-                   	s.href = srcMatch[2];
-                   	hd.appendChild(s);
-                }
-			}
-		}
-        var match;
-        var jslink = [];
-        var jsscript = [];
-        while(match = jsre.exec(html)){
-            var attrs = match[1];
-            var srcMatch = attrs ? attrs.match(jsSrcRe) : false;
-            if(srcMatch && srcMatch[2]){
-            	var included = false;
-				for(var i=0;i<scripts.length;i++){
-					var script = scripts[i];
-					if(script.indexOf(srcMatch[2]) != -1){
-						included = true;
-						break;
-					}
-				}
-               	if(!included) {
-               		jslink[jslink.length] = {
-               			src:srcMatch[2],
-               			type:'text/javascript'
-               		}
-               	} 
-            }else if(match[2] && match[2].length > 0){
-            	jsscript[jsscript.length] = match[2];
-            }
-        }
-        var loaded = 0;
-        
-        
-        
-        
-        var onReadOnLoad = function(){
-            var isready = Ext.isIE ? (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") : true;
-            if(isready) {
-                loaded ++;
-                if(loaded==jslink.length) {
-                    for(j=0,k=jsscript.length;j<k;j++){
-                        var jst = jsscript[j];
-                        if(window.execScript) {
-                            window.execScript(jst);
-                        } else {
-                            window.eval(jst);
-                        }
-                    }
-                    if(typeof callback == "function"){
-			                callback();
-			        }
-                }else{
-                	var js = jslink[loaded];
-                    var s = document.createElement("script");
-                    s.src = js.src;
-                    s.type = js.type;
-                    s[Ext.isIE ? "onreadystatechange" : "onload"] = onReadOnLoad;
-                    hd.appendChild(s);
-                }
-            }
-        }
-        
-        if(jslink.length > 0){
-            var js = jslink[0];
-            var s = document.createElement("script");
-            s.src = js.src;
-            s.type = js.type;
-            s[Ext.isIE ? "onreadystatechange" : "onload"] = onReadOnLoad;
-            hd.appendChild(s);
-        }
-        
-        
-//        for(var i = 0,l=jslink.length;i<l;i++){
-//        	var js = jslink[i];
-//        	var s = document.createElement("script");
-//            s.src = js.src;
-//            s.type = js.type;
-//            s[Ext.isIE ? "onreadystatechange" : "onload"] = function(){
-//           	var isready = Ext.isIE ? (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") : true;
-//            	if(isready) {
-//            		alert(this.readyState + " " + Aurora.Tree)
-//	            	loaded ++;
-//	            	if(loaded==jslink.length) {
-//	                    for(j=0,k=jsscript.length;j<k;j++){
-//		                	var jst = jsscript[j];
-//		                	if(window.execScript) {
-//		                    	window.execScript(jst);
-//		                    } else {
-//		                    	window.eval(jst);
-//		                    }
-//		                }
-//	            	}
-//            	}
-//            };
-//			hd.appendChild(s);
-//        }
-        if(jslink.length ==0) {
-        	for(j=0,k=jsscript.length;j<k;j++){
-            	var jst = jsscript[j];
-            	if(window.execScript) {
-                   window.execScript(jst);
-                } else {
-                   window.eval(jst);
-                }
-            }
-            if(typeof callback == "function"){
-	                callback();
-	        }
-        }        
-        var el = document.getElementById(id);
-        if(el){Ext.removeNode(el);} 
-	    Ext.fly(dom).setStyle('display', 'block');
-	    
+        $A.evalList.push({
+            html:html,
+            loadScripts:loadScripts,
+            callback:callback,
+            host:host,
+            sf:sf
+        });
+        if(!$A.evaling)
+        $A.doEvalScript() 
     });
+    
     Ext.fly(dom).setStyle('display', 'none');
     dom.innerHTML = html.replace(/(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)/ig, "").replace(/(?:<link.*?>)((\n|\r|.)*?)/ig, "");
     return this;
@@ -945,19 +983,26 @@ Ext.Element.prototype.update = function(html, loadScripts, callback){
 
 Ext.EventObjectImpl.prototype['isSpecialKey'] = function(){
     var k = this.keyCode;
-    return (this.type == 'keypress' && this.ctrlKey) || k==8 || k== 46 || k == 9 || k == 13  || k == 40 || k == 27 || k == 44 ||
+//    return (this.type == 'keypress' && this.ctrlKey) || k==8 || k== 46 || k == 9 || k == 13  || k == 40 || k == 27 || k == 44 ||
+     return (this.type == 'keypress' && this.ctrlKey) || k == 9 || k == 13  || k == 40 || k == 27 ||
     (k == 16) || (k == 17) ||
     (k >= 18 && k <= 20) ||
     (k >= 33 && k <= 35) ||
-    (k >= 36 && k <= 39);
+    (k >= 36 && k <= 39) ||
+    (k >= 44 && k <= 45);
 }
 Ext.removeNode = Ext.isIE && !Ext.isIE8 ? function(){
     var d;
     return function(n){
         if(n && n.tagName != 'BODY'){
             (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n, true) : Ext.EventManager.removeAll(n);
-            d = d || document.createElement('<div id="_removenode" style="position:absolute;display:none;left:-1000px;top:-1000px">');
-            if(!d.parentNode)document.appendChild(d);
+            if(!d){
+                d = document.createElement('div');
+                d.id = '_removenode';
+                d.style.cssText = 'position:absolute;display:none;left:-1000px;top:-1000px';
+            }
+//            d = d || document.createElement('<div id="_removenode" style="position:absolute;display:none;left:-1000px;top:-1000px">');
+            if(!d.parentNode)document.body.appendChild(d);
             d.appendChild(n);
             d.innerHTML = '';
             delete Ext.elCache[n.id];
@@ -1023,9 +1068,11 @@ $A.formatDateTime = function(date){
  * @return {String}
  */
 $A.formatNumber = function(value,decimalprecision){
-	if(value!==0&&(!value||isNaN(value)))return '';
+	if(Ext.isEmpty(value))return '';
+	value = String(value).replace(/,/g,'');
+	if(isNaN(value))return '';
 	if(decimalprecision||decimalprecision===0) value=Number(value).toFixed(decimalprecision);
-    var ps = String(value).split('.');
+    var ps = value.split('.');
     var sub = (ps.length==2)?'.'+ps[1]:'';
     var whole = ps[0];
     var r = /(\d+)(\d{3})/;
@@ -1034,6 +1081,15 @@ $A.formatNumber = function(value,decimalprecision){
     }
     v = whole + sub;
     return v;   
+}
+<div id="method-Aurora-formatMoney"></div>/**
+ * 将数值转换成带有千分位的字符串，并保留两位小数
+ * 
+ * @param {Number} value 数值
+ * @return {String}
+ */
+$A.formatMoney = function(v){
+    return $A.formatNumber(v,2)
 }
 <div id="method-Aurora-removeNumberFormat"></div>/**
  * 将字符串的千分位去除
@@ -1223,6 +1279,20 @@ $A.showValidTopMsg = function(ds) {
 //		}
 //	}
 //})
+$A.startCustomization = function(){
+    var cust = $A.CmpManager.get('_customization');
+    if(cust==null){
+        cust = new $A.Customization({id:'_customization'});    
+    }
+    cust.start();
+}
+$A.stopCustomization = function(){
+    var cust = $A.CmpManager.get('_customization');
+    if(cust!=null){
+        cust.stop();
+        $A.CmpManager.remove('_customization');
+    }
+}
 $A.setValidInfoType('tip'); 
 <div id="cls-Aurora.DataSet"></div>/**
  * @class Aurora.DataSet
@@ -1234,82 +1304,86 @@ $A.setValidInfoType('tip');
  */
 $A.AUTO_ID = 1000;
 $A.DataSet = Ext.extend(Ext.util.Observable,{
-	constructor: function(config) {//datas,fields, type
-		$A.DataSet.superclass.constructor.call(this);
-		config = config || {};
-		if(config.listeners){
+    constructor: function(config) {//datas,fields, type
+        $A.DataSet.superclass.constructor.call(this);
+        config = config || {};
+        if(config.listeners){
             this.on(config.listeners);
         }
-		this.pageid = config.pageid;
-    	this.spara = {};
-    	this.selected = [];
-    	this.pagesize = config.pagesize || 10;
-    	this.submiturl = config.submiturl || '';
-    	this.queryurl = config.queryurl || '';
-    	this.fetchall = config.fetchall||false;
-    	this.selectable = config.selectable||false;
-    	this.selectionmodel = config.selectionmodel||'multiple';
-    	this.selectfunction = config.selectfunction;
-    	this.autocount = config.autocount;
-    	this.autopagesize = config.autopagesize;
-    	this.bindtarget = config.bindtarget;
-    	this.bindname = config.bindname;
-		this.loading = false;
-    	this.qpara = {};
-    	this.fields = {};
-    	this.resetConfig();
-		this.id = config.id || Ext.id();
-        $A.CmpManager.put(this.id,this)	
+        this.pageid = config.pageid;
+        this.spara = {};
+        this.selected = [];
+        this.pagesize = config.pagesize || 10;
+        this.submiturl = config.submiturl || '';
+        this.queryurl = config.queryurl || '';
+        this.fetchall = config.fetchall||false;
+        this.selectable = config.selectable||false;
+        this.selectionmodel = config.selectionmodel||'multiple';
+        this.selectfunction = config.selectfunction;
+        this.autocount = config.autocount;
+        this.autopagesize = config.autopagesize;
+        this.bindtarget = config.bindtarget;
+        this.bindname = config.bindname;
+        this.processfunction = config.processfunction;
+        this.loading = false;
+        this.qpara = {};
+        this.fields = {};
+        this.resetConfig();
+        this.id = config.id || Ext.id();
+        $A.CmpManager.put(this.id,this) 
         if(this.bindtarget&&this.bindname) this.bind($(this.bindtarget),this.bindname);//$(this.bindtarget).bind(this.bindname,this);
-    	this.qds = Ext.isEmpty(config.querydataset) ? null :$(config.querydataset);
-    	if(this.qds != null && this.qds.getCurrentRecord() == null) this.qds.create();
-    	this.initEvents();
-    	if(config.fields)this.initFields(config.fields)
-    	if(config.datas && config.datas.length != 0) {
-    		this.datas=config.datahead?this.convertData(config.datahead,config.datas):config.datas;
-    		this.loadData(this.datas);
-    		//this.locate(this.currentIndex); //不确定有没有影响
-    	}
-    	if(config.autoquery === true) {
+        this.qds = Ext.isEmpty(config.querydataset) ? null :$(config.querydataset);
+        if(this.qds != null && this.qds.getCurrentRecord() == null) this.qds.create();
+        this.initEvents();
+        if(config.fields)this.initFields(config.fields)
+        if(config.datas && config.datas.length != 0) {
+            this.datas=config.datahead?this.convertData(config.datahead,config.datas):config.datas;
+            this.loadData(this.datas);
+            //this.locate(this.currentIndex); //不确定有没有影响
+        }
+        if(config.autoquery === true) {
             var sf = this;
             Ext.onReady(function(){
                sf.query(); 
             });
-    	}
-    	if(config.autocreate==true) {
+        }
+        if(config.autocreate==true) {
             if(this.data.length == 0)
             this.create();
-    	}
+        }
     },
     convertData : function(head,datas){
-    	var nds=[];
-    	for(var i=0;i<datas.length;i++){
-    		var d=datas[i],nd={};
-	    	for(var j=0;j<head.length;j++){
+        var nds=[];
+        for(var i=0;i<datas.length;i++){
+            var d=datas[i],nd={};
+            for(var j=0;j<head.length;j++){
                 if(!Ext.isEmpty(d[j], true))
-	    		nd[head[j]]=d[j];
-	    	}
-	    	nds.push(nd);
-    	}
-    	return nds;
+                nd[head[j]]=d[j];
+            }
+            nds.push(nd);
+        }
+        return nds;
     },
     destroy : function(){
-    	if(this.bindtarget&&this.bindname){
+    	if(this.qtId){
+			Ext.Ajax.abort(this.qtId);
+		}
+        if(this.bindtarget&&this.bindname){
             var bd = $A.CmpManager.get(this.bindtarget)
             if(bd)bd.clearBind();
-    	}
-    	$A.CmpManager.remove(this.id);
-    	delete $A.invalidRecords[this.id]
+        }
+        $A.CmpManager.remove(this.id);
+        delete $A.invalidRecords[this.id]
     },
     reConfig : function(config){
-    	this.resetConfig();
-    	Ext.apply(this, config);
+        this.resetConfig();
+        Ext.apply(this, config);
     },
     <div id="method-Aurora.DataSet-clearBind"></div>/**
      * 取消绑定.
      */
     clearBind : function(){
-    	var name = this.bindname;
+        var name = this.bindname;
         var ds = this.fields[name].pro['dataset'];
         if(ds)
         ds.processBindDataSetListener(this,'un');
@@ -1325,6 +1399,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this[ou]('load', this.onDataSetLoad, this);
         this[ou]('reject', bdp, this);
         ds[ou]('indexchange',this.onDataSetIndexChange, this);
+        ds[ou]('load',this.onBindDataSetLoad, this);
+        ds[ou]('clear',this.removeAll, this);
     },
     <div id="method-Aurora.DataSet-bind"></div>/**
      * 将组件绑定到某个DataSet的某个Field上.
@@ -1346,77 +1422,80 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         });
         ds.fields[name] = field;
     },
+    onBindDataSetLoad : function(ds,options){
+        if(ds.getAll().length == 0) this.removeAll();
+    },
     onDataSetIndexChange : function(ds, record){
-    	if(!record.get(this.bindname) && record.isNew != true){
-    		this.qpara = {};
+        if(!record.get(this.bindname) && record.isNew != true){
+            this.qpara = {};
             Ext.apply(this.qpara,record.data);
             this.query(1,{record:record});
-    	} 	
+        }   
     },
     onDataSetModify : function(){
-    	var bt = $A.CmpManager.get(this.bindtarget);
-    	if(bt){
+        var bt = $A.CmpManager.get(this.bindtarget);
+        if(bt){
             this.refreshBindDataSet(bt.getCurrentRecord(),this.getConfig())
-    	}
+        }
     },
     onDataSetLoad : function(ds,options){
-    	var record;
-    	if(options){
-    		record = options.opts.record;
-    	}else{
-    		var bt = $A.CmpManager.get(this.bindtarget);
-    		if(bt) record = bt.getCurrentRecord();    		
-    	}
-    	if(record)
-    	this.refreshBindDataSet(record,ds.getConfig())
+        var record;
+        if(options){
+            record = options.opts.record;
+        }else{
+            var bt = $A.CmpManager.get(this.bindtarget);
+            if(bt) record = bt.getCurrentRecord();          
+        }
+        if(record)
+        this.refreshBindDataSet(record,ds.getConfig())
     },
-   	refreshBindDataSet: function(record,config){
-    	if(!record)return;
-    	record.set(this.bindname,config,true)//this.getConfig()
-//    	for(var k in this.fields){
-//    		var field = this.fields[k];
-//    		if(field.type == 'dataset'){  
-//    			var ds = field.pro['dataset'];
-////    			if(ds && clear==true)ds.resetConfig();
-//    			record.set(field.name,ds.getConfig(),true)
-//    		}
-//    	}
+    refreshBindDataSet: function(record,config){
+        if(!record)return;
+        record.set(this.bindname,config,true)//this.getConfig()
+//      for(var k in this.fields){
+//          var field = this.fields[k];
+//          if(field.type == 'dataset'){  
+//              var ds = field.pro['dataset'];
+////                if(ds && clear==true)ds.resetConfig();
+//              record.set(field.name,ds.getConfig(),true)
+//          }
+//      }
     },
     beforeCreate: function(ds, record, index){
-    	if(this.data.length == 0){
-    		this.create({},false);
-    	}
+        if(this.data.length == 0){
+            this.create({},false);
+        }
     },
     resetConfig : function(){
-    	this.data = [];
-    	this.selected = [];
-    	this.gotoPage = 1;
-    	this.currentPage = 1;
-    	this.currentIndex = 1;
-    	this.totalCount = 0;
-    	this.totalPage = 0;
-    	this.isValid = true;
-//    	this.bindtarget = null;
+        this.data = [];
+        this.selected = [];
+        this.gotoPage = 1;
+        this.currentPage = 1;
+        this.currentIndex = 1;
+        this.totalCount = 0;
+        this.totalPage = 0;
+        this.isValid = true;
+//      this.bindtarget = null;
 //        this.bindname = null;
     },
     getConfig : function(){
-    	var c = {};
-//    	c.id = this.id;
-    	c.xtype = 'dataset';
-    	c.data = this.data;
-    	c.selected = this.selected;
-    	c.isValid = this.isValid;
-//    	c.bindtarget = this.bindtarget;
+        var c = {};
+//      c.id = this.id;
+        c.xtype = 'dataset';
+        c.data = this.data;
+        c.selected = this.selected;
+        c.isValid = this.isValid;
+//      c.bindtarget = this.bindtarget;
 //        c.bindname = this.bindname;
-    	c.gotoPage = this.gotoPage;
-    	c.currentPage = this.currentPage;
-    	c.currentIndex = this.currentIndex;
-    	c.totalCount = this.totalCount;
-    	c.totalPage = this.totalPage;
-    	return c;
+        c.gotoPage = this.gotoPage;
+        c.currentPage = this.currentPage;
+        c.currentIndex = this.currentIndex;
+        c.totalCount = this.totalCount;
+        c.totalPage = this.totalPage;
+        return c;
     },
     initEvents : function(){
-    	this.addEvents( 
+        this.addEvents( 
             <div id="event-Aurora.DataSet-ajaxfailed"></div>/**
              * @event ajaxfailed
              * ajax调用失败.
@@ -1425,13 +1504,15 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Object} opt opt.
              */
             'ajaxfailed',
-    	    <div id="event-Aurora.DataSet-beforecreate"></div>/**
+            <div id="event-Aurora.DataSet-beforecreate"></div>/**
              * @event beforecreate
              * 数据创建前事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
+             * @param {Object} object 新增的数据对象.
+             * @return ${Boolean} result 如果为true则新增一条记录,false则不新增直接返回
              */
-    		'beforecreate',
-    		<div id="event-Aurora.DataSet-metachange"></div>/**
+            'beforecreate',
+            <div id="event-Aurora.DataSet-metachange"></div>/**
              * @event metachange
              * meta配置改变事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
@@ -1440,8 +1521,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {String} type 类型.
              * @param {Object} value 值.
              */
-	        'metachange',
-	        <div id="event-Aurora.DataSet-fieldchange"></div>/**
+            'metachange',
+            <div id="event-Aurora.DataSet-fieldchange"></div>/**
              * @event fieldchange
              * field配置改变事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
@@ -1450,30 +1531,32 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {String} type 类型.
              * @param {Object} value 值.
              */
-	        'fieldchange',
-	        <div id="event-Aurora.DataSet-add"></div>/**
+            'fieldchange',
+            <div id="event-Aurora.DataSet-add"></div>/**
              * @event add
              * 数据增加事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 增加的record.
              * @param {Number} index 指针.
              */
-	        'add',
-	        <div id="event-Aurora.DataSet-remove"></div>/**
+            'add',
+            <div id="event-Aurora.DataSet-remove"></div>/**
              * @event remove
              * 数据删除事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 删除的record.
              * @param {Number} index 指针.
              */
-	        'remove',
-	        <div id="event-Aurora.DataSet-beforeremove"></div>/**
+            'remove',
+            <div id="event-Aurora.DataSet-beforeremove"></div>/**
              * @event beforeremove
              * 数据删除前.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
+             * @param {Array} records 将要删除的数据集合
+             * @return ${Boolean} result 如果为true则删除一条记录,false则不删除直接返回
              */
             'beforeremove',
-	        <div id="event-Aurora.DataSet-update"></div>/**
+            <div id="event-Aurora.DataSet-update"></div>/**
              * @event update
              * 数据更新事件.
              * "update", this, record, name, value
@@ -1483,32 +1566,32 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Object} value 更新的值.
              * @param {Object} oldvalue 更新前的值.
              */
-	        'update',
-	        <div id="event-Aurora.DataSet-clear"></div>/**
+            'update',
+            <div id="event-Aurora.DataSet-clear"></div>/**
              * @event clear
              * 清除数据事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */
-	        'clear',
-	        <div id="event-Aurora.DataSet-query"></div>/**
+            'clear',
+            <div id="event-Aurora.DataSet-query"></div>/**
              * @event query
              * 查询事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */ 
             'query',
-	        <div id="event-Aurora.DataSet-beforeload"></div>/**
+            <div id="event-Aurora.DataSet-beforeload"></div>/**
              * @event beforeload
              * 准备加载数据事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */ 
-	        'beforeload',
+            'beforeload',
             <div id="event-Aurora.DataSet-load"></div>/**
              * @event load
              * 加载数据事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */ 
-	        'load',
-	        <div id="event-Aurora.DataSet-loadfailed"></div>/**
+            'load',
+            <div id="event-Aurora.DataSet-loadfailed"></div>/**
              * @event loadfailed
              * 加载数据失败.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
@@ -1516,13 +1599,13 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Object} opt opt.
              */ 
             'loadfailed',
-	        <div id="event-Aurora.DataSet-refresh"></div>/**
+            <div id="event-Aurora.DataSet-refresh"></div>/**
              * @event refresh
              * 刷新事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */ 
-	        'refresh',
-	        <div id="event-Aurora.DataSet-valid"></div>/**
+            'refresh',
+            <div id="event-Aurora.DataSet-valid"></div>/**
              * @event valid
              * DataSet校验事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
@@ -1530,29 +1613,36 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {String} name 校验的field.
              * @param {Boolean} valid 校验结果. true 校验成功  false 校验失败
              */ 
-	        'valid',
-	        <div id="event-Aurora.DataSet-indexchange"></div>/**
+            'valid',
+            <div id="event-Aurora.DataSet-indexchange"></div>/**
              * @event indexchange
              * DataSet当前指针改变事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 当前record.
              */ 
-	        'indexchange',
-	        <div id="event-Aurora.DataSet-select"></div>/**
+            'indexchange',
+            <div id="event-Aurora.DataSet-beforeselect"></div>/**
+             * @event beforeselect
+             * 选择数据前事件.
+             * @param {Aurora.DataSet} dataSet 当前DataSet.
+             * @param {Aurora.Record} record 选择的record.
+             */ 
+            'beforeselect',
+            <div id="event-Aurora.DataSet-select"></div>/**
              * @event select
              * 选择数据事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 选择的record.
              */ 
-	        'select',
-	        <div id="event-Aurora.DataSet-unselect"></div>/**
+            'select',
+            <div id="event-Aurora.DataSet-unselect"></div>/**
              * @event unselect
              * 取消选择数据事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 取消选择的record.
              */
-	        'unselect',
-	        <div id="event-Aurora.DataSet-reject"></div>/**
+            'unselect',
+            <div id="event-Aurora.DataSet-reject"></div>/**
              * @event reject
              * 数据重置事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
@@ -1560,41 +1650,41 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {String} name 重置的field.
              * @param {Object} value 重置的值.
              */
-	        'reject',
-	        <div id="event-Aurora.DataSet-beforesubmit"></div>/**
+            'reject',
+            <div id="event-Aurora.DataSet-beforesubmit"></div>/**
              * @event beforesubmit
              * 数据提交前事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */
-	        'beforesubmit',
-	        <div id="event-Aurora.DataSet-submit"></div>/**
+            'beforesubmit',
+            <div id="event-Aurora.DataSet-submit"></div>/**
              * @event submit
              * 数据提交事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {String} url 提交的url.
              * @param {Array} datas 提交的数据.
              */
-	        'submit',
-	        <div id="event-Aurora.DataSet-submitsuccess"></div>/**
+            'submit',
+            <div id="event-Aurora.DataSet-submitsuccess"></div>/**
              * @event submitsuccess
              * 数据提交成功事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Object} res 返回结果res.
              */
             'submitsuccess',
-	        <div id="event-Aurora.DataSet-submitfailed"></div>/**
+            <div id="event-Aurora.DataSet-submitfailed"></div>/**
              * @event submitfailed
              * 数据提交失败事件.
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Object} res 返回结果res.
              */
-	        'submitfailed'
-		);    	
+            'submitfailed'
+        );      
     },
     initFields : function(fields){
-    	for(var i = 0, len = fields.length; i < len; i++){
-    		var field = new $A.Record.Field(fields[i]);
-	        this.fields[field.name] = field;
+        for(var i = 0, len = fields.length; i < len; i++){
+            var field = new $A.Record.Field(fields[i]);
+            this.fields[field.name] = field;
         }
     },
     <div id="method-Aurora.DataSet-getField"></div>/**
@@ -1603,28 +1693,38 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @return {Aurora.Record.Field} field配置对象
      */
     getField : function(name){
-    	return this.fields[name];
+        return this.fields[name];
+    },
+    beforeLoadData : function(datas){
+        if(this.processfunction) {
+            var fun = $A.getRenderer(this.processfunction);
+            if(fun){
+                return fun.call(window,datas);
+            }
+        }
+        return datas;
     },
     loadData : function(datas, num, options){
+        datas = this.beforeLoadData(datas);
         this.data = [];
         this.selected = [];
-        if(num) {
-        	this.totalCount = num;
+        if(num && this.fetchall == false) {
+            this.totalCount = num;
         }else{
-        	this.totalCount = datas.length;
+            this.totalCount = datas.length;
         }
-    	this.totalPage = Math.ceil(this.totalCount/this.pagesize)
-    	for(var i = 0, len = datas.length; i < len; i++){
-    		var data = datas[i].data||datas[i];
-    		for(var key in this.fields){
-    			var field = this.fields[key];
-    			if(field){
+        this.totalPage = Math.ceil(this.totalCount/this.pagesize)
+        for(var i = 0, len = datas.length; i < len; i++){
+            var data = datas[i].data||datas[i];
+            for(var key in this.fields){
+                var field = this.fields[key];
+                if(field){
                     data[key] = this.processData(data,key,field)
-    			}
-    		}
-    		var record = new $A.Record(data,datas[i].field);
+                }
+            }
+            var record = new $A.Record(data,datas[i].field);
             record.setDataSet(this);
-	        this.data.add(record);
+            this.data.add(record);
         }
         if(this.sortInfo) this.sort();
         
@@ -1642,27 +1742,34 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.fireEvent("load", this, options);
     },
     sort : function(f, direction){
-    	//TODO:grid已经实现服务端排序
+        //TODO:grid已经实现服务端排序
     },
+    <div id="method-Aurora.DataSet-create"></div>/**
+     * 创建一条记录
+     * @param {Object} data 数据对象
+     * @return {Aurora.Record} record 返回创建的record对象
+     */
     create : function(data, valid){
-    	this.fireEvent("beforecreate", this);
-    	data = data||{}
-//    	if(valid !== false) if(!this.validCurrent())return;
-    	var dd = {};
-    	for(var k in this.fields){
-    		var field = this.fields[k];
-    		var dv = field.getPropertity('defaultvalue');
-    		if(dv && !data[field.name]){
-    			dd[field.name] = dv;
-    		}
-            this.processValueListField(dd,k,field);
-    	}
-    	var data = Ext.apply(data||{},dd);
-    	var record = new $A.Record(data);
-        this.add(record); 
-//        var index = (this.currentPage-1)*this.pagesize + this.data.length;
-//        this.locate(index, true);
-        return record;
+        data = data||{}
+        if(this.fireEvent("beforecreate", this, data)){
+    //      if(valid !== false) if(!this.validCurrent())return;
+            var dd = {};
+            for(var k in this.fields){
+                var field = this.fields[k];
+                var dv = field.getPropertity('defaultvalue');
+                if(dv && !data[field.name]){
+                    dd[field.name] = dv;
+                }else {
+                    dd[field.name] = this.processValueListField(dd,data[field.name],field);
+                }
+            }
+            var data = Ext.apply(data||{},dd);
+            var record = new $A.Record(data);
+            this.add(record); 
+    //        var index = (this.currentPage-1)*this.pagesize + this.data.length;
+    //        this.locate(index, true);
+            return record;
+        }
     },
     <div id="method-Aurora.DataSet-getNewRecrods"></div>/**
      * 获取所有新创建的数据. 
@@ -1671,35 +1778,35 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     getNewRecrods: function(){
         var records = this.getAll();
         var news = [];
-       	for(var k = 0,l=records.length;k<l;k++){
-			var record = records[k];
-			if(record.isNew == true){
-				news.add(record);
-			}
-		}
-		return news;
+        for(var k = 0,l=records.length;k<l;k++){
+            var record = records[k];
+            if(record.isNew == true){
+                news.add(record);
+            }
+        }
+        return news;
     },
 //    validCurrent : function(){
-//    	var c = this.getCurrentRecord();
-//    	if(c==null)return true;
-//    	return c.validateRecord();
+//      var c = this.getCurrentRecord();
+//      if(c==null)return true;
+//      return c.validateRecord();
 //    },
     <div id="method-Aurora.DataSet-add"></div>/**
      * 新增数据. 
      * @param {Aurora.Record} record 需要新增的Record对象. 
      */
     add : function(record){
-    	record.isNew = true;
+        record.isNew = true;
         record.setDataSet(this);
         var index = this.data.length;
         this.data.add(record);
 //        for(var k in this.fields){
-//    		var field = this.fields[k];
-//    		if(field.type == 'dataset'){    			
-//    			var ds = field.pro['dataset'];
-//    			ds.resetConfig()   			
-//    		}
-//    	}
+//          var field = this.fields[k];
+//          if(field.type == 'dataset'){                
+//              var ds = field.pro['dataset'];
+//              ds.resetConfig()            
+//          }
+//      }
         var index = (this.currentPage-1)*this.pagesize + this.data.length;
         this.currentIndex = index;
         this.fireEvent("add", this, record, index);
@@ -1717,8 +1824,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @return {Aurora.Record} 当前指针所处的Record
      */
     getCurrentRecord : function(){
-    	if(this.data.length ==0) return null;
-    	return this.data[this.currentIndex - (this.currentPage-1)*this.pagesize -1];
+        if(this.data.length ==0) return null;
+        return this.data[this.currentIndex - (this.currentPage-1)*this.pagesize -1];
     },
     <div id="method-Aurora.DataSet-insert"></div>/**
      * 插入数据. 
@@ -1740,55 +1847,56 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @param {Aurora.Record} record 需要移除的Record.
      */
     remove : function(record){
-    	if(!record){
-    		record = this.getCurrentRecord();
-    	}
-    	if(!record)return;
-    	this.fireEvent("beforeremove", this);
-    	var rs = [].concat(record);
-    	var rrs = [];
-    	for(var i=0;i<rs.length;i++){
-    		var r = rs[i]
-    		if(r.isNew){
-                this.removeLocal(r);
-    		}else{    		
-                rrs[rrs.length] = r;
-    		}
-    	}
-    	this.removeRemote(rrs);    	
+        if(!record){
+            record = this.getCurrentRecord();
+        }
+        if(!record)return;
+        var rs = [].concat(record);
+        if(this.fireEvent("beforeremove", this, rs)){
+            var rrs = [];
+            for(var i=0;i<rs.length;i++){
+                var r = rs[i]
+                if(r.isNew){
+                    this.removeLocal(r);
+                }else{          
+                    rrs[rrs.length] = r;
+                }
+            }
+            this.removeRemote(rrs);
+        }
     },
-    removeRemote: function(rs){    	
-    	if(this.submiturl == '') return;
-    	var p = [];
-    	for(var k=0;k<rs.length;k++){
-    		var r = rs[k]
-    		for(var key in this.fields){
+    removeRemote: function(rs){     
+        if(this.submiturl == '') return;
+        var p = [];
+        for(var k=0;k<rs.length;k++){
+            var r = rs[k]
+            for(var key in this.fields){
                 var f = this.fields[key];
                 if(f && f.type == 'dataset') delete r.data[key];
             }
-        	var d = Ext.apply({}, r.data);
-    		d['_id'] = r.id;
-    		d['_status'] = 'delete';
+            var d = Ext.apply({}, r.data);
+            d['_id'] = r.id;
+            d['_status'] = 'delete';
             p[k] = d
-    	}
-//    	var p = [d];
-//    	for(var i=0;i<p.length;i++){
-//    		p[i] = Ext.apply(p[i],this.spara)
-//    	}
-    	if(p.length > 0) {
-    		var opts;
-    		if(this.bindtarget){
+        }
+//      var p = [d];
+//      for(var i=0;i<p.length;i++){
+//          p[i] = Ext.apply(p[i],this.spara)
+//      }
+        if(p.length > 0) {
+            var opts;
+            if(this.bindtarget){
                 var bd = $A.CmpManager.get(this.bindtarget);
                 opts = {record:bd.getCurrentRecord(),dataSet:this};
-    		}
-	    	$A.request({url:this.submiturl, para:p, ext:this.spara,success:this.onRemoveSuccess, error:this.onSubmitError, scope:this, failure:this.onAjaxFailed,opts:opts});
-    	}
+            }
+            $A.request({url:this.submiturl, para:p, ext:this.spara,success:this.onRemoveSuccess, error:this.onSubmitError, scope:this, failure:this.onAjaxFailed,opts:opts});
+        }
     
     },
     onRemoveSuccess: function(res,options){
-    	if(res.result.record){
-    		var datas = [].concat(res.result.record);
-    		if(this.bindtarget){
+        if(res.result.record){
+            var datas = [].concat(res.result.record);
+            if(this.bindtarget){
                 var bd = $A.CmpManager.get(this.bindtarget);
                 if(bd.getCurrentRecord()==options.opts.record){
                     for(var i=0;i<datas.length;i++){
@@ -1812,43 +1920,36 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                     this.removeLocal(this.findById(data['_id']),true); 
                 }
             }
-    	}
+        }
     },
     removeLocal: function(record,count){
-    	$A.removeInvalidReocrd(this.id, record)
-    	var index = this.data.indexOf(record);    	
-    	if(index == -1)return;
+        $A.removeInvalidReocrd(this.id, record)
+        var index = this.data.indexOf(record);      
+        if(index == -1)return;
         this.data.remove(record);
         if(count) this.totalCount --;
         this.selected.remove(record);
-        if(this.data.length == 0){
-        	this.removeAll();
-        	return;
-        }
-        var lindex = this.currentIndex - (this.currentPage-1)*this.pagesize;
-        if(lindex<0)return;
-        if(lindex<=this.data.length){
-        	this.locate(this.currentIndex,true);
-        }else{
-        	this.pre();
-        }
-//        if(this.currentIndex<=this.data.length){
-////        	this.next();
-//        	this.locate(this.currentIndex,true);
-//        }else{
-////        	this.pre();
-//        	var index = this.currentIndex-1;
-//        	if(index>=0)
-//        	this.locate(index,true);
+//        if(this.data.length == 0){
+//          this.removeAll();
+//          return;
 //        }
-        this.fireEvent("remove", this, record, index);    	
+        if(this.data.length != 0){
+            var lindex = this.currentIndex - (this.currentPage-1)*this.pagesize;
+            if(lindex<0)return;
+            if(lindex<=this.data.length){
+                this.locate(this.currentIndex,true);
+            }else{
+                this.pre();
+            }
+        }
+        this.fireEvent("remove", this, record, index);      
     },
     <div id="method-Aurora.DataSet-getAll"></div>/**
      * 获取当前数据集下的所有数据.  
      * @return {Array} records 当前数据集的所有Record.
      */
     getAll : function(){
-    	return this.data;    	
+        return this.data;       
     },
     <div id="method-Aurora.DataSet-find"></div>/**
      * 查找数据.  
@@ -1857,15 +1958,15 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @return {Aurora.Record} 符合查找条件的第一个record
      */
     find : function(property, value){
-    	var r = null;
-    	this.each(function(record){
-    		var v = record.get(property);
-    		if(v ==value){
-    			r = record;
-    			return false;    			
-    		}
-    	}, this)
-    	return r;
+        var r = null;
+        this.each(function(record){
+            var v = record.get(property);
+            if(v ==value){
+                r = record;
+                return false;               
+            }
+        }, this)
+        return r;
     },
     <div id="method-Aurora.DataSet-findById"></div>/**
      * 根据id查找数据.  
@@ -1873,10 +1974,10 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @return {Aurora.Record} 查找的record
      */
     findById : function(id){
-    	var find = null;
-    	for(var i = 0,len = this.data.length; i < len; i++){
+        var find = null;
+        for(var i = 0,len = this.data.length; i < len; i++){
             if(this.data[i].id == id){
-            	find = this.data[i]
+                find = this.data[i]
                 break;
             }
         }
@@ -1886,7 +1987,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * 删除所有数据.
      */
     removeAll : function(){
-    	this.currentIndex = 1;
+        this.currentIndex = 1;
+        this.totalCount = 0;
         this.data = [];
         this.selected = [];
         this.fireEvent("clear", this);
@@ -1915,236 +2017,250 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         }
     },
     processCurrentRow : function(){
-    	var r = this.getCurrentRecord();
-    	for(var k in this.fields){
-    		var field = this.fields[k];
-    		if(field.type == 'dataset'){
-    			var ds = field.pro['dataset'];
-    			if(r && r.data[field.name]){
-    				ds.reConfig(r.data[field.name]);
-    			}else{
-    				ds.resetConfig();
-    			}
-    			ds.fireEvent('refresh',ds)
-    			ds.processCurrentRow();
-    		}
-    	}
-    	if(r) this.fireEvent("indexchange", this, r);
+        var r = this.getCurrentRecord();
+        for(var k in this.fields){
+            var field = this.fields[k];
+            if(field.type == 'dataset'){
+                var ds = field.pro['dataset'];
+                if(r && r.data[field.name]){
+                    ds.reConfig(r.data[field.name]);
+                }else{
+                    ds.resetConfig();
+                }
+                ds.fireEvent('refresh',ds)
+                ds.processCurrentRow();
+            }
+        }
+        if(r) this.fireEvent("indexchange", this, r);
     },
     <div id="method-Aurora.DataSet-getSelected"></div>/**
      * 获取所有选择的数据.
      * @return {Array} 所有选择数据.
      */
     getSelected : function(){
-    	return this.selected;
+        return this.selected;
     },
     <div id="method-Aurora.DataSet-selectAll"></div>/**
      * 选择所有数据.
      */
     selectAll : function(){
-    	for(var i=0,l=this.data.length;i<l;i++){
-    		this.select(this.data[i]);
-    	}
+        for(var i=0,l=this.data.length;i<l;i++){
+            this.select(this.data[i]);
+        }
     },
     <div id="method-Aurora.DataSet-unSelectAll"></div>/**
      * 取消所有选择.
      */
     unSelectAll : function(){
-    	for(var i=0,l=this.data.length;i<l;i++){
-    		this.unSelect(this.data[i]);
-    	}
+        for(var i=0,l=this.data.length;i<l;i++){
+            this.unSelect(this.data[i]);
+        }
     },
     <div id="method-Aurora.DataSet-select"></div>/**
      * 选择某个record.
      * @param {Aurora.Record} record 需要选择的record.
      */
     select : function(r){
-    	if(!this.selectable)return;
-    	if(typeof(r) == 'string') r = this.findById(r);
-    	if(this.selected.indexOf(r) != -1)return;
-    	if(!this.execSelectFunction(r))return;
-    	if(this.selectionmodel == 'multiple'){
-			this.selected.add(r);
-			this.fireEvent('select', this, r);
-       	}else{
-       		var or = this.selected[0];
-       		this.unSelect(or);
-       		this.selected = []
-       		this.selected.add(r);
-       		this.fireEvent('select', this, r);
-       	}
+        if(!this.selectable)return;
+        if(typeof(r) == 'string'||typeof(r) == 'number') r = this.findById(r);
+        if(!r) return;
+        if(this.selected.indexOf(r) != -1)return;
+        if(!this.execSelectFunction(r))return;
+        if(this.fireEvent("beforeselect",this,r)){
+            if(this.selectionmodel == 'multiple'){
+                this.selected.add(r);
+                this.fireEvent('select', this, r);
+            }else{
+                var or = this.selected[0];
+                this.unSelect(or);
+                this.selected = []
+                this.selected.add(r);
+                this.fireEvent('select', this, r);
+            }
+        }
     },
     <div id="method-Aurora.DataSet-unSelect"></div>/**
      * 取消选择某个record.
      * @param {Aurora.Record} record 需要取消选择的record.
      */
     unSelect : function(r){
-    	if(!this.selectable)return;
-    	if(typeof(r) == 'string') r = this.findById(r);
-    	if(this.selected.indexOf(r) == -1) return;
-		this.selected.remove(r);
-		this.fireEvent('unselect', this, r);
+        if(!this.selectable)return;
+        if(typeof(r) == 'string'||typeof(r) == 'number') r = this.findById(r);
+        if(!r) return;
+        if(this.selected.indexOf(r) == -1) return;
+        this.selected.remove(r);
+        this.fireEvent('unselect', this, r);
     },
     execSelectFunction:function(r){
-    	if(this.selectfunction){
-    		var selfun = $A.getRenderer(this.selectfunction);
+        if(this.selectfunction){
+            var selfun = $A.getRenderer(this.selectfunction);
             if(selfun == null){
                 alert("未找到"+this.selectfunction+"方法!")
             }else{
-            	var b=selfun.call(window,r);
-            	if(Ext.isDefined(b))return b;
+                var b=selfun.call(window,r);
+                if(Ext.isDefined(b))return b;
             }
-    	}
-    	return true;
+        }
+        return true;
     },
     <div id="method-Aurora.DataSet-locate"></div>/**
      * 定位到某个指针位置.
      * @param {Number} index 指针位置.
      */
     locate : function(index, force){
-    	if(this.currentIndex == index && force !== true) return;
-//    	if(valid !== false) if(!this.validCurrent())return;
-    	if(index <=0 || (index > this.totalCount + this.getNewRecrods().length))return;
-    	var lindex = index - (this.currentPage-1)*this.pagesize;
-    	if(this.data[lindex - 1]){
-	    	this.currentIndex = index;
-    	}else{
-    		if(this.isModified()){
-    			$A.showInfoMessage(_lang['dataset.info'], _lang['dataset.info.locate'])
-    		}else{
-				this.currentIndex = index;
-				this.currentPage =  Math.ceil(index/this.pagesize);
-				this.query(this.currentPage);
-				return;
-    		}
-    	}
-    	this.processCurrentRow();
+        if(this.currentIndex === index && force !== true) return;
+//      if(valid !== false) if(!this.validCurrent())return;
+        if(index <=0 || (index > this.totalCount + this.getNewRecrods().length))return;
+        var lindex = index - (this.currentPage-1)*this.pagesize;
+        if(this.data[lindex - 1]){
+            this.currentIndex = index;
+        }else{
+            if(this.isModified()){
+                $A.showInfoMessage(_lang['dataset.info'], _lang['dataset.info.locate'])
+            }else{
+                this.currentIndex = index;
+                this.currentPage =  Math.ceil(index/this.pagesize);
+                this.query(this.currentPage);
+                return;
+            }
+        }
+        this.processCurrentRow();
     },
     <div id="method-Aurora.DataSet-goPage"></div>/**
      * 定位到某页.
      * @param {Number} page 页数.
      */
     goPage : function(page){
-    	if(page >0) {
-    		this.gotoPage = page;
-	    	var go = (page-1)*this.pagesize + this.getNewRecrods().length +1;
-//	    	var go = Math.max(0,page-2)*this.pagesize + this.data.length + 1;
-	    	this.locate(go);
-    	}
+        if(page >0) {
+            this.gotoPage = page;
+            var go = (page-1)*this.pagesize + 1;
+            var news = this.getAll().length-this.pagesize;
+            if(this.currentPage < page && news > 0)go+=news;
+//          var go = Math.max(0,page-2)*this.pagesize + this.data.length + 1;
+            this.locate(go);
+        }
     },
     <div id="method-Aurora.DataSet-first"></div>/**
      * 定位到所有数据的第一条位置.
      */
     first : function(){
-    	this.locate(1);
+        this.locate(1);
     },
     <div id="method-Aurora.DataSet-pre"></div>/**
      * 向前移动一个指针位置.
      */
     pre : function(){
-    	this.locate(this.currentIndex-1);    	
+        this.locate(this.currentIndex-1);       
     },
     <div id="method-Aurora.DataSet-next"></div>/**
      * 向后移动一个指针位置.
      */
     next : function(){
-    	this.locate(this.currentIndex+1);
+        this.locate(this.currentIndex+1);
     },
     <div id="method-Aurora.DataSet-firstPage"></div>/**
      * 定位到第一页.
      */
     firstPage : function(){
-    	this.goPage(1);
+        this.goPage(1);
     },
     <div id="method-Aurora.DataSet-prePage"></div>/**
      * 向前移动一页.
      */
     prePage : function(){
-    	this.goPage(this.currentPage -1);
+        this.goPage(this.currentPage -1);
     },
     <div id="method-Aurora.DataSet-nextPage"></div>/**
      * 向后移动一页.
      */
     nextPage : function(){
-    	this.goPage(this.currentPage +1);
+        this.goPage(this.currentPage +1);
     },
     <div id="method-Aurora.DataSet-lastPage"></div>/**
      * 定位到最后一页.
      */
     lastPage : function(){
-    	this.goPage(this.totalPage);
+        this.goPage(this.totalPage);
+    },
+    <div id="method-Aurora.DataSet-validateSelf"></div>/**
+     * 仅对dataset本身进行校验,不校验绑定的子dataset.
+     * @return {Boolean} valid 校验结果.
+     */
+    validateSelf : function(){
+        return this.validate(true,false)
     },
     <div id="method-Aurora.DataSet-validate"></div>/**
      * 对当前数据集进行校验.
      * @return {Boolean} valid 校验结果.
      */
-    validate : function(fire){
-    	this.isValid = true;
-    	var current = this.getCurrentRecord();
-    	if(!current)return true;
-    	var records = this.getAll();
-		var dmap = {};
-		var hassub = false;
-		var unvalidRecord = null;
-					
-    	for(var k in this.fields){
-    		var field = this.fields[k];
-    		if(field.type == 'dataset'){
-    			hassub = true;
-    			var d = field.pro['dataset'];
-    			dmap[field.name] = d;
-    		}
-    	}
-    	for(var k = 0,l=records.length;k<l;k++){
-			var record = records[k];
-			//有些项目是虚拟的字段,例如密码修改
-//			if(record.dirty == true || record.isNew == true) {
-				if(!record.validateRecord()){
-					this.isValid = false;
-					unvalidRecord = record;
-					$A.addInValidReocrd(this.id, record);
-				}else{
-					$A.removeInvalidReocrd(this.id, record);
-				}
-				if(this.isValid == false) {
-					if(hassub)break;
-				}else {
-					for(key in dmap){
-						var ds = dmap[key];
-						if(record.data[key]){
-    						ds.reConfig(record.data[key]);
-    						if(!ds.validate(false)) {
-    							this.isValid = false;
-    							unvalidRecord = record;
-    						}
-    						ds.reConfig(current.data[key]);//循环校验完毕后,重新定位到当前行
-						}
-					}
-					
-					if(this.isValid == false) {
-						break;
-					}
-									
-//				}
-			}
-		}
-		
-		if(unvalidRecord != null){
-			var r = this.indexOf(unvalidRecord);
-			if(r!=-1)this.locate(r+1);
-		}
-		if(fire !== false) {
-			$A.manager.fireEvent('valid', $A.manager, this, this.isValid);
-		}
-		if(!this.isValid) $A.showInfoMessage(_lang['dataset.info'], _lang['dataset.info.validate']);
-		return this.isValid;
+    validate : function(fire,vc){
+        this.isValid = true;
+        var current = this.getCurrentRecord();
+        if(!current)return true;
+        var records = this.getAll();
+        var dmap = {};
+        var hassub = false;
+        var unvalidRecord = null;
+        
+        if(vc !== false)
+        for(var k in this.fields){
+            var field = this.fields[k];
+            if(field.type == 'dataset'){
+                hassub = true;
+                var d = field.pro['dataset'];
+                dmap[field.name] = d;
+            }
+        }
+        for(var k = 0,l=records.length;k<l;k++){
+            var record = records[k];
+            //有些项目是虚拟的字段,例如密码修改
+//          if(record.dirty == true || record.isNew == true) {
+                if(!record.validateRecord()){
+                    this.isValid = false;
+                    unvalidRecord = record;
+                    $A.addInValidReocrd(this.id, record);
+                }else{
+                    $A.removeInvalidReocrd(this.id, record);
+                }
+                if(this.isValid == false) {
+                    if(hassub)break;
+                } else {
+                    for(key in dmap){
+                        var ds = dmap[key];
+                        if(record.data[key]){
+                            ds.reConfig(record.data[key]);
+                            if(!ds.validate(false)) {
+                                this.isValid = false;
+                                unvalidRecord = record;
+                            }
+                            ds.reConfig(current.data[key]);//循环校验完毕后,重新定位到当前行
+                        }
+                    }
+                    
+                    if(this.isValid == false) {
+                        break;
+                    }
+                                    
+//              }
+            }
+        }
+        
+        if(unvalidRecord != null){
+            var r = this.indexOf(unvalidRecord);
+            if(r!=-1)this.locate(r+1);
+        }
+        if(fire !== false) {
+            $A.manager.fireEvent('valid', $A.manager, this, this.isValid);
+            if(!this.isValid) $A.showInfoMessage(_lang['dataset.info'], _lang['dataset.info.validate']);
+        }
+        return this.isValid;
     },
     <div id="method-Aurora.DataSet-setQueryUrl"></div>/**
      * 设置查询的Url.
      * @param {String} url 查询的Url.
      */
     setQueryUrl : function(url){
-    	this.queryurl = url;
+        this.queryurl = url;
     },
     <div id="method-Aurora.DataSet-setQueryParameter"></div>/**
      * 设置查询的参数.
@@ -2159,15 +2275,15 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @param {Aurora.DataSet} ds DataSet.
      */
     setQueryDataSet : function(ds){ 
-    	this.qds = ds;
-    	if(this.qds.getCurrentRecord() == null) this.qds.create();
+        this.qds = ds;
+        if(this.qds.getCurrentRecord() == null) this.qds.create();
     },
     <div id="method-Aurora.DataSet-setSubmitUrl"></div>/**
      * 设置提交的Url.
      * @param {String} url 提交的Url.
      */
     setSubmitUrl : function(url){
-    	this.submiturl = url;
+        this.submiturl = url;
     },
     <div id="method-Aurora.DataSet-setSubmitParameter"></div>/**
      * 设置提交的参数.
@@ -2182,57 +2298,58 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * @param {Number} page(可选) 查询的页数.
      */
     query : function(page,opts){
-    	$A.slideBarEnable = $A.SideBar.enable;
-    	$A.SideBar.enable = false;
-    	if(!this.queryurl) return;
-    	if(this.qds) {
-    		if(this.qds.getCurrentRecord() == null) this.qds.create();
-	    	var sf=this,intervalId=setInterval(function(){
-	    		if(!sf.qds.getCurrentRecord().isReady)return;
-		        clearInterval(intervalId);
-		        if(!sf.qds.validate()) return;
-		        sf.doQuery(page,opts);
-	    	},10);
-    	}else{
-    		this.doQuery(page,opts);
-    	}
+        $A.slideBarEnable = $A.SideBar.enable;
+        $A.SideBar.enable = false;
+        if(!this.queryurl) return;
+        if(this.qds) {
+            if(this.qds.getCurrentRecord() == null) this.qds.create();
+            var sf=this,intervalId=setInterval(function(){
+                if(!sf.qds.getCurrentRecord().isReady)return;
+                clearInterval(intervalId);
+                if(!sf.qds.validate()) return;
+                sf.doQuery(page,opts);
+            },10);
+        }else{
+            this.doQuery(page,opts);
+        }
     },
     doQuery:function(page,opts){
-    	var r;
-    	if(this.qds)r = this.qds.getCurrentRecord();
-    	if(!page) this.currentIndex = 1;
-    	this.currentPage = page || 1;
-    	var q = {};
-    	if(r != null) Ext.apply(q, r.data);
-    	Ext.apply(q, this.qpara);
-    	for(var k in q){
-    	   var v = q[k];
-    	   if(Ext.isEmpty(v,false)) delete q[k];
-    	}
-    	var para = 'pagesize='+this.pagesize + 
-    				  '&pagenum='+this.currentPage+
-    				  '&_fetchall='+this.fetchall+
-    				  '&_autocount='+this.autocount
-//    				  + '&_rootpath=list'
-    	var url = this.queryurl +(this.queryurl.indexOf('?') == -1?'?':'&') + para;
-    	this.loading = true;
-    	this.fireEvent("query", this);
-//    	this.fireBindDataSetEvent("beforeload", this);//主dataset无数据,子dataset一直loading
-    	$A.request({url:url, para:q, success:this.onLoadSuccess, error:this.onLoadError, scope:this,failure:this.onAjaxFailed,opts:opts,ext:opts?opts.ext:null});
+        var r;
+        if(this.qds)r = this.qds.getCurrentRecord();
+        if(!page) this.currentIndex = 1;
+        this.currentPage = page || 1;
+        var q = {};
+        if(r != null) Ext.apply(q, r.data);
+        Ext.apply(q, this.qpara);
+        for(var k in q){
+           var v = q[k];
+           if(Ext.isEmpty(v,false)) delete q[k];
+        }
+        var para = 'pagesize='+this.pagesize + 
+                      '&pagenum='+this.currentPage+
+                      '&_fetchall='+this.fetchall+
+                      '&_autocount='+this.autocount
+//                    + '&_rootpath=list'
+        var url = this.queryurl +(this.queryurl.indexOf('?') == -1?'?':'&') + para;
+        this.loading = true;
+        this.fireEvent("query", this);
+//      this.fireBindDataSetEvent("beforeload", this);//主dataset无数据,子dataset一直loading
+        if(this.qtId) Ext.Ajax.abort(this.qtId);
+        this.qtId = $A.request({url:url, para:q, success:this.onLoadSuccess, error:this.onLoadError, scope:this,failure:this.onAjaxFailed,opts:opts,ext:opts?opts.ext:null});
     },
     <div id="method-Aurora.DataSet-isModified"></div>/**
      * 判断当前数据集是否发生改变.
      * @return {Boolean} modified 是否发生改变.
      */
     isModified : function(){
-    	var modified = false;
-    	var records = this.getAll();
-		for(var k = 0,l=records.length;k<l;k++){
-			var record = records[k];
-			if(record.dirty == true || record.isNew == true) {
-				modified = true;
-				break;
-			}else{
+        var modified = false;
+        var records = this.getAll();
+        for(var k = 0,l=records.length;k<l;k++){
+            var record = records[k];
+            if(record.dirty == true || record.isNew == true) {
+                modified = true;
+                break;
+            }else{
                 for(var key in this.fields){
                     var field = this.fields[key];
                     if(field.type == 'dataset'){                
@@ -2244,50 +2361,50 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                         }
                     }
                 }
-			}
-		}
-		return modified;
+            }
+        }
+        return modified;
     },
 //    isDataModified : function(){
-//    	var modified = false;
-//    	for(var i=0,l=this.data.length;i<l;i++){
-//    		var r = this.data[i];    		
-//    		if(r.dirty || r.isNew){
-//    			modified = true;
-//    			break;
-//    		}
-//    	}
-//    	return modified;
+//      var modified = false;
+//      for(var i=0,l=this.data.length;i<l;i++){
+//          var r = this.data[i];           
+//          if(r.dirty || r.isNew){
+//              modified = true;
+//              break;
+//          }
+//      }
+//      return modified;
 //    },
     <div id="method-Aurora.DataSet-getJsonData"></div>/**
      * 以json格式返回当前数据集.
      * @return {Object} json 返回的json对象.
      */
     getJsonData : function(selected){
-    	var datas = [];
-    	var items = this.data;
-    	if(selected) items = this.getSelected();
-    	for(var i=0,l=items.length;i<l;i++){
-    		var r = items[i];
-    		var isAdd = r.dirty || r.isNew
-			var d = Ext.apply({}, r.data);
-			d['_id'] = r.id;
-			d['_status'] = r.isNew ? 'insert' : 'update';
-			for(var k in r.data){
-				var item = d[k];
-				if(item && item.xtype == 'dataset'){
-					var ds = new $A.DataSet({});//$(item.id);
-					ds.reConfig(item)
-					isAdd = isAdd == false ? ds.isModified() :isAdd;
-					d[k] = ds.getJsonData();
-				}
-			}
-    		if(isAdd||selected){
-	    		datas.push(d);    			
-			}
-    	}
-    	
-    	return datas;
+        var datas = [];
+        var items = this.data;
+        if(selected) items = this.getSelected();
+        for(var i=0,l=items.length;i<l;i++){
+            var r = items[i];
+            var isAdd = r.dirty || r.isNew
+            var d = Ext.apply({}, r.data);
+            d['_id'] = r.id;
+            d['_status'] = r.isNew ? 'insert' : 'update';
+            for(var k in r.data){
+                var item = d[k];
+                if(item && item.xtype == 'dataset'){
+                    var ds = new $A.DataSet({});//$(item.id);
+                    ds.reConfig(item)
+                    isAdd = isAdd == false ? ds.isModified() :isAdd;
+                    d[k] = ds.getJsonData();
+                }
+            }
+            if(isAdd||selected){
+                datas.push(d);              
+            }
+        }
+        
+        return datas;
     },
     doSubmit : function(url, items){
         if(!this.validate()){           
@@ -2312,68 +2429,70 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         //}
     },
     isAllReady:function(records){
-    	for(var i=0;i<records.length;i++){
-    		if(!records[i].isReady)return false;
-    	}
-    	return true;
+        for(var i=0;i<records.length;i++){
+            if(!records[i].isReady)return false;
+        }
+        return true;
     },
     <div id="method-Aurora.DataSet-submitSelected"></div>/**
      * 提交选中数据.
      * @param {String} url(可选) 提交的url.
      */
     submitSelected : function(url){
-    	var sf=this,intervalId=setInterval(function(){
-    		if(!sf.isAllReady(sf.getSelected()))return;
-	        clearInterval(intervalId);
-	        sf.fireEvent("beforesubmit",sf);
-	        var d = sf.getJsonData(true);
-	        sf.doSubmit(url,d);
-    	},10);
+        var sf=this,intervalId=setInterval(function(){
+            if(!sf.isAllReady(sf.getSelected()))return;
+            clearInterval(intervalId);
+            if(sf.fireEvent("beforesubmit",sf)){
+                var d = sf.getJsonData(true);
+                sf.doSubmit(url,d);
+            }
+        },10);
     },
     <div id="method-Aurora.DataSet-submit"></div>/**
      * 提交数据.
      * @param {String} url(可选) 提交的url.
      */
     submit : function(url){
-    	var sf=this,intervalId=setInterval(function(){
-    		if(!sf.isAllReady(sf.getAll()))return;
-	    	clearInterval(intervalId);
-	    	sf.fireEvent("beforesubmit",sf);
-	    	var d = sf.getJsonData();
-	    	sf.doSubmit(url,d);
-    	},10);
+        var sf=this,intervalId=setInterval(function(){
+            if(!sf.isAllReady(sf.getAll()))return;
+            clearInterval(intervalId);
+            if(sf.fireEvent("beforesubmit",sf)){
+                var d = sf.getJsonData();
+                sf.doSubmit(url,d);
+            }
+        },10);
     },
     <div id="method-Aurora.DataSet-post"></div>/**
      * post方式提交数据.
      * @param {String} url(可选) 提交的url.
      */
     post : function(url){
-    	var r=this.getCurrentRecord();
-    	if(!r)return;
-    	var sf=this,intervalId=setInterval(function(){
-    		if(!r.isReady)return;
-		    clearInterval(intervalId);
-    		if(sf.validate())Aurora.post(url,r.data);
-    	},10);
-	},
+        var r=this.getCurrentRecord();
+        if(!r)return;
+        var sf=this,intervalId=setInterval(function(){
+            if(!r.isReady)return;
+            clearInterval(intervalId);
+            if(sf.validate())Aurora.post(url,r.data);
+        },10);
+    },
     <div id="method-Aurora.DataSet-reset"></div>/**
      * 重置数据.
      */
     reset : function(){
-    	var record=this.getCurrentRecord();
-    	if(!record&&!record.fields)return;
-    	for(var c in record.fields){
-    		var v=record.fields[c].get('defaultvalue');
-    		if(v!=record.get(c))
-    			record.set(c,v==undefined||v==null?"":v);
-    	}
+        var record=this.getCurrentRecord();
+        if(!record&&!record.fields)return;
+        for(var c in record.fields){
+            var v=record.fields[c].get('defaultvalue');
+            if(v!=record.get(c))
+                record.set(c,v==undefined||v==null?"":v);
+        }
     },
     fireBindDataSetEvent : function(){//event
-    	var a = Ext.toArray(arguments);
-    	var event = a[0];
-    	a[0] = this;
-    	this.fireEvent.apply(this,[event].concat(a))
-//    	this.fireEvent(event,this);
+        var a = Ext.toArray(arguments);
+        var event = a[0];
+        a[0] = this;
+        this.fireEvent.apply(this,[event].concat(a))
+//      this.fireEvent(event,this);
         for(var k in this.fields){
             var field = this.fields[k];
             if(field.type == 'dataset'){  
@@ -2388,55 +2507,55 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.fireEvent("update", this, record, name, value,oldvalue);
     },
     afterReject : function(record, name, value) {
-    	this.fireEvent("reject", this, record, name, value);
+        this.fireEvent("reject", this, record, name, value);
     },
     onSubmitSuccess : function(res){
-    	var datas = []
-    	if(res.result.record){
-    		datas = [].concat(res.result.record);
-    		this.commitRecords(datas,true)
-    	}
-    	this.fireBindDataSetEvent('submitsuccess',res);
+        var datas = []
+        if(res.result.record){
+            datas = [].concat(res.result.record);
+            this.commitRecords(datas,true)
+        }
+        this.fireBindDataSetEvent('submitsuccess',res);
     },
     commitRecords : function(datas,fire){
-    	//this.resetConfig();
-    	for(var i=0,l=datas.length;i<l;i++){
-    		var data = datas[i];
-	    	var r = this.findById(data['_id']);
-	    	if(r.isNew) this.totalCount ++;
-	    	if(!r) return;
-	    	r.commit();
-	    	for(var k in data){
-	    		var field = k;
-				var f = this.fields[field];
-				if(f && f.type == 'dataset'){
-					var ds = f.pro['dataset'];
-					ds.reConfig(r.data[f.name]);
-	    			if(data[k].record) {
+        //this.resetConfig();
+        for(var i=0,l=datas.length;i<l;i++){
+            var data = datas[i];
+            var r = this.findById(data['_id']);
+            if(r.isNew) this.totalCount ++;
+            if(!r) return;
+            r.commit();
+            for(var k in data){
+                var field = k;
+                var f = this.fields[field];
+                if(f && f.type == 'dataset'){
+                    var ds = f.pro['dataset'];
+                    ds.reConfig(r.data[f.name]);
+                    if(data[k].record) {
                         ds.commitRecords([].concat(data[k].record), this.getCurrentRecord() == r);                     
-	    			}
-				}else{
-					var ov = r.get(field);
-					var nv = data[k]
-					if(field == '_id' || field == '_status'||field=='__parameter_parsed__') continue;
-					if(f){
-					   nv = this.processData(data,k,f);
-					}
-					if(ov != nv) {
-						if(fire){
-							//由于commit放到上面,这个时候不改变状态,防止重复提交
+                    }
+                }else{
+                    var ov = r.get(field);
+                    var nv = data[k]
+                    if(field == '_id' || field == '_status'||field=='__parameter_parsed__') continue;
+                    if(f){
+                       nv = this.processData(data,k,f);
+                    }
+                    if(ov != nv) {
+                        if(fire){
+                            //由于commit放到上面,这个时候不改变状态,防止重复提交
                             r.set(field,nv, true);
-						}else{
+                        }else{
                             r.data[field] = nv;
-						}
-					}
-				}
-	       	}
-//	       	r.commit();//挪到上面了,record.set的时候会触发update事件,重新渲染.有可能去判断isNew的状态
-    	}
+                        }
+                    }
+                }
+            }
+//          r.commit();//挪到上面了,record.set的时候会触发update事件,重新渲染.有可能去判断isNew的状态
+        }
     },
     processData: function(data,key,field){
-    	var v = data[key];
+        var v = data[key];
         if(v){
             var dt = field.getPropertity('datatype');
             dt = dt ? dt.toLowerCase() : '';
@@ -2494,50 +2613,50 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         return v;
     },
     onSubmitError : function(res){
-//    	$A.showErrorMessage('错误', res.error.message||res.error.stackTrace,null,400,200);
-    	this.fireBindDataSetEvent('submitfailed', res);
+//      $A.showErrorMessage('错误', res.error.message||res.error.stackTrace,null,400,200);
+        this.fireBindDataSetEvent('submitfailed', res);
     },
     onLoadSuccess : function(res, options){
-    	if(res == null) return;
-    	if(!res.result.record) res.result.record = [];
-    	var records = [].concat(res.result.record);
-    	var total = res.result.totalCount;
-    	var datas = [];
-    	if(records.length > 0){
-    		for(var i=0,l=records.length;i<l;i++){
-	    		var item = {
-	    			data:records[i]	    		
-	    		}
-    			datas.push(item);
-    		}
-    	}else if(records.length == 0){
-    		this.currentIndex  = 1
-    	}    	
-    	this.loading = false;
-    	this.loadData(datas, total, options);
-    	this.locate(this.currentIndex,true);
-    	
+        if(res == null) return;
+        if(!res.result.record) res.result.record = [];
+        var records = [].concat(res.result.record);
+        var total = res.result.totalCount;
+        var datas = [];
+        if(records.length > 0){
+            for(var i=0,l=records.length;i<l;i++){
+                var item = {
+                    data:records[i]             
+                }
+                datas.push(item);
+            }
+        }else if(records.length == 0){
+            this.currentIndex  = 1
+        }       
+        this.loading = false;
+        this.loadData(datas, total, options);
+        this.locate(this.currentIndex,true);
+        
         $A.SideBar.enable = $A.slideBarEnable;
-	    
+        
     },
     onAjaxFailed : function(res,opt){
-    	this.fireBindDataSetEvent('ajaxfailed',res,opt);
+        this.fireBindDataSetEvent('ajaxfailed',res,opt);
     },
     onLoadError : function(res,opt){
-    	this.fireBindDataSetEvent('loadfailed', res,opt);
-//    	$A.showWarningMessage('错误', res.error.message||res.error.stackTrace,null,350,150);
-    	this.loading = false;
-    	$A.SideBar.enable = $A.slideBarEnable;
+        this.fireBindDataSetEvent('loadfailed', res,opt);
+//      $A.showWarningMessage('错误', res.error.message||res.error.stackTrace,null,350,150);
+        this.loading = false;
+        $A.SideBar.enable = $A.slideBarEnable;
     },
     onFieldChange : function(record,field,type,value) {
-    	this.fireEvent('fieldchange', this, record, field, type, value)
+        this.fireEvent('fieldchange', this, record, field, type, value)
     },
     onMetaChange : function(record,meta,type,value) {
-    	this.fireEvent('metachange', this, record, meta, type, value)
+        this.fireEvent('metachange', this, record, meta, type, value)
     },
     onRecordValid : function(record, name, valid){
-    	if(valid==false && this.isValid !== false) this.isValid = false;
-    	this.fireEvent('valid', this, record, name, valid)
+        if(valid==false && this.isValid !== false) this.isValid = false;
+        this.fireEvent('valid', this, record, name, valid)
     }
 });
 
@@ -2549,7 +2668,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
  * @param {Array} fields 配置对象. 
  */
 $A.Record = function(data, fields){
-	<div id="prop-Aurora.Record-id"></div>/**
+    <div id="prop-Aurora.Record-id"></div>/**
      * Record的id. (只读).
      * @type Number
      * @property
@@ -2590,93 +2709,94 @@ $A.Record = function(data, fields){
      * @type Boolean
      * @property
      */
-	this.dirty = false;	
-	<div id="prop-Aurora.Record-editing"></div>/**
+    this.dirty = false; 
+    <div id="prop-Aurora.Record-editing"></div>/**
      * 编辑状态 (只读).
      * @type Boolean
      * @property
      */
-	this.editing = false;
-	<div id="prop-Aurora.Record-modified"></div>/**
+    this.editing = false;
+    <div id="prop-Aurora.Record-modified"></div>/**
      * 编辑信息对象 (只读).
      * @type Object
      * @property
      */
-	this.modified= null;
-	<div id="prop-Aurora.Record-isReady"></div>/**
+    this.modified= null;
+    <div id="prop-Aurora.Record-isReady"></div>/**
      * 是否是已就绪数据 (只读).
      * @type Boolean
      * @property
      */
-	this.isReady=true;
+    this.isReady=true;
     this.meta = new $A.Record.Meta(this);
     if(fields)this.initFields(fields);
 };
 $A.Record.prototype = {
-	commit : function() {
-		this.editing = false;
-		this.valid = {};
-		this.isValid = true;
-		this.isNew = false;
-		this.dirty = false;
-		this.modified = null;
-	},
-	initFields : function(fields){
-		for(var i=0,l=fields.length;i<l;i++){
-			var f = new $A.Record.Field(fields[i]);
-			f.record = this;
-			this.fields[f.name] = f;
-		}
-	},
-	validateRecord : function() {
-		this.isValid = true;
-		this.valid = {};
-		var df = this.ds.fields;
-		var rf = this.fields;
-		var names = [];
-		for(var k in df){
-			if(df[k].type !='dataset')
-			names.add(k);
-		}
-		
-		for(var k in rf){
-			if(names.indexOf(k) == -1){
-				if(rf[k].type !='dataset')
-				names.add(k);
-			}
-		}
-		for(var i=0,l=names.length;i<l;i++){
-			if(this.isValid == true) {
-				this.isValid = this.validate(names[i]);
-			} else {
-				this.validate(names[i]);
-			}
-		}
-		return this.isValid;
-	},
-	validate : function(name){
-		var valid = true;
-		var v = this.get(name);
-		var field = this.getMeta().getField(name)
+    commit : function() {
+        this.editing = false;
+        this.valid = {};
+        this.isValid = true;
+        this.isNew = false;
+        this.dirty = false;
+        this.modified = null;
+    },
+    initFields : function(fields){
+        for(var i=0,l=fields.length;i<l;i++){
+            var f = new $A.Record.Field(fields[i]);
+            f.record = this;
+            this.fields[f.name] = f;
+        }
+    },
+    validateRecord : function() {
+        this.isValid = true;
+        this.valid = {};
+        var df = this.ds.fields;
+        var rf = this.fields;
+        var names = [];
+        for(var k in df){
+            if(df[k].type !='dataset')
+            names.add(k);
+        }
+        
+        for(var k in rf){
+            if(names.indexOf(k) == -1){
+                if(rf[k].type !='dataset')
+                names.add(k);
+            }
+        }
+        for(var i=0,l=names.length;i<l;i++){
+            if(this.isValid == true) {
+                this.isValid = this.validate(names[i]);
+            } else {
+                this.validate(names[i]);
+            }
+        }
+        return this.isValid;
+    },
+    validate : function(name){
+        var valid = true;
+        var v = this.get(name);
+        var field = this.getMeta().getField(name)
         var validator = field.get('validator');
-		if(Ext.isEmpty(v) && field.get('required') == true){
-			this.valid[name] = _lang['dataset.validate.required'];
-			valid =  false;
-		}else{
-			var isvalid = true;
-			if(validator){
-				validator = window[validator];
-				isvalid = validator.call(window,this, name, v);
-				if(isvalid !== true){
-					valid =	false;	
-					this.valid[name] = isvalid;
-				}
-			}
-		}
-		if(valid==true) delete this.valid[name];
-		this.ds.onRecordValid(this,name,valid);
-		return valid;
-	},
+        if(Ext.isEmpty(v) && field.get('required') == true){
+            this.valid[name] = _lang['dataset.validate.required'];
+            valid =  false;
+        }
+        if(valid == true){
+            var isvalid = true;
+            if(validator){
+                validator = window[validator];
+                isvalid = validator.call(window,this, name, v);
+                if(isvalid !== true){
+                    valid = false;  
+                    this.valid[name] = isvalid;
+                }
+            }
+        }
+        if(valid==true) delete this.valid[name];
+        this.ds.onRecordValid(this,name,valid);
+        return valid;
+    },
     setDataSet : function(ds){
         this.ds = ds;
     },
@@ -2686,21 +2806,21 @@ $A.Record.prototype = {
      * @return {Aurora.Record.Field}
      */
     getField : function(name){
-    	return this.getMeta().getField(name);
+        return this.getMeta().getField(name);
     },
     getMeta : function(){
-    	return this.meta;
+        return this.meta;
     },
     copy : function(record){
-    	if(record == this){
-    		alert('不能copy自身!');
-    		return;
-    	}
-    	if(record.dirty){
-        	for(var n in record.modified){
-        		this.set(n,record.get(n))
+        if(record == this){
+            alert('不能copy自身!');
+            return;
+        }
+        if(record.dirty){
+            for(var n in record.modified){
+                this.set(n,record.get(n))
             }
-    	}
+        }
     },
     <div id="method-Aurora.Record-set"></div>/**
      * 设置值.
@@ -2708,18 +2828,18 @@ $A.Record.prototype = {
      * @param {Object} value 设定的值.
      * @param {Boolean} notDirty true 不改变record的dirty状态.
      */
-	set : function(name, value, notDirty){
-        if(!(this.data[name] === value||(Ext.isDate(this.data[name])&&Ext.isDate(value)&&this.data[name].getTime()==value.getTime()))){
-        	if(!notDirty){
+    set : function(name, value, notDirty){
+        var old = this.data[name];
+        if(!(old === value||(Ext.isEmpty(old)&&Ext.isEmpty(value))||(Ext.isDate(old)&&Ext.isDate(value)&&old.getTime()==value.getTime()))){
+            if(!notDirty){
                 this.dirty = true;
                 if(!this.modified){
                     this.modified = {};
                 }
                 if(typeof this.modified[name] == 'undefined'){
-                    this.modified[name] = this.data[name];
+                    this.modified[name] = old;
                 }
             }
-            var old = this.data[name];
             this.data[name] = value;
             if(!this.editing && this.ds) {
                 this.ds.afterEdit(this, name, value, old);
@@ -2780,67 +2900,67 @@ $A.Record.prototype = {
 //        }        
 //    },
     onFieldChange : function(name, type, value){
-    	var field = this.getMeta().getField(name);
-    	this.ds.onFieldChange(this, field, type, value);
+        var field = this.getMeta().getField(name);
+        this.ds.onFieldChange(this, field, type, value);
     },
     onFieldClear : function(name){
-    	var field = this.getMeta().getField(name);
-    	this.ds.onFieldChange(this, field);
+        var field = this.getMeta().getField(name);
+        this.ds.onFieldChange(this, field);
     },
     onMetaChange : function(meta, type, value){
-    	this.ds.onMetaChange(this,meta, type, value);
+        this.ds.onMetaChange(this,meta, type, value);
     },
     onMetaClear : function(meta){
-    	this.ds.onMetaChange(this,meta);
+        this.ds.onMetaChange(this,meta);
     }
 }
 $A.Record.Meta = function(r){
-	this.record = r;
-	this.pro = {};
+    this.record = r;
+    this.pro = {};
 }
 $A.Record.Meta.prototype = {
-	clear : function(){
-		this.pro = {};
-		this.record.onMetaClear(this);
-	},
-	getField : function(name){
-		if(!name)return null;
-    	var f = this.record.fields[name];
-		var df = this.record.ds.fields[name];
-		var rf;
-    	if(!f){
-    		if(df){
-    			f = new $A.Record.Field({name:df.name,type:df.type||'string'});
-    		}else{
-    			f = new $A.Record.Field({name:name,type:'string'});//
-    		}
-			f.record = this.record;
-			this.record.fields[f.name]=f;
-    	}
-    	
-    	var pro = {};
-    	if(df) pro = Ext.apply(pro, df.pro);
-    	pro = Ext.apply(pro, this.pro);
-    	pro = Ext.apply(pro, f.pro);
-    	delete pro.name;
-		delete pro.type;
-    	f.snap = pro;
-    	return f;
+    clear : function(){
+        this.pro = {};
+        this.record.onMetaClear(this);
     },
-	setRequired : function(r){
-		var op = this.pro['required'];
-		if(op !== r){
-			this.pro['required'] = r;
-			this.record.onMetaChange(this, 'required', r);
-		}
-	},
-	setReadOnly : function(r){
-		var op = this.pro['readonly'];
-		if(op !== r){
-			this.pro['readonly'] = r;
-			this.record.onMetaChange(this,'readonly', r);
-		}
-	}
+    getField : function(name){
+        if(!name)return null;
+        var f = this.record.fields[name];
+        var df = this.record.ds.fields[name];
+        var rf;
+        if(!f){
+            if(df){
+                f = new $A.Record.Field({name:df.name,type:df.type||'string'});
+            }else{
+                f = new $A.Record.Field({name:name,type:'string'});//
+            }
+            f.record = this.record;
+            this.record.fields[f.name]=f;
+        }
+        
+        var pro = {};
+        if(df) pro = Ext.apply(pro, df.pro);
+        pro = Ext.apply(pro, this.pro);
+        pro = Ext.apply(pro, f.pro);
+        delete pro.name;
+        delete pro.type;
+        f.snap = pro;
+        return f;
+    },
+    setRequired : function(r){
+        var op = this.pro['required'];
+        if(op !== r){
+            this.pro['required'] = r;
+            this.record.onMetaChange(this, 'required', r);
+        }
+    },
+    setReadOnly : function(r){
+        var op = this.pro['readonly'];
+        if(op !== r){
+            this.pro['readonly'] = r;
+            this.record.onMetaChange(this,'readonly', r);
+        }
+    }
 }
 <div id="cls-Aurora.Record.Field"></div>/**
  * @class Aurora.Record.Field
@@ -2855,80 +2975,80 @@ $A.Record.Field = function(c){
     this.record;
 };
 $A.Record.Field.prototype = {
-	<div id="method-Aurora.Record.Field-clear"></div>/**
-	 * 清除所有配置信息.
-	 */
-	clear : function(){
-		this.pro = {};
-		this.record.onFieldClear(this.name);
-	},
-	setPropertity : function(type,value) {
-		var op = this.pro[type];
-		if(op !== value){
-			this.pro[type] = value;
-			this.record.onFieldChange(this.name, type, value);
-		}
-	},
-	<div id="method-Aurora.Record.Field-get"></div>/**
-	 * 获取配置信息
-	 * @param {String} name 配置名
-	 * @return {Object} value 配置值
-	 */
-	get : function(name){
-		var v = null;
-		if(this.snap){
-			v = this.snap[name];
-		}
-		return v;
-	},
-	getPropertity : function(name){
-		return this.pro[name]
-	},
-	<div id="method-Aurora.Record.Field-setRequired"></div>/**
-	 * 设置当前Field是否必输
-	 * @param {Boolean} required  是否必输.
-	 */
-	setRequired : function(r){
-		this.setPropertity('required',r);
+    <div id="method-Aurora.Record.Field-clear"></div>/**
+     * 清除所有配置信息.
+     */
+    clear : function(){
+        this.pro = {};
+        this.record.onFieldClear(this.name);
+    },
+    setPropertity : function(type,value) {
+        var op = this.pro[type];
+        if(op !== value){
+            this.pro[type] = value;
+            this.record.onFieldChange(this.name, type, value);
+        }
+    },
+    <div id="method-Aurora.Record.Field-get"></div>/**
+     * 获取配置信息
+     * @param {String} name 配置名
+     * @return {Object} value 配置值
+     */
+    get : function(name){
+        var v = null;
+        if(this.snap){
+            v = this.snap[name];
+        }
+        return v;
+    },
+    getPropertity : function(name){
+        return this.pro[name]
+    },
+    <div id="method-Aurora.Record.Field-setRequired"></div>/**
+     * 设置当前Field是否必输
+     * @param {Boolean} required  是否必输.
+     */
+    setRequired : function(r){
+        this.setPropertity('required',r);
         if(!r)this.record.validate(this.name);
-	},
-	<div id="method-Aurora.Record.Field-isRequired"></div>/**
-	 * 当前Field是否必输.
-	 * @return {Boolean} required  是否必输.
-	 */
+    },
+    <div id="method-Aurora.Record.Field-isRequired"></div>/**
+     * 当前Field是否必输.
+     * @return {Boolean} required  是否必输.
+     */
     isRequired : function(){
         return this.getPropertity('required');
     },
-	<div id="method-Aurora.Record.Field-setReadOnly"></div>/**
-	 * 设置当前Field是否只读.
-	 * @param {Boolean} readonly 是否只读
-	 */
-	setReadOnly : function(r){	
-		if(r)delete this.record.valid[this.name];
-		this.setPropertity('readonly',r);
-	},
-	<div id="method-Aurora.Record.Field-isReadOnly"></div>/**
-	 * 当前Field是否只读.
-	 * @return {Boolean} readonly 是否只读
-	 */
-	isReadOnly : function(){
+    <div id="method-Aurora.Record.Field-setReadOnly"></div>/**
+     * 设置当前Field是否只读.
+     * @param {Boolean} readonly 是否只读
+     */
+    setReadOnly : function(r){  
+        if(r)delete this.record.valid[this.name];
+        this.setPropertity('readonly',r);
+    },
+    <div id="method-Aurora.Record.Field-isReadOnly"></div>/**
+     * 当前Field是否只读.
+     * @return {Boolean} readonly 是否只读
+     */
+    isReadOnly : function(){
         return this.getPropertity('readonly');
-	},
-	<div id="method-Aurora.Record.Field-setOptions"></div>/**
-	 * 设置当前Field的数据集.
-	 * @param {Object} r 数据集
-	 */
-	setOptions : function(r){
-		this.setPropertity('options',r);
-	},
-	<div id="method-Aurora.Record.Field-getOptions"></div>/**
+    },
+    <div id="method-Aurora.Record.Field-setOptions"></div>/**
+     * 设置当前Field的数据集.
+     * @param {Object} r 数据集
+     */
+    setOptions : function(r){
+        this.setPropertity('options',r);
+    },
+    <div id="method-Aurora.Record.Field-getOptions"></div>/**
      * 获取当前的数据集.
      * @return {Object} r 数据集
      */
-	getOptions : function(){
-		return this.getPropertity('options');
-	},
-	<div id="method-Aurora.Record.Field-setMapping"></div>/**
+    getOptions : function(){
+        return this.getPropertity('options');
+    },
+    <div id="method-Aurora.Record.Field-setMapping"></div>/**
      * 设置当前Field的映射.
      * 例如：<p>
        var mapping = [{from:'name', to: 'code'},{from:'service', to: 'name'}];</p>
@@ -2936,59 +3056,59 @@ $A.Record.Field.prototype = {
      * @return {Array} mapping 映射列表.
      * 
      */
-	setMapping : function(m){
-		this.setPropertity('mapping',m);
-	},
-	<div id="method-Aurora.Record.Field-getMapping"></div>/**
+    setMapping : function(m){
+        this.setPropertity('mapping',m);
+    },
+    <div id="method-Aurora.Record.Field-getMapping"></div>/**
      * 获取当前的映射.
      * @return {Array} array 映射集合
      */
-	getMapping : function(){
+    getMapping : function(){
         return this.getPropertity('mapping');
-	},
-	<div id="method-Aurora.Record.Field-setTitle"></div>/**
+    },
+    <div id="method-Aurora.Record.Field-setTitle"></div>/**
      * 设置Lov弹出窗口的Title.
      * @param {String} title lov弹出窗口的Tile
      */
-	setTitle : function(t){
-		this.setPropertity('title',t);
-	},
-	<div id="method-Aurora.Record.Field-setLovWidth"></div>/**
+    setTitle : function(t){
+        this.setPropertity('title',t);
+    },
+    <div id="method-Aurora.Record.Field-setLovWidth"></div>/**
      * 设置Lov弹出窗口的宽度.
      * @param {Number} width lov弹出窗口的Width
      */
-	setLovWidth : function(w){
+    setLovWidth : function(w){
         this.setPropertity('lovwidth',w);
-	},
-	<div id="method-Aurora.Record.Field-setLovHeight"></div>/**
+    },
+    <div id="method-Aurora.Record.Field-setLovHeight"></div>/**
      * 设置Lov弹出窗口的高度.
      * @param {Number} height lov弹出窗口的Height
      */
-	setLovHeight : function(h){
-		this.setPropertity('lovheight',h);
-	},
-	<div id="method-Aurora.Record.Field-setLovGridHeight"></div>/**
+    setLovHeight : function(h){
+        this.setPropertity('lovheight',h);
+    },
+    <div id="method-Aurora.Record.Field-setLovGridHeight"></div>/**
      * 设置Lov弹出窗口中grid的高度.
      * 配置这个主要是由于查询条件可能存在多个，导致查询的form过高.
      * @param {Number} height lov弹出窗口的grid组件的Height
      */
-	setLovGridHeight : function(gh){
+    setLovGridHeight : function(gh){
         this.setPropertity("lovgridheight",gh)
-	},
-	<div id="method-Aurora.Record.Field-setLovModel"></div>/**
+    },
+    <div id="method-Aurora.Record.Field-setLovModel"></div>/**
      * 设置Lov的Model对象.
      * Lov的配置可以通过三种方式.(1)model (2)service (3)url.
      * @param {String} model lov配置的model.
      */
-	setLovModel : function(m){
+    setLovModel : function(m){
         this.setPropertity("lovmodel",m) 
-	},
-	<div id="method-Aurora.Record.Field-setLovService"></div>/**
+    },
+    <div id="method-Aurora.Record.Field-setLovService"></div>/**
      * 设置Lov的Service对象.
      * Lov的配置可以通过三种方式.(1)model (2)service (3)url.
      * @param {String} service lov配置的service.
      */
-	setLovService : function(m){
+    setLovService : function(m){
         this.setPropertity("lovservice",m) 
     },
     <div id="method-Aurora.Record.Field-setLovUrl"></div>/**
@@ -2998,7 +3118,7 @@ $A.Record.Field.prototype = {
      * @param {String} url lov打开的url.
      */
     setLovUrl : function(m){
-    	this.setPropertity("lovurl",m) 
+        this.setPropertity("lovurl",m) 
     },
     <div id="method-Aurora.Record.Field-setLovPara"></div>/**
      * 设置Lov的查询参数
@@ -3012,12 +3132,12 @@ $A.Record.Field.prototype = {
             this.setPropertity("lovpara",p) 
         }
         if(value==null){
-        	delete p[name]
+            delete p[name]
         }else{
             p[name] = value;
         }
     }
-	
+    
 }
 <div id="cls-Aurora.Component"></div>/**
  * @class Aurora.Component
@@ -3251,7 +3371,7 @@ $A.Component = Ext.extend(Ext.util.Observable,{
     	}    	
     },
     onUpdate : function(ds, record, name, value){
-    	if(this.binder.ds == ds && this.record == record && this.binder.name == name && this.getValue() != value){
+    	if(this.binder.ds == ds && this.record == record && this.binder.name == name && this.getValue() !== value){
 	    	this.setValue(value, true);
     	}
     },
@@ -3280,7 +3400,8 @@ $A.Component = Ext.extend(Ext.util.Observable,{
             this.record.set(this.binder.name,v);
             if(Ext.isEmpty(v,true)) delete this.record.data[this.binder.name];
     	}
-    	if(ov!=v){
+    	//if(ov!=v){
+    	if(!(ov === v||(Ext.isEmpty(ov)&&Ext.isEmpty(v)))){
             this.fireEvent('change', this, v, ov);
     	}
     },
@@ -3435,8 +3556,9 @@ $A.Field = Ext.extend($A.Component,{
     onKeyDown : function(e){
         this.fireEvent('keydown', this, e);        
         var keyCode = e.keyCode;
-        if(keyCode == 13 || keyCode == 27) {
-        	this.blur();
+        if(this.isEditor==true && keyCode == 9) e.stopEvent();
+        if(keyCode == 13 || keyCode == 27) {//13:enter  27:esc
+        	this.blur();//为了获取到新的值
         	if(keyCode == 13) {
         		var sf = this;
         		setTimeout(function(){
@@ -3475,32 +3597,37 @@ $A.Field = Ext.extend($A.Component,{
     	if(this.hasFocus){
 	        this.hasFocus = false;
 	        var rv = this.getRawValue();
-            var sb = [];
-            if(this.isOverMaxLength(rv)){
-                for (i = 0,k=0; i < rv.length;i++) {
-                    var cr = rv.charAt(i);
-                    var cl = cr.match(/[^\x00-\xff]/g);
-                    if (cl !=null && cl.length>0) {
-                        k=k+$A.defaultChineseLength;
-                    } else {
-                        k=k+1
-                    }
-                    if(k<=this.maxlength) {
-                        sb[sb.length] = cr
-                    }else{
-                        break;
-                    }
-                }
-                rv = sb.join('');
-            }
+           	rv = this.processMaxLength(rv);
 	        rv = this.processValue(rv);
 //	        if(String(rv) !== String(this.startValue)){
 //	            this.fireEvent('change', this, rv, this.startValue);
 //	        } 
+            
 	        this.setValue(rv);
 	        this.wrap.removeClass(this.focusCss);
 	        this.fireEvent("blur", this);
     	}
+    },
+    processMaxLength : function(rv){
+    	var sb = [];
+        if(this.isOverMaxLength(rv)){
+            for (i = 0,k=0; i < rv.length;i++) {
+                var cr = rv.charAt(i);
+                var cl = cr.match(/[^\x00-\xff]/g);
+                if (cl !=null && cl.length>0) {
+                    k=k+$A.defaultChineseLength;
+                } else {
+                    k=k+1
+                }
+                if(k<=this.maxlength) {
+                    sb[sb.length] = cr
+                }else{
+                    break;
+                }
+            }
+            return sb.join('');
+        }
+        return rv;
     },
     setValue : function(v, silent){
     	$A.Field.superclass.setValue.call(this,v, silent);
@@ -3624,6 +3751,7 @@ $A.Field = Ext.extend($A.Component,{
         }
     },
     setRawValue : function(v){
+        if(this.el.dom.value === (v === null || v === undefined ? '' : v)) return;
         return this.el.dom.value = (v === null || v === undefined ? '' : v);
     },
     reset : function(){
@@ -3710,7 +3838,17 @@ $A.ImageCode = Ext.extend($A.Component,{
         this.wrap[ou]("click", this.onClick,  this);
     },
     onClick : function(){
+        if(this.enable == true)
     	this.refresh();
+    },
+    setEnable : function(isEnable){
+        if(isEnable == true){
+            this.enable = true;
+            this.refresh();
+        }else{
+            this.enable = false;
+            this.wrap.dom.src = "";
+        }
     },
     <div id="method-Aurora.ImageCode-refresh"></div>/**
      * 重新加载验证码
@@ -3860,10 +3998,12 @@ $A.Button = Ext.extend($A.Component,{
     onMouseOver: function(e){
     	if(!this.disabled)
     	this.wrap.addClass(this.overCss);
+        $A.Button.superclass.onMouseOver.call(this,e);
     },
     onMouseOut: function(e){
     	if(!this.disabled)
     	this.wrap.removeClass(this.overCss);
+        $A.Button.superclass.onMouseOut.call(this,e);
     }
 });
 $A.Button.getTemplate = function(id,text,width){
@@ -3896,6 +4036,9 @@ $A.CheckBox = Ext.extend($A.Component,{
 	},
 	processListener: function(ou){
     	this.wrap[ou]('click',this.onClick,this);
+    	this.el[ou]('keydown',this.onKeyDown,this);
+    	this.el[ou]('focus',this.onFocus,this)
+    	this.el[ou]('blur',this.onBlur,this)
     },
 	initEvents:function(){
 		$A.CheckBox.superclass.initEvents.call(this);  	
@@ -3912,12 +4055,30 @@ $A.CheckBox = Ext.extend($A.Component,{
     	$A.CheckBox.superclass.destroy.call(this);
     	delete this.el;
     },
+    onKeyDown : function(e){
+    	var keyCode = e.keyCode;
+    	if(keyCode == 32){
+    		this.onClick.call(this,e)
+    	}
+    },
 	onClick: function(event){
 		if(!this.readonly){
-			this.checked = this.checked ? false : true;				
+			this.checked = this.checked ? false : true;	
 			this.setValue(this.checked);
 			this.fireEvent('click', this, this.checked);
+			this.focus();
 		}
+	},
+	focus : function(){
+		this.el.focus();
+	},
+	onFocus : function(){
+		this.el.setStyle('outline','1px dotted blue')
+		this.fireEvent('focus',this);
+	},
+	onBlur : function(){
+		this.el.setStyle('outline','none')
+		this.fireEvent('blur',this);
 	},
 	setValue:function(v, silent){
 		if(typeof(v)==='boolean'){
@@ -3982,6 +4143,7 @@ $A.Radio = Ext.extend($A.Component, {
 //		this.select(this.selectIndex);
 	},	
 	processListener: function(ou){
+        $A.Radio.superclass.processListener.call(this, ou);
     	this.wrap[ou]('click',this.onClick,this);
     	this.wrap[ou]("keydown", this.onKeyDown, this);
     },
@@ -4205,7 +4367,7 @@ $A.TextField = Ext.extend($A.Field,{
                 var s = d.selectionStart;
                 var e = d.selectionEnd;
 //                if(rv.length>=this.maxlength&&s==e)return;
-                if(this.isOverMaxLength(rv) && s==e) return;
+//                if(this.isOverMaxLength(rv) && s==e) return;
                 rv = rv.substring(0,s) + v + rv.substring(e,rv.length);
                 this.setRawValue(rv)
                 d.selectionStart=s+1;
@@ -4271,9 +4433,8 @@ $A.NumberField = Ext.extend($A.TextField,{
     	$A.NumberField.superclass.initEvents.call(this);    	
     },
     onKeyPress : function(e){
-        var k = e.getKey();
-        //!Ext.isIE && (e.isSpecialKey() ||
-        if(e.isSpecialKey()){
+        var k = e.keyCode;
+        if((Ext.isGecko || Ext.isOpera) && (e.isSpecialKey() || k == 8 || k == 46)){//BACKSPACE or DELETE
             return;
         }
         var c = e.getCharCode();
@@ -4286,7 +4447,14 @@ $A.NumberField = Ext.extend($A.TextField,{
     formatValue : function(v){
     	var rv = this.fixPrecision(this.parseValue(v))        
         if(this.allowformat)rv = $A.formatNumber(rv);
-        return rv;
+        return $A.NumberField.superclass.formatValue.call(this,rv);
+    },
+    processMaxLength : function(rv){
+    	var s=rv.split('.'),isNegative=false;
+    	if(s[0].search(/-/)!=-1)isNegative=true;
+    	return (isNegative?'-':'')+$A.NumberField.superclass.processMaxLength.call(this, s[0].replace(/[-,]/g,''))+(s[1]?'.'+s[1]:''); 
+    },
+    initMaxLength : function(maxlength){
     },
     processValue : function(v){
         return this.parseValue(v);
@@ -4303,7 +4471,7 @@ $A.NumberField = Ext.extend($A.TextField,{
 		if(value.indexOf(",")!=-1)value=value.replace(/,/g,"");
     	if(!this.allownegative)value = value.replace('-','');
     	if(!this.allowdecimals)value = value.indexOf(".")==-1?value:value.substring(0,value.indexOf("."));
-        value = parseFloat(value.replace(this.decimalSeparator, "."));
+        value = parseFloat(this.fixPrecision(value.replace(this.decimalSeparator, ".")));
         return isNaN(value) ? '' : value;
     },
     fixPrecision : function(value){
@@ -4369,11 +4537,12 @@ $A.TriggerField = Ext.extend($A.TextField,{
 //    	}
     },
     onKeyDown: function(e){
-    	if(e.keyCode == 9 || e.keyCode == 27||e.keyCode == 13) {
-        	if(this.isExpanded()){
-	    		this.collapse();
-	    	}
-        }
+		switch(e.keyCode){
+    		case 9:
+    		case 13:
+    		case 27:if(this.isExpanded())this.collapse();break;
+    		case 40:if(!this.isExpanded() && !this.readonly)this.expand();
+		}
     	$A.TriggerField.superclass.onKeyDown.call(this,e);
     },
     isEventFromComponent:function(el){
@@ -4391,7 +4560,7 @@ $A.TriggerField = Ext.extend($A.TextField,{
     	$A.TriggerField.superclass.destroy.call(this);
 	},
     triggerBlur : function(e){
-    	if(!this.popup.contains(e.target) && !this.wrap.contains(e.target)){    		
+    	if(this.popup.dom != e.target && !this.popup.contains(e.target) && !this.wrap.contains(e.target)){    		
             if(this.isExpanded()){
 	    		this.collapse();
 	    	}	    	
@@ -4420,11 +4589,14 @@ $A.TriggerField = Ext.extend($A.TextField,{
     	this.syncPopup();
     },
     syncPopup:function(){
-    	var xy = this.wrap.getXY(),
-    		H=this.popup.getHeight(),PH=this.wrap.getHeight(),BH=$A.getViewportHeight()-3,
-    		y=(xy[1]+PH+H)>BH?((xy[1]-H)<0?(xy[1]+PH):(xy[1]-H)):(xy[1]+PH);
-    	this.popup.moveTo(xy[0],y);
-    	this.shadow.moveTo(xy[0]+3,y+3);
+    	var xy=this.wrap.getXY(),
+			W=this.popup.getWidth(),H=this.popup.getHeight(),
+			PH=this.wrap.getHeight(),PW=this.wrap.getWidth(),
+			BH=$A.getViewportHeight()-3,BW=$A.getViewportWidth()-3,
+			x=(xy[0]+W)>BW?((BW-W)<0?xy[0]:(BW-W)):xy[0];
+			y=(xy[1]+PH+H)>BH?((xy[1]-H)<0?(xy[1]+PH):(xy[1]-H)):(xy[1]+PH);
+    	this.popup.moveTo(x,y);
+    	this.shadow.moveTo(x+3,y+3);
     },
     onTriggerClick : function(){
     	if(this.readonly) return;
@@ -4449,7 +4621,7 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 	blankOption:true,
 	rendered:false,
 	selectedClass:'item-comboBox-selected',	
-	currentNodeClass:'item-comboBox-current',
+	//currentNodeClass:'item-comboBox-current',
 	constructor : function(config) {
 		$A.ComboBox.superclass.constructor.call(this, config);		
 	},
@@ -4479,6 +4651,7 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 		$A.ComboBox.superclass.onTriggerClick.call(this);		
 	},
 	onBlur : function(e){
+        if(this.readonly)return;
 		$A.ComboBox.superclass.onBlur.call(this,e);
 		if(!this.isExpanded()) {
 			var raw = this.getRawValue();
@@ -4515,21 +4688,57 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 		$A.ComboBox.superclass.expand.call(this);
 		var v = this.getValue();
 		this.currentIndex = this.getIndex(v);
-		if(!this.currentIndex) return;
+//		if(!this.currentIndex) return;
 		if (!Ext.isEmpty(v)) {				
 			if(this.selectedIndex)Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
 			var node = this.getNode(this.currentIndex);
-			if(node)Ext.fly(node).addClass(this.currentNodeClass);
+			if(node)Ext.fly(node).addClass(this.selectedClass);
 			this.selectedIndex = this.currentIndex;
 		}		
 	},
+    onKeyDown: function(e){
+        if(this.readonly)return;
+        var current = Ext.isEmpty(this.selectedIndex) ? -1 : this.selectedIndex;
+        var keyCode = e.keyCode;
+        if(keyCode == 40||keyCode == 38){
+            this.inKeyMode = true;
+            if(keyCode == 38){
+                current --;
+                if(current>=0){
+                    this.selectItem(current)
+                }            
+            }
+            if(keyCode == 40){
+                current ++;
+                if(current<this.view.dom.childNodes.length){
+                    this.selectItem(current)
+                }
+            }
+        }
+        if(this.inKeyMode && keyCode == 13){
+            this.inKeyMode = false;
+            var doms = this.view.dom.childNodes;
+            var se = null;
+            for(var i=0;i<doms.length;i++){
+                var t = doms[i];
+                if(Ext.fly(t).hasClass(this.selectedClass)){
+                    se = t;
+                    break;
+                }
+            }
+            if(se)this.onSelect(se);
+            this.collapse();
+        } else {
+            $A.ComboBox.superclass.onKeyDown.call(this,e);
+        }
+    },
 	<div id="method-Aurora.ComboBox-collapse"></div>/**
 	 * 收起下拉菜单.
 	 */
 	collapse:function(){
 		$A.ComboBox.superclass.collapse.call(this);
 		if(this.currentIndex!==undefined)
-		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.currentNodeClass);		
+		Ext.fly(this.getNode(this.currentIndex)).removeClass(this.selectedClass);
 	},
 	clearOptions : function(){
 	   this.processDataSet('un');
@@ -4598,13 +4807,13 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 		this.onSelect(t);
 		this.collapse();		
 	},	
-	onViewOver:function(e,t){
-		this.inKeyMode = false;
-	},
+//	onViewOver:function(e,t){
+//		this.inKeyMode = false;
+//	},
 	onViewMove:function(e,t){
-		if(this.inKeyMode){ // prevent key nav and mouse over conflicts
-            return;
-        }
+//		if(this.inKeyMode){ // prevent key nav and mouse over conflicts
+//            return;
+//        }
         var index = t.tabIndex;
         this.selectItem(index);        
 	},
@@ -4689,8 +4898,8 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 //			this.view.un('mouseover',this.onViewOver,this);
 			this.view.un('mousemove',this.onViewMove,this);
 		}
-		delete this.view;
     	$A.ComboBox.superclass.destroy.call(this);
+		delete this.view;
 	},
 	getText : function() {		
 		return this.text;
@@ -4765,7 +4974,16 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
  */
 $A.DateField = Ext.extend($A.Component, {
 	bodyTpl:['<TABLE cellspacing="0">',
-				'<CAPTION class="item-dateField-caption"></CAPTION>',
+				'<CAPTION class="item-dateField-caption">',
+					'{preYearBtn}',
+					'{nextYearBtn}',
+					'{preMonthBtn}',
+					'{nextMonthBtn}',
+					'<SPAN>',
+						'<SPAN atype="item-year-span" style="margin-right:5px;cursor:pointer"></SPAN>',
+						'<SPAN atype="item-month-span" style="cursor:pointer"></SPAN>',
+					'</SPAN>',
+				'</CAPTION>',
 				'<THEAD class="item-dateField-head">',
 					'<TR>',
 						'<TD>{sun}</TD>',
@@ -4780,30 +4998,38 @@ $A.DateField = Ext.extend($A.Component, {
 				'<TBODY>',
 				'</TBODY>',
 			'</TABLE>'],
-	preMonthTpl:['<DIV class="item-dateField-pre" title="{pre}"></DIV>'],
-	nextMonthTpl:['<DIV class="item-dateField-next" title="{next}"></DIV>'],
+	preMonthTpl:'<DIV class="item-dateField-pre" title="{preMonth}" onclick="$(\'{id}\').preMonth()"></DIV>',
+	nextMonthTpl:'<DIV class="item-dateField-next" title="{nextMonth}" onclick="$(\'{id}\').nextMonth()"></DIV>',
+	preYearTpl:'<DIV class="item-dateField-preYear" title="{preYear}" onclick="$(\'{id}\').preYear()"></DIV>',
+	nextYearTpl:'<DIV class="item-dateField-nextYear" title="{nextYear}" onclick="$(\'{id}\').nextYear()"></DIV>',
+	popupTpl:'<DIV class="item-popup" atype="date-popup" style="vertical-align: middle;background-color:#fff;visibility:hidden"></DIV>',
     initComponent : function(config){
     	$A.DateField.superclass.initComponent.call(this, config);
     	if(this.height)this.rowHeight=(this.height-18*(Ext.isIE?3:2))/6;
-        this.body = new Ext.Template(this.bodyTpl).append(this.wrap.dom,{sun:_lang['datefield.sun'],mon:_lang['datefield.mon'],tues:_lang['datefield.tues'],wed:_lang['datefield.wed'],thur:_lang['datefield.thur'],fri:_lang['datefield.fri'],sat:_lang['datefield.sat']},true);
-        this.head=this.body.child(".item-dateField-caption").dom;
+    	var data = {sun:_lang['datefield.sun'],mon:_lang['datefield.mon'],tues:_lang['datefield.tues'],wed:_lang['datefield.wed'],thur:_lang['datefield.thur'],fri:_lang['datefield.fri'],sat:_lang['datefield.sat']}
+        if(this.enableyearbtn=="both"||this.enableyearbtn=="pre")
+        	data.preYearBtn = new Ext.Template(this.preYearTpl).apply({preYear:_lang['datefield.preYear'],id:this.id});
+    	if(this.enableyearbtn=="both"||this.enableyearbtn=="next")
+    		data.nextYearBtn = new Ext.Template(this.nextYearTpl).apply({nextYear:_lang['datefield.nextYear'],id:this.id});
         if(this.enablemonthbtn=="both"||this.enablemonthbtn=="pre")
-    		this.preMonthBtn = new Ext.Template(this.preMonthTpl).append(this.head,{pre:_lang['datefield.preMonth']},true);
+    		data.preMonthBtn = new Ext.Template(this.preMonthTpl).apply({preMonth:_lang['datefield.preMonth'],id:this.id});
     	if(this.enablemonthbtn=="both"||this.enablemonthbtn=="next")
-    		this.nextMonthBtn = new Ext.Template(this.nextMonthTpl).append(this.head,{next:_lang['datefield.nextMonth']},true);
-    	this.head.text=document.createElement('span');
-    	this.head.appendChild(this.head.text);
+    		data.nextMonthBtn = new Ext.Template(this.nextMonthTpl).apply({nextMonth:_lang['datefield.nextMonth'],id:this.id});
+        this.body = new Ext.Template(this.bodyTpl).append(this.wrap.dom,data,true);
+        this.yearSpan = this.body.child("span[atype=item-year-span]");
+        this.monthSpan = this.body.child("span[atype=item-month-span]");
+        this.popup = new Ext.Template(this.popupTpl).append(this.body.child('caption').dom,{},true);
+        //this.popup = new Ext.Template(this.popupTpl).append(this.wrap.dom,true);
     },
     processListener: function(ou){
     	$A.DateField.superclass.processListener.call(this,ou);
-    	if(this.enablemonthbtn=="both"||this.enablemonthbtn=="pre")
-    		this.preMonthBtn[ou]("click", this.preMonth, this);
-    	if(this.enablemonthbtn=="both"||this.enablemonthbtn=="next")
-    		this.nextMonthBtn[ou]("click", this.nextMonth, this);
     	this.body[ou]('mousewheel',this.onMouseWheel,this);	
     	this.body[ou]("mouseover", this.onMouseOver, this);
     	this.body[ou]("mouseout", this.onMouseOut, this);
     	this.body[ou]("mouseup",this.onSelect,this);
+    	this.yearSpan[ou]("click",this.onViewShow,this);
+    	this.monthSpan[ou]("click",this.onViewShow,this);
+    	//this.body[ou]("keydown",this.onKeyDown,this);
     },
     initEvents : function(){
     	$A.DateField.superclass.initEvents.call(this);   	
@@ -4827,34 +5053,77 @@ $A.DateField = Ext.extend($A.Component, {
 		delete this.preMonthBtn;
     	delete this.nextMonthBtn;
     	delete this.body;
-    	delete this.head;
 	},
 	onMouseWheel:function(e){
-		var delta = e.getWheelDelta();
-        if(delta > 0){
-            this.preMonth();
-            e.stopEvent();
-        }
-		if(delta < 0){
-            this.nextMonth();
-            e.stopEvent();
-        }
+        this[(e.getWheelDelta()>0?'pre':'next')+(e.ctrlKey?'Year':'Month')]();
+        e.stopEvent();
 	},
-    onMouseOver: function(e){
-    	if(this.overTd) Ext.fly(this.overTd).removeClass('dateover');
-    	if((Ext.fly(e.target).hasClass('item-day')||Ext.fly(e.target).hasClass('onToday')) && Ext.fly(e.target).getAttributeNS("",'_date') != '0'){
-    		this.overTd = e.target; 
-    		Ext.fly(this.overTd).addClass('dateover');
+    onMouseOver: function(e,t){
+    	this.out();
+    	if(((t = Ext.fly(t)).hasClass('item-day')||(t = t.parent('.item-day'))) && t.getAttributeNS("",'_date') != '0'){
+    		$A.DateField.superclass.onMouseOver.call(this,e);
+			this.over(t);
     	}
     },
     onMouseOut: function(e){
-    	if(this.overTd) Ext.fly(this.overTd).removeClass('dateover');
+    	$A.DateField.superclass.onMouseOut.call(this,e);
+    	this.out();
     },
-    onSelect:function(e){
-    	this.fireEvent("select",e);
+    over : function(t){
+    	t = t||this.body.last().child('td.item-day')
+    	this.overTd = t; 
+		t.addClass('dateover');
+    },
+    out : function(){
+    	if(this.overTd) {
+    		this.overTd.removeClass('dateover');
+    		this.overTd=null;
+    	}
+    },
+    onSelect:function(e,t){
+    	var td = Ext.get(t);
+    	if(td.parent('div[atype="date-popup"]')){
+    		this.onViewClick(e,td);
+    	}else{
+    		this.fireEvent("select",e,t);
+    	}
     },
 	onSelectDay: function(o){
-		if(!Ext.fly(o).hasClass('onSelect'))Ext.fly(o).addClass('onSelect');
+		if(!o.hasClass('onSelect'))o.addClass('onSelect');
+	},
+	onViewShow : function(e,t){
+		var span = Ext.get(t);
+		this.focusSpan = span;
+		var head = this.body.child('thead'),xy = head.getXY();
+		this.popup.moveTo(xy[0],xy[1]);
+		this.popup.setWidth(head.getWidth());
+		this.popup.setHeight(head.getHeight()+head.next().getHeight());
+		if(span.getAttributeNS("","atype")=="item-year-span")
+			this.initView(this.year,100,true);
+		else
+			this.initView(7,60);
+		Ext.get(document.documentElement).on("mousedown", this.viewBlur, this);
+		this.popup.show();
+	},
+	onViewHide : function(){
+		Ext.get(document.documentElement).un("mousedown", this.viewBlur, this);
+		this.popup.hide();
+	},
+	viewBlur : function(e,t){
+		if(!this.popup.contains(t) && !(this.focusSpan.contains(t)||this.focusSpan.dom==t)){    		
+    		this.onViewHide();
+        }
+	},
+	onViewClick : function(e,t){
+		if(t.hasClass('item-day')){
+			if(this.focusSpan.getAttributeNS("","atype")=="item-year-span")
+				this.year = t.getAttributeNS("",'_data');
+			else
+				this.month = t.getAttributeNS("",'_data');
+			this.year -- ;
+			this.nextYear();
+			this.onViewHide();
+		}
 	},
     <div id="method-Aurora.DateField-nowMonth"></div>/**
      * 当前月
@@ -4904,7 +5173,8 @@ $A.DateField = Ext.extend($A.Component, {
 	draw: function(date) {
 		//用来保存日期列表
 		var arr = [],year=date.getFullYear(),month=date.getMonth()+1,hour=date.getHours(),minute=date.getMinutes(),second=date.getSeconds();
-		this.head.text.innerHTML=year + _lang['datefield.year'] + month + _lang['datefield.month'];
+		this.yearSpan.update(year+_lang['datefield.year']);
+		this.monthSpan.update(month+_lang['datefield.month']);
 		//用当月第一天在一周中的日期值作为当月离第一天的天数,用上个月的最后天数补齐
 		for(var i = 1, firstDay = new Date(year, month - 1, 1).getDay(),lastDay = new Date(year, month - 1, 0).getDate(); i <= firstDay; i++){ 
 			arr.push((this.enablebesidedays=="both"||this.enablebesidedays=="pre")?new Date(year, month - 2, lastDay-firstDay+i,hour,minute,second):null);
@@ -4914,50 +5184,51 @@ $A.DateField = Ext.extend($A.Component, {
 			arr.push(new Date(year, month - 1, i,hour,minute,second)); 
 		}
 		//用下个月的前几天补齐6行
-		for(var i=1, monthDay = new Date(year, month, 0).getDay(),besideDays=7+(arr.length>5*7?0:7);i<besideDays-monthDay;i++){
+		for(var i=1, monthDay = new Date(year, month, 0).getDay(),besideDays=43-arr.length;i<besideDays;i++){
 			arr.push((this.enablebesidedays=="both"||this.enablebesidedays=="next")?new Date(year, month, i,hour,minute,second):null);
 		}
 		//先清空内容再插入(ie的table不能用innerHTML)
-		//while(this.body.dom.tBodies[0].firstChild){
-			//this.body.dom.tBodies[0].removeChild(this.body.dom.tBodies[0].firstChild);
-			//Ext.fly(this.body.dom.tBodies[0].firstChild).remove();
-		//}
-		Ext.fly(this.body.dom.tBodies[0]).remove();
-		this.body.dom.appendChild(document.createElement("tbody"));
+		var body = this.body.dom.tBodies[0];
+		while(body.firstChild){
+			Ext.fly(body.firstChild).remove();
+		}
 		//插入日期
 		var k=0;
 		while(arr.length){
 			//每个星期插入一个tr
-			var row = this.body.dom.tBodies[0].insertRow(-1);
-			if(this.rowHeight)row.style.height=this.rowHeight+"px";
-			if(k%2==0)row.className='week-alt';
+			var row = Ext.get(body.insertRow(-1));
+			row.set({'r_index':k});
+			if(k%2==0)row.addClass('week-alt');
+			if(this.rowHeight)row.setHeight(this.rowHeight);
 			k++;
 			//每个星期有7天
 			for(var i = 1; i <= 7; i++){
 				var d = arr.shift();
 				if(Ext.isDefined(d)){
-					var cell = row.insertCell(-1); 
+					var cell = Ext.get(row.dom.insertCell(-1)); 
 					if(d){
-						cell.className = date.getMonth()==d.getMonth()?"item-day":"item-day item-day-besides";
-						cell.innerHTML =this.renderCell(cell,d)||d.getDate();
+						cell.set({'c_index':i-1});
+						cell.addClass(date.getMonth()==d.getMonth()?"item-day":"item-day item-day-besides");
+						cell.update(this.renderCell(cell,d,d.getDate(),month)||d.getDate());
 						if(cell.disabled){
-							Ext.fly(cell).set({'_date':'0'});
-							Ext.fly(cell).addClass("item-day-disabled");
+							cell.set({'_date':'0'});
+							cell.addClass("item-day-disabled");
 						}else {
-							Ext.fly(cell).set({'_date':(''+d.getTime())});
-							if(this.format)Ext.fly(cell).set({'title':d.format(this.format)})
+							cell.set({'_date':(''+d.getTime())});
+							if(this.format)cell.set({'title':d.format(this.format)})
 						}
 						//判断是否今日
-						if(this.isSame(d, new Date())) cell.className = "onToday";
+						if(this.isSame(d, new Date())) cell.addClass("onToday");
 						//判断是否选择日期
 						if(this.selectDay && this.isSame(d, this.selectDay))this.onSelectDay(cell);
-					}
+					}else cell.update('&#160;');
 				}
 			}
 		}
 	},
-	renderCell:function(cell,date,text){
-		if(this.dayrenderer)$A.getRenderer(this.dayrenderer).call(this,cell,date,text);
+	renderCell:function(cell,date,day,currentMonth){
+		if(this.dayrenderer)
+			return $A.getRenderer(this.dayrenderer).call(this,cell,date,day,currentMonth);
 	},
 	<div id="method-Aurora.DateField-isSame"></div>/**
 	 * 判断是否同一日
@@ -4968,6 +5239,23 @@ $A.DateField = Ext.extend($A.Component, {
 	isSame: function(d1, d2) {
 		if(!d2.getFullYear||!d1.getFullYear)return false;
 		return (d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate());
+	},
+	initView : function(num,width,isYear){
+		var html = ["<table cellspacing='0' cellpadding='0' width='100%'><tr><td width='45%'></td><td width='10%'></td><td width='45%'></td></tr>"];
+		for(var i=0,rows = (isYear?5:6),year = num - rows,year2 = num;i<rows;i++){
+			html.push("<tr><td class='item-day' _data='"+year+"'>"+year+"</td><td></td><td class='item-day' _data='"+year2+"'>"+year2+"</td></tr>");
+			year += 1;year2 += 1;
+		}
+		html.push("");
+		if(isYear){
+			html.push("<tr><td><div class='item-dateField-pre' onclick='$(\""+this.id+"\").initView("+(num-10)+","+width+",true)'></div></td>");
+			html.push("<td><div class='item-dateField-close' onclick='$(\""+this.id+"\").onViewHide()'></div></td>")
+			html.push("<td><div class='item-dateField-next' onclick='$(\""+this.id+"\").initView("+(num+10)+","+width+",true)'></div></td></tr>");
+		}else{
+			html.push("<td colspan='3' align='center'><div class='item-dateField-close' onclick='$(\""+this.id+"\").onViewHide()'></div></td>")
+		}
+		html.push("</table>");
+		this.popup.update(html.join(''));
 	}
 });
 <div id="cls-Aurora.DatePicker"></div>/**
@@ -4982,12 +5270,12 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
 	nowTpl:['<DIV class="item-day" style="cursor:pointer" title="{title}">{now}</DIV>'],
 	constructor: function(config) {
 		this.dateFields = [];
+		this.cmps = {};
         $A.DatePicker.superclass.constructor.call(this,config);
     },
 	initComponent : function(config){
 		$A.DatePicker.superclass.initComponent.call(this,config);
 		this.initFormat();
-    	
 	},
 	initFormat : function(){
 		this.format=this.format||$A.defaultDateFormat;
@@ -5004,22 +5292,40 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     initDateField:function(){
     	this.popup.setStyle({'width':150*this.viewsize+'px'})
     	if(this.dateFields.length==0){
+    		window['__host']=this;
     		for(var i=0;i<this.viewsize;i++){
-	    		var cfg = {id:this.id+'_df'+i,height:130,enablemonthbtn:'none',enablebesidedays:'none',dayrenderer:this.dayrenderer,listeners:{"select":this.onSelect.createDelegate(this),"draw":this.onDraw.createDelegate(this)}}
+	    		var cfg = {
+	    			id:this.id+'_df'+i,
+	    			height:130,
+	    			enablemonthbtn:'none',
+	    			enablebesidedays:'none',
+	    			dayrenderer:this.dayrenderer,
+	    			listeners:{
+	    				"select":this.onSelect.createDelegate(this),
+	    				"draw":this.onDraw.createDelegate(this),
+	    				"mouseover":this.mouseOver.createDelegate(this),
+	    				"mouseout":this.mouseOut.createDelegate(this)
+	    			}
+	    		}
 		    	if(i==0){
 		    		if(this.enablebesidedays=="both"||this.enablebesidedays=="pre")
 		    			cfg.enablebesidedays="pre";
 		    		if(this.enablemonthbtn=="both"||this.enablemonthbtn=="pre")
 		    			cfg.enablemonthbtn="pre";
+		    		if(this.enableyearbtn=="both"||this.enableyearbtn=="pre")
+		    			cfg.enableyearbtn="pre";
 		    	}
 		    	if(i==this.viewsize-1){
 		    		if(this.enablebesidedays=="both"||this.enablebesidedays=="next")
 		    			cfg.enablebesidedays=cfg.enablebesidedays=="pre"?"both":"next";
 		    		if(this.enablemonthbtn=="both"||this.enablemonthbtn=="next")
 		    			cfg.enablemonthbtn=cfg.enablemonthbtn=="pre"?"both":"next";
+		    		if(this.enableyearbtn=="both"||this.enableyearbtn=="next")
+		    			cfg.enableyearbtn=cfg.enableyearbtn=="pre"?"both":"next";
 		    	}else Ext.fly(this.id+'_df'+i).dom.style.cssText="border-right:1px solid #BABABA";
 		    	this.dateFields.add(new $A.DateField(cfg));
     		}
+    		window['__host']=null;
     	}
     },
     initFooter : function(){
@@ -5039,39 +5345,153 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     },
     processListener : function(ou){
     	$A.DatePicker.superclass.processListener.call(this,ou);
+    	this.el[ou]('click',this.mouseOut, this);
     	if(this.now)this.now[ou]("click", this.onSelect, this);
     },
+    mouseOver: function(cmp,e){
+    	if(this.focusField)this.focusField.out();
+    	this.focusField = cmp
+    },
+    mouseOut: function(){
+    	if(this.focusField)this.focusField.out();
+    	this.focusField = null;
+    },
     onKeyUp: function(e){
+    	if(this.readonly)return;
     	$A.DatePicker.superclass.onKeyUp.call(this,e);
-    	try{
-    		this.selectDay=this.getRawValue().parseDate(this.format);
-    		$A.Component.prototype.setValue.call(this,this.selectDay);
-    		this.predraw(this.selectDay);
-    	}catch(e){
+    	var c = e.keyCode;
+    	if(!e.isSpecialKey()||c==8||c==46){
+	    	try{
+	    		this.selectDay=this.getRawValue().parseDate(this.format);
+                this.wrapDate(this.selectDay);
+	    		$A.Component.prototype.setValue.call(this,this.selectDay||"");
+	    		this.predraw(this.selectDay);
+	    	}catch(e){
+	    	}
     	}
+    },
+    onKeyDown: function(e){
+    	if(this.readonly)return;
+    	if(this.focusField){
+	    	switch(e.keyCode){
+	    		case 37:this.goLeft(e);break;
+	    		case 38:this.goUp(e);break;
+	    		case 39:this.goRight(e);break;
+	    		case 40:this.goDown(e);break;
+	    		case 13:this.onSelect(e,this.focusField.overTd);
+	    		default:{
+					if(this.focusField)this.focusField.out();
+					this.focusField = null;
+	    		}
+	    	}
+   		}else {
+   			$A.DatePicker.superclass.onKeyDown.call(this,e);
+   			if(e.keyCode == 40){
+				this.focusField = this.dateFields[0];
+				this.focusField.over();
+   			}
+   		}
+    },
+    goLeft : function(e){
+    	var field = this.focusField;
+		var td = field.overTd,prev = td.prev('.item-day');
+		field.out();
+    	if(prev) {
+    		field.over(prev);
+    	}else{
+			var f = this.dateFields[this.dateFields.indexOf(field)-1],
+			index = td.parent().getAttributeNS('','r_index')
+			if(f){
+				this.focusField = f;
+			}else{
+				field.preMonth();
+				this.focusField = this.dateFields[this.dateFields.length-1];
+			}
+			var l = this.focusField.body.child('tr[r_index='+index+']').select('td.item-day')
+			this.focusField.over(l.item(l.getCount()-1));
+		}
+		e.stopEvent();
+    },
+    goUp : function(e){
+    	var field = this.focusField;
+		var td = field.overTd,prev = td.parent().prev(),index = td.getAttributeNS('','c_index'),t;
+		field.out();
+		if(prev)t = prev.child('td[c_index='+index+']');
+		if(t)field.over(t);
+		else {
+			var f = this.dateFields[this.dateFields.indexOf(field)-1];
+			if(f){
+				this.focusField = f;
+			}else{
+				field.preMonth();
+				this.focusField = this.dateFields[0];
+			}
+			var l = this.focusField.body.select('td[c_index='+index+']')
+			this.focusField.over(l.item(l.getCount()-1));
+		}
+    },
+    goRight : function(e){
+    	var field = this.focusField;
+		var td = field.overTd,next = td.next('.item-day'),parent = td.parent();
+		field.out();
+    	if(next) {
+    		field.over(next);
+    	}else{
+			var f = this.dateFields[this.dateFields.indexOf(field)+1];
+			if(f){
+				this.focusField = f;
+			}else{
+				field.nextMonth();
+				this.focusField = this.dateFields[0];
+			}
+			this.focusField.over(this.focusField.body.child('tr[r_index='+parent.getAttributeNS('','r_index')+']').child('td.item-day'));
+		}
+		e.stopEvent();
+    },
+    goDown : function(e){
+    	var field = this.focusField;
+		var td = field.overTd,next = td.parent().next(),t,index = td.getAttributeNS('','c_index');
+		field.out();
+		if(next)t = next.child('td[c_index='+index+']');
+		if(t)field.over(t);
+		else {
+			var f = this.dateFields[this.dateFields.indexOf(field)+1];
+			if(f){
+				this.focusField = f;
+			}else{
+				field.nextMonth();
+				this.focusField = this.dateFields[this.dateFields.length-1];
+			}
+			this.focusField.over(this.focusField.body.child('td[c_index='+index+']'));
+		}
     },
     onDraw : function(field){
     	if(this.dateFields.length>1)this.sysnDateField(field);
     	this.shadow.setWidth(this.popup.getWidth());
     	this.shadow.setHeight(this.popup.getHeight());
     },
-    onSelect: function(e){
-		if((Ext.fly(e.target).hasClass('item-day')||Ext.fly(e.target).hasClass('onToday')) && Ext.fly(e.target).getAttributeNS("",'_date') != '0'){
-    		var date=new Date(parseInt(Ext.fly(e.target).getAttributeNS("",'_date')));
+    onSelect: function(e,t){
+		if((Ext.fly(t).hasClass('item-day'))&& Ext.fly(t).getAttributeNS("",'_date') != '0'){
+    		var date=new Date(parseInt(Ext.fly(t).getAttributeNS("",'_date')));
 	    	this.collapse();
-            this.processDate(date);
+            this.processDate(date);            
 	    	this.setValue(date);
 	    	this.fireEvent('select',this, date);
     	}
     },
+    wrapDate : function(d){},
     processDate : function(d){},
     onBlur : function(e){
+    	if(this.readonly)return;
 		$A.DatePicker.superclass.onBlur.call(this,e);
 		if(!this.isExpanded()){
 			try{
-				this.setValue(this.getRawValue().parseDate(this.format));
-			}catch(e){alert(e.message);
-				this.setValue(null);
+                var d = this.getRawValue().parseDate(this.format)
+                this.wrapDate(d);
+				this.setValue(d||"");
+			}catch(e){
+                //alert(e.message);
+				this.setValue("");
 			}
 		}
     },
@@ -5081,22 +5501,31 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     },
     expand : function(){
         this.initDatePicker();
-    	$A.DatePicker.superclass.expand.call(this);
     	this.selectDay = this.getValue();
 		this.predraw(this.selectDay);
-    	var xy=this.wrap.getXY(),
-			W=this.popup.getWidth(),H=this.popup.getHeight(),
-			PH=this.wrap.getHeight(),PW=this.wrap.getWidth(),
-			BH=$A.getViewportHeight()-3,BW=$A.getViewportWidth()-3,
-			x=(xy[0]+W)>BW?((BW-W)<0?xy[0]:(BW-W)):xy[0];
-			y=(xy[1]+PH+H)>BH?((xy[1]-H)<0?(xy[1]+PH):(xy[1]-H)):(xy[1]+PH);
-    	this.popup.moveTo(x,y);
-    	this.shadow.moveTo(x+3,y+3);
+    	$A.DatePicker.superclass.expand.call(this);
+    },
+    collapse : function(){
+    	$A.DatePicker.superclass.collapse.call(this);
+    	this.focusField = null;
     },
     destroy : function(){
     	$A.DatePicker.superclass.destroy.call(this);
     	delete this.format;
     	delete this.viewsize;
+    	var sf = this;
+        setTimeout(function(){
+        	for(var key in sf.cmps){
+        		var cmp = sf.cmps[key];
+        		if(cmp.destroy){
+        			try{
+        				cmp.destroy();
+        			}catch(e){
+        				alert('销毁window出错: ' + e)
+        			}
+        		}
+        	}
+        },10)
 	},
 	predraw : function(date){
 		if(date && date instanceof Date){
@@ -5127,23 +5556,6 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
 			if(field!=this.dateFields[i])
 			this.dateFields[i].predraw(date,true);
 		}
-	},
-	preMonth : function(){
-		this.dateFields[0].preMonth();
-	},
-	nextMonth : function(){
-		this.dateFields[0].nextMonth();
-	},
-	onMouseWheel:function(e){
-		var delta = e.getWheelDelta();
-        if(delta > 0&&(this.enablemonthbtn=="both"||this.enablemonthbtn=="pre")){
-            this.preMonth();
-            e.stopEvent();
-        }
-		if(delta < 0&&(this.enablemonthbtn=="both"||this.enablemonthbtn=="next")){
-            this.nextMonth();
-            e.stopEvent();
-        }
 	}
 });
 <div id="cls-Aurora.DateTimePicker"></div>/**
@@ -5221,7 +5633,11 @@ $A.DateTimePicker = Ext.extend($A.DatePicker,{
             d.setHours((el=this.hourSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
             d.setMinutes((el=this.minuteSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
             d.setSeconds((el=this.secondSpan.dom).value.match(/^[0-9]*$/)?el.value:el.oldValue);
+            this.wrapDate(d)
         }
+    },
+    wrapDate : function(d){
+        if(d)
         d.xtype = 'timestamp';
     }
 //    ,collapse : function(){
@@ -5256,59 +5672,103 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     initComponent : function(config){
     	$A.NavBar.superclass.initComponent.call(this, config);
     	this.dataSet = $(this.dataSet);
-    	this.pageInput = $(this.inputId);
-    	this.currentPage = this.wrap.child('div[atype=currentPage]');
-    	this.pageInfo = this.wrap.child('div[atype=pageInfo]');//Ext.get(this.pageId);
     	this.navInfo = this.wrap.child('div[atype=displayInfo]');//Ext.get(this.infoId);
-
-    	if(this.comboBoxId){
-    		this.pageSizeInput = $(this.comboBoxId);
-    		this.pageSizeInfo = this.wrap.child('div[atype=pageSizeInfo]');
-    		this.pageSizeInfo2 = this.wrap.child('div[atype=pageSizeInfo2]');
-    		this.pageSizeInfo.update(_lang['toolbar.pageSize']);
-    		this.pageSizeInfo2.update(_lang['toolbar.pageSize2']);
+    	if(this.type != "simple"){
+	    	this.pageInput = $(this.inputId);
+	    	this.currentPage = this.wrap.child('div[atype=currentPage]');
+	    	this.pageInfo = this.wrap.child('div[atype=pageInfo]');//Ext.get(this.pageId);
+	
+	    	if(this.comboBoxId){
+	    		this.pageSizeInput = $(this.comboBoxId);
+	    		this.pageSizeInfo = this.wrap.child('div[atype=pageSizeInfo]');
+	    		this.pageSizeInfo2 = this.wrap.child('div[atype=pageSizeInfo2]');
+	    		this.pageSizeInfo.update(_lang['toolbar.pageSize']);
+	    		this.pageSizeInfo2.update(_lang['toolbar.pageSize2']);
+	    	}
+	    	this.pageInfo.update(_lang['toolbar.total'] + '&#160;&#160;' + _lang['toolbar.page']);
+	    	this.currentPage.update(_lang['toolbar.ctPage']);
     	}
-    	this.pageInfo.update(_lang['toolbar.total'] + '&#160;&#160;' + _lang['toolbar.page']);
-    	this.currentPage.update(_lang['toolbar.ctPage']);
     },
     processListener: function(ou){
     	$A.NavBar.superclass.processListener.call(this,ou);
     	this.dataSet[ou]('load', this.onLoad,this);
-    	this.pageInput[ou]('keydown', this.onInputKeyPress, this);
-    	if(this.pageSizeInput){
-    		this.pageSizeInput[ou]('select', this.onInputSelect, this);
+    	if(this.type != "simple"){
+	    	this.pageInput[ou]('keydown', this.onInputKeyPress, this);
+	    	if(this.pageSizeInput){
+	    		this.pageSizeInput[ou]('select', this.onInputSelect, this);
+	    	}
     	}
     },
     initEvents : function(){
     	$A.NavBar.superclass.initEvents.call(this);    	
     },
     onLoad : function(){
-    	this.pageInput.setValue(this.dataSet.currentPage);
-    	this.pageInfo.update(_lang['toolbar.total'] + this.dataSet.totalPage + _lang['toolbar.page']);
     	this.navInfo.update(this.creatNavInfo());
-    	if(this.pageSizeInput&&!this.pageSizeInput.optionDataSet){
-    		var pageSize=[10,20,50,100];
-    		if(pageSize.indexOf(this.dataSet.pagesize)==-1){
-    			pageSize.unshift(this.dataSet.pagesize);
-    			pageSize.sort(function(a,b){return a-b});
-    		}
-    		var datas=[];
-    		while(Ext.isDefined(pageSize[0])){
-    			var ps=pageSize.shift();
-    			datas.push({'code':ps,'name':ps});
-    		}
-    		var dataset=new $A.DataSet({'datas':datas});
-	    	this.pageSizeInput.setOptions(dataset);
-	    	this.pageSizeInput.setValue(this.dataSet.pagesize);
-
+    	if(this.type != "simple"){
+	    	this.pageInput.setValue(this.dataSet.currentPage);
+	    	this.pageInfo.update(_lang['toolbar.total'] + this.dataSet.totalPage + _lang['toolbar.page']);
+	    	if(this.pageSizeInput&&!this.pageSizeInput.optionDataSet){
+	    		var pageSize=[10,20,50,100];
+	    		if(pageSize.indexOf(this.dataSet.pagesize)==-1){
+	    			pageSize.unshift(this.dataSet.pagesize);
+	    			pageSize.sort(function(a,b){return a-b});
+	    		}
+	    		var datas=[];
+	    		while(Ext.isDefined(pageSize[0])){
+	    			var ps=pageSize.shift();
+	    			datas.push({'code':ps,'name':ps});
+	    		}
+	    		var dataset=new $A.DataSet({'datas':datas});
+		    	this.pageSizeInput.setOptions(dataset);
+		    	this.pageSizeInput.setValue(this.dataSet.pagesize);
+	    	}
     	}
     },
     creatNavInfo : function(){
-    	var from = ((this.dataSet.currentPage-1)*this.dataSet.pagesize+1);
-    	var to = this.dataSet.currentPage*this.dataSet.pagesize;
-    	if(to>this.dataSet.totalCount) to = this.dataSet.totalCount;
-    	if(to==0) from =0;
-    	return _lang['toolbar.visible'] + from + ' - ' + to + ' '+ _lang['toolbar.total'] + this.dataSet.totalCount + _lang['toolbar.item'];
+    	if(this.type == "simple"){
+    		var html=[],ds=this.dataSet,currentPage=ds.currentPage,totalPage=ds.totalPage;
+    		if(totalPage){
+    			html.push('<span>共'+totalPage+'页</span>');
+    			html.push(currentPage == 1 ? '<span>首页</span>' : this.createAnchor('首页',1));
+    			html.push(currentPage == 1 ? '<span>上一页</span>' : this.createAnchor('上一页',currentPage-1));
+    			for(var i = 1 ; i < 4 && i <= totalPage ; i++){
+    				html.push(i == currentPage ? '<b>' + currentPage + '</b>' : this.createAnchor(i,i));
+    			}
+    			if(totalPage > this.maxPageCount){
+    				if(currentPage > 5)this.createSplit(html);
+    				for(var i = currentPage - 1;i < currentPage + 2 ;i++){
+    					if(i > 3 && i < totalPage - 2){
+    						html.push(i == currentPage ? '<b>' + currentPage + '</b>' : this.createAnchor(i,i));
+    					}
+    				}
+    				if(currentPage < totalPage - 4)this.createSplit(html);
+    			}else if(totalPage > 6){
+    				for(var i = 4; i < totalPage - 2 ;i++){
+    					html.push(i == currentPage ? '<b>' + currentPage + '</b>' : this.createAnchor(i,i));
+    				}
+    			}
+	    		for(var i = totalPage - 2 ; i < totalPage + 1; i++){
+	    			if(i > 3){
+    					html.push(i == currentPage ? '<b>' + currentPage + '</b>' : this.createAnchor(i,i));
+	    			}
+    			}
+	    		html.push(currentPage == totalPage ? '<span>下一页</span>' : this.createAnchor('下一页',currentPage+1));
+    			html.push(currentPage == totalPage ? '<span>尾页</span>' : this.createAnchor('尾页',totalPage));
+    		}
+    		return html.join('');
+    	}else{
+	    	var from = ((this.dataSet.currentPage-1)*this.dataSet.pagesize+1);
+	    	var to = this.dataSet.currentPage*this.dataSet.pagesize;
+	    	if(to>this.dataSet.totalCount) to = this.dataSet.totalCount;
+	    	if(to==0) from =0;
+	    	return _lang['toolbar.visible'] + from + ' - ' + to + ' '+ _lang['toolbar.total'] + this.dataSet.totalCount + _lang['toolbar.item'];
+    	}
+    },
+    createAnchor : function(text,page){
+    	return '<a href="javascript:$(\''+this.dataSet.id+'\').goPage('+page+')">'+text+'</a>';
+    },
+    createSplit : function(html){
+    	html.push('<span>···</span>');
     },
     onInputKeyPress : function(input, e){
     	if(e.keyCode == 13){
@@ -5361,7 +5821,7 @@ $A.WindowManager = function(){
         		if(zd =='auto') zd = 0;
         		if(zd > zindex) zindex = zd;       		
         	}
-        	return zindex;
+        	return Number(zindex);
         }
     };
 }();
@@ -5381,7 +5841,7 @@ $A.Window = Ext.extend($A.Component,{
         this.fullScreen = false;
         this.modal = config.modal||true;
         this.cmps = {};
-        $A.focusWindow = null;
+//        $A.focusWindow = null;
         $A.Window.superclass.constructor.call(this,config);
     },
     initComponent : function(config){
@@ -5399,8 +5859,14 @@ $A.Window = Ext.extend($A.Component,{
     		sf.marginheight=1;
     		sf.marginwidth=1;
     	}
-        sf.wrap = windowTpl.insertFirst(document.body, {title:sf.title,width:sf.width,bodywidth:sf.width-2,height:sf.height}, true);
+        var urlAtt = '';
+        if(sf.url){
+            urlAtt = 'url="'+sf.url+'"';
+        }
+        sf.wrap = windowTpl.insertFirst(document.body, {title:sf.title,width:sf.width,bodywidth:sf.width-2,height:sf.height,url:urlAtt}, true);
         sf.shadow = shadowTpl.insertFirst(document.body, {}, true);
+        sf.shadow.setWidth(sf.wrap.getWidth());
+        sf.shadow.setHeight(sf.wrap.getHeight());
         sf.focusEl = sf.wrap.child('a[atype=win.focus]')
     	sf.title = sf.wrap.child('div[atype=window.title]');
     	sf.head = sf.wrap.child('td[atype=window.head]');
@@ -5408,10 +5874,16 @@ $A.Window = Ext.extend($A.Component,{
         sf.closeBtn = sf.wrap.child('div[atype=window.close]');
         if(sf.draggable) sf.initDraggable();
         if(!sf.closeable)sf.closeBtn.hide();
-        sf.center();
+        if(Ext.isEmpty(config.x)||Ext.isEmpty(config.y)){
+            sf.center();
+        }else{
+            sf.move(config.x,config.y);
+            this.toFront();
+            this.focus.defer(10,this);
+        }
         if(sf.url){
         	sf.showLoading();       
-        	sf.load(sf.url,sf.params)
+        	sf.load(sf.url,config.params)
         }
     },
     processListener: function(ou){
@@ -5422,13 +5894,20 @@ $A.Window = Ext.extend($A.Component,{
     	   this.closeBtn[ou]("mouseout", this.onCloseOut,  this);
     	   this.closeBtn[ou]("mousedown", this.onCloseDown,  this);
     	}
-    	this.wrap[ou]("click", this.toFront, this);
+        if(!this.modal) this.wrap[ou]("click", this.toFront, this);
     	this.focusEl[ou]("keydown", this.handleKeyDown,  this);
     	if(this.draggable)this.head[ou]('mousedown', this.onMouseDown,this);
     },
     initEvents : function(){
     	$A.Window.superclass.initEvents.call(this);
     	this.addEvents(
+    	<div id="event-Aurora.Window-beforeclose"></div>/**
+         * @event beforeclose
+         * 窗口关闭前的事件.
+         * <p>监听函数返回值为false时，不执行关闭</p>
+         * @param {Window} this 当前窗口.         * 
+         */
+    	'beforeclose',
     	<div id="event-Aurora.Window-close"></div>/**
          * @event close
          * 窗口关闭事件.
@@ -5466,21 +5945,30 @@ $A.Window = Ext.extend($A.Component,{
     center: function(){
     	var screenWidth = $A.getViewportWidth();
     	var screenHeight = $A.getViewportHeight();
-    	var sl = document[Ext.isStrict?'documentElement':'body'].scrollLeft;
-    	var st = document[Ext.isStrict?'documentElement':'body'].scrollTop;
+    	var sl = document[Ext.isStrict&&!Ext.isWebKit?'documentElement':'body'].scrollLeft;
+    	var st = document[Ext.isStrict&&!Ext.isWebKit?'documentElement':'body'].scrollTop;
     	var x = sl+Math.max((screenWidth - this.width)/2,0);
     	var y = st+Math.max((screenHeight - this.height-(Ext.isIE?26:23))/2,0);
-        this.shadow.setWidth(this.wrap.getWidth());
-        this.shadow.setHeight(this.wrap.getHeight());
+//        this.shadow.setWidth(this.wrap.getWidth());
+//        this.shadow.setHeight(this.wrap.getHeight());
         if(this.fullScreen){
         	x=sl;y=st;
+            this.move(x,y,false);
         	this.shadow.moveTo(x,y)
         }else {
-            this.shadow.moveTo(x+3,y+3)
+            this.move(x,y)
         }
-        this.wrap.moveTo(x,y);
+//        this.wrap.moveTo(x,y);
         this.toFront();
         this.focus.defer(10,this);
+    },
+    <div id="method-Aurora.Window-move"></div>/**
+     * 移动窗口到指定位置.
+     * 
+     */
+    move: function(x,y,m){
+        this.wrap.moveTo(x,y);
+        if(!m)this.shadow.moveTo(x+3,y+3)
     },
     hasVScrollBar : function(){
     	var body=document[Ext.isStrict?'documentElement':'body'];
@@ -5495,7 +5983,7 @@ $A.Window = Ext.extend($A.Component,{
     },
     getTemplate : function() {
         return [
-            '<TABLE class="win-wrap" style="width:{width}px;" cellSpacing="0" cellPadding="0" border="0">',
+            '<TABLE class="win-wrap" style="width:{width}px;" cellSpacing="0" cellPadding="0" border="0" {url}>',
 			'<TBODY>',
 			'<TR style="height:23px;" >',
 				'<TD class="win-caption">',
@@ -5536,13 +6024,12 @@ $A.Window = Ext.extend($A.Component,{
 	    	this.shadow.setStyle('z-index', zindex+4);
 	    	if(this.modal) $A.Cover.cover(this.wrap);
     	}
-    	$A.focusWindow = this;    	
+//    	$A.focusWindow = this;    	
     },
     onMouseDown : function(e){
     	var sf = this; 
     	//e.stopEvent();
     	sf.toFront();
-    	sf.focus();
     	var xy = sf.wrap.getXY();
     	sf.relativeX=xy[0]-e.getPageX();
 		sf.relativeY=xy[1]-e.getPageY();
@@ -5552,6 +6039,7 @@ $A.Window = Ext.extend($A.Component,{
         this.proxy.show();
     	Ext.get(document.documentElement).on("mousemove", sf.onMouseMove, sf);
     	Ext.get(document.documentElement).on("mouseup", sf.onMouseUp, sf);
+        sf.focus();
     },
     onMouseUp : function(e){
     	var sf = this; 
@@ -5565,8 +6053,8 @@ $A.Window = Ext.extend($A.Component,{
     },
     onMouseMove : function(e){
     	e.stopEvent();
-    	var sl = document[Ext.isStrict?'documentElement':'body'].scrollLeft;
-    	var st = document[Ext.isStrict?'documentElement':'body'].scrollTop;
+    	var sl = document[Ext.isStrict&&!Ext.isWebKit?'documentElement':'body'].scrollLeft;
+    	var st = document[Ext.isStrict&&!Ext.isWebKit?'documentElement':'body'].scrollTop;
     	var sw = sl + this.screenWidth;
     	var sh = st + this.screenHeight;
     	var tx = e.getPageX()+this.relativeX;
@@ -5617,16 +6105,28 @@ $A.Window = Ext.extend($A.Component,{
     	Ext.get(document.documentElement).un("mouseup", this.onCloseUp, this);
     },
     close : function(){
-    	$A.WindowManager.remove(this);
-    	this.destroy(); 
-    	this.fireEvent('close', this)
+    	if(this.fireEvent('beforeclose',this)){
+	    	$A.WindowManager.remove(this);
+	    	this.destroy(); 
+	    	this.fireEvent('close', this);
+    	}
     },
     destroy : function(){
-    	$A.focusWindow = null;
+//    	$A.focusWindow = null;
     	var wrap = this.wrap;
     	if(!wrap)return;
     	if(this.proxy) this.proxy.remove();
     	if(this.modal) $A.Cover.uncover(this.wrap);
+        for(var key in this.cmps){
+            var cmp = this.cmps[key];
+            if(cmp.destroy){
+                try{
+                    cmp.destroy();
+                }catch(e){
+                    alert('销毁window出错: ' + e)
+                }
+            }
+        }
     	$A.Window.superclass.destroy.call(this);
     	delete this.title;
     	delete this.head;
@@ -5635,19 +6135,19 @@ $A.Window = Ext.extend($A.Component,{
         delete this.proxy;
         wrap.remove();
         this.shadow.remove();
-        var sf = this;
-        setTimeout(function(){
-        	for(var key in sf.cmps){
-        		var cmp = sf.cmps[key];
-        		if(cmp.destroy){
-        			try{
-        				cmp.destroy();
-        			}catch(e){
-        				alert('销毁window出错: ' + e)
-        			}
-        		}
-        	}
-        },10)
+//        var sf = this;
+//        setTimeout(function(){
+//        	for(var key in sf.cmps){
+//        		var cmp = sf.cmps[key];
+//        		if(cmp.destroy){
+//        			try{
+//        				cmp.destroy();
+//        			}catch(e){
+//        				alert('销毁window出错: ' + e)
+//        			}
+//        		}
+//        	}
+//        },10)
     },
     <div id="method-Aurora.Window-load"></div>/**
      * 窗口加载.
@@ -5660,6 +6160,7 @@ $A.Window = Ext.extend($A.Component,{
 //    	for(var key in cmps){
 //    		this.oldcmps[key] = cmps[key];
 //    	}
+        
     	Ext.Ajax.request({
 			url: url,
 			params:params||{},
@@ -5698,15 +6199,19 @@ $A.Window = Ext.extend($A.Component,{
         }catch(e){}
         if(res && res.success == false){
         	if(res.error){
-        		$A.manager.fireEvent('ajaxfailed', $A.manager, options.url,options.para,res);
-                var st = res.error.stackTrace;
-                st = (st) ? st.replaceAll('\r\n','</br>') : '';
-                if(res.error.message) {
-                    var h = (st=='') ? 150 : 250;
-                    $A.showErrorMessage(_lang['window.error'], res.error.message+'</br>'+st,null,400,h);
+                if(res.error.code  && res.error.code == 'session_expired'){
+                            $A.showErrorMessage(_lang['ajax.error'],  _lang['session.expired']);
                 }else{
-                    $A.showErrorMessage(_lang['window.error'], st,null,400,250);
-                }   
+            		$A.manager.fireEvent('ajaxfailed', $A.manager, options.url,options.para,res);
+                    var st = res.error.stackTrace;
+                    st = (st) ? st.replaceAll('\r\n','</br>') : '';
+                    if(res.error.message) {
+                        var h = (st=='') ? 150 : 250;
+                        $A.showErrorMessage(_lang['window.error'], res.error.message+'</br>'+st,null,400,h);
+                    }else{
+                        $A.showErrorMessage(_lang['window.error'], st,null,400,250);
+                    } 
+                }
             }
             return;
         }
@@ -5719,7 +6224,7 @@ $A.Window = Ext.extend($A.Component,{
 //	    		}
 //	    	}
 	    	sf.fireEvent('load',sf)
-    	});
+    	},this);
     }
 });
 <div id="method-Aurora.Window-showMessage"></div>/**
@@ -5824,27 +6329,29 @@ $A.showConfirm = function(title, msg, okfun,cancelfun, width, height){
  * @return {Window} 窗口对象
  */
 $A.showOkCancelWindow = function(title, msg, okfun,cancelfun,width, height){
-    var cmp = $A.CmpManager.get('aurora-msg-ok-cancel')
-    if(cmp == null) {
-        var okbtnhtml = $A.Button.getTemplate('aurora-msg-ok',_lang['window.button.ok']);
-        var cancelbtnhtml = $A.Button.getTemplate('aurora-msg-cancel',_lang['window.button.cancel']);
-        cmp = new $A.Window({id:'aurora-msg-ok-cancel',title:title, height:height||100,width:width||300});
+    //var cmp = $A.CmpManager.get('aurora-msg-ok-cancel')
+    //if(cmp == null) {
+        var id = Ext.id(),okid = 'aurora-msg-ok'+id,cancelid = 'aurora-msg-cancel'+id,
+        okbtnhtml = $A.Button.getTemplate(okid,_lang['window.button.ok']),
+        cancelbtnhtml = $A.Button.getTemplate(cancelid,_lang['window.button.cancel']),
+        cmp = new $A.Window({id:'aurora-msg-ok-cancel'+id,closeable:false,title:title, height:height||100,width:width||300});
         if(msg){
             cmp.body.update(msg+ '<center><table cellspacing="5"><tr><td>'+okbtnhtml+'</td><td>'+cancelbtnhtml+'</td><tr></table></center>',true,function(){
-                var okbtn = $("aurora-msg-ok");
-                var cancelbtn = $("aurora-msg-cancel");
-                cmp.cmps['aurora-msg-ok'] = okbtn;
-                cmp.cmps['aurora-msg-cancel'] = cancelbtn;
+                var okbtn = $(okid);
+                var cancelbtn = $(cancelid);
+                cmp.cmps[okid] = okbtn;
+                cmp.cmps[cancelid] = cancelbtn;
                 okbtn.on('click',function(){
-                	if(okfun)okfun.call(this,cmp);
+                	if(okfun && okfun.call(this,cmp) === false)return;
+                	cmp.close();
                 });
                 cancelbtn.on('click',function(){
-                    cmp.close()
-                	if(cancelfun)cancelfun.call(this,cmp)
+                	if(cancelfun && cancelfun.call(this,cmp) === false)return;
+                	cmp.close();
                 });
             });
         }
-    }
+    //}
     return cmp;
 }
 <div id="method-Aurora.Window-showOkWindow"></div>/**
@@ -5859,23 +6366,24 @@ $A.showOkCancelWindow = function(title, msg, okfun,cancelfun,width, height){
  * @return {Window} 窗口对象
  */
 $A.showOkWindow = function(title, msg, width, height,callback){
-	var cmp = $A.CmpManager.get('aurora-msg-ok');
-	if(cmp == null) {
-		var btnhtml = $A.Button.getTemplate('aurora-msg-yes',_lang['window.button.ok']);
-		cmp = new $A.Window({id:'aurora-msg-ok',title:title, height:height,width:width});
+	//var cmp = $A.CmpManager.get('aurora-msg-ok');
+	//if(cmp == null) {
+		var id = Ext.id(),yesid = 'aurora-msg-yes'+id,
+		btnhtml = $A.Button.getTemplate(yesid,_lang['window.button.ok']),
+		cmp = new $A.Window({id:'aurora-msg-ok'+id,closeable:false,title:title, height:height,width:width});
 		if(msg){
 			cmp.body.update(msg+ '<center>'+btnhtml+'</center>',true,function(){
-    			var btn = $("aurora-msg-yes");
-                cmp.cmps['aurora-msg-yes'] = btn;
+    			var btn = $(yesid);
+                cmp.cmps[yesid] = btn;
                 btn.on('click',function(){
-                    if(callback)callback.call(this,cmp);
-                    cmp.close()
+                    if(callback && callback.call(this,cmp) === false)return;
+                    cmp.close();
                 });
                 //btn.focus();
                 btn.focus.defer(10,btn);
 			});
 		}
-	}
+	//}
 	return cmp;
 }
 <div id="method-Aurora.Window-showUploadWindow"></div>/**
@@ -5901,10 +6409,17 @@ $A.showUploadWindow = function(path,title,source_type,pkvalue,max_size,file_type
  * @param {Object} config 配置对象. 
  */
 $A.Lov = Ext.extend($A.TextField,{
+	selectedClass:'item-comboBox-selected',
+	viewClass:'item-comboBox-view',
     constructor: function(config) {
         this.isWinOpen = false;
         this.fetching = false;
         this.fetchremote = true;
+        this.needFetch = true;
+        this.autocompletesize = 2;
+        this.autocompletedelay = 500;
+        this.autocompletepagesize = 10;
+        this.maxHeight = 210;
         this.context = config.context||'';
         $A.Lov.superclass.constructor.call(this, config);        
     },
@@ -5917,8 +6432,19 @@ $A.Lov = Ext.extend($A.TextField,{
             this.lovservice = this.processParmater(this.lovservice);           
         }else if(!Ext.isEmpty(this.lovmodel)){
             this.lovmodel = this.processParmater(this.lovmodel);
-        }       
-        this.trigger = this.wrap.child('div[atype=triggerfield.trigger]'); 
+        }
+        if(this.autocomplete = this.autocomplete == "true"){
+        	if(!this.autocompletefield){
+        		var maps = this.getMapping(),name = this.binder.name;
+        		for(var i=0;i<maps.length;i++){
+        			if(maps[i].to == name)this.autocompletefield = maps[i].from;
+        		}
+        	}
+        	this.fetchremote = false;
+        	this.autocompleteview = new $A.Popup({});
+        	if(!this.optionDataSet)this.optionDataSet = new $A.DataSet({id:this.id+"_autocomplete_ds",autocount:false})
+        }
+        this.trigger = this.wrap.child('div[atype=triggerfield.trigger]');
     },
     processParmater:function(url){
         var li = url.indexOf('?')
@@ -5942,13 +6468,27 @@ $A.Lov = Ext.extend($A.TextField,{
          * @param {Aurora.Record} r1 当前lov绑定的Record
          * @param {Aurora.Record} r2 选中的Record. 
          */
-        'commit');
+        'commit',
+        <div id="event-Aurora.Lov-beforetriggerclick"></div>/**
+         * @event beforetriggerclick
+         * 点击弹出框按钮之前的事件。
+         * @param {Aurora.Lov} lov 当前Lov组件.
+         */
+        'beforetriggerclick');
     },
     onTriggerClick : function(e){
     	e.stopEvent();
-    	this.showLovWindow();
+    	if(this.fireEvent('beforetriggerclick',this)){
+    		this.showLovWindow();
+    	}
     },
     destroy : function(){
+    	if(this.qtId){
+    		Ext.Ajax.abort(this.qtId);
+    	}
+    	if(this.optionDataSet){
+    		this.optionDataSet.destroy();
+    	}
         $A.Lov.superclass.destroy.call(this);
     },
     setWidth: function(w){
@@ -5956,9 +6496,208 @@ $A.Lov = Ext.extend($A.TextField,{
         this.el.setStyle("width",(w-20)+"px");
     },
     onChange : function(e){
-    	if(this.fetchremote == true)
-        this.fetchRecord();
+    	if(this.fetchremote == true||(this.autocomplete&&this.needFetch))
+			this.fetchRecord();
     },
+    onKeyUp : function(e){
+        this.fireEvent('keyup', this, e);
+        if(this.autocomplete){
+        	var v=this.getRawValue(),view=this.autocompleteview,code = e.keyCode;
+        	//if((code > 47 && code < 58) || (code > 64 && code < 91) || code == 8 || code == 46 || code == 13 || code == 32 || code == 16 || code == 17){
+	        if((code < 37 || code > 40)&&code != 13 && code !=27 && code != 9){
+        		if(v.length >= this.autocompletesize){
+	        		var sf=this;
+	        		if(this.showCompleteId)clearTimeout(this.showCompleteId);
+	        		this.showCompleteId=setTimeout(function(){
+	        			var url;
+			        	if(!Ext.isEmpty(sf.lovservice)){
+				            url = sf.context + 'sys_lov.svc?svc='+sf.lovservice +'&'+ Ext.urlEncode(sf.getLovPara());
+				        }else if(!Ext.isEmpty(sf.lovmodel)){
+				            url = sf.context + 'autocrud/'+sf.lovmodel+'/query?' + Ext.urlEncode(sf.getLovPara());
+				        }
+				        sf.optionDataSet.setQueryUrl(url);
+				       	sf.pagesize=sf.autocompletepagesize;
+	        			sf.optionDataSet.setQueryParameter(sf.autocompletefield,'%'+v.trim()+'%');
+	        			view.show();
+	        			sf.optionDataSet.query();
+	        			delete sf.showCompleteId;
+	        		},this.autocompletedelay);
+	        	}else{
+	        		if(this.showCompleteId){
+	        			clearTimeout(this.showCompleteId);
+	        			delete this.showCompleteId;
+	        		}
+	        		if(view.isShow){
+	        			view.hide();
+	        			view.on('show',this.autoCompleteShow,this);
+	        		}
+	        	}
+        	}
+        }
+    },
+    onKeyDown : function(e){
+        if(this.isWinOpen)return;       
+        var keyCode = e.keyCode;
+        if(this.autocomplete && this.autocompleteview && this.autocompleteview.isShow){
+            if(keyCode == 13 ) {
+    	    	if(this.selectedIndex != null){
+    	    		this.blur();
+        			this.onSelect(this.selectedIndex);
+    				this.autocompleteview.hide();
+        			this.focus();
+        		}else{
+        			this.autocompleteview.hide();
+    	    		var sf = this;
+    	    		setTimeout(function(){
+    	    			sf.fireEvent('enterdown', sf, e)
+    	    		},5);
+        		}
+            }else if(keyCode == 27 || keyCode == 9){
+            	this.autocompleteview.hide();
+            	this.blur();
+            }else if(this.optionDataSet.getAll().length > 0){
+    	        if(keyCode == 38){
+    	        	this.selectItem(this.selectedIndex == null ? -1 : this.selectedIndex - 1);
+    	        }else if(keyCode == 40){
+    	        	this.selectItem(this.selectedIndex == null ? 0 : this.selectedIndex + 1);
+    	        }
+            }
+        }else{
+            $A.Lov.superclass.onKeyDown.call(this,e);
+        }
+    },
+    onFocus : function(e){
+    	if(this.autocomplete){
+    		this.autocompleteview.bind(this.optionDataSet,this);
+    		//this.wrap.appendChild(this.autocompleteview.wrap);
+    		this.autocompleteview.on('show',this.autoCompleteShow,this);
+    	}
+    	$A.Lov.superclass.onFocus.call(this,e);
+    },
+    onBlur : function(e){
+    	if(this.autocomplete){
+    		if(this.showCompleteId){
+    			clearTimeout(this.showCompleteId);
+    			delete this.showCompleteId;
+    		}
+    		this.autocompleteview.un('show',this.autoCompleteShow,this);
+    	}
+    	$A.Lov.superclass.onBlur.call(this,e);
+    },
+    autoCompleteShow : function(){
+    	this.autoCompletePosition();
+    	var view = this.autocompleteview;
+    	view.addClass(this.viewClass);
+		view.update('<ul></ul>');
+		this.view=view.wrap.child('ul');
+		this.view.on('click', this.onViewClick,this);
+    	view.on('beforerender',this.onQuery,this);
+		view.on('render',this.onRender,this);
+    	view.on('hide',this.autoCompleteHide,this);
+    },
+    autoCompleteHide : function(){
+    	this.needFetch = true;
+		Ext.Ajax.abort(this.optionDataSet.qtId);
+    	var view = this.autocompleteview;
+    	this.view.un('click', this.onViewClick,this);
+		this.view.un('mousemove',this.onViewMove,this);
+    	view.un('show',this.autoCompleteShow,this);
+    	view.un('beforerender',this.onQuery,this);
+    	view.un('render',this.onRender,this);
+    	view.un('hide',this.autoCompleteHide,this);
+    },
+    autoCompletePosition:function(){
+    	var xy = this.wrap.getXY(),
+			W=this.autocompleteview.getWidth(),H=this.autocompleteview.getHeight(),
+			PH=this.wrap.getHeight(),PW=this.wrap.getWidth(),
+			BH=$A.getViewportHeight()-3,BW=$A.getViewportWidth()-3,
+			x=(xy[0]+W)>BW?((BW-W)<0?xy[0]:(BW-W)):xy[0];
+			y=(xy[1]+PH+H)>BH?((xy[1]-H)<0?(xy[1]+PH):(xy[1]-H)):(xy[1]+PH);
+    	this.autocompleteview.moveTo(x,y);
+    },
+    onViewClick:function(e,t){
+		if(t.tagName!='LI'){
+		    return;
+		}		
+		this.onSelect(t);
+		this.autocompleteview.hide();
+		this.focus();
+	},	
+	onViewMove:function(e,t){
+        var index = t.tabIndex;
+        this.selectItem(index);        
+	},
+	onSelect : function(target){
+		var index = Ext.isNumber(target)?target:target.tabIndex;
+		if(index==-1)return;
+		var record = this.optionDataSet.getAt(index);
+		this.commit(record);
+	},
+    onQuery : function(){
+    	this.view.update('<li tabIndex="-1">'+_lang['lov.query']+'</li>');
+    	this.view.un('mousemove',this.onViewMove,this);
+    	this.correctViewSize();
+    },
+    onRender : function(){
+    	var datas = this.optionDataSet.getAll();
+		var l=datas.length;
+		var sb = [];
+		for(var i=0;i<l;i++){
+			var text = this.getRenderText(datas[i]);
+			sb.add('<li tabIndex="'+i+'">'+text+'</li>');	//this.litp.applyTemplate(d)等数据源明确以后再修改		
+		}
+		this.selectedIndex = null;
+		if(l!=0){
+			this.view.update(sb.join(''));	
+			this.correctViewSize();
+			this.view.on('mousemove',this.onViewMove,this);
+			this.needFetch=false;
+		}else{
+			this.view.update('<li tabIndex="-1">'+_lang['lov.notfound']+'</li>');	
+		}
+    },
+    correctViewSize: function(){
+		var widthArray = [];
+		var mw = 150;
+		for(var i=0;i<this.view.dom.childNodes.length;i++){
+			var li=this.view.dom.childNodes[i];
+			var width=$A.TextMetrics.measure(li,li.innerHTML).width;
+			mw = Math.max(mw,width)||mw;
+		}
+		var lh = Math.min(this.autocompleteview.wrap.child('ul').getHeight()+2,this.maxHeight); 
+    	this.autocompleteview.setWidth(mw);
+		this.autocompleteview.setHeight(lh<20?20:lh);
+		this.autoCompletePosition();
+	},
+    selectItem:function(index){
+		if(Ext.isEmpty(index)){
+			return;
+		}	
+		var node = this.getNode(index);	
+		if(node && node.tabIndex!=this.selectedIndex){
+			if(!Ext.isEmpty(this.selectedIndex)){							
+				Ext.fly(this.getNode(this.selectedIndex)).removeClass(this.selectedClass);
+			}
+			this.selectedIndex=node.tabIndex;			
+			Ext.fly(node).addClass(this.selectedClass);					
+		}			
+	},
+	getNode:function(index){
+		var nodes = this.view.dom.childNodes,l = nodes.length;
+		if(index >= l) index =  index % l;
+		else if (index < 0) index = l + index % l;
+		return nodes[index];
+	},
+    getRenderText : function(record){
+        var rder = $A.getRenderer(this.autocompleterenderer);
+        var text = '&#160;';
+        if(rder){
+            text = rder.call(window,this,record);
+        }else{
+            text = record.get(this.autocompletefield);
+        }
+		return text;
+	},
 //  onKeyDown : function(e){
 //        if(e.getKey() == 13) {
 //          this.showLovWindow();
@@ -5973,7 +6712,7 @@ $A.Lov = Ext.extend($A.TextField,{
         if(this.win) this.win.close();
 //        this.setRawValue('')
         var record = lr ? lr : this.record;
-        if(record){
+        if(record && r){
             var mapping = this.getMapping();
             for(var i=0;i<mapping.length;i++){
                 var map = mapping[i];
@@ -5983,6 +6722,7 @@ $A.Lov = Ext.extend($A.TextField,{
 //        else{
 //          this.setValue()
 //        }
+        
         this.fireEvent('commit', this, record, r)
     },
     getMapping: function(){
@@ -6008,7 +6748,12 @@ $A.Lov = Ext.extend($A.TextField,{
     onWinClose: function(){
         this.isWinOpen = false;
         this.win = null;
-        if(!Ext.isIE6 && !Ext.isIE7)this.focus();//TODO:ie6 ie7 会死掉 
+        if(!Ext.isIE6 && !Ext.isIE7){//TODO:不知什么地方会导致冲突,ie6 ie7 会死掉 
+            this.focus();
+        }else{
+        	var sf = this;
+        	setTimeout(function(){sf.focus()},10)	
+        }
     },
     getLovPara : function(){
         var para = Ext.apply({},this.para);
@@ -6027,7 +6772,7 @@ $A.Lov = Ext.extend($A.TextField,{
             return;
         }
         this.fetching = true;
-        var v = this.getRawValue();
+        var v = this.getRawValue(),url;
         
         if(!Ext.isEmpty(this.lovservice)){
             url = this.context + 'sys_lov.svc?svc='+this.lovservice+'&pagesize=1&pagenum=1&_fetchall=false&_autocount=false&'+ Ext.urlEncode(this.getLovPara());
@@ -6047,9 +6792,14 @@ $A.Lov = Ext.extend($A.TextField,{
         }
         $A.slideBarEnable = $A.SideBar.enable;
         $A.SideBar.enable = false;
-        //if(Ext.isEmpty(v)) return;
+        if(Ext.isEmpty(v)) {
+            this.fetching = false;
+            record.isReady=true;
+            $A.SideBar.enable = $A.slideBarEnable;
+            return;
+        }
         this.setRawValue(_lang['lov.query'])
-        $A.request({url:url, para:p, success:function(res){
+        this.qtId = $A.request({url:url, para:p, success:function(res){
             var r = new $A.Record({});
             if(res.result.record){
                 var datas = [].concat(res.result.record);
@@ -6059,6 +6809,7 @@ $A.Lov = Ext.extend($A.TextField,{
                 }
             }
             this.fetching = false;
+            this.setRawValue('');
             this.commit(r,record);
             record.isReady=true;
             $A.SideBar.enable = $A.slideBarEnable;
@@ -6093,10 +6844,112 @@ $A.Lov = Ext.extend($A.TextField,{
         }
         if(url) {
 	        this.isWinOpen = true;
-            this.win = new $A.Window({title:this.title||'Lov', url:url+"lovid="+this.id+"&key="+encodeURIComponent(v)+"&gridheight="+(this.lovgridheight||350)+"&innerwidth="+((this.lovwidth||400)-30), height:this.lovheight||400,width:this.lovwidth||400});
+	        //alert(this.lovlabelwidth+' '+this.lovgridheight)
+            this.win = new $A.Window({title:this.title||'Lov', url:url+"lovid="+this.id+"&key="+encodeURIComponent(v)+"&gridheight="+(this.lovgridheight||350)+"&innerwidth="+((this.lovwidth||400)-30)+"&lovautoquery="+this.lovautoquery+"&lovlabelwidth="+this.lovlabelwidth, height:this.lovheight||400,width:this.lovwidth||400});
             this.win.on('close',this.onWinClose,this);
         }
     }
+});
+
+$A.Popup = Ext.extend($A.Component,{
+	constructor : function(config) {
+		var id = 'aurora-item-popup',popup = $A.CmpManager.get(id);
+		if(popup)return popup;
+		config.id=id;
+        $A.Popup.superclass.constructor.call(this, config);
+    },
+    initComponent : function(config){
+        $A.Popup.superclass.initComponent.call(this,config);
+    	this.wrap = new Ext.Template(this.tpl).insertFirst(document.body,{width:this.width,height:this.height},true);
+    	this.shadow = new Ext.Template(this.shadowtpl).insertFirst(document.body,{width:this.width,height:this.height},true);
+    },
+    initEvents : function(){
+        $A.Popup.superclass.initEvents.call(this);
+        this.addEvents(
+        	'show',
+        	'hide',
+        	'beforerender',
+        	'render'
+        );
+    },
+    processDataSet: function(ou){
+		if(this.optionDataSet){
+            this.optionDataSet[ou]('load', this.onDataSetLoad, this);
+            this.optionDataSet[ou]('query', this.onDataSetQuery, this);
+		}
+	},
+	
+	onDataSetQuery : function(){
+		this.fireEvent('beforerender',this)
+	},
+	onDataSetLoad : function(){
+		this.fireEvent('render',this)
+	},
+	update : function(){
+		this.wrap.update.apply(this.wrap,Ext.toArray(arguments));
+	},
+    show : function(){
+    	if(!this.isShow){
+    		this.isShow=true;
+	    	this.fireEvent('show',this);
+	    	this.wrap.show();
+	    	this.shadow.show();
+	    	Ext.get(document).on('mousedown',this.trigger,this);
+    	}
+    },
+    trigger : function(e){
+    	if(!this.wrap.contains(e.target) && !this.wrap.contains(e.target) &&(!this.owner||!this.owner.wrap.contains(e.target))){ 
+    		this.hide();
+    	}
+    },
+    hide : function(e){
+    	if(this.isShow){
+    		this.isShow=false;
+	    	this.fireEvent('hide',this)
+	    	Ext.get(document).un('mousedown',this.trigger,this)
+	    	this.wrap.hide();
+	    	this.shadow.hide();
+    	}
+    },
+    moveTo : function(x,y){
+    	this.wrap.moveTo(x,y);
+    	this.shadow.moveTo(x+3,y+3);
+    },
+    setHeight : function(h){
+    	this.wrap.setHeight(h);
+    	this.shadow.setHeight(h);
+    },
+    setWidth : function(w){
+    	this.wrap.setWidth(w);
+    	this.shadow.setWidth(w);
+    },
+    getHeight : function(){
+    	return this.wrap.getHeight();
+    },
+    getWidth : function(){
+    	return this.wrap.getWidth();
+    },
+    addClass : function(className){
+		if(this.customClass == className)return;
+    	if(this.customClass)this.wrap.removeClass(this.customClass);
+    	this.customClass = className;
+    	this.wrap.addClass(this.customClass);
+    },
+    bind : function(ds,cmp){
+    	this.owner = cmp;
+    	if(this.optionDataSet != ds){
+    		this.processDataSet('un');
+    		this.optionDataSet = ds;
+			this.processDataSet('on');
+    	}
+    },
+    destroy : function(){
+    	$A.Popup.superclass.destroy.call(this);
+    	this.processDataSet('un');
+    	delete this.shadow;
+    },
+    tpl : ['<div class="item-popup" style="visibility:hidden;background-color:#fff">','</div>'],
+    shadowtpl : ['<div class="item-shadow" style="visibility:hidden;">','</div>']
 });
 <div id="cls-Aurora.MultiLov"></div>/**
  * @class Aurora.MultiLov
@@ -6278,6 +7131,130 @@ $A.TextArea = Ext.extend($A.Field,{
 //        return v;
 //    }
 })
+$A.Customization = Ext.extend(Ext.util.Observable,{
+    constructor: function(config) {
+        $A.Customization.superclass.constructor.call(this);
+        this.id = config.id || Ext.id();
+        $A.CmpManager.put(this.id,this)
+        this.initConfig=config;
+    },
+    start : function(config){
+        var sf = this;
+        this.scanInterval = setInterval(function() {
+            var cmps = $A.CmpManager.getAll();
+            for(var key in cmps){
+                var cmp = cmps[key];
+                if(cmp.iscust == true){
+                    cmp.on('mouseover',sf.onCmpOver,sf);
+                }
+            }
+        }, 500);
+    },
+    mask : function(el){
+        var w = el.getWidth();
+        var h = el.getHeight();//leftp:0px;top:0px; 是否引起resize?
+        var p = '<div title="点击设置个性化" style="border:2px solid #000;cursor:pointer;left:-1000px;top:-1000px;width:'+(w)+'px;height:'+(h)+'px;position: absolute;"><div style="width:100%;height:100%;filter: alpha(opacity=0);opacity: 0;mozopacity: 0;background-color:#ffffff;"> </div></div>';
+        this.masker = Ext.get(Ext.DomHelper.insertFirst(Ext.getBody(),p));
+        this.masker.setStyle('z-index', 10001);
+        var xy = el.getXY();
+        this.masker.setX(xy[0]-2);
+        this.masker.setY(xy[1]-2);
+        this.masker.on('click', this.onClick,this);
+        this.cover.on('mouseover',this.onCmpOut,this);
+    },
+    onClick : function(){
+        var path = window.location.pathname;
+        var str = path.indexOf('modules');
+        var screen_path = path.substring(str,path.length);
+        var screen = screen_path.substring(screen_path.lastIndexOf('/'), screen_path.length);
+        var parent = this.el.findParent('.win-wrap')
+        if(parent) {
+            var url = parent.getAttributeNS("","url");
+            if(url){
+                var li = url.lastIndexOf('/');
+                if(li != -1){
+                    url = url.substring(li,url.length);
+                    screen_path = screen_path.replaceAll(screen, url);
+                }
+            }
+        }
+        new Aurora.Window({id:'sys_customization_edit_window', url:'/hec/modules/sys/sys_customization_edit.screen?screen_path='+screen_path + '&id='+ this.cmp.id, title:'属性设置',height:530,width:780});        
+        this.onCmpOut();
+    },
+    hideMask : function(){
+        if(this.masker){
+            Ext.fly(this.masker).remove();   
+            this.masker = null;
+        }
+    },
+    showCover : function(){
+        var scrollWidth = Ext.isStrict ? document.documentElement.scrollWidth : document.body.scrollWidth;
+        var scrollHeight = Ext.isStrict ? document.documentElement.scrollHeight : document.body.scrollHeight;
+        var screenWidth = Math.max(scrollWidth,Aurora.getViewportWidth());
+        var screenHeight = Math.max(scrollHeight,Aurora.getViewportHeight());
+        var st = (Ext.isIE6 ? 'position:absolute;width:'+(screenWidth-1)+'px;height:'+(screenHeight-1)+'px;':'')
+//        var p = '<DIV class="aurora-cover" style="'+st+'" unselectable="on"></DIV>';
+        var p = '<DIV class="aurora-cover" style="'+st+'filter: alpha(opacity=0);background-color: #fff;opacity: 0;mozopacity: 0;" unselectable="on"></DIV>';
+        this.cover = Ext.get(Ext.DomHelper.insertFirst(Ext.getBody(),p));
+        this.cover.setStyle('z-index', 9999);
+    },
+    hideCover : function(){
+        if(this.cover){
+            this.cover.un('mouseover',this.onCmpOut,this);
+            Ext.fly(this.cover).remove();
+            this.cover = null;
+        }
+    },
+    getEl : function(cmp){
+        var el;
+        if(Aurora.Grid && cmp instanceof Aurora.Grid) {
+            el = cmp.wb;       
+        }else{
+            el = cmp.wrap;
+        }
+        
+        return el;
+    },
+    onCmpOver : function(cmp, e){
+        if(this.isInSpotlight) return;
+        this.isInSpotlight = true;
+        this.showCover();
+        this.cmp = cmp;
+        this.el = this.getEl(cmp);
+        if(this.el){
+//            this.backgroundcolor = this.el.getStyle('background-color');
+//            this.currentPosition = this.el.getStyle('position');
+            this.currentZIndex = this.el.getStyle('z-index');
+//            this.el.setStyle('background-color','#fff')
+//            this.el.setStyle('position','relative');
+            this.el.setStyle('z-index', 10000);
+        }
+        this.mask(this.el)
+    },
+    onCmpOut : function(e){
+        this.isInSpotlight = false;
+        if(this.el){
+//            this.el.setStyle('position',this.currentPosition||'')
+            this.el.setStyle('z-index', this.currentZIndex);
+//            this.el.setStyle('background-color', this.backgroundcolor||'');
+            this.el = null;
+        }
+        this.hideMask();
+        this.hideCover();
+        this.cmp = null;
+    },
+    stop : function(){
+        if(this.scanInterval) clearInterval(this.scanInterval)
+        this.onCmpOut();
+        var cmps = $A.CmpManager.getAll();
+        for(var key in cmps){
+            var cmp = cmps[key];
+            if(cmp.iscust == true){
+                cmp.un('mouseover',this.onCmpOver,this);
+            }
+        }
+    }
+});
 </pre>    
 </body>
 </html>
