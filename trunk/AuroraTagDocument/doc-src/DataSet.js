@@ -124,7 +124,14 @@
  * @type Boolean
  * @default false
  */
-
+ 
+/**
+ * 是否显示全选框
+ * @property showCheckAll
+ * @type Boolean
+ * @default true
+ */
+ 
 /**
  * 用回调函数判断行是否可选择
  * <p>回调函数function(record){return true|false}</P>
