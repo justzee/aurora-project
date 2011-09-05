@@ -88,6 +88,12 @@ $A.Grid = Ext.extend($A.Component,{
     initEvents:function(){
         $A.Grid.superclass.initEvents.call(this);
         this.addEvents(
+        <div id="event-Aurora.Grid-render"></div>/**
+         * @event render
+         * grid渲染出数据后触发该事件
+         * @param {Aurora.Grid} grid 当前Grid组件.
+         */
+        'render',
         <div id="event-Aurora.Grid-keydown"></div>/**
          * @event keydown
          * 键盘按下事件.
@@ -130,7 +136,15 @@ $A.Grid = Ext.extend($A.Component,{
          * @param {String} 当前name.
          * @param {Aurora.Record} record 鼠标点击所在行的Record对象.
          */
-        'editorshow');
+        'editorshow',
+        <div id="event-Aurora.Grid-nexteditorshow"></div>/**
+         * @event nexteditorshow
+         * 切换下一个编辑器的事件.
+         * @param {Aurora.Grid} grid 当前Grid组件.
+         * @param {Number} row 行号.
+         * @param {String} 当前name.
+         */
+        'nexteditorshow');
     },
     syncScroll : function(){
         this.hideEditor();
@@ -216,7 +230,7 @@ $A.Grid = Ext.extend($A.Component,{
         var sf = this;
         sf.dataset = ds;
         if(ds.autopagesize===true){
-        	ds.pagesize=Math.round((this.ub.getHeight()-16)/25);
+        	ds.pagesize=Math.round(((this.ub.getHeight()||parseFloat(this.ub.dom.style.height))-16)/25);
         }
         sf.processDataSetLiestener('on');
         this.onLoad();
@@ -227,15 +241,15 @@ $A.Grid = Ext.extend($A.Component,{
     initTemplate : function(){
         this.rowTdTpl = new Ext.Template('<td atype="{atype}" class="grid-rowbox" recordid="{recordid}">');
         this.tdTpl = new Ext.Template('<td style="visibility:{visibility};text-align:{align}" dataindex="{name}" atype="grid-cell" recordid="{recordid}">');
-        this.cellTpl = new Ext.Template('<div class="grid-cell {cellcls}" style="width:{width}px" id="'+this.id+'_{name}_{recordid}">{text}</div>');        
+        this.cellTpl = new Ext.Template('<div class="grid-cell {cellcls}" style="width:{width}px" id="'+this.id+'_{name}_{recordid}" title="{title}">{text}</div>');        
         this.cbTpl = new Ext.Template('<center><div class="{cellcls}" id="'+this.id+'_{name}_{recordid}"></div></center>');
     },
-    getCheckBoxStatus: function(record, name) {
+    getCheckBoxStatus: function(record, name ,readonly) {
         var field = this.dataset.getField(name)
         var cv = field.getPropertity('checkedvalue');
         var uv = field.getPropertity('uncheckedvalue');
         var value = record.data[name];
-        return (value && value == cv) ? 'item-ckb-c' : 'item-ckb-u';
+        return 'item-ckb-'+(readonly?'readonly-':'')+((value && value == cv) ? 'c' : 'u');
     },
     createTemplateData : function(col,record){
     	return {
@@ -251,6 +265,7 @@ $A.Grid = Ext.extend($A.Component,{
         var tdTpl = this.tdTpl;
         var cls = ''; //col.editor ? this.cecls : 
         var xtype = col.type;
+        var readonly;
         var editor = this.getEditor(col,record);
         if(editor!=''){
         	var edi = $A.CmpManager.get(editor);
@@ -261,10 +276,13 @@ $A.Grid = Ext.extend($A.Component,{
             }else{
                 cls = this.cecls;
             }
+        }else if(col.name && Ext.isDefined(record.getField(col.name).get('checkedvalue'))){
+    		xtype = 'cellcheck';
+    		readonly=true;
         }
         if(xtype == 'rowcheck'||xtype == 'rowradio'){
-        	var readonly="";
-        	if(!this.dataset.execSelectFunction(record))readonly="-readonly"
+        	if(!this.dataset.execSelectFunction(record))readonly="-readonly";
+        	else readonly="";
             tdTpl = this.rowTdTpl;
             data = Ext.apply(data,{
                 align:'center',
@@ -275,7 +293,7 @@ $A.Grid = Ext.extend($A.Component,{
         }else if(xtype == 'cellcheck'){
             data = Ext.apply(data,{
                 align:'center',
-                cellcls: 'grid-ckb ' + this.getCheckBoxStatus(record, col.name) //+((cls=='') ? ' disabled ' : '' )
+                cellcls: 'grid-ckb ' + this.getCheckBoxStatus(record, col.name ,readonly) //+((cls=='') ? ' disabled ' : '' )
             })
             cellTpl =  this.cbTpl;
         }else{
@@ -284,12 +302,14 @@ $A.Grid = Ext.extend($A.Component,{
                 cls = cls + ' ' + this.nbcls
             }
             var sp = (cls.indexOf(this.cecls)!=-1) ? 5 : 2;
+            var t = this.renderText(record,col,record.data[col.name])
             data = Ext.apply(data,{
                 align:col.align||'left',
                 cellcls: cls,
 //                width:col.width-4,//-11
                 width:data.width-sp,//-11
-                text:this.renderText(record,col,record.data[col.name])
+                text:t,
+                title:String(t).replace(/<[^<>]*>/mg,'')
             })
             cellTpl =  this.cellTpl;
         }
@@ -367,6 +387,8 @@ $A.Grid = Ext.extend($A.Component,{
         $A.Masker.mask(this.wb,_lang['grid.mask.remove']);
     },
     onBeforeLoad : function(){
+    	this.ub.scrollTo('left',0);
+    	this.uh.scrollTo('left',0);
         $A.Masker.mask(this.wb,_lang['grid.mask.loading']);
     },
     onBeforSubmit : function(ds){
@@ -387,6 +409,7 @@ $A.Grid = Ext.extend($A.Component,{
 //        if(focus !== false) this.focus.defer(10,this);//获取数据后的获得焦点,会引起其他编辑器无法编辑
         this.drawFootBar();
         $A.Masker.unmask(this.wb);
+        this.fireEvent('render',this)
     },
     clearDomRef : function(){
     	this.selectlockTr = null;
@@ -396,13 +419,13 @@ $A.Grid = Ext.extend($A.Component,{
         $A.Masker.unmask(this.wb);
     },
     onMouseWheel : function(e){
-    	var delta = e.getWheelDelta();
+        e.stopEvent();
+        if(this.editing == true) return;
+    	var delta = e.getWheelDelta(),sf=this;
         if(delta > 0){
-            this.dataset.pre();
-            e.stopEvent();
+            sf.dataset.pre();
         } else if(delta < 0){
-            this.dataset.next();
-            e.stopEvent();
+            sf.dataset.next();
         }
     },
     focus: function(){    	
@@ -492,6 +515,9 @@ $A.Grid = Ext.extend($A.Component,{
                     if(col.type == 'rowcheck') {
                         Ext.fly(td).set({'recordid':record.id,'atype':'grid.rowcheck'})
                         td.className = 'grid-rowbox';
+                    }else if(col.type == 'rowradio'){
+                    	Ext.fly(td).set({'recordid':record.id,'atype':'grid.rowradio'})
+                        td.className = 'grid-rowbox';
                     }else{
                         td.style.visibility=col.hidden === true ? 'hidden' : 'visible';
                         td.style.textAlign=col.align||'left';
@@ -531,7 +557,7 @@ $A.Grid = Ext.extend($A.Component,{
     },
     renderEditor : function(div,record,c,editor){
     	var cell = this.createCell(c,record,false);
-    	div.parent().update(cell);
+    	div.parent('td').update(cell);
     	
     	/*
     	if(editor == ''){    	
@@ -594,11 +620,13 @@ $A.Grid = Ext.extend($A.Component,{
     },
     onRemove : function(ds,record,index){
         var lrow = Ext.get(this.id+'$l-'+record.id);
-        if(lrow)lrow.remove();
-        
+        if(lrow)lrow.remove();        
         var urow = Ext.get(this.id+'$u-'+record.id);
         if(urow)urow.remove();
+        if(Ext.isIE||Ext.isIE9)this.syncScroll();
+        this.clearDomRef();
         $A.Masker.unmask(this.wb);
+        this.drawFootBar();
     },
     onClear : function(){
         
@@ -645,6 +673,7 @@ $A.Grid = Ext.extend($A.Component,{
             this.setCheckBoxStatus(cb, true);
         }else{
             this.setRadioStatus(cb,true);
+            this.dataset.locate((this.dataset.currentPage-1)*this.dataset.pagesize + this.dataset.indexOf(record) + 1)
         }
     },
     onUnSelect : function(ds,record){
@@ -674,8 +703,8 @@ $A.Grid = Ext.extend($A.Component,{
                 var record = this.dataset.findById(rid);
                 var row = this.dataset.indexOf(record);
                 var name = Ext.fly(target).getAttributeNS("","dataindex");
-                this.showEditor(row,name);
                 this.fireEvent('cellclick', this, row, name, record);
+                this.showEditor(row,name);
                 this.fireEvent('rowclick', this, row, record);
             }else if(atype=='grid.rowcheck'){               
                 var cb = Ext.get(this.id+'__'+rid);
@@ -718,7 +747,11 @@ $A.Grid = Ext.extend($A.Component,{
         col.editor = editor;
         var div = Ext.get(this.id+'_'+name+'_'+this.selectRecord.id)
         if(div){
-            (editor == '') ? div.removeClass(this.cecls) : div.addClass(this.cecls)
+            if(editor == ''){
+            	div.removeClass(this.cecls)
+            }else if(!$(editor) instanceof $A.CheckBox){
+            	div.addClass(this.cecls)
+            }
         }
     },
     getEditor : function(col,record){
@@ -738,51 +771,190 @@ $A.Grid = Ext.extend($A.Component,{
      * @param {Number} row 行号
      * @param {String} name 当前列的name.
      */
-    showEditor : function(row, name){       
+    showEditor : function(row, name,callback){       
         if(row == -1)return;
         var col = this.findColByName(name);
         if(!col)return;
         var record = this.dataset.getAt(row);
         if(!record)return;
-        if(record.id != this.selectedId);
-        this.selectRow(row);
+        if(record.id != this.selectedId) this.selectRow(row);
         this.focusColumn(name);
         var editor = this.getEditor(col,record);
         this.setEditor(name, editor);
-        if(editor!='' && ($(editor) instanceof $A.CheckBox)){
-            var field = this.dataset.getField(name)
-            var cv = field.getPropertity('checkedvalue');
-            var uv = field.getPropertity('uncheckedvalue');
-            var v = record.get(name);
-            record.set(name, v == cv ? uv : cv);
-        } else if(editor){
-            var dom = document.getElementById(this.id+'_'+name+'_'+record.id);
-            var xy = Ext.fly(dom).getXY();
-            var sf = this;
+        var sf = this;
+        if(sf.currentEditor){
+        	sf.currentEditor.editor.el.un('keydown', sf.onEidtorKeyDown,sf);
+    		var d = sf.currentEditor.focusCheckBox;
+    		if(d){
+    			d.setStyle('outline','none');
+    			sf.currentEditor.focusCheckBox = null;
+    		}
+    	}
+        if(editor!=''){
+        	var ed = $(editor);
             setTimeout(function(){
-                var v = record.get(name)
+            	var v = record.get(name);
                 sf.currentEditor = {
                     record:record,
                     ov:v,
                     name:name,
-                    editor:$(editor)
+                    editor:ed
                 };
-                var ed = sf.currentEditor.editor;
-                if(ed){
-                    ed.setHeight(Ext.fly(dom.parentNode).getHeight()-5)
-                    ed.setWidth(Ext.fly(dom.parentNode).getWidth()-7);
+                var dom = Ext.get(sf.id+'_'+name+'_'+record.id);
+                var xy = dom.getXY();
+                ed.bind(sf.dataset, name);
+                ed.render(record);
+	        	if(ed instanceof $A.CheckBox){
+	        		ed.move(-1000,xy[1]+5);
+		        	ed.el.on('keydown', sf.onEidtorKeyDown,sf);
+		        	ed.onClick();
+		        	sf.currentEditor.focusCheckBox = dom;
+	        		dom.setStyle('outline','1px dotted blue');
+//		            var field = sf.dataset.getField(name)
+//		            var cv = field.getPropertity('checkedvalue');
+//		            var uv = field.getPropertity('uncheckedvalue');
+//		            var v = record.get(name);
+//		            record.set(name, v == cv ? uv : cv);
+	       		}else{
+	       			ed.move(xy[0],xy[1]);
+                    ed.setHeight(dom.parent().getHeight()-5)
+                    ed.setWidth(dom.parent().getWidth()-7);
+                    ed.isEditor = true;
                     ed.isFireEvent = true;
                     ed.isHidden = false;
-                    ed.move(xy[0],xy[1]);
-                    ed.bind(sf.dataset, name);
-                    ed.render(record);
                     ed.focus();
+       				sf.editing = true;
+                    ed.el.on('keydown', sf.onEidtorKeyDown,sf);
 //                    ed.on('blur',sf.onEditorBlur, sf);
                     Ext.get(document.documentElement).on("mousedown", sf.onEditorBlur, sf);
-                }
-                sf.fireEvent('editorshow', sf, ed, row, name, record);
-            },1)
+                    if(callback)callback.call(window,ed)
+	                sf.fireEvent('editorshow', sf, ed, row, name, record);
+       			}
+            },10)
         }           
+    },
+    onEidtorKeyDown : function(e){
+        var keyCode = e.keyCode;
+        //esc
+        if(keyCode == 27) {
+            if(this.currentEditor && this.currentEditor.editor){
+                var ed = this.currentEditor.editor
+                ed.clearInvalid();
+                ed.render(ed.binder.ds.getCurrentRecord());
+            }
+            this.hideEditor();
+        }
+        //enter
+        if(keyCode == 13) {
+            this.showNextEditor();
+        }
+        //tab
+        if(keyCode == 9){
+            e.stopEvent();
+            this.showNextEditor();
+        }
+    },
+    showNextEditor : function(){
+        this.hideEditor();
+        var sf = this;
+        if(this.currentEditor && this.currentEditor.editor){
+            var callback = function(ed){
+                if(ed instanceof Aurora.Lov){
+                    ed.showLovWindow();
+                }
+            }
+            var ed = this.currentEditor.editor,ds = ed.binder.ds,
+                fname = ed.binder.name,r = ed.record,
+                row = ds.data.indexOf(r),name=null;
+            if(row!=-1){
+                var cls = this.columns;
+                var start = 0;
+                for(var i = 0,l = cls.length; i<l; i++){
+                    if(cls[i].name == fname){
+                        start = i+1;
+                    }
+                }
+                var editor;
+                for(var i = start,l = cls.length; i<l; i++){
+                    var col = cls[i];
+                    if(col.hidden !=true){
+	                    editor = this.getEditor(col,r);
+	                    if(editor!=''){
+	                        name =  col.name;
+	                        break;
+	                    }
+                    }
+                }
+                if(sf.currentEditor){
+        			var d= sf.currentEditor.focusCheckBox;
+        			if(d){
+        				d.setStyle('outline','none');
+        				sf.currentEditor.focusCheckBox = null;
+        			}
+        		}
+                if(name){
+                	var ed = $(editor);
+                	if(ed instanceof $A.CheckBox){
+                		sf.currentEditor = {
+		                    record:r,
+		                    ov:r.get(name),
+		                    name:name,
+		                    editor:ed
+		                };
+                		setTimeout(function(){
+	                		ed.bind(sf.dataset,name);
+	                		ed.render(r);
+	                		var dom = Ext.get(sf.id+'_'+name+'_'+r.id);
+	                		var xy = dom.getXY();
+	                		ed.move(-1000,xy[1])
+	                		ed.focus();
+	                		ed.el.on('keydown', sf.onEidtorKeyDown,sf);
+	                		sf.currentEditor.focusCheckBox = dom;
+	                		dom.setStyle('outline','1px dotted blue');
+                		},10)
+                	}else{
+	                    this.fireEvent('cellclick', this, row, name, r);
+	                    this.showEditor(row,name,callback);
+                	}
+                }else{
+                    var nr = ds.getAt(row+1);
+                    if(nr){
+                    	sf.selectRow(row+1);
+                        for(var i = 0,l = cls.length; i<l; i++){
+                            var col = cls[i];
+                            var editor = this.getEditor(col,nr);
+                            if(editor!=''){
+                            	var ed = $(editor),name = col.name;
+                            	if(ed instanceof $A.CheckBox){
+			                		sf.currentEditor = {
+					                    record:nr,
+					                    ov:nr.get(name),
+					                    name:name,
+					                    editor:ed
+					                };
+			                		setTimeout(function(){
+				                		ed.bind(sf.dataset,name);
+				                		ed.render(nr);
+				                		var dom = Ext.get(sf.id+'_'+name+'_'+nr.id);
+				                		var xy = dom.getXY();
+				                		ed.move(-1000,xy[1])
+				                		ed.focus();
+				                		ed.el.on('keydown', sf.onEidtorKeyDown,sf);
+				                		sf.currentEditor.focusCheckBox = dom;
+				                		dom.setStyle('outline','1px dotted blue');
+			                		},10)
+			                	}else{
+	                                this.fireEvent('cellclick', this, row+1, name, nr);
+	                                this.showEditor(row+1,name,callback);
+			                	}
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            this.fireEvent('nexteditorshow',this, row, name);
+        }
     },
     <div id="method-Aurora.Grid-focusRow"></div>/**
      * 指定行获取焦点.
@@ -833,24 +1005,27 @@ $A.Grid = Ext.extend($A.Component,{
      * 隐藏当前编辑器
      */
     hideEditor : function(){
-        if(this.currentEditor && this.currentEditor.editor){
+        if(this.currentEditor && this.currentEditor.editor && this.editing){
             var ed = this.currentEditor.editor;
-            ed.un('blur',this.onEditorBlur, this);
+            //ed.un('blur',this.onEditorBlur, this);
             var needHide = true;
             if(ed.canHide){
                 needHide = ed.canHide();
             }
             if(needHide) {
+                ed.el.un('keydown', this.onEidtorKeyDown,this);
                 Ext.get(document.documentElement).un("mousedown", this.onEditorBlur, this);
                 var ed = this.currentEditor.editor;
                 ed.move(-10000,-10000);
+                ed.onBlur();
                 ed.isFireEvent = false;
                 ed.isHidden = true;
+                this.editing = false;
             }
         }
     },
     onEditorBlur : function(e){
-        if(this.currentEditor && !this.currentEditor.editor.isEventFromComponent(e.target)) {           
+        if(this.currentEditor && !this.currentEditor.editor.isEventFromComponent(e.target)) {   
             this.hideEditor();
         }
     },
@@ -929,12 +1104,14 @@ $A.Grid = Ext.extend($A.Component,{
             }
         }else if(atype=='grid.rowcheck'){
             var cb = target.child('div[atype=grid.headcheck]');
-            var checked = cb.hasClass('item-ckb-c');
-            this.setCheckBoxStatus(cb,!checked);
-            if(!checked){
-                this.dataset.selectAll();
-            }else{
-                this.dataset.unSelectAll();
+            if(cb){
+                var checked = cb.hasClass('item-ckb-c');
+                this.setCheckBoxStatus(cb,!checked);
+                if(!checked){
+                    this.dataset.selectAll();
+                }else{
+                    this.dataset.unSelectAll();
+                }
             }
         }
     },
@@ -948,6 +1125,7 @@ $A.Grid = Ext.extend($A.Component,{
         }
     },
     setCheckBoxStatus: function(el, checked){
+        if(el)
         if(!checked){
             el.removeClass('item-ckb-c');
             el.addClass('item-ckb-u');
@@ -1249,32 +1427,59 @@ $A.Grid = Ext.extend($A.Component,{
     	}
     },
     _export : function(){
-    	var p={"ext":{"parameter":{"_column_config_":{}}}},columns=[],parentMap={},
-    	_parentColumn=function(pcl,cl){
-    		var json=Ext.encode(pcl);
-    		var c=parentMap[json];
-    		if(!c)c={prompt:pcl.prompt};
-    		parentMap[json]=c;
-    		(c["column"]=c["column"]||[]).add(cl);
-    		if(pcl._parent){
-    			return _parentColumn(pcl._parent,c)
-    		}
-    		return c;
-    	};
-    	for(var i=0;i<this.columns.length;i++){
-    		var column=this.columns[i];
-    		if(!column.type){
-    			var c={prompt:column.prompt||this.dataset.getField(column.name).pro["prompt"]}
-    			if(column.width)c.width=column.width
-    			if(column.name)c.name=column.name
-	    		columns.add(column._parent?_parentColumn(column._parent,c):c);
-    		}
-    	}
-    	p["ext"]["parameter"]["_column_config_"]["column"]=columns;
-    	p["ext"]["_generate_state"]=true;
-    	p["ext"]["_format"]="xls"
-
-    	this.dataset.query(1,p);
+    	var sf = this;
+    	$A.showConfirm('导出确认','导出过程可能需要花费很长时间，是否继续？',function(win){
+	    	var p={"parameter":{"_column_config_":{}}},columns=[],parentMap={},
+	    	_parentColumn=function(pcl,cl){
+	    		if(!(Ext.isDefined(pcl.forexport)?pcl.forexport:true))return null;
+	    		var json=Ext.encode(pcl);
+	    		var c=parentMap[json];
+	    		if(!c)c={prompt:pcl.prompt};
+	    		parentMap[json]=c;
+	    		(c["column"]=c["column"]||[]).add(cl);
+	    		if(pcl._parent){
+	    			return _parentColumn(pcl._parent,c)
+	    		}
+	    		return c;
+	    	};
+	    	for(var i=0;i<sf.columns.length;i++){
+	    		var column=sf.columns[i],forExport=Ext.isDefined(column.forexport)?column.forexport:true;
+	    		if(!column.type&&forExport){
+	    			var c={prompt:column.prompt||sf.dataset.getField(column.name).pro["prompt"]}
+	    			if(column.width)c.width=column.width;
+	    			if(column.name)c.name=column.exportfield||column.name;
+	    			c.align=column.align||"left";
+	    			var o=column._parent?_parentColumn(column._parent,c):c;
+		    		if(o)columns.add(o);
+	    		}
+	    	}
+	    	p["parameter"]["_column_config_"]["column"]=columns;
+	    	p["_generate_state"]=true;
+	    	p["_format"]="xls";
+	    	var r,q = {};
+	    	if(sf.dataset.qds)r = sf.dataset.qds.getCurrentRecord();
+	    	if(r) Ext.apply(q, r.data);
+	    	Ext.apply(q, sf.dataset.qpara);
+	    	for(var k in q){
+	    	   var v = q[k];
+	    	   if(Ext.isEmpty(v,false)) delete q[k];
+	    	}
+	    	Ext.apply(p.parameter,q)
+			var form = document.createElement("form");
+			form.target = "_blank";
+			form.method="post";
+			form.action = sf.dataset.queryurl+'?r='+Math.random();
+			var s = document.createElement("input");
+			s.id = "_request_data";
+			s.type = 'hidden';
+			s.name = '_request_data';
+	       	s.value = Ext.encode(p);
+	       	form.appendChild(s);
+	       	document.body.appendChild(form);
+	       	form.submit();
+	       	form.parentNode.removeChild(form);
+	       	win.close();
+    	});
     },
     destroy: function(){
         $A.Grid.superclass.destroy.call(this);
@@ -1283,6 +1488,6 @@ $A.Grid = Ext.extend($A.Component,{
         delete this.sp;
     }
 });
-$A.Grid.revision='$Rev: 2303 $';</pre>    
+$A.Grid.revision='$Rev: 3508 $';</pre>    
 </body>
 </html>
