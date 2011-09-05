@@ -17,7 +17,7 @@ Aurora提供了此功能，可以在svc的init-procedure或者screen的init-proc
        </p:arguments>
    </p:method-invoke>
    }}}
-  * 对于非静待方法，目前支持所有已经在aurora实例注册器（uncertain.ocm.IObjectRegistry）中注册过的实例，模板如下：
+  * 对于非静态方法，目前支持所有已经在aurora实例注册器（uncertain.ocm.IObjectRegistry）中注册过的实例，模板如下：
    {{{
       <p:method-invoke xmlns:p="uncertain.proc" instanceType="my.pkg.IRegisteredInterface" 
 methodName="anyMethod" resultPath="/model/result/@status" >
