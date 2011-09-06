@@ -1,0 +1,21 @@
+#summary 使用aurora的SQLRunner对象执行带有参数的SQL
+#labels coding_sample
+
+{{{
+// 获取service的context
+CompositeMap context ＝ ...
+
+// 转换为SqlServiceContext
+SqlServiceContext sql_context ＝ SqlServiceContext.createSqlServiceContext();
+
+// 如果不是在session级的service中，context是自己创建的，那么使用之前
+// 需要调用SqlServiceContext.setConnection()，或通过
+// SqlServiceContext.createSqlServiceContext(Connection)方法创建SqlServiceContext对象
+
+String sql = new String("select ... from ... where user_id=${/session/@user_id}");
+ParsedSql stmt = createStatement(sql);
+SQLRunner runner = new SqlRunner(sql_context, stmt);
+
+// 之前先把必要的参数放入context
+ResultSet rs = runner.query(sql_context.getCurrentParameter());
+}}}
