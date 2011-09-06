@@ -55,6 +55,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName datasetReference = new QualifiedName(
 			"http://www.aurora-framework.org/application", "dataset");
 
+
 	private Map compositeMap = new HashMap();
 	private Map exceptionMap = new HashMap();
 
@@ -124,7 +125,7 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	abstract protected CompositeMapIteator createIterationHandle(IFile resource);
 
-	private List buildMatchLines(IFile file, List r, Object pattern)
+	protected List buildMatchLines(IFile file, List r, Object pattern)
 			throws CoreException {
 		List lines = new ArrayList();
 		for (int i = 0; i < r.size(); i++) {
@@ -182,11 +183,11 @@ abstract public class AbstractSearchService implements ISearchService {
 		return result;
 	}
 
-	private List createLineMatches(MapFinderResult r, LineElement l,
+	protected List createLineMatches(MapFinderResult r, LineElement l,
 			IFile file, Object pattern) throws CoreException {
+		IDocument document = (IDocument) getDocument(file);
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 				(IDocument) getDocument(file));
-
 		int startOffset = l.getOffset();
 		List matches = new ArrayList();
 		List attributes = r.getAttributes();
@@ -195,15 +196,15 @@ abstract public class AbstractSearchService implements ISearchService {
 			try {
 				Attribute att = (Attribute) attributes.get(i);
 				String name = att.getName();
-				IRegion nameRegion;
-				nameRegion = dd.find(startOffset, name, true, true, false,
-						false);
+				IRegion nameRegion = getAttributeRegion(startOffset, l
+						.getLength(), name, document);
+
 				if (nameRegion == null) {
 					continue;
 				}
 				startOffset = nameRegion.getOffset();
 				IRegion valueRegion = dd.find(startOffset, pattern.toString(),
-						true, true, false, false);
+						true, true, true, false);
 				if (valueRegion == null) {
 					continue;
 				}
@@ -218,6 +219,48 @@ abstract public class AbstractSearchService implements ISearchService {
 		}
 		return matches;
 	}
+
+	private IRegion getAttributeRegion(int offset, int length, String name,
+			IDocument document) throws BadLocationException {
+		return Util.getAttributeRegion(offset, length, name, document);
+	}
+
+	// protected List createLineMatches(MapFinderResult r, LineElement l,
+	// IFile file, Object pattern) throws CoreException {
+	// FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
+	// (IDocument) getDocument(file));
+	//	
+	// int startOffset = l.getOffset();
+	// List matches = new ArrayList();
+	// List attributes = r.getAttributes();
+	//	
+	// for (int i = 0; i < attributes.size(); i++) {
+	// try {
+	// Attribute att = (Attribute) attributes.get(i);
+	// String name = att.getName();
+	// IRegion nameRegion;
+	// nameRegion = dd
+	// .find(startOffset, name, true, true, true, false);
+	// if (nameRegion == null) {
+	// continue;
+	// }
+	// startOffset = nameRegion.getOffset();
+	// IRegion valueRegion = dd.find(startOffset, pattern.toString(),
+	// true, true, true, false);
+	// if (valueRegion == null) {
+	// continue;
+	// }
+	// startOffset = valueRegion.getOffset();
+	// ReferenceMatch match = new ReferenceMatch(file, valueRegion
+	// .getOffset(), valueRegion.getLength(), l);
+	// match.setMatchs(r);
+	// matches.add(match);
+	// } catch (BadLocationException e) {
+	// continue;
+	// }
+	// }
+	// return matches;
+	// }
 
 	public List service(final IProgressMonitor monitor) {
 		List files = findFilesInScope(scope);

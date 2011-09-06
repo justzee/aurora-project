@@ -36,6 +36,7 @@ public class FileReferenceAciton implements IObjectActionDelegate {
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
+
 		boolean isEnable = checkSelection(selection);
 		action.setEnabled(isEnable);
 
@@ -47,7 +48,7 @@ public class FileReferenceAciton implements IObjectActionDelegate {
 		}
 		List resources = IDE
 				.computeSelectedResources((IStructuredSelection) selection);
-		if (resources.isEmpty()) {
+		if (resources.size() != 1) {
 			return false;
 		}
 		Object resource = resources.get(0);

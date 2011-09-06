@@ -1,6 +1,5 @@
 package aurora.ide.search.core;
 
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,6 +12,14 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.Token;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
@@ -20,10 +27,69 @@ import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
 import aurora.ide.bm.BMUtil;
+import aurora.ide.editor.textpage.ColorManager;
+import aurora.ide.editor.textpage.IColorConstants;
+import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.LoadSchemaManager;
 
 public class Util {
+
+	static private XMLTagScanner tagScanner;
+
+	static public XMLTagScanner getXMLTagScanner() {
+		if (tagScanner == null) {
+			ColorManager manager = new ColorManager();
+			tagScanner = new XMLTagScanner(manager);
+			tagScanner.setDefaultReturnToken(new Token(new TextAttribute(
+					manager.getColor(IColorConstants.TAG))));
+		}
+		return tagScanner;
+	}
+
+	static public IRegion getAttributeRegion(int offset, int length,
+			String name, IDocument document) throws BadLocationException {
+		XMLTagScanner scanner = getXMLTagScanner();
+		IToken token = null;
+		scanner.setRange(document, offset, length);
+		while ((token = scanner.nextToken()) != Token.EOF) {
+			if (token.getData() instanceof TextAttribute) {
+				TextAttribute text = (TextAttribute) token.getData();
+				int tokenOffset = scanner.getTokenOffset();
+				int tokenLength = scanner.getTokenLength();
+				if (text.getForeground().getRGB().equals(
+						IColorConstants.ATTRIBUTE)
+						&& name.equals(document.get(tokenOffset, tokenLength))) {
+					return new Region(tokenOffset, tokenLength);
+				}
+			}
+		}
+		return null;
+	}
+
+	static public IRegion getFirstWhitespaceRegion(int offset, int length,
+			IDocument document) throws BadLocationException {
+		XMLTagScanner scanner = getXMLTagScanner();
+		IToken token = null;
+		IRegion c_region = null;
+		scanner.setRange(document, offset, length);
+		while ((token = scanner.nextToken()) != Token.EOF) {
+			int tokenOffset = scanner.getTokenOffset();
+			int tokenLength = scanner.getTokenLength();
+			if (Token.WHITESPACE.equals(token)) {
+				c_region = new Region(tokenOffset, tokenLength);
+			}
+			if (token.getData() instanceof TextAttribute) {
+				TextAttribute text = (TextAttribute) token.getData();
+				if (text.getForeground().getRGB().equals(
+						IColorConstants.ATTRIBUTE)) {
+					return c_region;
+				}
+			}
+		}
+		return null;
+	}
+
 	public static Object getReferenceModelPKG(CompositeMap map) {
 		if (map == null)
 			return null;
@@ -148,8 +214,8 @@ public class Util {
 			if (prefixOf) {
 				// fullpath
 				IPath sourceFilePath = rootPath.append(path);
-				IFile sourceFile = file.getProject().getParent()
-						.getFile(sourceFilePath);
+				IFile sourceFile = file.getProject().getParent().getFile(
+						sourceFilePath);
 				if (sourceFile.exists())
 					return sourceFile;
 			} else {
