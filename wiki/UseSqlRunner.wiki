@@ -1,7 +1,10 @@
 #summary 使用aurora的SQLRunner对象执行带有参数的SQL
 #labels coding_sample
-
 {{{
+import aurora.database.ParsedSql;
+import aurora.database.ResultSetLoader;
+import aurora.database.SqlRunner;
+
 // 获取service的context
 CompositeMap context ＝ ...
 
@@ -18,4 +21,11 @@ SQLRunner runner = new SqlRunner(sql_context, stmt);
 
 // 之前先把必要的参数放入context
 ResultSet rs = runner.query(sql_context.getCurrentParameter());
+
+// 如需将结果集变为CompositeMap:
+ResultSetLoader     mRsLoader = new ResultSetLoader();
+FetchDescriptor desc ＝ FetchDescriptor.fetchAll(); // 如果不是加载全部结果集，则创建一个FetchDescriptor对象并设置其分页属性
+CompositeMap result = new CompositeMap("result");
+CompositeMapCreator compositeCreator = new CompositeMapCreator(result);
+mRsLoader.loadByResultSet( rs, desc, consumer );
 }}}
