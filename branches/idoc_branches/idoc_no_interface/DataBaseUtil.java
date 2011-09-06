@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.sql.DataSource;
 
@@ -398,7 +399,7 @@ public class DataBaseUtil {
 					insertSt = dbConn.prepareStatement(insert_sql.toString());
 					insertSt.executeUpdate();
 				}catch(Throwable e){
-					System.out.println("execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable");
+					logger.log(Level.SEVERE, "execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable");
 					throw new ApplicationException("execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable",e);
 				}
 				insertSt.close();
@@ -473,7 +474,11 @@ public class DataBaseUtil {
 			}
 			statement.executeUpdate();
 			statement.close();
-		} finally {
+		}catch(Throwable e){
+			logger.log(Level.SEVERE, "execute sql:"+insert_sql.toString()+"in handleContentNode");
+			throw new ApplicationException("execute sql:"+insert_sql.toString()+" in handleContentNode",e);
+		} 
+		finally {
 			if (statement != null) {
 				statement.close();
 			}
