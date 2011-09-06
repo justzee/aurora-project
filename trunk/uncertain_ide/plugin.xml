@@ -236,6 +236,34 @@
           </and>
        </enablement>
     </objectContribution> 
+    <objectContribution
+          adaptable="true"
+          id="aurora.ide.screen_custom.reference"
+          objectClass="org.eclipse.core.resources.IResource"
+          >
+       <action
+             class="aurora.ide.refactoring.ui.action.ScreenCustomAciton"
+             enablesFor="*"
+             icon="icons/service.gif"
+             id="aurora.ide.refactoring.ui.action.ScreenCustomAciton"
+             label="%plugin.screen.custom"
+             menubarPath="additions"> 
+       </action>
+       <visibility>
+       	<and>
+ 		  <not>
+      		 <objectClass name="org.eclipse.core.resources.IProject"/>
+		  </not>
+		  <or>
+			  <and>
+			    <objectClass name="org.eclipse.core.resources.IFile"/>
+			  	<objectState name="extension" value="screen"/>
+			  </and>
+			  <objectClass name="org.eclipse.core.resources.IFolder"/>
+		 </or>
+	   </and>
+	   </visibility>
+    </objectContribution>
     
     <objectContribution
           adaptable="true"
@@ -244,33 +272,34 @@
           objectClass="org.eclipse.core.resources.IFile">
        <action
              class="aurora.ide.search.action.FileReferenceAciton"
-             enablesFor="1"
              icon="icons/bm.gif"
              id="aurora.search.action.BMReferenceAciton"
-             label="BM-References"
-             menubarPath="additions"> 
+             label="%plugin.bm.references"
+             menubarPath="additions"
+             enablesFor="1"> 
        </action>
     </objectContribution>
-      <objectContribution
+    <objectContribution
           adaptable="true"
-          id="aurora.ide.bm.reference"
+          id="aurora.ide.screen.reference"
           nameFilter="*.screen"
           objectClass="org.eclipse.core.resources.IFile">
        <action
              class="aurora.ide.search.action.FileReferenceAciton"
-             enablesFor="1"
              icon="icons/service.gif"
              id="aurora.search.action.ScreenReferenceAciton"
-             label="Screen-References"
-             menubarPath="additions"> 
+             label="%plugin.screen.references"
+             menubarPath="additions"
+             enablesFor="1"> 
        </action>
     </objectContribution>
+    
     <viewerContribution 
 	      id="aurora.ide.editor.textpage.reference"
 	   	  targetID="aurora.ide.editor.textpage.context"> 
 	      <action
 	         id="aurora.search.action.FieldReferenceAction" 
-	         label="Field-References"
+	         label="%plugin.field.references"
 	         menubarPath="additions" 
 	         definitionId="aurora.ide.search.command.FiledReferenceCommand"
 	         class="aurora.ide.search.action.FieldReferenceAction"> 
@@ -557,7 +586,7 @@
       </key>
    </extension>
  <extension 
-    id="aurora.search.SearchResultPage"
+    id="aurora.ide.search.SearchResultPage"
     point="org.eclipse.search.searchResultViewPages"> 
     <viewPage 
     id="aurora.search.AuroraSearchResult"
@@ -565,4 +594,7 @@
     class="aurora.ide.search.ui.SearchResultPage"> 
  	</viewPage> 
  </extension>
+
+  
+    
 </plugin>
