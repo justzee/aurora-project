@@ -7,17 +7,17 @@ import uncertain.core.IGlobalInstance;
 
 public class SapConfig implements IGlobalInstance{
 	Map sapInstanceMap=new HashMap();
-	SapInstance defaultSapInstance;
-	public SapInstance getSapInstance(String sid){
-		return (SapInstance)sapInstanceMap.get(sid);
+	InstanceConfig defaultSapInstance;
+	public InstanceConfig getSapInstance(String sid){
+		return (InstanceConfig)sapInstanceMap.get(sid);
 	}
 	
-	public SapInstance getSapInstance(){
+	public InstanceConfig getSapInstance(){
 		return defaultSapInstance;
 	}
 	
-	public void addInstances(SapInstance[] instances) {
-		SapInstance instance;
+	public void addInstances(InstanceConfig[] instances) {
+		InstanceConfig instance;
 		int l=instances.length;
 		for(int i=0;i<l;i++){
 			instance=instances[i];		

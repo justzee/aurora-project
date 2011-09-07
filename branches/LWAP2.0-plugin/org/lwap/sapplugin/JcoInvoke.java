@@ -63,7 +63,7 @@ public class JcoInvoke extends AbstractEntry {
     public void run(ProcedureRunner runner) throws Exception {       	
         CompositeMap context = runner.getContext();
         Sid=TextParser.parse(Sid, context);
-        SapInstance sapInstance=null;
+        InstanceConfig sapInstance=null;
         if(Sid==null){
         	sapInstance=sapConfig.getSapInstance();
         	if(sapInstance==null)
