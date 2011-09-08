@@ -100,16 +100,42 @@ public class UncertainEngineTest extends TestCase {
         assertNotNull(p);
     }
     
+    public static ProcedureRunner createProcedureRunner( UncertainEngine engine, String proc_path ){
+        try{
+            Procedure proc = engine.getProcedureManager().loadProcedure(proc_path);
+            ProcedureRunner runner = new ProcedureRunner();
+            runner.setProcedure(proc);
+            return runner;
+        }catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+    private Configuration loadConfig( UncertainEngine engine, String class_path) 
+        throws Exception
+    {
+        CompositeMap m = engine.getCompositeLoader().loadFromClassPath(class_path);
+        if (m == null)
+            return null;
+        Configuration config = engine.createConfig();
+        config.loadConfig(m);
+        return config;
+    }    
     
-    private ProcedureRunner createProcedureRunner(String proc_path, String config_path){
-        ProcedureRunner runner = engine.createProcedureRunner(proc_path);
-        Configuration config = engine.loadConfig(config_path);
+    private ProcedureRunner createProcedureRunner(String proc_path, String config_path)
+        throws Exception
+    {
+        ProcedureRunner runner = createProcedureRunner(engine,proc_path);
+        Configuration config = loadConfig(engine, config_path);
         if(config!=null) runner.addConfiguration(config);
         else throw new IllegalArgumentException("Can't load " + config_path);
         return runner;
     }
     
-    public void testRunProcedure(){
+    public void testRunProcedure()
+        throws Exception
+    {
         ProcedureRunner runner = createProcedureRunner(
                 "uncertain.testcase.proc.ProcTest",
                 "uncertain.testcase.proc.ProcConfig");

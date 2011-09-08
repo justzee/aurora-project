@@ -8,7 +8,7 @@ import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
 import uncertain.ocm.PackageMapping;
-import aurora.application.Namespace;
+import aurora.application.AuroraApplication;
 import aurora.database.profile.DatabaseFactory;
 
 public class DatabaseFactoryInit {
@@ -32,7 +32,7 @@ public class DatabaseFactoryInit {
     
     protected void setUp( String config_name ) throws Exception 
     {
-        PackageMapping pm = new PackageMapping( Namespace.AURORA_DATABASE_NAMESPACE, DatabaseFactory.class.getPackage().getName());
+        PackageMapping pm = new PackageMapping( AuroraApplication.AURORA_DATABASE_NAMESPACE, DatabaseFactory.class.getPackage().getName());
         ocManager.getClassRegistry().addPackageMapping(pm);
         loader = CompositeLoader.createInstanceForOCM();
         String name = DatabaseFactoryTest.class.getPackage().getName()+"."+config_name;
