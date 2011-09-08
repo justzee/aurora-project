@@ -59,7 +59,8 @@ public class ContextFieldTest extends UncertainEngineTest {
     
     public void testPassingFields(){
         QueryCreator qr = new QueryCreator();
-        ProcedureRunner runner = engine.createProcedureRunner(create_query);
+        //ProcedureRunner runner = engine.createProcedureRunner(create_query);
+        ProcedureRunner runner = new ProcedureRunner(create_query);
         runner.setContextField("Table", book);
         runner.getConfiguration().addParticipant(qr);
         //create_query.run(runner);

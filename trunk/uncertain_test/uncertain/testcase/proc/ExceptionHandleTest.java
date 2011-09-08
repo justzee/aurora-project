@@ -26,7 +26,7 @@ public class ExceptionHandleTest extends TestCase {
     protected void load(String proc) throws Exception {
         super.setUp();
         engine = UncertainEngineTest.createEngine();
-        runner = engine.createProcedureRunner(proc);
+        runner = UncertainEngineTest.createProcedureRunner(engine,proc);
         config = engine.createConfig();
         config.addParticipant( new TestExceptionHandle());
         runner.addConfiguration(config);
