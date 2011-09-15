@@ -27,6 +27,13 @@
  */
 
 /**
+ * 是否显示行号
+ * @property showRowNumber
+ * @type Boolean
+ * @default false
+ */
+ 
+/**
  * 是否自动聚焦
  * @property autoFocus
  * @type Boolean
