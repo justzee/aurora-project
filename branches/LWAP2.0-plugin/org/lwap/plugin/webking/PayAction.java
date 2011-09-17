@@ -33,7 +33,16 @@ public class PayAction extends AbstractEntry {
 	public String detailbizno;
 	public String desc;
 	public String batch;
+	public String usedesc;
 	private ServiceSettings settings;
+	
+	public String getUsedesc() {
+		return usedesc;
+	}
+
+	public void setUsedesc(String usedesc) {
+		this.usedesc = usedesc;
+	}
 
 	public PayAction(ServiceSettings settings) {
 		this.settings = settings;
@@ -166,7 +175,8 @@ public class PayAction extends AbstractEntry {
 				}
 				// String bank = "工商银行";
 				// String address = "山东省的某个城市";
-				String useCn = "工资";
+//				String useCn = "工资";
+				String useCn=cmrecord.get(this.getUsedesc()).toString();
 				String detailBizNo = cmrecord.get(this.getDetailbizno())
 						.toString();
 				cmrecord.get(this.getDesc()).toString();
