@@ -20,7 +20,7 @@
 || 属性 || 说明 ||
 ||defaultCheckAll || 是否缺省对所有svc都执行防重复请求检查，如果service没有单独设置。 ||
 ||errorMessage || 如果发生重复请求，返回给客户端的JSON错误信息的多语言代码。||
-|| ||缺省为PROMPT.SERVICE_IN_LOCK，需要在系
+|| ||缺省为`PROMPT.SERVICE_IN_LOCK`，需要在系
 统中定义对应的消息  ||
 ||sessionKey || 判断是否同一session的缺省表达式，支持${}。 ||
 
