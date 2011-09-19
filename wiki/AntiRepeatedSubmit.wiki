@@ -18,10 +18,10 @@
 
 该配置文件的说明：
 || 属性 || 说明 ||
-||defaultCheckAll||是否缺省对所有svc都执行防重复请求检查，如果service没有单独设置。||
-||errorMessage||如果发生重复请求，返回给客户端的JSON错误信息的多语言代码。缺省为PROMPT.SERVICE_IN_LOCK，需要在系
-统中定义对应的消息||
-||sessionKey||判断是否同一session的缺省表达式，支持${}。||
+||defaultCheckAll || 是否缺省对所有svc都执行防重复请求检查，如果service没有单独设置。 ||
+||errorMessage || 如果发生重复请求，返回给客户端的JSON错误信息的多语言代码。缺省为PROMPT.SERVICE_IN_LOCK，需要在系
+统中定义对应的消息 ||
+||sessionKey || 判断是否同一session的缺省表达式，支持${}。 ||
 
 如果上述文件设置为defaultCheckAll="true"，那么系统中所有的svc都支持按session防重复提交。如果还
 需要更细的控制，可以在svc文件中设置以下属性：
@@ -34,12 +34,12 @@ lockService="other_control.svc" lockErrorMessage="当前公司的缺料检查还
 
 service级的配置属性说明如下：
 || 属性 || 说明 ||
-||checkSessionLock||单独控制该service是否启用防重复提交，覆盖全局文件的缺省配置||
-||lockKey||设置不同的锁定控制维度。如果某些特殊功能不是按session，而是特殊业务逻辑去防止重复提交，则用该属性设置用于控制的表达式。例如按角
-色+组织控制防重复提交，可以设置成lockKey ="${/session/@role_id}.${/session/@org_id}"||
+||checkSessionLock || 单独控制该service是否启用防重复提交，覆盖全局文件的缺省配置 ||
+||lockKey || 设置不同的锁定控制维度。如果某些特殊功能不是按session，而是特殊业务逻辑去防止重复提交，则用该属性设置用于控制的表达式。例如按角
+色+组织控制防重复提交，可以设置成lockKey ="${/session/@role_id}.${/session/@org_id}" ||
 ||lockService||缺省情况下以当前被执行的service的名字来执行锁定。用该属性可以设置不同的锁定请求名称控制逻辑，以实现“如果A请求没有执行完毕，则B请
 求也不能被提交”这样的需求。||
-||lockErrorMessage||如果检测到重复提交，显示给客户端的错误信息||
+||lockErrorMessage ||如果检测到重复提交，显示给客户端的错误信息 ||
 
 == 实现原理 ==
   # 对客户端提交的请求，以lockKey + lockService生成唯一标志字符串，判断该标志是否已有锁。
@@ -63,6 +63,3 @@ service级的配置属性说明如下：
 
 == JMX支持 ==
 可通过JMX来监控应用服务器内的请求锁。在路径`org.uncertain/<应用名>/Session/ServiceSessionLock`下，可看到该MBean。可通过lockCount属性查看瞬时的请求锁数量，通过showAllLocks()方法查看所有的锁，并可通过clear()方法来手工清除所有的锁。
-
-== 注意事项 ==
-  * 可通过JMX监控
