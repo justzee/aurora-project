@@ -48,7 +48,7 @@
  */
 
 /**
- * 根据Grid的高度，自动填充行数。注：只在grid初次加载时生效，如果Grid设定了marginHeigt，行数不会根据窗口大小的调整而调整。
+ * 根据Grid的高度，自适应分页大小。注：只在grid初次加载时生效，如果Grid设定了marginHeigt，行数不会根据窗口大小的调整而调整。
  * @property autoPageSize
  * @type Boolean
  * @default false
@@ -101,9 +101,17 @@
  */
 
 /**
+ * 查询的分页大小的最大值，用于限制navBar中的分页输入框的输入上限
+ * @property maxPageSize
+ * @type Integer
+ * @default 500
+ */
+
+/**
  * 查询的分页大小
  * @property pageSize
  * @type Integer
+ * @default 10
  */
 
 /**
