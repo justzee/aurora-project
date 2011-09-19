@@ -1,5 +1,5 @@
 #summary 使用aurora的SQLRunner对象执行带有参数的SQL
-#labels coding_sample
+#labels code_sample
 {{{
 import aurora.database.ParsedSql;
 import aurora.database.ResultSetLoader;
