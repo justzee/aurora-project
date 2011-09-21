@@ -2,6 +2,8 @@ package aurora.ide.search.core;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -15,11 +17,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.swt.graphics.RGB;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
@@ -47,8 +49,37 @@ public class Util {
 		return tagScanner;
 	}
 
+	static public List getMapAttributes(CompositeMap map) {
+		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		if (element != null)
+			return element.getAllAttributes();
+		return null;
+	}
+
 	static public IRegion getAttributeRegion(int offset, int length,
 			String name, IDocument document) throws BadLocationException {
+		// XMLTagScanner scanner = getXMLTagScanner();
+		// IToken token = null;
+		// scanner.setRange(document, offset, length);
+		// while ((token = scanner.nextToken()) != Token.EOF) {
+		// if (token.getData() instanceof TextAttribute) {
+		// TextAttribute text = (TextAttribute) token.getData();
+		// int tokenOffset = scanner.getTokenOffset();
+		// int tokenLength = scanner.getTokenLength();
+		// if (text.getForeground().getRGB().equals(
+		// IColorConstants.ATTRIBUTE)
+		// && name.equals(document.get(tokenOffset, tokenLength))) {
+		// return new Region(tokenOffset, tokenLength);
+		// }
+		// }
+		// }
+		return getDocumentRegion(offset, length, name, document,
+				IColorConstants.ATTRIBUTE);
+	}
+
+	static public IRegion getDocumentRegion(int offset, int length,
+			String name, IDocument document, RGB reginRGB)
+			throws BadLocationException {
 		XMLTagScanner scanner = getXMLTagScanner();
 		IToken token = null;
 		scanner.setRange(document, offset, length);
@@ -57,8 +88,7 @@ public class Util {
 				TextAttribute text = (TextAttribute) token.getData();
 				int tokenOffset = scanner.getTokenOffset();
 				int tokenLength = scanner.getTokenLength();
-				if (text.getForeground().getRGB().equals(
-						IColorConstants.ATTRIBUTE)
+				if (text.getForeground().getRGB().equals(reginRGB)
 						&& name.equals(document.get(tokenOffset, tokenLength))) {
 					return new Region(tokenOffset, tokenLength);
 				}
@@ -81,8 +111,8 @@ public class Util {
 			}
 			if (token.getData() instanceof TextAttribute) {
 				TextAttribute text = (TextAttribute) token.getData();
-				if (text.getForeground().getRGB().equals(
-						IColorConstants.ATTRIBUTE)) {
+				if (text.getForeground().getRGB()
+						.equals(IColorConstants.ATTRIBUTE)) {
 					return c_region;
 				}
 			}
@@ -214,8 +244,8 @@ public class Util {
 			if (prefixOf) {
 				// fullpath
 				IPath sourceFilePath = rootPath.append(path);
-				IFile sourceFile = file.getProject().getParent().getFile(
-						sourceFilePath);
+				IFile sourceFile = file.getProject().getParent()
+						.getFile(sourceFilePath);
 				if (sourceFile.exists())
 					return sourceFile;
 			} else {
@@ -226,5 +256,28 @@ public class Util {
 			}
 		}
 		return null;
+	}
+
+	public static boolean stringMatch(String pattern, String text,
+			boolean isCaseSensitive, boolean isRegularExpression) {
+		Pattern jdkPattern = PatternConstructor.createPattern(pattern,
+				isCaseSensitive, isRegularExpression);
+		Matcher matcher = jdkPattern.matcher(text);
+		return matcher.matches();
+		// SearchPattern.RULE_CASE_SENSITIVE eclipse bug?
+		// int rules = SearchPattern.RULE_EXACT_MATCH
+		// | SearchPattern.RULE_PREFIX_MATCH
+		// | SearchPattern.RULE_CAMELCASE_MATCH
+		// | SearchPattern.RULE_BLANK_MATCH;
+		//
+		// if (!isRegularExpression) {
+		// rules = rules | SearchPattern.RULE_PATTERN_MATCH;
+		// }
+		// if (isCaseSensitive) {
+		// rules = rules | SearchPattern.RULE_CASE_SENSITIVE;
+		// }
+		// SearchPattern searchPattern = new SearchPattern(rules);
+		// searchPattern.setPattern(pattern);
+		// return searchPattern.matches(text);
 	}
 }

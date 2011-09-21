@@ -3,7 +3,6 @@ package aurora.ide.search.core;
 import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
@@ -28,10 +27,9 @@ public class AuroraSearchResult extends AbstractSearchResult implements
 		int matchCount = getMatchCount();
 		if (query instanceof AbstractSearchQuery) {
 			Object pattern = ((AbstractSearchQuery) query).getPattern();
-			IResource scope = ((AbstractSearchQuery) query).getScope();
-			if (pattern != null && null != scope) {
 
-				String in = scope.getProject().getName();
+			if (pattern != null) {
+				String in = ((AbstractSearchQuery) query).getSearchInLabel();
 				String[] args = { pattern.toString(),
 						String.valueOf(matchCount), in };
 				return MessageFormat.format(Message.result_label, args);

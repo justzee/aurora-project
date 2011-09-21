@@ -32,10 +32,12 @@ public abstract class AbstractSearchQuery implements ISearchQuery {
 
 	protected abstract ISearchService getSearchService();
 
-	protected abstract IResource getScope();
+	protected abstract IResource[] getRoots();
 
 	protected abstract IResource getSourceFile();
 
 	protected abstract Object getPattern();
+	
+	protected abstract String getSearchInLabel();
 
 }

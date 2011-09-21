@@ -17,9 +17,12 @@ import aurora.ide.search.core.Util;
 public class ReferenceSearchService extends AbstractSearchService implements
 		IDataFilter {
 
+	private IResource scope;
+
 	public ReferenceSearchService(IResource scope, Object source,
 			ISearchQuery query) {
-		super(scope, source, query);
+		super(new IResource[] { scope }, source, query);
+		this.scope = scope;
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile file) {
@@ -60,17 +63,17 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	}
 
 	private boolean bmRefMatch(CompositeMap map, Attribute attrib) {
-		Object pattern = getSearchPattern(this.getScope(), this.getSource());
+		Object pattern = getSearchPattern(this.getRoots(), this.getSource());
 		Object data = map.get(attrib.getName());
 		return pattern == null ? false : pattern.equals(data);
 	}
 
-	protected IDataFilter getDataFilter(final IResource scope,
+	protected IDataFilter getDataFilter(final IResource[] scope,
 			final Object source) {
 		return this;
 	}
 
-	protected Object createPattern(IResource scope, Object source) {
+	protected Object createPattern(IResource[] roots, Object source) {
 		if (source instanceof IFile) {
 			IFile file = (IFile) source;
 			String fileExtension = file.getFileExtension();

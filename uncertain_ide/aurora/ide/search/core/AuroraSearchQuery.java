@@ -4,43 +4,32 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.search.ui.text.Match;
+import org.eclipse.search.ui.text.FileTextSearchScope;
 
+import aurora.ide.search.condition.AuroraSearchPattern;
 
-public class AuroraSearchQuery extends AbstractSearchQuery  {
+public class AuroraSearchQuery extends AbstractSearchQuery {
 
 	private AuroraSearchResult fResult;
+	private IResource[] roots;
+
+	private ISearchService service;
+	private AuroraSearchPattern pattern;
+
+	public AuroraSearchQuery(IResource[] roots, AuroraSearchPattern pattern) {
+		super();
+		this.roots = roots;
+		this.pattern = pattern;
+	}
+
+	public AuroraSearchQuery(FileTextSearchScope createTextSearchScope,
+			AuroraSearchPattern pattern) {
+		this(createTextSearchScope.getRoots(), pattern);
+	}
 
 	public IStatus run(IProgressMonitor monitor)
 			throws OperationCanceledException {
-		SearchEngine engine= new SearchEngine();
-//		engine.search(null, null, null);
-		AuroraSearchResult searchResult = (AuroraSearchResult)this.getSearchResult();
-		Match match = new Match ("xyz",1,2);
-	
-		searchResult.addMatch(match);
-		match = new Match ("def",1,2);
-	
-		searchResult.addMatch(match);
-		match = new Match ("ccc",1,2);
-		
-		searchResult.addMatch(match);
-		match = new Match ("aaa",1,2);
-		
-		searchResult.addMatch(match);
-		match = new Match ("xxx",1,2);
-		
-		searchResult.addMatch(match);
-		match = new Match ("bbb",1,2);
-	
-		searchResult.addMatch(match);
-		match = new Match ("yyy",1,2);
-		searchResult.addMatch(match);
-		
-		//TextSearchEngine.create().search(null, null, null, null);
-		
-		return new Status(IStatus.OK, "aa", 0, "aa", null);
+		return super.run(monitor);
 	}
 
 	public String getLabel() {
@@ -55,7 +44,7 @@ public class AuroraSearchQuery extends AbstractSearchQuery  {
 		return true;
 	}
 
-	protected AbstractSearchResult getAruroraSearchResult()  {
+	protected AbstractSearchResult getAruroraSearchResult() {
 		if (fResult == null) {
 			AuroraSearchResult result = new AuroraSearchResult(this);
 			fResult = result;
@@ -64,28 +53,45 @@ public class AuroraSearchQuery extends AbstractSearchQuery  {
 	}
 
 	protected ISearchService getSearchService() {
-		// TODO Auto-generated method stub
-		return null;
+		if (service == null)
+			service = new AuroraSearchService(this.roots, pattern, this);
+		return service;
 	}
 
 	protected void setSearchService(ISearchService service) {
-		// TODO Auto-generated method stub
-		
+		this.service = service;
 	}
 
-	protected IResource getScope() {
-		// TODO Auto-generated method stub
-		return null;
+	protected IResource[] getRoots() {
+		return this.roots;
 	}
 
 	protected IResource getSourceFile() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	protected Object getPattern() {
-		// TODO Auto-generated method stub
-		return null;
+		return service == null ? null : ((AbstractSearchService) service)
+				.getSearchPattern(roots, null);
 	}
 
+	@Override
+	protected String getSearchInLabel() {
+		StringBuilder builder = new StringBuilder();
+		if (roots != null) {
+			for (IResource root : roots) {
+				if (root.getType() == IResource.ROOT) {
+					builder.append("workspace");
+				} else {
+					builder.append(root.getName());
+
+				}
+				builder.append(",");
+			}
+			int lastIndexOf = builder.lastIndexOf(",");
+			if (-1 != lastIndexOf)
+				builder.deleteCharAt(lastIndexOf);
+		}
+		return builder.toString();
+	}
 }

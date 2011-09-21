@@ -15,7 +15,7 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 
 	public ScreenDSReferenceService(IResource scope, Object source,
 			ISearchQuery query, String datasetName) {
-		super(scope, source, query);
+		super(new IResource[] { scope }, source, query);
 		this.datasetName = datasetName;
 	}
 
@@ -23,11 +23,11 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 		return new ReferenceTypeFinder(datasetReference);
 	}
 
-	protected IDataFilter getDataFilter(final IResource scope,
+	protected IDataFilter getDataFilter(final IResource[] roots,
 			final Object source) {
 		IDataFilter filter = new IDataFilter() {
 			public boolean found(CompositeMap map, Attribute attrib) {
-				Object pattern = getSearchPattern(scope, source);
+				Object pattern = getSearchPattern(roots, source);
 				Object data = map.get(attrib.getName());
 				return pattern == null ? false : pattern.equals(data);
 			}
@@ -36,7 +36,7 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 		return filter;
 	}
 
-	protected Object createPattern(IResource scope, Object source) {
+	protected Object createPattern(IResource[] roots, Object source) {
 		return datasetName;
 	}
 

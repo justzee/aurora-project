@@ -27,8 +27,6 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 				this.getResult().add(new MapFinderResult(map, match));
 			}
 		} catch (ApplicationException e) {
-			e.printStackTrace();
-
 		}
 		return IterationHandle.IT_CONTINUE;
 	}
