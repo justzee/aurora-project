@@ -104,7 +104,7 @@
  * 查询的分页大小的最大值，用于限制navBar中的分页输入框的输入上限
  * @property maxPageSize
  * @type Integer
- * @default 500
+ * @default 1000
  */
 
 /**
