@@ -16,6 +16,7 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 
 	private String fieldName;
 	private String bmPkg;
+	private IResource scope;
 
 	private class BMFieldReferenceTypeFinder extends ReferenceTypeFinder {
 
@@ -39,13 +40,14 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 			ISearchQuery query, String fieldName) {
 		super(scope, source, query);
 		this.fieldName = fieldName;
+		this.scope = scope;
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile resource) {
 		return new BMFieldReferenceTypeFinder(bmReference);
 	}
 
-	protected IDataFilter getDataFilter(final IResource scope,
+	protected IDataFilter getDataFilter(final IResource[] roots,
 			final Object source) {
 		IDataFilter filter = new IDataFilter() {
 			public boolean found(CompositeMap map, Attribute attrib) {
@@ -88,7 +90,7 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 
 			private boolean isMatch(final IResource scope, final Object source,
 					CompositeMap map, Attribute attrib) {
-				Object pattern = getSearchPattern(scope, source);
+				Object pattern = getSearchPattern(new IResource[] { scope }, source);
 				Object data = map.get(attrib.getName());
 				return pattern == null ? false : pattern.equals(data);
 			}
@@ -107,8 +109,8 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 		return filter;
 	}
 
-	protected Object createPattern(IResource scope, Object source) {
-		bmPkg = (String) super.createPattern(scope, source);
+	protected Object createPattern(IResource[] roots, Object source) {
+		bmPkg = (String) super.createPattern(roots, source);
 		return fieldName;
 	}
 

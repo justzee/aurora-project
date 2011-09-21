@@ -39,7 +39,6 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
-import aurora.ide.search.reference.ReferenceMatch;
 import aurora.ide.search.ui.LineElement;
 import aurora.ide.search.ui.MessageFormater;
 
@@ -54,7 +53,6 @@ abstract public class AbstractSearchService implements ISearchService {
 			"http://www.aurora-framework.org/schema/bm", "foreignField");
 	public final static QualifiedName datasetReference = new QualifiedName(
 			"http://www.aurora-framework.org/application", "dataset");
-
 
 	private Map compositeMap = new HashMap();
 	private Map exceptionMap = new HashMap();
@@ -75,14 +73,6 @@ abstract public class AbstractSearchService implements ISearchService {
 		private List result = new ArrayList();
 
 		public boolean visit(IResource resource) throws CoreException {
-			if (resource.getType() == IResource.PROJECT) {
-				return true;
-			}
-
-			if (resource.getType() == IResource.FOLDER) {
-				return true;
-			}
-
 			if (resource.getType() == IResource.FILE) {
 				boolean checkExtension = checkExtension(resource);
 				if (checkExtension) {
@@ -90,7 +80,7 @@ abstract public class AbstractSearchService implements ISearchService {
 				}
 				return false;
 			}
-			return false;
+			return true;
 		}
 
 		public List getResult() {
@@ -107,19 +97,19 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	private ISearchQuery query;
 	private Object source;
-	private IResource scope;
+	private IResource[] roots;
 	private IFile fCurrentFile;
 	private int fNumberOfScannedFiles;
 	private int fNumberOfFilesToScan;
 
-	public AbstractSearchService(IResource scope, Object source) {
-		this.scope = scope;
+	public AbstractSearchService(IResource[] roots, Object source) {
+		this.roots = roots;
 		this.source = source;
 	}
 
-	public AbstractSearchService(IResource scope, Object source,
+	public AbstractSearchService(IResource[] roots, Object source,
 			ISearchQuery query) {
-		this(scope, source);
+		this(roots, source);
 		this.query = query;
 	}
 
@@ -160,7 +150,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		CompositeMap bm;
 		fNumberOfScannedFiles++;
 		CompositeMapIteator finder = createIterationHandle((IFile) resource);
-		finder.setFilter(getDataFilter(scope, source));
+		finder.setFilter(getDataFilter(roots, source));
 
 		bm = getCompositeMap((IFile) resource);
 		compositeMap.put(bm, resource);
@@ -209,7 +199,7 @@ abstract public class AbstractSearchService implements ISearchService {
 					continue;
 				}
 				startOffset = valueRegion.getOffset();
-				ReferenceMatch match = new ReferenceMatch(file, valueRegion
+				AuroraMatch match = new AuroraMatch(file, valueRegion
 						.getOffset(), valueRegion.getLength(), l);
 				match.setMatchs(r);
 				matches.add(match);
@@ -220,7 +210,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		return matches;
 	}
 
-	private IRegion getAttributeRegion(int offset, int length, String name,
+	protected IRegion getAttributeRegion(int offset, int length, String name,
 			IDocument document) throws BadLocationException {
 		return Util.getAttributeRegion(offset, length, name, document);
 	}
@@ -263,7 +253,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	// }
 
 	public List service(final IProgressMonitor monitor) {
-		List files = findFilesInScope(scope);
+		List files = findFilesInScopes(roots);
 		fNumberOfFilesToScan = files.size();
 		Job monitorUpdateJob = new Job("Aurora Search progress") {
 			private int fLastNumberOfScannedFiles = 0;
@@ -294,7 +284,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		};
 
 		// searchPattern
-		pattern = getSearchPattern(scope, source);
+		pattern = getSearchPattern(roots, source);
 
 		monitor.beginTask("Searching for " + pattern.toString(), files.size());
 		monitorUpdateJob.setSystem(true);
@@ -375,6 +365,29 @@ abstract public class AbstractSearchService implements ISearchService {
 		exceptionMap.put(file, e);
 	}
 
+	private List findFilesInScopes(IResource[] roots) {
+		List result = new ArrayList();
+		if (roots != null) {
+			for (int i = 0; i < roots.length; i++) {
+				List _result = findFilesInScope(roots[i]);
+				merge(result, _result);
+			}
+		}
+
+		return result;
+	}
+
+	private void merge(List to, List from) {
+		if (from == null)
+			return;
+		for (int i = 0; i < from.size(); i++) {
+			if (to.contains(from.get(i))) {
+				continue;
+			}
+			to.add(from.get(i));
+		}
+	}
+
 	private List findFilesInScope(IResource scope) {
 		ScopeVisitor visitor = new ScopeVisitor();
 		try {
@@ -385,10 +398,11 @@ abstract public class AbstractSearchService implements ISearchService {
 		return null;
 	}
 
-	protected abstract IDataFilter getDataFilter(IResource scope, Object source);
+	protected abstract IDataFilter getDataFilter(IResource[] roots,
+			Object source);
 
-	public Object getSearchPattern(IResource scope, Object source) {
-		return this.pattern == null ? createPattern(scope, source) : pattern;
+	public Object getSearchPattern(IResource[] roots, Object source) {
+		return this.pattern == null ? createPattern(roots, source) : pattern;
 
 	}
 
@@ -400,8 +414,8 @@ abstract public class AbstractSearchService implements ISearchService {
 		return source;
 	}
 
-	public IResource getScope() {
-		return scope;
+	public IResource[] getRoots() {
+		return roots;
 	}
 
 	public CompositeMap getCompositeMap(IFile file) throws CoreException,
@@ -417,6 +431,6 @@ abstract public class AbstractSearchService implements ISearchService {
 		return CacheManager.getDocumentCacher().getDocument(file);
 	}
 
-	protected abstract Object createPattern(IResource scope, Object source);
+	protected abstract Object createPattern(IResource[] roots, Object source);
 
 }

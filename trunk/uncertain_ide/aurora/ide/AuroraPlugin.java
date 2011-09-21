@@ -1,11 +1,11 @@
 package aurora.ide;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -14,12 +14,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -27,12 +28,11 @@ import org.osgi.framework.BundleContext;
 
 import aurora.ide.helpers.DialogUtil;
 
-
-
 /**
  * The activator class controls the plug-in life cycle
  */
-public class AuroraPlugin extends AbstractUIPlugin implements ISelectionListener{
+public class AuroraPlugin extends AbstractUIPlugin implements
+		ISelectionListener {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "aurora.ide";
@@ -41,6 +41,7 @@ public class AuroraPlugin extends AbstractUIPlugin implements ISelectionListener
 	private static AuroraPlugin plugin;
 
 	private IStructuredSelection selection;
+
 	/**
 	 * The constructor
 	 */
@@ -57,8 +58,17 @@ public class AuroraPlugin extends AbstractUIPlugin implements ISelectionListener
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		getWorkbench().getActiveWorkbenchWindow().getSelectionService().addSelectionListener(this);
-		
+		IWorkbench workbench = getWorkbench();
+		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+
+		if (window == null)
+			window = workbench.getWorkbenchWindows()[0];
+		if (window != null) {
+			ISelectionService selectionService = window.getSelectionService();
+
+			selectionService.addSelectionListener(this);
+		}
+
 	}
 
 	/*
@@ -112,37 +122,52 @@ public class AuroraPlugin extends AbstractUIPlugin implements ISelectionListener
 	public static IWorkspace getWorkspace() {
 		return ResourcesPlugin.getWorkspace();
 	}
-	public static IFile getActiveIFile(){
+
+	public static IFile getActiveIFile() {
 		IWorkbenchPage workbenchPage = getActivePage();
-		if(workbenchPage == null)
+		if (workbenchPage == null)
 			return null;
 		IEditorPart editorPart = workbenchPage.getActiveEditor();
 		IEditorInput input = editorPart.getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		return ifile;
 	}
-	public static IWorkbenchPage getActivePage(){
-		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
+
+	public static IWorkbenchPage getActivePage() {
+		return PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage();
 	}
+
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if(!(selection instanceof IStructuredSelection))
+		if (!(selection instanceof IStructuredSelection))
 			return;
-		Object element = ((IStructuredSelection)selection).getFirstElement();
-	    if (element instanceof IResource) {
-	    	this.selection = (IStructuredSelection)selection;
-	    }
+		Object element = ((IStructuredSelection) selection).getFirstElement();
+		if (element instanceof IResource) {
+			this.selection = (IStructuredSelection) selection;
+		}
 	}
-	public IStructuredSelection getStructuredSelection(){
+
+	public IStructuredSelection getStructuredSelection() {
 		return selection;
 	}
-	public static void logToStatusLine(String message,boolean isError){
-		WorkbenchWindow workbenchWindow = (WorkbenchWindow)PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+
+	public static void logToStatusLine(String message, boolean isError) {
+		WorkbenchWindow workbenchWindow = (WorkbenchWindow) PlatformUI
+				.getWorkbench().getActiveWorkbenchWindow();
 		IActionBars bars = workbenchWindow.getActionBars();
 		IStatusLineManager lineManager = bars.getStatusLineManager();
-		if(isError)
+		if (isError)
 			lineManager.setErrorMessage(message);
-		else{
+		else {
 			lineManager.setMessage(message);
 		}
+	}
+	public IDialogSettings getDialogSettingsSection(String name) {
+		IDialogSettings dialogSettings= getDialogSettings();
+		IDialogSettings section= dialogSettings.getSection(name);
+		if (section == null) {
+			section= dialogSettings.addNewSection(name);
+		}
+		return section;
 	}
 }

@@ -595,6 +595,28 @@
  	</viewPage> 
  </extension>
 
-  
+  <extension point="org.eclipse.ltk.core.refactoring.renameParticipants">
+	<renameParticipant
+   	 	id="aurora.ide.refactoring.TypeRenameParticipant"
+    	name="Aurora Rename Participant" 
+    	class="aurora.ide.refactoring.TypeRenameParticipant"> 
+    <enablement>
+    </enablement>    
+	</renameParticipant>
+ </extension>
+ 
+ <extension point="org.eclipse.search.searchPages"> 
+      <page 
+         id="aurora.ide.search.ui.SearchPage" 
+         label="Aurora Search" 
+         icon="icons/aurora.gif" 
+         sizeHint="250,160" 
+         tabPosition="1" 
+         extensions="*:1" 
+         showScopeSection="true"
+         canSearchEnclosingProjects="true"
+         class="aurora.ide.search.ui.SearchPage">
+      </page> 
+   </extension> 
     
 </plugin>

@@ -26,27 +26,26 @@ import aurora.ide.search.ui.LineElement;
 public class ScreenCustomService extends AbstractSearchService {
 
 	public ScreenCustomService(IResource scope) {
-		super(scope, null, null);
+		super(new IResource[] { scope }, null, null);
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile resource) {
 		return new ReferenceTypeFinder(datasetReference);
 	}
 
-	protected IDataFilter getDataFilter(final IResource scope,
-			final Object source) {
+	protected IDataFilter getDataFilter(IResource[] roots, Object source) {
 		IDataFilter filter = new IDataFilter() {
 			public boolean found(CompositeMap map, Attribute attrib) {
 				Object object = map.get("name");
 				return "bindTarget".equals(attrib.getName()) && object != null
-						&& !"".equals(object)&&map.get("id")==null;
+						&& !"".equals(object) && map.get("id") == null;
 			}
 
 		};
 		return filter;
 	}
 
-	protected Object createPattern(IResource scope, Object source) {
+	protected Object createPattern(IResource[] roots, Object source) {
 		return "";
 	}
 
@@ -60,11 +59,12 @@ public class ScreenCustomService extends AbstractSearchService {
 			IRegion whitespaceRegion = Util.getFirstWhitespaceRegion(
 					startOffset, l.getLength(), document);
 			if (whitespaceRegion == null) {
-				IRegion attributeRegion = Util.getAttributeRegion(
-					startOffset, l.getLength(), "bindTarget",document);
-				whitespaceRegion = new Region(attributeRegion.getOffset()-1, 0);
+				IRegion attributeRegion = Util.getAttributeRegion(startOffset,
+						l.getLength(), "bindTarget", document);
+				whitespaceRegion = new Region(attributeRegion.getOffset() - 1,
+						0);
 			}
-			
+
 			CompositeMapMatch match = new CompositeMapMatch(file,
 					whitespaceRegion.getOffset(), whitespaceRegion.getLength(),
 					r.getMap(), l);

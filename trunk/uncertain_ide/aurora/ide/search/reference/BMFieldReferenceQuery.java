@@ -67,7 +67,17 @@ public class BMFieldReferenceQuery extends AbstractSearchQuery {
 	protected Object getPattern() {
 
 		return service == null ? null : ((AbstractSearchService) service)
-				.getSearchPattern(scope, sourceFile);
+				.getSearchPattern(new IResource[] { scope }, sourceFile);
+	}
+
+	@Override
+	protected IResource[] getRoots() {
+		return new IResource[] { scope };
+	}
+
+	@Override
+	protected String getSearchInLabel() {
+		return scope.getProject().getName();
 	}
 
 }
