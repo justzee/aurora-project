@@ -5,7 +5,7 @@
 package aurora.testcase.service;
 
 import junit.framework.TestCase;
-import aurora.service.ServiceSessionLock;
+import aurora.service.lock.ServiceSessionLock;
 
 public class ServiceSessionLockTest extends TestCase {
     
@@ -38,7 +38,7 @@ public class ServiceSessionLockTest extends TestCase {
             assertTrue(!mLock.islocked(Integer.toString(i), "TestService"));
         
         mLock.lock("1", "TestService", 100);
-        System.out.println(mLock.dumpLocks());
+        //System.out.println(mLock.dumpLocks());
         Thread.sleep(101);
         assertTrue(!mLock.islocked("1","TestService"));
     
