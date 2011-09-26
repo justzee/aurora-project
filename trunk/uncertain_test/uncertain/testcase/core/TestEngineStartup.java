@@ -62,5 +62,12 @@ public class TestEngineStartup extends TestCase {
         Element elm = sm.getElement( new QualifiedName(AuroraApplication.AURORA_FRAMEWORK_NAMESPACE, "screen") );
         assertNotNull(elm);
     }
+/*
+    protected void tearDown() throws Exception {
+        uncertainEngine.shutdown();
+        super.tearDown();
+    }
+ */   
+    
 
 }
