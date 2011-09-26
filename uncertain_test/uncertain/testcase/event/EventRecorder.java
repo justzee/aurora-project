@@ -5,7 +5,7 @@
 package uncertain.testcase.event;
 
 import uncertain.event.EventModel;
-import uncertain.proc.IEventListener;
+import uncertain.event.IEventListener;
 import uncertain.proc.ProcedureRunner;
 
 public class EventRecorder implements IEventListener {
