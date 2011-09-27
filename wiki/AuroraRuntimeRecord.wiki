@@ -120,4 +120,56 @@ SYS_RUNTIME_EXCEPTION_LOG记录请求处理过程中发生的错误，其中REQU
 
 然后，在service-listener.config文件中增加一行：
 {{{
-		<participant class="aurora.application.features.RequestRecorder
+		<participant class="aurora.application.features.RequestRecorder"/>
+}}}
+
+这样，就可以在数据库中看到每次请求的记录了。
+
+== JMX监控 ==
+此特性提供MBean用于监控当前状态，MBean路径为
+{{{
+<应用名>/Application/RequestRecorder
+}}}
+提供的属性：
+|| 属性 || 含义 ||
+|| CurrentQueueSize || 当前待处理队列大小 ||
+|| MaxQueueSize || 待处理队列曾经达到过的最大size ||
+|| MaxQueueSizeTime || 待处理队列达到最大size的时间 ||
+|| RequestCount || 请求总次数 ||
+|| TotalProcessTime || 花费在处理请求上面的总时间 ||
+|| AverageProcessTime || 平均每个请求的保存时间 ||
+|| ProcessedCount || 已处理的请求数 ||
+
+== 数据统计与分析 ==
+
+如果系统每日请求数很多，那么SYS_RUNTIME_REQUEST_DETAIL表将会积累很多的记录。由于对这个表的使用主要是进行统计分析，为提高性能，可定期将该表中的数据按天汇总，转存到另一个统计表中，再清理这部分数据。例如：
+{{{
+create table SYS_RUNTIME_REQUEST_STAT_DAY
+(
+  STAT_DATE   DATE not null,
+  URL         VARCHAR2(300) not null,
+  ACTION_NAME VARCHAR2(200) not null,
+  TOTAL_COUNT NUMBER,
+  AVG_TIME    NUMBER,
+  MAX_TIME    NUMBER,
+  MIN_TIME    NUMBER,
+  MEDIAN_TIME NUMBER
+)
+}}}
+再定期运行下面的SQL来进行统计汇总：
+{{{
+insert into sys_runtime_request_stat_day
+select trunc(r.enter_time), r.url, d.name, count(*), avg(d.duration), max(d.duration), min(d.duration), median(d.duration)
+from sys_runtime_request_detail d, sys_runtime_request_record r
+where d.request_id = r.request_id
+group by  trunc(r.enter_time), r.url, d.name
+}}}
+
+基于请求记录表，可以做各类分析，包括：
+  * 系统各时段的负载状况
+  * 请求平均响应时间，按时段，模块等维度分类；
+  * 用户地理位置，浏览器，操作系统分析等；
+  * 用户使用习惯分析，例如最经常使用的功能，用户点击路径分析，等等；
+  * 性能短板分析，最耗时的请求，其中最耗时的步骤
+ 
+基于异常记录表，可以还原大部分现场数据，排查错误。也可以对一段时间内的异常情况进行统计分析，及早发现问题。
