@@ -91,5 +91,84 @@ create sequence HECDEV.SYS_RUNTIME_EXCEPTION_LOG_S;
 
 SYS_RUNTIME_REQUEST_DETAIL进一步记录在每次请求内部，各个节点的处理时间，如：
 {{{
-
+REQUEST_ID	SEQUENCE_NUM	NAME	ENTER_TIME	EXIT_TIME	DURATION
+59fa7bfd-aea6-4480-9b5c-b75f80995236	1	set	2011/9/26 15:04:20	2011/9/26 15:04:20	1
+59fa7bfd-aea6-4480-9b5c-b75f80995236	2	model-query[sys.sys_user]	2011/9/26 15:04:20	2011/9/26 15:04:21	173
+59fa7bfd-aea6-4480-9b5c-b75f80995236	3	BuildOutputContent	2011/9/26 15:04:21	2011/9/26 15:04:21	292
 }}}
+
+从这个表的记录可以看出一次响应大多数的时间花费在哪里，有利于定位性能短板。
+
+SYS_RUNTIME_EXCEPTION_LOG记录请求处理过程中发生的错误，其中REQUEST_ID对应发生该错误的请求记录，CONTEXT_DUMP记录当时的context内容，FULL_STACK_TRACE记录当时的java堆栈。
+
+== 配置 ==
+
+首先，在WEB-INF下创建配置文件
+{{{
+<f:request-recorder xmlns:f="aurora.application.features" /> 
+}}}
+该类监听每一次请求，将请求信息放进一个内部队列，再启动一个线程将队列中的信息写入数据库。
+大多数属性都可以取缺省值，可配置的属性说明如下：
+（所有时间单位都是毫秒）
+|| 属性 || 含义 || 缺省值 ||
+|| checkInterval || 多长时间检查一次队列 || 1000 ||
+|| connectionIdleTime || 数据库连接多长时间自动关闭 || 20 * 60 * 1000，即20分钟 ||
+|| requestSaveBm || 保存请求信息的BM的名字 || sys.monitor.sys_runtime_request_record ||
+|| saveDetail || 是否保存每次请求内部各步骤的处理时间 || true ||
+|| batchSize || 一次处理队列中的记录数 || 100 ||
+
+然后，在service-listener.config文件中增加一行：
+{{{
+		<participant class="aurora.application.features.RequestRecorder"/>
+}}}
+
+这样，就可以在数据库中看到每次请求的记录了。
+
+== JMX监控 ==
+此特性提供MBean用于监控当前状态，MBean路径为
+{{{
+<应用名>/Application/RequestRecorder
+}}}
+提供的属性：
+|| 属性 || 含义 ||
+|| CurrentQueueSize || 当前待处理队列大小 ||
+|| MaxQueueSize || 待处理队列曾经达到过的最大size ||
+|| MaxQueueSizeTime || 待处理队列达到最大size的时间 ||
+|| RequestCount || 请求总次数 ||
+|| TotalProcessTime || 花费在处理请求上面的总时间 ||
+|| AverageProcessTime || 平均每个请求的保存时间 ||
+|| ProcessedCount || 已处理的请求数 ||
+
+== 数据统计与分析 ==
+
+如果系统每日请求数很多，那么SYS_RUNTIME_REQUEST_DETAIL表将会积累很多的记录。由于对这个表的使用主要是进行统计分析，为提高性能，可定期将该表中的数据按天汇总，转存到另一个统计表中，再清理这部分数据。例如：
+{{{
+create table HECDEV.SYS_RUNTIME_REQUEST_STAT_DAY
+(
+  STAT_DATE   DATE not null,
+  URL         VARCHAR2(300) not null,
+  ACTION_NAME VARCHAR2(200) not null,
+  TOTAL_COUNT NUMBER,
+  AVG_TIME    NUMBER,
+  MAX_TIME    NUMBER,
+  MIN_TIME    NUMBER,
+  MEDIAN_TIME NUMBER
+)
+}}}
+再定期运行下面的SQL来进行统计汇总：
+{{{
+insert into sys_runtime_request_stat_day
+select trunc(r.enter_time), r.url, d.name, count(*), avg(d.duration), max(d.duration), min(d.duration), median(d.duration)
+from sys_runtime_request_detail d, sys_runtime_request_record r
+where d.request_id = r.request_id
+group by  trunc(r.enter_time), r.url, d.name
+}}}
+
+基于请求记录表，可以做各类分析，包括：
+  * 系统各时段的负载状况
+  * 请求平均响应时间，按时段，模块等维度分类；
+  * 用户地理位置，浏览器，操作系统分析等；
+  * 用户使用习惯分析，例如最经常使用的功能，用户点击路径分析，等等；
+  * 性能短板分析，最耗时的请求，其中最耗时的步骤
+ 
+基于异常记录表，可以还原大部分现场数据，排查错误。也可以对一段时间内的异常情况进行统计分析，及早发现问题。
