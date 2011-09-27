@@ -200,6 +200,7 @@ public class PayAction extends AbstractEntry {
 				String detailBizNo = cmrecord.get(this.getDetailbizno())
 						.toString();
 				String payeeType=cmrecord.get(this.getPayeetype()).toString();
+				String descString=cmrecord.get(this.getDesc()).toString();
 				if(payeeType==null||"".equals(payeeType))payeeType="company";
 				cmrecord.get(this.getDesc()).toString();
 				String detailSeqID1 = Sequence.genSequence();
@@ -208,7 +209,7 @@ public class PayAction extends AbstractEntry {
 				returnlist.addChild(detail);
 				PaymentDetail pd = createPaymentDetail(detailSeqID1,
 						detailBizNo, oppAccNo, name, payeeType, bank,
-						address, amount, "-1", useCn, urgentString, desc);
+						address, amount, "-1", useCn, urgentString, descString);
 				cl.add(pd);
 
 			}
@@ -271,7 +272,7 @@ public class PayAction extends AbstractEntry {
 	protected PaymentDetail createPaymentDetail(String detailSeqID,
 			String detailBizNo, String acc, String name, String payeeType,
 			String bank, String address, String amount, String useCode,
-			String useCN, String urgentString, String desc) {
+			String useCN, String urgentString, String descString) {
 		PaymentDetail detail = new PaymentDetail();
 		detail.setDetailSeqID(detailSeqID);// Sequence.genSequence()
 		detail.setDetailBizNo(detailBizNo);
@@ -279,7 +280,7 @@ public class PayAction extends AbstractEntry {
 		detail.setPayeeAccNo(acc);
 		detail.setPayeeAccName(name);
 		detail.setPayeeBankName(bank);
-		detail.setDesc(desc);
+		detail.setDesc(descString);
 		detail.setPayeeType(payeeType);		
 		detail.setUseCode(useCode);
 		detail.setUse(useCN);
