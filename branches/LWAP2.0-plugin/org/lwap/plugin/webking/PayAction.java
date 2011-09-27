@@ -173,36 +173,33 @@ public class PayAction extends AbstractEntry {
 				CompositeMap cmrecord = (CompositeMap) it.next();
 				String accNo = cmrecord.getString(this.getAccno());
 				accnoheader = cmrecord.getString(this.getAccno());
-				String oppAccNo = cmrecord.get(this.getOppaccno()).toString();
-				String amount = cmrecord.get(this.getAmount()).toString();
+				String oppAccNo = cmrecord.getString(this.getOppaccno());
+				String amount = cmrecord.getString(this.getAmount());
 				BigDecimal bd = new BigDecimal(amount);
 				bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 				amount = bd.toString();
-				currency_code = cmrecord.get(this.getCurrency()).toString();
+				currency_code = cmrecord.getString(this.getCurrency());
 
 				// String name = "胡玉玲";
-				String name = cmrecord.get(this.getName()).toString();
-				String urgentString = cmrecord.get(this.getUrgent()).toString();
-				if(urgentString==null||"".equals(urgentString))urgentString="false";
+				String name = cmrecord.getString(this.getName());
+				String urgentString = cmrecord.getString(this.getUrgent(),"false");				
 				
 				// 同行支付
-				String bank = cmrecord.get(this.getBank()).toString();
+				String bank = cmrecord.getString(this.getBank());
 				String address = "";
 				try {
-					address = cmrecord.get(this.getAddress()).toString();
+					address = cmrecord.getString(this.getAddress());
 				} catch (NullPointerException ne) {
 
 				}
 				// String bank = "工商银行";
 				// String address = "山东省的某个城市";
 //				String useCn = "工资";
-				String useCn=cmrecord.get(this.getUsedesc()).toString();
-				String detailBizNo = cmrecord.get(this.getDetailbizno())
-						.toString();
-				String payeeType=cmrecord.get(this.getPayeetype()).toString();
-				String descString=cmrecord.get(this.getDesc()).toString();
-				if(payeeType==null||"".equals(payeeType))payeeType="company";
-				cmrecord.get(this.getDesc()).toString();
+				String useCn=cmrecord.getString(this.getUsedesc());
+				String detailBizNo = cmrecord.getString(this.getDetailbizno());
+				String payeeType=cmrecord.getString(this.getPayeetype(),"company");				
+				String descString=cmrecord.getString(this.getDesc());
+				
 				String detailSeqID1 = Sequence.genSequence();
 				CompositeMap detail = new CompositeMap(detailSeqID1);
 				detail.put(this.getDetailbizno(), detailBizNo);
