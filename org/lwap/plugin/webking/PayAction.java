@@ -34,6 +34,25 @@ public class PayAction extends AbstractEntry {
 	public String desc;
 	public String batch;
 	public String usedesc;
+	public String urgent;
+	public String payeetype;	
+	
+	public String getUrgent() {
+		return urgent;
+	}
+
+	public void setUrgent(String urgent) {
+		this.urgent = urgent;
+	}
+
+	public String getPayeetype() {
+		return payeetype;
+	}
+
+	public void setPayeetype(String payeetype) {
+		this.payeetype = payeetype;
+	}
+
 	private ServiceSettings settings;
 	
 	public String getUsedesc() {
@@ -163,8 +182,9 @@ public class PayAction extends AbstractEntry {
 
 				// String name = "胡玉玲";
 				String name = cmrecord.get(this.getName()).toString();
-				boolean urgent = false;
-				boolean toIndividual = false;
+				String urgentString = cmrecord.get(this.getUrgent()).toString();
+				if(urgentString==null||"".equals(urgentString))urgentString="false";
+				
 				// 同行支付
 				String bank = cmrecord.get(this.getBank()).toString();
 				String address = "";
@@ -179,14 +199,16 @@ public class PayAction extends AbstractEntry {
 				String useCn=cmrecord.get(this.getUsedesc()).toString();
 				String detailBizNo = cmrecord.get(this.getDetailbizno())
 						.toString();
+				String payeeType=cmrecord.get(this.getPayeetype()).toString();
+				if(payeeType==null||"".equals(payeeType))payeeType="company";
 				cmrecord.get(this.getDesc()).toString();
 				String detailSeqID1 = Sequence.genSequence();
 				CompositeMap detail = new CompositeMap(detailSeqID1);
 				detail.put(this.getDetailbizno(), detailBizNo);
 				returnlist.addChild(detail);
 				PaymentDetail pd = createPaymentDetail(detailSeqID1,
-						detailBizNo, oppAccNo, name, toIndividual, bank,
-						address, amount, "-1", useCn, urgent, desc);
+						detailBizNo, oppAccNo, name, payeeType, bank,
+						address, amount, "-1", useCn, urgentString, desc);
 				cl.add(pd);
 
 			}
@@ -247,9 +269,9 @@ public class PayAction extends AbstractEntry {
 	 * CPIC0001 是写死的，可以用STATIC 代替，后期没改，如果程序效率慢，可修改
 	 * */
 	protected PaymentDetail createPaymentDetail(String detailSeqID,
-			String detailBizNo, String acc, String name, boolean toIndividual,
+			String detailBizNo, String acc, String name, String payeeType,
 			String bank, String address, String amount, String useCode,
-			String useCN, boolean urgent, String desc) {
+			String useCN, String urgentString, String desc) {
 		PaymentDetail detail = new PaymentDetail();
 		detail.setDetailSeqID(detailSeqID);// Sequence.genSequence()
 		detail.setDetailBizNo(detailBizNo);
@@ -258,15 +280,11 @@ public class PayAction extends AbstractEntry {
 		detail.setPayeeAccName(name);
 		detail.setPayeeBankName(bank);
 		detail.setDesc(desc);
-		if (toIndividual) {
-			detail.setPayeeType("individual");
-		} else {
-			detail.setPayeeType("company");
-		}
+		detail.setPayeeType(payeeType);		
 		detail.setUseCode(useCode);
 		detail.setUse(useCN);
 		detail.setPayeeBankAddr(address);
-		detail.setUrgent("" + urgent);
+		detail.setUrgent(urgentString);
 		String keyCode = "CPIC0001";
 		;
 		String des = DES.des_encrypt(keyCode, detail.getPayeeAccNo()
