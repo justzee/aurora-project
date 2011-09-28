@@ -120,6 +120,12 @@ public class UncertainEngineTest extends TestCase {
             return null;
         Configuration config = engine.createConfig();
         config.loadConfig(m);
+/*
+        CompositeMap p =  (CompositeMap)(m.getChilds().get(0)) ;
+        System.out.println(p.toXML());
+        Object o = engine.getOcManager().createObject(p);
+        System.out.println(o);
+  */      
         return config;
     }    
     

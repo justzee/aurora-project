@@ -35,7 +35,7 @@ public class ParticipantManagerTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-
+        try{
         reg = new ObjectRegistryImpl();
         loader = CompositeLoader.createInstanceForOCM();
         global_bean = new GlobalBean("test app");
@@ -65,9 +65,17 @@ public class ParticipantManagerTest extends TestCase {
         pManager = (ParticipantManager)ocManager.createObject(data);
         assertNotNull(pManager);
         pManager.onInitialize();
+        }catch(Throwable thr){
+            thr.getCause().printStackTrace();
+        }
     
     }
     
+    public void testA(){
+        
+    }
+    
+
     public void testBasicConfig()
         throws Exception
     {

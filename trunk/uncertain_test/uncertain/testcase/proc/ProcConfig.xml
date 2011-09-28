@@ -4,6 +4,5 @@
 	<ParticipantTest/>
 	<participant-test/>
 -->	
-	<participant-test2 xmlns="uncertain.testcase.proc">
-	</participant-test2>
+	<participant-test2 xmlns="uncertain.testcase.proc" />
 </participant-list>
