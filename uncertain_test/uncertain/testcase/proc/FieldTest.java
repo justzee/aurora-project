@@ -18,7 +18,7 @@ public class FieldTest extends ProcedureRunnerTest {
     public void testGetField()
         throws Exception
     {
-        loadProcedure("FieldTest.xml");
+        loadProcedure("FieldTest");
         assertNotNull(super.test_proc);
         
         Field f1 = test_proc.getField("BusinessModel");

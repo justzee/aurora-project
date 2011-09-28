@@ -6,7 +6,7 @@
 		<participant class="java.util.HashMap" />		
 	</participant-list>
 	<participant-list category="service">
-		<participant class="java.util.Date" />	
+		<participant class="java.lang.RuntimeException" />	
 	</participant-list>
 	<participant-list category="service">
 		<participant class="uncertain.testcase.event.ServiceListener" />

@@ -5,6 +5,7 @@ package uncertain.testcase.proc;
 
 import junit.framework.TestCase;
 import uncertain.event.EventModel;
+import uncertain.event.ReflectionMethodHandle;
 import uncertain.proc.*;
 import java.util.*;
 //import java.lang.reflect.*;

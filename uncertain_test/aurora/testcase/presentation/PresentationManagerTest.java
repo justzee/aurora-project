@@ -148,6 +148,7 @@ public class PresentationManagerTest extends TestCase {
         CompositeMap form = new CompositeMap("template");
         form.put("template","employee_form");
         form.put("package", AURORA_TESTCASE_UI);
+        form.put("indexfield", "name");
         
         CompositeMap page = new CompositeMap("html-page");
         page.put("template","default");
