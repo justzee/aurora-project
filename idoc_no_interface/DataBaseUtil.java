@@ -9,38 +9,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-import javax.sql.DataSource;
-
 import uncertain.composite.CompositeMap;
-import uncertain.logging.ILogger;
-import uncertain.ocm.IObjectRegistry;
 
 import com.sap.conn.idoc.jco.JCoIDocServer;
 
 public class DataBaseUtil {
 	private Connection dbConn;
-	private ILogger logger;
-
-	public DataBaseUtil(IObjectRegistry registry, ILogger logger) throws ApplicationException {
-		dbConn = initConnection(registry);
-		this.logger = logger;
+	public DataBaseUtil(Connection dbConn) throws AuroraIDocException {
+		this.dbConn = dbConn;
 	}
-
-	private Connection initConnection(IObjectRegistry registry) throws ApplicationException {
-		DataSource ds = (DataSource) registry.getInstanceOfType(DataSource.class);
-		try {
-			if (ds == null)
-				throw new ApplicationException("Can not get DataSource from registry " + registry);
-			return ds.getConnection();
-		} catch (SQLException e) {
-			throw new ApplicationException("Can not get Connection from DataSource", e);
-		}
-	}
-
-	public int registerSapServers(JCoIDocServer server) throws SQLException {
+	public int registerSapServers(JCoIDocServer server) throws AuroraIDocException {
 		// SERVER_ID,PROGRAM_ID,REPOSITORY_NAME,GATEWAY_HOST,GATEWAY_SERVICE,RESPOSITORY_DESTINATION,STATUS,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,
 		int server_id = -1;
 		PreparedStatement statement = null;
@@ -93,33 +75,30 @@ public class DataBaseUtil {
 			statement.setString(index++, respository_destination);
 			statement.setString(index++, "");
 			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
-
 		return server_id;
 	}
 
-	public void unRegisterSapServers(int serverId) throws SQLException {
+	public void unRegisterSapServers(int serverId) throws AuroraIDocException {
 		String delete_sql = "delete from fnd_sap_servers s where s.server_id=" + serverId;
 		Statement statement = null;
 		try {
 			statement = dbConn.createStatement();
 			statement.executeUpdate(delete_sql);
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (statement != null) {
-				statement.close();
-			}
+			closeStatement(statement);
 		}
 	}
 
-	public int addIdoc(int serverId, String filePath) throws SQLException, ApplicationException {
+	public int addIdoc(int serverId, String filePath) throws SQLException, AuroraIDocException {
 		String get_idoc_id_sql = "select fnd_sap_idocs_s.nextval from dual";
 		Statement statement = null;
 		PreparedStatement pStatement = null;
@@ -131,7 +110,7 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				idoc_id = rs.getInt(1);
 			} else {
-				throw new ApplicationException("execute sql:" + get_idoc_id_sql + " failed.");
+				throw new AuroraIDocException("execute sql:" + get_idoc_id_sql + " failed.");
 			}
 			rs.close();
 			statement.close();
@@ -143,21 +122,22 @@ public class DataBaseUtil {
 			pStatement.setString(index++, filePath);
 			pStatement.executeUpdate();
 			pStatement.close();
+		} catch (SQLException e) {
+			if (pStatement != null)
+				throw new AuroraIDocException("execute sql:" + pStatement.toString() + " failed.", e);
+			else if (statement != null) {
+				throw new AuroraIDocException("execute sql:" + statement.toString() + " failed.", e);
+			}
+			throw new AuroraIDocException(e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
-			if (pStatement != null) {
-				pStatement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
+			closeStatement(pStatement);
 		}
 		return idoc_id;
 	}
 
-	public void updateIdocInfo(int idocId, CompositeMap control_node) throws SQLException {
+	public void updateIdocInfo(int idocId, CompositeMap control_node) throws AuroraIDocException {
 		if (idocId < 1 || control_node == null)
 			return;
 		String tabnam = getChildNodeText(control_node, IDocFile.TABNAM_NODE);
@@ -208,10 +188,10 @@ public class DataBaseUtil {
 			statement.setInt(index++, idocId);
 			statement.executeUpdate();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (statement != null) {
-				statement.close();
-			}
+			closeStatement(statement);
 		}
 	}
 
@@ -244,7 +224,7 @@ public class DataBaseUtil {
 		return getParentSegment(parentNode, segment);
 	}
 
-	public int registerInterfaceHeader(int idocId, CompositeMap controlNode) throws SQLException, ApplicationException {
+	public int registerInterfaceHeader(int idocId, CompositeMap controlNode) throws AuroraIDocException {
 		if (idocId < 1 || controlNode == null)
 			return -1;
 		String idoctyp = getChildNodeText(controlNode, IDocFile.IDOCTYP_NODE);
@@ -261,7 +241,7 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				header_id = rs.getInt(1);
 			} else {
-				throw new ApplicationException("execute sql:" + get_interface_header_sql + " failed.");
+				throw new AuroraIDocException("execute sql:" + get_interface_header_sql + " failed.");
 			}
 			rs.close();
 			statement.close();
@@ -273,22 +253,18 @@ public class DataBaseUtil {
 			pstatement.setString(3, String.valueOf(idocId));
 			pstatement.executeUpdate();
 			pstatement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(new Statement[] { pstatement, statement }, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
-			if (pstatement != null) {
-				pstatement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
+			closeStatement(pstatement);
 		}
 		return header_id;
 
 	}
 
-	public String getTemplateCode(String idoctyp, String cimtyp) throws SQLException, ApplicationException {
+	public String getTemplateCode(String idoctyp, String cimtyp) throws AuroraIDocException {
 		StringBuffer query_sql = new StringBuffer("select TEMPLATE_CODE from FND_SAP_IDOC_TEMPLATES where IDOCTYP=? ");
 		if (cimtyp != null)
 			query_sql.append(" and CIMTYP=?");
@@ -304,29 +280,27 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				templateCode = rs.getString(1);
 			} else {
-				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
+				throw new AuroraIDocException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
 						+ query_sql.toString() + " failed.");
 			}
 			rs.close();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return templateCode;
 	}
 
-	public IdocType getIdocType(CompositeMap controlNode) {
+	public IDocType getIdocType(CompositeMap controlNode) {
 		String idoctyp = getChildNodeText(controlNode, IDocFile.IDOCTYP_NODE);
 		String cimtyp = getChildNodeText(controlNode, IDocFile.CIMTYP_NODE);
-		return new IdocType(idoctyp, cimtyp);
+		return new IDocType(idoctyp, cimtyp);
 	}
 
-	public String getHandleModel(String idoctyp, String cimtyp) throws SQLException, ApplicationException {
+	public String getHandleModel(String idoctyp, String cimtyp) throws AuroraIDocException {
 		StringBuffer query_sql = new StringBuffer("select HANDLE_MODEL from FND_SAP_IDOC_TEMPLATES where IDOCTYP=? ");
 		if (cimtyp != null)
 			query_sql.append(" and CIMTYP=?");
@@ -342,29 +316,27 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				handleModel = rs.getString(1);
 			} else {
-				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
+				throw new AuroraIDocException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
 						+ query_sql.toString() + " failed.");
 			}
 			rs.close();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return handleModel;
 	}
 
-	public void registerMiddleLine(int headerId, CompositeMap contentNode) throws SQLException, ApplicationException {
+	public void registerMiddleLine(int headerId, CompositeMap contentNode) throws AuroraIDocException {
 		if (headerId < 1 || contentNode == null)
 			return;
 		insertIntoMiddleTable(headerId, contentNode);
 	}
 
-	private void insertIntoMiddleTable(int headerId, CompositeMap node) throws SQLException, ApplicationException {
+	private void insertIntoMiddleTable(int headerId, CompositeMap node) throws AuroraIDocException {
 		PreparedStatement segmentMapsSt = null;
 		PreparedStatement fieldMapsSt = null;
 		PreparedStatement insertSt = null;
@@ -386,40 +358,39 @@ public class DataBaseUtil {
 				StringBuffer insert_sql = new StringBuffer("insert into " + tableName
 						+ " (BATCH_ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE");
 				StringBuffer values_sql = new StringBuffer("values(" + headerId + ",0,sysdate,0,sysdate");
+				List values = new LinkedList();
 				while (filedMapsRs.next()) {
 					String segmentName = filedMapsRs.getString(1);
 					String segmentField = filedMapsRs.getString(2);
 					String tableField = filedMapsRs.getString(3);
 					insert_sql.append("," + tableField);
 					String value = getSegmentFieldValue(node, segmentName, segmentField);
-					values_sql.append(",'" + (value != null ? value : "")+"'");
+//					values_sql.append(",'" + (value != null ? value : "") + "'");
+					values_sql.append(",?");
+					values.add(value != null ? value : "");
 				}
 				insert_sql.append(")").append(values_sql).append(")");
-				try{
+				try {
 					insertSt = dbConn.prepareStatement(insert_sql.toString());
+					int i=1;
+					for(Iterator it = values.iterator();it.hasNext();i++){
+						insertSt.setString(i, (String)it.next());
+					}
 					insertSt.executeUpdate();
-				}catch(Throwable e){
-					logger.log(Level.SEVERE, "execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable");
-					throw new ApplicationException("execute sql:"+insert_sql.toString()+" in insertIntoMiddleTable",e);
+				} catch (Throwable e) {
+					throw new AuroraIDocException("execute sql:" + insert_sql.toString() + " in insertIntoMiddleTable",
+							e);
 				}
 				insertSt.close();
 			}
+		} catch (SQLException e) {
+			throw createAuroraIDocException(new Statement[] { insertSt, fieldMapsSt, segmentMapsSt }, e);
 		} finally {
-			if (segmentMapsRs != null) {
-				segmentMapsRs.close();
-			}
-			if (segmentMapsSt != null) {
-				segmentMapsSt.close();
-			}
-			if (filedMapsRs != null) {
-				filedMapsRs.close();
-			}
-			if (fieldMapsSt != null) {
-				fieldMapsSt.close();
-			}
-			if (insertSt != null) {
-				insertSt.close();
-			}
+			closeResultSet(segmentMapsRs);
+			closeStatement(segmentMapsSt);
+			closeResultSet(filedMapsRs);
+			closeStatement(fieldMapsSt);
+			closeStatement(insertSt);
 		}
 		for (int i = 0; i < node.getChilds().size(); i++) {
 			CompositeMap child = (CompositeMap) node.getChilds().get(i);
@@ -429,19 +400,18 @@ public class DataBaseUtil {
 		}
 	}
 
-	public void registerInterfaceLine(int headerId, CompositeMap contentNode) throws SQLException, ApplicationException {
+	public void registerInterfaceLine(int headerId, CompositeMap contentNode) throws AuroraIDocException {
 		if (headerId < 1 || contentNode == null)
 			return;
 		handleContentNode(headerId, 0, contentNode);
 	}
 
-	private void handleContentNode(int headerId, int parent_id, CompositeMap node) throws SQLException,
-			ApplicationException {
+	private void handleContentNode(int headerId, int parent_id, CompositeMap node) throws AuroraIDocException {
 		StringBuffer insert_sql = new StringBuffer(
-				"insert into FND_INTERFACE_LINES(LINE_ID,HEADER_ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,"
+				"insert into FND_INTERFACE_LINES(LINE_ID,LINE_NUMBER,HEADER_ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,"
 						+ " SOURCE_TABLE,PARENT_LINE_ID");
 		int line_id = getLineId();
-		StringBuffer values_sql = new StringBuffer("values(?,?,0,sysdate,0,sysdate,?,?");
+		StringBuffer values_sql = new StringBuffer("values(?,?,?,0,sysdate,0,sysdate,?,?");
 		int index = 1;
 		for (int i = 0; i < node.getChilds().size(); i++) {
 			CompositeMap child = (CompositeMap) node.getChilds().get(i);
@@ -460,6 +430,7 @@ public class DataBaseUtil {
 			statement = dbConn.prepareStatement(insert_sql.toString());
 			index = 1;
 			statement.setInt(index++, line_id);
+			statement.setInt(index++, line_id);
 			statement.setInt(index++, headerId);
 			statement.setString(index++, node.getName());
 			statement.setInt(index++, parent_id);
@@ -474,14 +445,10 @@ public class DataBaseUtil {
 			}
 			statement.executeUpdate();
 			statement.close();
-		}catch(Throwable e){
-			logger.log(Level.SEVERE, "execute sql:"+insert_sql.toString()+"in handleContentNode");
-			throw new ApplicationException("execute sql:"+insert_sql.toString()+" in handleContentNode",e);
-		} 
-		finally {
-			if (statement != null) {
-				statement.close();
-			}
+		} catch (Throwable e) {
+			throw new AuroraIDocException("execute sql:" + insert_sql.toString() + " in handleContentNode", e);
+		} finally {
+			closeStatement(statement);
 		}
 	}
 
@@ -495,7 +462,7 @@ public class DataBaseUtil {
 		return false;
 	}
 
-	public int getLineId() throws SQLException, ApplicationException {
+	public int getLineId() throws AuroraIDocException {
 		String query_sql = "select FND_INTERFACE_LINES_s.nextval from dual";
 		Statement statement = null;
 		ResultSet rs = null;
@@ -506,22 +473,20 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				lineId = rs.getInt(1);
 			} else {
-				throw new ApplicationException(" execute sql:" + query_sql + " failed.");
+				throw new AuroraIDocException(" execute sql:" + query_sql + " failed.");
 			}
 			rs.close();
 			statement.close();
+		} catch (SQLException e) {
+			throw new AuroraIDocException("execute sql:" + query_sql.toString() + " in handleContentNode", e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return lineId;
 	}
 
-	public void updateIdocStatus(int headerId, int idocId, String status) throws SQLException {
+	public void updateIdocStatus(int headerId, int idocId, String status) throws AuroraIDocException {
 		String header_update_sql = "update FND_INTERFACE_HEADERS t set t.status=? where t.header_id =?";
 		String idoc_update_sql = "update fnd_sap_idocs t set t.handled_status=? where t.idoc_id =?";
 		PreparedStatement statement = null;
@@ -536,14 +501,14 @@ public class DataBaseUtil {
 			statement.setInt(2, idocId);
 			statement.executeUpdate();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (statement != null) {
-				statement.close();
-			}
+			closeStatement(statement);
 		}
 	}
 
-	public void updateIdocsStatus(int idocId, String message) throws SQLException {
+	public void updateIdocsStatus(int idocId, String message) throws AuroraIDocException {
 		String idoc_update_sql = "update fnd_sap_idocs t set t.handled_status=? where t.idoc_id =?";
 		PreparedStatement statement = null;
 		try {
@@ -552,14 +517,14 @@ public class DataBaseUtil {
 			statement.setInt(2, idocId);
 			statement.executeUpdate();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (statement != null) {
-				statement.close();
-			}
+			closeStatement(statement);
 		}
 	}
 
-	public String getMiddleExecutePkg(int idocId) throws SQLException, ApplicationException {
+	public String getMiddleExecutePkg(int idocId) throws AuroraIDocException {
 		if (idocId < 1)
 			return null;
 		String query_sql = "select i.idoctyp,i.cimtyp from fnd_sap_idocs i where i.idoc_id = " + idocId;
@@ -575,23 +540,21 @@ public class DataBaseUtil {
 				idoctyp = rs.getString(1);
 				cimtyp = rs.getString(2);
 			} else {
-				throw new ApplicationException("execute sql:" + query_sql + " failed!");
+				throw new AuroraIDocException("execute sql:" + query_sql + " failed!");
 			}
 			rs.close();
 			statement.close();
 			templateCode = getTemplateCode(idoctyp, cimtyp);
+		} catch (SQLException e) {
+			throw createAuroraIDocException(query_sql, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return getMiddleExecutePkg(templateCode);
 	}
 
-	public String getMiddleExecutePkg(String template_code) throws SQLException, ApplicationException {
+	public String getMiddleExecutePkg(String template_code) throws AuroraIDocException {
 		String query_sql = "select execute_pkg from fnd_interface_templates where enabled_flag='Y' and template_code='"
 				+ template_code + "'";
 		Statement statement = null;
@@ -600,26 +563,23 @@ public class DataBaseUtil {
 		try {
 			statement = dbConn.createStatement();
 			rs = statement.executeQuery(query_sql);
-
 			if (rs.next()) {
 				executePkg = rs.getString(1);
 			} else {
-				throw new ApplicationException("execute sql:" + query_sql + " failed!");
+				throw new AuroraIDocException("execute sql:" + query_sql + " failed!");
 			}
 			rs.close();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(query_sql, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return executePkg;
 	}
 
-	public String getFormalExecutePkg(int idocId) throws SQLException, ApplicationException {
+	public String getFormalExecutePkg(int idocId) throws AuroraIDocException {
 		if (idocId < 1)
 			return null;
 		String query_sql = "select i.idoctyp,i.cimtyp from fnd_sap_idocs i where i.idoc_id = " + idocId;
@@ -634,22 +594,20 @@ public class DataBaseUtil {
 				idoctyp = rs.getString(1);
 				cimtyp = rs.getString(2);
 			} else {
-				throw new ApplicationException("execute sql:" + query_sql + " failed!");
+				throw new AuroraIDocException("execute sql:" + query_sql + " failed!");
 			}
 			rs.close();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(query_sql, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return getFormalExecutePkg(idoctyp, cimtyp);
 	}
 
-	public String getFormalExecutePkg(String idoctyp, String cimtyp) throws SQLException, ApplicationException {
+	public String getFormalExecutePkg(String idoctyp, String cimtyp) throws AuroraIDocException {
 		StringBuffer query_sql = new StringBuffer("select execute_pkg from fnd_sap_idoc_transactions where IDOCTYP=? ");
 		if (cimtyp != null)
 			query_sql.append(" and CIMTYP=?");
@@ -665,23 +623,21 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				executePkg = rs.getString(1);
 			} else {
-				throw new ApplicationException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
+				throw new AuroraIDocException("IDOCTYP:" + idoctyp + " CIMTYP:" + cimtyp + " execute sql:"
 						+ query_sql.toString() + " failed.");
 			}
 			rs.close();
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
 		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return executePkg;
 	}
 
-	public String executePkg(String executePkg, int headerId) throws SQLException {
+	public String executePkg(String executePkg, int headerId) throws AuroraIDocException {
 		String errorMessage = null;
 		CallableStatement proc = null;
 		try {
@@ -698,17 +654,18 @@ public class DataBaseUtil {
 			}
 			proc.close();
 			dbConn.setAutoCommit(true);
+		} catch (SQLException e) {
+			throw createAuroraIDocException(proc, e);
 		} finally {
-			if (proc != null)
-				proc.close();
-			dbConn.rollback();
-			dbConn.setAutoCommit(true);
+			closeStatement(proc);
+			rollbackConnection();
+			setConnectionAutoCommit(true);
 		}
 		return errorMessage;
 
 	}
 
-	public void stopSapServers(int serverId) throws SQLException {
+	public void stopSapServers(int serverId) throws AuroraIDocException {
 		String delete_sql = "update fnd_sap_servers s set s.status='Error occurred:please check the console or log for details.',last_update_date=sysdate where s.server_id="
 				+ serverId;
 		Statement statement = null;
@@ -716,14 +673,14 @@ public class DataBaseUtil {
 			statement = dbConn.createStatement();
 			statement.executeUpdate(delete_sql);
 			statement.close();
+		} catch (SQLException e) {
+			throw createAuroraIDocException(delete_sql, e);
 		} finally {
-			if (statement != null) {
-				statement.close();
-			}
+			closeStatement(statement);
 		}
 	}
 
-	public int getFieldIndex(String segmenttyp, String fieldname) throws SQLException, ApplicationException {
+	public int getFieldIndex(String segmenttyp, String fieldname) throws AuroraIDocException {
 		String get_field_Index_sql = "select t.field_index from fnd_sap_fields t where t.segmenttyp ='" + segmenttyp
 				+ "' and t.fieldname='" + fieldname + "'";
 		Statement statement = null;
@@ -735,22 +692,20 @@ public class DataBaseUtil {
 			if (rs.next()) {
 				fieldIndex = rs.getInt(1);
 			} else {
-				throw new ApplicationException(" execute sql:" + get_field_Index_sql + " failed.");
+				throw new AuroraIDocException(" execute sql:" + get_field_Index_sql + " failed.");
 			}
 			rs.close();
 			statement.close();
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+		} catch (SQLException e) {
+			throw createAuroraIDocException(get_field_Index_sql, e);
+		}finally {
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 		return fieldIndex;
 	}
 
-	public void getHistoryIdocs(String program_id, List idocList) throws SQLException, ApplicationException {
+	public void getHistoryIdocs(String program_id, List idocList) throws AuroraIDocException {
 		String get_HistoryIdocs_sql = "select i.idoc_id, i.server_id, i.file_path  from "
 				+ " fnd_sap_idocs i, fnd_sap_servers s  where (i.handled_status is null or i.handled_status<>'done') "
 				+ " and i.server_id = s.server_id" + " and s.program_id='" + program_id + "' order by i.idoc_id";
@@ -765,55 +720,122 @@ public class DataBaseUtil {
 				String file_path = rs.getString(3);
 				File file = new File(file_path);
 				if (!file.exists()) {
-					throw new ApplicationException("file :" + file.getAbsolutePath() + " is not exits");
+					throw new AuroraIDocException("file :" + file.getAbsolutePath() + " is not exits");
 				}
 				idocList.add(new IDocFile(file_path, idoc_id, server_id));
 			}
 			rs.close();
 			statement.close();
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+		} catch (SQLException e) {
+			throw createAuroraIDocException(get_HistoryIdocs_sql, e);
+		}finally {
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
 
 	}
 
-	public int existHeaders(int idoc_id) throws SQLException {
+	public int existHeaders(int idoc_id) throws AuroraIDocException {
 		String get_field_Index_sql = "select t.header_id " + " from fnd_interface_headers t, fnd_sap_idocs i "
 				+ " where t.attribute_1 = i.idoc_id and i.idoc_id = " + idoc_id;
 		Statement statement = null;
 		ResultSet rs = null;
-		int server_id = -1;
+		int header_id = -1;
 		try {
 			statement = dbConn.createStatement();
 			rs = statement.executeQuery(get_field_Index_sql);
 			if (rs.next()) {
-				server_id = rs.getInt(1);
+				header_id = rs.getInt(1);
 			}
 			rs.close();
 			statement.close();
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (statement != null) {
-				statement.close();
-			}
+		} catch (SQLException e) {
+			throw createAuroraIDocException(get_field_Index_sql, e);
+		}finally {
+			closeResultSet(rs);
+			closeStatement(statement);
 		}
-		return server_id;
+		return header_id;
 	}
 
 	public Connection getConnection() {
 		return dbConn;
 	}
 
-	public void dispose() throws SQLException {
-		if (dbConn != null) {
-			dbConn.close();
+	public void dispose(){
+		closeConnection(dbConn);
+	}
+
+	private AuroraIDocException createAuroraIDocException(String sql, SQLException e) {
+		if (sql != null)
+			return new AuroraIDocException("execute sql:" + sql + " failed.", e);
+		return new AuroraIDocException(e);
+	}
+
+	private AuroraIDocException createAuroraIDocException(Statement statement, SQLException e) {
+		if (statement != null)
+			return new AuroraIDocException("execute sql:" + statement.toString() + " failed.", e);
+		return new AuroraIDocException(e);
+	}
+
+	private AuroraIDocException createAuroraIDocException(Statement[] statements, SQLException e) {
+		if (statements != null) {
+			for (int i = 0; i < statements.length; i++) {
+				Statement statement = statements[i];
+				if (statement != null)
+					return new AuroraIDocException("execute sql:" + statement.toString() + " failed.", e);
+			}
+		}
+		return new AuroraIDocException(e);
+	}
+
+	public void closeConnection(Connection conn) {
+		if (conn == null)
+			return;
+		try {
+			conn.close();
+		} catch (SQLException ex) {
+			LoggerUtil.getLogger().log(Level.SEVERE, "", ex);
+		}
+	}
+
+	public void rollbackConnection() {
+		if (dbConn == null)
+			return;
+		try {
+			dbConn.rollback();
+		} catch (SQLException ex) {
+			LoggerUtil.getLogger().log(Level.SEVERE, "", ex);
+		}
+	}
+
+	public void setConnectionAutoCommit(boolean autoCommit) {
+		if (dbConn== null)
+			return;
+		try {
+			dbConn.setAutoCommit(autoCommit);
+		} catch (SQLException ex) {
+			LoggerUtil.getLogger().log(Level.SEVERE, "", ex);
+		}
+	}
+
+	public void closeResultSet(ResultSet rs) {
+		if (rs == null)
+			return;
+		try {
+			rs.close();
+		} catch (SQLException ex) {
+			LoggerUtil.getLogger().log(Level.SEVERE, "", ex);
+		}
+	}
+
+	public void closeStatement(Statement stmt) {
+		if (stmt == null)
+			return;
+		try {
+			stmt.close();
+		} catch (SQLException ex) {
+			LoggerUtil.getLogger().log(Level.SEVERE, "", ex);
 		}
 	}
 }

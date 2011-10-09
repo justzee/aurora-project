@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import uncertain.core.IGlobalInstance;
 import uncertain.logging.ILogger;
 import uncertain.logging.LoggingContext;
@@ -12,35 +14,27 @@ import uncertain.ocm.IObjectRegistry;
 
 public class IDocServerInstance implements IGlobalInstance {
 	public static final String PLUGIN = "aurora.plugin.sap.sync.idoc";
-	public String SERVER_NAME_LIST;
-	public String IDOC_DIR;
-	private IObjectRegistry registry;
-	public ILogger logger;
 	public static final String SEPARATOR = ",";
 	public String DeleteImmediately = "Y";
-	private String version = "1.2";
+	public String SERVER_NAME_LIST;
+	public String IDOC_DIR;
 	private List serverList;
+	private IObjectRegistry registry;
+	private String version = "1.3";
 	public IDocServerInstance(IObjectRegistry registry) {
 		this.registry = registry;
-	}
-	public ILogger getLogger() {
-		return logger;
-	}
-	public IObjectRegistry getRegistry() {
-		return registry;
-	}
-
-	public void log(String message) {
-		if (logger != null) {
-			logger.info(message);
-		} else {
-			System.out.println(message);
-		}
+		serverList = new LinkedList();
 	}
 	// Framework function
 	public void onInitialize() throws Exception {
-		logger = LoggingContext.getLogger(PLUGIN, registry);
+		initLoggerUtil();
 		run();
+	}
+	private void initLoggerUtil(){
+		ILogger logger = LoggingContext.getLogger(PLUGIN, registry);
+		if(logger == null)
+			throw new RuntimeException("Can not get logger from registry!");
+		LoggerUtil.setLogger(logger);
 	}
 	public void onShutdown() throws Exception {
 		if(serverList != null&&!serverList.isEmpty()){
@@ -49,15 +43,9 @@ public class IDocServerInstance implements IGlobalInstance {
 			}
 		}
 	}
-	public String getIdocDir() {
-		return IDOC_DIR;
-	}
-	public String getServerNameList() {
-		return SERVER_NAME_LIST;
-	}
-	public void run() {
-		log("idoc version: "+version);
-		log("IDOC_DIR:" + IDOC_DIR);
+	public void run() throws AuroraIDocException {
+		LoggerUtil.getLogger().info("Aurora IDoc Plugin version: "+version);
+		LoggerUtil.getLogger().info("IDoc Dir:" + IDOC_DIR);
 		if (IDOC_DIR == null || "".equals(IDOC_DIR)) {
 			throw new IllegalArgumentException("IDOC_DIR can not be null !");
 		} else {
@@ -66,28 +54,23 @@ public class IDocServerInstance implements IGlobalInstance {
 				throw new IllegalArgumentException("IDOC_DIR:" + IDOC_DIR + " is not exists!");
 			}
 		}
-		serverList = new LinkedList();
-		log("SERVER_NAME_LIST:" + SERVER_NAME_LIST);
+		LoggerUtil.getLogger().info("Server name list:" + SERVER_NAME_LIST);
 		if (SERVER_NAME_LIST == null || SERVER_NAME_LIST.equals("")) {
 			throw new IllegalArgumentException("SERVER_NAME_LIST can not be null !");
 		}
 		String[] servers = SERVER_NAME_LIST.split(SEPARATOR);
-		String serverName = null;
-		IDocServer server = null;
+		
+		DataSource ds = (DataSource) registry.getInstanceOfType(DataSource.class);
+		if (ds == null)
+			throw new AuroraIDocException("Can not get DataSource from registry " + registry);
 		for (int i = 0; i < servers.length; i++) {
-			serverName = servers[i];
-			server = new IDocServer(this, serverName);
+			String serverName = servers[i];
+			IDocServer server = new IDocServer(IDOC_DIR,ds,serverName,isDeleteFileImmediately());
 			server.start();
 			serverList.add(server);
 		}
 	}
-	public void setLogger(ILogger logger) {
-		this.logger = logger;
-	}
-	public void setRegistry(IObjectRegistry registry) {
-		this.registry = registry;
-	}
-	public boolean isDeleteImmediately() {
+	public boolean isDeleteFileImmediately() {
 		return "Y".equals(DeleteImmediately);
 	}
 }
