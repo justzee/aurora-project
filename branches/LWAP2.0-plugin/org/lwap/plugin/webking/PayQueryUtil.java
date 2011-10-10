@@ -39,11 +39,10 @@ public class PayQueryUtil {
 			CompositeMap record = new CompositeMap("record");
 			record.put("BATCHSEQID", batchSeqID);
 			record.put("DETAILSEQID", paydetail[i].getDetailSeqID());
-			record.put("BIZNO", paydetail[i].getDetailBizNo().toString());
-			record.put("PAYEEACCNO", paydetail[i].getPayeeAccNo().toString());
-			record.put("PAYEEACCNAME", paydetail[i].getPayeeAccName()
-					.toString());
-			record.put("PAYEETYPE", paydetail[i].getPayeeType().toString());
+			record.put("BIZNO", paydetail[i].getDetailBizNo());
+			record.put("PAYEEACCNO", paydetail[i].getPayeeAccNo());
+			record.put("PAYEEACCNAME", paydetail[i].getPayeeAccName());
+			record.put("PAYEETYPE", paydetail[i].getPayeeType());
 			record.put("EBSTATUSMSG", paydetail[i].getBankStatusMsg());
 
 			String bankstatus = paydetail[i].getBankStatus();
@@ -56,26 +55,26 @@ public class PayQueryUtil {
 			}
 			
 			record.put("EBSTATUS", bankstatus);
-			record.put("BANKNAME", paydetail[i].getPayeeBankName().toString());
+			record.put("BANKNAME", paydetail[i].getPayeeBankName());
 			record.put("MSTATUS", paydetail[i].getEbStatus());
 			record.put("MSTATUSMSG", paydetail[i].getBankStatusMsg());
-			record.put("ADDR", paydetail[i].getPayeeBankAddr().toString());
+			record.put("ADDR", paydetail[i].getPayeeBankAddr());
 			String country = paydetail[i].getPayeeCountry() == null ? ""
-					: paydetail[i].getPayeeCountry().toString();
+					: paydetail[i].getPayeeCountry();
 			record.put("COUNTRY", country);
 			String province = paydetail[i].getPayeeProvince() == null ? ""
-					: paydetail[i].getPayeeProvince().toString();
+					: paydetail[i].getPayeeProvince();
 			record.put("PROVINCE", province);
 			String city = paydetail[i].getPayeeCity() == null ? ""
-					: paydetail[i].getPayeeCity().toString();
+					: paydetail[i].getPayeeCity();
 			record.put("CITY", city);
 			String areacode = paydetail[i].getPayeeAreaCode() == null ? ""
-					: paydetail[i].getPayeeAreaCode().toString();
+					: paydetail[i].getPayeeAreaCode();
 			record.put("AREACODE", areacode);
 			String cnpscode = paydetail[i].getPayeeCnapsCode() == null ? ""
-					: paydetail[i].getPayeeCnapsCode().toString();
+					: paydetail[i].getPayeeCnapsCode();
 			record.put("CNPSCODE", cnpscode);
-			record.put("AMOUNT", paydetail[i].getAmount().toString());
+			record.put("AMOUNT", paydetail[i].getAmount());
 			cmlist.addChild(record);
 		}
 	}
