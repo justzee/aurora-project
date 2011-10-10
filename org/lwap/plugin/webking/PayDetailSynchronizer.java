@@ -53,9 +53,13 @@ public class PayDetailSynchronizer implements Job {
 
 			while (it.hasNext()) {
 				CompositeMap record = (CompositeMap) it.next();
-				PayQueryUtil.payQuery(record.getString("BATCH_ID"), record
-						.getString("ACCNO"), record.getString("IP"), record
-						.getInt("PORT"), resultlist);
+				try{
+					PayQueryUtil.payQuery(record.getString("BATCH_ID"), record
+							.getString("ACCNO"), record.getString("IP"), record
+							.getInt("PORT"), resultlist);
+				}catch(Exception e){
+					logger.info(e.getMessage());
+				}
 			}
 			/*
 			 * synresult.xml 查询结果用这个package处理
