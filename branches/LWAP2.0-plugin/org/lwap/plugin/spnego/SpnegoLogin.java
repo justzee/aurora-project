@@ -41,7 +41,7 @@ public class SpnegoLogin extends AbstractServiceHandle {
 			service.databaseAccess(config.getChecksql(), parameter, model);			
 			mLogger.info("context:"+context.toXML());
 			
-			if ("0".equalsIgnoreCase(TextParser.parse(config.getIs_login_required(), context))){
+			if ("0".equalsIgnoreCase(TextParser.parse(config.getChecksql_result(), context))){
 				mLogger.info(serviceName+" is not login required");
 				return EventModel.HANDLE_STOP;
 			}
@@ -88,6 +88,6 @@ public class SpnegoLogin extends AbstractServiceHandle {
 		CompositeMap model=service.getModel();		
 		parameter.put("encrypted_session_id", service.getServiceContext().getObject("/cookie/@JSID/@value"));		
 		service.databaseAccess(config.getChecksession(), parameter, model);	
-		return ((CompositeMap)model.getObject(config.getIs_login())).getChilds()==null?false:true;
+		return ((CompositeMap)model.getObject(config.getChecksession_result())).getChilds()==null?false:true;
 	}	
 }
