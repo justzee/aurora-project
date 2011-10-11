@@ -2,7 +2,7 @@ package aurora.ide.search.reference;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.search.ui.ISearchQuery;
 
 import uncertain.composite.CompositeMap;
@@ -30,10 +30,12 @@ public class ReferenceSearchService extends AbstractSearchService implements
 		if (source instanceof IFile) {
 			String fileExtension = ((IFile) source).getFileExtension();
 			if ("bm".equalsIgnoreCase(fileExtension)) {
-				return new ReferenceTypeFinder(bmReference);
+				return new MultiReferenceTypeFinder(bmReference)
+						.addReferenceType(urlReference);
 			}
 			if ("screen".equalsIgnoreCase(fileExtension)) {
-				return new ReferenceTypeFinder(screenReference);
+				return new MultiReferenceTypeFinder(screenReference)
+						.addReferenceType(urlReference);
 			}
 		}
 		return null;
@@ -42,12 +44,12 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	public boolean found(CompositeMap map, Attribute attrib) {
 		IType attributeType = attrib.getAttributeType();
 		if (attributeType instanceof SimpleType) {
-			QualifiedName referenceTypeQName = ((SimpleType) attributeType)
-					.getReferenceTypeQName();
-			if (bmReference.equals(referenceTypeQName)) {
+			String fileExtension = ((IFile) this.getSource())
+					.getFileExtension();
+			if ("bm".equalsIgnoreCase(fileExtension)) {
 				return bmRefMatch(map, attrib);
 			}
-			if (screenReference.equals(referenceTypeQName)) {
+			if ("screen".equalsIgnoreCase(fileExtension)) {
 				return screenRefMatch(map, attrib);
 			}
 		}
@@ -65,6 +67,17 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	protected boolean bmRefMatch(CompositeMap map, Attribute attrib) {
 		Object pattern = getSearchPattern(this.getRoots(), this.getSource());
 		Object data = map.get(attrib.getName());
+		if (data instanceof String) {
+			Path path = new Path((String) data);
+			String[] segments = path.segments();
+			for (String s : segments) {
+				String[] split = s.split("\\?");
+				s = split[0];
+				if (s.equals(pattern)) {
+					return true;
+				}
+			}
+		}
 		return pattern == null ? false : pattern.equals(data);
 	}
 
@@ -83,7 +96,6 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			if ("screen".equalsIgnoreCase(fileExtension)) {
 				return getScreenPKG(scope, file);
 			}
-
 		}
 		return null;
 	}
