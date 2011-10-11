@@ -138,7 +138,7 @@ to initialize.  Subsequent startups will be much faster.
 Once the HQ server reports that it has successfully started, you can log in
 to your HQ server at: 
 
-  http://192.168.10.209:7080/
+  http://localhost:7080/
   username: hqadmin
   password: hqadmin
 
@@ -176,7 +176,7 @@ mail.smtp.socketFactory.port=25
 mail.smtp.starttls.enable=false
  }}}
     具体参考[http://support.hyperic.com/display/EVO/Configuring+Hyperic+Server+for+SMTP+Server Hyperic mail config]
-   # 在[http://192.168.10.209:7080/]中配置alert警告条件，并在通知人中，添加需要通知的邮件列表。
+   # 在[http://localhost:7080/]中配置alert警告条件，并在通知人中，添加需要通知的邮件列表。
  * Aurora工程监控
   # 打开tomcat安装目录的bin/catalina.bat，找到
   {{{
@@ -191,12 +191,12 @@ set JAVA_OPTS=%JAVA_OPTS%
 -Dcom.sun.management.jmxremote.ssl=false
   }}}
    6969就是jmx的端口号
-  # 在[http://192.168.10.209:7080/]中添加此tomcat对应的jvm安装路径，即手工添加一项service，类型选择 Sun JVM 1.5。
+  # 在[http://localhost:7080/]中添加此tomcat对应的jvm安装路径，即手工添加一项service，类型选择 Sun JVM 1.5。
   # 把uncertain-plugin.xml(从[http://code.google.com/p/aurora-project/downloads/detail?name=hyperic-uncertain.zip&can=2&q= 附件下载]从获取)放入server的server-4.5.1\hq-engine\hq-server\webapps\ROOT\WEB-INF\hq-plugins目录和agent的\agent-4.5.1\bundles\agent-4.5.1\pdk\plugins目录 
   # 把c3p0-jmx.jar放入server的server-4.5.1\hq-engine\hq-server\webapps\ROOT\WEB-INF\lib目录和agent的agent-4.5.1\bundles\agent-4.5.1\pdk\lib中
  * 自定义查看Aurora jmx的各项属性值
    # 通过jconsole查看并获得需要查看的ObjectName以及其属性，并修改uncertain-plugin.xml
-   # 在[http://192.168.10.209:7080/]中找到此属性值，并为其添加监控间隔时间值。
+   # 在[http://localhost:7080/]中找到此属性值，并为其添加监控间隔时间值。
    # 重启server和agent
    
    
