@@ -21,6 +21,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.Match;
@@ -37,6 +38,7 @@ import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.refactoring.ui.AuroraRefactoringWizard;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
@@ -54,6 +56,8 @@ abstract public class AbstractSearchService implements ISearchService {
 			"http://www.aurora-framework.org/schema/bm", "foreignField");
 	public final static QualifiedName datasetReference = new QualifiedName(
 			"http://www.aurora-framework.org/application", "dataset");
+	public final static QualifiedName urlReference = new QualifiedName(
+			"http://www.aurora-framework.org/application", "screenBm");
 
 	private Map compositeMap = new HashMap();
 	private Map exceptionMap = new HashMap();
@@ -180,12 +184,13 @@ abstract public class AbstractSearchService implements ISearchService {
 		IDocument document = (IDocument) getDocument(file);
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 				(IDocument) getDocument(file));
-		int startOffset = l.getOffset();
+		
 		List matches = new ArrayList();
 		List attributes = r.getAttributes();
 
 		for (int i = 0; i < attributes.size(); i++) {
 			try {
+				int startOffset = l.getOffset();
 				Attribute att = (Attribute) attributes.get(i);
 				String name = att.getName();
 				IRegion nameRegion = getAttributeRegion(startOffset,
@@ -257,24 +262,27 @@ abstract public class AbstractSearchService implements ISearchService {
 	public List service(final IProgressMonitor monitor) {
 		List files = findFilesInScopes(roots);
 		fNumberOfFilesToScan = files.size();
-		Job monitorUpdateJob = new UIJob("Aurora Search progress") {
+		Job monitorUpdateJob = new Job("Aurora Search progress") {
 			private int fLastNumberOfScannedFiles = 0;
 
-			public IStatus run2(IProgressMonitor inner) {
+			public IStatus run(IProgressMonitor inner) {
 				while (!inner.isCanceled()) {
-					IFile file = fCurrentFile;
+					final IFile file = fCurrentFile;
 					if (file != null) {
-						String fileName = file.getName();
-						Object[] args = { fileName,
-								new Integer(fNumberOfScannedFiles),
-								new Integer(fNumberOfFilesToScan) };
-//						Display.getDefault().asyncExec(runnable)
-						monitor.subTask(MessageFormater.format(
-								Message._scanning, args));
-						int steps = fNumberOfScannedFiles
-								- fLastNumberOfScannedFiles;
-						monitor.worked(steps);
-						fLastNumberOfScannedFiles += steps;
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								String fileName = file.getName();
+								final Object[] args = { fileName,
+										new Integer(fNumberOfScannedFiles),
+										new Integer(fNumberOfFilesToScan) };
+								monitor.subTask(MessageFormater.format(
+										Message._scanning, args));	
+								int steps = fNumberOfScannedFiles
+										- fLastNumberOfScannedFiles;
+								monitor.worked(steps);
+								fLastNumberOfScannedFiles += steps;
+							}
+						});
 					}
 					try {
 						Thread.sleep(100);
@@ -284,12 +292,6 @@ abstract public class AbstractSearchService implements ISearchService {
 				}
 				return Status.OK_STATUS;
 			}
-			//
-			//
-			 public IStatus runInUIThread(IProgressMonitor inner) {
-			
-			 return run2(inner);
-			 }
 		};
 
 		// searchPattern
@@ -310,7 +312,7 @@ abstract public class AbstractSearchService implements ISearchService {
 					} catch (CoreException e) {
 					} catch (ApplicationException e) {
 					} catch (Exception e) {
-						e.printStackTrace();
+//						e.printStackTrace();
 						handleException(fCurrentFile, e);
 					}
 				}

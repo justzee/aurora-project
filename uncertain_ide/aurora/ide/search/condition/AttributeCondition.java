@@ -2,6 +2,7 @@ package aurora.ide.search.condition;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.text.BadLocationException;
@@ -103,9 +104,19 @@ public class AttributeCondition extends SearchCondition {
 						if (documentRegion == null) {
 							continue;
 						}
-						IRegion valueRegion = dd.find(
-								documentRegion.getOffset(), _value, true, true,
-								true, false);
+						IRegion valueRegion = Util.getValueRegion(
+								documentRegion.getOffset(),
+								l.getLength() - documentRegion.getOffset()
+										+ l.getOffset(), _value, document,
+								IColorConstants.STRING);
+						// if (_value.contains("$")) {
+						// valueRegion = dd.find(
+						// documentRegion.getOffset(), _value, true,
+						// true, true, false);
+						// }
+						// IRegion valueRegion = dd.find(
+						// documentRegion.getOffset(), _value, true, true,
+						// true, false);
 
 						if (valueRegion != null) {
 							info.addRegion(valueRegion);
@@ -182,9 +193,14 @@ public class AttributeCondition extends SearchCondition {
 						if (documentRegion == null) {
 							continue;
 						}
-						IRegion valueRegion = dd.find(
-								documentRegion.getOffset(), _value, true, true,
-								true, false);
+						IRegion valueRegion = Util.getValueRegion(
+								documentRegion.getOffset(),
+								l.getLength() - documentRegion.getOffset()
+										+ l.getOffset(), _value, document,
+								IColorConstants.STRING);
+						// IRegion valueRegion = dd.find(
+						// documentRegion.getOffset(), _value, true, true,
+						// true, false);
 						if (valueRegion != null) {
 							info.addRegion(valueRegion);
 						}
