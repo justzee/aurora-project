@@ -1,4 +1,5 @@
 #summary 使用Hyperic HQ 说明
+#labels Hyperic,aurora,plugin
 
 == 简介 ==
 [http://www.hyperic.com/ Hyperic HQ]是一个开源(GPL授权)IT资源管理平台。它提供了友好的图形化界面，显示各种资源的配置和运行时参数，并可以存储数据到数据库中。还可以设置警告条件，并在条件满足时发送邮件通知管理员。
