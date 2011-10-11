@@ -46,7 +46,7 @@ public class PayDetailSynchronizer implements Job {
 			CompositeMap resultmap = new CompositeMap("resultmap");
 			resultmap = t_fact.query("synlist.xml", new CompositeMap(
 					"parameter"));
-
+			logger.info("resultmap:"+resultmap.toXML());
 			Iterator it = ((CompositeMap) resultmap.getObject("/model/synlist"))
 					.getChildIterator();
 			CompositeMap resultlist = new CompositeMap("resultlist");
@@ -64,7 +64,9 @@ public class PayDetailSynchronizer implements Job {
 			/*
 			 * synresult.xml 查询结果用这个package处理
 			 * */
-			t_fact.execute("synresult.xml", resultlist);
+			logger.info("resultlist:"+resultlist.toXML());
+			t_fact.execute("synresult.xml", resultlist);	
+			logger.info("success");
 		} catch (Exception ex) {
 			logger.info(ex.getMessage());
 		} finally {
