@@ -311,4 +311,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 
 	public void startEntity(String arg0) throws SAXException {
 	}
+
+	public void setUri_mapping(Map uri_mapping) {
+		this.uri_mapping = uri_mapping;
+	}
 }

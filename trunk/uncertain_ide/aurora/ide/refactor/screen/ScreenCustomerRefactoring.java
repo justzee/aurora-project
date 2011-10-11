@@ -34,7 +34,7 @@ public class ScreenCustomerRefactoring extends Refactoring {
 
 	private List<IResource> scopes = new ArrayList<IResource>();
 
-	private Map<TextFileChange, MultiTextEdit> editMap = new HashMap<TextFileChange, MultiTextEdit>();
+	
 	private Map<IFile, TextFileChange> changeMap = new HashMap<IFile, TextFileChange>();
 
 	public ScreenCustomerRefactoring(IStructuredSelection selection) {

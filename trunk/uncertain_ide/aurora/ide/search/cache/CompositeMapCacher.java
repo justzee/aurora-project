@@ -70,7 +70,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 	public CompositeMap getCompositeMap(IFile file) throws CoreException,
 			ApplicationException {
 		ProjectCatcher projectCatcher = getProjectCatcher(file);
-		return projectCatcher.getCompositeMap(file);
+		return (CompositeMap) projectCatcher.getCompositeMap(file).clone();
 	}
 
 	private CompositeMap remove(IFile file) {
@@ -79,7 +79,6 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 	private synchronized ProjectCatcher getProjectCatcher(IFile file) {
 		IProject project = file.getProject();
-	
 		ProjectCatcher projectCatcher = catcher.get(project);
 		if (projectCatcher == null) {
 			projectCatcher = new ProjectCatcher(project);

@@ -6,12 +6,12 @@ import org.eclipse.core.resources.IResource;
 import aurora.ide.search.core.AbstractSearchQuery;
 import aurora.ide.search.core.AbstractSearchResult;
 import aurora.ide.search.core.AbstractSearchService;
-import aurora.ide.search.core.AuroraSearchResult;
+import aurora.ide.search.core.AuroraSearchReferenceResult;
 import aurora.ide.search.core.ISearchService;
 
 public class ScreenDSReferenceQuery extends AbstractSearchQuery {
 
-	private AuroraSearchResult fResult;
+	private AuroraSearchReferenceResult fResult;
 	private IResource scope;
 	private IFile sourceFile;
 	private String datasetName;
@@ -39,7 +39,7 @@ public class ScreenDSReferenceQuery extends AbstractSearchQuery {
 
 	protected AbstractSearchResult getAruroraSearchResult() {
 		if (fResult == null) {
-			AuroraSearchResult result = new AuroraSearchResult(this);
+			AuroraSearchReferenceResult result = new AuroraSearchReferenceResult(this);
 			fResult = result;
 		}
 		return fResult;

@@ -1,9 +1,17 @@
 package aurora.ide.search.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -22,6 +30,8 @@ import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.graphics.RGB;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
@@ -77,6 +87,42 @@ public class Util {
 				IColorConstants.ATTRIBUTE);
 	}
 
+	/**
+	 * String s = "<a replace />"; s =
+	 * s.replace("replace",this.getReplaceWith()); Util.checkXMLForm(s);
+	 * 
+	 * 用来检查xml是否是格式良好的。
+	 * */
+	public static boolean checkXMLForm(String s) {
+		SAXParserFactory parser_factory = SAXParserFactory.newInstance();
+		parser_factory.setNamespaceAware(false);
+		parser_factory.setValidating(false);
+
+		// using SAX parser shipped with JDK
+		SAXParser parser = null;
+
+		InputStream is = null;
+		try {
+			parser = parser_factory.newSAXParser();
+			is = new ByteArrayInputStream(s.getBytes("UTF-8"));
+			parser.parse(is, new DefaultHandler());
+			return true;
+		} catch (UnsupportedEncodingException e) {
+		} catch (SAXException e) {
+		} catch (IOException e) {
+		} catch (ParserConfigurationException e) {
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return false;
+	}
+
 	static public IRegion getDocumentRegion(int offset, int length,
 			String name, IDocument document, RGB reginRGB)
 			throws BadLocationException {
@@ -90,6 +136,26 @@ public class Util {
 				int tokenLength = scanner.getTokenLength();
 				if (text.getForeground().getRGB().equals(reginRGB)
 						&& name.equals(document.get(tokenOffset, tokenLength))) {
+					return new Region(tokenOffset, tokenLength);
+				}
+			}
+		}
+		return null;
+	}
+
+	static public IRegion getValueRegion(int offset, int length, String name,
+			IDocument document, RGB reginRGB) throws BadLocationException {
+		XMLTagScanner scanner = getXMLTagScanner();
+		IToken token = null;
+		scanner.setRange(document, offset, length);
+		while ((token = scanner.nextToken()) != Token.EOF) {
+			if (token.getData() instanceof TextAttribute) {
+				TextAttribute text = (TextAttribute) token.getData();
+				int tokenOffset = scanner.getTokenOffset();
+				int tokenLength = scanner.getTokenLength();
+				if (text.getForeground().getRGB().equals(reginRGB)
+						&& name.equals(document.get(tokenOffset + 1,
+								tokenLength - 2))) {
 					return new Region(tokenOffset, tokenLength);
 				}
 			}
@@ -190,7 +256,7 @@ public class Util {
 		return null;
 	}
 
-	public static IResource getScope(IFile sourceFile) {
+	public static IResource getScope(IResource sourceFile) {
 		if (sourceFile == null)
 			return null;
 		IProject project = sourceFile.getProject();
@@ -260,6 +326,9 @@ public class Util {
 
 	public static boolean stringMatch(String pattern, String text,
 			boolean isCaseSensitive, boolean isRegularExpression) {
+		if (text == null) {
+			return false;
+		}
 		Pattern jdkPattern = PatternConstructor.createPattern(pattern,
 				isCaseSensitive, isRegularExpression);
 		Matcher matcher = jdkPattern.matcher(text);
@@ -279,5 +348,52 @@ public class Util {
 		// SearchPattern searchPattern = new SearchPattern(rules);
 		// searchPattern.setPattern(pattern);
 		// return searchPattern.matches(text);
+	}
+
+	public static String toBMPKG(IFile file) {
+		IPath path = file.getProjectRelativePath().removeFileExtension();
+		return toPKG(path);
+	}
+
+	// web.WEB-INF.a
+	public static String toPKG(IPath path) {
+		String[] segments = path.segments();
+		StringBuilder result = new StringBuilder();
+		StringBuilder _result = new StringBuilder();
+		int classes_idx = -1;
+		for (int i = 0; i < segments.length; i++) {
+			_result.append(segments[i]);
+			if (i != segments.length - 1)
+				_result.append(".");
+			if (classes_idx != -1) {
+				result.append(segments[i]);
+				if (i != segments.length - 1)
+					result.append(".");
+			}
+			if ("classes".equals(segments[i])) {
+				classes_idx = i;
+			}
+		}
+		if (result.length() == 0) {
+			result = _result;
+		}
+		return result.toString();
+	}
+
+	public static String toRelativeClassesPKG(IPath path) {
+		String[] segments = path.segments();
+		StringBuilder result = new StringBuilder();
+		int classes_idx = -1;
+		for (int i = 0; i < segments.length; i++) {
+			if (classes_idx != -1) {
+				result.append(segments[i]);
+				if (i != segments.length - 1)
+					result.append(".");
+			}
+			if ("classes".equals(segments[i])) {
+				classes_idx = i;
+			}
+		}
+		return result.toString();
 	}
 }

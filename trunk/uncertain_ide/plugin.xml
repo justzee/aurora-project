@@ -586,23 +586,75 @@
       </key>
    </extension>
  <extension 
+    id="aurora.ide.search.ui.SearchReferenceResultPage"
+    point="org.eclipse.search.searchResultViewPages"> 
+    <viewPage 
+    id="aurora.ide.search.core.AuroraSearchReferenceResult"
+	 searchResultClass="aurora.ide.search.core.AuroraSearchReferenceResult"
+    class="aurora.ide.search.ui.SearchReferenceResultPage"> 
+ 	</viewPage> 
+ </extension>
+
+  <extension 
     id="aurora.ide.search.SearchResultPage"
     point="org.eclipse.search.searchResultViewPages"> 
     <viewPage 
-    id="aurora.search.AuroraSearchResult"
+    id="aurora.ide.search.core.AuroraSearchResult"
 	 searchResultClass="aurora.ide.search.core.AuroraSearchResult"
     class="aurora.ide.search.ui.SearchResultPage"> 
  	</viewPage> 
  </extension>
+ 
 
   <extension point="org.eclipse.ltk.core.refactoring.renameParticipants">
 	<renameParticipant
-   	 	id="aurora.ide.refactoring.TypeRenameParticipant"
-    	name="Aurora Rename Participant" 
-    	class="aurora.ide.refactoring.TypeRenameParticipant"> 
+   	 	id="aurora.ide.refactoring.BmRenameParticipant"
+    	name="Aurora BM Rename Participant" 
+    	class="aurora.ide.refactoring.BmRenameParticipant"> 
     <enablement>
     </enablement>    
 	</renameParticipant>
+    <renameParticipant
+   	 	id="aurora.ide.refactoring.FolderRenameParticipant"
+    	name="Aurora Folder Participant" 
+    	class="aurora.ide.refactoring.FolderRenameParticipant"> 
+    <enablement>
+    </enablement>    
+	</renameParticipant>
+ </extension>
+ 
+  <extension point="org.eclipse.ltk.core.refactoring.moveParticipants">
+	<moveParticipant
+   	 	id="aurora.ide.refactoring.BMMoveParticipant"
+    	name="Aurora Move Participant" 
+    	class="aurora.ide.refactoring.BMMoveParticipant"> 
+    <enablement>
+    </enablement>    
+	</moveParticipant>
+	<moveParticipant
+   	 	id="aurora.ide.refactoring.FolderMoveParticipant"
+    	name="Aurora Folder Move Participant" 
+    	class="aurora.ide.refactoring.FolderMoveParticipant"> 
+    <enablement>
+    </enablement>    
+	</moveParticipant>
+ </extension>
+ 
+ <extension point="org.eclipse.ltk.core.refactoring.deleteParticipants">
+	<deleteParticipant
+   	 	id="aurora.ide.refactoring.BMDeleteParticipant"
+    	name="Aurora Delete Participant" 
+    	class="aurora.ide.refactoring.BMDeleteParticipant"> 
+    <enablement>
+    </enablement>    
+	</deleteParticipant>
+	<deleteParticipant
+   	 	id="aurora.ide.refactoring.FolderDeleteParticipant"
+    	name="Aurora Folder Delete Participant"
+    	class="aurora.ide.refactoring.FolderDeleteParticipant"> 
+    <enablement>
+    </enablement>    
+	</deleteParticipant>
  </extension>
  
  <extension point="org.eclipse.search.searchPages"> 

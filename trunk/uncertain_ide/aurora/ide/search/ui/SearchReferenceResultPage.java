@@ -4,8 +4,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -16,20 +14,15 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.search.ui.ISearchResultListener;
-import org.eclipse.search.ui.SearchResultEvent;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.search.ui.text.Match;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 
 import aurora.ide.search.core.AbstractMatch;
 
-public class SearchResultPage extends AbstractTextSearchViewPage {
+public class SearchReferenceResultPage extends AbstractTextSearchViewPage {
 
 	private static final int DEFAULT_ELEMENT_LIMIT = 1000;
 	private static final String limited_format_matches = "{0} (showing {1} of {2} matches)";
@@ -100,13 +93,12 @@ public class SearchResultPage extends AbstractTextSearchViewPage {
 
 	}
 
-	public SearchResultPage() {
+	public SearchReferenceResultPage() {
 		setElementLimit(new Integer(DEFAULT_ELEMENT_LIMIT));
+
 	}
 
 	private ISearchContentProvider provider;
-	private SashForm sashForm;
-	private TreeViewer treeViewer;
 
 	protected void configureTreeViewer(TreeViewer viewer) {
 		TreeContentProvider provider = new TreeContentProvider(this, viewer);
@@ -150,10 +142,8 @@ public class SearchResultPage extends AbstractTextSearchViewPage {
 			if (firstElement instanceof IFile) {
 				if (getDisplayedMatchCount(firstElement) == 0) {
 					try {
-						// open(getSite().getPage(), (IFile) firstElement,
-						// false);
-						opener.open(getSite().getPage(), (IFile) firstElement,
-								false);
+//						open(getSite().getPage(), (IFile) firstElement, false);
+						opener.open(getSite().getPage(), (IFile) firstElement, false);
 					} catch (PartInitException e) {
 						ErrorDialog.openError(getSite().getShell(),
 								"Open File", "Opening the file failed.",
@@ -220,56 +210,6 @@ public class SearchResultPage extends AbstractTextSearchViewPage {
 
 	private boolean showLineMatches() {
 		return getLayout() == FLAG_LAYOUT_TREE && getInput() != null;
-	}
-
-	@Override
-	protected TreeViewer createTreeViewer(Composite parent) {
-		sashForm = new SashForm(parent, SWT.HORIZONTAL);
-		// Change the width of the sashes
-		sashForm.SASH_WIDTH = 3;
-	
-		treeViewer = super.createTreeViewer(sashForm);
-		RefactorActionComposite actions = new RefactorActionComposite(sashForm,
-				SWT.BORDER);
-		treeViewer.addSelectionChangedListener(actions);
-		sashForm.setWeights(new int[] { 1, 1 });
-		maxSashForm();
-		return treeViewer;
-	}
-
-	@Override
-	protected TableViewer createTableViewer(Composite parent) {
-		if (sashForm != null) {
-			sashForm.dispose();
-		}
-		return super.createTableViewer(parent);
-	}
-
-	private void maxSashForm() {
-		if (sashForm.getMaximizedControl() == null) {
-			sashForm.setMaximizedControl(treeViewer.getControl());
-		} else {
-			sashForm.setMaximizedControl(null);
-		}
-	}
-
-	protected void fillToolbar(IToolBarManager tbm) {
-		super.fillToolbar(tbm);
-		if (getLayout() == FLAG_LAYOUT_TREE) {
-			Action action = new Action() {
-
-				@Override
-				public void run() {
-
-					maxSashForm();
-				}
-
-			};
-			action.setImageDescriptor(SearchImages
-					.getImageDescriptor("search_action.gif"));
-			action.setToolTipText("Refactor Action");
-			tbm.add(action);
-		}
 	}
 
 }

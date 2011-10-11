@@ -11,21 +11,22 @@ import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
+import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.search.ui.text.Match;
 
 import aurora.ide.search.core.AbstractMatch;
-import aurora.ide.search.core.AuroraSearchResult;
+import aurora.ide.search.core.AbstractSearchResult;
 
 public class TreeContentProvider implements ITreeContentProvider,ISearchContentProvider {
 
 	private final Object[] EMPTY_ARR = new Object[0];
 
 	private AbstractTextSearchResult fResult;
-	private SearchResultPage fPage;
+	private AbstractTextSearchViewPage fPage;
 	private AbstractTreeViewer fTreeViewer;
 	private Map fChildrenMap;
 
-	public TreeContentProvider(SearchResultPage page, AbstractTreeViewer viewer) {
+	public TreeContentProvider(AbstractTextSearchViewPage page, AbstractTreeViewer viewer) {
 		fPage = page;
 		fTreeViewer = viewer;
 	}
@@ -51,8 +52,8 @@ public class TreeContentProvider implements ITreeContentProvider,ISearchContentP
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (newInput instanceof AuroraSearchResult) {
-			initialize((AuroraSearchResult) newInput);
+		if (newInput instanceof AbstractSearchResult) {
+			initialize((AbstractSearchResult) newInput);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package aurora.ide.search.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
@@ -51,7 +52,7 @@ public class LineElement {
 	}
 
 	public AbstractMatch[] getMatches(AbstractTextSearchResult result) {
-		ArrayList res = new ArrayList();
+		List<AbstractMatch> res = new ArrayList<AbstractMatch> ();
 		Match[] matches = result.getMatches(fParent);
 		for (int i = 0; i < matches.length; i++) {
 			AbstractMatch curr = (AbstractMatch) matches[i];
@@ -59,7 +60,7 @@ public class LineElement {
 				res.add(curr);
 			}
 		}
-		return (AbstractMatch[]) res.toArray(new AbstractMatch[res.size()]);
+		return res.toArray(new AbstractMatch[res.size()]);
 	}
 
 	public int getNumberOfMatches(AbstractTextSearchResult result) {
