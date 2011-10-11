@@ -3,11 +3,12 @@ package aurora.ide.refactoring;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -16,43 +17,44 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 import org.eclipse.text.edits.ReplaceEdit;
 
+import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.Util;
 import aurora.ide.search.reference.ReferenceSearchService;
 
-public class TypeRenameParticipant extends RenameParticipant {
+public class BmRenameParticipant extends RenameParticipant {
 
 	private IFile currentSourcefile;
 	private String fileExtension;
+	private TextFileChangeManager changeManager;
+	private boolean check;
 
-	public TypeRenameParticipant() {
+	public BmRenameParticipant() {
 	}
 
 	protected boolean initialize(Object element) {
-		
+
 		if (element instanceof IFile) {
 			this.currentSourcefile = (IFile) element;
 			fileExtension = ((IFile) element).getFileExtension();
-//			return "bm".equalsIgnoreCase(fileExtension)
-//					|| "screen".equalsIgnoreCase(fileExtension);
-			return false;
-		}
-		if (element instanceof IFolder) {
-			// is web-inf
+			changeManager = new TextFileChangeManager();
+			return "bm".equalsIgnoreCase(fileExtension);
 		}
 		return false;
 	}
 
 	public String getName() {
-		return "AuroraRenameParticipant";
+		return "BM Rename Participant";
 	}
 
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws OperationCanceledException {
+		check = true;
 		RefactoringStatus result = new RefactoringStatus();
 		String newName = this.getArguments().getNewName();
 		if (!newName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
-			result.merge(RefactoringStatus.createFatalErrorStatus("文件扩展名错误 : "
+			check = false;
+			result.merge(RefactoringStatus.createErrorStatus("文件扩展名错误 : "
 					+ newName));
 		}
 
@@ -61,22 +63,15 @@ public class TypeRenameParticipant extends RenameParticipant {
 
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		if ("bm".equalsIgnoreCase(fileExtension)) {
+		if (check) {
 			return createBMChange(pm);
 		}
-		if ("screen".equalsIgnoreCase(fileExtension)) {
-			return createScreenChange(pm);
-		}
+
 		return null;
 
 	}
 
-	private Change createScreenChange(IProgressMonitor pm) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private Change createBMChange(IProgressMonitor pm) {
+	private Change createBMChange(IProgressMonitor pm) throws CoreException {
 		IResource scope = Util.getScope(currentSourcefile);
 		ReferenceSearchService seachService = new ReferenceSearchService(scope,
 				currentSourcefile, null);
@@ -87,16 +82,32 @@ public class TypeRenameParticipant extends RenameParticipant {
 		for (int i = 0; i < relations.size(); i++) {
 			AbstractMatch object = (AbstractMatch) relations.get(i);
 			IFile file = (IFile) object.getElement();
-			TextFileChange textFileChange = new TextFileChange("File Changed ",
-					file);
-			textFileChange.setSaveMode(TextFileChange.FORCE_SAVE);
-			ReplaceEdit edit = new ReplaceEdit(object.getOriginalOffset(),
-					object.getOriginalLength(), this.getArguments()
-							.getNewName().replace(".bm", ""));
-			textFileChange.setEdit(edit);
-			changes.add(textFileChange);
+			IDocument document = getDocument(file);
+			TextFileChange textFileChange = changeManager
+					.getTextFileChange(file);
+			int offset = object.getOriginalOffset();
+			int length = object.getOriginalLength();
+			try {
+				String text = document.get(offset, length);
+				String oldName = currentSourcefile.getProjectRelativePath()
+						.removeFileExtension().lastSegment();
+				String _inputName = this.getArguments().getNewName();
+				String newName = _inputName.substring(0,
+						_inputName.length() - 3);
+				newName = text.substring(0, text.length() - oldName.length())
+						+ newName;
+				ReplaceEdit edit = new ReplaceEdit(offset, length, newName);
+				textFileChange.addEdit(edit);
+			} catch (BadLocationException e) {
+				continue;
+			}
+
 		}
+		changes.addAll(changeManager.getAllChanges());
 		return changes;
 	}
 
+	public IDocument getDocument(IFile file) throws CoreException {
+		return CacheManager.getDocumentCacher().getDocument(file);
+	}
 }

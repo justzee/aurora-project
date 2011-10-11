@@ -62,7 +62,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 		return this.getSource().equals(findScreenFile);
 	}
 
-	private boolean bmRefMatch(CompositeMap map, Attribute attrib) {
+	protected boolean bmRefMatch(CompositeMap map, Attribute attrib) {
 		Object pattern = getSearchPattern(this.getRoots(), this.getSource());
 		Object data = map.get(attrib.getName());
 		return pattern == null ? false : pattern.equals(data);
@@ -93,28 +93,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	}
 
 	private Object getBMPKG(IResource scope, IFile file) {
-		IPath path = file.getProjectRelativePath().removeFileExtension();
-		String[] segments = path.segments();
-		StringBuilder result = new StringBuilder();
-		StringBuilder _result = new StringBuilder();
-		int classes_idx = -1;
-		for (int i = 0; i < segments.length; i++) {
-			_result.append(segments[i]);
-			if (i != segments.length - 1)
-				_result.append(".");
-			if (classes_idx != -1) {
-				result.append(segments[i]);
-				if (i != segments.length - 1)
-					result.append(".");
-			}
-			if ("classes".equals(segments[i])) {
-				classes_idx = i;
-			}
-		}
-		if (result.length() == 0) {
-			result = _result;
-		}
-		return result.toString();
+		return Util.toBMPKG(file);
 	}
 
 }

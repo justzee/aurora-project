@@ -15,7 +15,7 @@ public class SearchImages {
 	private final static ImageRegistry PLUGIN_REGISTRY = AuroraPlugin
 			.getDefault().getImageRegistry();
 
-	private static final IPath ICONS_PATH = new Path("$nl$/icons/search/"); //$NON-NLS-1$
+	public static final IPath ICONS_PATH = new Path("$nl$/icons/search/"); //$NON-NLS-1$
 
 	public static final String LINE_MATCH = "line_match.gif";
 

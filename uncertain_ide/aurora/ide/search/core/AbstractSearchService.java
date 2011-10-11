@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.UIJob;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
@@ -90,8 +91,9 @@ abstract public class AbstractSearchService implements ISearchService {
 		private boolean checkExtension(IResource resource) {
 			IFile file = (IFile) resource;
 			String fileExtension = file.getFileExtension();
-			return "bm".equals(fileExtension) || "screen".equals(fileExtension)
-					|| "svc".equals(fileExtension);
+			return "bm".equalsIgnoreCase(fileExtension)
+					|| "screen".equalsIgnoreCase(fileExtension)
+					|| "svc".equalsIgnoreCase(fileExtension);
 		}
 	}
 
@@ -186,8 +188,8 @@ abstract public class AbstractSearchService implements ISearchService {
 			try {
 				Attribute att = (Attribute) attributes.get(i);
 				String name = att.getName();
-				IRegion nameRegion = getAttributeRegion(startOffset, l
-						.getLength(), name, document);
+				IRegion nameRegion = getAttributeRegion(startOffset,
+						l.getLength(), name, document);
 
 				if (nameRegion == null) {
 					continue;
@@ -199,8 +201,8 @@ abstract public class AbstractSearchService implements ISearchService {
 					continue;
 				}
 				startOffset = valueRegion.getOffset();
-				AuroraMatch match = new AuroraMatch(file, valueRegion
-						.getOffset(), valueRegion.getLength(), l);
+				AuroraMatch match = new AuroraMatch(file,
+						valueRegion.getOffset(), valueRegion.getLength(), l);
 				match.setMatchs(r);
 				matches.add(match);
 			} catch (BadLocationException e) {
@@ -219,11 +221,11 @@ abstract public class AbstractSearchService implements ISearchService {
 	// IFile file, Object pattern) throws CoreException {
 	// FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 	// (IDocument) getDocument(file));
-	//	
+	//
 	// int startOffset = l.getOffset();
 	// List matches = new ArrayList();
 	// List attributes = r.getAttributes();
-	//	
+	//
 	// for (int i = 0; i < attributes.size(); i++) {
 	// try {
 	// Attribute att = (Attribute) attributes.get(i);
@@ -255,10 +257,10 @@ abstract public class AbstractSearchService implements ISearchService {
 	public List service(final IProgressMonitor monitor) {
 		List files = findFilesInScopes(roots);
 		fNumberOfFilesToScan = files.size();
-		Job monitorUpdateJob = new Job("Aurora Search progress") {
+		Job monitorUpdateJob = new UIJob("Aurora Search progress") {
 			private int fLastNumberOfScannedFiles = 0;
 
-			public IStatus run(IProgressMonitor inner) {
+			public IStatus run2(IProgressMonitor inner) {
 				while (!inner.isCanceled()) {
 					IFile file = fCurrentFile;
 					if (file != null) {
@@ -266,6 +268,7 @@ abstract public class AbstractSearchService implements ISearchService {
 						Object[] args = { fileName,
 								new Integer(fNumberOfScannedFiles),
 								new Integer(fNumberOfFilesToScan) };
+//						Display.getDefault().asyncExec(runnable)
 						monitor.subTask(MessageFormater.format(
 								Message._scanning, args));
 						int steps = fNumberOfScannedFiles
@@ -281,6 +284,12 @@ abstract public class AbstractSearchService implements ISearchService {
 				}
 				return Status.OK_STATUS;
 			}
+			//
+			//
+			 public IStatus runInUIThread(IProgressMonitor inner) {
+			
+			 return run2(inner);
+			 }
 		};
 
 		// searchPattern
@@ -301,6 +310,7 @@ abstract public class AbstractSearchService implements ISearchService {
 					} catch (CoreException e) {
 					} catch (ApplicationException e) {
 					} catch (Exception e) {
+						e.printStackTrace();
 						handleException(fCurrentFile, e);
 					}
 				}

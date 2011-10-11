@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
+import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 
 
 public class TableContentProvider implements IStructuredContentProvider,
@@ -12,12 +13,12 @@ public class TableContentProvider implements IStructuredContentProvider,
 
 	private final Object[] EMPTY_ARR = new Object[0];
 
-	private SearchResultPage fPage;
+	private AbstractTextSearchViewPage fPage;
 	private AbstractTextSearchResult fResult;
 
 	private TableViewer viewer;
 
-	public TableContentProvider(SearchResultPage page, TableViewer viewer) {
+	public TableContentProvider(AbstractTextSearchViewPage page, TableViewer viewer) {
 		fPage = page;
 		this.viewer = viewer;
 	}
