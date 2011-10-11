@@ -92,8 +92,8 @@ public class SpnegoConfig {
 	String procedure;
 	String checksql;
 	String checksession;
-	String is_login_required;
-	String is_login;
+	String checksql_result;
+	String checksession_result;
 	boolean allowBasic = true;
 	boolean allowDelegation = false;
 	boolean allowLocalhost = false;
@@ -101,19 +101,18 @@ public class SpnegoConfig {
 	boolean promptIfNtlm = true;
 	String clientModuleName = "spnego-client";
 	String serverModuleName = "spnego-server";	
-	
-	
-	public String getIs_login_required() {
-		return is_login_required;
+		
+	public String getChecksql_result() {
+		return checksql_result;
 	}
-	public void setIs_login_required(String is_login_required) {
-		this.is_login_required = is_login_required;
+	public void setChecksql_result(String checksql_result) {
+		this.checksql_result = checksql_result;
 	}
-	public String getIs_login() {
-		return is_login;
+	public String getChecksession_result() {
+		return checksession_result;
 	}
-	public void setIs_login(String is_login) {
-		this.is_login = is_login;
+	public void setChecksession_result(String checksession_result) {
+		this.checksession_result = checksession_result;
 	}
 	public String getChecksession() {
 		return checksession;
