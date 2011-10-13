@@ -18,6 +18,8 @@ public class IDocServerInstance implements IGlobalInstance {
 	public String DeleteImmediately = "Y";
 	public String SERVER_NAME_LIST;
 	public String IDOC_DIR;
+	public String RECONNECT_TIME = "60000";//1 minute
+	public String MAX_RECONNECT_TIME = "3600000";// 1 hour
 	private List serverList;
 	private IObjectRegistry registry;
 	private String version = "1.3";
@@ -58,6 +60,8 @@ public class IDocServerInstance implements IGlobalInstance {
 		if (SERVER_NAME_LIST == null || SERVER_NAME_LIST.equals("")) {
 			throw new IllegalArgumentException("SERVER_NAME_LIST can not be null !");
 		}
+		int reconnectTime = Integer.parseInt(RECONNECT_TIME);
+		int maxReconnectTime = Integer.parseInt(MAX_RECONNECT_TIME);
 		String[] servers = SERVER_NAME_LIST.split(SEPARATOR);
 		
 		DataSource ds = (DataSource) registry.getInstanceOfType(DataSource.class);
@@ -65,7 +69,7 @@ public class IDocServerInstance implements IGlobalInstance {
 			throw new AuroraIDocException("Can not get DataSource from registry " + registry);
 		for (int i = 0; i < servers.length; i++) {
 			String serverName = servers[i];
-			IDocServer server = new IDocServer(IDOC_DIR,ds,serverName,isDeleteFileImmediately());
+			IDocServer server = new IDocServer(IDOC_DIR,ds,serverName,isDeleteFileImmediately(),reconnectTime,maxReconnectTime);
 			server.start();
 			serverList.add(server);
 		}

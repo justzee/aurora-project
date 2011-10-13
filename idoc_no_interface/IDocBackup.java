@@ -19,7 +19,7 @@ public class IDocBackup extends Thread {
 		this.iDocServer = iDocServer;
 	}
 	public void run() {
-		while (!isServerShutdown()) {
+		while (isServerRunning()) {
 			idocType = null;
 			IDocFile file = iDocServer.getBckupFile();
 			if (file == null) {
@@ -47,7 +47,7 @@ public class IDocBackup extends Thread {
 				}
 				continue;
 			}
-			LoggerUtil.getLogger().log("Idoc id:" + file.getIdocId() + " execute successful !");
+			LoggerUtil.getLogger().log("Idoc File id=" + file.getIdocId() + " execute successful !");
 		}
 	}
 
@@ -96,8 +96,8 @@ public class IDocBackup extends Thread {
 		return header_id;
 	}
 
-	public boolean isServerShutdown() {
-		return iDocServer.isShutDown();
+	public boolean isServerRunning() {
+		return iDocServer.isRunning();
 	}
 
 	private boolean isIdocTypeStop() throws SQLException, AuroraIDocException {

@@ -14,8 +14,6 @@ import java.util.logging.Level;
 
 import javax.sql.DataSource;
 
-import uncertain.logging.ILogger;
-
 import com.sap.conn.idoc.IDocDocumentList;
 import com.sap.conn.idoc.IDocXMLProcessor;
 import com.sap.conn.idoc.jco.JCoIDoc;
@@ -24,6 +22,7 @@ import com.sap.conn.idoc.jco.JCoIDocHandlerFactory;
 import com.sap.conn.idoc.jco.JCoIDocServer;
 import com.sap.conn.idoc.jco.JCoIDocServerContext;
 import com.sap.conn.jco.JCoException;
+import com.sap.conn.jco.rt.StandaloneServerFactory;
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerContext;
 import com.sap.conn.jco.server.JCoServerContextInfo;
@@ -43,14 +42,21 @@ public class IDocServer {
 	private DataSource dataSource;
 	private int server_id = -1;
 	private boolean isDeleteFileImmediately;
-	public IDocServer(String idocDir, DataSource ds, String serverName, boolean isDeleteFileImmediately) {
+	private StandaloneServerFactory serverFactory;
+	private int reconnectTime;
+	private int maxReconnectTime;
+	public IDocServer(String idocDir, DataSource ds, String serverName, boolean isDeleteFileImmediately,int reconnectTime,int maxReconnectTime) {
 		this.idocDir = idocDir;
 		this.dataSource = ds;
 		this.serverName = serverName;
 		this.isDeleteFileImmediately = isDeleteFileImmediately;
+		this.reconnectTime = reconnectTime;
+		this.maxReconnectTime = maxReconnectTime;
 	}
-
 	public void start() {
+		start(false);
+	}
+	public void start(boolean isRestart) {
 		try {
 			Connection dbConn = dataSource.getConnection();
 			if (dbConn == null)
@@ -61,10 +67,10 @@ public class IDocServer {
 			return;
 		}
 		try {
-			// see provided examples of configuration files MYSERVER.jcoServer
-			// and BCE.jcoDestination
+			// see provided examples of configuration files MYSERVER.jcoServer and BCE.jcoDestination
 			LoggerUtil.getLogger().config("begin start IDocServer " + serverName + "...");
-			iDocServer = JCoIDoc.getServer(serverName);
+			if(!isRestart)
+				iDocServer = JCoIDoc.getServer(serverName);
 			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), syncFiles);
 		} catch (JCoException e) {
 			shutdown(serverName + " is not valid.", e);
@@ -102,6 +108,8 @@ public class IDocServer {
 			LoggerUtil.getLogger().config("begin handle " + serverName + " HistoryIdocs...");
 			IDocBackup backup = new IDocBackup(this);
 			backup.start();
+			ServerConnection sc = new ServerConnection(this,reconnectTime,maxReconnectTime);
+			sc.start();
 		} catch (Throwable e) {
 			shutdown("", e);
 			return;
@@ -255,11 +263,14 @@ public class IDocServer {
 		}
 	}
 
-	public boolean isShutDown() {
-		return !(JCoServerState.ALIVE.equals(iDocServer.getState()) || JCoServerState.STARTED.equals(iDocServer
-				.getState()));
+	public boolean isRunning() {
+		return JCoServerState.ALIVE.equals(iDocServer.getState()) || JCoServerState.STARTED.equals(iDocServer
+				.getState());
 	}
-
+	public boolean isShutdown() {
+		return JCoServerState.DEAD.equals(iDocServer.getState()) || JCoServerState.STOPPED.equals(iDocServer
+				.getState());
+	}
 	public boolean isFinished() {
 		return syncFiles.size() <= 0;
 	}
