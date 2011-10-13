@@ -19,7 +19,7 @@ public class IDocSync extends Thread {
 	}
 
 	public void run() {
-		while (!isServerShutdown()) {
+		while (isServerRunning()) {
 			idocType = null;
 			IDocFile file = iDocServer.getSyncFile();
 			if (file == null) {
@@ -109,8 +109,8 @@ public class IDocSync extends Thread {
 		iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), "done");
 	}
 
-	public boolean isServerShutdown() {
-		return iDocServer.isShutDown();
+	public boolean isServerRunning() {
+		return iDocServer.isRunning();
 	}
 
 	private boolean isIdocTypeStop() throws SQLException, AuroraIDocException {
