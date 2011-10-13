@@ -81,7 +81,7 @@ public class IDocServer {
 				server_id = dbUtil.registerSapServers(iDocServer);
 			}	
 			context = "Get HistoryIdocs " + iDocServer.getProgramID();
-			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), syncFiles);
+			handleHistoryFile();
 			context = "";
 			iDocServer.start();
 			if (!isRunning()) {
@@ -101,7 +101,13 @@ public class IDocServer {
 		}
 
 	}
-
+	private void handleHistoryFile(){
+		try {
+			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), syncFiles);
+		} catch (AuroraIDocException e) {
+			log(e);
+		}
+	}
 	private void addListeners(JCoIDocServer iDocServer) {
 		if (iDocServer == null)
 			return;
