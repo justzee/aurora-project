@@ -23,7 +23,7 @@ public class IDocServerInstance implements IGlobalInstance {
 	public String MAX_RECONNECT_TIME = "3600000";// 1 hour
 	private List serverList;
 	private IObjectRegistry registry;
-	private String version = "1.3";
+	private String version = "1.4";
 
 	public IDocServerInstance(IObjectRegistry registry) {
 		this.registry = registry;
@@ -81,7 +81,7 @@ public class IDocServerInstance implements IGlobalInstance {
 				server.start();
 				serverList.add(server);
 			} catch (Throwable e) {
-				LoggerUtil.getLogger().log(Level.SEVERE, "start server" + serverName + " failed!", e);
+				LoggerUtil.getLogger().log(Level.SEVERE, "start server " + serverName + " failed!", e);
 			}
 		}
 	}

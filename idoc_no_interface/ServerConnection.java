@@ -48,7 +48,7 @@ public class ServerConnection extends Thread{
 		} catch (InterruptedException e) {
 			iDocServer.log(e);
 		}
-		LoggerUtil.getLogger().log("begin ReConnection IDocServer:" + iDocServer.getServerName() + "...");
+		LoggerUtil.getLogger().log("begin ReConnection IDocServer " + iDocServer.getServerName() + "...");
 		if(!isRestart)
 			iDocServer.start();
 		else{
