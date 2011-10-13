@@ -28,36 +28,26 @@ public class IDocSync extends Thread {
 				} catch (InterruptedException e) {
 					iDocServer.log(e);
 				}
-				continue;
-			}
-			int header_id = -1;
-			try {
-				header_id = insertMiddleTables(file);
-			} catch (Throwable e) {
-				iDocServer.log(e);
+			} else {
+				int header_id = -1;
+				String context = "middle";
 				try {
-					String errorMessage = "middle failed";
-					LoggerUtil.getLogger().log("updateIdocStatus for idoc:" + file.getIdocId() + " " + errorMessage);
-					iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), errorMessage);
-				} catch (AuroraIDocException e1) {
-					iDocServer.log(e1);
+					header_id = insertMiddleTables(file);
+					context = "formal";
+					insertFormalTables(file, header_id);
+					iDocServer.addBackupFile(file);
+				} catch (Throwable e) {
+					iDocServer.log(e);
+					try {
+						String errorMessage = context+" failed";
+						LoggerUtil.getLogger()
+								.log("updateIdocStatus for idoc:" + file.getIdocId() + " " + context);
+						iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), errorMessage);
+					} catch (AuroraIDocException e1) {
+						iDocServer.log(e1);
+					}
 				}
-				continue;
 			}
-			try {
-				insertFormalTables(file,header_id);
-			} catch (Throwable e) {
-				iDocServer.log(e);
-				try {
-					String errorMessage = "formal failed";
-					LoggerUtil.getLogger().log("updateIdocStatus for idoc:" + file.getIdocId() + " " + errorMessage);
-					iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), errorMessage);
-				} catch (AuroraIDocException e1) {
-					iDocServer.log(e1);
-				}
-				continue;
-			}
-			iDocServer.addBackupFile(file);
 		}
 	}
 
@@ -71,7 +61,7 @@ public class IDocSync extends Thread {
 					return header_id;
 				iDocServer.getDbUtil().setConnectionAutoCommit(false);
 				for (Iterator it = iDocData.getChildIterator(); it.hasNext();) {
-					CompositeMap idoc_node = (CompositeMap)it.next();
+					CompositeMap idoc_node = (CompositeMap) it.next();
 					if (idoc_node == null || idoc_node.getChildIterator() == null || idoc_node.getChilds().size() < 2) {
 						return header_id;
 					}
@@ -100,7 +90,7 @@ public class IDocSync extends Thread {
 		return header_id;
 	}
 
-	private void insertFormalTables(IDocFile file,int header_id) throws SQLException, AuroraIDocException {
+	private void insertFormalTables(IDocFile file, int header_id) throws SQLException, AuroraIDocException {
 		String executePkg = iDocServer.getDbUtil().getFormalExecutePkg(file.getIdocId());
 		String errorMessage = iDocServer.getDbUtil().executePkg(executePkg, header_id);
 		if (errorMessage != null && !"".equals(errorMessage)) {
