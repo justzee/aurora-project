@@ -18,6 +18,7 @@ public class IDocBackup extends Thread {
 	public IDocBackup(IDocServer iDocServer) {
 		this.iDocServer = iDocServer;
 	}
+
 	public void run() {
 		while (isServerRunning()) {
 			idocType = null;
@@ -28,26 +29,27 @@ public class IDocBackup extends Thread {
 				} catch (InterruptedException e) {
 					iDocServer.log(e);
 				}
-				continue;
-			}
-			try {
-				int header_id = insertInterface(file);
-				iDocServer.getDbUtil().updateIdocStatus(header_id,file.getIdocId(), "done");
-			} catch (Throwable e) {
+			} else {
 				try {
-					iDocServer.log(e);
-					if (idocType != null) {
-						errorIdocTypes.add(idocType);
+					int header_id = insertInterface(file);
+					iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), "done");
+					LoggerUtil.getLogger().log("Idoc File id=" + file.getIdocId() + " execute successful !");
+				} catch (Throwable e) {
+					try {
+						iDocServer.log(e);
+						if (idocType != null) {
+							errorIdocTypes.add(idocType);
+						}
+						String errorMessage = "interface failed";
+						LoggerUtil.getLogger()
+								.log("updateIdocStatus for idoc:" + file.getIdocId() + " " + errorMessage);
+						iDocServer.getDbUtil().updateIdocsStatus(file.getIdocId(), errorMessage);
+					} catch (Throwable e1) {
+						iDocServer.log(e1);
 					}
-					String errorMessage = "interface failed";
-					LoggerUtil.getLogger().log("updateIdocStatus for idoc:" + file.getIdocId() + " " + errorMessage);
-					iDocServer.getDbUtil().updateIdocsStatus(file.getIdocId(), errorMessage);
-				} catch (Throwable e1) {
-					iDocServer.log(e1);
 				}
-				continue;
+
 			}
-			LoggerUtil.getLogger().log("Idoc File id=" + file.getIdocId() + " execute successful !");
 		}
 	}
 

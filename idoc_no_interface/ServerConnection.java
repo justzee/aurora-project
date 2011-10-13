@@ -14,14 +14,12 @@ public class ServerConnection extends Thread{
 	}
 	public void run() {
 		while(true){
+			if(iDocServer.getJCoIDocServer() == null){
+				startServer(false);
+				continue;
+			}
 			if(iDocServer.isShutdown()){
-				try {
-					Thread.sleep(computeConnectTime());
-				} catch (InterruptedException e) {
-					iDocServer.log(e);
-				}
-				LoggerUtil.getLogger().log("begin ReConnection IDocServer:" + iDocServer.getServerId() + "...");
-				iDocServer.start(true);
+				startServer(true);
 			}
 			else{
 				currentConnectTime = reconnectTime;
@@ -43,5 +41,18 @@ public class ServerConnection extends Thread{
 		}
 		return currentConnectTime;
 			
+	}
+	private void startServer(boolean isRestart){
+		try {
+			Thread.sleep(computeConnectTime());
+		} catch (InterruptedException e) {
+			iDocServer.log(e);
+		}
+		LoggerUtil.getLogger().log("begin ReConnection IDocServer:" + iDocServer.getServerName() + "...");
+		if(!isRestart)
+			iDocServer.start();
+		else{
+			iDocServer.reStart();
+		}
 	}
 }

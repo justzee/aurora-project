@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
@@ -21,8 +22,6 @@ import com.sap.conn.idoc.jco.JCoIDocHandler;
 import com.sap.conn.idoc.jco.JCoIDocHandlerFactory;
 import com.sap.conn.idoc.jco.JCoIDocServer;
 import com.sap.conn.idoc.jco.JCoIDocServerContext;
-import com.sap.conn.jco.JCoException;
-import com.sap.conn.jco.rt.StandaloneServerFactory;
 import com.sap.conn.jco.server.JCoServer;
 import com.sap.conn.jco.server.JCoServerContext;
 import com.sap.conn.jco.server.JCoServerContextInfo;
@@ -42,65 +41,52 @@ public class IDocServer {
 	private DataSource dataSource;
 	private int server_id = -1;
 	private boolean isDeleteFileImmediately;
-	private StandaloneServerFactory serverFactory;
 	private int reconnectTime;
 	private int maxReconnectTime;
-	public IDocServer(String idocDir, DataSource ds, String serverName, boolean isDeleteFileImmediately,int reconnectTime,int maxReconnectTime) {
+	private ServerConnection reConnect;
+	public IDocServer(String idocDir, DataSource ds, String serverName, boolean isDeleteFileImmediately,
+			int reconnectTime, int maxReconnectTime) {
 		this.idocDir = idocDir;
 		this.dataSource = ds;
 		this.serverName = serverName;
 		this.isDeleteFileImmediately = isDeleteFileImmediately;
 		this.reconnectTime = reconnectTime;
 		this.maxReconnectTime = maxReconnectTime;
+		reConnect = new ServerConnection(this,reconnectTime, maxReconnectTime);
 	}
-	public void start() {
+	public void start(){
 		start(false);
+		if(!reConnect.isAlive())
+			reConnect.start();
 	}
-	public void start(boolean isRestart) {
+	public void reStart(){
+		start(true);
+	}
+	private void start(boolean isRestart) {
+		String context = "";
 		try {
-			Connection dbConn = dataSource.getConnection();
-			if (dbConn == null)
-				throw new AuroraIDocException("Can not get Connection from DataSource");
-			dbUtil = new DataBaseUtil(dbConn);
-		} catch (Throwable e) {
-			shutdown("", e);
-			return;
-		}
-		try {
-			// see provided examples of configuration files MYSERVER.jcoServer and BCE.jcoDestination
+			dbUtil = getConnection();
+			// see provided examples of configuration files MYSERVER.jcoServer
+			// and BCE.jcoDestination
 			LoggerUtil.getLogger().config("begin start IDocServer " + serverName + "...");
-			if(!isRestart)
+			context = "Get Server by Config File:" + serverName;
+			if(!isRestart){
 				iDocServer = JCoIDoc.getServer(serverName);
-			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), syncFiles);
-		} catch (JCoException e) {
-			shutdown(serverName + " is not valid.", e);
-			return;
-		} catch (AuroraIDocException e) {
-			shutdown("Get HistoryIdocs " + iDocServer.getProgramID() + " failure!", e);
-			return;
-		}
-		MyIDocHandlerFactory idocHanlerFactory = new MyIDocHandlerFactory();
-		iDocServer.setIDocHandlerFactory(idocHanlerFactory);
-		iDocServer.setTIDHandler(new MyTidHandler());
-
-		MyThrowableListener listener = new MyThrowableListener();
-		iDocServer.addServerErrorListener(listener);
-		iDocServer.addServerExceptionListener(listener);
-		LoggerUtil.getLogger().config(serverName + " ConnectionCount= " + iDocServer.getConnectionCount());
-		if (iDocServer.getConnectionCount() == 0) {
-			iDocServer.setConnectionCount(1);
-		}
-		try {
-			server_id = dbUtil.registerSapServers(iDocServer);
-			iDocServer.start();
-			LoggerUtil.getLogger().config(serverName + "'s status is " + iDocServer.getState());
-			if (!JCoServerState.ALIVE.equals(iDocServer.getState())
-					&& !JCoServerState.STARTED.equals(iDocServer.getState())) {
-				LoggerUtil.getLogger().log("unRegisterSapServers server_id " + server_id);
-				if (dbUtil.getConnection() != null && !dbUtil.getConnection().isClosed()) {
-					dbUtil.unRegisterSapServers(server_id);
-					dbUtil.dispose();
+				context = "";
+				addListeners(iDocServer);
+				LoggerUtil.getLogger().config(serverName + " ConnectionCount= " + iDocServer.getConnectionCount());
+				if (iDocServer.getConnectionCount() == 0) {
+					iDocServer.setConnectionCount(1);
 				}
+				server_id = dbUtil.registerSapServers(iDocServer);
+			}	
+			context = "Get HistoryIdocs " + iDocServer.getProgramID();
+			dbUtil.getHistoryIdocs(iDocServer.getProgramID(), syncFiles);
+			context = "";
+			iDocServer.start();
+			if (!isRunning()) {
+				LoggerUtil.getLogger().log(serverName + "'s status is " + iDocServer.getState());
+				shutdown();
 				return;
 			}
 			IDocSync sync = new IDocSync(this);
@@ -108,13 +94,32 @@ public class IDocServer {
 			LoggerUtil.getLogger().config("begin handle " + serverName + " HistoryIdocs...");
 			IDocBackup backup = new IDocBackup(this);
 			backup.start();
-			ServerConnection sc = new ServerConnection(this,reconnectTime,maxReconnectTime);
-			sc.start();
+			LoggerUtil.getLogger().config("IDocServer " + serverName + " start successful!");
 		} catch (Throwable e) {
-			shutdown("", e);
+			shutdown(context, e);
 			return;
 		}
-		LoggerUtil.getLogger().config("IDocServer " + serverName + " start successful!");
+
+	}
+
+	private void addListeners(JCoIDocServer iDocServer) {
+		if (iDocServer == null)
+			return;
+		MyIDocHandlerFactory idocHanlerFactory = new MyIDocHandlerFactory();
+		iDocServer.setIDocHandlerFactory(idocHanlerFactory);
+		iDocServer.setTIDHandler(new MyTidHandler());
+
+		MyThrowableListener listener = new MyThrowableListener();
+		iDocServer.addServerErrorListener(listener);
+		iDocServer.addServerExceptionListener(listener);
+	}
+
+	private DataBaseUtil getConnection() throws SQLException, AuroraIDocException {
+		Connection dbConn = dataSource.getConnection();
+		if (dbConn == null)
+			throw new AuroraIDocException("Can not get Connection from DataSource");
+		DataBaseUtil dbUtil = new DataBaseUtil(dbConn);
+		return dbUtil;
 	}
 	public DataBaseUtil getDbUtil() {
 		return dbUtil;
@@ -139,7 +144,7 @@ public class IDocServer {
 				osw.close();
 				// handleXMLFile(filePath);
 				int idoc_id = dbUtil.addIdoc(server_id, filePath);
-				LoggerUtil.getLogger().log("Receive Idoc file, id="+idoc_id);
+				LoggerUtil.getLogger().log("Receive Idoc file, id=" + idoc_id);
 				addSyncFile(new IDocFile(filePath, idoc_id, server_id));
 			} catch (Throwable thr) {
 				shutdown("", thr);
@@ -253,6 +258,7 @@ public class IDocServer {
 		public boolean checkTID(JCoServerContext serverCtx, String tid) {
 			return true;
 		}
+
 		public void confirmTID(JCoServerContext serverCtx, String tid) {
 		}
 
@@ -264,13 +270,15 @@ public class IDocServer {
 	}
 
 	public boolean isRunning() {
-		return JCoServerState.ALIVE.equals(iDocServer.getState()) || JCoServerState.STARTED.equals(iDocServer
-				.getState());
+		return JCoServerState.ALIVE.equals(iDocServer.getState())
+				|| JCoServerState.STARTED.equals(iDocServer.getState());
 	}
+
 	public boolean isShutdown() {
-		return JCoServerState.DEAD.equals(iDocServer.getState()) || JCoServerState.STOPPED.equals(iDocServer
-				.getState());
+		return JCoServerState.DEAD.equals(iDocServer.getState())
+				|| JCoServerState.STOPPED.equals(iDocServer.getState());
 	}
+
 	public boolean isFinished() {
 		return syncFiles.size() <= 0;
 	}
@@ -282,6 +290,13 @@ public class IDocServer {
 	public void setServerId(int serverId) {
 		this.server_id = serverId;
 	}
+
+	public String getServerName() {
+		return serverName;
+	}
+	public JCoIDocServer getJCoIDocServer() {
+		return iDocServer;
+	}
 	public boolean isDeleteFileImmediately() {
 		return isDeleteFileImmediately;
 	}
@@ -292,24 +307,43 @@ public class IDocServer {
 		else
 			LoggerUtil.getLogger().log(Level.SEVERE, "", e);
 	}
+
 	public void shutdown(String errorMessage, Throwable e) {
 		LoggerUtil.getLogger().log(Level.SEVERE, errorMessage, e);
 		shutdown();
 	}
+
 	public void shutdown() {
+		LoggerUtil.getLogger().log("close dbconnection ");
+		shutdownDB();
+		LoggerUtil.getLogger().log("stop iDocServer ：" + serverName);
+		shutdownIDocServer();
+		LoggerUtil.getLogger().log("...........shutdown " + serverName + " finished.............. ");
+	}
+
+	private void shutdownDB() {
+		if (dbUtil != null) {
+			try {
+				dbUtil.getConnection().rollback();
+				dbUtil.getConnection().setAutoCommit(true);
+				if (server_id != -1)
+					dbUtil.stopSapServers(server_id);
+			} catch (Throwable e) {
+				log(e);
+			}
+			dbUtil.dispose();
+		}
+	}
+
+	private void shutdownIDocServer() {
+		if (iDocServer == null)
+			return;
 		try {
-			dbUtil.getConnection().rollback();
-			dbUtil.getConnection().setAutoCommit(true);
-			dbUtil.stopSapServers(server_id);
+			if (isRunning()) {
+				iDocServer.stop();
+			}
 		} catch (Throwable e) {
 			log(e);
 		}
-		if (JCoServerState.ALIVE.equals(iDocServer.getState()) || JCoServerState.STARTED.equals(iDocServer.getState())) {
-			LoggerUtil.getLogger().log("stop iDocServer ：" + serverName);
-			iDocServer.stop();
-		}
-		LoggerUtil.getLogger().log("close dbconnection ");
-		dbUtil.dispose();
-		LoggerUtil.getLogger().log("...........shutdown " + serverName + " finished.............. ");
 	}
 }

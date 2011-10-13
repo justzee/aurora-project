@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.sql.DataSource;
 
@@ -18,35 +19,40 @@ public class IDocServerInstance implements IGlobalInstance {
 	public String DeleteImmediately = "Y";
 	public String SERVER_NAME_LIST;
 	public String IDOC_DIR;
-	public String RECONNECT_TIME = "60000";//1 minute
+	public String RECONNECT_TIME = "60000";// 1 minute
 	public String MAX_RECONNECT_TIME = "3600000";// 1 hour
 	private List serverList;
 	private IObjectRegistry registry;
 	private String version = "1.3";
+
 	public IDocServerInstance(IObjectRegistry registry) {
 		this.registry = registry;
 		serverList = new LinkedList();
 	}
+
 	// Framework function
 	public void onInitialize() throws Exception {
 		initLoggerUtil();
 		run();
 	}
-	private void initLoggerUtil(){
+
+	private void initLoggerUtil() {
 		ILogger logger = LoggingContext.getLogger(PLUGIN, registry);
-		if(logger == null)
+		if (logger == null)
 			throw new RuntimeException("Can not get logger from registry!");
 		LoggerUtil.setLogger(logger);
 	}
+
 	public void onShutdown() throws Exception {
-		if(serverList != null&&!serverList.isEmpty()){
-			for(Iterator it =serverList.iterator();it.hasNext();){
-				((IDocServer)it.next()).shutdown();
+		if (serverList != null && !serverList.isEmpty()) {
+			for (Iterator it = serverList.iterator(); it.hasNext();) {
+				((IDocServer) it.next()).shutdown();
 			}
 		}
 	}
+
 	public void run() throws AuroraIDocException {
-		LoggerUtil.getLogger().info("Aurora IDoc Plugin version: "+version);
+		LoggerUtil.getLogger().info("Aurora IDoc Plugin version: " + version);
 		LoggerUtil.getLogger().info("IDoc Dir:" + IDOC_DIR);
 		if (IDOC_DIR == null || "".equals(IDOC_DIR)) {
 			throw new IllegalArgumentException("IDOC_DIR can not be null !");
@@ -63,17 +69,23 @@ public class IDocServerInstance implements IGlobalInstance {
 		int reconnectTime = Integer.parseInt(RECONNECT_TIME);
 		int maxReconnectTime = Integer.parseInt(MAX_RECONNECT_TIME);
 		String[] servers = SERVER_NAME_LIST.split(SEPARATOR);
-		
+
 		DataSource ds = (DataSource) registry.getInstanceOfType(DataSource.class);
 		if (ds == null)
 			throw new AuroraIDocException("Can not get DataSource from registry " + registry);
 		for (int i = 0; i < servers.length; i++) {
 			String serverName = servers[i];
-			IDocServer server = new IDocServer(IDOC_DIR,ds,serverName,isDeleteFileImmediately(),reconnectTime,maxReconnectTime);
-			server.start();
-			serverList.add(server);
+			try {
+				IDocServer server = new IDocServer(IDOC_DIR, ds, serverName, isDeleteFileImmediately(), reconnectTime,
+						maxReconnectTime);
+				server.start();
+				serverList.add(server);
+			} catch (Throwable e) {
+				LoggerUtil.getLogger().log(Level.SEVERE, "start server" + serverName + " failed!", e);
+			}
 		}
 	}
+
 	public boolean isDeleteFileImmediately() {
 		return "Y".equals(DeleteImmediately);
 	}
