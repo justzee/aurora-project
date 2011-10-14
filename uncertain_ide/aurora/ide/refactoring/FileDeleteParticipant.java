@@ -1,5 +1,6 @@
 package aurora.ide.refactoring;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -15,25 +16,26 @@ import org.eclipse.ltk.core.refactoring.participants.DeleteParticipant;
 import aurora.ide.search.core.Util;
 import aurora.ide.search.reference.ReferenceSearchService;
 
-public class BMDeleteParticipant extends DeleteParticipant {
+public class FileDeleteParticipant extends DeleteParticipant {
 
 	private IFile currentSourcefile;
 	private String fileExtension;
 
-	public BMDeleteParticipant() {
+	public FileDeleteParticipant() {
 	}
 
 	protected boolean initialize(Object element) {
 		if (element instanceof IFile) {
 			this.currentSourcefile = (IFile) element;
 			fileExtension = ((IFile) element).getFileExtension();
-			return "bm".equalsIgnoreCase(fileExtension);
+			return "bm".equalsIgnoreCase(fileExtension)
+					|| "screen".equalsIgnoreCase(fileExtension);
 		}
 		return false;
 	}
 
 	public String getName() {
-		return "BM Delete Participant";
+		return "Aurora File Delete Participant";
 	}
 
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
@@ -54,6 +56,9 @@ public class BMDeleteParticipant extends DeleteParticipant {
 
 	private List findRelations(IProgressMonitor pm) {
 		IResource scope = Util.getScope(currentSourcefile);
+		if(scope == null){
+			return Collections.EMPTY_LIST;
+		}
 		ReferenceSearchService seachService = new ReferenceSearchService(scope,
 				currentSourcefile, null);
 		seachService.setPostException(false);

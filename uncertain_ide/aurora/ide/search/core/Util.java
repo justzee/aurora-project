@@ -38,12 +38,15 @@ import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.LoadSchemaManager;
+import aurora.ide.helpers.ProjectUtil;
+import aurora.ide.project.propertypage.ProjectPropertyPage;
 
 public class Util {
 
@@ -163,6 +166,27 @@ public class Util {
 		return null;
 	}
 
+	static public IRegion getValueRegion(int offset, int length,
+			int hintOffset, IDocument document, RGB reginRGB)
+			throws BadLocationException {
+		XMLTagScanner scanner = getXMLTagScanner();
+		IToken token = null;
+		scanner.setRange(document, offset, length);
+		while ((token = scanner.nextToken()) != Token.EOF) {
+			if (token.getData() instanceof TextAttribute) {
+				TextAttribute text = (TextAttribute) token.getData();
+				int tokenOffset = scanner.getTokenOffset();
+				int tokenLength = scanner.getTokenLength();
+				if (text.getForeground().getRGB().equals(reginRGB)
+						&& (tokenOffset <= hintOffset && hintOffset <= tokenOffset
+								+ tokenLength)) {
+					return new Region(tokenOffset, tokenLength);
+				}
+			}
+		}
+		return null;
+	}
+
 	static public IRegion getFirstWhitespaceRegion(int offset, int length,
 			IDocument document) throws BadLocationException {
 		XMLTagScanner scanner = getXMLTagScanner();
@@ -241,18 +265,55 @@ public class Util {
 	}
 
 	public static IContainer findWebInf(IResource resource) {
-
 		if (null == resource) {
 			return null;
 		}
+		IFolder webINF = null;
 		IProject project = resource.getProject();
+		try {
+			String web = project
+					.getPersistentProperty(ProjectPropertyPage.WebQN);
+			if (web != null) {
+				IPath webINFPath = new Path(web).append("WEB-INF");
+				webINF = project.getParent().getFolder(webINFPath);
+			}
+		} catch (CoreException e1) {
+
+		}
+		if (webINF != null && webINF.exists()) {
+			return webINF;
+		}
 		try {
 			WebInfFinder finder = new WebInfFinder();
 			project.accept(finder);
 			return finder.getFolder();
 		} catch (CoreException e) {
+		}
+		return null;
+	}
+
+	public static IContainer findBMHome(IResource resource) {
+		if (null == resource) {
+			return null;
+		}
+		IFolder bmHome = null;
+		IProject project = resource.getProject();
+		try {
+			String bm = project.getPersistentProperty(ProjectPropertyPage.BMQN);
+			IPath bmPath = new Path(bm);
+			bmHome = project.getParent().getFolder(bmPath);
+		} catch (CoreException e1) {
 
 		}
+		if (bmHome != null && bmHome.exists()) {
+			return bmHome;
+		}
+		IContainer webINF = findWebInf(resource);
+		if (webINF != null && webINF.exists()) {
+			IFolder classes = webINF.getFolder(new Path("classes"));
+			return classes.exists() ? classes : null;
+		}
+
 		return null;
 	}
 
@@ -304,7 +365,26 @@ public class Util {
 			IContainer parent = file.getParent();
 			IPath parentPath = parent.getFullPath();
 			IPath rootPath = webRoot.getFullPath();
-			Path path = new Path((String) pkg);
+			IPath path = new Path((String) pkg);
+			IPath requestPath = new Path("${/request/@context_path}");
+			boolean prefixOfRequest = requestPath.isPrefixOf(path);
+			if (prefixOfRequest) {
+				path = path.makeRelativeTo(requestPath);
+			}
+			String[] split = path.toString().split("\\?");
+			path = new Path(split[0]);
+
+			// String replaceAll = ((String) pkg).replaceAll("\\$\\{.*\\}",
+			// "?");
+			// IPath noParaPath = new Path(replaceAll);
+			// String fileExtension = noParaPath.getFileExtension();
+			// if (fileExtension != null) {
+			// String[] split = fileExtension.split("\\?");
+			// split = path.toString().split("\\?");
+			// // path = path.removeFileExtension()
+			// // .addFileExtension(split[0]);
+			// path = new Path(split[0]);
+			// }
 			IPath relativePath = parentPath.makeRelativeTo(rootPath);
 			boolean prefixOf = relativePath.isPrefixOf(path);
 			if (prefixOf) {
@@ -355,7 +435,7 @@ public class Util {
 		return toPKG(path);
 	}
 
-	// web.WEB-INF.a
+	// 如果不属于classes，将会返回 "web.WEB-INF.a"
 	public static String toPKG(IPath path) {
 		String[] segments = path.segments();
 		StringBuilder result = new StringBuilder();
@@ -380,6 +460,7 @@ public class Util {
 		return result.toString();
 	}
 
+	// 如果不属于classes，将会返回""
 	public static String toRelativeClassesPKG(IPath path) {
 		String[] segments = path.segments();
 		StringBuilder result = new StringBuilder();

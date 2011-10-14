@@ -1,12 +1,13 @@
 package aurora.ide.search.reference;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.search.ui.ISearchQuery;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
@@ -33,7 +34,8 @@ public class ReferenceSearchService extends AbstractSearchService implements
 				return new MultiReferenceTypeFinder(bmReference)
 						.addReferenceType(urlReference);
 			}
-			if ("screen".equalsIgnoreCase(fileExtension)) {
+			if ("screen".equalsIgnoreCase(fileExtension)
+					|| "svc".equalsIgnoreCase(fileExtension)) {
 				return new MultiReferenceTypeFinder(screenReference)
 						.addReferenceType(urlReference);
 			}
@@ -49,7 +51,8 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			if ("bm".equalsIgnoreCase(fileExtension)) {
 				return bmRefMatch(map, attrib);
 			}
-			if ("screen".equalsIgnoreCase(fileExtension)) {
+			if ("screen".equalsIgnoreCase(fileExtension)
+					|| "svc".equalsIgnoreCase(fileExtension)) {
 				return screenRefMatch(map, attrib);
 			}
 		}
@@ -57,15 +60,42 @@ public class ReferenceSearchService extends AbstractSearchService implements
 
 	}
 
-	private boolean screenRefMatch(CompositeMap map, Attribute attrib) {
-		IFile file = this.getFile(map.getRoot());
-		Object pkg = map.get(attrib.getName());
-		IFile findScreenFile = Util.findScreenFile(file, pkg);
+	protected boolean screenRefMatch(CompositeMap map, Attribute attrib) {
+		IFile findScreenFile = findScreenFile(map, attrib);
+
 		return this.getSource().equals(findScreenFile);
+	}
+
+	protected IFile findScreenFile(CompositeMap map, Attribute attrib) {
+		IFile file = this.getFile(map.getRoot());
+		
+		Object pkg = map.get(attrib.getName());
+		boolean isScreenRef = false;
+		if (attrib.getAttributeType() instanceof SimpleType) {
+			isScreenRef = screenReference.equals(((SimpleType) attrib
+					.getAttributeType()).getReferenceTypeQName());
+		}
+		IFile findScreenFile = null;
+		if (isScreenRef) {
+			IContainer webInf = Util.findWebInf(file);
+			if (webInf != null) {
+				IPath find = webInf.getParent().getProjectRelativePath()
+						.append(pkg.toString());
+				findScreenFile = file.getProject().getFile(find);
+			}
+		} else {
+			findScreenFile = Util.findScreenFile(file, pkg);
+		}
+		return findScreenFile;
 	}
 
 	protected boolean bmRefMatch(CompositeMap map, Attribute attrib) {
 		Object pattern = getSearchPattern(this.getRoots(), this.getSource());
+		return bmRefMatch(map, attrib, pattern);
+	}
+
+	protected boolean bmRefMatch(CompositeMap map, Attribute attrib,
+			Object pattern) {
 		Object data = map.get(attrib.getName());
 		if (data instanceof String) {
 			Path path = new Path((String) data);
@@ -73,6 +103,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			for (String s : segments) {
 				String[] split = s.split("\\?");
 				s = split[0];
+				//TODO bug?
 				if (s.equals(pattern)) {
 					return true;
 				}
@@ -93,7 +124,8 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			if ("bm".equalsIgnoreCase(fileExtension)) {
 				return getBMPKG(scope, file);
 			}
-			if ("screen".equalsIgnoreCase(fileExtension)) {
+			if ("screen".equalsIgnoreCase(fileExtension)
+					|| "svc".equalsIgnoreCase(fileExtension)) {
 				return getScreenPKG(scope, file);
 			}
 		}

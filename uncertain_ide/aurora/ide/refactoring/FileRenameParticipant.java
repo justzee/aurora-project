@@ -22,14 +22,14 @@ import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.Util;
 import aurora.ide.search.reference.ReferenceSearchService;
 
-public class BmRenameParticipant extends RenameParticipant {
+public class FileRenameParticipant extends RenameParticipant {
 
 	private IFile currentSourcefile;
 	private String fileExtension;
 	private TextFileChangeManager changeManager;
 	private boolean check;
 
-	public BmRenameParticipant() {
+	public FileRenameParticipant() {
 	}
 
 	protected boolean initialize(Object element) {
@@ -38,13 +38,15 @@ public class BmRenameParticipant extends RenameParticipant {
 			this.currentSourcefile = (IFile) element;
 			fileExtension = ((IFile) element).getFileExtension();
 			changeManager = new TextFileChangeManager();
-			return "bm".equalsIgnoreCase(fileExtension);
+			return "bm".equalsIgnoreCase(fileExtension)
+					|| "screen".equalsIgnoreCase(fileExtension)
+					|| "svc".equalsIgnoreCase(fileExtension);
 		}
 		return false;
 	}
 
 	public String getName() {
-		return "BM Rename Participant";
+		return "Aurora File Rename Participant";
 	}
 
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
@@ -61,18 +63,55 @@ public class BmRenameParticipant extends RenameParticipant {
 		return result;
 	}
 
-	public Change createChange(IProgressMonitor pm) throws CoreException,
+	public Change createPreChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		if (check) {
-			return createBMChange(pm);
+			if ("bm".equalsIgnoreCase(fileExtension)) {
+				return createBMChange(pm);
+			} else if ("screen".equalsIgnoreCase(fileExtension)
+					|| "svc".equalsIgnoreCase(fileExtension)) {
+				return createScreenChange(pm);
+			}
 		}
-
 		return null;
+	}
 
+	private Change createScreenChange(IProgressMonitor pm) throws CoreException {
+		IResource scope = Util.getScope(currentSourcefile);
+		if(scope == null){
+			return null;
+		}
+		ReferenceSearchService seachService = new ReferenceSearchService(scope,
+				currentSourcefile, null);
+		seachService.setPostException(false);
+		List relations = seachService.service(pm);
+		CompositeChange changes = new CompositeChange("aurora changes");
+		changes.markAsSynthetic();
+		for (int i = 0; i < relations.size(); i++) {
+			AbstractMatch object = (AbstractMatch) relations.get(i);
+			IFile file = (IFile) object.getElement();
+			TextFileChange textFileChange = changeManager
+					.getTextFileChange(file);
+			int offset = object.getOriginalOffset();
+			int length = object.getOriginalLength();
+			String newName = this.getArguments().getNewName();
+			ReplaceEdit edit = new ReplaceEdit(offset, length, newName);
+			textFileChange.addEdit(edit);
+		}
+		changes.addAll(changeManager.getAllChanges());
+		return changes;
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+		return null;
 	}
 
 	private Change createBMChange(IProgressMonitor pm) throws CoreException {
 		IResource scope = Util.getScope(currentSourcefile);
+		if(scope == null){
+			return null;
+		}
 		ReferenceSearchService seachService = new ReferenceSearchService(scope,
 				currentSourcefile, null);
 		seachService.setPostException(false);
