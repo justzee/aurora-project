@@ -21,7 +21,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.Match;
@@ -30,15 +29,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.UIJob;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
+import a.d;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.refactoring.ui.AuroraRefactoringWizard;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
@@ -124,6 +122,7 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	protected List buildMatchLines(IFile file, List r, Object pattern)
 			throws CoreException {
+
 		List lines = new ArrayList();
 		for (int i = 0; i < r.size(); i++) {
 			MapFinderResult result = (MapFinderResult) r.get(i);
@@ -152,19 +151,17 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	private List processFile(IResource resource) throws CoreException,
 			ApplicationException {
-
 		List result = new ArrayList();
 		CompositeMap bm;
 		fNumberOfScannedFiles++;
 		CompositeMapIteator finder = createIterationHandle((IFile) resource);
 		finder.setFilter(getDataFilter(roots, source));
-
 		bm = getCompositeMap((IFile) resource);
 		compositeMap.put(bm, resource);
 		bm.iterate(finder, true);
-
 		List r = finder.getResult();
 		List lines = buildMatchLines((IFile) resource, r, pattern);
+
 		for (int i = 0; i < lines.size(); i++) {
 			if (query != null) {
 				ISearchResult searchResult = query.getSearchResult();
@@ -182,6 +179,7 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	protected List createLineMatches(MapFinderResult r, LineElement l,
 			IFile file, Object pattern) throws CoreException {
+
 		IDocument document = (IDocument) getDocument(file);
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 				(IDocument) getDocument(file));
@@ -215,12 +213,17 @@ abstract public class AbstractSearchService implements ISearchService {
 				continue;
 			}
 		}
+
 		return matches;
 	}
 
 	protected IRegion getAttributeRegion(int offset, int length, String name,
 			IDocument document) throws BadLocationException {
-		return Util.getAttributeRegion(offset, length, name, document);
+
+		IRegion attributeRegion = Util.getAttributeRegion(offset, length, name,
+				document);
+
+		return attributeRegion;
 	}
 
 	// protected List createLineMatches(MapFinderResult r, LineElement l,
@@ -261,6 +264,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	// }
 
 	public List service(final IProgressMonitor monitor) {
+
 		List files = findFilesInScopes(roots);
 		fNumberOfFilesToScan = files.size();
 		Job monitorUpdateJob = new Job("Aurora Search progress") {
@@ -322,7 +326,10 @@ abstract public class AbstractSearchService implements ISearchService {
 					} catch (CoreException e) {
 					} catch (ApplicationException e) {
 					} catch (Exception e) {
-						e.printStackTrace();
+						if (!(e instanceof IllegalArgumentException)) {
+//							e.printStackTrace();
+						}
+
 						handleException(fCurrentFile, e);
 					}
 				}

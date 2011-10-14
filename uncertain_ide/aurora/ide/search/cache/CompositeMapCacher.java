@@ -29,8 +29,8 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			this.project = project;
 		}
 
-		private synchronized CompositeMap getCompositeMap(IFile file) throws CoreException,
-				ApplicationException {
+		private synchronized CompositeMap getCompositeMap(IFile file)
+				throws CoreException, ApplicationException {
 			CompositeMap map = catchMap.get(file);
 			if (map == null) {
 				map = load(file);
@@ -45,8 +45,9 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			return project;
 		}
 
-		private CompositeMap  load(IFile file) throws CoreException,
+		private CompositeMap load(IFile file) throws CoreException,
 				ApplicationException {
+
 			IDocument document = CacheManager.getDocumentCacher().getDocument(
 					file);
 			if (document == null)
@@ -70,7 +71,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 	public CompositeMap getCompositeMap(IFile file) throws CoreException,
 			ApplicationException {
 		ProjectCatcher projectCatcher = getProjectCatcher(file);
-		return (CompositeMap) projectCatcher.getCompositeMap(file).clone();
+		return (CompositeMap) projectCatcher.getCompositeMap(file);
 	}
 
 	private CompositeMap remove(IFile file) {
