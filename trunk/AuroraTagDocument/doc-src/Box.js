@@ -17,3 +17,10 @@
  * @type Integer
  * @default 75
  */
+ 
+/**
+ * 容器中prompt后面的符号
+ * @property labelSeparator
+ * @type String
+ * @default :
+ */
