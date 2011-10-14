@@ -62,6 +62,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	private Map compositeMap = new HashMap();
 	private Map exceptionMap = new HashMap();
 
+	private boolean runInUI = false;
 	private Object pattern;
 
 	public boolean isPostException() {
@@ -184,7 +185,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		IDocument document = (IDocument) getDocument(file);
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 				(IDocument) getDocument(file));
-		
+
 		List matches = new ArrayList();
 		List attributes = r.getAttributes();
 
@@ -265,24 +266,19 @@ abstract public class AbstractSearchService implements ISearchService {
 		Job monitorUpdateJob = new Job("Aurora Search progress") {
 			private int fLastNumberOfScannedFiles = 0;
 
-			public IStatus run(IProgressMonitor inner) {
+			public IStatus run(final IProgressMonitor inner) {
 				while (!inner.isCanceled()) {
 					final IFile file = fCurrentFile;
 					if (file != null) {
-						Display.getDefault().asyncExec(new Runnable() {
-							public void run() {
-								String fileName = file.getName();
-								final Object[] args = { fileName,
-										new Integer(fNumberOfScannedFiles),
-										new Integer(fNumberOfFilesToScan) };
-								monitor.subTask(MessageFormater.format(
-										Message._scanning, args));	
-								int steps = fNumberOfScannedFiles
-										- fLastNumberOfScannedFiles;
-								monitor.worked(steps);
-								fLastNumberOfScannedFiles += steps;
-							}
-						});
+						if (isRunInUI()) {
+							Display.getDefault().asyncExec(new Runnable() {
+								public void run() {
+									updateMonitor(monitor, file);
+								}
+							});
+						} else {
+							updateMonitor(monitor, file);
+						}
 					}
 					try {
 						Thread.sleep(100);
@@ -291,7 +287,21 @@ abstract public class AbstractSearchService implements ISearchService {
 					}
 				}
 				return Status.OK_STATUS;
+
 			}
+
+			private void updateMonitor(final IProgressMonitor monitor,
+					final IFile file) {
+				String fileName = file.getName();
+				final Object[] args = { fileName,
+						new Integer(fNumberOfScannedFiles),
+						new Integer(fNumberOfFilesToScan) };
+				monitor.subTask(MessageFormater.format(Message._scanning, args));
+				int steps = fNumberOfScannedFiles - fLastNumberOfScannedFiles;
+				monitor.worked(steps);
+				fLastNumberOfScannedFiles += steps;
+			}
+
 		};
 
 		// searchPattern
@@ -312,7 +322,7 @@ abstract public class AbstractSearchService implements ISearchService {
 					} catch (CoreException e) {
 					} catch (ApplicationException e) {
 					} catch (Exception e) {
-//						e.printStackTrace();
+						e.printStackTrace();
 						handleException(fCurrentFile, e);
 					}
 				}
@@ -444,5 +454,13 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	protected abstract Object createPattern(IResource[] roots, Object source);
+
+	public boolean isRunInUI() {
+		return runInUI;
+	}
+
+	public void setRunInUI(boolean runInUI) {
+		this.runInUI = runInUI;
+	}
 
 }

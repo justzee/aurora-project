@@ -293,6 +293,20 @@
              enablesFor="1"> 
        </action>
     </objectContribution>
+    <objectContribution
+          adaptable="true"
+          id="aurora.ide.svc.reference"
+          nameFilter="*.svc"
+          objectClass="org.eclipse.core.resources.IFile">
+       <action
+             class="aurora.ide.search.action.FileReferenceAciton"
+             icon="icons/service.gif"
+             id="aurora.search.action.SVCReferenceAciton"
+             label="%plugin.screen.references"
+             menubarPath="additions"
+             enablesFor="1"> 
+       </action>
+    </objectContribution>
     
     <viewerContribution 
 	      id="aurora.ide.editor.textpage.reference"
@@ -610,7 +624,7 @@
 	<renameParticipant
    	 	id="aurora.ide.refactoring.BmRenameParticipant"
     	name="Aurora BM Rename Participant" 
-    	class="aurora.ide.refactoring.BmRenameParticipant"> 
+    	class="aurora.ide.refactoring.FileRenameParticipant"> 
     <enablement>
     </enablement>    
 	</renameParticipant>
@@ -627,7 +641,7 @@
 	<moveParticipant
    	 	id="aurora.ide.refactoring.BMMoveParticipant"
     	name="Aurora Move Participant" 
-    	class="aurora.ide.refactoring.BMMoveParticipant"> 
+    	class="aurora.ide.refactoring.FileMoveParticipant"> 
     <enablement>
     </enablement>    
 	</moveParticipant>
@@ -644,7 +658,7 @@
 	<deleteParticipant
    	 	id="aurora.ide.refactoring.BMDeleteParticipant"
     	name="Aurora Delete Participant" 
-    	class="aurora.ide.refactoring.BMDeleteParticipant"> 
+    	class="aurora.ide.refactoring.FileDeleteParticipant"> 
     <enablement>
     </enablement>    
 	</deleteParticipant>

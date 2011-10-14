@@ -1,14 +1,13 @@
 package aurora.ide.refactoring;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,6 +21,7 @@ import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.MoveParticipant;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.text.edits.TextEdit;
 
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.AbstractMatch;
@@ -30,9 +30,7 @@ import aurora.ide.search.reference.MultiSourceReferenceSearchService;
 import aurora.ide.search.reference.ReferenceSearchService;
 
 public class FolderMoveParticipant extends MoveParticipant {
-
-	private IFolder currentFolder;
-	private ScopeVisitor visitor;
+	private FolderRefactorParticipant folderRefactorParticipant;
 
 	private Map<String, String> pkgMap;
 	private TextFileChangeManager changeManager;
@@ -48,32 +46,23 @@ public class FolderMoveParticipant extends MoveParticipant {
 		Object destination = this.getArguments().getDestination();
 		// ifnature in
 		if (element instanceof IFolder && destination instanceof IFolder) {
-			currentFolder = (IFolder) element;
-			visitor = new ScopeVisitor();
+			folderRefactorParticipant = new FolderRefactorParticipant();
 			changeManager = new TextFileChangeManager();
 			moveTO = (IFolder) destination;
-			if (currentFolder.getParent().equals(moveTO)
-					|| !currentFolder.getProject().equals(moveTO.getProject())) {
+			if (((IFolder) element).getParent().equals(moveTO)
+					|| !((IFolder) element).getProject().equals(
+							moveTO.getProject())) {
 				// 目标目录相同，不参与
 				// 工程不同不参与
 				return false;
 			}
-			return isTakeIn(currentFolder);
-		}
-		return false;
-	}
-
-	private boolean isTakeIn(IFolder currentFolder) {
-		try {
-			currentFolder.accept(visitor);
-			return visitor.isTakeIn();
-		} catch (CoreException e) {
+			return folderRefactorParticipant.initialize(element);
 		}
 		return false;
 	}
 
 	public String getName() {
-		return "Folder Rename Participant";
+		return "Folder Move Participant";
 	}
 
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
@@ -81,7 +70,9 @@ public class FolderMoveParticipant extends MoveParticipant {
 		this.check = true;
 		RefactoringStatus result = new RefactoringStatus();
 		Object destination = this.getArguments().getDestination();
-		if (destination instanceof IResource) {
+		// bm move
+		if (destination instanceof IResource
+				&& (folderRefactorParticipant.isBMFolder())) {
 			IPath path = ((IResource) destination).getProjectRelativePath();
 			String pkg = Util.toRelativeClassesPKG(path);
 			if (pkg.length() == 0) {
@@ -90,83 +81,135 @@ public class FolderMoveParticipant extends MoveParticipant {
 						.createInfoStatus("目标目录不属于classes,Aurora重构不会进行,请Cancel后重新选择。"));
 			}
 		}
+		// screen move
+		if (destination instanceof IResource
+				&& (!folderRefactorParticipant.isBMFolder())) {
+
+			IContainer webInf = Util.findWebInf(folderRefactorParticipant
+					.getCurrentFolder());
+			if (webInf == null) {
+				this.check = false;
+				result.merge(RefactoringStatus
+						.createInfoStatus("WEB-INF未发现,Aurora重构不会进行,请Cancel后重新选择。"));
+			}
+			if (webInf != null) {
+				IPath path = ((IResource) destination).getProjectRelativePath();
+				boolean inWeb = webInf.getParent().getProjectRelativePath()
+						.isPrefixOf(path);
+				boolean inWebInf = webInf.getProjectRelativePath().isPrefixOf(
+						path);
+				if (!inWeb || inWebInf) {
+					this.check = false;
+					result.merge(RefactoringStatus
+							.createInfoStatus("目标目录无效,Aurora重构不会进行,请Cancel后重新选择。"));
+				}
+			}
+		}
 		return result;
 	}
 
-	public Change createChange(IProgressMonitor pm) throws CoreException,
+	@Override
+	public Change createPreChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		// bug:select->preview->back->select another->preview
 		// getArguments().getDestination() did nont changed
 		if (check) {
-			createPKGMap();
-			return createBMChange(pm);
+			if (folderRefactorParticipant.isBMFolder()) {
+				createPKGMap();
+				Change createBMChange = createBMChange(pm);
+				return createBMChange;
+			} else {
+				return createScreenChange(pm);
+			}
 		}
+		return null;
+	}
+
+	private List getRelations(IProgressMonitor pm) {
+		List<IFile> result = folderRefactorParticipant.getFiles();
+		IResource scope = Util.getScope(folderRefactorParticipant
+				.getCurrentFolder());
+		if (scope == null) {
+			return null;
+		}
+		ReferenceSearchService seachService = new MultiSourceReferenceSearchService(
+				scope, result.toArray(new IFile[result.size()]), null,
+				folderRefactorParticipant.isBMFolder());
+		seachService.setPostException(false);
+		seachService.setRunInUI(true);
+		List relations = seachService.service(pm);
+		return relations;
+	}
+
+	private Change createScreenChange(IProgressMonitor pm) throws CoreException {
+		List relations = getRelations(pm);
+		CompositeChange changes = new CompositeChange("aurora changes");
+		changes.markAsSynthetic();
+		for (int i = 0; i < relations.size(); i++) {
+			AbstractMatch object = (AbstractMatch) relations.get(i);
+			IFile file = (IFile) object.getElement();
+			TextFileChange textFileChange = changeManager
+					.getTextFileChange(file);
+			TextEdit edit;
+			try {
+				edit = createScreenEdit(object);
+				if (edit != null)
+					textFileChange.addEdit(edit);
+			} catch (BadLocationException e) {
+			}
+		}
+		changes.addAll(changeManager.getAllChangesHasEdit());
+		return changes;
+	}
+
+	private TextEdit createScreenEdit(AbstractMatch match)
+			throws CoreException, BadLocationException {
+		IFile file = (IFile) match.getElement();
+		int offset = match.getOriginalOffset();
+		int length = match.getOriginalLength();
+		if (changeManager.isOverlapping(file, offset, length)) {
+			return null;
+		}
+		String string = ScreenRefactoring.findAttributeValue(match);
+		IFile findScreenFile = Util.findScreenFile(file, string);
+		
+		if (findScreenFile == null) {
+			return null;
+		}if(findScreenFile.getParent().equals(file.getParent())){
+			return null;
+		}
+		IPath folderPath = this.folderRefactorParticipant.getCurrentFolder()
+				.getParent().getProjectRelativePath();
+		IPath newPath = moveTO.getProjectRelativePath().append(
+				findScreenFile.getProjectRelativePath().makeRelativeTo(
+						folderPath));
+		return ScreenRefactoring.createMoveTOScreenTextEdit(match, newPath);
+	}
+
+	public Change createChange(IProgressMonitor pm) throws CoreException,
+			OperationCanceledException {
+
 		return null;
 	}
 
 	private void createPKGMap() {
 		pkgMap = new HashMap<String, String>();
-		List<IFile> result = this.visitor.getResult();
+		List<IFile> result = folderRefactorParticipant.getFiles();
 		for (IFile file : result) {
 			String oldPkg = Util.toBMPKG(file);
-			IPath folderPath = this.currentFolder.getParent()
-					.getProjectRelativePath();
+			IPath folderPath = folderRefactorParticipant.getCurrentFolder()
+					.getParent().getProjectRelativePath();
 			IPath filePath = file.getProjectRelativePath();
 			IPath raelativeTo = filePath.makeRelativeTo(folderPath)
 					.removeFileExtension();
 			IPath toPath = this.moveTO.getProjectRelativePath();
-			String newPkg = Util.toPKG(toPath)+"."
-					+ Util.toPKG(raelativeTo);
+			String newPkg = Util.toPKG(toPath) + "." + Util.toPKG(raelativeTo);
 			pkgMap.put(oldPkg, newPkg);
 		}
 	}
 
-	private class ScopeVisitor implements IResourceVisitor {
-		private List<IFile> result = new ArrayList<IFile>();
-
-		private boolean isTakeIn = true;
-
-		public boolean visit(IResource resource) throws CoreException {
-			if (resource.getType() == IResource.FILE) {
-				boolean checkExtension = checkExtension(resource);
-				if (checkExtension) {
-					result.add((IFile) resource);
-				}
-				return false;
-			}
-			if (resource.getType() == IResource.FOLDER) {
-				IFolder f = (IFolder) resource;
-				//
-				// TODO bm folder in properties page
-				if ("classes".equals(f.getName())) {
-					isTakeIn = false;
-				}
-			}
-			return true;
-		}
-
-		public boolean isTakeIn() {
-			return isTakeIn && result.size() > 0;
-		}
-
-		public List<IFile> getResult() {
-			return result;
-		}
-
-		private boolean checkExtension(IResource resource) {
-			IFile file = (IFile) resource;
-			String fileExtension = file.getFileExtension();
-			return "bm".equalsIgnoreCase(fileExtension);
-		}
-	}
-
 	private Change createBMChange(IProgressMonitor pm) throws CoreException {
-		List<IFile> result = visitor.getResult();
-		IResource scope = Util.getScope(currentFolder);
-		ReferenceSearchService seachService = new MultiSourceReferenceSearchService(
-				scope, result.toArray(new IFile[result.size()]), null);
-		seachService.setPostException(false);
-		List relations = seachService.service(pm);
+		List relations = getRelations(pm);
 		CompositeChange changes = new CompositeChange("aurora changes");
 		changes.markAsSynthetic();
 		for (int i = 0; i < relations.size(); i++) {
@@ -178,6 +221,9 @@ public class FolderMoveParticipant extends MoveParticipant {
 
 			int offset = object.getOriginalOffset();
 			int length = object.getOriginalLength();
+			if (changeManager.isOverlapping(file, offset, length)) {
+				continue;
+			}
 			try {
 				String string = document.get(offset, length);
 				ReplaceEdit edit = new ReplaceEdit(offset, length,
