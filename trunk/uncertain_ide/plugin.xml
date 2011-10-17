@@ -539,12 +539,80 @@
 	<extension  
       id="auroranature"  
       point="org.eclipse.core.resources.natures">  
-   <runtime>  
-      <run  
-            class="aurora.ide.AuroraProjectNature">  
-      </run>  
-   </runtime>  
-</extension>
+       <runtime>  
+          <run  
+                class="aurora.ide.AuroraProjectNature">  
+          </run>  
+       </runtime>
+       <builder
+             id="aurora.ide.auroraBuilder">
+       </builder>  
+    </extension>
+
+    <extension id="auroraBuilder" name="Aurora Project Builder" 
+        point="org.eclipse.core.resources.builders">
+        <builder hasNature="true">
+            <run class="aurora.ide.builder.AuroraBuilder">
+            </run>
+        </builder>
+    </extension>
+    <extension id="undefinedAttribute" name="Undefined Attribute" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="undefinedBM" name="Undefined BM " 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="undefinedDataSet" name="Undefined DataSet" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="undefinedForeignField" name="Undefined ForeignField" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="undefinedLocalField" name="Undefined LocalField" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="undefinedScreen" name="Undefined Screen" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="nonenamespace" name="No NameSpace" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+    <extension id="configProblem" name="Config Problem" 
+        point="org.eclipse.core.resources.markers">
+        <super type="org.eclipse.core.resources.problemmarker">
+        </super>
+        <persistent value="true">
+        </persistent>
+    </extension>
+
  <extension
        point="org.eclipse.ui.commands">
     <category
