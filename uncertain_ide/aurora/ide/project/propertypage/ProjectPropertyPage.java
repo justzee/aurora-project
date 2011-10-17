@@ -1,10 +1,8 @@
 package aurora.ide.project.propertypage;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -24,45 +22,35 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ExceptionUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
+import aurora.ide.helpers.UncertainEngineUtil;
 
 public class ProjectPropertyPage extends PropertyPage {
     public static final String        PropertyId     = "aurora.ide.projectproperty";
     private static final String       LOCAL_WEB_URL  = "LOCAL_WEB_URL";
     private static final String       WEB_HOME       = "WEB_HOME";
     private static final String       BM_HOME        = "BM_HOME";
-    private static final String       LOG_HOME       = "LOG_HOME";
     private static final String       DebugMode      = "DEBUG_MODE";
     public static final QualifiedName LoclaUrlHomeQN = new QualifiedName(AuroraPlugin.PLUGIN_ID, LOCAL_WEB_URL);
     public static final QualifiedName WebQN          = new QualifiedName(AuroraPlugin.PLUGIN_ID, WEB_HOME);
     public static final QualifiedName BMQN           = new QualifiedName(AuroraPlugin.PLUGIN_ID, BM_HOME);
-    public static final QualifiedName LogQN          = new QualifiedName(AuroraPlugin.PLUGIN_ID, LOG_HOME);
     public static final QualifiedName DebugModeQN    = new QualifiedName(AuroraPlugin.PLUGIN_ID, DebugMode);
-    private static final String       LogAttrName    = "logPath";
     private Text                      localWebUrlText;
     private Text                      webHomeText;
     private Text                      bmHomeText;
-    private Text                      logHomeText;
     private Button                    debugButton;
 
     protected Control createContents(Composite parent) {
@@ -94,48 +82,6 @@ public class ProjectPropertyPage extends PropertyPage {
             DialogUtil.showExceptionMessageBox(e);
         }
 
-        // logDir
-        Label logDirLabel = new Label(content, SWT.NONE);
-        logDirLabel.setText("Log主目录");
-        logHomeText = new Text(content, SWT.NONE);
-        gridData = new GridData(GridData.FILL_HORIZONTAL);
-        logHomeText.setLayoutData(gridData);
-        String logDir = null;
-        try {
-            logDir = getProject().getPersistentProperty(LogQN);
-            if (filtEmpty(logDir) != null) {
-                logHomeText.setText(logDir);
-            } else {
-                logDir = ProjectUtil.autoGetLogHome(getProject());
-                if (filtEmpty(logDir) != null) {
-                    logHomeText.setText(logDir);
-                }
-            }
-        } catch (CoreException e) {
-            DialogUtil.showExceptionMessageBox(e);
-        } catch (ApplicationException e) {
-            DialogUtil.showExceptionMessageBox(e);
-        }
-
-        Button logBrowseButton = new Button(content, SWT.PUSH);
-        logBrowseButton.setText("浏览(&L)..");
-        logBrowseButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent event) {
-                DirectoryDialog dialog = new DirectoryDialog(Display.getCurrent().getActiveShell());
-                if (logHomeText.getText() != null) {
-                    dialog.setFilterPath(logHomeText.getText());
-                }
-                String logDir = dialog.open();
-                String errorMessage = validLogHome(logDir);
-                if (errorMessage != null) {
-                    if (DialogUtil.showConfirmDialogBox("校验不通过：" + errorMessage + AuroraResourceUtil.LineSeparator
-                            + "是否仍然继续设置?") != SWT.OK) {
-                        return;
-                    }
-                }
-                logHomeText.setText(logDir);
-            }
-        });
         // webDir
         Label webDirGroup = new Label(content, SWT.NONE);
         webDirGroup.setText("Web主目录");
@@ -289,26 +235,6 @@ public class ProjectPropertyPage extends PropertyPage {
                 DialogUtil.showExceptionMessageBox(e);
             }
         }
-        if (logHomeText.getText() != null) {
-            try {
-                IContainer webHome = (IContainer) ResourcesPlugin.getWorkspace().getRoot()
-                        .findMember(webHomeText.getText());
-                String logDir = logHomeText.getText();
-                project.setPersistentProperty(LogQN, logDir);
-                IResource coreConfigFile = AuroraResourceUtil.getResource(webHome, AuroraConstant.CoreConfigFileName);
-                IResource logConfigFile = AuroraResourceUtil.getResource(webHome, AuroraConstant.LogConfigFileName);
-                if (coreConfigFile != null) {
-                    setLogDirToConfigFile(coreConfigFile, logDir);
-                }
-                if (logConfigFile != null) {
-                    setLogDirToConfigFile(logConfigFile, logDir);
-                }
-            } catch (CoreException e) {
-                DialogUtil.showExceptionMessageBox(e);
-            } catch (ApplicationException e) {
-                DialogUtil.showExceptionMessageBox(e);
-            }
-        }
         try {
             project.setPersistentProperty(DebugModeQN, String.valueOf(debugButton.getSelection()));
             project.setPersistentProperty(LoclaUrlHomeQN, localWebUrlText.getText());
@@ -352,48 +278,6 @@ public class ProjectPropertyPage extends PropertyPage {
         return str;
     }
 
-    public static void setLogDirToConfigFile(IResource coreConfigFile, String logDir) throws ApplicationException {
-        String coreConfigFileLocalPath = coreConfigFile.getLocation().toOSString();
-        File coreConfig = new File(coreConfigFileLocalPath);
-        if (!coreConfig.exists())
-            throw new ApplicationException(coreConfigFileLocalPath + "在文件系统中不存在!");
-        CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
-        CompositeMap data;
-        try {
-            data = loader.loadByFullFilePath(coreConfigFileLocalPath);
-            if (data == null) {
-                throw new ApplicationException(coreConfigFileLocalPath + "文件为空!");
-            }
-            data.put(LogAttrName, logDir);
-            XMLOutputter.saveToFile(coreConfig, data);
-        } catch (IOException e) {
-            throw new ApplicationException(coreConfigFileLocalPath + "在文件系统中不存在!", e);
-        } catch (SAXException e) {
-            throw new ApplicationException("请检查" + coreConfigFileLocalPath + "格式是否正确!", e);
-        }
-    }
-
-    public static String getLogDirFromCoreConfigFile(IResource coreConfigFile) throws ApplicationException {
-        String coreConfigFileLocalPath = coreConfigFile.getLocation().toOSString();
-        File coreConfig = new File(coreConfigFileLocalPath);
-        if (!coreConfig.exists())
-            throw new ApplicationException(coreConfigFileLocalPath + "在文件系统中不存在!");
-        CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
-        CompositeMap data;
-        try {
-            data = loader.loadByFullFilePath(coreConfigFileLocalPath);
-        } catch (IOException e) {
-            throw new ApplicationException(coreConfigFileLocalPath + "在文件系统中不存在!", e);
-        } catch (SAXException e) {
-            throw new ApplicationException("请检查" + coreConfigFileLocalPath + "格式是否正确!", e);
-        }
-        if (data == null) {
-            throw new ApplicationException(coreConfigFileLocalPath + "文件为空!");
-        }
-        String logPath = data.getString(LogAttrName);
-        return logPath;
-    }
-
     public static String validWebHome(IProject project, IPath path) {
         IResource selectionResource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
         if (selectionResource == null) {
@@ -407,7 +291,7 @@ public class ProjectPropertyPage extends PropertyPage {
             return "文件系统中不存在此目录!";
         }
         try {
-            DBConnectionUtil.testDBConnection(locationPath);
+            UncertainEngineUtil.testDBConnection(project,locationPath);
         } catch (ApplicationException e) {
             return ExceptionUtil.getExceptionTraceMessage(e);
         }
@@ -429,14 +313,6 @@ public class ProjectPropertyPage extends PropertyPage {
         }
         if (!classesDir.equals(selectionResource.getName().toLowerCase())) {
             return "此文件名不是" + classesDir;
-        }
-        return null;
-    }
-
-    public static String validLogHome(String logLocalPath) {
-        File logFile = new File(logLocalPath);
-        if (!logFile.exists()) {
-            return "文件系统中不存在此目录!";
         }
         return null;
     }

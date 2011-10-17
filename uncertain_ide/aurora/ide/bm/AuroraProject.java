@@ -9,9 +9,9 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
+import aurora.ide.helpers.UncertainEngineUtil;
 
 import uncertain.core.UncertainEngine;
 
@@ -30,7 +30,7 @@ public class AuroraProject implements IRunnableWithProgress {
 		monitor.beginTask(LocaleMessage.getString("try.to.init.aurora.project.engine.please.wait"),
 				IProgressMonitor.UNKNOWN);
 			try {
-				uncertainEngine = DBConnectionUtil.initUncertainProject(project);
+				uncertainEngine = UncertainEngineUtil.initUncertainProject(project);
 			} catch (ApplicationException e) {
 				runtiemException = e;
 			}

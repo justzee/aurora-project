@@ -1,22 +1,13 @@
 package aurora.ide.editor;
 
 
-import java.io.IOException;
-
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeMap;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LoadSchemaManager;
-
-
-import uncertain.composite.CompositeMap;
-import uncertain.schema.SchemaManager;
 
 public class CompositeMapTreeShell implements IViewer {
 
@@ -57,32 +48,5 @@ public class CompositeMapTreeShell implements IViewer {
 		}
 		baseCompositeMapPage.refresh(false);
 
-	}
-
-	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-
-		SchemaManager sm = LoadSchemaManager.getSchemaManager();
-		try {
-			sm.loadSchemaFromClassPath("aurora.testcase.ui.config.components",
-					"sxsd");
-
-			sm.loadSchemaFromClassPath("aurora.testcase.ui.config.service",
-					"sxsd");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		}
-		shell.open();
-
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-
-		display.dispose();
 	}
 }

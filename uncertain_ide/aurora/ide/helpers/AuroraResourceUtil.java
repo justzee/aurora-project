@@ -6,9 +6,9 @@ package aurora.ide.helpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
@@ -37,13 +38,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
+import uncertain.core.UncertainEngine;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.preferencepages.AuroraTemplateContextType;
 import aurora.ide.preferencepages.AuroraTemplateManager;
-
-
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
 
 public class AuroraResourceUtil{
     
@@ -240,5 +240,17 @@ public class AuroraResourceUtil{
 		}
 		return templateString;
 		
+	}
+	public static File getClassPathFile(String fileName) throws IOException {
+		ClassLoader loader = UncertainEngine.class.getClassLoader();
+		URL url = loader.getResource(fileName);
+		if (url == null) {
+			loader = Thread.currentThread().getContextClassLoader();
+			url = loader.getResource(fileName);
+		}
+		if (url == null)
+			throw new IOException("Can't find " + fileName + " from current classpath");
+		url = FileLocator.toFileURL(url);
+		return new File(url.getFile());
 	}
 }

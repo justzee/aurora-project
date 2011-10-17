@@ -27,6 +27,17 @@ public class BMUtil {
 	public static final String FeaturesPrefix = "f";
 	public static final String OracleUri = "aurora.database.local.oracle";
 	public static final String OraclePrefix = "ora";
+	public static IResource getBMResourceFromClassPath(String classPath,String fileExt) throws ApplicationException{
+		return getBMResourceFromClassPath(ProjectUtil.getIProjectFromSelection(),classPath,fileExt);
+	}
+	public static IResource getBMResourceFromClassPath(IProject project, String classPath,String fileExt) throws ApplicationException {
+		if(classPath == null||project==null)
+			return null;
+		String path = classPath.replace('.', File.separatorChar) +'.' + fileExt;
+		String fullPath = ProjectUtil.getBMHome(project)+File.separatorChar+path;
+		IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(fullPath);
+		return file;
+	}
 	public static IResource getBMResourceFromClassPath(String classPath) throws ApplicationException{
 		return getBMResourceFromClassPath(ProjectUtil.getIProjectFromSelection(),classPath);
 	}
