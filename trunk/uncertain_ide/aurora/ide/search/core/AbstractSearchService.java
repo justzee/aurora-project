@@ -327,7 +327,7 @@ abstract public class AbstractSearchService implements ISearchService {
 					} catch (ApplicationException e) {
 					} catch (Exception e) {
 						if (!(e instanceof IllegalArgumentException)) {
-//							e.printStackTrace();
+							// e.printStackTrace();
 						}
 
 						handleException(fCurrentFile, e);

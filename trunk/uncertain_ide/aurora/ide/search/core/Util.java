@@ -396,7 +396,7 @@ public class Util {
             // }
             IPath relativePath = parentPath.makeRelativeTo(rootPath);
             boolean prefixOf = relativePath.isPrefixOf(path);
-            if (prefixOf) {
+            if (prefixOf||prefixOfRequest) {
                 // fullpath
                 IPath sourceFilePath = rootPath.append(path);
                 IFile sourceFile = file.getProject().getParent().getFile(sourceFilePath);

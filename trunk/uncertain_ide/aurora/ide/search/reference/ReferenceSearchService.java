@@ -68,8 +68,9 @@ public class ReferenceSearchService extends AbstractSearchService implements
 
 	protected IFile findScreenFile(CompositeMap map, Attribute attrib) {
 		IFile file = this.getFile(map.getRoot());
-		
+
 		Object pkg = map.get(attrib.getName());
+		
 		boolean isScreenRef = false;
 		if (attrib.getAttributeType() instanceof SimpleType) {
 			isScreenRef = screenReference.equals(((SimpleType) attrib
@@ -103,7 +104,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			for (String s : segments) {
 				String[] split = s.split("\\?");
 				s = split[0];
-				//TODO bug?
+				// TODO bug?
 				if (s.equals(pattern)) {
 					return true;
 				}
