@@ -546,7 +546,7 @@
        </runtime>
        <builder
              id="aurora.ide.auroraBuilder">
-       </builder>  
+       </builder>
     </extension>
 
     <extension id="auroraBuilder" name="Aurora Project Builder" 
