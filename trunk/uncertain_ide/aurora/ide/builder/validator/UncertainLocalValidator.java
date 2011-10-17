@@ -1,7 +1,6 @@
 package aurora.ide.builder.validator;
 
 import java.io.File;
-import java.nio.file.InvalidPathException;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,14 +32,6 @@ public class UncertainLocalValidator extends AbstractValidator {
                         String value = map.getString(key);
                         IRegion region = getValueRegion(doc, line - 1, key, value);
                         File f = new File(value);
-                        try {
-                            // 验证取到的值是否可以作为一个路径
-                            f.toPath();
-                        } catch (InvalidPathException e) {
-                            AuroraBuilder.addMarker(file, key + " : " + value + " 不是一个有效的路径", line, region,
-                                    IMarker.SEVERITY_ERROR, AuroraBuilder.CONFIG_PROBLEM);
-                            continue;
-                        }
                         if (f.exists()) {
                             if (!f.isDirectory())
                                 AuroraBuilder.addMarker(file, key + " : " + value + " 存在 , 但不是一个目录", line, region,
