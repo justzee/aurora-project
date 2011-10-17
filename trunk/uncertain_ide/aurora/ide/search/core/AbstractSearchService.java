@@ -34,7 +34,6 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
-import a.d;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.search.cache.CacheManager;

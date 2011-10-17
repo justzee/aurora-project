@@ -11,11 +11,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LocaleMessage;
-
 import uncertain.pkg.PackageManager;
 import uncertain.schema.SchemaManager;
+import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.LocaleMessage;
+import aurora.ide.helpers.UncertainEngineUtil;
 
 public class SxsdPackageValidAction implements IObjectActionDelegate {
 
@@ -31,9 +31,10 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 		IStructuredSelection structured = (IStructuredSelection) selection;
 		IResource type = (IResource) structured.getFirstElement();
 		File selectedFile = type.getLocation().toFile();
-		PackageManager pkgManager = new PackageManager();
+		PackageManager pkgManager;
 		String fileList = "";
 		try {
+			pkgManager = UncertainEngineUtil.getUncertainEngine(selectedFile.getName()).getPackageManager();
 			pkgManager.loadPackgeDirectory(selectedFile.getAbsolutePath());
 			File[] files = selectedFile.listFiles();
 			for (int i = 0; i < files.length; i++) {

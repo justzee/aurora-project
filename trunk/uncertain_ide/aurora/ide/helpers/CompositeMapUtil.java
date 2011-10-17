@@ -25,6 +25,7 @@ import uncertain.schema.Array;
 import uncertain.schema.Attribute;
 import uncertain.schema.ComplexType;
 import uncertain.schema.Element;
+import uncertain.schema.ISchemaManager;
 import uncertain.schema.IType;
 import uncertain.schema.Namespace;
 import uncertain.schema.Schema;
@@ -178,7 +179,7 @@ public class CompositeMapUtil {
 		return availableChilds;
 	}
 
-	public static Set getSchemaChilds(Element element, SchemaManager manager) {
+	public static Set getSchemaChilds(Element element, ISchemaManager manager) {
 		Set childs = new HashSet();
 		Set childElements = element.getChilds();
 		if (childElements == null) {

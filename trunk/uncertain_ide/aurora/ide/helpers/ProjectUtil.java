@@ -170,33 +170,6 @@ public class ProjectUtil {
 		}
 		return null;
 	}
-
-	public static String autoGetLogHome(IProject project) throws ApplicationException {
-		IResource coreConfigFile = AuroraResourceUtil.getResource(project, AuroraConstant.CoreConfigFileName);
-		IResource logConfigFile = AuroraResourceUtil.getResource(project, AuroraConstant.LogConfigFileName);
-		if (coreConfigFile == null)
-			return null;
-		else {
-			if (coreConfigFile.exists()) {
-				String logHome = ProjectPropertyPage.getLogDirFromCoreConfigFile(coreConfigFile);
-				if (logHome != null) {
-					String errorMessage = ProjectPropertyPage.validLogHome(logHome);
-					if (errorMessage == null) {
-						try {
-							project.setPersistentProperty(ProjectPropertyPage.LogQN, logHome);
-						} catch (CoreException e) {
-							throw new SystemException(e);
-						}
-						if (logConfigFile != null) {
-							ProjectPropertyPage.setLogDirToConfigFile(logConfigFile, logHome);
-						}
-					}
-					return logHome;
-				}
-			}
-		}
-		return null;
-	}
 	public static String autoGetLocalWebUrl(IProject project) throws ApplicationException {
 		String defaultUrl = "http://127.0.0.1:8080/" + project.getName();
 		try {

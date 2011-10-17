@@ -25,8 +25,8 @@ import aurora.ide.helpers.SystemException;
 public class FileHyperlinkDetector implements IHyperlinkDetector {
 
 	private XMLTagScanner scanner;
-	private static String[] buildinColumnNames = new String[] { "model",
-			"extend", "lovservice" };
+	private static String[] buildinBMNames = new String[] { "model",
+			"extend", "lovservice","service" };
 	private static String[] buildinScreenFile = new String[] { "service",
 			"screen", "svc" };
 
@@ -57,8 +57,8 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 			String columnName = getColumnName(region.getOffset(), doc);
 			if (columnName == null)
 				return null;
-			for (int i = 0; i < buildinColumnNames.length; i++) {
-				String cName = buildinColumnNames[i];
+			for (int i = 0; i < buildinBMNames.length; i++) {
+				String cName = buildinBMNames[i];
 				if ((columnName.toLowerCase().indexOf(cName) != -1)) {
 					return new IHyperlink[] { new BMFileHyperlink(token,
 							textViewer) };

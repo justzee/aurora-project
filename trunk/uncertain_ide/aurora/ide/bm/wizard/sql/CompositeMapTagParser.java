@@ -53,7 +53,7 @@ public class CompositeMapTagParser {
 					tag_begin = index;
 				}
 			} else {
-				if (!processor.accept(chr)) {
+				if (processor.accept(chr)!=0) {
 					processor.setEscapeState(false);
 					appendString(tag_begin, processor, handle);
 				}
