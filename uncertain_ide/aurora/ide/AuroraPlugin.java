@@ -61,7 +61,7 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		IWorkbench workbench = getWorkbench();
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 
-		if (window == null)
+		if (window == null && workbench.getWorkbenchWindows().length > 0)
 			window = workbench.getWorkbenchWindows()[0];
 		if (window != null) {
 			ISelectionService selectionService = window.getSelectionService();
@@ -162,11 +162,12 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 			lineManager.setMessage(message);
 		}
 	}
+
 	public IDialogSettings getDialogSettingsSection(String name) {
-		IDialogSettings dialogSettings= getDialogSettings();
-		IDialogSettings section= dialogSettings.getSection(name);
+		IDialogSettings dialogSettings = getDialogSettings();
+		IDialogSettings section = dialogSettings.getSection(name);
 		if (section == null) {
-			section= dialogSettings.addNewSection(name);
+			section = dialogSettings.addNewSection(name);
 		}
 		return section;
 	}
