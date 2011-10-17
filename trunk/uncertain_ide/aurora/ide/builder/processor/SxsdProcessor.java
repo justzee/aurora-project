@@ -16,10 +16,12 @@ import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.validator.AbstractValidator;
 
 public class SxsdProcessor extends AbstractProcessor {
-    private Set<String> nameSet = new HashSet<String>();
 
     @Override
     public void processMap(IFile file, CompositeMap map, IDocument doc) {
+        if (map.getNamespaceURI() == null)
+            return;
+        Set<String> nameSet = new HashSet<String>();
         List<Attribute> list = getAttributesInSchemaNotNull(map);
         for (Attribute a : list) {
             nameSet.add(a.getName().toLowerCase());
