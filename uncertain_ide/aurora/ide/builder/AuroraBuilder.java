@@ -177,15 +177,16 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         if (resource instanceof IFile) {
             IFile file = (IFile) resource;
             deleteMarkers(file);
-            if (file.getName().equals("uncertain.local.xml")) {
+            String ext = file.getFileExtension().toLowerCase();
+            if (file.getName().equalsIgnoreCase("uncertain.local.xml")) {
                 new UncertainLocalValidator(file).validate();
-            } else if ("bm".equals(file.getFileExtension())) {
+            } else if ("bm".equals(ext)) {
                 new BmValidator(file).validate();
-            } else if ("svc".equals(file.getFileExtension())) {
+            } else if ("svc".equals(ext)) {
                 new SvcValidator(file).validate();
-            } else if ("screen".equals(file.getFileExtension())) {
+            } else if ("screen".equals(ext)) {
                 new ScreenValidator(file).validate();
-            } else if ("config".equals(file.getFileExtension())) {
+            } else if ("config".equals(ext)) {
             }
 
         } else if (resource instanceof IFolder) {
