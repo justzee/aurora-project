@@ -42,8 +42,9 @@ public class ForeignFieldProcessor extends AbstractProcessor {
         if (refModel == null)
             refModel = (String) Util.getReferenceModelPKG(map.getParent().getParent());
         if (refModel == null) {
-            AuroraBuilder.addMarker(file, a.getName() + " : " + value + " 没有参照BM", line, region,
-                    IMarker.SEVERITY_WARNING, AuroraBuilder.UNDEFINED_FOREIGNFIELD);
+            // AuroraBuilder.addMarker(file, a.getName() + " : " + value +
+            // " 没有参照BM", line, region,
+            // IMarker.SEVERITY_WARNING, AuroraBuilder.UNDEFINED_FOREIGNFIELD);
             return;
         }
         IResource bmfile = null;
