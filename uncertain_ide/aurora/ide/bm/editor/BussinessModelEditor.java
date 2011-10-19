@@ -13,6 +13,7 @@ import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.CompositeMapLocatorParser;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.LocaleMessage;
 
 
 import uncertain.composite.CompositeMap;
@@ -20,18 +21,23 @@ import uncertain.composite.CompositeMap;
 
 public class BussinessModelEditor extends BaseCompositeMapEditor {
 
-	protected BussinessModelPage mainFormPage ;
-	private SQLExecutePage sqlPage  = new SQLExecutePage(this);
+	protected BussinessModelPage mainFormPage;
+	private SQLExecutePage sqlPage = new SQLExecutePage(this);
+	private ViewSource viewSource = new ViewSource(this);
 	int SQLPageIndex;
+	private int viewSourceIndex;
+	
 	public CompositeMapPage initMainViewerPage() {
 		mainFormPage = new BussinessModelPage(this);
 		return mainFormPage;
 	}
-	
+
 	protected void addPages() {
 		try {
 			super.addPages();
 			SQLPageIndex = addPage(sqlPage);
+			viewSourceIndex = addPage(viewSource, getEditorInput());
+			this.setPageText(viewSourceIndex, LocaleMessage.getString("view.source"));
 		} catch (PartInitException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
@@ -41,22 +47,25 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 		super.editorDirtyStateChanged();
 		sqlPage.setModify(true);
 	}
+
 	protected void pageChange(int newPageIndex) {
 		int currentPage = getCurrentPage();
 		super.pageChange(newPageIndex);
-		if(newPageIndex ==SQLPageIndex){
+		if (newPageIndex == SQLPageIndex) {
 			try {
 				sqlPage.refresh(mainViewerPage.getFullContent());
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
 			}
-		}else if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
+		} else if (newPageIndex == viewSourceIndex) {
+			viewSource.refresh();
+		} else if (currentPage == mainViewerIndex && newPageIndex == textPageIndex) {
 			try {
 				locateTextPage();
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
 			}
-		}else if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
+		} else if (currentPage == textPageIndex && newPageIndex == mainViewerIndex) {
 			locateMainPage();
 		}
 	}
@@ -65,32 +74,30 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 		CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
 
 		try {
-			InputStream content = new ByteArrayInputStream(textPage.getContent()
-					.getBytes("UTF-8"));
-			CompositeMap  cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
-			if(cm != null){
-				while(cm.getParent() != null){
+			InputStream content = new ByteArrayInputStream(textPage.getContent().getBytes("UTF-8"));
+			CompositeMap cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
+			if (cm != null) {
+				while (cm.getParent() != null) {
 					CompositeMap parent = cm.getParent();
-					if(AuroraConstant.ModelQN.equals(parent.getQName())){
+					if (AuroraConstant.ModelQN.equals(parent.getQName())) {
 						mainFormPage.setSelectionTab(cm.getName());
 					}
 					cm = parent;
 				}
 			}
-		} catch (Exception e){
+		} catch (Exception e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
-		
+
 	}
 
 	private void locateTextPage() throws ApplicationException {
 		CompositeMap selection = mainFormPage.getSelectionTab();
-		if(selection == null)
+		if (selection == null)
 			return;
 		int line = 0;
 		line = CompositeMapUtil.locateNode(mainFormPage.getFullContent(), selection);
 		int offset = textPage.getOffsetFromLine(line);
 		textPage.setHighlightRange(offset, 10, true);
-		
-	}
-}
+
+	}}
