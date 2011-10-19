@@ -126,7 +126,8 @@ public class RefactorActionComposite extends Composite implements
 		Label label = new Label(actionParent, SWT.LEFT);
 		label.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false,
 				false, 2, 1));
-		RemoveAttributeAction action = new RemoveAttributeAction();
+		RemoveAttributeAction action = new RemoveAttributeAction(
+				this.getShell());
 		action.setControl(name);
 		action.addActionChangedListener(this);
 		actions[3] = action;
@@ -140,7 +141,7 @@ public class RefactorActionComposite extends Composite implements
 		addSelectionListener(radio);
 		Text replace = createInputBox(actionParent, "replace");
 		Text with = createInputBox(actionParent, "with");
-		ReplaceAttributeAction action = new ReplaceAttributeAction(
+		ReplaceAttributeAction action = new ReplaceAttributeAction(this.getShell(),
 				ReplaceAttributeAction.NAME);
 		action.setControl(replace, with);
 		action.addActionChangedListener(this);
@@ -155,7 +156,7 @@ public class RefactorActionComposite extends Composite implements
 		addSelectionListener(radio);
 		Text replace = createInputBox(actionParent, "replace");
 		Text with = createInputBox(actionParent, "with");
-		ReplaceAttributeAction action = new ReplaceAttributeAction(
+		ReplaceAttributeAction action = new ReplaceAttributeAction(this.getShell(),
 				ReplaceAttributeAction.VALUE);
 		action.setControl(replace, with);
 		action.addActionChangedListener(this);
