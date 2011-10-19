@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -31,6 +32,7 @@ public class FolderRenameParticipant extends RenameParticipant {
 	private FolderRefactorParticipant folderRefactorParticipant;
 	private Map<String, String> pkgMap;
 	private TextFileChangeManager changeManager;
+	private boolean check;
 
 	public FolderRenameParticipant() {
 	}
@@ -52,7 +54,24 @@ public class FolderRenameParticipant extends RenameParticipant {
 
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws OperationCanceledException {
+		check = true;
 		RefactoringStatus result = new RefactoringStatus();
+		IFolder currentFolder = folderRefactorParticipant.getCurrentFolder();
+		if (currentFolder.equals(Util.findWebInf(currentFolder).getParent())) {
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("重构目录是Web主目录，Aurora重构不会进行。"));
+		}
+		if (currentFolder.equals(Util.findBMHome(currentFolder))) {
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("重构目录是BM主目录，Aurora重构不会进行。"));
+		}
+		if (this.getArguments().getNewName().contains(".")) {
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("新目录名字错误，Aurora重构不会进行。"));
+		}
 
 		return result;
 	}
@@ -60,6 +79,9 @@ public class FolderRenameParticipant extends RenameParticipant {
 	@Override
 	public Change createPreChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
+		if (!this.check)
+			return null;
+
 		if (folderRefactorParticipant.isBMFolder()) {
 			createPKGMap();
 			return createBMChange(pm);
