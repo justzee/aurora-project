@@ -78,7 +78,7 @@ public class FileRenameParticipant extends RenameParticipant {
 
 	private Change createScreenChange(IProgressMonitor pm) throws CoreException {
 		IResource scope = Util.getScope(currentSourcefile);
-		if(scope == null){
+		if (scope == null) {
 			return null;
 		}
 		ReferenceSearchService seachService = new ReferenceSearchService(scope,
@@ -95,6 +95,11 @@ public class FileRenameParticipant extends RenameParticipant {
 			int offset = object.getOriginalOffset();
 			int length = object.getOriginalLength();
 			String newName = this.getArguments().getNewName();
+			boolean overlapping = changeManager.isOverlapping(file, offset,
+					length);
+			if (overlapping) {
+				continue;
+			}
 			ReplaceEdit edit = new ReplaceEdit(offset, length, newName);
 			textFileChange.addEdit(edit);
 		}
@@ -109,7 +114,7 @@ public class FileRenameParticipant extends RenameParticipant {
 
 	private Change createBMChange(IProgressMonitor pm) throws CoreException {
 		IResource scope = Util.getScope(currentSourcefile);
-		if(scope == null){
+		if (scope == null) {
 			return null;
 		}
 		ReferenceSearchService seachService = new ReferenceSearchService(scope,
@@ -135,6 +140,11 @@ public class FileRenameParticipant extends RenameParticipant {
 						_inputName.length() - 3);
 				newName = text.substring(0, text.length() - oldName.length())
 						+ newName;
+				boolean overlapping = changeManager.isOverlapping(file, offset,
+						length);
+				if (overlapping) {
+					continue;
+				}
 				ReplaceEdit edit = new ReplaceEdit(offset, length, newName);
 				textFileChange.addEdit(edit);
 			} catch (BadLocationException e) {

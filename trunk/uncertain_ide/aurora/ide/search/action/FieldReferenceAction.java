@@ -28,6 +28,7 @@ import uncertain.composite.QualifiedName;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.TextPage;
@@ -106,6 +107,7 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 				Element element = LoadSchemaManager.getSchemaManager()
 						.getElement(map);
 				if (element != null) {
+					
 					List attrib_list = element.getAllAttributes();
 					for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 						uncertain.schema.Attribute attrib = (uncertain.schema.Attribute) it

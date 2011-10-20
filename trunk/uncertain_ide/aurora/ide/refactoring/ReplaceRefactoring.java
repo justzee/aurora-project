@@ -1,8 +1,5 @@
 package aurora.ide.refactoring;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,17 +10,18 @@ import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
-import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.ReplaceEdit;
 
 public class ReplaceRefactoring extends Refactoring {
 
 	private RefactoringReplaceInfo[] infos;
 
-	private Map<IFile, TextFileChange> changeMap = new HashMap<IFile, TextFileChange>();
+	private TextFileChangeManager changeManager;
 
 	public ReplaceRefactoring(RefactoringReplaceInfo[] infos) {
 		this.infos = infos;
+		changeManager = new TextFileChangeManager();
 		init(infos);
 	}
 
@@ -51,29 +49,34 @@ public class ReplaceRefactoring extends Refactoring {
 		changes.markAsSynthetic();
 		for (RefactoringReplaceInfo info : infos) {
 
-			TextFileChange textFileChange = this.getTextFileChange(info
-					.getFile());
+			IFile file = info.getFile();
+			TextFileChange textFileChange = this.getTextFileChange(file);
 			IRegion region = info.getRegion();
-			ReplaceEdit child = new ReplaceEdit(region.getOffset(), region.getLength(), info.getReplaceWith());
-			textFileChange.addEdit(child);
+
+			boolean overlapping = changeManager.isOverlapping(file,
+					region.getOffset(), region.getLength());
+			if (overlapping) {
+				continue;
+			}
+			ReplaceEdit child = new ReplaceEdit(region.getOffset(),
+					region.getLength(), info.getReplaceWith());
+			try {
+				textFileChange.addEdit(child);
+			} catch (MalformedTreeException e) {
+				// TextEdit.overlapping
+				// TextEdit.deleted_edit
+				// TextEdit.range_outside
+			}
 
 		}
 
-		changes.addAll(changeMap.values().toArray(
-				new TextFileChange[changeMap.size()]));
+		changes.addAll(changeManager.getAllChanges());
 
 		return changes;
 	}
 
 	private TextFileChange getTextFileChange(IFile file) {
-		TextFileChange textFileChange = changeMap.get(file);
-		if (textFileChange == null) {
-			textFileChange = new TextFileChange("Replace Refactoring", file);
-			textFileChange.setSaveMode(TextFileChange.FORCE_SAVE);
-			textFileChange.setEdit(new MultiTextEdit());
-			changeMap.put(file, textFileChange);
-		}
-		return textFileChange;
+		return changeManager.getTextFileChange(file);
 	}
 
 	@Override

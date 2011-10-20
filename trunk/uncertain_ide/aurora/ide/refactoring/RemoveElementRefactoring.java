@@ -1,8 +1,5 @@
 package aurora.ide.refactoring;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,7 +10,7 @@ import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
-import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.ReplaceEdit;
 
 import aurora.ide.search.core.CompositeMapInDocument;
@@ -22,11 +19,15 @@ public class RemoveElementRefactoring extends Refactoring {
 
 	private CompositeMapInDocument[] lines;
 
-	private Map<IFile, TextFileChange> changeMap = new HashMap<IFile, TextFileChange>();
+	private TextFileChangeManager changeManager;
+
+	// private Map<IFile, TextFileChange> changeMap = new HashMap<IFile,
+	// TextFileChange>();
 
 	public RemoveElementRefactoring(CompositeMapInDocument[] lines) {
 		this.lines = lines;
 		init(lines);
+		changeManager = new TextFileChangeManager();
 	}
 
 	private void init(CompositeMapInDocument[] lines) {
@@ -53,31 +54,34 @@ public class RemoveElementRefactoring extends Refactoring {
 		changes.markAsSynthetic();
 		for (CompositeMapInDocument line : lines) {
 
-			TextFileChange textFileChange = this.getTextFileChange(line
-					.getFile());
+			IFile file = line.getFile();
+			TextFileChange textFileChange = this.getTextFileChange(file);
 			IRegion start = line.getStart();
 			IRegion end = line.getEnd();
 			int length = end.getOffset() - start.getOffset() + end.getLength();
+			boolean overlapping = changeManager.isOverlapping(file,
+					start.getOffset(), length);
+			if (overlapping) {
+				continue;
+			}
 			ReplaceEdit child = new ReplaceEdit(start.getOffset(), length, "");
-			textFileChange.addEdit(child);
+			try {
+				textFileChange.addEdit(child);
+			} catch (MalformedTreeException e) {
+				// TextEdit.overlapping
+				// TextEdit.deleted_edit
+				// TextEdit.range_outside
+			}
 
 		}
 
-		changes.addAll(changeMap.values().toArray(
-				new TextFileChange[changeMap.size()]));
+		changes.addAll(changeManager.getAllChanges());
 
 		return changes;
 	}
 
 	private TextFileChange getTextFileChange(IFile file) {
-		TextFileChange textFileChange = changeMap.get(file);
-		if (textFileChange == null) {
-			textFileChange = new TextFileChange("Remove Element", file);
-			textFileChange.setSaveMode(TextFileChange.FORCE_SAVE);
-			textFileChange.setEdit(new MultiTextEdit());
-			changeMap.put(file, textFileChange);
-		}
-		return textFileChange;
+		return changeManager.getTextFileChange(file);
 	}
 
 	@Override
