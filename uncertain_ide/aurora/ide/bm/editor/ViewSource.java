@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.XMLOutputter;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.ide.bm.ExtendModelFactory;
@@ -17,18 +18,21 @@ public class ViewSource extends TextPage {
 
 	public ViewSource(FormEditor editor) {
 		super(editor);
-		
+
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		this.getSourceViewer().getTextWidget().addFocusListener(new FocusListener(){
-			public void focusGained(FocusEvent arg0) {
-				refresh();
-			}
-			public void focusLost(FocusEvent arg0) {
-			}});
+		this.getSourceViewer().getTextWidget()
+				.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {
+						refresh();
+					}
+
+					public void focusLost(FocusEvent arg0) {
+					}
+				});
 	}
 
 	@Override
@@ -58,16 +62,20 @@ public class ViewSource extends TextPage {
 	public String getExtendContent() {
 		IFile file = (IFile) getEditorInput().getAdapter(IFile.class);
 		try {
+			
 			CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
-			BusinessModel r = createResult(bm);
-			return r.getObjectContext().toXML();
+			BusinessModel r = createResult(bm, file);
+			return XMLOutputter.defaultInstance().toXML(r.getObjectContext(),
+					true);
+			// return r.getObjectContext().toXML();
 		} catch (Exception e) {
 			return e.getMessage();
 		}
 	}
 
-	private BusinessModel createResult(CompositeMap config) {
-		ExtendModelFactory factory = new ExtendModelFactory(OCManager.getInstance());
+	private BusinessModel createResult(CompositeMap config, IFile file) {
+		ExtendModelFactory factory = new ExtendModelFactory(
+				OCManager.getInstance(), file);
 		return factory.getModel(config);
 	}
 }
