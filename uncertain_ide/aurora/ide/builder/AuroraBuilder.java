@@ -29,6 +29,9 @@ import aurora.ide.builder.validator.UncertainLocalValidator;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
 
 public class AuroraBuilder extends IncrementalProjectBuilder {
+    private IProgressMonitor monitor;
+    private int              filecount   = 0;
+    private int              currentfile = 0;
 
     class SampleDeltaVisitor implements IResourceDeltaVisitor {
         public boolean visit(IResourceDelta delta) throws CoreException {
@@ -115,6 +118,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         if (kind == FULL_BUILD) {
             fullBuild(monitor);
         } else {
+            this.monitor = monitor;
             IResourceDelta delta = getDelta(getProject());
             if (delta == null) {
                 fullBuild(monitor);
@@ -145,6 +149,17 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         try {
             if (!checkWebDir())
                 return;
+            filecount = 0;
+            currentfile = 0;
+            getProject().accept(new IResourceVisitor() {
+
+                public boolean visit(IResource resource) throws CoreException {
+                    filecount++;
+                    return true;
+                }
+            });
+            this.monitor = monitor;
+            monitor.beginTask("builder " + getProject().getName(), filecount);
             getProject().accept(new SampleResourceVisitor());
         } catch (CoreException e) {
             e.printStackTrace();
@@ -154,6 +169,9 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
     protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
         if (!checkWebDir())
             return;
+        filecount = 1;
+        currentfile = 0;
+        monitor.beginTask("builder " + getProject().getName(), filecount);
         delta.accept(new SampleDeltaVisitor());
     }
 
@@ -179,6 +197,9 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
     }
 
     private void validate(IResource resource) {
+        monitor.subTask(resource.getName());
+        currentfile++;
+        monitor.worked(1);
         if (resource instanceof IFile) {
             IFile file = (IFile) resource;
             deleteMarkers(file);
