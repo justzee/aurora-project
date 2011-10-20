@@ -1,23 +1,26 @@
 package aurora.ide.builder.validator;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
+import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.processor.AbstractProcessor;
 import aurora.ide.editor.textpage.IColorConstants;
-import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.LogUtil;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.Util;
 
 public abstract class AbstractValidator implements IterationHandle {
-    private IFile        file;
-    private CompositeMap map;
-    private IDocument    doc;
+    private IFile               file;
+    private CompositeMap        map;
+    private IDocument           doc;
+    private AbstractProcessor[] aps = null;
 
     public AbstractValidator(IFile file) {
         super();
@@ -25,22 +28,26 @@ public abstract class AbstractValidator implements IterationHandle {
         try {
             map = CacheManager.getCompositeMapCacher().getCompositeMap(file);
             doc = CacheManager.getDocumentCacher().getDocument(file);
-        } catch (CoreException e) {
-            e.printStackTrace();
-        } catch (ApplicationException e) {
+        } catch (Exception e) {
+            System.out.println(file);
+            AuroraBuilder.addMarker(file, e.getMessage(), 1, IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
+            LogUtil.getInstance().log(IStatus.ERROR, file.getName() + "解析异常", e);
             e.printStackTrace();
         }
     }
 
     public final void validate() {
+        if (map == null)
+            return;
+        aps = getMapProcessor();
         map.iterate(this, true);
-        for (AbstractProcessor np : getMapProcessor()) {
+        for (AbstractProcessor np : aps) {
             np.processComplete(file, map, doc);
         }
     }
 
     public int process(CompositeMap map) {
-        for (AbstractProcessor np : getMapProcessor()) {
+        for (AbstractProcessor np : aps) {
             np.processMap(file, map, doc);
         }
         return 0;
