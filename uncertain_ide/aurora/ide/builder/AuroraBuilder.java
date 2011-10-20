@@ -66,6 +66,8 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
     public static final String UNDEFINED_SCREEN       = "aurora.ide.undefinedScreen";
     public static final String NONENAMESPACE          = "aurora.ide.nonenamespace";
     public static final String CONFIG_PROBLEM         = "aurora.ide.configProblem";
+    public static final String UNDEFINED_TAG          = "aurora.ide.undefinedTag";
+    public static final String FATAL_ERROR            = "aurora.ide.fatalError";
 
     public static void addMarker(IFile file, String message, int lineNumber, int severity, String markerType) {
         try {
@@ -133,6 +135,8 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
             file.deleteMarkers(UNDEFINED_LOCALFIELD, false, IResource.DEPTH_ZERO);
             file.deleteMarkers(UNDEFINED_SCREEN, false, IResource.DEPTH_ZERO);
             file.deleteMarkers(NONENAMESPACE, false, IResource.DEPTH_ZERO);
+            file.deleteMarkers(UNDEFINED_TAG, false, IResource.DEPTH_ZERO);
+            file.deleteMarkers(FATAL_ERROR, false, IResource.DEPTH_ZERO);
         } catch (CoreException ce) {
         }
     }
@@ -143,6 +147,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
                 return;
             getProject().accept(new SampleResourceVisitor());
         } catch (CoreException e) {
+            e.printStackTrace();
         }
     }
 
@@ -158,13 +163,13 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         String webdir = project.getPersistentProperty(ProjectPropertyPage.WebQN);
         if (webdir == null || !project.getParent().getFolder(new Path(webdir + "/WEB-INF")).exists()) {
             IMarker marker = project.createMarker(CONFIG_PROBLEM);
-            marker.setAttribute(IMarker.MESSAGE, "未指定web目录!");
+            marker.setAttribute(IMarker.MESSAGE, "未指定Web主目录,请打开属性页设置!");
             marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
                     MessageBox mb = new MessageBox(new Shell(), SWT.ERROR);
                     mb.setText("builder error");
-                    mb.setMessage("请先设置web目录");
+                    mb.setMessage("请先设置Web主目录,请打开属性页设置");
                     mb.open();
                 }
             });
