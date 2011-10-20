@@ -10,21 +10,26 @@ import aurora.bm.BusinessModel;
 import aurora.bm.ModelFactory;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.search.core.Util;
 
 public class ExtendModelFactory extends ModelFactory {
 
-	public ExtendModelFactory(OCManager ocm) {
+	private IFile c_file;
+
+	public ExtendModelFactory(OCManager ocm, IFile file) {
 		super(ocm);
+		this.c_file = file;
 	}
 
 	@Override
-	protected BusinessModel getNewModelInstance(String name, String ext) throws IOException {
+	protected BusinessModel getNewModelInstance(String name, String ext)
+			throws IOException {
 		if (name == null) {
 			throw new IllegalArgumentException("model name is null");
 		}
 		try {
-			IFile file = Util.findBMFileByPKG(name);
+			IFile file = (IFile) BMUtil.getBMResourceFromClassPath(
+					this.c_file.getProject(), name);
+			//
 			CompositeMap config = AuroraResourceUtil.loadFromResource(file);
 			if (config == null) {
 				throw new IOException("Can't load resource " + name);
