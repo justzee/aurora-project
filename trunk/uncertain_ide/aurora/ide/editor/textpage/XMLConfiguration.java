@@ -1,18 +1,11 @@
 package aurora.ide.editor.textpage;
 
-import java.util.Iterator;
-
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultTextHover;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
-import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.IUndoManager;
-import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
@@ -27,12 +20,9 @@ import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
-import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.EditorsUI;
@@ -63,7 +53,6 @@ public class XMLConfiguration extends SourceViewerConfiguration {
     private ColorManager           colorManager;
 
     public XMLConfiguration(ColorManager colorManager) {
-
         this.colorManager = colorManager;
     }
 
@@ -85,6 +74,13 @@ public class XMLConfiguration extends SourceViewerConfiguration {
             scanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager.getColor(IColorConstants.DEFAULT))));
         }
         return scanner;
+    }
+
+    @Override
+    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+        if (contentType.equals(XMLPartitionScanner.XML_CDATA))
+            return new IAutoEditStrategy[] { new JavaScriptAutoIndentStrategy() };
+        return super.getAutoEditStrategies(sourceViewer, contentType);
     }
 
     protected JSEditorCodeScanner getCDataScanner() {
@@ -209,85 +205,9 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 
     }
 
-    private String getMarkerInfo(ISourceViewer sourceViewer, IRegion hoverRegion) {
-        IAnnotationModel model = null;
-        if (sourceViewer instanceof ISourceViewerExtension2) {
-            ISourceViewerExtension2 extension = (ISourceViewerExtension2) sourceViewer;
-            model = extension.getVisualAnnotationModel();
-        } else
-            model = sourceViewer.getAnnotationModel();
-        if (model == null)
-            return null;
-
-        @SuppressWarnings("unchecked")
-        Iterator<Annotation> e = model.getAnnotationIterator();
-        while (e.hasNext()) {
-            Annotation a = e.next();
-            String type = a.getType();
-            if (!XmlErrorReconcile.AnnotationType.equals(type)
-                    && !"org.eclipse.ui.workbench.texteditor.warning".equals(type)
-                    && !"org.eclipse.ui.workbench.texteditor.error".equals(type))
-                continue;
-            Position p = model.getPosition(a);
-            if (p != null && p.overlapsWith(hoverRegion.getOffset(), hoverRegion.getLength())) {
-                String msg = a.getText();
-                if (msg != null && msg.trim().length() > 0)
-                    return msg;
-            }
-        }
-
-        return null;
-    }
-
     @Override
     public ITextHover getTextHover(final ISourceViewer sourceViewer, String contentType) {
-        return new DefaultTextHover(sourceViewer) {
-
-            @SuppressWarnings("deprecation")
-            @Override
-            public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-                String hover = getMarkerInfo(sourceViewer, hoverRegion);
-                if (hover != null)
-                    return hover;
-                try {
-                    return textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
-                } catch (BadLocationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                return super.getHoverInfo(textViewer, hoverRegion);
-            }
-
-            @Override
-            public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-                // TODO Auto-generated method stub
-                IDocument doc = textViewer.getDocument();
-                try {
-                    int line = doc.getLineOfOffset(offset);
-                    int ls = doc.getLineOffset(line);
-                    int len = doc.getLineLength(line);
-                    String text = doc.get(ls, len);
-                    if (text == null || text.length() == 0)
-                        return super.getHoverRegion(textViewer, offset);
-                    int s = offset - ls, e = offset - ls;
-                    char c = text.charAt(s);
-                    if (Character.isJavaIdentifierPart(c)) {
-                        while (s >= 0 && Character.isJavaIdentifierPart(text.charAt(s)))
-                            s--;
-                        s++;
-                        while (e < text.length() && Character.isJavaIdentifierPart(text.charAt(e)))
-                            e++;
-                        return new Region(ls + s, e - s);
-                    }
-
-                } catch (BadLocationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                return super.getHoverRegion(textViewer, offset);
-            }
-
-        };
+        ITextHover th = new TextHover(sourceViewer);
+        return th;
     }
 }
