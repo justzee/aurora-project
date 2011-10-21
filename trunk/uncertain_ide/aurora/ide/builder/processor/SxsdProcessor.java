@@ -1,6 +1,6 @@
 package aurora.ide.builder.processor;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,52 +17,71 @@ import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.builder.AuroraBuilder;
+import aurora.ide.builder.SxsdUtil;
 import aurora.ide.builder.validator.AbstractValidator;
 import aurora.ide.editor.textpage.IColorConstants;
-import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.core.Util;
 
 public class SxsdProcessor extends AbstractProcessor {
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public void processMap(IFile file, CompositeMap map, IDocument doc) {
-        if (map.getNamespaceURI() == null)
-            return;
-        CompositeMap parent = map.getParent();
-        List<Element> childs = new ArrayList<Element>();
-        if (parent != null) {
-            childs = CompositeMapUtil.getAvailableChildElements(parent);
-            if (childs == null)
-                childs = new ArrayList<Element>();
-            Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
-            if (ele != null) {
-                childs.addAll(ele.getAllArrays());
+
+    /**
+     * 检查当前结点map是否可以出现其父结点下中(如果当前结点不是根节点)
+     * 
+     * @param file
+     * @param map
+     * @param doc
+     */
+    private void checkTag(IFile file, CompositeMap map, IDocument doc) {
+        List<Element> childs = SxsdUtil.getAvailableChildElements(map);
+        List<CompositeMap> childMap = map.getChildsNotNull();
+        HashMap<String, Integer> countMap = new HashMap<String, Integer>(20);
+        L: for (CompositeMap m : childMap) {
+            if (m.getNamespaceURI() == null)
+                continue;
+            String mapName = m.getName();
+            if (countMap.get(mapName) == null)
+                countMap.put(mapName, 1);
+            else
+                countMap.put(mapName, countMap.get(mapName) + 1);
+            boolean reachMax = false;
+            int mc = 0;
+            for (int i = 0; i < childs.size(); i++) {
+                Element e = childs.get(i);
+                if (mapName.equalsIgnoreCase(e.getQName().getLocalName())) {
+                    String maxOccurs = e.getMaxOccurs();
+                    if (maxOccurs != null) {
+                        mc = Integer.parseInt(maxOccurs);
+                        if (mc < countMap.get(mapName)) {
+                            reachMax = true;
+                            break;
+                        }
+                    }
+                    continue L;
+                }
             }
-        }
-        boolean ok = false;
-        String mapName = map.getName();
-        for (Element ele : childs) {
-            if (mapName.equalsIgnoreCase(ele.getQName().getLocalName())) {
-                ok = true;
-                break;
-            }
-        }
-        if (!ok && parent != null) {
-            int line = map.getLocationNotNull().getStartLine();
+            int line = m.getLocationNotNull().getStartLine();
             if (line == 0)
                 line = 1;
             IRegion region = null;
             try {
                 region = Util.getDocumentRegion(doc.getLineOffset(line - 1), doc.getLineLength(line - 1),
-                        map.getRawName(), doc, IColorConstants.TAG_NAME);
+                        m.getRawName(), doc, IColorConstants.TAG_NAME);
             } catch (BadLocationException e) {
                 region = new Region(0, 0);
                 e.printStackTrace();
             }
-            AuroraBuilder.addMarker(file, "Tag : " + mapName + " , 不应该出现在 " + parent.getName() + " 下", line, region,
-                    IMarker.SEVERITY_WARNING, AuroraBuilder.UNDEFINED_TAG);
+            String msg = "Tag : " + mapName
+                    + (reachMax ? (" , 已超出最大重复数 : " + mc) : (" , 不应该出现在 " + map.getName() + " 下"));
+            AuroraBuilder.addMarker(file, msg, line, region, IMarker.SEVERITY_WARNING, AuroraBuilder.UNDEFINED_TAG);
         }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public void processMap(IFile file, CompositeMap map, IDocument doc) {
+        if (map.getNamespaceURI() == null)
+            return;
+        checkTag(file, map, doc);
 
         Set<String> nameSet = new HashSet<String>();
         List<Attribute> list = getAttributesInSchemaNotNull(map);
