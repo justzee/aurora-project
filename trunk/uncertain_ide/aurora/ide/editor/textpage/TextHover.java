@@ -1,7 +1,6 @@
 package aurora.ide.editor.textpage;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultTextHover;
@@ -24,16 +23,15 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
-import uncertain.schema.Element;
 import uncertain.schema.IType;
+import aurora.ide.builder.SxsdUtil;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.core.Util;
 
 public class TextHover extends DefaultTextHover implements ITextHoverExtension {
     private ISourceViewer sourceViewer;
-    private String        style = "<style> body,table{ font-family:sans-serif; font-size:9pt; background:#FFFFE1; } </style>";
+    private String        style = "<style>body,table{ font-family:sans-serif; font-size:9pt; background:#FFFFE1; } table,td,th {border:1px solid #888 ;border-collapse:collapse;}</style>";
 
     public TextHover(ISourceViewer sourceViewer) {
         super(sourceViewer);
@@ -63,27 +61,14 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 
                 public int process(CompositeMap map) {
                     if (map.getLocation().getStartLine() == line + 1) {
-                        Element ele = LoadSchemaManager.getSchemaManager().getElement(map);
-                        if (ele != null) {
-                            @SuppressWarnings("unchecked")
-                            List<Attribute> list = ele.getAllAttributes();
-                            if (list != null) {
-                                StringBuilder sb = new StringBuilder(2000);
-                                sb.append("Defined Attributes in [ ");
-                                sb.append(map.getName());
-                                sb.append(" ]:<hr/><table>");
-                                for (Attribute a : list) {
-                                    if (word[0].equalsIgnoreCase(a.getName())) {
-                                        word[0] = a.getName() + "<br/>" + notNull(a.getDocument()) + "<br/>Type : "
-                                                + getTypeNameNotNull(a.getAttributeType());
-                                        return IterationHandle.IT_BREAK;
-                                    }
-                                    sb.append(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>", a.getName(),
-                                            notNull(a.getDocument()), getTypeNameNotNull(a.getAttributeType())));
-                                }
-                                sb.append("</table>");
-                                if (word[0].equalsIgnoreCase(map.getName()))
-                                    word[0] = sb.toString();
+                        if (word[0].equalsIgnoreCase(map.getName())) {
+                            word[0] = SxsdUtil.getHtmlDocument(map);
+                        }
+                        for (Attribute a : SxsdUtil.getAttributesNotNull(map)) {
+                            if (word[0].equalsIgnoreCase(a.getName())) {
+                                word[0] = a.getName() + "<br/>" + notNull(a.getDocument()) + "<br/>Type : "
+                                        + getTypeNameNotNull(a.getAttributeType());
+                                return IterationHandle.IT_BREAK;
                             }
                         }
                         return IterationHandle.IT_BREAK;
@@ -174,7 +159,7 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
     }
 
     private String html(String str) {
-        StringBuilder sb = new StringBuilder(2000);
+        StringBuilder sb = new StringBuilder(5000);
         sb.append("<html><head>");
         sb.append(style);
         sb.append("</head><body>");
