@@ -1,6 +1,7 @@
 package aurora.ide.editor.textpage;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultTextHover;
@@ -18,12 +19,11 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
+import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.IterationHandle;
-import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
-import uncertain.schema.IType;
+import uncertain.util.resource.Location;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.CompositeMapUtil;
@@ -31,7 +31,8 @@ import aurora.ide.search.core.Util;
 
 public class TextHover extends DefaultTextHover implements ITextHoverExtension {
     private ISourceViewer sourceViewer;
-    private String        style = "<style>body,table{ font-family:sans-serif; font-size:9pt; background:#FFFFE1; } table,td,th {border:1px solid #888 ;border-collapse:collapse;}</style>";
+    private static String style    = "<style>body,table{ font-family:sans-serif; font-size:9pt; background:#FFFFE1; } table,td,th {border:1px solid #888 ;border-collapse:collapse;}</style>";
+    private Annotation    lastAnno = null;
 
     public TextHover(ISourceViewer sourceViewer) {
         super(sourceViewer);
@@ -39,6 +40,7 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
     }
 
     public IInformationControlCreator getHoverControlCreator() {
+
         return new HoverInformationControlCreator();
     }
 
@@ -51,32 +53,27 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
         try {
             IDocument doc = textViewer.getDocument();
             final int line = doc.getLineOfOffset(hoverRegion.getOffset());
-            final String[] word = { doc.get(hoverRegion.getOffset(), hoverRegion.getLength()) };
-            if (word[0] == null || word[0].trim().length() == 0)
+            String word = doc.get(hoverRegion.getOffset(), hoverRegion.getLength());
+            if (word == null || word.trim().length() == 0)
                 return null;
             if (isAttributeValue(doc, line, hoverRegion.getOffset(), hoverRegion.getLength()))
-                return html(word[0]);
+                return html(word);
             CompositeMap map = CompositeMapUtil.loaderFromString(doc.get());
-            map.iterate(new IterationHandle() {
-
-                public int process(CompositeMap map) {
-                    if (map.getLocation().getStartLine() == line + 1) {
-                        if (word[0].equalsIgnoreCase(map.getName())) {
-                            word[0] = SxsdUtil.getHtmlDocument(map);
-                        }
-                        for (Attribute a : SxsdUtil.getAttributesNotNull(map)) {
-                            if (word[0].equalsIgnoreCase(a.getName())) {
-                                word[0] = a.getName() + "<br/>" + notNull(a.getDocument()) + "<br/>Type : "
-                                        + getTypeNameNotNull(a.getAttributeType());
-                                return IterationHandle.IT_BREAK;
-                            }
-                        }
-                        return IterationHandle.IT_BREAK;
+            if (map == null)
+                return null;
+            CompositeMap cursorMap = findMap(map, line);
+            if (word.equals(cursorMap.getName())) {
+                word = SxsdUtil.getHtmlDocument(cursorMap);
+            } else {
+                for (Attribute a : SxsdUtil.getAttributesNotNull(cursorMap)) {
+                    if (word.equalsIgnoreCase(a.getName())) {
+                        word = a.getName() + "<br/>" + SxsdUtil.notNull(a.getDocument());
+                        if (SxsdUtil.getTypeNameNotNull(a.getAttributeType()).length() > 0)
+                            word += "<br/>Type : " + SxsdUtil.getTypeNameNotNull(a.getAttributeType());
                     }
-                    return 0;
                 }
-            }, true);
-            return html(word[0]);
+            }
+            return html(word);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,20 +81,15 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
         return null;
     }
 
-    private String getTypeNameNotNull(IType type) {
-        if (type == null)
-            return "";
-        QualifiedName qfn = type.getQName();
-        if (qfn == null)
-            return "";
-        String name = qfn.getLocalName();
-        if (name == null)
-            return "";
-        return name;
-    }
-
-    private String notNull(String str) {
-        return str == null ? "" : str;
+    private CompositeMap findMap(CompositeMap rootMap, int line) {
+        @SuppressWarnings("unchecked")
+        List<CompositeMap> childs = rootMap.getChildsNotNull();
+        for (CompositeMap map : childs) {
+            Location loc = map.getLocationNotNull();
+            if (loc.getStartLine() <= line + 1 && loc.getEndLine() >= line + 1)
+                return findMap(map, line);
+        }
+        return rootMap;
     }
 
     @Override
@@ -142,28 +134,32 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
         Iterator<Annotation> e = model.getAnnotationIterator();
         while (e.hasNext()) {
             Annotation a = e.next();
-            String type = a.getType();
-            if (!XmlErrorReconcile.AnnotationType.equals(type)
-                    && !"org.eclipse.ui.workbench.texteditor.warning".equals(type)
-                    && !"org.eclipse.ui.workbench.texteditor.error".equals(type))
+            if (!(a instanceof MarkerAnnotation))
                 continue;
-            Position p = model.getPosition(a);
+            MarkerAnnotation ma = (MarkerAnnotation) a;
+            lastAnno = ma;
+            // String type = a.getType();
+            // if (!XmlErrorReconcile.AnnotationType.equals(type)
+            // && !"org.eclipse.ui.workbench.texteditor.warning".equals(type)
+            // && !"org.eclipse.ui.workbench.texteditor.error".equals(type))
+            // continue;
+            Position p = model.getPosition(ma);
             if (p != null && p.overlapsWith(hoverRegion.getOffset(), hoverRegion.getLength())) {
-                String msg = a.getText();
+                String msg = ma.getText();
                 if (msg != null && msg.trim().length() > 0)
                     return msg;
             }
         }
-
+        lastAnno = null;
         return null;
     }
 
-    private String html(String str) {
+    public static String html(String str) {
         StringBuilder sb = new StringBuilder(5000);
         sb.append("<html><head>");
         sb.append(style);
         sb.append("</head><body>");
-        sb.append(str);
+        sb.append(str.replace("\\n", "<br/>"));
         sb.append("</body></html>");
         return sb.toString();
     }
