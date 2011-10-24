@@ -30,8 +30,7 @@ import aurora.ide.project.propertypage.ProjectPropertyPage;
 
 public class AuroraBuilder extends IncrementalProjectBuilder {
     private IProgressMonitor monitor;
-    private int              filecount   = 0;
-    private int              currentfile = 0;
+    private int              filecount = 0;
 
     class SampleDeltaVisitor implements IResourceDeltaVisitor {
         public boolean visit(IResourceDelta delta) throws CoreException {
@@ -71,6 +70,10 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
     public static final String CONFIG_PROBLEM         = "aurora.ide.configProblem";
     public static final String UNDEFINED_TAG          = "aurora.ide.undefinedTag";
     public static final String FATAL_ERROR            = "aurora.ide.fatalError";
+
+    private static String[]    definedMarkerTypes     = { UNDEFINED_ATTRIBUTE, UNDEFINED_BM, UNDEFINED_DATASET,
+            UNDEFINED_FOREIGNFIELD, UNDEFINED_LOCALFIELD, UNDEFINED_SCREEN, NONENAMESPACE, CONFIG_PROBLEM,
+            UNDEFINED_TAG, FATAL_ERROR               };
 
     public static void addMarker(IFile file, String message, int lineNumber, int severity, String markerType) {
         try {
@@ -131,16 +134,8 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 
     private void deleteMarkers(IFile file) {
         try {
-            file.deleteMarkers(CONFIG_PROBLEM, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_ATTRIBUTE, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_BM, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_DATASET, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_FOREIGNFIELD, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_LOCALFIELD, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_SCREEN, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(NONENAMESPACE, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(UNDEFINED_TAG, false, IResource.DEPTH_ZERO);
-            file.deleteMarkers(FATAL_ERROR, false, IResource.DEPTH_ZERO);
+            for (String s : definedMarkerTypes)
+                file.deleteMarkers(s, false, IResource.DEPTH_ZERO);
         } catch (CoreException ce) {
         }
     }
@@ -150,7 +145,6 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
             if (!checkWebDir())
                 return;
             filecount = 0;
-            currentfile = 0;
             getProject().accept(new IResourceVisitor() {
 
                 public boolean visit(IResource resource) throws CoreException {
@@ -170,7 +164,6 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         if (!checkWebDir())
             return;
         filecount = 1;
-        currentfile = 0;
         monitor.beginTask("builder " + getProject().getName(), filecount);
         delta.accept(new SampleDeltaVisitor());
     }
@@ -198,7 +191,6 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 
     private void validate(IResource resource) {
         monitor.subTask(resource.getName());
-        currentfile++;
         monitor.worked(1);
         if (resource instanceof IFile) {
             IFile file = (IFile) resource;
@@ -239,5 +231,9 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static String[] getDefinedMarkerTypes() {
+        return definedMarkerTypes;
     }
 }
