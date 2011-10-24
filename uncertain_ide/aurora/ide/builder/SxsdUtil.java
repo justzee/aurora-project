@@ -120,6 +120,8 @@ public final class SxsdUtil {
      *         并非完整html代码
      */
     public static String getHtmlDocument(CompositeMap mapNode) {
+        if (mapNode.getNamespaceURI() == null)
+            return mapNode.getName() + " 没有命名空间,找不到文档";
         StringBuilder sb = new StringBuilder(6 * 1024);
         List<Attribute> list = getAttributesNotNull(mapNode);
         if (list.size() == 0) {
@@ -129,7 +131,7 @@ public final class SxsdUtil {
                     mapNode.getName()));
             for (Attribute a : list) {
                 sb.append(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>", a.getName(),
-                        notNull(a.getDocument()), getTypeNameNotNull(a.getAttributeType())));
+                        convertToHTMLContent(notNull(a.getDocument())), getTypeNameNotNull(a.getAttributeType())));
             }
             sb.append("</table><br/>");
         }
@@ -141,14 +143,22 @@ public final class SxsdUtil {
                     mapNode.getName()));
             for (Element e : childs) {
                 sb.append(String.format("<tr><td>%s</td><td>%s</td><td>%s</td></tr>", e.getQName().getLocalName(),
-                        notNull(e.getDocument()), e.getMaxOccurs() == null ? "∞" : e.getMaxOccurs()));
+                        convertToHTMLContent(notNull(e.getDocument())),
+                        e.getMaxOccurs() == null ? "∞" : e.getMaxOccurs()));
             }
             sb.append("</table><br/>");
         }
         return sb.toString();
     }
 
-    private static String getTypeNameNotNull(IType type) {
+    public static String convertToHTMLContent(String content) {
+        content = content.replace("&", "&amp;");
+        content = content.replace("\"", "&quot;");
+        content = content.replace("<", "&lt;");
+        return content.replace(">", "&gt;");
+    }
+
+    public static String getTypeNameNotNull(IType type) {
         if (type == null)
             return "";
         QualifiedName qfn = type.getQName();
@@ -160,7 +170,7 @@ public final class SxsdUtil {
         return name;
     }
 
-    private static String notNull(String str) {
+    public static String notNull(String str) {
         return str == null ? "" : str;
     }
 }
