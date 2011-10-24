@@ -21,6 +21,7 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
+import uncertain.composite.XMLOutputter;
 import uncertain.schema.Array;
 import uncertain.schema.Attribute;
 import uncertain.schema.ComplexType;
@@ -431,5 +432,10 @@ public class CompositeMapUtil {
 			}
 		}
 		return root;
+	}
+	public static String getFullContent(CompositeMap data){
+		if(data == null)
+			return null;
+		return AuroraResourceUtil.xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
 	}
 }

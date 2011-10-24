@@ -1,6 +1,5 @@
 package aurora.ide.editor;
 
-
 import java.io.File;
 import java.io.IOException;
 
@@ -40,20 +39,22 @@ public class CompositeMapTreePage extends CompositeMapPage {
 		shell = form.getBody();
 		FillLayout layout = new FillLayout();
 		shell.setLayout(layout);
-		try {
-			CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
-			data = loader.loadByFile(getFile().getAbsolutePath());
+		if (data == null) {
+			try {
+				CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
+				data = loader.loadByFile(getFile().getAbsolutePath());
 
-		} catch (IOException e) {
-			DialogUtil.showExceptionMessageBox(e);
-		} catch (SAXException e) {
-			String emptyExcption = "Premature end of file";
-			if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
-				data = ScreenUtil.createScreenTopNode();
-				data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
-			} else {
+			} catch (IOException e) {
 				DialogUtil.showExceptionMessageBox(e);
-				return;
+			} catch (SAXException e) {
+				String emptyExcption = "Premature end of file";
+				if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
+					data = ScreenUtil.createScreenTopNode();
+					data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+				} else {
+					DialogUtil.showExceptionMessageBox(e);
+					return;
+				}
 			}
 		}
 		try {
@@ -85,43 +86,34 @@ public class CompositeMapTreePage extends CompositeMapPage {
 	}
 
 	public void refresh(boolean dirty) {
-		if (dirty) {
-			getEditor().editorDirtyStateChanged();
-		}
 		baseCompositeMapPage.refresh(false);
-	}
-
-	public void refresh(CompositeMap data) {
-		this.data = data;
-		baseCompositeMapPage.refresh(data);
+		super.refresh(dirty);
 	}
 
 	public CompositeMap getData() {
 		return data;
 	}
 
-	public void setData(CompositeMap data) {
-		this.data = data;
-	}
 	public TreeViewer getTreeViewer() {
 		return baseCompositeMapPage.getTreeViewer();
 	}
+
 	public CompositeMap getSelection() {
 		return baseCompositeMapPage.getSelection();
 	}
-	public CompositeMap getContent() {
-		return data;
 
-	}
-
-	public String getFullContent() {
-		String encoding = "UTF-8";
-		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>\n";
-		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
-	}
-
-	public void setContent(CompositeMap content) {
+	public void setData(CompositeMap content) {
 		this.data = content;
+
+	}
+
+	public boolean isFormContendCreated() {
+		return baseCompositeMapPage != null;
+	}
+
+	@Override
+	public void refreshFormContent(CompositeMap data) {
+		this.data = data;
 		baseCompositeMapPage.refresh(data);
 	}
 }

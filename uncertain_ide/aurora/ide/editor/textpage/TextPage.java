@@ -1,11 +1,13 @@
 package aurora.ide.editor.textpage;
 
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -26,13 +28,14 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
-import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
+import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
 
 public class TextPage extends TextEditor implements IViewer {
@@ -157,24 +160,19 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public boolean canLeaveThePage() {
-		if (!checkContentFormat()) {
+		return checkContentFormat();
+	}
+
+	public boolean checkContentFormat() {
+		try {
+			toCompoisteMap();
+		} catch (ApplicationException e) {
 			return false;
 		}
 		return true;
 	}
-
-	private boolean checkContentFormat() {
-		CompositeMap content = null;
-		CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();;
-		try {
-			content = loader.loadFromString(getContent());
-		} catch (IOException e) {
-			return false;
-		} catch (SAXException e) {
-			return false;
-		}
-		getSourceViewer().getTextWidget().setText(content.toXML());
-		return true;
+	public CompositeMap toCompoisteMap() throws ApplicationException{
+		return CompositeMapUtil.loaderFromString(getContent());
 	}
 
 	public int getCursorLine() {
@@ -276,5 +274,16 @@ public class TextPage extends TextEditor implements IViewer {
 				.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"), "Editor.ManageBookmarks.", this,
 				getVerticalRuler(), IMarker.BOOKMARK, true);
 		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
+	}
+	public void doSave(IProgressMonitor monitor){
+		try {
+			IFile ifile = ((IFileEditorInput) getEditorInput()).getFile();
+			File file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
+			XMLOutputter.saveToFile(file,CompositeMapUtil.loaderFromString(getContent()));//parseString(getContent()) );//
+			ifile.refreshLocal(IResource.DEPTH_ZERO, null);
+//			super.doSave(monitor);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
