@@ -36,7 +36,8 @@ public class SxsdProcessor extends AbstractProcessor {
         List<CompositeMap> childMap = map.getChildsNotNull();
         HashMap<String, Integer> countMap = new HashMap<String, Integer>(20);
         L: for (CompositeMap m : childMap) {
-            if (m.getNamespaceURI() == null)
+            String uri = m.getNamespaceURI();
+            if (uri == null || !uri.startsWith("http:"))
                 continue;
             String mapName = m.getName();
             if (countMap.get(mapName) == null)
@@ -79,10 +80,15 @@ public class SxsdProcessor extends AbstractProcessor {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void processMap(IFile file, CompositeMap map, IDocument doc) {
-        if (map.getNamespaceURI() == null)
+        String uri = map.getNamespaceURI();
+        if (uri == null)
+            return;
+        if (!uri.startsWith("http:"))
             return;
         checkTag(file, map, doc);
-
+        // 特别处理record标签
+        if (map.getName().equals("record") && map.getParent().getName().equals("datas"))
+            return;
         Set<String> nameSet = new HashSet<String>();
         List<Attribute> list = getAttributesInSchemaNotNull(map);
         for (Attribute a : list) {
