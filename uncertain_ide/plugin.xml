@@ -111,6 +111,12 @@
             id="aurora.ide.preferencePage.TemplatesPage"
             name="%page.templates">
       </page>
+      <page
+            category="aurora.ide.preferencePage"
+            class="aurora.ide.preferencepages.CustomSettingPreferencePage"
+            id="aurora.ide.preferencePage.CustomPage"
+            name="%page.custom">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -765,6 +771,14 @@
          canSearchEnclosingProjects="true"
          class="aurora.ide.search.ui.SearchPage">
       </page> 
-   </extension> 
+   </extension>
+ <extension
+       point="org.eclipse.ui.views">
+    <view
+          class="aurora.ide.editor.textpage.ad"
+          id="aurora.ide.editor.textpage.ad"
+          name="New ViewPart">
+    </view>
+ </extension> 
     
 </plugin>
