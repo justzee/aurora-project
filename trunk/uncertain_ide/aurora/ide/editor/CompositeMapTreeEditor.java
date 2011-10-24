@@ -30,9 +30,11 @@ public abstract class CompositeMapTreeEditor extends BaseCompositeMapEditor {
 	protected void pageChange(int newPageIndex){
 		int currentPage = getCurrentPage();
 		super.pageChange(newPageIndex);
+		if(!mainViewerPage.isFormContendCreated())
+				return;
 		if(currentPage==mainViewerIndex&&newPageIndex ==textPageIndex){
 			locateTextPage();
-		}else if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex){
+		}else if(currentPage==textPageIndex&&newPageIndex ==mainViewerIndex&&textPage.checkContentFormat()){
 			locateTreePage();
 		}
 	}
@@ -44,8 +46,6 @@ public abstract class CompositeMapTreeEditor extends BaseCompositeMapEditor {
 					.getBytes("UTF-8"));
 			CompositeMap  cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
 			if(cm != null){
-//				treePage.getTreeViewer().expandToLevel(
-//						cm, 0);
 				treePage.getTreeViewer().setSelection(
 						new StructuredSelection(cm), true);
 			}

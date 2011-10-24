@@ -338,6 +338,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	public void setData(CompositeMap data) throws ApplicationException {
 		this.data = data;
 		if (tableViewer != null) {
+			createDefaultActions();
 			if (tableViewer.getColumnProperties() == null)
 				createTableColumns();
 			if (data.getChilds() != null) {

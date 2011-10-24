@@ -26,12 +26,13 @@ import uncertain.composite.CompositeMap;
  * 
  */
 public abstract class CompositeMapPage extends FormPage implements IViewer {
+	private boolean modify = false;
 	public CompositeMapPage(FormEditor editor, String id, String title) {
 		super(editor, id, title);
 	}
-	public abstract void setContent(CompositeMap content);
-	public abstract CompositeMap getContent();
-	public abstract String getFullContent();
+	public abstract void setData(CompositeMap data);
+	public abstract CompositeMap getData();
+	public abstract void refreshFormContent(CompositeMap data);
 	protected File getFile() {
 		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
 		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
@@ -43,6 +44,22 @@ public abstract class CompositeMapPage extends FormPage implements IViewer {
 			ifile.refreshLocal(IResource.DEPTH_ZERO, null);
 		} catch (CoreException e) {
 			DialogUtil.showExceptionMessageBox(e);
+		}
+	}
+	public boolean isFormContendCreated(){
+		return true;
+	}
+	public boolean isModify() {
+		return modify;
+	}
+
+	public void setModify(boolean modify) {
+		this.modify = modify;
+	}
+	public void refresh(boolean dirty) {
+		if(dirty){
+			modify = true;
+			getEditor().editorDirtyStateChanged();
 		}
 	}
 }

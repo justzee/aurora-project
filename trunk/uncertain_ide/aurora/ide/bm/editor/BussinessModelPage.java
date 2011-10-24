@@ -1,6 +1,5 @@
 package aurora.ide.bm.editor;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -35,7 +33,12 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.xml.sax.SAXException;
 
-
+import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.XMLOutputter;
+import uncertain.schema.Array;
+import uncertain.schema.Element;
+import uncertain.schema.IType;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.editor.BaseCompositeMapViewer;
 import aurora.ide.editor.CompositeMapPage;
@@ -53,14 +56,7 @@ import aurora.ide.node.action.ActionListener;
 import aurora.ide.node.action.RefreshAction;
 import aurora.ide.node.action.RemoveElementAction;
 
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
-import uncertain.schema.Array;
-import uncertain.schema.Element;
-import uncertain.schema.IType;
-
-public class BussinessModelPage extends CompositeMapPage{
+public class BussinessModelPage extends CompositeMapPage {
 	private static final String PageId = "BussinessModelPage";
 	private static final String PageTitle = LocaleMessage.getString("bussiness.model.file");
 	private CTabFolder mTabFolder;
@@ -69,11 +65,11 @@ public class BussinessModelPage extends CompositeMapPage{
 	private Composite shell;
 	private ArrayList childViews;
 
-	private static final String[] customTabs = new String[]{"primary-key","order-by","ref-fields"};
-	private static final String ref_fields = "ref-fields"; 
+	private static final String[] customTabs = new String[] { "primary-key", "order-by", "ref-fields" };
+	private static final String ref_fields = "ref-fields";
 	private List tabFolerNameList;
 	private static Map customerTitles = new HashMap();
-	static{
+	static {
 		customerTitles.put("fields", "字段");
 		customerTitles.put("ref-fields", "引用字段");
 		customerTitles.put("primary-key", "主键");
@@ -84,6 +80,7 @@ public class BussinessModelPage extends CompositeMapPage{
 		customerTitles.put("features", "特性");
 		customerTitles.put("operations", "自定义操作");
 	}
+
 	public BussinessModelPage(FormEditor editor) {
 		super(editor, PageId, PageTitle);
 	}
@@ -93,32 +90,34 @@ public class BussinessModelPage extends CompositeMapPage{
 		shell = form.getBody();
 		FillLayout layout = new FillLayout();
 		shell.setLayout(layout);
-		Element schemaElement = LoadSchemaManager.getSchemaManager()
-				.getElement(AuroraConstant.ModelQN);
+		Element schemaElement = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.ModelQN);
 		if (schemaElement == null) {
 			DialogUtil.showErrorMessageBox(LocaleMessage.getString("please.add.bm.schema.file"));
 			return;
 		}
-		String filePath = getFile().getAbsolutePath();
-		try {
-			CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
-			data = loader.loadByFile(filePath);
-		} catch (IOException e) {
-			DialogUtil.showExceptionMessageBox(e);
-			return;
-		} catch (SAXException e) {
-			String emptyExcption = "Premature end of file";
-			if(e.getMessage() != null && e.getMessage().indexOf(emptyExcption)!= -1){
-				data = BMUtil.createBMTopNode();
-				data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
-			}else{
+		if (data == null) {
+			String filePath = getFile().getAbsolutePath();
+			try {
+				CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
+				data = loader.loadByFile(filePath);
+			} catch (IOException e) {
 				DialogUtil.showExceptionMessageBox(e);
 				return;
+			} catch (SAXException e) {
+				String emptyExcption = "Premature end of file";
+				if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
+					data = BMUtil.createBMTopNode();
+					data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+				} else {
+					DialogUtil.showExceptionMessageBox(e);
+					return;
+				}
 			}
-		}
-		if (!data.getQName().equals(AuroraConstant.ModelQN)){
-			DialogUtil.showErrorMessageBox("文件"+filePath+"的"+LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN+ " !");
-			return;
+			if (!data.getQName().equals(AuroraConstant.ModelQN)) {
+				DialogUtil.showErrorMessageBox("文件" + filePath + "的"
+						+ LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN + " !");
+				return;
+			}
 		}
 		try {
 			createContent(shell);
@@ -135,7 +134,6 @@ public class BussinessModelPage extends CompositeMapPage{
 				temp.dispose();
 			}
 		}
-		
 		sashForm = new SashForm(shell, SWT.VERTICAL);
 		initChildViews();
 		createMasterContent(sashForm);
@@ -143,8 +141,9 @@ public class BussinessModelPage extends CompositeMapPage{
 		sashForm.setWeights(new int[] { 50, 50 });
 		shell.layout(true);
 	}
-	private void initChildViews(){
-		tabFolerNameList = new  ArrayList();
+
+	private void initChildViews() {
+		tabFolerNameList = new ArrayList();
 		if (childViews != null)
 			childViews.clear();
 		else
@@ -153,32 +152,30 @@ public class BussinessModelPage extends CompositeMapPage{
 
 	protected void createMasterContent(Composite parent) throws ApplicationException {
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
-		PropertyHashViewer mPropertyEditor = new PropertyHashViewer(this,
-				sashForm);
+		PropertyHashViewer mPropertyEditor = new PropertyHashViewer(this, sashForm);
 		childViews.add(mPropertyEditor);
 		mPropertyEditor.createEditor(false);
 		String errorMessage = mPropertyEditor.clear(true);
-		if(errorMessage != null){
+		if (errorMessage != null) {
 			DialogUtil.showErrorMessageBox(errorMessage);
 		}
 		mPropertyEditor.setData(data);
-		Group bmDescGroup = new Group(sashForm,SWT.NONE);
+		Group bmDescGroup = new Group(sashForm, SWT.NONE);
 		bmDescGroup.setLayout(new FillLayout());
 		bmDescGroup.setText("本BM功能描述");
-		final StyledText bmDescSt = new StyledText(bmDescGroup, SWT.MULTI | SWT.WRAP | 
-				SWT.BORDER);
+		final StyledText bmDescSt = new StyledText(bmDescGroup, SWT.MULTI | SWT.WRAP | SWT.BORDER);
 		final String bmDesc = "descripiton";
 		CompositeMap bmCm = data.getChild(bmDesc);
-		if(bmCm != null){
+		if (bmCm != null) {
 			String desc = bmCm.getText();
-			if(desc != null){
+			if (desc != null) {
 				bmDescSt.setText(desc);
 			}
 		}
 		bmDescSt.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				CompositeMap bmCm = data.getChild(bmDesc);
-				if(bmCm == null){
+				if (bmCm == null) {
 					bmCm = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), bmDesc);
 					data.addChild(bmCm);
 				}
@@ -188,7 +185,8 @@ public class BussinessModelPage extends CompositeMapPage{
 		});
 		sashForm.setWeights(new int[] { 80, 20 });
 	}
-	private void registerTabFolder(int i,String tabFolerName){
+
+	private void registerTabFolder(int i, String tabFolerName) {
 		tabFolerNameList.add(i, tabFolerName);
 	}
 
@@ -202,44 +200,41 @@ public class BussinessModelPage extends CompositeMapPage{
 
 			if (array_data == null) {
 				String name = array.getLocalName();
-				array_data = new CompositeMap(data.getPrefix(), data
-						.getNamespaceURI(), name);
+				array_data = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), name);
 				array_data.setParent(data);
 			}
 
 			IType type = array.getElementType();
 			if (!(type instanceof Element)) {
-				childViews.add(createBaseViewer(i, array,array_data));
-				registerTabFolder(i,array.getLocalName());
+				childViews.add(createBaseViewer(i, array, array_data));
+				registerTabFolder(i, array.getLocalName());
 				continue;
 			}
-			Element arrayType = LoadSchemaManager.getSchemaManager()
-					.getElement(type.getQName());
+			Element arrayType = LoadSchemaManager.getSchemaManager().getElement(type.getQName());
 			if (arrayType.getAllElements().size() > 0) {
-				childViews.add(createBaseViewer(i, array,	array_data));
-				registerTabFolder(i,array.getLocalName());
+				childViews.add(createBaseViewer(i, array, array_data));
+				registerTabFolder(i, array.getLocalName());
 				continue;
 			} else {
-				final GridViewer gridViewer = new GridViewer(null,IGridViewer.fullEditable);
+				final GridViewer gridViewer = new GridViewer(null, IGridViewer.fullEditable);
 				gridViewer.setParent(this);
 				gridViewer.createViewer(mTabFolder, array_data);
 
-				for(int j= 0;j<customTabs.length;j++){
-					if (customTabs[j].equals(array.getLocalName())){
+				for (int j = 0; j < customTabs.length; j++) {
+					if (customTabs[j].equals(array.getLocalName())) {
 						createCustomerActions(gridViewer);
 					}
 				}
 
 				mTabFolder.getItem(i).setText(customTabTitle(array.getLocalName()));
-				mTabFolder.getItem(i).setControl(
-						gridViewer.getControl());
+				mTabFolder.getItem(i).setControl(gridViewer.getControl());
 				childViews.add(gridViewer);
-				registerTabFolder(i,array.getLocalName());
-				final int  itemIndex = i;
+				registerTabFolder(i, array.getLocalName());
+				final int itemIndex = i;
 				mTabFolder.addSelectionListener(new SelectionListener() {
 
 					public void widgetSelected(SelectionEvent e) {
-						if(mTabFolder.getSelectionIndex()==itemIndex)
+						if (mTabFolder.getSelectionIndex() == itemIndex)
 							gridViewer.packColumns();
 					}
 
@@ -253,9 +248,9 @@ public class BussinessModelPage extends CompositeMapPage{
 
 	}
 
-	private BaseCompositeMapViewer createBaseViewer(int i,Array array, CompositeMap array_data) throws ApplicationException {
-		BaseCompositeMapViewer baseViewer = new BaseCompositeMapViewer(this,
-				array_data);
+	private BaseCompositeMapViewer createBaseViewer(int i, Array array, CompositeMap array_data)
+			throws ApplicationException {
+		BaseCompositeMapViewer baseViewer = new BaseCompositeMapViewer(this, array_data);
 		baseViewer.createFormContent(mTabFolder);
 		mTabFolder.getItem(i).setText(customTabTitle(array.getLocalName()));
 		mTabFolder.getItem(i).setControl(baseViewer.getControl());
@@ -270,33 +265,34 @@ public class BussinessModelPage extends CompositeMapPage{
 		Action[] actions = new Action[3];
 		if (element.isArray()) {
 			Action addAction = null;
-			if(ref_fields.equals(element.getLocalName())){
-				 addAction = new AddRefFieldAction(pae,pae.getInput().getParent(),ActionListener.DefaultImage);
-			}else{
-				addAction = new AddFieldAction(pae, data.getChild("fields"),pae.getInput());
+			if (ref_fields.equals(element.getLocalName())) {
+				addAction = new AddRefFieldAction(pae, pae.getInput().getParent(), ActionListener.DefaultImage);
+			} else {
+				addAction = new AddFieldAction(pae, data.getChild("fields"), pae.getInput());
 			}
-			actions[0]= addAction;
-			actions[1]= new RefreshAction(pae,ActionListener.DefaultImage);
-			actions[2] = new RemoveElementAction(pae,ActionListener.DefaultImage);
+			actions[0] = addAction;
+			actions[1] = new RefreshAction(pae, ActionListener.DefaultImage);
+			actions[2] = new RemoveElementAction(pae, ActionListener.DefaultImage);
 			pae.setActions(actions);
 		}
 	}
 
 	private CTabFolder createTabFolder(final Composite parent) {
-		final CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE
-				| SWT.BORDER);
+		final CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE | SWT.BORDER);
 		tabFolder.setMaximizeVisible(true);
 		tabFolder.addMouseListener(new MouseListener() {
 			public void mouseUp(MouseEvent e) {
 			}
+
 			public void mouseDown(MouseEvent e) {
 			}
+
 			public void mouseDoubleClick(MouseEvent e) {
-				if(tabFolder.getMaximized()){
+				if (tabFolder.getMaximized()) {
 					tabFolder.setMaximized(false);
 					sashForm.setMaximizedControl(null);
 					parent.layout(true);
-				}else{
+				} else {
 					tabFolder.setMaximized(true);
 					sashForm.setMaximizedControl(tabFolder);
 					parent.layout(true);
@@ -306,8 +302,7 @@ public class BussinessModelPage extends CompositeMapPage{
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void minimize(CTabFolderEvent event) {
 				tabFolder.setMinimized(true);
-				tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-						false));
+				tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				parent.layout(true);
 			}
 
@@ -345,13 +340,10 @@ public class BussinessModelPage extends CompositeMapPage{
 
 	public void refresh(boolean dirty) {
 		try {
-			initData();
+			refreshChildViewData();
 		} catch (ApplicationException e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
-		}
-		if (dirty) {
-			getEditor().editorDirtyStateChanged();
 		}
 		for (Iterator iterator = childViews.iterator(); iterator.hasNext();) {
 			Object childViewer = iterator.next();
@@ -360,25 +352,27 @@ public class BussinessModelPage extends CompositeMapPage{
 				iViewer.refresh(false);
 			}
 		}
+		super.refresh(dirty);
 	}
-	private void initData() throws ApplicationException{
-		if(tabFolerNameList == null)
-			return ;
+
+	private void refreshChildViewData() throws ApplicationException {
+		if (tabFolerNameList == null || data == null || childViews == null)
+			return;
 		Iterator tabIt = tabFolerNameList.iterator();
 		int index = 0;
-		while(tabIt.hasNext()){
-			String tabFolderName = (String)tabIt.next(); 
+		while (tabIt.hasNext()) {
+			String tabFolderName = (String) tabIt.next();
 			CompositeMap array_data = data.getChild(tabFolderName);
 			if (array_data == null) {
 				array_data = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), tabFolderName);
 				array_data.setParent(data);
-				Object childViewer = childViews.get(index+1);
-				if(childViewer == null)
+				Object childViewer = childViews.get(index + 1);
+				if (childViewer == null)
 					continue;
 				if (childViewer instanceof BaseCompositeMapViewer) {
 					BaseCompositeMapViewer iViewer = (BaseCompositeMapViewer) childViewer;
 					iViewer.refresh(array_data);
-				}else if(childViewer instanceof GridViewer){
+				} else if (childViewer instanceof GridViewer) {
 					GridViewer iViewer = (GridViewer) childViewer;
 					iViewer.setData(array_data);
 				}
@@ -386,11 +380,6 @@ public class BussinessModelPage extends CompositeMapPage{
 			index++;
 		}
 	}
-
-	public void refresh(CompositeMap data) {
-		this.data = data;
-	}
-
 	public CompositeMap getData() {
 		return data;
 	}
@@ -399,58 +388,54 @@ public class BussinessModelPage extends CompositeMapPage{
 		this.data = data;
 	}
 
-	public CompositeMap getContent() {
-		return data;
-	}
-
-	public String getFullContent() {
-		String encoding = "UTF-8";
-		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding+"\"?>\n";
-		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
-	}
-
-	public void setContent(CompositeMap content) {
+	public void refreshFormContent(CompositeMap content) {
 		this.data = content;
 		try {
 			createContent(shell);
 		} catch (ApplicationException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
-
 	}
 
 	public CompositeMap getSelectionTab() {
 		int SelectionIndex = mTabFolder.getSelectionIndex();
-		if(SelectionIndex == -1)
+		if (SelectionIndex == -1)
 			return null;
 		Object nameObject = tabFolerNameList.get(SelectionIndex);
-		if(nameObject == null)
+		if (nameObject == null)
 			return null;
-		String tabFolderName = (String)nameObject;
+		String tabFolderName = (String) nameObject;
 		CompositeMap tabFoler = data.getChild(tabFolderName);
 		return tabFoler;
 	}
-	public void setSelectionTab(String tabName){
-		if(tabName == null)
-			return ;
+
+	public void setSelectionTab(String tabName) {
+		if (tabName == null)
+			return;
 		int tabIndex = tabFolerNameList.indexOf(tabName);
-		if(tabIndex == -1 || tabIndex>mTabFolder.getItemCount())
+		if (tabIndex == -1 || tabIndex > mTabFolder.getItemCount())
 			return;
-		Object view = childViews.get(tabIndex+1);
-		if(view == null)
+		Object view = childViews.get(tabIndex + 1);
+		if (view == null)
 			return;
-		if(view instanceof GridViewer){
-			((GridViewer)view).packColumns();
+		if (view instanceof GridViewer) {
+			((GridViewer) view).packColumns();
 		}
 		mTabFolder.setSelection(tabIndex);
-		
 	}
-	private String customTabTitle(String tabName){
+
+	private String customTabTitle(String tabName) {
 		String tabHeighGrab = "      ";
 		String tabTitle = tabName;
 		Object customTtile = customerTitles.get(tabName);
-		if(customTtile != null)
-			tabTitle = (String)customTtile;
-		return tabHeighGrab+tabTitle+tabHeighGrab;
+		if (customTtile != null)
+			tabTitle = (String) customTtile;
+		return tabHeighGrab + tabTitle + tabHeighGrab;
+	}
+
+	public boolean isFormContendCreated() {
+		if (sashForm != null)
+			return true;
+		return false;
 	}
 }

@@ -59,18 +59,19 @@ public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 		CompositeMap root= getData();
 		if(root == null)
 			return ;
-		CompositeMap fields = root.getChild("fields");
+		CompositeMap fields = isTableItemEditor()?root.getChild("fields"):root.getParent().getChild("fields");
 		CompositeMap filedNames = new CompositeMap();
-		for(Iterator it = fields.getChildsNotNull().iterator();it.hasNext();){
-			CompositeMap child = (CompositeMap)it.next();
-			String targetNode = child.getString("name");
-			if(targetNode == null)
-				continue;
-			CompositeMap newChild = new CompositeMap();
-			newChild.put("name", targetNode);
-			filedNames.addChild(newChild);
-
-		}
+		if(fields != null)
+			for(Iterator it = fields.getChildsNotNull().iterator();it.hasNext();){
+				CompositeMap child = (CompositeMap)it.next();
+				String targetNode = child.getString("name");
+				if(targetNode == null)
+					continue;
+				CompositeMap newChild = new CompositeMap();
+				newChild.put("name", targetNode);
+				filedNames.addChild(newChild);
+	
+			}
 		String[] columnProperties = {"name"};
 		GridViewer grid = new GridViewer(IGridViewer.filterBar|IGridViewer.NoToolBar);
 		grid.setData(filedNames);

@@ -53,19 +53,19 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 		super.pageChange(newPageIndex);
 		if (newPageIndex == SQLPageIndex) {
 			try {
-				sqlPage.refresh(mainViewerPage.getFullContent());
+				sqlPage.refresh(CompositeMapUtil.getFullContent(mainFormPage.getData()));
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
 			}
 		} else if (newPageIndex == viewSourceIndex) {
 			viewSource.refresh();
-		} else if (currentPage == mainViewerIndex && newPageIndex == textPageIndex) {
+		} else if (currentPage == mainViewerIndex && newPageIndex == textPageIndex && mainViewerPage.isFormContendCreated()) {
 			try {
 				locateTextPage();
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
 			}
-		} else if (currentPage == textPageIndex && newPageIndex == mainViewerIndex) {
+		} else if (currentPage == textPageIndex && newPageIndex == mainViewerIndex&&textPage.checkContentFormat()) {
 			locateMainPage();
 		}
 	}
@@ -96,7 +96,7 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
 		if (selection == null)
 			return;
 		int line = 0;
-		line = CompositeMapUtil.locateNode(mainFormPage.getFullContent(), selection);
+		line = CompositeMapUtil.locateNode(CompositeMapUtil.getFullContent(mainFormPage.getData()), selection);
 		int offset = textPage.getOffsetFromLine(line);
 		textPage.setHighlightRange(offset, 10, true);
 
