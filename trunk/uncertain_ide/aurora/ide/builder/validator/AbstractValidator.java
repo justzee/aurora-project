@@ -2,7 +2,6 @@ package aurora.ide.builder.validator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -12,7 +11,6 @@ import uncertain.composite.IterationHandle;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.processor.AbstractProcessor;
 import aurora.ide.editor.textpage.IColorConstants;
-import aurora.ide.helpers.LogUtil;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.Util;
 
@@ -29,9 +27,7 @@ public abstract class AbstractValidator implements IterationHandle {
             map = CacheManager.getCompositeMapCacher().getCompositeMap(file);
             doc = CacheManager.getDocumentCacher().getDocument(file);
         } catch (Exception e) {
-            System.out.println(file);
             AuroraBuilder.addMarker(file, e.getMessage(), 1, IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
-            LogUtil.getInstance().log(IStatus.ERROR, file.getName() + "解析异常", e);
             e.printStackTrace();
         }
     }
