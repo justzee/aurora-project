@@ -5,6 +5,7 @@ package aurora.database.actions;
 
 import java.util.List;
 
+import org.lwap.controller.WSDLBinaryProcessor;
 import org.lwap.feature.ExcelResultSetProcessor;
 
 import uncertain.composite.CompositeMap;
@@ -27,6 +28,7 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
     boolean     trace = false;
     boolean     autoCount = false;
     boolean     saveResultSet = false;
+    boolean 	outputSOAP=false;
 
     Integer     pageSize;
     String      fieldNameCase = "unassigned";
@@ -86,6 +88,8 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
                 // check if save resultset
                 if(getSaveResultSet()){
                     consumer = new ExcelResultSetProcessor(context_map);                    
+                }else if(getOutputSOAP()){
+                	consumer = new WSDLBinaryProcessor(context_map,rootPath);   
                 }else{
                     CompositeMap result = context.getModel();
                     if(rootPath!=null) result = result.createChildByTag(rootPath);
@@ -250,5 +254,12 @@ public abstract class AbstractQueryAction  extends AbstractDeferredEntry {
         this.saveResultSet = saveResultSet;
     }
     
+    public boolean getOutputSOAP(){
+    	return this.outputSOAP;
+    }
+    
+    public void setOutputSOAP(boolean outputSOAP){
+    	this.outputSOAP=outputSOAP;
+    }
 
 }
