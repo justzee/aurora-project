@@ -37,7 +37,7 @@ public Class getFieldClass() {
 public Object getObject (CallableStatement aCallableStatement,int anIndex) throws SQLException{
 
 	Blob aBlob = aCallableStatement.getBlob(anIndex);
-	int blobLength = (int)aBlob.length();
+//	int blobLength = (int)aBlob.length();
 	return aBlob; //aBlob.getBytes(1,blobLength);
 }
 /**
@@ -46,7 +46,7 @@ public Object getObject (CallableStatement aCallableStatement,int anIndex) throw
 public Object getObject (ResultSet aResultSet,int anIndex) throws SQLException{
 
 	Blob aBlob = aResultSet.getBlob(anIndex);
-	int blobLength = (int)aBlob.length();
+//	int blobLength = (int)aBlob.length();
 	return aBlob; //aBlob.getBytes(1,blobLength);
 }
 /**
