@@ -41,7 +41,7 @@ public class IDocSync extends Thread {
 					try {
 						String errorMessage = context+" failed";
 						LoggerUtil.getLogger()
-								.log("updateIdocStatus for idoc:" + file.getIdocId() + " " + context);
+								.log("updateIdocStatus for idoc:" + file.getIdocId() + " " + errorMessage);
 						iDocServer.getDbUtil().updateIdocStatus(header_id, file.getIdocId(), errorMessage);
 					} catch (AuroraIDocException e1) {
 						iDocServer.log(e1);
