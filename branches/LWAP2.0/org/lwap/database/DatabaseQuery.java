@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
+import org.lwap.controller.WSDLBinaryProcessor;
+
 import aurora.database.ResultSetWithStatement;
 import aurora.database.actions.ResultSetSaver;
 
@@ -116,6 +118,9 @@ public class DatabaseQuery extends DatabaseAccess {
             	stmt.setAutoCloseStatement(false);
                 rs=null;
             // end check
+            }else if(getOutputSOAP()){
+            	WSDLBinaryProcessor processor=new WSDLBinaryProcessor(parameter.getRoot(),this.getTarget());
+            	processor.processResultSet(rs);
             } else {
 
                 ResultSetLoader loader = new ResultSetLoader(rs);
@@ -313,5 +318,8 @@ public class DatabaseQuery extends DatabaseAccess {
     public boolean getSaveResultSet() {
         return getBoolean(KEY_SAVE_RESULTSET,false);
     }
-
+    
+    public boolean getOutputSOAP() {
+        return getBoolean("outputsoap",false);
+    }
 }
