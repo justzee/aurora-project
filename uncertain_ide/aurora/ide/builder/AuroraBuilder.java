@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.IRegion;
@@ -31,6 +32,7 @@ import aurora.ide.project.propertypage.ProjectPropertyPage;
 public class AuroraBuilder extends IncrementalProjectBuilder {
     private IProgressMonitor monitor;
     private int              filecount = 0;
+    private IPath            webPath;
 
     class SampleDeltaVisitor implements IResourceDeltaVisitor {
         public boolean visit(IResourceDelta delta) throws CoreException {
@@ -172,6 +174,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         IProject project = getProject();
         project.deleteMarkers(CONFIG_PROBLEM, false, IResource.DEPTH_ZERO);
         String webdir = project.getPersistentProperty(ProjectPropertyPage.WebQN);
+        webPath = new Path(webdir);
         if (webdir == null || !project.getParent().getFolder(new Path(webdir + "/WEB-INF")).exists()) {
             IMarker marker = project.createMarker(CONFIG_PROBLEM);
             marker.setAttribute(IMarker.MESSAGE, "未指定Web主目录,请打开属性页设置!");
@@ -192,6 +195,8 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
     private void validate(IResource resource) {
         monitor.subTask(resource.getName());
         monitor.worked(1);
+        if (!webPath.isPrefixOf(resource.getFullPath()))
+            return;
         if (resource instanceof IFile) {
             IFile file = (IFile) resource;
             deleteMarkers(file);
