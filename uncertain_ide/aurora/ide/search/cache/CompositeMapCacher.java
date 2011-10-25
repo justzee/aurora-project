@@ -90,6 +90,8 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResourceDelta delta = event.getDelta();
+		if (delta == null)
+			return;
 		try {
 			delta.accept(this);
 		} catch (CoreException e) {
