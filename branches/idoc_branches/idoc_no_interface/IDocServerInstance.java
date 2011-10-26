@@ -46,7 +46,9 @@ public class IDocServerInstance implements IGlobalInstance {
 	public void onShutdown() throws Exception {
 		if (serverList != null && !serverList.isEmpty()) {
 			for (Iterator it = serverList.iterator(); it.hasNext();) {
-				((IDocServer) it.next()).shutdown();
+				IDocServer server = (IDocServer) it.next();
+				server.setShutdownByCommand(true);
+				server.shutdown();
 			}
 		}
 	}

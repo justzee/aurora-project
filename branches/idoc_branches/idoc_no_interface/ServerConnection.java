@@ -13,7 +13,7 @@ public class ServerConnection extends Thread{
 		this.currentConnectTime = reconnectTime;
 	}
 	public void run() {
-		while(true){
+		while(!iDocServer.isShutdownByCommand()){
 			if(iDocServer.getJCoIDocServer() == null){
 				startServer(false);
 				continue;
