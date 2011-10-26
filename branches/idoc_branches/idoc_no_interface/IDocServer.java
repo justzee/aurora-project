@@ -94,6 +94,7 @@ public class IDocServer {
 			IDocBackup backup = new IDocBackup(this);
 			backup.start();
 			LoggerUtil.getLogger().config("IDocServer " + serverName + " start successful!");
+			System.out.println("IDocServer " + serverName + " start successful!");
 		} catch (Throwable e) {
 			shutdown(context, e);
 			return;
