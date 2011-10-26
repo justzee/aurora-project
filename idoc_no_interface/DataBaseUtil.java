@@ -407,6 +407,8 @@ public class DataBaseUtil {
 	}
 
 	private void handleContentNode(int headerId, int parent_id, CompositeMap node) throws AuroraIDocException {
+		if(!isSegmentDefined(node.getName()))
+			return;
 		StringBuffer insert_sql = new StringBuffer(
 				"insert into FND_INTERFACE_LINES(LINE_ID,LINE_NUMBER,HEADER_ID,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE,"
 						+ " SOURCE_TABLE,PARENT_LINE_ID");
@@ -448,6 +450,28 @@ public class DataBaseUtil {
 		} catch (Throwable e) {
 			throw new AuroraIDocException("execute sql:" + insert_sql.toString() + " in handleContentNode", e);
 		} finally {
+			closeStatement(statement);
+		}
+	}
+	public boolean isSegmentDefined(String segment) throws AuroraIDocException{
+		if(segment == null)
+			return false;
+		StringBuffer query_sql = new StringBuffer("select 1 from fnd_sap_segments t where t.SEGMENTTYP=? ");
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		try {
+			statement = dbConn.prepareStatement(query_sql.toString());
+			statement.setString(1, segment);
+			rs = statement.executeQuery();
+			if (rs.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			throw createAuroraIDocException(statement, e);
+		} finally {
+			closeResultSet(rs);
 			closeStatement(statement);
 		}
 	}

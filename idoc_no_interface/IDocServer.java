@@ -41,17 +41,14 @@ public class IDocServer {
 	private DataSource dataSource;
 	private int server_id = -1;
 	private boolean isDeleteFileImmediately;
-	private int reconnectTime;
-	private int maxReconnectTime;
 	private ServerConnection reConnect;
+	private boolean shutdownByCommand = false;
 	public IDocServer(String idocDir, DataSource ds, String serverName, boolean isDeleteFileImmediately,
 			int reconnectTime, int maxReconnectTime) {
 		this.idocDir = idocDir;
 		this.dataSource = ds;
 		this.serverName = serverName;
 		this.isDeleteFileImmediately = isDeleteFileImmediately;
-		this.reconnectTime = reconnectTime;
-		this.maxReconnectTime = maxReconnectTime;
 		reConnect = new ServerConnection(this,reconnectTime, maxReconnectTime);
 	}
 	public void start(){
@@ -63,6 +60,8 @@ public class IDocServer {
 		start(true);
 	}
 	private void start(boolean isRestart) {
+		if(shutdownByCommand)
+			return;
 		String context = "";
 		try {
 			dbUtil = getConnection();
@@ -326,7 +325,6 @@ public class IDocServer {
 		shutdownIDocServer();
 		LoggerUtil.getLogger().log("...........shutdown " + serverName + " finished.............. ");
 	}
-
 	private void shutdownDB() {
 		if (dbUtil != null) {
 			try {
@@ -351,5 +349,11 @@ public class IDocServer {
 		} catch (Throwable e) {
 			log(e);
 		}
+	}
+	public void setShutdownByCommand(boolean shutdownByCommand){
+		this.shutdownByCommand = shutdownByCommand;
+	}
+	public boolean isShutdownByCommand(){
+		return shutdownByCommand;
 	}
 }
