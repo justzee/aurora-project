@@ -85,6 +85,15 @@
             id="aurora.ide.BussinessModelEditor"
             name="%editor.bm">
       </editor>
+      <!--
+      <editor
+            class="aurora.ide.editor.CollaborateEditor"
+            filenames="*.service,*.screen,*.svc,*.bm"
+            icon="icons/service.gif"
+            id="aurora.ide.editor.CollaborateEditor"
+            default="false"
+            name="远程协作编辑器"/>
+       -->   
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
