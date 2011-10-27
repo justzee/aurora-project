@@ -781,13 +781,6 @@
          class="aurora.ide.search.ui.SearchPage">
       </page> 
    </extension>
- <extension
-       point="org.eclipse.ui.views">
-    <view
-          class="aurora.ide.editor.textpage.ad"
-          id="aurora.ide.editor.textpage.ad"
-          name="New ViewPart">
-    </view>
- </extension> 
+
     
 </plugin>
