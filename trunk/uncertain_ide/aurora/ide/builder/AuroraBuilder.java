@@ -77,7 +77,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
             UNDEFINED_FOREIGNFIELD, UNDEFINED_LOCALFIELD, UNDEFINED_SCREEN, NONENAMESPACE, CONFIG_PROBLEM,
             UNDEFINED_TAG, FATAL_ERROR               };
 
-    public static void addMarker(IFile file, String message, int lineNumber, int severity, String markerType) {
+    public static IMarker addMarker(IFile file, String message, int lineNumber, int severity, String markerType) {
         try {
             IMarker marker = file.createMarker(markerType);
             marker.setAttribute(IMarker.MESSAGE, message);
@@ -86,11 +86,14 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
                 lineNumber = 1;
             }
             marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+            return marker;
         } catch (CoreException e) {
         }
+
+        return null;
     }
 
-    public static void addMarker(IFile file, String message, int line, int start, int length, int severity,
+    public static IMarker addMarker(IFile file, String message, int line, int start, int length, int severity,
             String markerType) {
         try {
             IMarker marker = file.createMarker(markerType);
@@ -99,17 +102,20 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
             marker.setAttribute(IMarker.LINE_NUMBER, line);
             marker.setAttribute(IMarker.CHAR_START, start);
             marker.setAttribute(IMarker.CHAR_END, start + length);
+            return marker;
         } catch (CoreException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     private Set<IFolder> web_infs = new HashSet<IFolder>();
 
-    public static void addMarker(IFile file, String msg, int lineno, IRegion region, int sevrity, String markerType) {
+    public static IMarker addMarker(IFile file, String msg, int lineno, IRegion region, int sevrity, String markerType) {
         if (region == null) {
-            addMarker(file, msg, lineno, sevrity, markerType);
+            return addMarker(file, msg, lineno, sevrity, markerType);
         } else {
-            addMarker(file, msg, lineno, region.getOffset(), region.getLength(), sevrity, markerType);
+            return addMarker(file, msg, lineno, region.getOffset(), region.getLength(), sevrity, markerType);
         }
     }
 
@@ -174,7 +180,6 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
         IProject project = getProject();
         project.deleteMarkers(CONFIG_PROBLEM, false, IResource.DEPTH_ZERO);
         String webdir = project.getPersistentProperty(ProjectPropertyPage.WebQN);
-        webPath = new Path(webdir);
         if (webdir == null || !project.getParent().getFolder(new Path(webdir + "/WEB-INF")).exists()) {
             IMarker marker = project.createMarker(CONFIG_PROBLEM);
             marker.setAttribute(IMarker.MESSAGE, "未指定Web主目录,请打开属性页设置!");
@@ -189,6 +194,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
             });
             return false;
         }
+        webPath = new Path(webdir);
         return true;
     }
 
