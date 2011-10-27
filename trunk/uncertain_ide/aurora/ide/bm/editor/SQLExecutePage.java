@@ -2,7 +2,6 @@ package aurora.ide.bm.editor;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -39,9 +38,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.xml.sax.SAXException;
-
-
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
@@ -417,10 +413,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 			CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadFromString(content,AuroraConstant.ENCODING);
 			BusinessModelService service = svcFactory.getModelService(bm_model, context);
 			return service;
-		} catch (IOException e) {
-			throw new ApplicationException("IO不正常!", e);
-		} catch (SAXException e) {
-			throw new ApplicationException("文件解析不正确!", e);
+		} catch (Throwable e) {
+			throw new SystemException(e);
 		}
 	}
 }
