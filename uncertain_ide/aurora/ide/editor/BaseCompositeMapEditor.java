@@ -147,6 +147,8 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 				return;
 			}
 			sycTextPageWithMainViewerPage();
+		}else{
+			super.pageChange(newPageIndex);
 		}
 	}
 
