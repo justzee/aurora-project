@@ -1,11 +1,7 @@
 package aurora.ide.editor;
 
-import java.util.Collection;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IKeyBindingService;
-import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.ide.ResourceUtil;
 
@@ -23,7 +19,6 @@ public class CollaborateEditor extends TextPage {
 
 	public CollaborateEditor(FormEditor editor, String id, String title) {
 		super(editor, id, title);
-//		this.setDocumentProvider((IDocumentProvider)null);
 		this.setDocumentProvider(new XMLTextFileDocumentProvider());
 	}
 
@@ -32,7 +27,6 @@ public class CollaborateEditor extends TextPage {
 		super.initializeEditor();
 		setEditorContextMenuId("#TextEditorContext");
 		setRulerContextMenuId("#TextRulerContext");
-//this.setk
 	}
 
 	@Override
@@ -45,11 +39,6 @@ public class CollaborateEditor extends TextPage {
 		super.createActions();
 		CFormatAction action = new CFormatAction();
 		action.setActiveEditor(null, this);
-		IContextService service = (IContextService)this.getSite().getService(IContextService.class);
-		Collection activeContextIds = service.getActiveContextIds();
-		a.d.d().println(activeContextIds);
-		IKeyBindingService keyBindingService = this.getEditorSite().getKeyBindingService();
-//		service.
 		this.setAction("format", action);
 	}
 
