@@ -9,7 +9,10 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
+import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
+import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.text.edits.MultiTextEdit;
 
 public class TextFileChangeManager {
@@ -25,6 +28,15 @@ public class TextFileChangeManager {
 			changeMap.put(file, textFileChange);
 		}
 		return textFileChange;
+	}
+
+	public TextFileChange getTextFileChangeInProcessor(
+			RefactoringProcessor processor, IFile file) {
+		TextChange textChange = processor.getRefactoring().getTextChange(file);
+		if (textChange instanceof TextFileChange) {
+			return (TextFileChange) textChange;
+		}
+		return null;
 	}
 
 	public Map<IFile, TextFileChange> getChangeMap() {

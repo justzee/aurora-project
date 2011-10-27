@@ -91,7 +91,9 @@ public class FileRenameParticipant extends RenameParticipant {
 			AbstractMatch object = (AbstractMatch) relations.get(i);
 			IFile file = (IFile) object.getElement();
 			TextFileChange textFileChange = changeManager
-					.getTextFileChange(file);
+					.getTextFileChangeInProcessor(this.getProcessor(), file);
+			if (textFileChange == null)
+				textFileChange = changeManager.getTextFileChange(file);
 			int offset = object.getOriginalOffset();
 			int length = object.getOriginalLength();
 			String newName = this.getArguments().getNewName();
@@ -128,7 +130,9 @@ public class FileRenameParticipant extends RenameParticipant {
 			IFile file = (IFile) object.getElement();
 			IDocument document = getDocument(file);
 			TextFileChange textFileChange = changeManager
-					.getTextFileChange(file);
+					.getTextFileChangeInProcessor(this.getProcessor(), file);
+			if (textFileChange == null)
+				textFileChange = changeManager.getTextFileChange(file);
 			int offset = object.getOriginalOffset();
 			int length = object.getOriginalLength();
 			try {

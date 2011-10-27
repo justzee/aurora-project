@@ -15,6 +15,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.MoveParticipant;
@@ -131,7 +132,10 @@ public class FileMoveParticipant extends MoveParticipant {
 			AbstractMatch object = (AbstractMatch) relations.get(i);
 			IFile file = (IFile) object.getElement();
 			TextFileChange textFileChange = changeManager
-					.getTextFileChange(file);
+					.getTextFileChangeInProcessor(this.getProcessor(), file);
+			if (textFileChange == null)
+				textFileChange = changeManager.getTextFileChange(file);
+			
 			try {
 				textFileChange.addEdit(createScreenTextEdit(object));
 			} catch (MalformedTreeException e) {
@@ -167,7 +171,9 @@ public class FileMoveParticipant extends MoveParticipant {
 			AbstractMatch object = (AbstractMatch) relations.get(i);
 			IFile file = (IFile) object.getElement();
 			TextFileChange textFileChange = changeManager
-					.getTextFileChange(file);
+					.getTextFileChangeInProcessor(this.getProcessor(), file);
+			if (textFileChange == null)
+				textFileChange = changeManager.getTextFileChange(file);
 			textFileChange.addEdit(createBMTextEdit(object));
 		}
 		changes.addAll(changeManager.getAllChanges());
