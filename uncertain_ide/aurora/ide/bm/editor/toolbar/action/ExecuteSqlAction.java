@@ -34,9 +34,11 @@ public class ExecuteSqlAction extends Action {
 	public void run() {
 		Connection conn = viewer.getConnection();
 		String sql = viewer.getSql();
-
-//		String action = viewer.getAction();
-		String action = sql.split(" ")[0];
+		if(sql == null ||"".equals(sql)){
+			DialogUtil.showErrorMessageBox("请先输入SQL语句。");
+			return;
+		}
+		String action = sql.trim().split(" ")[0];
 		ResultSet resultSet = null;
 		Statement stmt;
 		int resultCount = 0;
