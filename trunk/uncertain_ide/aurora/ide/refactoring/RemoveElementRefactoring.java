@@ -81,6 +81,7 @@ public class RemoveElementRefactoring extends Refactoring {
 	}
 
 	private TextFileChange getTextFileChange(IFile file) {
+		
 		return changeManager.getTextFileChange(file);
 	}
 

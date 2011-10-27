@@ -114,7 +114,9 @@ public class FolderRenameParticipant extends RenameParticipant {
 			AbstractMatch object = (AbstractMatch) relations.get(i);
 			IFile file = (IFile) object.getElement();
 			TextFileChange textFileChange = changeManager
-					.getTextFileChange(file);
+					.getTextFileChangeInProcessor(this.getProcessor(), file);
+			if (textFileChange == null)
+				textFileChange = changeManager.getTextFileChange(file);
 			TextEdit edit;
 			try {
 				edit = createScreenEdit(object);
@@ -190,7 +192,9 @@ public class FolderRenameParticipant extends RenameParticipant {
 			IFile file = (IFile) object.getElement();
 			IDocument document = getDocument(file);
 			TextFileChange textFileChange = changeManager
-					.getTextFileChange(file);
+					.getTextFileChangeInProcessor(this.getProcessor(), file);
+			if (textFileChange == null)
+				textFileChange = changeManager.getTextFileChange(file);
 
 			int offset = object.getOriginalOffset();
 			int length = object.getOriginalLength();

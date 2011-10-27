@@ -29,7 +29,6 @@ public class CompositeMapInDocumentManager {
 	*/
 	public static CompositeMapInDocument getCompositeMapInDocument(
 			CompositeMap map, IDocument document) {
-
 		int startLine = map.getLocation().getStartLine() - 1;
 		int endLine = map.getLocation().getEndLine() - 1;
 
