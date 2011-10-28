@@ -33,7 +33,7 @@
 = 离线解压安装 =
 
  # 适合可以访问网络，尤其适合中国大陆的朋友。
- # 喜欢研究并且愿意自己管理eclipse的朋友。
+ # 喜欢研究并且愿意自己管理eclipse插件的朋友。
 
  # 下载最新的安装包[http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip 安装包下载]
  # 将压缩包解压，删除site.xml
