@@ -27,7 +27,7 @@
 
  # 下载最新的安装包[http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip 安装包下载]
  # 参考[连线自动更新]方式。
- # 注意在安装更新对话框中，取消[contact all update sites during install to find required software]选项。
+ # 注意在安装更新对话框中，取消_contact all update sites during install to find required software_选项。
  # 如不取消，速度同连线自动更新方式。
 
 = 离线解压安装 =
