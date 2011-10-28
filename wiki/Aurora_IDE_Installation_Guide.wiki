@@ -26,7 +26,7 @@
  # 适合可以访问网络，尤其适合中国大陆的朋友。
 
  # 下载最新的安装包[安装包下载||http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip]
- # 参考[#连线自动更新]方式。
+ # 参考[WikiSyntax#连线自动更新]方式。
  # 注意在安装更新对话框中，取消[contact all update sites during install to find required software]选项。
  # 如不取消，速度同连线自动更新方式。
 
