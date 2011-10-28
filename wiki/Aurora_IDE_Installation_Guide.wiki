@@ -8,37 +8,37 @@
 
 = 连线自动更新 =
 
-*适用网络环境比较好的朋友，或中国大陆以外的地区或国家。
+ * 适用网络环境比较好的朋友，或中国大陆以外的地区或国家。
 
-*选择菜单栏中help菜单
-*选择install New Software..
-*在打开的对话框work with位置中输入:[http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/]
-*eclipse 开始自动查找需要安装的IDE。
-*出现列表后选择最新版本的AuroraIDE和AuroraIDELibrary
-*next开始eclipse的自动安装。
-*安装过程中遇到提示，请选择OK。
-*此过程可能会需要很长时间，视网络情况而定。
-*安装完成后重新启动。
-*在About Eclipse菜单中确认是否安装成功。
+ # 选择菜单栏中help菜单
+ # 选择install New Software..
+ # 在打开的对话框work with位置中输入:[http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/]
+ # eclipse 开始自动查找需要安装的IDE。
+ # 出现列表后选择最新版本的AuroraIDE和AuroraIDELibrary
+ # next开始eclipse的自动安装。
+ # 安装过程中遇到提示，请选择OK。
+ # 此过程可能会需要很长时间，视网络情况而定。
+ # 安装完成后重新启动。
+ # 在About Eclipse菜单中确认是否安装成功。
 
 = 离线自动更新 =
 
-*适合可以访问网络，尤其适合中国大陆的朋友。
+ # 适合可以访问网络，尤其适合中国大陆的朋友。
 
-*下载最新的安装包[安装包下载|http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip]
-*参考[在线自动更新]方式。
-*注意在安装更新对话框中，取消[contact all update sites during install to find required software]选项。
-*如不取消，速度同连线自动更新方式。
+ # 下载最新的安装包[安装包下载#http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip]
+ # 参考[在线自动更新]方式。
+ # 注意在安装更新对话框中，取消[contact all update sites during install to find required software]选项。
+ # 如不取消，速度同连线自动更新方式。
 
 = 离线解压安装 =
 
-*适合可以访问网络，尤其适合中国大陆的朋友。
-*喜欢研究并且愿意自己管理eclipse的朋友。
+ # 适合可以访问网络，尤其适合中国大陆的朋友。
+ # 喜欢研究并且愿意自己管理eclipse的朋友。
 
-*下载最新的安装包[安装包下载|http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip]
-*将压缩包解压，删除site.xml
-*保证目录结构为aurora_ide/plugins
-*将aurora_ide目录丢到，eclipse/dropins
-*删除eclipse/configuration/org.eclipse.osgi
-*完成后重新启动。
-*在About Eclipse菜单中确认是否安装成功。
+ # 下载最新的安装包[安装包下载#http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip]
+ # 将压缩包解压，删除site.xml
+ # 保证目录结构为aurora_ide/plugins
+ # 将aurora_ide目录丢到，eclipse/dropins
+ # 删除eclipse/configuration/org.eclipse.osgi
+ # 完成后重新启动。
+ # 在About Eclipse菜单中确认是否安装成功。
