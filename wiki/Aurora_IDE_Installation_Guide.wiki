@@ -40,7 +40,7 @@
 
  # 下载最新的安装包[http://aurora-project.googlecode.com/svn/trunk/uncertain_ide_release/Aurora_IDE.zip 安装包下载]
  # 将压缩包解压，删除site.xml
- # 保证目录结构为aurora_ide/plugins
+ # 保证目录结构为aurora_ide/plugins和aurora_ide/features
  # 将aurora_ide目录丢到，eclipse/dropins
  # 删除eclipse/configuration/org.eclipse.osgi
  # 完成后重新启动。
