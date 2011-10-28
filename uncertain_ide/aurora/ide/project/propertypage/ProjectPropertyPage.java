@@ -1,6 +1,5 @@
 package aurora.ide.project.propertypage;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IProject;
@@ -39,23 +38,30 @@ import aurora.ide.helpers.SystemException;
 import aurora.ide.helpers.UncertainEngineUtil;
 
 public class ProjectPropertyPage extends PropertyPage {
+	public ProjectPropertyPage() {
+	}
+
 	public static final String PropertyId = "aurora.ide.projectproperty";
 	private static final String LOCAL_WEB_URL = "LOCAL_WEB_URL";
 	private static final String WEB_HOME = "WEB_HOME";
 	private static final String BM_HOME = "BM_HOME";
 	private static final String DebugMode = "DEBUG_MODE";
+	private static final String BUILD_RIGHT_NOW = "BUILD_RIGHT_NOW";
 	public static final QualifiedName LoclaUrlHomeQN = new QualifiedName(
 			AuroraPlugin.PLUGIN_ID, LOCAL_WEB_URL);
 	public static final QualifiedName WebQN = new QualifiedName(
 			AuroraPlugin.PLUGIN_ID, WEB_HOME);
 	public static final QualifiedName BMQN = new QualifiedName(
 			AuroraPlugin.PLUGIN_ID, BM_HOME);
+	public static final QualifiedName buildNow = new QualifiedName(
+			AuroraPlugin.PLUGIN_ID, BUILD_RIGHT_NOW);
 	public static final QualifiedName DebugModeQN = new QualifiedName(
 			AuroraPlugin.PLUGIN_ID, DebugMode);
 	private Text localWebUrlText;
 	private Text webHomeText;
 	private Text bmHomeText;
 	private Button debugButton;
+	private Button cb_isBuild;
 
 	protected Control createContents(Composite parent) {
 		Composite content = new Composite(parent, SWT.NONE);
@@ -231,6 +237,14 @@ public class ProjectPropertyPage extends PropertyPage {
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 3;
 		debugButton.setLayoutData(gridData);
+
+		cb_isBuild = new Button(content, SWT.CHECK);
+		cb_isBuild.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
+				false, 2, 1));
+		cb_isBuild.setText("立即开始 build ( build 过程可能耗时较长 )");
+
+		cb_isBuild.setSelection(getStoredBuildOption());
+		new Label(content, SWT.NONE);
 		return content;
 	}
 
@@ -259,6 +273,8 @@ public class ProjectPropertyPage extends PropertyPage {
 					String.valueOf(debugButton.getSelection()));
 			project.setPersistentProperty(LoclaUrlHomeQN,
 					localWebUrlText.getText());
+			project.setPersistentProperty(buildNow,
+					cb_isBuild.getSelection() ? "true" : "false");
 		} catch (CoreException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
@@ -266,7 +282,7 @@ public class ProjectPropertyPage extends PropertyPage {
 	}
 
 	public boolean performOk() {
-		if (checkInput()) {
+		if (checkInput() && cb_isBuild.getSelection()) {
 			Display.getCurrent().asyncExec(new Runnable() {
 				public void run() {
 					try {
@@ -345,5 +361,17 @@ public class ProjectPropertyPage extends PropertyPage {
 			return "此文件名不是" + classesDir;
 		}
 		return null;
+	}
+
+	private boolean getStoredBuildOption() {
+		String str = null;
+		try {
+			str = getProject().getPersistentProperty(buildNow);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		if (str == null)
+			return false;
+		return str.endsWith("true");
 	}
 }
