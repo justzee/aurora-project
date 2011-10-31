@@ -419,9 +419,9 @@ public class CompositeMapUtil {
 		} catch (UnsupportedEncodingException e) {
 			throw new SystemException(e);
 		} catch (SAXException e) {
-			throw new ApplicationException("请检查内容格式" + content + "是否正确.", e);
+			throw new ApplicationException("请检查内容格式是否正确.", e);
 		} catch (IOException e) {
-			throw new ApplicationException("请检查内容格式" + content + "是否正确.", e);
+			throw new ApplicationException("请检查内容格式是否正确.", e);
 		} finally {
 			if (is != null) {
 				try {
