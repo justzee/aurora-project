@@ -11,10 +11,9 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 
-
 public class JavascriptDocumentListener implements IDocumentListener {
 
-	private static final String SCRIPT = "<script>";
+	private static final String SCRIPT = "<script( .*){0,1}>";
 	private TextEditor sourceEditor;
 	private final static String C_DATA_BEGIN = "<![CDATA[";
 	private final static String C_DATA_END = "]]>";
@@ -48,12 +47,15 @@ public class JavascriptDocumentListener implements IDocumentListener {
 		IDocument document = event.getDocument();
 		try {
 			ITypedRegion partition = document.getPartition(offset);
-			ITypedRegion parentRegion = document.getPartition(partition.getOffset()- 1);
+			ITypedRegion parentRegion = document.getPartition(partition
+					.getOffset() - 1);
 			String parentNode = document.get(parentRegion.getOffset(),
 					parentRegion.getLength());
+			if (parentNode == null)
+				return;
 			String type = partition.getType();
 			if (XMLPartitionScanner.XML_CDATA.equals(type)
-					&& SCRIPT.equalsIgnoreCase(parentNode)) {
+					&& parentNode.matches(SCRIPT)) {
 				validate(document, partition);
 			}
 		} catch (BadLocationException e) {
