@@ -1,4 +1,4 @@
-package aurora.ide.editor.textpage;
+package aurora.ide.editor.textpage.hover;
 
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
@@ -6,6 +6,7 @@ import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.swt.widgets.Shell;
+
 
 @SuppressWarnings("restriction")
 public class HoverInformationControl extends BrowserInformationControl {
