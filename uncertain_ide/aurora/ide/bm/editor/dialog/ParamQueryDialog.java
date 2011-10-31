@@ -1,6 +1,5 @@
 package aurora.ide.bm.editor.dialog;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -38,7 +37,6 @@ import aurora.ide.AuroraPlugin;
 
 public class ParamQueryDialog extends Dialog {
 	private final int MAX_PARAMETERS = 5;
-	//private final String PATH = "dialog.xml";
 	private IDialogSettings settings = AuroraPlugin.getDefault().getDialogSettingsSection("queryParam");
 	private List<Parameter> repeatParameter = new ArrayList<Parameter>(10);
 	private List<Parameter> unRepeatParameter = new ArrayList<Parameter>(5);
@@ -72,15 +70,6 @@ public class ParamQueryDialog extends Dialog {
 		}
 		parameter = unRepeatParameter;
 		repeat = false;
-		/*try {
-			settings.load(PATH);
-		} catch (IOException e) {
-			try {
-				settings.save(PATH);
-			} catch (IOException ee) {
-				ee.printStackTrace();
-			}
-		}*/
 	}
 
 	public String[] getValues() {
@@ -212,12 +201,7 @@ public class ParamQueryDialog extends Dialog {
 		for (int i = 1; i < temp.length && oldParameters.length >= 1; i++) {
 			temp[i] = oldParameters[i - 1];
 		}
-		//try {
 			settings.put(name, temp);
-			//settings.save(PATH);
-		//} catch (IOException e) {
-			//e.printStackTrace();
-		//}
 	}
 
 	class TableLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -225,7 +209,6 @@ public class ParamQueryDialog extends Dialog {
 			if (element instanceof Parameter) {
 				Parameter p = (Parameter) element;
 				if (columnIndex == 0) {
-					//return String.valueOf(parameter.indexOf(p) + 1);
 					return Integer.toString(p.getIndex());
 				} else if (columnIndex == 1) {
 					return p.getName();
