@@ -1,20 +1,22 @@
 package aurora.ide.bm.editor.toolbar.action;
 
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.bm.editor.dialog.ParamQueryDialog;
 import aurora.ide.editor.core.ISqlViewer;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
-
-
 
 public class ExecuteSqlAction extends Action {
 	ISqlViewer viewer;
@@ -23,7 +25,7 @@ public class ExecuteSqlAction extends Action {
 		this.viewer = viewer;
 	}
 
-	public ExecuteSqlAction(ISqlViewer viewer,ImageDescriptor imageDescriptor, String text) {
+	public ExecuteSqlAction(ISqlViewer viewer, ImageDescriptor imageDescriptor, String text) {
 		if (imageDescriptor != null)
 			setHoverImageDescriptor(imageDescriptor);
 		if (text != null)
@@ -33,24 +35,38 @@ public class ExecuteSqlAction extends Action {
 
 	public void run() {
 		Connection conn = viewer.getConnection();
-		String sql = viewer.getSql();
-		if(sql == null ||"".equals(sql)){
+		String sql = viewer.getSql().trim();
+		if (sql == null || "".equals(sql)) {
 			DialogUtil.showErrorMessageBox("请先输入SQL语句。");
 			return;
 		}
+		String[] parameters = new String[0];
+		if (sql.indexOf('$') != -1) {
+			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			ParamQueryDialog dialog = new ParamQueryDialog(shell, sql);
+			if (Dialog.OK == dialog.open()) {
+				sql = sql.replaceAll("\\$\\{[^}]+\\}", "?");
+				parameters = dialog.getValues();
+				System.out.println(Arrays.toString(parameters));
+			} else {
+				return;
+			}
+		}
 		String action = sql.trim().split(" ")[0];
 		ResultSet resultSet = null;
-		Statement stmt;
+		PreparedStatement stmt;
 		int resultCount = 0;
 		try {
-			stmt = conn.createStatement();
+			stmt = conn.prepareStatement(sql);
+			for (int i = 0; i < parameters.length; i++) {
+				stmt.setString(i + 1, parameters[i]);
+			}
 			if ("select".equalsIgnoreCase(action)) {
-				resultSet = stmt.executeQuery(sql);
+				resultSet = stmt.executeQuery();
+			} else if (action != null) {
+				resultCount = stmt.executeUpdate();
 			}
-			else if(action != null){
-				resultCount = stmt.executeUpdate(sql);
-			}
-			if(resultSet != null){
+			if (resultSet != null) {
 				resultCount = resultSet.getFetchSize();
 			}
 		} catch (SQLException e) {
