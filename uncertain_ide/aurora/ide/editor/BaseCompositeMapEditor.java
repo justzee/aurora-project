@@ -43,7 +43,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			mainViewerIndex = addPage(mainViewerPage);
 			textPageIndex = addPage(textPage, getEditorInput());
 			setPageText(textPageIndex, TextPage.textPageTitle);
-			setActivePage(textPageIndex);
+//			setActivePage(textPageIndex);
 		} catch (PartInitException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
@@ -78,12 +78,12 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		}
 	}
 
-	protected int getCurrentPage() {
-		int currentPage = super.getCurrentPage();
-		if (currentPage == -1)
-			currentPage = textPageIndex;
-		return currentPage;
-	}
+//	protected int getCurrentPage() {
+//		int currentPage = super.getCurrentPage();
+//		if (currentPage == -1)
+//			currentPage = textPageIndex;
+//		return currentPage;
+//	}
 
 	public void doSave(IProgressMonitor monitor) {
 		int currentPage = getCurrentPage();
@@ -139,7 +139,6 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 				DialogUtil.showErrorMessageBox(errorMessage);
 				return;
 			}
-			super.pageChange(newPageIndex);
 		}else if(newPageIndex == textPageIndex ){
 			// setActivePage will call pageChage(),we should prevent dead lock.
 			if (textPage.isIgnorceSycOnce()) {
@@ -147,9 +146,8 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 				return;
 			}
 			sycTextPageWithMainViewerPage();
-		}else{
-			super.pageChange(newPageIndex);
 		}
+		super.pageChange(newPageIndex);
 	}
 
 	private boolean sycMainViewerPageWithTextPage() throws ApplicationException{
