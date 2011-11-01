@@ -11,6 +11,7 @@ import java.util.ListIterator;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
+import uncertain.event.EventModel;
 import uncertain.event.RuntimeContext;
 import uncertain.logging.DummyLogger;
 import uncertain.logging.ILogger;
@@ -306,7 +307,9 @@ public class ProcedureRunner {
         // set current event
         current_event = event_name;
         try{
-            config.fireEvent(event_name, parameters, this, config.getHandleManager());
+            int result = config.fireEvent(event_name, parameters, this, config.getHandleManager());
+            if(EventModel.HANDLE_STOP==result)
+            	stop();
         }catch(Exception ex){
             //System.out.println("error in "+config.getCurrentHandle());
             //ex.printStackTrace();
