@@ -2,7 +2,7 @@
 <feature
       id="aurora.ide.feature"
       label="Aurora IDE"
-      version="1.2.6.qualifier"
+      version="1.2.7.qualifier"
       provider-name="Aurora Framework"
       plugin="aurora.ide">
 
@@ -197,7 +197,7 @@ Library.
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="aurora.ide.libs" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="aurora.ide.libs" version="1.2.7" match="greaterOrEqual"/>
       <import plugin="org.eclipse.update.scheduler" version="3.2.200" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.expressions"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
@@ -207,7 +207,7 @@ Library.
          id="aurora.ide"
          download-size="0"
          install-size="0"
-         version="1.2.6.qualifier"
+         version="1.2.7.qualifier"
          unpack="false"/>
 
 </feature>
