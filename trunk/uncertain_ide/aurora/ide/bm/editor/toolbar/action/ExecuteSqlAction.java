@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
@@ -42,12 +41,13 @@ public class ExecuteSqlAction extends Action {
 		}
 		String[] parameters = new String[0];
 		if (sql.indexOf('$') != -1) {
+			sql = sql.replace("\r\n", " ");
+			sql = sql.replace("@", "");
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			ParamQueryDialog dialog = new ParamQueryDialog(shell, sql);
 			if (Dialog.OK == dialog.open()) {
 				sql = sql.replaceAll("\\$\\{[^}]+\\}", "?");
 				parameters = dialog.getValues();
-				System.out.println(Arrays.toString(parameters));
 			} else {
 				return;
 			}

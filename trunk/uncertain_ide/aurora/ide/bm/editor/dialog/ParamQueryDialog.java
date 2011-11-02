@@ -56,7 +56,7 @@ public class ParamQueryDialog extends Dialog {
 		for (int i = 1; i < ps.length; i++) {
 			Parameter p = new Parameter();
 			p.setIndex(i);
-			p.setName(ps[i].replaceAll(".+@|\\}(.|\\s)*", ""));
+			p.setName(ps[i].replaceAll("(.*\\{)|(\\}.*)", ""));
 			unRepeat.add(p.getName());
 			repeatParameter.add(p);
 		}
@@ -94,7 +94,7 @@ public class ParamQueryDialog extends Dialog {
 
 	@Override
 	protected int getShellStyle() {
-		return super.getShellStyle() | SWT.RESIZE | SWT.MAX;
+		return super.getShellStyle() | SWT.RESIZE | SWT.MAX | SWT.HELP;
 	}
 
 	@Override
@@ -167,8 +167,9 @@ public class ParamQueryDialog extends Dialog {
 		tableViewer.setContentProvider(new ContentProvider());
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setInput(parameter);
-
+		
 		cboCellEditor = new ComboBoxCellEditor(tableViewer.getTable(), new String[] {});
+	
 		CellEditor[] cellEditors = new CellEditor[3];
 		cellEditors[0] = null;
 		cellEditors[1] = null;
@@ -201,7 +202,7 @@ public class ParamQueryDialog extends Dialog {
 		for (int i = 1; i < temp.length && oldParameters.length >= 1; i++) {
 			temp[i] = oldParameters[i - 1];
 		}
-			settings.put(name, temp);
+		settings.put(name, temp);
 	}
 
 	class TableLabelProvider extends LabelProvider implements ITableLabelProvider {
