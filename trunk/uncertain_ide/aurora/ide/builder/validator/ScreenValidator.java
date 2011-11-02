@@ -10,16 +10,20 @@ import aurora.ide.builder.processor.ScreenProcessor;
 import aurora.ide.builder.processor.SxsdProcessor;
 
 public class ScreenValidator extends AbstractValidator {
-    private AbstractProcessor[] aps = new AbstractProcessor[] { new BmProcessor(), new DataSetProcessor(),
-            new ScreenProcessor(), new ForeignFieldProcessor(), new SxsdProcessor() };
+	private AbstractProcessor[] aps = new AbstractProcessor[] {
+			new BmProcessor(), new DataSetProcessor(), new ScreenProcessor(),
+			new ForeignFieldProcessor(), new SxsdProcessor() };
 
-    public ScreenValidator(IFile file) {
-        super(file);
-    }
+	public ScreenValidator(IFile file) {
+		super(file);
+	}
 
-    @Override
-    public AbstractProcessor[] getMapProcessor() {
-        return aps;
-    }
+	public ScreenValidator() {
+	}
+
+	@Override
+	public AbstractProcessor[] getMapProcessor() {
+		return aps;
+	}
 
 }
