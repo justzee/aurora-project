@@ -2,6 +2,7 @@ package aurora.ide.editor.textpage.quickfix;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IDocument;
@@ -49,6 +50,15 @@ public class QuickFixInformationControl extends AbstractInformationControl
 
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
+			if (cp instanceof CompletionProposalAction) {
+				CompletionProposalAction cpa = (CompletionProposalAction) cp;
+				if (cpa.isIgnoreReplace()) {
+					IAction action = cpa.getAction();
+					action.run();
+					getShell().close();
+					return;
+				}
+			}
 			cp.apply(curDoc);
 			Point selection = cp.getSelection(curDoc);
 			if (selection != null)

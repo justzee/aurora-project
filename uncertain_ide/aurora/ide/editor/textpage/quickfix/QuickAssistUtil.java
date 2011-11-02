@@ -72,14 +72,12 @@ public class QuickAssistUtil {
 	 *            错误单词
 	 * @param s2
 	 *            正确单词
-	 * @return -1 表示不认为这两个次之间有明显联系<br/>
-	 *         <b>非负值</b> 有价值的编辑距离
+	 * @return -1 表示不认为这两个词之间有明显联系<br/>
+	 *         <b>非负值</b> 有意义的编辑距离
 	 */
 	public static int getApproiateEditDistance(String s1, String s2) {
-		if (Math.abs(s1.length() - s2.length()) > 2)
-			return -1;
 		int ed = getEditDistance(s1, s2);
-		if (ed > s2.length() / 2)
+		if (1 << ed > s2.length())
 			return -1;
 		return ed;
 	}
