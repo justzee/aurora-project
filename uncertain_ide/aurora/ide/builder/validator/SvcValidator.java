@@ -7,14 +7,18 @@ import aurora.ide.builder.processor.BmProcessor;
 import aurora.ide.builder.processor.SxsdProcessor;
 
 public class SvcValidator extends AbstractValidator {
-    private AbstractProcessor[] aps = new AbstractProcessor[] { new BmProcessor(), new SxsdProcessor() };
+	private AbstractProcessor[] aps = new AbstractProcessor[] {
+			new BmProcessor(), new SxsdProcessor() };
 
-    public SvcValidator(IFile file) {
-        super(file);
-    }
+	public SvcValidator(IFile file) {
+		super(file);
+	}
 
-    @Override
-    public AbstractProcessor[] getMapProcessor() {
-        return aps;
-    }
+	public SvcValidator() {
+	}
+
+	@Override
+	public AbstractProcessor[] getMapProcessor() {
+		return aps;
+	}
 }

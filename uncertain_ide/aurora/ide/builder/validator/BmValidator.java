@@ -10,16 +10,21 @@ import aurora.ide.builder.processor.NamespaceProcessor;
 import aurora.ide.builder.processor.SxsdProcessor;
 
 public class BmValidator extends AbstractValidator {
-    private AbstractProcessor[] aps = new AbstractProcessor[] { new BmProcessor(), new ForeignFieldProcessor(),
-            new LocalFieldProcessor(), new NamespaceProcessor(), new SxsdProcessor() };
+	private AbstractProcessor[] aps = new AbstractProcessor[] {
+			new BmProcessor(), new ForeignFieldProcessor(),
+			new LocalFieldProcessor(), new NamespaceProcessor(),
+			new SxsdProcessor() };
 
-    public BmValidator(IFile file) {
-        super(file);
-    }
+	public BmValidator(IFile file) {
+		super(file);
+	}
 
-    @Override
-    public AbstractProcessor[] getMapProcessor() {
-        return aps;
-    }
+	public BmValidator() {
+	}
+
+	@Override
+	public AbstractProcessor[] getMapProcessor() {
+		return aps;
+	}
 
 }
