@@ -1,6 +1,5 @@
 package aurora.ide.editor;
 
-
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -18,11 +17,16 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import uncertain.composite.CompositeMap;
+import uncertain.composite.XMLOutputter;
+import uncertain.schema.Element;
+import uncertain.schema.IType;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.JavaScriptConfiguration;
@@ -34,12 +38,6 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
-
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
-import uncertain.schema.Element;
-import uncertain.schema.IType;
 
 public class BaseCompositeMapViewer implements IViewer {
 
@@ -69,7 +67,8 @@ public class BaseCompositeMapViewer implements IViewer {
 
 	}
 
-	protected void createPropertyContent(Composite mContent) throws ApplicationException {
+	protected void createPropertyContent(Composite mContent)
+			throws ApplicationException {
 		propertySection = new PropertySection(this);
 		propertySection.create(mContent);
 
@@ -138,6 +137,7 @@ public class BaseCompositeMapViewer implements IViewer {
 		private GridViewer gridViewer;
 		private SourceViewer textSection;
 		IViewer viewer;
+
 		PropertySection(IViewer viewer) {
 			this.viewer = viewer;
 		}
@@ -157,16 +157,23 @@ public class BaseCompositeMapViewer implements IViewer {
 			mTabFolder.getItem(0).setControl(mPropertyEditor.getControl());
 		}
 
-		private void createPropertyGridTab(Composite parent) throws ApplicationException {
-			gridViewer = new GridViewer(null, IGridViewer.fullEditable|IGridViewer.isColumnPacked);
+		private void createPropertyGridTab(Composite parent)
+				throws ApplicationException {
+			gridViewer = new GridViewer(null, IGridViewer.fullEditable
+					| IGridViewer.isColumnPacked);
 			gridViewer.setParent(this);
 			gridViewer.createViewer(parent);
 			mTabFolder.getItem(1).setControl(gridViewer.getControl());
 		}
 
 		private void createTextTab(Composite parent) {
-			textSection = new SourceViewer(parent, null, SWT.MULTI | SWT.V_SCROLL| SWT.H_SCROLL);
-			textSection.configure(new JavaScriptConfiguration(new ColorManager()));
+			textSection = new SourceViewer(parent, null, SWT.MULTI
+					| SWT.V_SCROLL | SWT.H_SCROLL);
+			textSection.configure(new JavaScriptConfiguration(
+					new ColorManager()));
+			textSection.getTextWidget().setFont(
+					new Font(parent.getShell().getDisplay(), "Courier New", 10,
+							0));
 			Document document = new Document();
 			textSection.setDocument(document);
 			textSection.getTextWidget().addFocusListener(new FocusListener() {
@@ -215,7 +222,7 @@ public class BaseCompositeMapViewer implements IViewer {
 			String a = data.getText();
 			if (a != null && !a.trim().equals("")) {
 				textSection.getTextWidget().setText(data.getText());
-//				lineStyler.parseBlockComments(data.getText());
+				// lineStyler.parseBlockComments(data.getText());
 				mTabFolder.setSelection(2);
 				mTabFolder.layout(true);
 			} else {
@@ -223,12 +230,12 @@ public class BaseCompositeMapViewer implements IViewer {
 			}
 		}
 
-		public String clear(boolean validation){
+		public String clear(boolean validation) {
 			String errorMessage = mPropertyEditor.clear(validation);
-			if(errorMessage != null)
+			if (errorMessage != null)
 				return errorMessage;
 			errorMessage = gridViewer.clearAll(validation);
-			if(errorMessage != null)
+			if (errorMessage != null)
 				return errorMessage;
 			return null;
 		}
@@ -321,9 +328,9 @@ public class BaseCompositeMapViewer implements IViewer {
 			}
 			TreeSelection selection = (TreeSelection) event.getSelection();
 			CompositeMap data = (CompositeMap) selection.getFirstElement();
-			boolean validation = getValidation(treeViewer.getFocus(),data);
+			boolean validation = getValidation(treeViewer.getFocus(), data);
 			String errorMessage = propertySection.clear(validation);
-			if(errorMessage != null){
+			if (errorMessage != null) {
 				validError = true;
 				DialogUtil.showErrorMessageBox(errorMessage);
 				treeViewer.getTreeViewer().setSelection(
@@ -339,24 +346,30 @@ public class BaseCompositeMapViewer implements IViewer {
 				DialogUtil.showExceptionMessageBox(e);
 			}
 		}
-		private boolean getValidation(CompositeMap focus,CompositeMap selection){
-			if(focus == null || selection == null)
+
+		private boolean getValidation(CompositeMap focus, CompositeMap selection) {
+			if (focus == null || selection == null)
 				return true;
 
-			if(isArryRelation(focus,selection)||isArryRelation(selection,focus)){
-				return false; 
+			if (isArryRelation(focus, selection)
+					|| isArryRelation(selection, focus)) {
+				return false;
 			}
 			return true;
 		}
-		private boolean isArryRelation(CompositeMap parent,CompositeMap child){
-			Element parent_element = LoadSchemaManager.getSchemaManager().getElement(parent);
-			if(parent_element == null ||!parent_element.isArray())
+
+		private boolean isArryRelation(CompositeMap parent, CompositeMap child) {
+			Element parent_element = LoadSchemaManager.getSchemaManager()
+					.getElement(parent);
+			if (parent_element == null || !parent_element.isArray())
 				return false;
-			Element child_element = LoadSchemaManager.getSchemaManager().getElement(child);
-			if(child_element == null)
+			Element child_element = LoadSchemaManager.getSchemaManager()
+					.getElement(child);
+			if (child_element == null)
 				return false;
 			IType parentIType = parent_element.getElementType();
-			if(child_element.getQName().equals(parentIType.getQName())||child_element.isExtensionOf(parentIType))
+			if (child_element.getQName().equals(parentIType.getQName())
+					|| child_element.isExtensionOf(parentIType))
 				return true;
 			return false;
 		}

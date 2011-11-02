@@ -7,24 +7,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
 import uncertain.composite.XMLOutputter;
 import uncertain.schema.Attribute;
+import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.bm.wizard.sql.BMFromSQLWizard;
+import aurora.ide.bm.wizard.sql.BMFromSQLWizardPage;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.builder.validator.AbstractValidator;
+import aurora.ide.project.propertypage.ProjectPropertyPage;
 import aurora.ide.search.core.CompositeMapInDocument;
 import aurora.ide.search.core.CompositeMapInDocumentManager;
 
@@ -51,6 +64,8 @@ public class CompletionProposalCreator {
 	private int line = 0;
 	private String word;
 	private String markerType;
+
+	private String bm;
 
 	public CompletionProposalCreator(IDocument doc, CompositeMap rootMap,
 			IMarker marker) {
@@ -88,6 +103,10 @@ public class CompletionProposalCreator {
 			return getAttributeProposal();
 		} else if (markerType.equals(AuroraBuilder.UNDEFINED_DATASET)) {
 			return getDataSetProposal();
+		} else if (markerType.equals(AuroraBuilder.UNDEFINED_BM)) {
+			return getBmProposal();
+		} else if (markerType.equals(AuroraBuilder.UNDEFINED_TAG)) {
+			return getTagProposal();
 		}
 		return null;
 	}
@@ -99,8 +118,11 @@ public class CompletionProposalCreator {
 			return null;
 		IRegion valueRegion = AbstractValidator.getValueRegion(doc, map
 				.getLocationNotNull().getStartLine() - 1, word, value);
-		int deleteLength = valueRegion.getOffset() + valueRegion.getLength()
-				+ 2 - markerRegion.getOffset();
+		// FIXME 属性值中含有特殊字符,被转义,查找失败,返回null
+		int deleteLength = -1;
+		if (valueRegion != null)
+			deleteLength = valueRegion.getOffset() + valueRegion.getLength()
+					+ 2 - markerRegion.getOffset();
 		ArrayList<SortElement> comp = new ArrayList<SortElement>();
 		@SuppressWarnings("unchecked")
 		Set<Map.Entry<String, String>> set = map.entrySet();
@@ -108,7 +130,13 @@ public class CompletionProposalCreator {
 		for (Map.Entry<String, String> entry : set) {
 			keySet.add(entry.getKey().toLowerCase());
 		}
-		List<Attribute> definedAttribute = SxsdUtil.getAttributesNotNull(map);// map的合法属性
+		List<Attribute> definedAttribute;
+		try {
+			definedAttribute = SxsdUtil.getAttributesNotNull(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}// map的合法属性
 		for (Attribute attr : definedAttribute) {
 			String aname = attr.getName();
 			if (keySet.contains(aname.toLowerCase()))// 已经被使用的属性名掠过...
@@ -173,8 +201,10 @@ public class CompletionProposalCreator {
 			if (pathMap[1] == null) {// script不存在,直接作为view的子接点,插在最前面
 				relMap = CompositeMapInDocumentManager
 						.getCompositeMapInDocument(pathMap[0], doc);
-				prefix = getLeadingPrefix(doc, relMap)
-						+ XMLOutputter.DEFAULT_INDENT;
+				prefix = getLeadingPrefix(doc, relMap);
+				if (prefix == null)
+					return null;
+				prefix += XMLOutputter.DEFAULT_INDENT;
 				IRegion region = relMap.getStart();
 				insertOffset = region.getOffset() + region.getLength();
 				insertTag = XMLOutputter.LINE_SEPARATOR
@@ -189,6 +219,8 @@ public class CompletionProposalCreator {
 				relMap = CompositeMapInDocumentManager
 						.getCompositeMapInDocument(pathMap[1], doc);
 				prefix = getLeadingPrefix(doc, relMap);
+				if (prefix == null)
+					return null;
 				IRegion endRegion = relMap.getEnd();
 				insertOffset = endRegion.getOffset() + endRegion.getLength();
 				insertTag = XMLOutputter.LINE_SEPARATOR
@@ -226,7 +258,7 @@ public class CompletionProposalCreator {
 				String prefix = getLeadingPrefix(doc, relMap);
 				if (prefix == null)
 					return null;
-				clearNameSpaceURI(pathMap[2]);
+				clearnsURI(pathMap[2]);
 				replaceLength = endRegion.getOffset() + endRegion.getLength()
 						- region.getOffset();
 				pathMap[2].addChild(dataSetMap);
@@ -253,12 +285,135 @@ public class CompletionProposalCreator {
 		return cps;
 	}
 
+	private ICompletionProposal[] getBmProposal() {
+		if (word.equals("\"\"") || word.equals("''"))
+			return null;
+		String bmHomeStr = null;
+		IProject project = AuroraPlugin.getActiveIFile().getProject();
+		try {
+			bmHomeStr = project.getPersistentProperties().get(
+					ProjectPropertyPage.BMQN);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		if (bmHomeStr == null)
+			return null;
+		int idx = word.lastIndexOf('.');
+		bm = word;
+		String prefix = "";
+		if (idx != -1) {
+			prefix = word.substring(0, idx).replace(".", "/");
+			bm = word.substring(idx + 1);
+		}
+		final IFolder folder = project.getParent().getFolder(
+				new Path(bmHomeStr + "/" + prefix));
+		final ArrayList<SortElement> list = new ArrayList<SortElement>();
+		try {
+			folder.accept(new IResourceVisitor() {
+
+				public boolean visit(IResource resource) throws CoreException {
+					if (resource instanceof IFile) {
+						IFile file = (IFile) resource;
+						if ("bm".equalsIgnoreCase(file.getFileExtension())) {
+							String fn = file.getName();
+							fn = fn.substring(0, fn.length() - 3);
+							int ed = QuickAssistUtil.getApproiateEditDistance(
+									bm, fn);
+							if (ed != -1) {
+								list.add(new SortElement(fn, ed));
+							}
+						}
+					}
+					return true;
+				}
+			}, IResource.DEPTH_ONE, false);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		if (prefix.length() > 0)
+			prefix = prefix.replace("/", ".") + ".";
+		Collections.sort(list);
+		ICompletionProposal cps[] = new ICompletionProposal[list.size() + 1];
+		for (int i = 0; i < list.size(); i++) {
+			SortElement se = list.get(i);
+			String str = prefix + se.name;
+			cps[i] = new CompletionProposal(str, markerRegion.getOffset(),
+					markerRegion.getLength(), str.length(), img_rename, "更改为 "
+							+ str, null, "建议修改为 : " + str);
+		}
+		CompletionProposalAction cpa = new CompletionProposalAction("",
+				markerRegion.getOffset(), 0, 0, img_new, "创建bm : " + word,
+				null, "新建一个BM");
+		cpa.setAction(new EmptyAction() {
+
+			@Override
+			public void run() {
+				BMFromSQLWizard sqlWizard = new BMFromSQLWizard();
+				WizardDialog wd = new WizardDialog(new Shell(Display
+						.getCurrent()), sqlWizard);
+				wd.setBlockOnOpen(false);
+				wd.open();
+				BMFromSQLWizardPage wp = (BMFromSQLWizardPage) wd
+						.getCurrentPage();
+				wp.setFolder(folder.getFullPath().toString());
+				wp.setFileName(bm);
+				wp.getSQLTextField().forceFocus();
+			}
+		});
+		cpa.setIgnoreReplace(true);
+		cps[list.size()] = cpa;
+		return cps;
+	}
+
+	private ICompletionProposal[] getTagProposal() {
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, line);
+		final String tagName = map.getName();
+		CompositeMap parent = map.getParent();
+		List<Element> aChilds = SxsdUtil.getAvailableChildElements(parent);
+		final ArrayList<SortElement> list = new ArrayList<SortElement>();
+		for (Element e : aChilds) {
+			String name = e.getQName().getLocalName();
+			if (name.equals(tagName))
+				continue;
+			int ed = QuickAssistUtil.getApproiateEditDistance(tagName, name);
+			if (ed != -1) {
+				list.add(new SortElement(name, ed));
+			}
+		}
+		Collections.sort(list);
+		CompositeMapInDocument info = CompositeMapInDocumentManager
+				.getCompositeMapInDocument(map, doc);
+		IRegion mapRegion = getMapRegion(doc, info);
+		String prefix = getLeadingPrefix(doc, info);
+		if (prefix == null)
+			return null;
+		ICompletionProposal[] cps = new ICompletionProposal[list.size() + 1];
+		for (int i = 0; i < cps.length - 1; i++) {
+			String name = list.get(i).name;
+			CompositeMap cMap = (CompositeMap) map.clone();
+			cMap.setName(name);
+			clearnsURI(cMap);
+			String str = cMap
+					.toXML()
+					.trim()
+					.replace(XMLOutputter.LINE_SEPARATOR,
+							XMLOutputter.LINE_SEPARATOR + prefix);
+			cps[i] = new CompletionProposal(str, mapRegion.getOffset(),
+					mapRegion.getLength(), 0, img_rename, "更改为 " + name, null,
+					"建议修改为 : " + name);
+		}
+		cps[cps.length - 1] = new CompletionProposal("", mapRegion.getOffset(),
+				mapRegion.getLength(), 0, img_remove, "删除Tag : " + tagName,
+				null, "建议删除Tag : " + tagName);
+		return cps;
+	}
+
 	/**
 	 * 清除map及其所有子节点的nameSpaceURI,以便toXML时不会再出现
 	 * 
 	 * @param map
 	 */
-	private void clearNameSpaceURI(CompositeMap map) {
+	private void clearnsURI(CompositeMap map) {
 		map.iterate(new IterationHandle() {
 
 			public int process(CompositeMap map) {
@@ -295,6 +450,14 @@ public class CompletionProposalCreator {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private IRegion getMapRegion(IDocument doc, CompositeMapInDocument relMap) {
+		IRegion sRegion = relMap.getStart();
+		IRegion eRegion = relMap.getEnd();
+		IRegion region = new Region(sRegion.getOffset(), eRegion.getOffset()
+				+ eRegion.getLength() - sRegion.getOffset());
+		return region;
 	}
 
 	private CompositeMap getOuterDataSetMap(CompositeMap map) {
