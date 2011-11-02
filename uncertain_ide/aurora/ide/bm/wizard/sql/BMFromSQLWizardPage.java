@@ -1,6 +1,5 @@
 package aurora.ide.bm.wizard.sql;
 
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,7 +27,6 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 import aurora.ide.helpers.LocaleMessage;
 
-
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
@@ -40,8 +38,8 @@ public class BMFromSQLWizardPage extends WizardPage {
 	private Text containerText;
 	private Text fileText;
 	private ISelection selection;
-	private StyledText innerText; 
-	
+	private StyledText innerText;
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -87,21 +85,21 @@ public class BMFromSQLWizardPage extends WizardPage {
 
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan=2;
+		gd.horizontalSpan = 2;
 		fileText.setLayoutData(gd);
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				dialogChanged();
 			}
 		});
-		
-		Group SQLText = new Group(container,SWT.NONE);
-		gd = new GridData(GridData.FILL,GridData.FILL,true,true);
-		gd.horizontalSpan=3;
+
+		Group SQLText = new Group(container, SWT.NONE);
+		gd = new GridData(GridData.FILL, GridData.FILL, true, true);
+		gd.horizontalSpan = 3;
 		SQLText.setLayoutData(gd);
 		SQLText.setText(LocaleMessage.getString("enter.sql"));
 		SQLText.setLayout(new FillLayout());
-		innerText = new StyledText(SQLText, SWT.WRAP|SWT.V_SCROLL);
+		innerText = new StyledText(SQLText, SWT.WRAP | SWT.V_SCROLL);
 		innerText.setFont(new Font(SQLText.getDisplay(), "Courier New", 10,
 				SWT.NORMAL));
 		innerText.addModifyListener(new ModifyListener() {
@@ -135,6 +133,7 @@ public class BMFromSQLWizardPage extends WizardPage {
 			}
 		}
 	}
+
 	/**
 	 * Uses the standard container selection dialog to choose the new value for
 	 * the container field.
@@ -151,6 +150,7 @@ public class BMFromSQLWizardPage extends WizardPage {
 			}
 		}
 	}
+
 	/**
 	 * Ensures that both text fields are set.
 	 */
@@ -161,7 +161,8 @@ public class BMFromSQLWizardPage extends WizardPage {
 		String fileName = getFileName();
 
 		if (getContainerName().length() == 0) {
-			updateStatus(LocaleMessage.getString("file.container.must.be.specified"));
+			updateStatus(LocaleMessage
+					.getString("file.container.must.be.specified"));
 			return;
 		}
 		if (container == null
@@ -169,7 +170,10 @@ public class BMFromSQLWizardPage extends WizardPage {
 			updateStatus(LocaleMessage.getString("file.container.must.exist"));
 			return;
 		}
-		if(fileName !=null &&!fileName.equals("")&&((IContainer)container).getFile(new Path(fileName)).exists()){
+		if (fileName != null
+				&& !fileName.equals("")
+				&& ((IContainer) container).getFile(new Path(fileName))
+						.exists()) {
 			updateStatus(LocaleMessage.getString("filename.used"));
 			return;
 		}
@@ -181,7 +185,7 @@ public class BMFromSQLWizardPage extends WizardPage {
 			updateStatus(LocaleMessage.getString("file.name.must.be.specified"));
 			return;
 		}
-		
+
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
 			updateStatus(LocaleMessage.getString("file.name.must.be.valid"));
 			return;
@@ -190,7 +194,8 @@ public class BMFromSQLWizardPage extends WizardPage {
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
 			if (ext.equalsIgnoreCase("bm") == false) {
-				updateStatus(LocaleMessage.getString("file.extension.must.be.bm"));
+				updateStatus(LocaleMessage
+						.getString("file.extension.must.be.bm"));
 				return;
 			}
 		}
@@ -199,6 +204,21 @@ public class BMFromSQLWizardPage extends WizardPage {
 			return;
 		}
 		updateStatus(null);
+	}
+
+	// 用于设置默认的目录
+	public void setFolder(String path) {
+		containerText.setText(path);
+	}
+
+	// 用于设置默认的文件名
+	public void setFileName(String fileName) {
+		fileText.setText(fileName);
+	}
+
+	// 用于设置默认sql或者设置焦点等
+	public StyledText getSQLTextField() {
+		return innerText;
 	}
 
 	private void updateStatus(String message) {
@@ -212,13 +232,14 @@ public class BMFromSQLWizardPage extends WizardPage {
 
 	public String getFileName() {
 		String fileName = fileText.getText();
-		if(fileName.indexOf(".")==-1){
-			fileName = fileName+"."+FILE_EXT;
+		if (fileName.indexOf(".") == -1) {
+			fileName = fileName + "." + FILE_EXT;
 		}
 		return fileName;
 	}
-	public String getSQL(){
+
+	public String getSQL() {
 		return innerText.getText();
 	}
-	
+
 }
