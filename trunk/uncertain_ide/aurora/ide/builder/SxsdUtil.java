@@ -172,6 +172,7 @@ public final class SxsdUtil {
 	public static String convertToHTMLContent(String content) {
 		content = content.replace("&", "&amp;");
 		content = content.replace("\"", "&quot;");
+		content = content.replace("'", "&apos;");
 		content = content.replace("<", "&lt;");
 		return content.replace(">", "&gt;");
 	}
