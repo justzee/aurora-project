@@ -77,7 +77,9 @@ public class QuickAssistUtil {
 	 */
 	public static int getApproiateEditDistance(String s1, String s2) {
 		int ed = getEditDistance(s1, s2);
-		if (1 << ed > s2.length())
+		long len = 1L << ed;
+		// System.out.println(ed + " " + len + " " + s2.length());
+		if (len < 0 || len > s2.length())
 			return -1;
 		return ed;
 	}
