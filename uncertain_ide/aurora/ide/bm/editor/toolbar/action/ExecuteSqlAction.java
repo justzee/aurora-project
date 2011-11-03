@@ -46,8 +46,13 @@ public class ExecuteSqlAction extends Action {
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			ParamQueryDialog dialog = new ParamQueryDialog(shell, sql);
 			if (Dialog.OK == dialog.open()) {
-				sql = sql.replaceAll("\\$\\{[^}]+\\}", "?");
+				sql = sql.replaceAll("\\$\\{[^:][^}]+\\}", "?");
 				parameters = dialog.getValues();
+				for (String s : parameters) {
+					if (null != s && s.indexOf("~") != -1) {
+						sql = sql.replaceFirst("\\$\\{[^}]+\\}", s.substring(1));
+					}
+				}
 			} else {
 				return;
 			}
@@ -58,8 +63,14 @@ public class ExecuteSqlAction extends Action {
 		int resultCount = 0;
 		try {
 			stmt = conn.prepareStatement(sql);
-			for (int i = 0; i < parameters.length; i++) {
-				stmt.setString(i + 1, parameters[i]);
+			for (int i = 0, n = 0; i < parameters.length; i++) {
+				if (null == parameters[i]) {
+					stmt.setString(n + 1, parameters[i]);
+					n++;
+				} else if (parameters[i].indexOf("~") == -1) {
+					stmt.setString(n + 1, parameters[i]);
+					n++;
+				}
 			}
 			if ("select".equalsIgnoreCase(action)) {
 				resultSet = stmt.executeQuery();

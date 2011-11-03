@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -44,9 +45,12 @@ public class ParamQueryDialog extends Dialog {
 	private ComboBoxCellEditor cboCellEditor;
 	private TableViewer tableViewer;
 	private boolean repeat;
+	private Shell parent;
+	private int maxStringLength = 0;
 
 	public ParamQueryDialog(Shell parent, String sql) {
 		super(parent);
+		this.parent = parent;
 		initDialog(sql);
 	}
 
@@ -65,25 +69,47 @@ public class ParamQueryDialog extends Dialog {
 			Parameter p = new Parameter();
 			p.setIndex(index);
 			p.setName(s);
+			int maxLength = getStringWidth(s) + s.length();
+			maxStringLength = maxLength < maxStringLength ? maxStringLength : maxLength;
 			unRepeatParameter.add(p);
 			index++;
 		}
+		maxStringLength = maxStringLength < 40 ? 40 : maxStringLength;
 		parameter = unRepeatParameter;
 		repeat = false;
+	}
+
+	private int getStringWidth(String string) {
+		int width = 0;
+		GC gc = new GC(parent);
+		for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			width += gc.getCharWidth(c);
+		}
+		gc.dispose();
+		return width;
 	}
 
 	public String[] getValues() {
 		String[] values = new String[repeatParameter.size()];
 		if (repeat) {
 			for (int i = 0; i < repeatParameter.size(); i++) {
-				values[i] = repeatParameter.get(i).getValue();
+				if (repeatParameter.get(i).getName().indexOf(":") != -1) {
+					values[i] = "~" + repeatParameter.get(i).getValue();
+				} else {
+					values[i] = repeatParameter.get(i).getValue();
+				}
 			}
 		} else {
 			for (int i = 0; i < repeatParameter.size(); i++) {
 				Parameter p = repeatParameter.get(i);
 				for (Parameter pp : unRepeatParameter) {
 					if (pp.getName().equals(p.getName())) {
-						values[i] = pp.getValue();
+						if (pp.getName().indexOf(":") != -1) {
+							values[i] = "~" + pp.getValue();
+						} else {
+							values[i] = pp.getValue();
+						}
 						break;
 					}
 				}
@@ -152,11 +178,12 @@ public class ParamQueryDialog extends Dialog {
 		colIndex.setWidth(25);
 		colIndex.setText("");
 		tclayout.setColumnData(colIndex, new ColumnWeightData(25, 25, false));
+		colIndex.setResizable(false);
 
 		TableColumn colName = new TableColumn(table, SWT.NONE);
-		colName.setWidth(100);
+		colName.setWidth(maxStringLength);
 		colName.setText("参数名");
-		tclayout.setColumnData(colName, new ColumnWeightData(100, 100, false));
+		tclayout.setColumnData(colName, new ColumnWeightData(maxStringLength, maxStringLength, false));
 
 		TableColumn colValue = new TableColumn(table, SWT.NONE);
 		colValue.setWidth(235);
@@ -167,9 +194,9 @@ public class ParamQueryDialog extends Dialog {
 		tableViewer.setContentProvider(new ContentProvider());
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setInput(parameter);
-		
+
 		cboCellEditor = new ComboBoxCellEditor(tableViewer.getTable(), new String[] {});
-	
+
 		CellEditor[] cellEditors = new CellEditor[3];
 		cellEditors[0] = null;
 		cellEditors[1] = null;
