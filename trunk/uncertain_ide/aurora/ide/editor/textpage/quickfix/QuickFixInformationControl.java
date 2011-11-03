@@ -14,6 +14,8 @@ import org.eclipse.jface.util.Geometry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -197,14 +199,28 @@ public class QuickFixInformationControl extends AbstractInformationControl
 			l.setBackground(com.getBackground());
 			l.setBounds(3, displayHeight, 16, 20);
 			l.setImage(cps[i].getImage());
-			Hyperlink hl = new Hyperlink(com, SWT.NONE);
+			final Hyperlink hl = new Hyperlink(com, SWT.NONE);
 			hl.setBounds(20, displayHeight,
 					guessWidth(hl, cps[i].getDisplayString()), 20);
 			hl.setText(cps[i].getDisplayString());
 			hl.setBackground(com.getBackground());
 			hl.setForeground(new Color(com.getDisplay(), 0, 102, 204));
-			hl.setUnderlined(true);
+			// hl.setUnderlined(true);
 			hl.addHyperlinkListener(new ProposalHyperlinkAdapter(cps[i]));
+			hl.addMouseTrackListener(new MouseTrackListener() {
+
+				public void mouseEnter(MouseEvent e) {
+					hl.setUnderlined(true);
+				}
+
+				public void mouseExit(MouseEvent e) {
+					hl.setUnderlined(false);
+				}
+
+				public void mouseHover(MouseEvent e) {
+
+				}
+			});
 			displayHeight += 24;
 		}
 		displayHeight += 24;

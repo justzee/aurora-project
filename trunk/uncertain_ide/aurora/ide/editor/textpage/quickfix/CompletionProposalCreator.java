@@ -119,10 +119,11 @@ public class CompletionProposalCreator {
 		IRegion valueRegion = AbstractValidator.getValueRegion(doc, map
 				.getLocationNotNull().getStartLine() - 1, word, value);
 		// FIXME 属性值中含有特殊字符,被转义,查找失败,返回null
+		if (valueRegion == null)
+			return null;
 		int deleteLength = -1;
-		if (valueRegion != null)
-			deleteLength = valueRegion.getOffset() + valueRegion.getLength()
-					+ 2 - markerRegion.getOffset();
+		deleteLength = valueRegion.getOffset() + valueRegion.getLength() + 2
+				- markerRegion.getOffset();
 		ArrayList<SortElement> comp = new ArrayList<SortElement>();
 		@SuppressWarnings("unchecked")
 		Set<Map.Entry<String, String>> set = map.entrySet();
@@ -202,8 +203,6 @@ public class CompletionProposalCreator {
 				relMap = CompositeMapInDocumentManager
 						.getCompositeMapInDocument(pathMap[0], doc);
 				prefix = getLeadingPrefix(doc, relMap);
-				if (prefix == null)
-					return null;
 				prefix += XMLOutputter.DEFAULT_INDENT;
 				IRegion region = relMap.getStart();
 				insertOffset = region.getOffset() + region.getLength();
@@ -219,8 +218,6 @@ public class CompletionProposalCreator {
 				relMap = CompositeMapInDocumentManager
 						.getCompositeMapInDocument(pathMap[1], doc);
 				prefix = getLeadingPrefix(doc, relMap);
-				if (prefix == null)
-					return null;
 				IRegion endRegion = relMap.getEnd();
 				insertOffset = endRegion.getOffset() + endRegion.getLength();
 				insertTag = XMLOutputter.LINE_SEPARATOR
@@ -241,8 +238,6 @@ public class CompletionProposalCreator {
 						.getCompositeMapInDocument(outerDsMap, doc);
 				IRegion region = relMap.getStart();
 				String prefix = getLeadingPrefix(doc, relMap);
-				if (prefix == null)
-					return null;
 				insertOffset = region.getOffset();
 				insertTag = dataSetMap.toXML().trim()
 						+ XMLOutputter.LINE_SEPARATOR + prefix;
@@ -256,8 +251,6 @@ public class CompletionProposalCreator {
 				IRegion region = relMap.getStart();
 				IRegion endRegion = relMap.getEnd();
 				String prefix = getLeadingPrefix(doc, relMap);
-				if (prefix == null)
-					return null;
 				clearnsURI(pathMap[2]);
 				replaceLength = endRegion.getOffset() + endRegion.getLength()
 						- region.getOffset();
@@ -447,10 +440,17 @@ public class CompletionProposalCreator {
 		try {
 			int line = doc.getLineOfOffset(offset);
 			int lineOffset = doc.getLineOffset(line);
-			return doc.get(lineOffset, offset - lineOffset);
-		} catch (BadLocationException e) {
+			String str = doc.get(lineOffset, offset - lineOffset);
+			if (str.trim().length() == 0)
+				return str;
+			char cs[] = str.toCharArray();
+			for (int i = 0; i < cs.length; i++)
+				if (!Character.isWhitespace(cs[i]))
+					cs[i] = ' ';
+			return new String(cs);
+		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			return "";
 		}
 	}
 
