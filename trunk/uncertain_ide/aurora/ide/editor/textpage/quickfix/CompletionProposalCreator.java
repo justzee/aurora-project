@@ -162,8 +162,8 @@ public class CompletionProposalCreator {
 	}
 
 	private ICompletionProposal[] getDataSetProposal() {
-		// if (!validWord(word))
-		// return null;
+		if (!isValidWord(word))
+			return null;
 		CompositeMap map = QuickAssistUtil.findMap(rootMap, line);
 		@SuppressWarnings("unchecked")
 		Map<String, String> nsMapping = rootMap.getNamespaceMapping();
@@ -287,6 +287,8 @@ public class CompletionProposalCreator {
 
 	private ICompletionProposal[] getBmProposal() {
 		if (word.equals("\"\"") || word.equals("''"))
+			return null;
+		if (!isValidWord(word))
 			return null;
 		String bmHomeStr = null;
 		IProject project = AuroraPlugin.getActiveIFile().getProject();
@@ -490,5 +492,14 @@ public class CompletionProposalCreator {
 			}
 		}, true);
 		return path;
+	}
+
+	private boolean isValidWord(String w) {
+		char[] ics = { '\'', '"', ' ', '\t', '\r', '\n' };
+		for (char c : ics) {
+			if (w.indexOf(c) != -1)
+				return false;
+		}
+		return true;
 	}
 }
