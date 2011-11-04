@@ -3,7 +3,6 @@ package aurora.ide.search.reference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.eclipse.search.ui.ISearchQuery;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
+import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.CompositeMapIteator;
 import aurora.ide.search.ui.LineElement;
 
@@ -34,6 +34,7 @@ public class MultiSourceReferenceSearchService extends ReferenceSearchService {
 		this.sources = sources;
 		this.patterns = this.createPatterns(this.getRoots(), sources);
 		this.isBM = isBM;
+		this.getJsService().getSources().addAll(Arrays.asList(sources));
 	}
 
 	private List<String> createPatterns(IResource[] roots, IFile[] sources) {
@@ -81,11 +82,10 @@ public class MultiSourceReferenceSearchService extends ReferenceSearchService {
 	protected boolean screenRefMatch(CompositeMap map, Attribute attrib) {
 		IFile findScreenFile = this.findScreenFile(map, attrib);
 		int indexOf = Arrays.asList(sources).indexOf(findScreenFile);
-		
+
 		if (indexOf != -1) {
 			putInPatternMap(map,
-					createPattern(this.getRoots(), sources[indexOf])
-							.toString());
+					createPattern(this.getRoots(), sources[indexOf]).toString());
 			return true;
 		}
 		return false;
@@ -93,22 +93,25 @@ public class MultiSourceReferenceSearchService extends ReferenceSearchService {
 
 	@Override
 	public boolean found(CompositeMap map, Attribute attrib) {
+		if (attrib == null) {
+			return false;
+		}
 		return isBM ? bmRefMatch(map, attrib) : this
 				.screenRefMatch(map, attrib);
 	}
 
 	@Override
-	protected List createLineMatches(MapFinderResult r, LineElement l,
-			IFile file, Object pattern) throws CoreException {
+	protected List<AbstractMatch> createLineMatches(MapFinderResult r,
+			LineElement l, IFile file, Object pattern) throws CoreException {
 		List<String> ps = this.patternMap.get(r.getMap());
 		if (ps != null) {
-			List result = new ArrayList();
+			List<AbstractMatch> result = new ArrayList<AbstractMatch>();
 			for (String s : ps) {
 				result.addAll(super.createLineMatches(r, l, file, s));
 			}
 			return result;
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	@Override

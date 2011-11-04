@@ -17,6 +17,8 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 			ISearchQuery query, String datasetName) {
 		super(new IResource[] { scope }, source, query);
 		this.datasetName = datasetName;
+		//TODO 
+		this.setSupportJS(false);
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile resource) {
@@ -27,11 +29,14 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 			final Object source) {
 		IDataFilter filter = new IDataFilter() {
 			public boolean found(CompositeMap map, Attribute attrib) {
+				if (attrib == null) {
+					return false;
+				}
 				Object pattern = getSearchPattern(roots, source);
 				Object data = map.get(attrib.getName());
-				return pattern == null ? false : pattern.equals(data);
+				return pattern == null ? false : pattern.equals(data)
+						|| found(map, attrib);
 			}
-
 		};
 		return filter;
 	}

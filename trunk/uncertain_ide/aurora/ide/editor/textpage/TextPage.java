@@ -67,6 +67,7 @@ public class TextPage extends TextEditor implements IViewer {
 
 	// add by shiliyan
 	public Object getAdapter(Class adapter) {
+	
 		if (Display.getCurrent() != null && IAnnotationModel.class.equals(adapter)) {
 			return this.getAnnotationModel();
 		}

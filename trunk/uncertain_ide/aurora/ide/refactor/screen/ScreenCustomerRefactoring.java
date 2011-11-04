@@ -76,7 +76,7 @@ public class ScreenCustomerRefactoring extends Refactoring {
 		List<AbstractMatch> result = new ArrayList<AbstractMatch>();
 		for (IResource scope : scopes) {
 			ScreenCustomService service = new ScreenCustomService(scope);
-			List _result = service.service(pm);
+			List<AbstractMatch> _result = service.service(pm);
 			result.addAll(_result);
 		}
 		CompositeChange changes = new CompositeChange("aurora changes");

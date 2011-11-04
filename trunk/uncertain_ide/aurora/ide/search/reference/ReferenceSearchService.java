@@ -4,7 +4,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.search.ui.ISearchQuery;
 
 import uncertain.composite.CompositeMap;
@@ -24,6 +23,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			ISearchQuery query) {
 		super(new IResource[] { scope }, source, query);
 		this.scope = scope;
+		this.setSupportJS(true);
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile file) {
@@ -36,6 +36,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			}
 			if ("screen".equalsIgnoreCase(fileExtension)
 					|| "svc".equalsIgnoreCase(fileExtension)) {
+
 				return new MultiReferenceTypeFinder(screenReference)
 						.addReferenceType(urlReference);
 			}
@@ -44,6 +45,9 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	}
 
 	public boolean found(CompositeMap map, Attribute attrib) {
+		if (attrib == null) {
+			return false;
+		}
 		IType attributeType = attrib.getAttributeType();
 		if (attributeType instanceof SimpleType) {
 			String fileExtension = ((IFile) this.getSource())
@@ -62,7 +66,6 @@ public class ReferenceSearchService extends AbstractSearchService implements
 
 	protected boolean screenRefMatch(CompositeMap map, Attribute attrib) {
 		IFile findScreenFile = findScreenFile(map, attrib);
-
 		return this.getSource().equals(findScreenFile);
 	}
 
@@ -70,7 +73,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 		IFile file = this.getFile(map.getRoot());
 
 		Object pkg = map.get(attrib.getName());
-		
+
 		boolean isScreenRef = false;
 		if (attrib.getAttributeType() instanceof SimpleType) {
 			isScreenRef = screenReference.equals(((SimpleType) attrib
@@ -98,17 +101,8 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	protected boolean bmRefMatch(CompositeMap map, Attribute attrib,
 			Object pattern) {
 		Object data = map.get(attrib.getName());
-		if (data instanceof String) {
-			Path path = new Path((String) data);
-			String[] segments = path.segments();
-			for (String s : segments) {
-				String[] split = s.split("\\?");
-				s = split[0];
-				// TODO bug?
-				if (s.equals(pattern)) {
-					return true;
-				}
-			}
+		if (data instanceof String && Util.bmRefMatch(pattern, (String) data)) {
+			return true;
 		}
 		return pattern == null ? false : pattern.equals(data);
 	}

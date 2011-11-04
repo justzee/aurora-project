@@ -36,6 +36,8 @@ import uncertain.schema.Attribute;
 import uncertain.util.resource.Location;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.javascript.search.Javascript4RhinoSearchService;
+import aurora.ide.javascript.search.JavascriptSearchService;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.reference.IDataFilter;
 import aurora.ide.search.reference.MapFinderResult;
@@ -56,8 +58,14 @@ abstract public class AbstractSearchService implements ISearchService {
 	public final static QualifiedName urlReference = new QualifiedName(
 			"http://www.aurora-framework.org/application", "screenBm");
 
-	private Map compositeMap = new HashMap();
-	private Map exceptionMap = new HashMap();
+	private Map<CompositeMap, IResource> compositeMap = new HashMap<CompositeMap, IResource>();
+	private Map<IFile, Exception> exceptionMap = new HashMap<IFile, Exception>();
+
+	private JavascriptSearchService jsService;
+
+	public JavascriptSearchService getJsService() {
+		return jsService;
+	}
 
 	private boolean runInUI = false;
 	private Object pattern;
@@ -73,7 +81,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	private boolean isPostException = true;
 
 	private class ScopeVisitor implements IResourceVisitor {
-		private List result = new ArrayList();
+		private List<IResource> result = new ArrayList<IResource>();
 
 		public boolean visit(IResource resource) throws CoreException {
 			if (resource.getType() == IResource.FILE) {
@@ -86,7 +94,7 @@ abstract public class AbstractSearchService implements ISearchService {
 			return true;
 		}
 
-		public List getResult() {
+		public List<IResource> getResult() {
 			return result;
 		}
 
@@ -105,24 +113,36 @@ abstract public class AbstractSearchService implements ISearchService {
 	private IFile fCurrentFile;
 	private int fNumberOfScannedFiles;
 	private int fNumberOfFilesToScan;
+	private boolean supportJS;
+
+	public void setSupportJS(boolean supportJS) {
+		this.supportJS = supportJS;
+	}
 
 	public AbstractSearchService(IResource[] roots, Object source) {
 		this.roots = roots;
 		this.source = source;
+		jsService = new Javascript4RhinoSearchService();
+		if (source instanceof IFile)
+			jsService.addSource((IFile) source);
 	}
 
 	public AbstractSearchService(IResource[] roots, Object source,
 			ISearchQuery query) {
 		this(roots, source);
 		this.query = query;
-	}
+	} 
 
 	abstract protected CompositeMapIteator createIterationHandle(IFile resource);
 
-	protected List buildMatchLines(IFile file, List r, Object pattern)
-			throws CoreException {
+	protected List<AbstractMatch> buildMatchLines(IFile file,
+			List<MapFinderResult> r, Object pattern) throws CoreException {
 
-		List lines = new ArrayList();
+		List<AbstractMatch> lines = new ArrayList<AbstractMatch>();
+		if (isSupportJS()) {
+			lines.addAll(this.jsService.buildMatchLines(file, r, pattern));
+		}
+
 		for (int i = 0; i < r.size(); i++) {
 			MapFinderResult result = (MapFinderResult) r.get(i);
 			CompositeMap map = result.getMap();
@@ -148,18 +168,24 @@ abstract public class AbstractSearchService implements ISearchService {
 		return lines;
 	}
 
-	private List processFile(IResource resource) throws CoreException,
-			ApplicationException {
-		List result = new ArrayList();
+	private List<AbstractMatch> processFile(IResource resource)
+			throws CoreException, ApplicationException {
+		List<AbstractMatch> result = new ArrayList<AbstractMatch>();
 		CompositeMap bm;
 		fNumberOfScannedFiles++;
 		CompositeMapIteator finder = createIterationHandle((IFile) resource);
+		if (isSupportJS()) {
+			finder = new MultiIteatorMapFinder().addFinder(
+					jsService.createIterationHandle((IFile) resource))
+					.addFinder(finder);
+		}
 		finder.setFilter(getDataFilter(roots, source));
 		bm = getCompositeMap((IFile) resource);
 		compositeMap.put(bm, resource);
 		bm.iterate(finder, true);
-		List r = finder.getResult();
-		List lines = buildMatchLines((IFile) resource, r, pattern);
+		List<MapFinderResult> r = finder.getResult();
+		List<AbstractMatch> lines = buildMatchLines((IFile) resource, r,
+				pattern);
 
 		for (int i = 0; i < lines.size(); i++) {
 			if (query != null) {
@@ -176,15 +202,23 @@ abstract public class AbstractSearchService implements ISearchService {
 		return result;
 	}
 
-	protected List createLineMatches(MapFinderResult r, LineElement l,
-			IFile file, Object pattern) throws CoreException {
+	private boolean isSupportJS() {
+		return supportJS;
+	}
+
+	protected List<AbstractMatch> createLineMatches(MapFinderResult r,
+			LineElement l, IFile file, Object pattern) throws CoreException {
 
 		IDocument document = (IDocument) getDocument(file);
 		FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
 				(IDocument) getDocument(file));
 
-		List matches = new ArrayList();
-		List attributes = r.getAttributes();
+		List<AbstractMatch> matches = new ArrayList<AbstractMatch>();
+		List<Attribute> attributes = r.getAttributes();
+
+		if (attributes == null) {
+			return matches;
+		}
 
 		for (int i = 0; i < attributes.size(); i++) {
 			try {
@@ -193,7 +227,6 @@ abstract public class AbstractSearchService implements ISearchService {
 				String name = att.getName();
 				IRegion nameRegion = getAttributeRegion(startOffset,
 						l.getLength(), name, document);
-
 				if (nameRegion == null) {
 					continue;
 				}
@@ -218,53 +251,14 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	protected IRegion getAttributeRegion(int offset, int length, String name,
 			IDocument document) throws BadLocationException {
-
 		IRegion attributeRegion = Util.getAttributeRegion(offset, length, name,
 				document);
-
 		return attributeRegion;
 	}
 
-	// protected List createLineMatches(MapFinderResult r, LineElement l,
-	// IFile file, Object pattern) throws CoreException {
-	// FindReplaceDocumentAdapter dd = new FindReplaceDocumentAdapter(
-	// (IDocument) getDocument(file));
-	//
-	// int startOffset = l.getOffset();
-	// List matches = new ArrayList();
-	// List attributes = r.getAttributes();
-	//
-	// for (int i = 0; i < attributes.size(); i++) {
-	// try {
-	// Attribute att = (Attribute) attributes.get(i);
-	// String name = att.getName();
-	// IRegion nameRegion;
-	// nameRegion = dd
-	// .find(startOffset, name, true, true, true, false);
-	// if (nameRegion == null) {
-	// continue;
-	// }
-	// startOffset = nameRegion.getOffset();
-	// IRegion valueRegion = dd.find(startOffset, pattern.toString(),
-	// true, true, true, false);
-	// if (valueRegion == null) {
-	// continue;
-	// }
-	// startOffset = valueRegion.getOffset();
-	// ReferenceMatch match = new ReferenceMatch(file, valueRegion
-	// .getOffset(), valueRegion.getLength(), l);
-	// match.setMatchs(r);
-	// matches.add(match);
-	// } catch (BadLocationException e) {
-	// continue;
-	// }
-	// }
-	// return matches;
-	// }
+	public List<AbstractMatch> service(final IProgressMonitor monitor) {
 
-	public List service(final IProgressMonitor monitor) {
-
-		List files = findFilesInScopes(roots);
+		List<IResource> files = findFilesInScopes(roots);
 		fNumberOfFilesToScan = files.size();
 		Job monitorUpdateJob = new Job("Aurora Search progress") {
 			private int fLastNumberOfScannedFiles = 0;
@@ -313,7 +307,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		monitor.beginTask("Searching for " + pattern.toString(), files.size());
 		monitorUpdateJob.setSystem(true);
 		monitorUpdateJob.schedule();
-		List result = new ArrayList();
+		List<AbstractMatch> result = new ArrayList<AbstractMatch>();
 		try {
 			if (files != null) {
 				for (int i = 0; i < files.size(); i++) {
@@ -328,7 +322,7 @@ abstract public class AbstractSearchService implements ISearchService {
 						if (!(e instanceof IllegalArgumentException)) {
 							// e.printStackTrace();
 						}
-
+						e.printStackTrace();
 						handleException(fCurrentFile, e);
 					}
 				}
@@ -378,9 +372,9 @@ abstract public class AbstractSearchService implements ISearchService {
 
 	public IStatus[] getStatusChildren() {
 		IStatus[] children = new IStatus[exceptionMap.size()];
-		Set keySet = exceptionMap.keySet();
+		Set<IFile> keySet = exceptionMap.keySet();
 		int i = 0;
-		for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+		for (Iterator<IFile> iterator = keySet.iterator(); iterator.hasNext();) {
 			IFile o = (IFile) iterator.next();
 			children[i] = new Status(IStatus.ERROR, AuroraPlugin.PLUGIN_ID, o
 					.getFullPath().toString(), (Throwable) exceptionMap.get(o));
@@ -393,11 +387,11 @@ abstract public class AbstractSearchService implements ISearchService {
 		exceptionMap.put(file, e);
 	}
 
-	private List findFilesInScopes(IResource[] roots) {
-		List result = new ArrayList();
+	private List<IResource> findFilesInScopes(IResource[] roots) {
+		List<IResource> result = new ArrayList<IResource>();
 		if (roots != null) {
 			for (int i = 0; i < roots.length; i++) {
-				List _result = findFilesInScope(roots[i]);
+				List<IResource> _result = findFilesInScope(roots[i]);
 				merge(result, _result);
 			}
 		}
@@ -405,7 +399,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		return result;
 	}
 
-	private void merge(List to, List from) {
+	private void merge(List<IResource> to, List<IResource> from) {
 		if (from == null)
 			return;
 		for (int i = 0; i < from.size(); i++) {
@@ -416,7 +410,7 @@ abstract public class AbstractSearchService implements ISearchService {
 		}
 	}
 
-	private List findFilesInScope(IResource scope) {
+	private List<IResource> findFilesInScope(IResource scope) {
 		ScopeVisitor visitor = new ScopeVisitor();
 		try {
 			scope.accept(visitor);
@@ -468,5 +462,4 @@ abstract public class AbstractSearchService implements ISearchService {
 	public void setRunInUI(boolean runInUI) {
 		this.runInUI = runInUI;
 	}
-
 }
