@@ -23,14 +23,13 @@ public class NtlmLogin extends AbstractServiceHandle {
 	ILogger mLogger;
 
 	public NtlmLogin(IObjectRegistry registry) {
-		mObjectRegistry = registry;
-		ntlmConfig = (NtlmConfig) mObjectRegistry.getInstanceOfType(NtlmConfig.class);
-		mLogger = LoggingContext.getLogger("org.lwap.plugin.ntlm",mObjectRegistry);
+		mObjectRegistry = registry;	
 	}
 
 	public int handleEvent(int sequence, CompositeMap context,
 			Object[] parameters) throws Exception {	
-		
+		ntlmConfig = (NtlmConfig) mObjectRegistry.getInstanceOfType(NtlmConfig.class);
+		mLogger = LoggingContext.getLogger("org.lwap.plugin.ntlm",mObjectRegistry);
 		MainService service = MainService.getServiceInstance(context);
 		HttpServletRequest httpRequest = service.getRequest();
 		HttpServletResponse httpResponse = service.getResponse();
