@@ -52,8 +52,9 @@ public class CompletionProposalAction implements ICompletionProposal {
 
 	public void apply(IDocument document) {
 		try {
-			document.replace(fReplacementOffset, fReplacementLength,
-					fReplacementString);
+			if (!ignoreReplace)
+				document.replace(fReplacementOffset, fReplacementLength,
+						fReplacementString);
 			//
 			action.run();
 		} catch (BadLocationException x) {
