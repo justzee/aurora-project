@@ -50,7 +50,7 @@ public class ScreenCustomService extends AbstractSearchService {
 	}
 
 	@Override
-	protected List createLineMatches(MapFinderResult r, LineElement l,
+	protected List<AbstractMatch> createLineMatches(MapFinderResult r, LineElement l,
 			IFile file, Object pattern) throws CoreException {
 		IDocument document = getDocument(file);
 		int startOffset = l.getOffset();

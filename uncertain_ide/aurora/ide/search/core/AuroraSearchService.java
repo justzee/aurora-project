@@ -41,29 +41,10 @@ public class AuroraSearchService extends AbstractSearchService {
 		return null;
 	}
 
-	//
-	// private void match(MapFinderResult r, LineElement l, IFile file, Object
-	// _p)
-	// throws CoreException {
-	// List matches = new ArrayList();
-	// CompositeMap map = r.getMap();
-	// IDocument document = (IDocument) getDocument(file);
-	// MatchInfo matchInfo = pattern.match(map, document, l);
-	// if (matchInfo.isMatch()) {
-	// List<IRegion> regions = matchInfo.getRegions();
-	// for (IRegion region : regions) {
-	// AuroraMatch match = new AuroraMatch(file, region.getOffset(),
-	// region.getLength(), l);
-	// match.setMatchs(r);
-	// matches.add(match);
-	// }
-	// }
-	// }
-
 	@Override
-	protected List createLineMatches(MapFinderResult r, LineElement l,
+	protected List<AbstractMatch> createLineMatches(MapFinderResult r, LineElement l,
 			IFile file, Object _pattern) throws CoreException {
-		List matches = new ArrayList();
+		List<AbstractMatch> matches = new ArrayList<AbstractMatch>();
 		CompositeMap map = r.getMap();
 		IDocument document = (IDocument) getDocument(file);
 		MatchInfo matchInfo = pattern.match(map, document, l);

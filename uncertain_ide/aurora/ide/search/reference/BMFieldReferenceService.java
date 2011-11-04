@@ -41,6 +41,7 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 		super(scope, source, query);
 		this.fieldName = fieldName;
 		this.scope = scope;
+		this.setSupportJS(false);
 	}
 
 	protected CompositeMapIteator createIterationHandle(IFile resource) {

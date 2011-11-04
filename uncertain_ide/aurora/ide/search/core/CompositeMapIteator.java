@@ -5,11 +5,12 @@ import java.util.List;
 
 import uncertain.composite.IterationHandle;
 import aurora.ide.search.reference.IDataFilter;
+import aurora.ide.search.reference.MapFinderResult;
 
 public abstract class CompositeMapIteator implements IterationHandle {
 	private IDataFilter filter;
 
-	private List result = new ArrayList();
+	private List<MapFinderResult> result = new ArrayList<MapFinderResult>();
 
 	public IDataFilter getFilter() {
 		return filter;
@@ -19,7 +20,7 @@ public abstract class CompositeMapIteator implements IterationHandle {
 		this.filter = filter;
 	}
 
-	public List getResult() {
+	public List<MapFinderResult> getResult() {
 		return result;
 	}
 

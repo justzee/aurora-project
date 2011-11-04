@@ -21,7 +21,7 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 
 	public int process(CompositeMap map) {
 		try {
-			List match = getMatch(map);
+			List<Attribute> match = getMatch(map);
 			if (match != null) {
 				this.getResult().add(new MapFinderResult(map, match));
 			}
@@ -30,8 +30,9 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 		return IterationHandle.IT_CONTINUE;
 	}
 
-	protected List getMatch(CompositeMap map) throws ApplicationException {
-		List matchs = new ArrayList();
+	protected List<Attribute> getMatch(CompositeMap map) throws ApplicationException {
+
+		List<Attribute> matchs = new ArrayList<Attribute>();
 		boolean isMacth = false;
 		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (element != null) {

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uncertain.composite.CompositeMap;
+import uncertain.schema.Attribute;
 
 public class MapFinderResult {
 	private CompositeMap map;
 
-	private List attributes;
+	private List<Attribute> attributes;
 
 	public CompositeMap getMap() {
 		return map;
@@ -18,21 +19,21 @@ public class MapFinderResult {
 		this.map = map;
 	}
 
-	public List getAttributes() {
+	public List<Attribute> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(List attributes) {
+	public void setAttributes(List<Attribute> attributes) {
 		this.attributes = attributes;
 	}
 
-	public void addAttribute(Object o) {
+	public void addAttribute(Attribute o) {
 		if (attributes == null)
-			attributes = new ArrayList();
+			attributes = new ArrayList<Attribute>();
 		this.attributes.add(o);
 	}
 
-	public MapFinderResult(CompositeMap map, List attributes) {
+	public MapFinderResult(CompositeMap map, List<Attribute> attributes) {
 		super();
 		this.map = map;
 		this.attributes = attributes;

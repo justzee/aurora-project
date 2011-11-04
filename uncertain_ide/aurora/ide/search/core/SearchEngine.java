@@ -16,7 +16,7 @@ public class SearchEngine {
 		this.query = query;
 	}
 
-	public List execute(IProgressMonitor monitor) {
+	public List<AbstractMatch> execute(IProgressMonitor monitor) {
 		ISearchService searchService = query.getSearchService();
 		return searchService.service(monitor);
 	}

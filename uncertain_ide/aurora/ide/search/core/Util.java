@@ -520,4 +520,18 @@ public class Util {
 		}
 		return result.toString();
 	}
+
+	public static boolean bmRefMatch(Object bmPattern, String url) {
+		Path path = new Path(url);
+		String[] segments = path.segments();
+		for (String s : segments) {
+			String[] split = s.split("\\?");
+			s = split[0];
+			// TODO bug?
+			if (s.equals(bmPattern)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
