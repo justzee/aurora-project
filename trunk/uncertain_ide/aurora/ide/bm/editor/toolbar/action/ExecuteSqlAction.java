@@ -46,7 +46,7 @@ public class ExecuteSqlAction extends Action {
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			ParamQueryDialog dialog = new ParamQueryDialog(shell, sql);
 			if (Dialog.OK == dialog.open()) {
-				sql = sql.replaceAll("\\$\\{[^:][^}]+\\}", "?");
+				sql = sql.replaceAll("\\$\\{[^:}]+\\}", "?");
 				parameters = dialog.getValues();
 				for (String s : parameters) {
 					if (null != s && s.indexOf("~") != -1) {
