@@ -307,9 +307,7 @@ public class ProcedureRunner {
         // set current event
         current_event = event_name;
         try{
-            int result = config.fireEvent(event_name, parameters, this, config.getHandleManager());
-            if(EventModel.HANDLE_STOP==result)
-            	stop();
+            config.fireEvent(event_name, parameters, this, config.getHandleManager());         
         }catch(Exception ex){
             //System.out.println("error in "+config.getCurrentHandle());
             //ex.printStackTrace();
