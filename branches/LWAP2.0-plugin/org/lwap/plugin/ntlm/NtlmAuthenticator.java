@@ -46,7 +46,7 @@ public class NtlmAuthenticator {
 				throw new RuntimeException("defaultDomain is null");
 			domainController=domainInstance.getDomainController();
 			
-			Config.setProperty("jcifs.smb.client.domain", defaultDomain);
+			Config.setProperty("jcifs.smb.client.domain", domainInstance.getDomain());
 			Config.setProperty("jcifs.smb.client.username", domainInstance.getUserName());
 			Config.setProperty("jcifs.smb.client.password", domainInstance.getPassword());
 			
