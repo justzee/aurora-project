@@ -38,11 +38,8 @@ public class NtlmLogin extends AbstractServiceHandle {
 		if (!checkSession(service)) {
 			CompositeMap parameter=service.getParameters();
 			CompositeMap model=service.getModel();	
-			if(msg==null||!msg.startsWith("NTLM")){
-				
-				String serviceName = httpRequest.getRequestURI().substring(
-						httpRequest.getContextPath().length() + 1);
-				
+			if(msg==null||!msg.startsWith("NTLM")){			
+				String serviceName = (String)context.getObject("/request/@url");
 				parameter.putString("service_name", serviceName);
 				service.databaseAccess(ntlmConfig.getChecksql(), parameter, model);			
 				mLogger.info("context:"+context.toXML());
