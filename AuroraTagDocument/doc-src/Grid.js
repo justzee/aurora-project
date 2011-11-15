@@ -74,6 +74,13 @@
  * @type Boolean
  * @default false
  */
+ 
+/**
+ * 能否通过鼠标滚动来换行。
+ * @property canWheel
+ * @type Boolean
+ * @default true
+ */
 
 /**
  * <p>通过回调函数返回的样式表渲染指定行</p> 
