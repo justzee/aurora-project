@@ -66,6 +66,14 @@
  * @default 10
  */
 
+ 
+/**
+ * 能否通过鼠标滚动来换行。
+ * @property canWheel
+ * @type Boolean
+ * @default true
+ */
+
 /**
  * @property height
  * @remove
