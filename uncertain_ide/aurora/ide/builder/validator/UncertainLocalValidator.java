@@ -5,18 +5,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.processor.AbstractProcessor;
+import aurora.ide.preferencepages.BuildLevelPage;
 
 public class UncertainLocalValidator extends AbstractValidator {
+	private int level;
 
 	public UncertainLocalValidator(IFile file) {
 		super(file);
+		level = BuildLevelPage.getBuildLevel(AuroraBuilder.CONFIG_PROBLEM);
 	}
 
 	public UncertainLocalValidator() {
@@ -28,6 +30,8 @@ public class UncertainLocalValidator extends AbstractValidator {
 
 			@Override
 			public void processMap(IFile file, CompositeMap map, IDocument doc) {
+				if (level == 0)
+					return;
 				if (map.getName().equalsIgnoreCase("path-config")) {
 					int line = map.getLocationNotNull().getStartLine();
 					for (Map.Entry entry : (Set<Map.Entry>) map.entrySet()) {
@@ -40,12 +44,11 @@ public class UncertainLocalValidator extends AbstractValidator {
 							if (!f.isDirectory())
 								AuroraBuilder.addMarker(file, key + " : "
 										+ value + " 存在 , 但不是一个目录", line,
-										region, IMarker.SEVERITY_ERROR,
+										region, level,
 										AuroraBuilder.CONFIG_PROBLEM);
 						} else
 							AuroraBuilder.addMarker(file, key + " : " + value
-									+ " 不存在 ", line, region,
-									IMarker.SEVERITY_ERROR,
+									+ " 不存在 ", line, region, level,
 									AuroraBuilder.CONFIG_PROBLEM);
 					}
 				}
