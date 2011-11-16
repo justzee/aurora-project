@@ -51,7 +51,16 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
         super.pageChange(newPageIndex);
         if (newPageIndex == SQLPageIndex) {
             try {
-                sqlPage.refresh(CompositeMapUtil.getFullContent(mainFormPage.getData()));
+            	String context = "";
+            	if(mainFormPage.isModify())
+            		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
+            	else if(textPage.isModify())
+            		context = textPage.getContent();
+            	else if(mainViewerPage.isFormContendCreated())
+            		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
+            	else
+            		context = textPage.getContent();
+                sqlPage.refresh(context);
             } catch (ApplicationException e) {
                 DialogUtil.showExceptionMessageBox(e);
             }
