@@ -1,7 +1,6 @@
 package aurora.ide.preferencepages;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbench;
@@ -37,10 +36,10 @@ public class CustomSettingPreferencePage extends FieldEditorPreferencePage
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new ComboFieldEditor(screenEditorInitPageId, "Screen编辑器初始选项卡",
-				screenPage, getFieldEditorParent()));
-		addField(new ComboFieldEditor(bmEditorInitPageId, "BM编辑器初始选项卡", bmPage,
-				getFieldEditorParent()));
+		addField(new ComboFieldEditor_new(screenEditorInitPageId,
+				"Screen编辑器初始选项卡", screenPage, getFieldEditorParent()));
+		addField(new ComboFieldEditor_new(bmEditorInitPageId, "BM编辑器初始选项卡",
+				bmPage, getFieldEditorParent()));
 		addField(new BooleanFieldEditor(intinebuildId, "启用即时build",
 				BooleanFieldEditor.DEFAULT, getFieldEditorParent()));
 	}
