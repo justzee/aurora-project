@@ -23,117 +23,137 @@ import aurora.ide.builder.validator.AbstractValidator;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LogUtil;
+import aurora.ide.preferencepages.BuildLevelPage;
 import aurora.ide.search.core.AbstractSearchService;
 
 public class LocalFieldProcessor extends AbstractProcessor {
-    class LocalFieldCollect extends AbstractProcessor implements IterationHandle {
+	private int level;
 
-        private Set<String>  set = new HashSet<String>();
-        private IFile        file;
-        private CompositeMap map;
+	class LocalFieldCollect extends AbstractProcessor implements
+			IterationHandle {
 
-        public LocalFieldCollect(IFile file) {
-            try {
-                this.file = file;
-                CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
-                BusinessModel r = createResult(bm, file);
-                String str = XMLOutputter.defaultInstance().toXML(r.getObjectContext(), true);
-                map = CompositeMapUtil.loaderFromString(str);
-            } catch (Exception e) {
-                LogUtil.getInstance().log(IStatus.ERROR, file.getName() + "解析异常", e);
-                AuroraBuilder.addMarker(file, e.getMessage(), 1, IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
-            }
-        }
+		private Set<String> set = new HashSet<String>();
+		private IFile file;
+		private CompositeMap map;
 
-        public Set<String> collect() {
-            if (map != null)
-                map.iterate(this, true);
-            return set;
-        }
+		public LocalFieldCollect(IFile file) {
+			try {
+				this.file = file;
+				CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
+				BusinessModel r = createResult(bm, file);
+				String str = XMLOutputter.defaultInstance().toXML(
+						r.getObjectContext(), true);
+				map = CompositeMapUtil.loaderFromString(str);
+			} catch (Exception e) {
+				LogUtil.getInstance().log(IStatus.ERROR,
+						file.getName() + "解析异常", e);
+				AuroraBuilder.addMarker(file, e.getMessage(), 1,
+						IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
+			}
+		}
 
-        private BusinessModel createResult(CompositeMap config, IFile file) {
-            ExtendModelFactory factory = new ExtendModelFactory(OCManager.getInstance(), file);
-            return factory.getModel(config);
-        }
+		public Set<String> collect() {
+			if (map != null)
+				map.iterate(this, true);
+			return set;
+		}
 
-        public int process(CompositeMap map) {
-            processMap(file, map, null);
-            return 0;
-        }
+		private BusinessModel createResult(CompositeMap config, IFile file) {
+			ExtendModelFactory factory = new ExtendModelFactory(
+					OCManager.getInstance(), file);
+			return factory.getModel(config);
+		}
 
-        @Override
-        public void processComplete(IFile file, CompositeMap map, IDocument doc) {
+		public int process(CompositeMap map) {
+			processMap(file, map, null);
+			return 0;
+		}
 
-        }
+		@Override
+		public void processComplete(IFile file, CompositeMap map, IDocument doc) {
 
-        @Override
-        public void processMap(IFile file, CompositeMap map, IDocument doc) {
-            processAttribute(file, map, doc);
-        }
+		}
 
-        @Override
-        protected void visitAttribute(Attribute a, IFile file, CompositeMap map, IDocument doc) {
-            if (isLocalFieldReference(a.getAttributeType())) {
-                String name = a.getName();
-                String value = map.getString(name);
-                if (map.getName().equalsIgnoreCase("field") || map.getName().equalsIgnoreCase("ref-field")) {
-                    if (name.equalsIgnoreCase("name")) {
-                        set.add(value.toLowerCase());
-                        return;
-                    }
-                }
-            }
-        }
+		@Override
+		public void processMap(IFile file, CompositeMap map, IDocument doc) {
+			processAttribute(file, map, doc);
+		}
 
-    }
+		@Override
+		protected void visitAttribute(Attribute a, IFile file,
+				CompositeMap map, IDocument doc) {
+			if (isLocalFieldReference(a.getAttributeType())) {
+				String name = a.getName();
+				String value = map.getString(name);
+				if (map.getName().equalsIgnoreCase("field")
+						|| map.getName().equalsIgnoreCase("ref-field")) {
+					if (name.equalsIgnoreCase("name")) {
+						set.add(value.toLowerCase());
+						return;
+					}
+				}
+			}
+		}
 
-    private Set<Object[]> fieldTask = new HashSet<Object[]>();
+	}
 
-    private boolean isLocalFieldReference(IType attributeType) {
-        if (attributeType instanceof SimpleType) {
-            return AbstractSearchService.localFieldReference.equals(((SimpleType) attributeType)
-                    .getReferenceTypeQName());
-        }
-        return false;
-    }
+	private Set<Object[]> fieldTask = new HashSet<Object[]>();
 
-    @Override
-    public void processComplete(IFile file, CompositeMap map1, IDocument doc) {
-        Set<String> fieldSet = new LocalFieldCollect(file).collect();
-        if (fieldSet.size() == 0)
-            return;
-        for (Object[] objs : fieldTask) {
-            String name = (String) objs[0];
-            String value = (String) objs[1];
-            if (fieldSet.contains(value.toLowerCase()))
-                continue;
-            CompositeMap map = (CompositeMap) objs[2];
-            int line = map.getLocationNotNull().getStartLine();
-            IRegion region = AbstractValidator.getValueRegion(doc, line - 1, name, value);
-            if ("bm".equals(file.getFileExtension()))
-                AuroraBuilder.addMarker(file, name + " : " + value + " 未在BM中定义过", line, region, IMarker.SEVERITY_ERROR,
-                        AuroraBuilder.UNDEFINED_LOCALFIELD);
-        }
-    }
+	private boolean isLocalFieldReference(IType attributeType) {
+		if (attributeType instanceof SimpleType) {
+			return AbstractSearchService.localFieldReference
+					.equals(((SimpleType) attributeType)
+							.getReferenceTypeQName());
+		}
+		return false;
+	}
 
-    @Override
-    public void processMap(IFile file, CompositeMap map, IDocument doc) {
-        processAttribute(file, map, doc);
-    }
+	@Override
+	public void processComplete(IFile file, CompositeMap map1, IDocument doc) {
+		if (level == 0)
+			return;
+		Set<String> fieldSet = new LocalFieldCollect(file).collect();
+		if (fieldSet.size() == 0)
+			return;
+		for (Object[] objs : fieldTask) {
+			String name = (String) objs[0];
+			String value = (String) objs[1];
+			if (fieldSet.contains(value.toLowerCase()))
+				continue;
+			CompositeMap map = (CompositeMap) objs[2];
+			int line = map.getLocationNotNull().getStartLine();
+			IRegion region = AbstractValidator.getValueRegion(doc, line - 1,
+					name, value);
+			AuroraBuilder.addMarker(file, name + " : " + value + " 未在BM中定义过",
+					line, region, level, AuroraBuilder.UNDEFINED_LOCALFIELD);
+		}
+	}
 
-    @Override
-    public void visitAttribute(Attribute a, IFile file, CompositeMap map, IDocument doc) {
-        if (isLocalFieldReference(a.getAttributeType())) {
-            String name = a.getName();
-            String value = map.getString(name);
-            if (map.getName().equalsIgnoreCase("field") || map.getName().equalsIgnoreCase("ref-field")) {
-                if (name.equalsIgnoreCase("name")) {
-                    // fieldSet.add(value.toLowerCase());
-                    return;
-                }
-            }
-            fieldTask.add(new Object[] { name, value, map });
-        }
-    }
+	@Override
+	public void processMap(IFile file, CompositeMap map, IDocument doc) {
+		String ext = "_" + file.getFileExtension().toUpperCase();
+		level = BuildLevelPage.getBuildLevel(AuroraBuilder.UNDEFINED_LOCALFIELD
+				+ ext);
+		if (level == 0)
+			return;
+		processAttribute(file, map, doc);
+	}
+
+	@Override
+	public void visitAttribute(Attribute a, IFile file, CompositeMap map,
+			IDocument doc) {
+		if (isLocalFieldReference(a.getAttributeType())) {
+			String name = a.getName();
+			String value = map.getString(name);
+			if (map.getName().equalsIgnoreCase("field")
+					|| map.getName().equalsIgnoreCase("ref-field")) {
+				if (name.equalsIgnoreCase("name")) {
+					// fieldSet.add(value.toLowerCase());
+					return;
+				}
+			}
+			fieldTask.add(new Object[] { name, value, map });
+		}
+	}
 
 }
