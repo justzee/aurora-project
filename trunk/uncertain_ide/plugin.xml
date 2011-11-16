@@ -126,6 +126,12 @@
             id="aurora.ide.preferencePage.CustomPage"
             name="%page.custom">
       </page>
+      <page
+            category="aurora.ide.preferencePage.CustomPage"
+            class="aurora.ide.preferencepages.BuildLevelPage"
+            id="aurora.ide.preferencepages.BuildLevel"
+            name="Errors/Warnings">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
