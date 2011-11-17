@@ -20,6 +20,10 @@ import aurora.ide.search.core.AbstractSearchService;
 
 @SuppressWarnings("unchecked")
 public final class SxsdUtil {
+	public static final QualifiedName ANY_ELEMENT = new QualifiedName(
+			"http://www.uncertain-framework.org/schema/simple-schema",
+			"AnyElement");
+
 	/**
 	 * 获取CompositeMap结点声明的所有属性
 	 * 
@@ -236,5 +240,10 @@ public final class SxsdUtil {
 							.getReferenceTypeQName());
 		}
 		return false;
+	}
+
+	public static boolean isExtOfAnyElement(Element elem) {
+		return elem.isExtensionOf(LoadSchemaManager.getSchemaManager()
+				.getComplexType(ANY_ELEMENT));
 	}
 }
