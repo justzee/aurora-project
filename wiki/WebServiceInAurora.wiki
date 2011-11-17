@@ -273,4 +273,130 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
  <a:service-output output="/parameter/"/>
 }}}
    # 调用此svc，并查看日志和数据库记录是否正确。
- 
+=== svc常用功能简介 ===
+ * 最基本的四个功能:model-query,model-insert,model-update,model-delete
+ * *批量循环处理：batch-apply* 。例子：
+{{{
+<batch-apply sourcepath="/model/syncAccResponse/out">
+   <a:model-insert model="fnd.account_test"/>	
+</batch-apply>
+}}}
+ 表示对/model/syncAccResponse/out下面的所有子节点执行model-insert操作。
+ * *更改查询返回的数据格式*。例子：
+{{{
+<a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1/cancat">
+    <a:consumer>
+	<rs:CompositeMapCreator localName="s2" attribAsCdata="true" attribAsCdataList="employee_code prefix="ns1" 
+nameSpace="http://www.aurora.org/simple"/>
+     </a:consumer>
+</a:model-query>
+}}}
+ 如果不加中间那段，那么原本的返回结果可能是
+{{{
+<model>
+  <result1>
+    <concat>
+      <record employee_cod="test"/>
+    </concat>
+  </result1>
+</model>
+}}}
+ 经过处理后，就变成
+{{{
+<model>
+  <result1>
+    <concat>
+      <ns1:s2 xmlns:ns1="http://www.aurora.org/simple">test</ns1:s2>
+    </concat>
+  </result1>
+</model>
+}}} 
+ * *把cdata的内容变成父节点的一个属性*，例子：
+{{{
+ <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="collapse">
+      <p:arguments>
+         <p:argument path="/model/syncAccResponse/out" type="uncertain.composite.CompositeMap"/>
+      </p:arguments>
+</p:method-invoke>
+}}} 
+ 原先的数据格式可能是这样的：
+{{{
+<model>
+  <syncAccResponse>
+    <out>
+      <s1>yes</s1>
+      <s2>test</s2>
+    </out>
+  </syncAccResponse1>
+</model>
+}}}
+ 处理后的格式就是这样的
+{{{
+<model>
+  <syncAccResponse>
+    <out s1="yes" s2="test"/>
+  </syncAccResponse1>
+</model>
+}}}
+ * *复制元素属性*，例子
+{{{
+ <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="copyAttributes" >
+     <p:arguments>
+	<p:argument path="/model/result4" type="java.util.Map"/>
+	<p:argument path="/parameter" type="java.util.Map"/>
+    </p:arguments>
+</p:method-invoke>
+}}}
+ 原先的格式可能是这样的
+{{{
+<model>
+  <result4 s1="yes" s2="test"/>
+</model>
+<parameter s3="aurora" />
+}}}
+ 执行后就变成这个效果
+{{{
+<model>
+  <result4 s1="yes" s2="test"/>
+</model>
+<parameter s1="yes" s2="test" s3="aurora" />
+}}}
+ * *更改元素名称、namespace和前缀*：set-element。
+ 例子
+{{{
+ <p:set-element target="/model/syncAccResponse/out" name="ok" prefix="right"
+ namespace="http://aurora.org" childLevel="0"/>
+}}}
+ 原先的格式可能是这样的：
+{{{
+ <model>
+  <syncAccResponse>
+    <out>
+      <s1>yes</s1>
+      <s2>test</s2>
+    </out>
+  </syncAccResponse1>
+</model>
+}}}
+ 执行后变成：
+{{{
+ <model>
+  <syncAccResponse>
+    <right:ok xmlns:right="http://aurora.org">
+      <s1>yes</s1>
+      <s2>test</s2>
+    </right:ok>
+  </syncAccResponse1>
+</model>
+}}}
+ 其中childLevel表示子节点的层次，如果是0，代表本节点，如果是1，表示下一级子节点。假设把上面的childLevel改成1，然后结果会变成：
+{{{
+ <model>
+  <syncAccResponse>
+    <out>
+      <right:ok xmlns:right="http://aurora.org" >yes</right:o>
+      <right:ok xmlns:right="http://aurora.org">test</right:o>
+    </out>
+  </syncAccResponse1>
+</model>
+}}}
