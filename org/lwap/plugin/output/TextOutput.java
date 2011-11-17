@@ -92,6 +92,7 @@ public class TextOutput implements IConfigurable {
 					pw.print(table.getSeparator());
 				}				
 			}
+			pw.println();
 			CompositeMap data=(CompositeMap)model.getObject(table.getDatamodel());
 			Iterator it=data.getChildIterator();
 			while(it!=null&&it.hasNext()){
