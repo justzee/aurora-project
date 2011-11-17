@@ -294,7 +294,7 @@ public class JavaScriptAutoIndentStrategy extends
 			command.text = buf.toString();
 
 		} catch (BadLocationException excp) {
-			System.out.println("bad location"); //$NON-NLS-1$
+			System.out.println("badlocation"); //$NON-NLS-1$
 		}
 	}
 
@@ -336,12 +336,9 @@ public class JavaScriptAutoIndentStrategy extends
 							- whiteend));
 					replaceText.append(command.text);
 					// modify document command
-					System.out.println(command.offset);
 					command.length = command.offset - start;
 					command.offset = start;
-					System.out.println(command.offset);
 					command.text = replaceText.toString();
-					System.out.println(command.text);
 				}
 			}
 		} catch (BadLocationException excp) {
