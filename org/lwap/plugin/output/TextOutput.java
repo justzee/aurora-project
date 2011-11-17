@@ -1,6 +1,7 @@
 package org.lwap.plugin.output;
 
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,16 +19,16 @@ import uncertain.proc.ProcedureRunner;
 
 public class TextOutput implements IConfigurable {
 	String KEY_TEXT_CONTENT_TYPE = "text/plain";
-	String KEY_ENCODING = "UTF-8";
+	String KEY_ENCODING = "GBK";
 
 	CompositeMap config;
 	UncertainEngine mEngine;
-	String fileName;
-	String fileType;
+	String fileName="data";
+	String fileType="txt";
 	MainService service;
 
 	public String getFileName() {
-		return fileName == null ? "data" : fileName;
+		return fileName;
 	}
 
 	public void setFileName(String fileName) {
@@ -35,7 +36,7 @@ public class TextOutput implements IConfigurable {
 	}
 
 	public String getFileType() {
-		return fileType == null ? "txt" : fileType;
+		return fileType;
 	}
 
 	public void setFileType(String fileType) {
@@ -52,8 +53,8 @@ public class TextOutput implements IConfigurable {
 		HttpServletResponse response = service.getResponse();
 		response.setCharacterEncoding(KEY_ENCODING);
 		response.setContentType(KEY_TEXT_CONTENT_TYPE);
-		response.setHeader("Content-Disposition", "attachment; filename=\""
-				+ getFileName() + "." + getFileType() + "\"");
+		response.addHeader("Content-Disposition", "attachment; filename=\""
+				+ URLEncoder.encode(getFileName(),"UTF-8") + "." + getFileType() + "\"");
 		PrintWriter pw = new PrintWriter(response.getOutputStream());
 		try {
 			while (iterator != null && iterator.hasNext()) {
@@ -103,6 +104,6 @@ public class TextOutput implements IConfigurable {
 				pw.println();
 			}			
 		}
-		pw.flush();
+//		pw.flush();
 	}
 }
