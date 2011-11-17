@@ -286,7 +286,8 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
 {{{
 <a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1/cancat">
     <a:consumer>
-	<rs:CompositeMapCreator localName="s2" attribAsCdata="true" attribAsCdataList="employee_code" prefix="ns1" 
+	<rs:CompositeMapCreator localName="s2" attribAsCdata="true" 
+attribAsCdataList="employee_code" prefix="ns1" 
 nameSpace="http://www.aurora.org/simple"/>
      </a:consumer>
 </a:model-query>
