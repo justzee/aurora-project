@@ -173,6 +173,12 @@
              menubarPath="additions">
        </action>
        <action
+             class="aurora.ide.editor.textpage.action.FormatSQL"
+             id="aurora.ide.editor.textpage.FormatSQL"
+             label="格式化SQL"
+             menubarPath="additions">
+       </action>
+       <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
              id="aurora.ide.editor.textpage.GetFileNameAction"
              label="复制文件名"

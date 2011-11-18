@@ -23,6 +23,7 @@ Import-Package: org.eclipse.core.expressions,
  org.eclipse.search.core.text,
  org.eclipse.search.ui,
  org.eclipse.search.ui.text,
- org.eclipse.ui.texteditor.templates
+ org.eclipse.ui.texteditor.templates,
+ org.eclipse.ui.views.contentoutline
 Bundle-Localization: OSGI-INF/l10n/bundle
 
