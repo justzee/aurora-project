@@ -35,16 +35,18 @@ public class NtlmLogin extends AbstractServiceHandle {
 		MainService service = MainService.getServiceInstance(context);
 		HttpServletRequest httpRequest = service.getRequest();
 		String msg=httpRequest.getHeader("Authorization");
-		if (!checkSession(service)) {
-			CompositeMap parameter=service.getParameters();
-			CompositeMap model=service.getModel();	
-			if(msg==null||!msg.startsWith("NTLM")){			
-				String serviceName = (String)context.getObject("/request/@url");
+		boolean is_access=true;
+		is_access=checkSession(service);
+		if (is_access) {
+			CompositeMap root=new CompositeMap("root");			
+			CompositeMap parameter=root.createChild("parameter");
+			CompositeMap model=root.createChild("model");	
+			String serviceName = (String)context.getObject("/request/@url");
+			if(msg==null||!msg.startsWith("NTLM")){							
 				parameter.putString("service_name", serviceName);
 				service.databaseAccess(ntlmConfig.getChecksql(), parameter, model);			
-				mLogger.info("context:"+context.toXML());
 				
-				if ("0".equalsIgnoreCase(TextParser.parse(ntlmConfig.getChecksql_result(), context))){
+				if ("0".equalsIgnoreCase(TextParser.parse(ntlmConfig.getChecksql_result(), model))){
 					mLogger.info(serviceName+" is not login required");
 					//如果不需要权限验证跳过域验证
 					return EventModel.HANDLE_NORMAL;
@@ -54,12 +56,13 @@ public class NtlmLogin extends AbstractServiceHandle {
 			if(ntlm==null)
 				return EventModel.HANDLE_NORMAL;			
 		
-			String username=ntlm.getUsername();
+			String username=ntlm.getUsername();					
 			parameter.put("user_name", username.toUpperCase());
+			root.putObject("/request/@address", context.getObject("/request/@address"),true);
+			root.putObject("/cookie/@JSID/@value", context.getObject("/cookie/@JSID/@value"),true);			
 			mLogger.info("username:"+username);
 			mLogger.info("excute procedure "+ntlmConfig.getProcedure());
 			service.databaseAccess(ntlmConfig.getProcedure(), parameter, model);			
-			mLogger.info("doLogin context:"+context.toXML());
 		}else{
 			if ("POST".equals(httpRequest.getMethod().toUpperCase())) {
 				if(msg!=null&&msg.startsWith("NTLM"))
@@ -70,13 +73,16 @@ public class NtlmLogin extends AbstractServiceHandle {
 	}
 
 	boolean checkSession(MainService service) throws ServletException {
-		CompositeMap parameter = service.getParameters();
-		CompositeMap model = service.getModel();
-		parameter.put("encrypted_session_id", service.getServiceContext()
-				.getObject("/cookie/@JSID/@value"));
-		service.databaseAccess(ntlmConfig.getChecksession(), parameter, model);
-		return ((CompositeMap) model.getObject(ntlmConfig
-				.getChecksession_result())).getChilds() == null ? false : true;
+		CompositeMap root=new CompositeMap("root");
+		CompositeMap parameter=root.createChild("parameter");
+		CompositeMap model=root.createChild("model");		
+		CompositeMap context=service.getModel();
+		root.putObject("/cookie/@JSID/@value", context.getObject("/cookie/@JSID/@value"),true);	
+		root.putObject("/request/@url", context.getObject("/request/@url"),true);	
+		root.putObject("/request/@server_name", context.getObject("/request/@server_name"),true);	
+		root.putObject("/request/@server_port", context.getObject("/request/@server_port"),true);	
+		service.databaseAccess(ntlmConfig.getChecksession(), parameter, model);		
+		return "N".equals(model.getObject(ntlmConfig.getChecksession_result())) ? true : false;
 	}
 	
 	NtlmPasswordAuthentication authenticate(CompositeMap context){
