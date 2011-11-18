@@ -8,22 +8,12 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.textpage.TextPage;
-import aurora.ide.editor.textpage.format.JSBeautifier;
-import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
+import aurora.ide.editor.textpage.format.sqlformat.PLSQLFormat;
 import aurora.ide.helpers.DialogUtil;
 
-public class FormatJS implements IEditorActionDelegate {
-
+public class FormatSQL implements IEditorActionDelegate {
 	IEditorPart activeEditor;
-
-	public FormatJS() {
-	}
-
-	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-		activeEditor = targetEditor;
-	}
 
 	public void run(IAction action) {
 		if (activeEditor == null || !(activeEditor instanceof TextPage)) {
@@ -42,24 +32,26 @@ public class FormatJS implements IEditorActionDelegate {
 			String parentNode = document.get(parentRegion.getOffset(), parentRegion.getLength());
 			int startLine = document.getLineOfOffset(parentRegion.getOffset());
 			String txt = document.get(document.getLineOffset(startLine), document.getLineLength(startLine));
-			int index = txt.toLowerCase().indexOf("<script");
+			int index = txt.toLowerCase().indexOf("<");
 			if (index <= 0)
 				return;
 			String prefix = txt.substring(0, index);
-			if (!XMLPartitionScanner.XML_CDATA.equals(region.getType()) || !parentNode.toLowerCase().matches("<script( .*){0,1}>")) {
-				DialogUtil.showErrorMessageBox("此区域非javascript代码");
+			if (!parentNode.matches("<[^/].+sql>")) {
+				DialogUtil.showErrorMessageBox("此区域非SQL代码");
 				return;
 			}
 			int begin = region.getOffset() + "<![CDATA[".length();
 			int length = region.getLength() - "<![CDATA[".length() - "]]>".length();
-			String jsCode = document.get(begin, length);
-			if (jsCode == null || jsCode.trim().length() == 0)
-				return;
-			JSBeautifier bf = new JSBeautifier();
-			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
-			jsCode = ("\n" + bf.beautify(jsCode, bf.opts)).replaceAll("\n", "\n" + indent) + "\n" + prefix;
-			document.replace(begin, length, jsCode);
-		} catch (Throwable e) {
+			String sqlCode = document.get(begin, length);
+			PLSQLFormat sqlformat = new PLSQLFormat(sqlCode);
+			String[] temp = sqlformat.format().split("\n|\r\n");
+			StringBuffer result = new StringBuffer("\n");
+			for (String s : temp) {
+				result.append(prefix + "    " + s + " \n");
+			}
+			result.append(prefix);
+			document.replace(begin, length, result.toString());
+		} catch (Exception e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
 		}
@@ -75,6 +67,12 @@ public class FormatJS implements IEditorActionDelegate {
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		activeEditor = targetEditor;
 	}
 
 }
