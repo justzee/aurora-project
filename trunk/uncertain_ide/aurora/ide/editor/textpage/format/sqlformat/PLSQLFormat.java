@@ -125,12 +125,6 @@ public class PLSQLFormat {
 					indent--;
 				}
 				addIndent(indent);
-			} else if (("CASE".equals(upper))) {
-				sb.append(upper);
-				sb.append("\n");
-				indent++;
-				addIndent(indent);
-				once = true;
 			} else if (("THEN".equals(upper)) || ("ELSE".equals(upper))) {
 				sb.append(upper);
 				sb.append("\n");
