@@ -7,7 +7,7 @@
 == 在Aurora中发布Web Service ==
  # 从[http://www.aurora-framework.org/release/ Aurora-framework]上下载最新的aurora.jar
  # 添加web service监听器。打开[[WEB-HOME]]\WEB-INF\aurora.feature\service-listener.config,在 `<participant-list category="service">` 节点下，添加 `<participant class="aurora.service.ws.SOAPServiceInterpreter"/>` 子节点。
- # 取消登录校验。即取消service-procedure.config配置文件。
+ # 取消此svc的登录校验。在系统注册svc文件时，设置不需要登录的权限。对于webservice作为一个独立部署的工程，可以取消service-procedure.config配置文件，这样所有的文件都不需要登录校验。
  # 撰写svc文件，提供给他人调用即可。
 === 简单例子 ===
 我们提供一个svc，此svc把请求的数据插入到一个数据库表中。
@@ -21,8 +21,7 @@ $Date: 2011-11-9 上午10:42:34
 $Revision: 1.0 
 $Purpose: 
 -->
-<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" 
-xmlns:f="aurora.database.features" alias="t1" baseTable="ACCOUNT_TEST">
+<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" alias="t1" baseTable="ACCOUNT_TEST">
   <bm:fields>
     <bm:field name="ACCOUNT_ID" databaseType="NUMBER" datatype="java.lang.Long" 
 physicalName="ACCOUNT_ID" prompt="ACOUNT_TEST.ACCOUNT_ID"/>
@@ -34,9 +33,7 @@ datatype="java.lang.String" physicalName="ACCOUNT_OTHER_CODE" prompt="ACOUNT_TES
  # 在modules/sys目录下新建ws_test.svc文件，并输入以下内容
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<a:service xmlns:a="http://www.aurora-framework.org/application" 
-xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" 
-xmlns:ws="aurora.service.ws"  xmlns:as="aurora.service" trace="true">
+<a:service xmlns:a="http://www.aurora-framework.org/application">
     <a:init-procedure>
 	<a:model-insert model="fnd.account_test"/>
     </a:init-procedure>
@@ -138,7 +135,7 @@ end ACCOUNT_TEST_PKG;
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
 <a:service xmlns:a="http://www.aurora-framework.org/application" 
-xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" xmlns:ws="aurora.service.ws" trace="true">
+xmlns:p="uncertain.proc">
     <a:init-procedure>
         <p:echo/>
         <!-- 对数据进行循环操作-->
@@ -156,8 +153,7 @@ xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" xmlns:ws="aurora.
 		<p:argument path="/parameter/requestBody" type="java.util.Map"/>
             </p:arguments>
 	</p:method-invoke>
-        <p:echo/>
-    </a:init-procedure>
+     </a:init-procedure>
     <a:service-output output="/parameter/"/>
 </a:service>
 }}}
@@ -234,7 +230,7 @@ private static OMElement makeRequest2() {
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
 <a:service xmlns:a="http://www.aurora-framework.org/application"
- xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" xmlns:ws="aurora.service.ws" trace="true">
+ xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" >
     <a:init-procedure>
         <!-- 构建符合的请求的格式-->
 	<a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1">
@@ -255,20 +251,18 @@ private static OMElement makeRequest2() {
         <!-- 请求WebService-->
 	<a:ws-invoker raiseExceptionOnError="false" url="http://localhost:8080/axis2/services/simple" 
 inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
-<!--把子节点中cdata的内容整合成父节点中的一个属性 -->
- <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="collapse">
+        <!--把子节点中cdata的内容整合成父节点中的一个属性 -->
+       <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="collapse">
             <p:arguments>
                 <p:argument path="/model/syncAccResponse/out" type="uncertain.composite.CompositeMap"/>
             </p:arguments>
 </p:method-invoke>
 <as:SetParameterParsed />
-<p:echo />
 <!--循环处理子节点 -->
 <batch-apply sourcepath="/model/syncAccResponse/out">
       <a:model-insert model="fnd.account_test"/> 
  </batch-apply>
 <!-- 在日志中输出当前信息-->
- <p:echo/>
  </a:init-procedure>
  <a:service-output output="/parameter/"/>
 }}}
