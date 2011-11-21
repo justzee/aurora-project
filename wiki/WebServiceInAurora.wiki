@@ -241,14 +241,13 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
             <p:arguments>
                 <p:argument path="/model/syncAccResponse/out" type="uncertain.composite.CompositeMap"/>
             </p:arguments>
-</p:method-invoke>
-<as:SetParameterParsed />
-<!--循环处理子节点 -->
-<batch-apply sourcepath="/model/syncAccResponse/out">
-      <a:model-insert model="fnd.account_test"/> 
- </batch-apply>
-<!-- 在日志中输出当前信息-->
- </a:init-procedure>
+      </p:method-invoke>
+      <as:SetParameterParsed />
+      <!--循环处理子节点 -->
+      <batch-apply sourcepath="/model/syncAccResponse/out">
+         <a:model-insert model="fnd.account_test"/> 
+      </batch-apply>
+    </a:init-procedure>
  <a:service-output output="/parameter/"/>
 }}}
    # 调用此svc，并查看日志和数据库记录是否正确。
