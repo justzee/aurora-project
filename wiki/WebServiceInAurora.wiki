@@ -145,14 +145,8 @@ xmlns:p="uncertain.proc">
         <!--更改节点的名称和namespace-->
 	<p:set-element target="/parameter/requestHead" name="responseHead" namespace="http://aurora.org" />
          <!-- 获得当前的时间--> 
-	 <a:model-query fetchAll="true" model="ccic.systest" rootPath="/model/tempdate"/>
-        <!-- 从把查询的结果的属性赋值到目标节点上-->
-        <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="copyAttributes" >
-            <p:arguments>
-		<p:argument path="/model/tempdate/record" type="java.util.Map"/>
-		<p:argument path="/parameter/requestBody" type="java.util.Map"/>
-            </p:arguments>
-	</p:method-invoke>
+	 <a:model-query fetchAll="true" fethOneRecord="true" model="ccic.systest"
+ rootPath="/parameter/requestBody"/>
      </a:init-procedure>
     <a:service-output output="/parameter/"/>
 </a:service>
@@ -233,21 +227,12 @@ private static OMElement makeRequest2() {
  xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" >
     <a:init-procedure>
         <!-- 构建符合的请求的格式-->
-	<a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1">
-	  <a:consumer>
-	    <rs:CompositeMapCreator prefix="ns1" nameSpace="http://www.aurora.org/simple" localName="cancat"/>
-	       </a:consumer>
-	</a:model-query>
-	<a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1/cancat">
-	   <a:consumer>
-		<rs:CompositeMapCreator localName="s1" attribAsCdata="true" attribAsCdataList="unit_code"/>
-	   </a:consumer>
-	</a:model-query>
-	<a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1/cancat">
-	   <a:consumer>
-	      <rs:CompositeMapCreator localName="s2" attribAsCdata="true" attribAsCdataList="employee_code"/>
-	   </a:consumer>
-	</a:model-query>
+	<a:model-query fetchAll="true" prefix="ns1"
+ nameSpace="http://www.aurora.org/simple" localName="cancat" model="sys.systest" rootPath="/model/result1"/>
+	<a:model-query fetchAll="true" model="sys.systest" localName="s1" 
+attribAsCdata="true" attribAsCdataList="unit_code"rootPath="/model/result1/cancat"/>
+	<a:model-query fetchAll="true" model="sys.systest" localName="s2" 
+attribAsCdata="true" attribAsCdataList="employee_code" rootPath="/model/result1/cancat"/>
         <!-- 请求WebService-->
 	<a:ws-invoker raiseExceptionOnError="false" url="http://localhost:8080/axis2/services/simple" 
 inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
@@ -269,6 +254,29 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
    # 调用此svc，并查看日志和数据库记录是否正确。
 === svc常用功能简介 ===
  * 最基本的四个功能:model-query,model-insert,model-update,model-delete
+ * *把单条记录查询结果返回的属性直接更新到指定的节点上: fatchOneRecord="true"* 。例子：
+{{{
+<a:model-query fetchAll="true" fatchOneRecord="true" model="sys.systest" rootPath="/model/result1/cancat"/>
+}}}
+ 如果不加此属性，返回的结果是
+{{{
+<model>
+  <result1>
+    <concat>
+      <record employee_cod="test"/>
+    </concat>
+  </result1>
+</model> 
+}}}
+ 加了此属性后，返回结果就是：
+{{{
+<model>
+  <result1>
+    <concat employee_cod="test"/>
+   </result1>
+</model> 
+}}}
+ 注意：*此属性仅对返回单条记录有效* 。
  * *批量循环处理：batch-apply* 。例子：
 {{{
 <batch-apply sourcepath="/model/syncAccResponse/out">
@@ -278,15 +286,12 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
  表示对/model/syncAccResponse/out下面的所有子节点执行model-insert操作。
  * *更改查询返回的数据格式*。例子：
 {{{
-<a:model-query fetchAll="true" model="sys.systest" rootPath="/model/result1/cancat">
-    <a:consumer>
-	<rs:CompositeMapCreator localName="s2" attribAsCdata="true" 
+<a:model-query fetchAll="true" model="sys.systest" localName="s2" attribAsCdata="true" 
 attribAsCdataList="employee_code" prefix="ns1" 
-nameSpace="http://www.aurora.org/simple"/>
-     </a:consumer>
+nameSpace="http://www.aurora.org/simple" rootPath="/model/result1/cancat"/>
 </a:model-query>
 }}}
- 如果不加中间那段，那么原本的返回结果可能是
+ 如果不加`localName="s2"...nameSpace="http://www.aurora.org/simple" `那段，那么原本的返回结果可能是
 {{{
 <model>
   <result1>
