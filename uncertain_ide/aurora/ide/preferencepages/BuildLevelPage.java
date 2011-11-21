@@ -15,7 +15,7 @@ public class BuildLevelPage extends FieldEditorPreferencePage implements
 	static IPreferenceStore store = AuroraPlugin.getDefault()
 			.getPreferenceStore();
 	static {
-		store.setDefault(AuroraBuilder.CONFIG_PROBLEM, "2");
+		store.setDefault(AuroraBuilder.CONFIG_PROBLEM, "1");
 		store.setDefault(AuroraBuilder.UNDEFINED_BM, "2");
 		store.setDefault(AuroraBuilder.UNDEFINED_ATTRIBUTE, "1");
 		store.setDefault(AuroraBuilder.UNDEFINED_DATASET, "1");
@@ -46,6 +46,8 @@ public class BuildLevelPage extends FieldEditorPreferencePage implements
 		Composite par = getFieldEditorParent();
 		// par.setLayout(new GridLayout());
 
+		addField(new ComboFieldEditor_new(AuroraBuilder.CONFIG_PROBLEM,
+				"Config Problem", levels, par));
 		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_BM,
 				"Undefined BM", levels, par));
 		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_ATTRIBUTE,
