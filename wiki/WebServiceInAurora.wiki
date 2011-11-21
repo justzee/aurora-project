@@ -254,9 +254,9 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
    # 调用此svc，并查看日志和数据库记录是否正确。
 === svc常用功能简介 ===
  * 最基本的四个功能:model-query,model-insert,model-update,model-delete
- * *把单条记录查询结果返回的属性直接更新到指定的节点上: fatchOneRecord="true"* 。例子：
+ * *把单条记录查询结果返回的属性直接更新到指定的节点上: fetchOneRecord="true"* 。例子：
 {{{
-<a:model-query fetchAll="true" fatchOneRecord="true" model="sys.systest" rootPath="/model/result1/cancat"/>
+<a:model-query fetchAll="true" fetchOneRecord="true" model="sys.systest" rootPath="/model/result1/cancat"/>
 }}}
  如果不加此属性，返回的结果是
 {{{
