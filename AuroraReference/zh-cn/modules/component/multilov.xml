@@ -10,7 +10,7 @@
             <imagedata fileref="images/multilov.jpg" format="JPG" width="443" depth="344" contentwidth="443" contentdepth="334"/>
         </imageobject>
         <imageobject role="html">
-            <imagedata fileref="../shared/images/multilov.jpg.jpg" format="JPG"/>
+            <imagedata fileref="../shared/images/multilov.jpg" format="JPG"/>
         </imageobject>
 		<caption>
 			<para>
