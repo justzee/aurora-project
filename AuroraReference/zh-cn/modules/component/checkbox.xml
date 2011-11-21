@@ -22,6 +22,11 @@
     	 在screen文件中我们通过&lt;a:checkBox&gt;标签来定义一个CheckBox对象。
     </para>
     <programlisting><![CDATA[
+<a:dataSet id="sys_notify_edit_ds">
+    <a:fields>
+        <a:field name="enabled_flag" checkedValue="Y" defaultValue="Y" uncheckedValue="N"/>
+    </a:fields>
+</a:dataSet>
 <a:checkBox name="enabled_flag" bindTarget="sys_notify_edit_ds" prompt="FND_OPERATION_UNITS.ENABLED_FLAG">
 	<a:events>
         <a:event name="change" handler="onChange"/>
@@ -32,7 +37,7 @@
     	checkBox标签可以设置一个id属性，id是组件的唯一标识，我们可以在页面脚本中用$('id')的方法获得该id对应的组件对象，进而可以调用相应的函数方法。
     </para>
     <para>
-    	checkBox标签的bindTarget属性可指定一个dataset对象的id，name属性可指定该dataset其中一个field的名字。这两个属性必须联合使用，其功能是将Radio对象绑定到dataset中的一个field上，进而我们只要对dataset进行操作就能即时反映在Radio上，另外Radio上的文字编辑也会立刻修改dataset中的数据。
+    	checkBox标签的bindTarget属性可指定一个dataset对象的id，name属性可指定该dataset其中一个field的名字。这两个属性必须联合使用，其功能是将CheckBox对象绑定到dataset中的一个field上，进而我们只要对dataset进行操作就能即时反映在CheckBox上，另外改变CheckBox的选中状态也会立刻修改dataset中的数据。
     </para>
     <para>
     	events标签定义了需要响应的事件函数，例如change事件，当选中的选项改变为选中另一个选项时，CheckBox会触发change事件，这样我们可以通过配置一个客户端函数onChange来响应。
