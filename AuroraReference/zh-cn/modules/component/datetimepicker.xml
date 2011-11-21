@@ -49,6 +49,33 @@ function login(){
 ]]></programlisting>
     </sect4>
     <sect4>
+    	<title>日期渲染</title>
+    	<para>
+    		渲染函数(dayRenderer)
+    	</para>
+    	<para>
+很多情况下我们需要将显示的日期表进行一些特殊处理，例如我们需要将今天之前的日期设为不能选择状态。这个时候我们就需要 在datetimepicker标签上指定dayRenderer渲染函数来实现.
+    	</para>
+    	<para>
+首先我们需要实现一个dayRenderer函数，来判断当前日期，然后返回一段html代码。 
+    	</para>
+    	<programlisting><![CDATA[
+function rendererDay(cell,date,text,currentMonth){
+	var today=new Date();
+	if(date < new Date(today.getFullYear(),today.getMonth(),today.getDate())){
+		cell.disabled=true;
+	}
+	return text;
+}
+		]]></programlisting> 
+		<para>
+接下来在datetimepicker标签上指定dayRenderer属性为rendererDay. 
+		</para>
+		    	<programlisting><![CDATA[
+<a:dateTimePicker dayRenderer="rendererDay"/>
+		]]></programlisting>
+    </sect4>
+    <sect4>
 		<title>DateTimePicker标签属性</title>
 		<para>
     		请参阅DatePicker的标签属性。
