@@ -415,19 +415,9 @@ public class Util {
 				path = path.makeRelativeTo(requestPath);
 			}
 			String[] split = path.toString().split("\\?");
+			if (split == null)
+				return null;
 			path = new Path(split[0]);
-
-			// String replaceAll = ((String) pkg).replaceAll("\\$\\{.*\\}",
-			// "?");
-			// IPath noParaPath = new Path(replaceAll);
-			// String fileExtension = noParaPath.getFileExtension();
-			// if (fileExtension != null) {
-			// String[] split = fileExtension.split("\\?");
-			// split = path.toString().split("\\?");
-			// // path = path.removeFileExtension()
-			// // .addFileExtension(split[0]);
-			// path = new Path(split[0]);
-			// }
 			IPath relativePath = parentPath.makeRelativeTo(rootPath);
 			boolean prefixOf = relativePath.isPrefixOf(path);
 			if (prefixOf || prefixOfRequest) {
