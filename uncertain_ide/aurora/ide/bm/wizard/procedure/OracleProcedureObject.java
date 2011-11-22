@@ -142,7 +142,7 @@ public class OracleProcedureObject {
 				CompositeMap bm_parameter = new CompositeMap(pre,AuroraConstant.BMUri,"parameter");
 				bm_parameter.put("name",convertParameter(op.getName()));
 				bm_parameter.put("dataType",typeMap.get(op.getPls_type()));
-				bm_parameter.put("requried","true");
+				bm_parameter.put("required","true");
 				bm_parameter.put("input",new Boolean(op.getIn_out().indexOf("IN")!=-1));
 				bm_parameter.put("output",new Boolean(op.getIn_out().indexOf("OUT")!=-1));
 				bm_parameters.addChild(bm_parameter);
