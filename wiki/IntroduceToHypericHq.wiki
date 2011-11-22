@@ -19,8 +19,9 @@ Hyperic HQ 可以监控和管理多种资源类型:
  # 从[http://sourceforge.net/projects/hyperic-hq/ Hyperic HQ 下载地址]中获得最新的开源版本。
  # Server端安装
    Hyperic HQ的安装与其他管理软件在安装用户的权限要求上，有很大区别。一般管理软件都要求安装用户必须是root，但是Hyperic HQ却整好相反，他要求用户必须不能是root。
+ 注意：如果想把检测数据记录到外部数据库上，譬如oracle，那么安装参数需要加 -oracle,即./setup.sh -oracle。如果想在按照过程中显示所有选项，那么添加 -all。
  {{{
-[root@TServer hyperic-hq-installer]# ./setup.sh 
+[root@TServer hyperic-hq-installer]# ./setup.sh -oracle
 提示不能使用root用户安装。
 Execution of HQ setup not allowed as the root user.
 Please log in as a different user and re-run 
@@ -35,7 +36,7 @@ JAVA_HOME=/usr/java
  }}}
  # 执行安装脚本
  {{{
-[cl@TServer hyperic]$  /opt/hyperic/hyperic-hq-installer/installer-4.5.1/setup.sh
+[cl@TServer hyperic]$  /opt/hyperic/hyperic-hq-installer/installer-4.5.1/setup.sh -oracle
 Initializing Hyperic HQ 4.5.1 Installation...
 Loading taskdefs...
 Taskdefs loaded
@@ -180,21 +181,30 @@ mail.smtp.starttls.enable=false
    # 在[http://localhost:7080/]中配置alert警告条件，并在通知人中，添加需要通知的邮件列表。
  * Aurora工程监控
   # 打开tomcat安装目录的bin/catalina.bat，找到
-  {{{
-  rem ----- Execute The Requested Command ---------------------------------------
-  }}}
-  在此后添加
-  {{{
-set JAVA_OPTS=%JAVA_OPTS% 
--Dcom.sun.management.jmxremote 
--Dcom.sun.management.jmxremote.port=6969 
--Dcom.sun.management.jmxremote.authenticate=false 
--Dcom.sun.management.jmxremote.ssl=false
-  }}}
-   6969就是jmx的端口号
-  # 在[http://localhost:7080/]中添加此tomcat对应的jvm安装路径，即手工添加一项service，类型选择 Sun JVM 1.5。
+{{{
+  rem ----- Execute The Requested Command -----------------------------
+}}}
+   在此后添加JAVA_OPTS参数，windows下：
+{{{
+set JAVA_OPTS="%JAVA_OPTS% \
+-Dcom.sun.management.jmxremote \
+-Dcom.sun.management.jmxremote.port=6969 \
+-Dcom.sun.management.jmxremote.authenticate=false \
+-Dcom.sun.management.jmxremote.ssl=false"
+}}}
+   linux或者unix下：
+{{{
+set JAVA_OPTS="$JAVA_OPTS \
+-Dcom.sun.management.jmxremote \
+-Dcom.sun.management.jmxremote.port=6969 \
+-Dcom.sun.management.jmxremote.authenticate=false \
+-Dcom.sun.management.jmxremote.ssl=false"
+}}}
+   6969就是jmx的端口号。注意：以上代码，如果想需要换行，就在行尾加"\",或者去掉"\"，把所有参数写在一行上。
+  # 在[http://localhost:7080/]中添加此tomcat对应的jvm安装路径，即手工添加一项server，类型选择 Sun JVM 1.5。
   # 把uncertain-plugin.xml(从[http://code.google.com/p/aurora-project/downloads/detail?name=hyperic-uncertain.zip&can=2&q= 附件下载]从获取)放入server的server-4.5.1\hq-engine\hq-server\webapps\ROOT\WEB-INF\hq-plugins目录和agent的\agent-4.5.1\bundles\agent-4.5.1\pdk\plugins目录 
   # 把c3p0-jmx.jar放入server的server-4.5.1\hq-engine\hq-server\webapps\ROOT\WEB-INF\lib目录和agent的agent-4.5.1\bundles\agent-4.5.1\pdk\lib中
+  # 在 Sun JVM 1.5这个server下手工添加C3P0这个service类型。
  * 自定义查看Aurora jmx的各项属性值
    # 通过jconsole查看并获得需要查看的ObjectName以及其属性，并修改uncertain-plugin.xml
    # 在[http://localhost:7080/]中找到此属性值，并为其添加监控间隔时间值。
