@@ -15,7 +15,7 @@ public class BuildLevelPage extends FieldEditorPreferencePage implements
 	static IPreferenceStore store = AuroraPlugin.getDefault()
 			.getPreferenceStore();
 	static {
-		store.setDefault(AuroraBuilder.CONFIG_PROBLEM, "1");
+		store.setDefault(AuroraBuilder.CONFIG_PROBLEM, "2");
 		store.setDefault(AuroraBuilder.UNDEFINED_BM, "2");
 		store.setDefault(AuroraBuilder.UNDEFINED_ATTRIBUTE, "1");
 		store.setDefault(AuroraBuilder.UNDEFINED_DATASET, "1");
