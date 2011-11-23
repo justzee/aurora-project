@@ -6,6 +6,7 @@
       <wizard
             category="aurora.ide.wizard"
             class="aurora.ide.project.wizard.ProjectWizard"
+            finalPerspective="aurora.ide.perspectives.AuroraPerspective"
             icon="icons/aurora.gif"
             id="aurora.ide.wizard.ProjectWizard"
             name="%aurora.project"
@@ -177,6 +178,12 @@
              id="aurora.ide.editor.textpage.FormatSQL"
              label="格式化SQL"
              menubarPath="additions">
+          <enablement>
+             <objectState
+                   name="name"
+                   value="*.bm">
+             </objectState>
+          </enablement>
        </action>
        <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
@@ -403,7 +410,7 @@
                    label="quick open file"
                    style="push"
                    toolbarPath="additions"
-                   tooltip="open a file with finename">
+                   tooltip="open a file with filename">
              </action>
           </actionSet>
        </extension>
@@ -668,17 +675,6 @@
           name="aurora format ">
     </command>
  </extension>
- <extension
-       point="org.eclipse.ui.bindings">
-    <key
-          commandId="aurora.ide.format"
-          contextId="aurora.ide.EditorScope"
-          schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-          sequence="M1+M2+P">
-    </key>
-      
- </extension>
- <!--shiliyan3310-2011-08-08-->
   
   <extension
          point="org.eclipse.ui.commands">
@@ -692,6 +688,17 @@
             id="aurora.ide.search.command.FiledReferenceCommand">
       </command>
    </extension>
+ <extension
+       point="org.eclipse.ui.bindings">
+    <key
+          commandId="aurora.ide.format"
+          contextId="aurora.ide.EditorScope"
+          schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+          sequence="M1+M2+P">
+    </key>
+      
+ </extension>
+ <!--shiliyan3310-2011-08-08-->
    <extension
          point="org.eclipse.ui.handlers">
       <handler
@@ -793,6 +800,59 @@
          class="aurora.ide.search.ui.SearchPage">
       </page> 
    </extension>
+ <extension
+       id="aurora.ide.perspectives"
+       point="org.eclipse.ui.perspectives">
+    <perspective
+          class="aurora.ide.perspectives.AuroraPerspective"
+          icon="icons/aurora.gif"
+          id="aurora.ide.perspectives.AuroraPerspective"
+          name="Aurora">
+    </perspective>
+ </extension>
+ <extension
+       point="org.eclipse.ui.perspectiveExtensions">
+    <perspectiveExtension
+          targetID="aurora.ide.perspectives.AuroraPerspective">
+       <newWizardShortcut
+             id="aurora.ide.wizard.ProjectWizard">
+       </newWizardShortcut>
+       <newWizardShortcut
+             id="aurora.ide.wizard.ServiceNewWizard">
+       </newWizardShortcut>
+       <newWizardShortcut
+             id="aurora.ide.wizard.BMFromSQLWizard">
+       </newWizardShortcut>
+       <newWizardShortcut
+             id="aurora.ide.wizard.BMFromDBWizard">
+       </newWizardShortcut>
+       <newWizardShortcut
+             id="aurora.ide.wizard.BMFromProcedure">
+       </newWizardShortcut>
+
+       <actionSet
+             id="aurora.ide.actionset.quickopenfile">
+       </actionSet>
+       <view
+             id="org.eclipse.search.ui.views.SearchView"
+             minimized="false"
+             relationship="stack"
+             relative="org.eclipse.ui.views.ProblemView">
+       </view>
+       <view
+             id="org.eclipse.wst.server.ui.ServersView"
+             minimized="false"
+             relationship="stack"
+             relative="org.eclipse.ui.views.ProblemView">
+       </view>
+       <viewShortcut
+             id="org.eclipse.team.ccvs.ui.RepositoriesView">
+       </viewShortcut>
+       <showInPart
+             id="org.eclipse.team.ui.GenericHistoryView">
+       </showInPart>
+    </perspectiveExtension>
+ </extension>
 
     
 </plugin>
