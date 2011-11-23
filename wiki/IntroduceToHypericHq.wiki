@@ -18,8 +18,9 @@ Hyperic HQ 可以监控和管理多种资源类型:
 
  # 从[http://sourceforge.net/projects/hyperic-hq/ Hyperic HQ 下载地址]中获得最新的开源版本。
  # Server端安装
-   Hyperic HQ的安装与其他管理软件在安装用户的权限要求上，有很大区别。一般管理软件都要求安装用户必须是root，但是Hyperic HQ却整好相反，他要求用户必须不能是root。
- 注意：如果想把检测数据记录到外部数据库上，譬如oracle，那么安装参数需要加 -oracle,即./setup.sh -oracle。如果想在按照过程中显示所有选项，那么添加 -all。
+ Hyperic HQ的安装与其他管理软件在安装用户的权限要求上，有很大区别。一般管理软件都要求安装用户必须是root，但是Hyperic HQ却整好相反，他要求用户必须不能是root。
+
+ 注意：如果想把检测数据记录到外部数据库上，譬如oracle，那么安装参数需要加 -oracle,即./setup.sh -oracle，并把数据库驱动（比如class12.jar或者oc4j.jar）放入安装包目录下的lib中。如果想在按照过程中显示所有选项，那么添加 -all。
  {{{
 [root@TServer hyperic-hq-installer]# ./setup.sh -oracle
 提示不能使用root用户安装。
@@ -179,6 +180,9 @@ mail.smtp.starttls.enable=false
  }}}
     具体参考[http://support.hyperic.com/display/EVO/Configuring+Hyperic+Server+for+SMTP+Server Hyperic mail config]
    # 在[http://localhost:7080/]中配置alert警告条件，并在通知人中，添加需要通知的邮件列表。
+ * 监控oracle数据库
+  # 把合适的数据库驱动放入server和agent目录中，譬如：server-4.5.1\lib和agent-4.5.1\bundles\agent-4.5.1\pdk\lib\jdbc中。
+  # 启动oracle数据库，此时hyperic会自动发现oracle，加入监控后，会提示配置不正确，此时需要配置jdbc的url连接、用户名和密码。配置正确的后，就会显示相关的oracle监控数据。
  * Aurora工程监控
   # 打开tomcat安装目录的bin/catalina.bat，找到
 {{{
@@ -209,5 +213,5 @@ set JAVA_OPTS="$JAVA_OPTS \
    # 通过jconsole查看并获得需要查看的ObjectName以及其属性，并修改uncertain-plugin.xml
    # 在[http://localhost:7080/]中找到此属性值，并为其添加监控间隔时间值。
    # 重启server和agent
-   
+    
    
