@@ -854,5 +854,18 @@
     </perspectiveExtension>
  </extension>
 
-    
+    <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Aurora"
+            id="aurora.viewer.category">
+      </category>
+      <view
+            name="统计与度量"
+            icon="icons/aurora.gif"
+            category="aurora.viewer.category"
+            class="aurora.ide.statistics.viewer.StatisticsView"
+            id="aurora.ide.viewer.statistics.StatisticsView">
+      </view>
+   </extension>
 </plugin>

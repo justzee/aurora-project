@@ -36,7 +36,6 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			}
 			if ("screen".equalsIgnoreCase(fileExtension)
 					|| "svc".equalsIgnoreCase(fileExtension)) {
-
 				return new MultiReferenceTypeFinder(screenReference)
 						.addReferenceType(urlReference);
 			}
