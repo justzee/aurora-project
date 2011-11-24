@@ -35,7 +35,7 @@
 || *属性名* || *类型* || *描述* || *必须* || *默认值* ||
 || header_id || in || fnd_interface_headers表中的header_id || true || ||
 || user_id || in || 当前用户user_id || false || ${/session/@user_id} ||
-|| separator || in || 导入文本类型时的分隔符 || false || ||
+|| separator || in || 导入文本类型时的分隔符 || false || , ||
 || template_code || in || 模板号,来源于fnd_interface_templates.用于导入数据的预处理 || false|| ||
 || job_id || in || 任务id || false || ||
 || attribute1 || in || 扩展字段1 || false || ||
