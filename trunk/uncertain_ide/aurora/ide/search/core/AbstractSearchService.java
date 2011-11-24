@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -79,33 +78,6 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	private boolean isPostException = true;
-
-	private class ScopeVisitor implements IResourceVisitor {
-		private List<IResource> result = new ArrayList<IResource>();
-
-		public boolean visit(IResource resource) throws CoreException {
-			if (resource.getType() == IResource.FILE) {
-				boolean checkExtension = checkExtension(resource);
-				if (checkExtension) {
-					result.add(resource);
-				}
-				return false;
-			}
-			return true;
-		}
-
-		public List<IResource> getResult() {
-			return result;
-		}
-
-		private boolean checkExtension(IResource resource) {
-			IFile file = (IFile) resource;
-			String fileExtension = file.getFileExtension();
-			return "bm".equalsIgnoreCase(fileExtension)
-					|| "screen".equalsIgnoreCase(fileExtension)
-					|| "svc".equalsIgnoreCase(fileExtension);
-		}
-	}
 
 	private ISearchQuery query;
 	private Object source;
@@ -411,7 +383,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	private List<IResource> findFilesInScope(IResource scope) {
-		ScopeVisitor visitor = new ScopeVisitor();
+		AuroraFileFinder visitor = new AuroraFileFinder();
 		try {
 			scope.accept(visitor);
 			return visitor.getResult();

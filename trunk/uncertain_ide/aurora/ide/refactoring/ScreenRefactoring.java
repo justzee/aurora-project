@@ -73,42 +73,40 @@ public class ScreenRefactoring {
 			return "";
 		IResource webRoot = webInf.getParent();
 		IPath path = new Path((String) changeValue);
-		String qPath ="";
+		String qPath = "";
 		String[] split = changeValue.split("\\?");
-		if(changeValue.length()>1){
-			for(int i=1;i<split.length;i++)
-			{
-				qPath = "?"+split[i];
+		if (changeValue.length() > 1) {
+			for (int i = 1; i < split.length; i++) {
+				qPath = "?" + split[i];
 			}
 		}
 		path = new Path(split[0]);
-		
-		
+
 		boolean prefixOfRequest = requestPath.isPrefixOf(path);
 		if (prefixOfRequest) {
 			path = path.makeRelativeTo(requestPath);
-//			if (fileExtension != null) {
-				newPath = newPath.makeRelativeTo(webRoot
-						.getProjectRelativePath());
-				newPath = requestPath.append(newPath);
-//				return newPath.toString();
-//			}
-		}else{
-			newPath = newPath.makeRelativeTo(targetFile.getParent().getProjectRelativePath());
+			// if (fileExtension != null) {
+			newPath = newPath.makeRelativeTo(webRoot.getProjectRelativePath());
+			newPath = requestPath.append(newPath);
+			// return newPath.toString();
+			// }
+		} else {
+			newPath = newPath.makeRelativeTo(targetFile.getParent()
+					.getProjectRelativePath());
 		}
-		if(qPath.length()>0){
-//			newPath =newPath.append(qPath);
-			return newPath.toString()+qPath;
+		if (qPath.length() > 0) {
+			// newPath =newPath.append(qPath);
+			return newPath.toString() + qPath;
 		}
-		
-//		L/hr_aurora/web/modules/hr/org/hr_org_unit_update.screen
-//		web/modules/hr/fdasf/hr_org_unit_choice_single.screen
-//		web/modules/hr/fdasf/hr_org_unit_choice_single.screen
-//		web/modules/hr/org/hr_org_unit_update.screen
-//		../../fdasf/hr_org_unit_choice_single.screen
-//		targetFile.getProjectRelativePath().append("../../fdasf/hr_org_unit_choice_single.screen");
-		
-//				.addFileExtension(fileExtension);
+
+		// L/hr_aurora/web/modules/hr/org/hr_org_unit_update.screen
+		// web/modules/hr/fdasf/hr_org_unit_choice_single.screen
+		// web/modules/hr/fdasf/hr_org_unit_choice_single.screen
+		// web/modules/hr/org/hr_org_unit_update.screen
+		// ../../fdasf/hr_org_unit_choice_single.screen
+		// targetFile.getProjectRelativePath().append("../../fdasf/hr_org_unit_choice_single.screen");
+
+		// .addFileExtension(fileExtension);
 		return newPath.toString();
 	}
 }
