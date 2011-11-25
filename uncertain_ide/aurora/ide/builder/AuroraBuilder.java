@@ -139,7 +139,8 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			this.monitor = monitor;
 			IResourceDelta delta = getDelta(getProject());
 			if (delta == null) {
-				fullBuild(monitor);
+				return null;
+				// fullBuild(monitor);
 			} else {
 				incrementalBuild(delta, monitor);
 			}

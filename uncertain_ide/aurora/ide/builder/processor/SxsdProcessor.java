@@ -21,7 +21,6 @@ import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.builder.validator.AbstractValidator;
 import aurora.ide.editor.textpage.IColorConstants;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.preferencepages.BuildLevelPage;
 import aurora.ide.search.core.Util;
 
@@ -45,7 +44,7 @@ public class SxsdProcessor extends AbstractProcessor {
 		HashMap<String, Integer> countMap = new HashMap<String, Integer>(20);
 		L: for (CompositeMap m : childMap) {
 			// // ignore AnyElement
-			Element elem = LoadSchemaManager.getSchemaManager().getElement(m);
+			Element elem = SxsdUtil.getMapElement(m);
 			if (elem == null || SxsdUtil.isExtOfAnyElement(elem))
 				continue;
 			// ///
@@ -116,7 +115,7 @@ public class SxsdProcessor extends AbstractProcessor {
 		try {
 			list = getAttributesInSchemaNotNull(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			AuroraBuilder.addMarker(file, e.getMessage(), map
 					.getLocationNotNull().getStartLine() - 1,
 					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
