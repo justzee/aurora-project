@@ -1,7 +1,9 @@
 package aurora.ide.editor.textpage;
 
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
@@ -13,12 +15,16 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.ITextListener;
+import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -28,15 +34,20 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.core.IViewer;
+import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.CompositeMapLocatorParser;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
+import aurora.ide.helpers.LogUtil;
 
 public class TextPage extends TextEditor implements IViewer {
 	/** The ID of this editor as defined in plugin.xml */
@@ -54,6 +65,7 @@ public class TextPage extends TextEditor implements IViewer {
 	private boolean modify = false;
 	private boolean ignorceSycOnce = false;
 	private IAnnotationModel annotationModel;
+	private BaseOutlinePage outline;
 
 	public TextPage() {
 		super();
@@ -67,9 +79,13 @@ public class TextPage extends TextEditor implements IViewer {
 
 	// add by shiliyan
 	public Object getAdapter(Class adapter) {
-	
+
 		if (Display.getCurrent() != null && IAnnotationModel.class.equals(adapter)) {
 			return this.getAnnotationModel();
+		} else if (adapter == IContentOutlinePage.class) {
+			outline = new BaseOutlinePage(this);
+			this.addListenerObject(outline);
+			return outline;
 		}
 		return super.getAdapter(adapter);
 	}
@@ -78,6 +94,7 @@ public class TextPage extends TextEditor implements IViewer {
 	public boolean isIgnorceSycOnce() {
 		return ignorceSycOnce;
 	}
+
 	private IAnnotationModel getAnnotationModel() {
 		if (annotationModel != null)
 			return annotationModel;
@@ -121,7 +138,13 @@ public class TextPage extends TextEditor implements IViewer {
 					return;
 				}
 				refresh(true);
+				/*try {
+					//CompositeMap map = toCompoisteMap();//CompositeMapUtil.loaderFromString(event.getText());
+					//outline.refresh(map);
+				} catch (ApplicationException e) {
+				}*/
 			}
+
 			public void documentAboutToBeChanged(DocumentEvent event) {
 
 			}
@@ -172,7 +195,8 @@ public class TextPage extends TextEditor implements IViewer {
 		}
 		return true;
 	}
-	public CompositeMap toCompoisteMap() throws ApplicationException{
+
+	public CompositeMap toCompoisteMap() throws ApplicationException {
 		return CompositeMapUtil.loaderFromString(getContent());
 	}
 
@@ -248,19 +272,35 @@ public class TextPage extends TextEditor implements IViewer {
 		this.modify = modify;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.ui.texteditor.AbstractTextEditor#createSourceViewer(org.eclipse
-	 * .swt.widgets.Composite, org.eclipse.jface.text.source.IVerticalRuler,
-	 * int)
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#createSourceViewer(org.eclipse
+	 *      .swt.widgets.Composite,
+	 *      org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 
+		viewer.getTextWidget().addCaretListener(new CaretListener() {
+			public void caretMoved(CaretEvent event) {
+				CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
+				try {
+					InputStream content = new ByteArrayInputStream(getContent().getBytes("UTF-8"));
+					int cursorLine = getSourceViewer().getTextWidget().getLineAtOffset(event.caretOffset);
+					CompositeMap cm = parser.getCompositeMapFromLine(content, cursorLine);
+					if (cm != null) {
+						outline.selectNode(cm);
+					}
+				} catch (SAXException e) {
+					// DialogUtil.showExceptionMessageBox(e);
+				} catch (IOException e) {
+					LogUtil.getInstance().logError(EDITOR_CONTEXT, e);
+				}
+			}
+		});
 		return viewer;
 	}
 
@@ -271,18 +311,18 @@ public class TextPage extends TextEditor implements IViewer {
 		 * 点击左侧垂直条，AbstractTextEditor
 		 * .findContributedAction()中getSite().getId()总是为"",判断失效。
 		 * */
-		Action action = new MarkerRulerAction(ResourceBundle
-				.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"), "Editor.ManageBookmarks.", this,
-				getVerticalRuler(), IMarker.BOOKMARK, true);
+		Action action = new MarkerRulerAction(ResourceBundle.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"), "Editor.ManageBookmarks.", this, getVerticalRuler(), IMarker.BOOKMARK, true);
 		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
 	}
-	public void doSave(IProgressMonitor monitor){
+
+	public void doSave(IProgressMonitor monitor) {
 		try {
 			IFile ifile = ((IFileEditorInput) getEditorInput()).getFile();
 			File file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
-			XMLOutputter.saveToFile(file,CompositeMapUtil.loaderFromString(getContent()));//parseString(getContent()) );//
+			XMLOutputter.saveToFile(file, CompositeMapUtil.loaderFromString(getContent()));// parseString(getContent())
+																							// );//
 			ifile.refreshLocal(IResource.DEPTH_ZERO, null);
-//			super.doSave(monitor);
+			// super.doSave(monitor);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
