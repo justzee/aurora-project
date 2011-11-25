@@ -375,8 +375,9 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			if ((gridStyle & IGridViewer.fullEditable) != 0) {
 				Element element = null;
 				try {
-					element = LoadSchemaManager.getSchemaManager().getElement(
-							data);
+//					element = LoadSchemaManager.getSchemaManager().getElement(
+//							data);
+					element = CompositeMapUtil.getElement(data);
 				} catch (Exception e) {
 					// do nothing
 				}

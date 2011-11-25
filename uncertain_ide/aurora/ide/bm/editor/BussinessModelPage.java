@@ -49,6 +49,7 @@ import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
@@ -258,7 +259,8 @@ public class BussinessModelPage extends CompositeMapPage {
 	}
 
 	public void createCustomerActions(GridViewer pae) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(pae.getInput());
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(pae.getInput());
+		Element element = CompositeMapUtil.getElement(pae.getInput());
 		if (element == null) {
 			return;
 		}

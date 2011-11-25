@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 
 import uncertain.composite.CompositeMap;
@@ -32,7 +33,8 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		CompositeMap map = (CompositeMap) parentElement;
 		List childs = new LinkedList(map.getChildsNotNull());
 
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element =CompositeMapUtil.getElement(map);
 		if (element != null) {
 			//列示所有数组子节点
 			List arrays = element.getAllArrays();
@@ -78,7 +80,8 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 		}
 		// this element maybe have arrays
 		else{
-			Element cm = LoadSchemaManager.getSchemaManager().getElement(map);
+//			Element cm = LoadSchemaManager.getSchemaManager().getElement(map);
+			Element cm =CompositeMapUtil.getElement(map);
 			if(cm != null &&!cm.getAllArrays().isEmpty()){
 				return true;
 			}
@@ -96,7 +99,8 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 			return new Object[] { rootElement };
 		}
 		List childs = new LinkedList(map.getChildsNotNull());
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element =CompositeMapUtil.getElement(map);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {

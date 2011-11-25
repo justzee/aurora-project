@@ -86,7 +86,8 @@ public class ServiceTreePage extends CompositeMapTreePage {
 				if (resourceTransfer.isSupportedType(event.currentDataType)) {
 					Object data = event.data;
 					if (data != null) {
-						Element element = LoadSchemaManager.getSchemaManager().getElement(getInput());
+//						Element element = LoadSchemaManager.getSchemaManager().getElement(getInput());
+						Element element = CompositeMapUtil.getElement(getInput());
 						if (element == null || !element.getQName().equals(AuroraConstant.ScreenQN)) {
 							DialogUtil.showErrorMessageBox("this.is.not.screen.file");
 							return;

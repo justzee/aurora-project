@@ -53,7 +53,8 @@ public class CompositeMapUtil {
 
 	}
 
-	public static String getContextFullName(CompositeMap context, QualifiedName qn) {
+	public static String getContextFullName(CompositeMap context,
+			QualifiedName qn) {
 		String text = null;
 		String prefix = getContextPrefix(context, qn);
 		String localName = qn.getLocalName();
@@ -73,6 +74,7 @@ public class CompositeMapUtil {
 		}
 		return prefix;
 	}
+
 	public static String getContextPrefix(CompositeMap context, String uri) {
 		if (uri == null || context == null) {
 			return null;
@@ -85,15 +87,18 @@ public class CompositeMapUtil {
 			return null;
 	}
 
-	public static CompositeMap addElement(CompositeMap parent, QualifiedName childQN) {
+	public static CompositeMap addElement(CompositeMap parent,
+			QualifiedName childQN) {
 		if (parent == null || childQN == null)
 			return null;
 		String prefix = getContextPrefix(parent, childQN);
-		CompositeMap child = new CompositeMap(prefix, childQN.getNameSpace(), childQN.getLocalName());
+		CompositeMap child = new CompositeMap(prefix, childQN.getNameSpace(),
+				childQN.getLocalName());
 		parent.addChild(child);
 		addArrayNode(parent);
 		return child;
 	}
+
 	public static boolean addElement(CompositeMap node, CompositeMap childNode) {
 		if (node == null || childNode == null)
 			return false;
@@ -101,8 +106,11 @@ public class CompositeMapUtil {
 		addArrayNode(node);
 		return true;
 	}
+
 	public static void addArrayNode(CompositeMap parent) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
+		// Element element = LoadSchemaManager.getSchemaManager().getElement(
+		// parent);
+		Element element = CompositeMapUtil.getElement(parent);
 		if (element != null && element.isArray()) {
 			QualifiedName qName = parent.getQName();
 			if (CompositeUtil.findChild(parent.getParent(), qName) == null) {
@@ -112,7 +120,9 @@ public class CompositeMapUtil {
 	}
 
 	public static void addElementArray(CompositeMap parentCM) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCM);
+		// Element element = LoadSchemaManager.getSchemaManager().getElement(
+		// parentCM);
+		Element element = CompositeMapUtil.getElement(parentCM);
 		if (element != null) {
 			List arrays = element.getAllArrays();
 			if (arrays != null) {
@@ -120,7 +130,8 @@ public class CompositeMapUtil {
 				while (ite.hasNext()) {
 					Array array = (Array) ite.next();
 					String name = array.getLocalName();
-					CompositeMap newCM = new CompositeMap(parentCM.getPrefix(), parentCM.getNamespaceURI(), name);
+					CompositeMap newCM = new CompositeMap(parentCM.getPrefix(),
+							parentCM.getNamespaceURI(), name);
 					parentCM.addChild(newCM);
 				}
 			}
@@ -128,7 +139,9 @@ public class CompositeMapUtil {
 	}
 
 	public static List getAvailableChildElements(CompositeMap parent) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
+		// Element element = LoadSchemaManager.getSchemaManager().getElement(
+		// parent);
+		Element element = CompositeMapUtil.getElement(parent);
 		if (element == null)
 			return null;
 		List childElements = new LinkedList();
@@ -137,11 +150,13 @@ public class CompositeMapUtil {
 			IType type = element.getElementType();
 			// 如果数组成员类型是元素
 			if (type instanceof Element) {
-				Element arrayType = LoadSchemaManager.getSchemaManager().getElement(type.getQName());
+				Element arrayType = LoadSchemaManager.getSchemaManager()
+						.getElement(type.getQName());
 				childElements.add(arrayType);
 			}// 判断数组成员类型是否是基类
 			else if (type instanceof ComplexType) {
-				childElements.addAll(LoadSchemaManager.getSchemaManager().getElementsOfType(type));
+				childElements.addAll(LoadSchemaManager.getSchemaManager()
+						.getElementsOfType(type));
 			}
 		}
 		// 如果节点是元素
@@ -154,8 +169,12 @@ public class CompositeMapUtil {
 	}
 
 	private static List getChildElements(CompositeMap parent) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parent);
-		Set schemaChilds = getSchemaChilds(element, LoadSchemaManager.getSchemaManager());
+		// Element element = LoadSchemaManager.getSchemaManager().getElement(
+		// parent);
+		Element element = CompositeMapUtil.getElement(parent);
+
+		Set schemaChilds = getSchemaChilds(element,
+				LoadSchemaManager.getSchemaManager());
 		List availableChilds = new ArrayList();
 
 		if (schemaChilds != null) {
@@ -186,7 +205,8 @@ public class CompositeMapUtil {
 		if (childElements == null) {
 			return childs;
 		}
-		for (Iterator cit = childElements.iterator(); cit != null && cit.hasNext();) {
+		for (Iterator cit = childElements.iterator(); cit != null
+				&& cit.hasNext();) {
 			Object node = cit.next();
 			if (!(node instanceof ComplexType))
 				continue;
@@ -202,7 +222,8 @@ public class CompositeMapUtil {
 		List complexTypes = element.getAllExtendedTypes();
 		if (complexTypes == null)
 			return childs;
-		for (Iterator cit = complexTypes.iterator(); cit != null && cit.hasNext();) {
+		for (Iterator cit = complexTypes.iterator(); cit != null
+				&& cit.hasNext();) {
 			ComplexType ct = (ComplexType) cit.next();
 			if (ct instanceof Element) {
 				Element new_name = (Element) ct;
@@ -212,7 +233,8 @@ public class CompositeMapUtil {
 		return childs;
 	}
 
-	public static int getCountOfChildElement(CompositeMap parent, QualifiedName childQN) {
+	public static int getCountOfChildElement(CompositeMap parent,
+			QualifiedName childQN) {
 		List childs = parent.getChildsNotNull();
 		int count = 0;
 		Iterator it = childs.iterator();
@@ -225,7 +247,8 @@ public class CompositeMapUtil {
 		return count;
 	}
 
-	public static boolean validNextNodeLegalWithAction(CompositeMap parent, CompositeMap child) {
+	public static boolean validNextNodeLegalWithAction(CompositeMap parent,
+			CompositeMap child) {
 		if (!validNextNodeLegal(parent, child)) {
 			String warning = "";
 			if (parent == null) {
@@ -233,8 +256,10 @@ public class CompositeMapUtil {
 			} else if (child == null) {
 				warning = LocaleMessage.getString("child.element.is.null");
 			} else {
-				warning = " " + parent.getQName().getLocalName() + " " + LocaleMessage.getString("undefined")
-						+ child.getQName().getLocalName() + " " + LocaleMessage.getString("child.element");
+				warning = " " + parent.getQName().getLocalName() + " "
+						+ LocaleMessage.getString("undefined")
+						+ child.getQName().getLocalName() + " "
+						+ LocaleMessage.getString("child.element");
 			}
 			DialogUtil.showWarningMessageBox(warning);
 			return false;
@@ -242,14 +267,18 @@ public class CompositeMapUtil {
 		return true;
 	}
 
-	public static boolean validNextNodeLegal(CompositeMap parent, CompositeMap child) {
+	public static boolean validNextNodeLegal(CompositeMap parent,
+			CompositeMap child) {
 		if (parent == null || child == null)
 			return false;
-		Element parentElement = LoadSchemaManager.getSchemaManager().getElement(parent);
+		// Element parentElement = LoadSchemaManager.getSchemaManager()
+		// .getElement(parent);
+		Element parentElement = CompositeMapUtil.getElement(parent);
 		return validNextNodeLegal(parentElement, child.getQName());
 	}
 
-	public static boolean validNextNodeLegal(Element parent, QualifiedName childQN) {
+	public static boolean validNextNodeLegal(Element parent,
+			QualifiedName childQN) {
 		if (parent == null || childQN == null)
 			return false;
 		if (parent.isArray()) {
@@ -258,7 +287,8 @@ public class CompositeMapUtil {
 				return true;
 			}
 		}
-		List childElements = parent.getChildElements(LoadSchemaManager.getSchemaManager());
+		List childElements = parent.getChildElements(LoadSchemaManager
+				.getSchemaManager());
 		if (childElements != null) {
 			Iterator ite = childElements.iterator();
 			while (ite.hasNext()) {
@@ -270,13 +300,13 @@ public class CompositeMapUtil {
 					return true;
 			}
 		}
-		//列示所有数组子节点
+		// 列示所有数组子节点
 		List arrays = parent.getAllArrays();
 		if (arrays != null) {
 			Iterator ite = arrays.iterator();
 			while (ite.hasNext()) {
 				Array array = (Array) ite.next();
-				if(childQN.equals(array.getQName()))
+				if (childQN.equals(array.getQName()))
 					return true;
 			}
 		}
@@ -287,7 +317,8 @@ public class CompositeMapUtil {
 	public Set getMaxOcuss(Element element, SchemaManager manager) {
 		Set allChildElements = new HashSet();
 		Set childElements = element.getChilds();
-		for (Iterator cit = childElements.iterator(); cit != null && cit.hasNext();) {
+		for (Iterator cit = childElements.iterator(); cit != null
+				&& cit.hasNext();) {
 			Object node = cit.next();
 			if (!(node instanceof ComplexType))
 				continue;
@@ -302,7 +333,8 @@ public class CompositeMapUtil {
 		List complexTypes = element.getAllExtendedTypes();
 		if (complexTypes == null)
 			return allChildElements;
-		for (Iterator cit = complexTypes.iterator(); cit != null && cit.hasNext();) {
+		for (Iterator cit = complexTypes.iterator(); cit != null
+				&& cit.hasNext();) {
 			ComplexType ct = (ComplexType) cit.next();
 			if (ct instanceof Element) {
 				Element new_name = (Element) ct;
@@ -325,7 +357,8 @@ public class CompositeMapUtil {
 		if (namespaceToPrefix == null)
 			return null;
 
-		Namespace[] namespaces = new Namespace[namespaceToPrefix.keySet().size()];
+		Namespace[] namespaces = new Namespace[namespaceToPrefix.keySet()
+				.size()];
 		Iterator elements = namespaceToPrefix.keySet().iterator();
 		int i = 0;
 		while (elements.hasNext()) {
@@ -337,7 +370,9 @@ public class CompositeMapUtil {
 		}
 		return namespaces;
 	}
-	public static void collectAttribueValues(Set set, String attribueName, CompositeMap root) {
+
+	public static void collectAttribueValues(Set set, String attribueName,
+			CompositeMap root) {
 		String attribueValue = root.getString(attribueName);
 		if (attribueValue != null) {
 			set.add(attribueValue);
@@ -351,25 +386,35 @@ public class CompositeMapUtil {
 			}
 		}
 	}
-	public static List getArrayAttrs(CompositeMap arrayData) throws ApplicationException {
+
+	public static List getArrayAttrs(CompositeMap arrayData)
+			throws ApplicationException {
 		if (arrayData == null)
 			throw new ApplicationException("CompositeMap data can not be null!");
-		Element element = LoadSchemaManager.getSchemaManager().getElement(arrayData);
+		// Element element = LoadSchemaManager.getSchemaManager().getElement(
+		// arrayData);
+		Element element = CompositeMapUtil.getElement(arrayData);
 		if (element == null)
-			throw new ApplicationException("Can't get element schema from " + arrayData.toXML());
+			throw new ApplicationException("Can't get element schema from "
+					+ arrayData.toXML());
 		if (!(element instanceof Array))
-			throw new ApplicationException("Type " + element.getQName() + " is not array");
+			throw new ApplicationException("Type " + element.getQName()
+					+ " is not array");
 		Array array = (Array) element;
 		IType type = array.getElementType();
 		if (type == null)
-			throw new ApplicationException("Can't get array type from " + array.getQName());
+			throw new ApplicationException("Can't get array type from "
+					+ array.getQName());
 		if (!(type instanceof ComplexType))
-			throw new ApplicationException("Type " + type.getQName() + " is not ComplexType");
+			throw new ApplicationException("Type " + type.getQName()
+					+ " is not ComplexType");
 		ComplexType type_element = (ComplexType) type;
 		List attrib_list = type_element.getAllAttributes();
 		return attrib_list;
 	}
-	public static String[] getArrayAttrNames(CompositeMap arrayData) throws ApplicationException {
+
+	public static String[] getArrayAttrNames(CompositeMap arrayData)
+			throws ApplicationException {
 		List attrib_list = getArrayAttrs(arrayData);
 		if (attrib_list == null)
 			return null;
@@ -381,7 +426,9 @@ public class CompositeMapUtil {
 		}
 		return column_index;
 	}
-	public static int locateNode(String content, CompositeMap node) throws ApplicationException {
+
+	public static int locateNode(String content, CompositeMap node)
+			throws ApplicationException {
 		int line = -1;
 		if (node == null || content == null)
 			return -1;
@@ -407,7 +454,9 @@ public class CompositeMapUtil {
 		}
 		return line;
 	}
-	public static CompositeMap loaderFromString(String content) throws ApplicationException {
+
+	public static CompositeMap loaderFromString(String content)
+			throws ApplicationException {
 		if (content == null)
 			return null;
 		CompositeMap root = null;
@@ -433,9 +482,30 @@ public class CompositeMapUtil {
 		}
 		return root;
 	}
-	public static String getFullContent(CompositeMap data){
-		if(data == null)
+
+	public static String getFullContent(CompositeMap data) {
+		if (data == null)
 			return null;
-		return AuroraResourceUtil.xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
+		return AuroraResourceUtil.xml_decl
+				+ XMLOutputter.defaultInstance().toXML(data, true);
+	}
+
+	/**
+	 * 
+	 * fix Bug : <bm:features><bm:feature/></bm:features>
+	 * java.lang.IllegalArgumentException: Specified QName
+	 * {{http://www.aurora-framework.org/schema/bm}feature} is not Element but
+	 * uncertain.schema.ComplexType
+	 * 
+	 */
+	public static Element getElement(CompositeMap map) {
+		ISchemaManager schemaManager = LoadSchemaManager.getSchemaManager();
+		try {
+			return schemaManager.getElement(map);
+		} catch (IllegalArgumentException e) {
+			LogUtil.getInstance().logError(e.getMessage(), e);
+		}
+
+		return null;
 	}
 }

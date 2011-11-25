@@ -94,7 +94,7 @@ public class BussinessModelEditor extends BaseCompositeMapEditor {
                 }
             }
         } catch (Exception e) {
-            DialogUtil.showExceptionMessageBox(e);
+        	DialogUtil.showExceptionMessageBox(e);
         }
 
     }

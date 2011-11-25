@@ -43,8 +43,9 @@ public class ActionsFactory {
 
 	public ActionListener[] createActions(ActionInfo actionInfo) throws ApplicationException {
 		CompositeMap currentNode = actionInfo.getCurrentNode();
-		Element element = LoadSchemaManager.getSchemaManager().getElement(
-				currentNode);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(
+//				currentNode);
+		Element element = CompositeMapUtil.getElement(currentNode);
 		if (element == null) {
 			DialogUtil.showWarningMessageBox(LocaleMessage
 					.getString("undefined.self.element"));

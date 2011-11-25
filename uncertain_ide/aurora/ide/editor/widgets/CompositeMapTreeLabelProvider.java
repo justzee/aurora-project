@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 
@@ -22,8 +23,9 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 
 	public Image getImage(Object element) {
 		CompositeMap elemenntCm = (CompositeMap) element;
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(
-				elemenntCm);
+//		Element ele = LoadSchemaManager.getSchemaManager().getElement(
+//				elemenntCm);
+		Element ele = CompositeMapUtil.getElement(elemenntCm);
 		if (ele != null) {
 			if (ele.isArray()) {
 				return AuroraPlugin.getImageDescriptor(
@@ -52,8 +54,9 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 			elementText = elementName;
 		else
 			elementText = tagName;
-		Element element = LoadSchemaManager.getSchemaManager().getElement(
-				elemenntCm);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(
+//				elemenntCm);
+		Element element = CompositeMapUtil.getElement(elemenntCm);
 		if (element != null) {
 			if (element.isArray()) {
 				int nodes = elemenntCm.getChildsNotNull().size();
@@ -68,7 +71,8 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 	private String getElementName(CompositeMap element) {
 
 		String tagName = element.getRawName();
-		Element elm = LoadSchemaManager.getSchemaManager().getElement(element);
+//		Element elm = LoadSchemaManager.getSchemaManager().getElement(element);
+		Element elm = CompositeMapUtil.getElement(element);
 		String elemDesc = null;
 		if (elm != null && !elm.isArray()) {
 			if (elm.getDisplayMask() != null) {

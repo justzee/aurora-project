@@ -38,6 +38,7 @@ import aurora.ide.editor.core.ICategoryTableViewer;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.widgets.core.CategoryLabel;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
@@ -91,7 +92,8 @@ public class PropertyHashViewer extends PropertyViewer implements
 		}
 		setCellEditors();
 
-		Element em = LoadSchemaManager.getSchemaManager().getElement(data);
+//		Element em = LoadSchemaManager.getSchemaManager().getElement(data);
+		Element em = CompositeMapUtil.getElement(data);
 		elementDocument.setText("");
 		if (em != null) {
 			String document = em.getDocument();

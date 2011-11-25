@@ -26,6 +26,7 @@ import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapLocatorParser;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
@@ -88,7 +89,8 @@ public class AttributeStrategy implements IContentAssistStrategy {
 	}
 
 	private ICompletionProposal[] computeUpdateAttr(CompositeMap parentCompositeMap) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCompositeMap.getQName());
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCompositeMap.getQName());
+		Element element =CompositeMapUtil.getElement(parentCompositeMap);
 		if (element == null)
 			return getDefaultCompletionProposal();
 		List allAttributes = element.getAllAttributes();
@@ -132,7 +134,8 @@ public class AttributeStrategy implements IContentAssistStrategy {
 		return result;
 	}
 	private ICompletionProposal[] computeNewAttr(CompositeMap parentCompositeMap) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCompositeMap.getQName());
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(parentCompositeMap.getQName());
+		Element element =CompositeMapUtil.getElement(parentCompositeMap);
 		if (element == null)
 			return getDefaultCompletionProposal();
 		List allAttributes = element.getAllAttributes();
