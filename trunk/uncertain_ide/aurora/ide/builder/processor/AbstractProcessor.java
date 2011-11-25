@@ -29,7 +29,7 @@ public abstract class AbstractProcessor {
 		try {
 			list = getAttributesInSchemaNotNull(map);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			AuroraBuilder.addMarker(file, e.getMessage(), map
 					.getLocationNotNull().getStartLine() - 1,
 					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
@@ -42,7 +42,7 @@ public abstract class AbstractProcessor {
 	}
 
 	public List<Attribute> getAttributesInSchemaNotNull(CompositeMap map)
-			throws Exception {
+			throws RuntimeException {
 		Element ele = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (ele == null)
 			return new ArrayList<Attribute>();

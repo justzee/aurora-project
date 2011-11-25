@@ -12,6 +12,8 @@ import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.processor.AbstractProcessor;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.search.cache.CacheManager;
+import aurora.ide.search.core.CompositeMapInDocument;
+import aurora.ide.search.core.CompositeMapInDocumentManager;
 import aurora.ide.search.core.Util;
 
 public abstract class AbstractValidator implements IterationHandle {
@@ -47,6 +49,8 @@ public abstract class AbstractValidator implements IterationHandle {
 	}
 
 	public int process(CompositeMap map) {
+		CompositeMapInDocument mapdoc = CompositeMapInDocumentManager
+				.getCompositeMapInDocument(map, doc);
 		for (AbstractProcessor np : aps) {
 			np.processMap(file, map, doc);
 		}

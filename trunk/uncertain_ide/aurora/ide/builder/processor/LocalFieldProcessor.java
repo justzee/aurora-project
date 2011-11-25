@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
@@ -22,7 +21,6 @@ import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.validator.AbstractValidator;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LogUtil;
 import aurora.ide.preferencepages.BuildLevelPage;
 import aurora.ide.search.core.AbstractSearchService;
 
@@ -45,8 +43,6 @@ public class LocalFieldProcessor extends AbstractProcessor {
 						r.getObjectContext(), true);
 				map = CompositeMapUtil.loaderFromString(str);
 			} catch (Exception e) {
-				LogUtil.getInstance().log(IStatus.ERROR,
-						file.getName() + "解析异常", e);
 				AuroraBuilder.addMarker(file, e.getMessage(), 1,
 						IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
 			}

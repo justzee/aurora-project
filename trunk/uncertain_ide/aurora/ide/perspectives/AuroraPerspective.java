@@ -41,11 +41,11 @@ public class AuroraPerspective implements IPerspectiveFactory {
 		bottom.addPlaceholder("org.eclipse.ui.console.ConsoleView");
 
 		IFolderLayout topLeft = factory.createFolder("topLeft", // NON-NLS-1
-				IPageLayout.LEFT, 0.23f, factory.getEditorArea());
+				IPageLayout.LEFT, 0.21f, factory.getEditorArea());
 		topLeft.addView("org.eclipse.ui.navigator.ProjectExplorer");
 
 		factory.addView("org.eclipse.ui.views.ContentOutline",
-				IPageLayout.RIGHT, 0.85f, IPageLayout.ID_EDITOR_AREA);
+				IPageLayout.RIGHT, 0.82f, IPageLayout.ID_EDITOR_AREA);
 
 		factory.addFastView("org.eclipse.team.ccvs.ui.RepositoriesView", 0.50f); // NON-NLS-1
 		factory.addFastView("org.eclipse.team.sync.views.SynchronizeView",

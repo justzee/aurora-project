@@ -32,7 +32,7 @@ public final class SxsdUtil {
 	 */
 
 	public static List<Attribute> getAttributesNotNull(CompositeMap map)
-			throws Exception {
+			throws RuntimeException {
 		Element ele = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (ele == null)
 			return new ArrayList<Attribute>();
@@ -42,6 +42,16 @@ public final class SxsdUtil {
 		return list;
 	}
 
+	public static Element getMapElement(CompositeMap map) {
+		Element element = null;
+		try {
+			element = LoadSchemaManager.getSchemaManager().getElement(map);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return element;
+	}
+
 	/**
 	 * 照搬CompositeMapUtil中的方法getAvailableChildElements
 	 * 
@@ -49,7 +59,7 @@ public final class SxsdUtil {
 	 * @return
 	 */
 	private static List<Element> getAvailableChildElements1(CompositeMap map) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element = getMapElement(map);
 		if (element == null)
 			return null;
 		List<Element> childElements = new LinkedList<Element>();
@@ -112,7 +122,12 @@ public final class SxsdUtil {
 		List<Element> childs = getAvailableChildElements1(map);
 		if (childs == null)
 			childs = new ArrayList<Element>();
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element ele = null;
+		try {
+			ele = LoadSchemaManager.getSchemaManager().getElement(map);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 		if (ele != null) {
 			childs.addAll(ele.getAllArrays());
 		}
