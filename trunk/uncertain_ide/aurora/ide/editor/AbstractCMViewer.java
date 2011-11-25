@@ -55,7 +55,8 @@ public abstract class AbstractCMViewer implements IViewer{
 	public void removeElement() {
 		CompositeMap comp = getFocus();
 		if (comp != null) {
-			Element em = LoadSchemaManager.getSchemaManager().getElement(comp);
+//			Element em = LoadSchemaManager.getSchemaManager().getElement(comp);
+			Element em =CompositeMapUtil.getElement(comp);
 			if (em != null && em.isArray()) {
 				if (comp.getChildsNotNull().size() > 0) {
 					int buttonID = DialogUtil.showConfirmDialogBox(LocaleMessage.getString("clear.array.question"));
@@ -80,8 +81,10 @@ public abstract class AbstractCMViewer implements IViewer{
 		case SWT.OK:
 			if (comp != null) {
 				CompositeMap parentCM = comp.getParent();
-				Element element = LoadSchemaManager.getSchemaManager().getElement(
-						parentCM);
+//				Element element = LoadSchemaManager.getSchemaManager().getElement(
+//						parentCM);
+				Element element = CompositeMapUtil.getElement(parentCM);
+				
 				if (element != null&&element.isArray()) {
 					comp.getParent().removeChild(comp);
 					if (parentCM.getChilds() == null

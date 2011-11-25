@@ -35,6 +35,7 @@ import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapLocatorParser;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.SystemException;
 import aurora.ide.search.core.AbstractSearchQuery;
@@ -104,8 +105,9 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 				return null;
 			Object value = map.get(att.name);
 			if (att.value.equals(value)) {
-				Element element = LoadSchemaManager.getSchemaManager()
-						.getElement(map);
+//				Element element = LoadSchemaManager.getSchemaManager()
+//						.getElement(map);
+				Element element = CompositeMapUtil.getElement(map);
 				if (element != null) {
 					
 					List attrib_list = element.getAllAttributes();

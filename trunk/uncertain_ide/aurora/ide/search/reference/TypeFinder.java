@@ -10,6 +10,7 @@ import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.core.CompositeMapIteator;
 
@@ -33,7 +34,9 @@ public class TypeFinder extends CompositeMapIteator {
 	protected List getMatch(CompositeMap map) throws ApplicationException {
 		List matchs = new ArrayList();
 		boolean isMacth = false;
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element = CompositeMapUtil.getElement(map);
+		
 		if (element != null) {
 			List attrib_list = element.getAllAttributes();
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {

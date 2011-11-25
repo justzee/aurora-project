@@ -12,6 +12,7 @@ import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.core.CompositeMapIteator;
 
@@ -34,7 +35,8 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 
 		List<Attribute> matchs = new ArrayList<Attribute>();
 		boolean isMacth = false;
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element = CompositeMapUtil.getElement(map);
 		if (element != null) {
 			List attrib_list = element.getAllAttributes();
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {

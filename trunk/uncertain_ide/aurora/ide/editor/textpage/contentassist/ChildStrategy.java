@@ -120,7 +120,8 @@ public class ChildStrategy implements IContentAssistStrategy {
 		List childs = CompositeMapUtil.getAvailableChildElements(parent);
 		if (childs == null)
 			childs = new ArrayList();
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
+//		Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
+		Element ele =CompositeMapUtil.getElement(parent);
 		if (ele != null) {
 			childs.addAll(ele.getAllArrays());
 		} else {
@@ -173,7 +174,8 @@ public class ChildStrategy implements IContentAssistStrategy {
 		List childs = CompositeMapUtil.getAvailableChildElements(parent);
 		if (childs == null)
 			childs = new ArrayList();
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
+//		Element ele = LoadSchemaManager.getSchemaManager().getElement(parent);
+		Element ele =CompositeMapUtil.getElement(parent);
 		if (ele != null) {
 			childs.addAll(ele.getAllArrays());
 		} else {

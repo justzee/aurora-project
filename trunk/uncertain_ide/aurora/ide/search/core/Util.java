@@ -44,6 +44,7 @@ import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
 
@@ -62,7 +63,8 @@ public class Util {
 	}
 
 	static public List getMapAttributes(CompositeMap map) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element = CompositeMapUtil.getElement(map);
 		if (element != null)
 			return element.getAllAttributes();
 		return null;
@@ -256,7 +258,8 @@ public class Util {
 	public static Object getReferenceModelPKG(CompositeMap map) {
 		if (map == null)
 			return null;
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		Element element = CompositeMapUtil.getElement(map);
 		if (element != null) {
 			List attrib_list = element.getAllAttributes();
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {
