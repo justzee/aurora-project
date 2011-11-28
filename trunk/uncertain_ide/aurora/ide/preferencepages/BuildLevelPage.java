@@ -23,7 +23,9 @@ public class BuildLevelPage extends FieldEditorPreferencePage implements
 		store.setDefault(AuroraBuilder.UNDEFINED_FOREIGNFIELD + "_BM", "2");
 		store.setDefault(AuroraBuilder.UNDEFINED_LOCALFIELD + "_SCREEN", "1");
 		store.setDefault(AuroraBuilder.UNDEFINED_LOCALFIELD + "_BM", "2");
+		store.setDefault(AuroraBuilder.UNDEFINED_SCREEN, "2");
 		store.setDefault(AuroraBuilder.UNDEFINED_TAG, "1");
+		store.setDefault(AuroraBuilder.NONENAMESPACE, "1");
 	}
 
 	private static final String[][] levels = { { "Error", "2" },
@@ -56,14 +58,18 @@ public class BuildLevelPage extends FieldEditorPreferencePage implements
 				"Undefined DataSet (screen)", levels, par));
 		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_FOREIGNFIELD
 				+ "_SCREEN", "Undefined ForeignField (screen)", levels, par));
-		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_LOCALFIELD
+		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_FOREIGNFIELD
 				+ "_BM", "Undefined ForeignField (bm)", levels, par));
 		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_LOCALFIELD
 				+ "_SCREEN", "Undefined LocalField (screen)", levels, par));
 		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_LOCALFIELD
-				+ "_BM", "Undefined Screen (screen)", levels, par));
+				+ "_BM", "Undefined LocalField (bm)", levels, par));
+		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_SCREEN,
+				"Undefined Screen (screen)", levels, par));
 		addField(new ComboFieldEditor_new(AuroraBuilder.UNDEFINED_TAG,
 				"Undefined Tag", levels, par));
+		addField(new ComboFieldEditor_new(AuroraBuilder.NONENAMESPACE,
+				"None namespace", levels, par));
 	}
 
 	public static int getBuildLevel(String type) {
