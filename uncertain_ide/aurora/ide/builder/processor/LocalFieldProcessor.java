@@ -20,7 +20,6 @@ import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.preferencepages.BuildLevelPage;
@@ -38,20 +37,17 @@ public class LocalFieldProcessor extends AbstractProcessor {
 			CompositeMap bm = null;
 			try {
 				bm = CacheManager.getCompositeMap(file);
-
-				BusinessModel r = createResult(bm, file);
-				String str = XMLOutputter.defaultInstance().toXML(
-						r.getObjectContext(), true);
-				map = CompositeMapUtil.loaderFromString(str);
-			} catch (Exception e) {
-				try {
-					CompositeMap bm1 = AuroraResourceUtil
-							.loadFromResource(file);
-					bm.toXML();
-				} catch (ApplicationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if (bm.get("extend") == null) {
+					map = bm;
+				} else {
+					bm = AuroraResourceUtil.loadFromResource(file);
+					BusinessModel r = createResult(bm, file);
+					String str = XMLOutputter.defaultInstance().toXML(
+							r.getObjectContext(), true);
+					map = CompositeMapUtil.loaderFromString(str);
 				}
+
+			} catch (Exception e) {
 				AuroraBuilder.addMarker(file, e.getMessage(), 1,
 						IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
 			}
@@ -115,13 +111,12 @@ public class LocalFieldProcessor extends AbstractProcessor {
 			CompositeMap map = (CompositeMap) objs[2];
 			CompositeMapInfo info = new CompositeMapInfo(map, doc);
 			IRegion region = info.getAttrValueRegion2(name);
-			// int line = map.getLocationNotNull().getStartLine();
-			// IRegion region = AbstractValidator.getValueRegion(doc, line - 1,
-			// name, value);
+			int line = info.getLineOfRegion(region);
 
-			AuroraBuilder.addMarker(file, name + " : " + value + " 未在BM中定义过",
-					info.getStartLine() + 1, region, level,
-					AuroraBuilder.UNDEFINED_LOCALFIELD);
+			AuroraBuilder
+					.addMarker(file, name + " : " + value + " 未在BM中定义过",
+							line + 1, region, level,
+							AuroraBuilder.UNDEFINED_LOCALFIELD);
 		}
 	}
 
