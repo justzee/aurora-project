@@ -35,11 +35,9 @@ import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.wizard.sql.BMFromSQLWizard;
 import aurora.ide.bm.wizard.sql.BMFromSQLWizardPage;
 import aurora.ide.builder.AuroraBuilder;
+import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.builder.validator.AbstractValidator;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
-import aurora.ide.search.core.CompositeMapInDocument;
-import aurora.ide.search.core.CompositeMapInDocumentManager;
 
 public class CompletionProposalCreator {
 	private static Image img_new = null;
@@ -116,14 +114,11 @@ public class CompletionProposalCreator {
 		String value = map.getString(word);
 		if (value == null)// 很可能是Annotation发生错位...
 			return null;
-		IRegion valueRegion = AbstractValidator.getValueRegion(doc, map
-				.getLocationNotNull().getStartLine() - 1, word, value);
+		CompositeMapInfo info = new CompositeMapInfo(map, doc);
+		IRegion attrRegion = info.getAttrRegion(word);
 		// FIXME 属性值中含有特殊字符,被转义,查找失败,返回null
-		if (valueRegion == null)
+		if (attrRegion == null)
 			return null;
-		int deleteLength = -1;
-		deleteLength = valueRegion.getOffset() + valueRegion.getLength() + 2
-				- markerRegion.getOffset();
 		ArrayList<SortElement> comp = new ArrayList<SortElement>();
 		@SuppressWarnings("unchecked")
 		Set<Map.Entry<String, String>> set = map.entrySet();
@@ -152,13 +147,13 @@ public class CompletionProposalCreator {
 		ICompletionProposal[] cps = new ICompletionProposal[comp.size() + 1];
 		for (int i = 0; i < comp.size(); i++) {
 			String str = comp.get(i).name;
-			cps[i] = new CompletionProposal(str, markerRegion.getOffset(),
-					markerRegion.getLength(), str.length(), img_rename, "更改 "
-							+ word + " 为 " + str, null, "建议修改为 : " + str);
+			cps[i] = new CompletionProposal(str, attrRegion.getOffset(),
+					word.length(), str.length(), img_rename, "更改 " + word
+							+ " 为 " + str, null, "建议修改为 : " + str);
 		}
 		cps[comp.size()] = new CompletionProposal("",
-				markerRegion.getOffset() - 1, deleteLength, 0, img_remove,
-				"删除此属性", null, "建议删除");
+				attrRegion.getOffset() - 1, attrRegion.getLength() + 1, 0,
+				img_remove, "删除此属性", null, "建议删除");
 		return cps;
 	}
 
@@ -198,13 +193,12 @@ public class CompletionProposalCreator {
 			dataSetsMap.addChild(dataSetMap);
 			String prefix = "";
 
-			CompositeMapInDocument relMap;
+			CompositeMapInfo info;
 			if (pathMap[1] == null) {// script不存在,直接作为view的子接点,插在最前面
-				relMap = CompositeMapInDocumentManager
-						.getCompositeMapInDocument(pathMap[0], doc);
-				prefix = getLeadingPrefix(doc, relMap);
+				info = new CompositeMapInfo(pathMap[0], doc);
+				prefix = info.getLeadPrefix();
 				prefix += XMLOutputter.DEFAULT_INDENT;
-				IRegion region = relMap.getStart();
+				IRegion region = info.getStartTagRegion();
 				insertOffset = region.getOffset() + region.getLength();
 				insertTag = XMLOutputter.LINE_SEPARATOR
 						+ prefix
@@ -215,10 +209,9 @@ public class CompletionProposalCreator {
 										XMLOutputter.LINE_SEPARATOR + prefix);
 
 			} else {// 插在script段下面
-				relMap = CompositeMapInDocumentManager
-						.getCompositeMapInDocument(pathMap[1], doc);
-				prefix = getLeadingPrefix(doc, relMap);
-				IRegion endRegion = relMap.getEnd();
+				info = new CompositeMapInfo(pathMap[1], doc);
+				prefix = info.getLeadPrefix();
+				IRegion endRegion = info.getEndTagRegion();
 				insertOffset = endRegion.getOffset() + endRegion.getLength();
 				insertTag = XMLOutputter.LINE_SEPARATOR
 						+ prefix
@@ -234,10 +227,9 @@ public class CompletionProposalCreator {
 			 * 如果当前结点本身就在dataSet中,那就插在当前dataSet结点前面,
 			 */
 			if (outerDsMap != null) {
-				CompositeMapInDocument relMap = CompositeMapInDocumentManager
-						.getCompositeMapInDocument(outerDsMap, doc);
-				IRegion region = relMap.getStart();
-				String prefix = getLeadingPrefix(doc, relMap);
+				CompositeMapInfo info = new CompositeMapInfo(outerDsMap, doc);
+				IRegion region = info.getStartTagRegion();
+				String prefix = info.getLeadPrefix();
 				insertOffset = region.getOffset();
 				insertTag = dataSetMap.toXML().trim()
 						+ XMLOutputter.LINE_SEPARATOR + prefix;
@@ -246,14 +238,11 @@ public class CompletionProposalCreator {
 			 * 插在dataSets段的尾部
 			 */
 			else {
-				CompositeMapInDocument relMap = CompositeMapInDocumentManager
-						.getCompositeMapInDocument(pathMap[2], doc);
-				IRegion region = relMap.getStart();
-				IRegion endRegion = relMap.getEnd();
-				String prefix = getLeadingPrefix(doc, relMap);
+				CompositeMapInfo info = new CompositeMapInfo(pathMap[2], doc);
+				IRegion region = info.getMapRegion();
+				String prefix = info.getLeadPrefix();
 				clearnsURI(pathMap[2]);
-				replaceLength = endRegion.getOffset() + endRegion.getLength()
-						- region.getOffset();
+				replaceLength = region.getLength();
 				pathMap[2].addChild(dataSetMap);
 				insertOffset = region.getOffset();
 				insertTag = pathMap[2]
@@ -376,26 +365,25 @@ public class CompletionProposalCreator {
 			}
 		}
 		Collections.sort(list);
-		CompositeMapInDocument info = CompositeMapInDocumentManager
-				.getCompositeMapInDocument(map, doc);
-		IRegion mapRegion = getMapRegion(doc, info);
-		String prefix = getLeadingPrefix(doc, info);
-		if (prefix == null)
-			return null;
+		CompositeMapInfo info = new CompositeMapInfo(map, doc);
+		IRegion mapRegion = info.getMapRegion();
+		IRegion mapNameRegion = info.getMapNameRegion();
+		IRegion mapEndNameRegion = info.getMapEntTagNameRegion();
+		boolean isSelfClose = mapNameRegion.equals(mapEndNameRegion);
+		int start1 = mapNameRegion.getOffset() - mapRegion.getOffset();
+		StringBuilder mapStr = new StringBuilder(getString(doc, mapRegion));
 		ICompletionProposal[] cps = new ICompletionProposal[list.size() + 1];
 		for (int i = 0; i < cps.length - 1; i++) {
 			String name = list.get(i).name;
-			CompositeMap cMap = (CompositeMap) map.clone();
-			cMap.setName(name);
-			clearnsURI(cMap);
-			String str = cMap
-					.toXML()
-					.trim()
-					.replace(XMLOutputter.LINE_SEPARATOR,
-							XMLOutputter.LINE_SEPARATOR + prefix);
-			cps[i] = new CompletionProposal(str, mapRegion.getOffset(),
-					mapRegion.getLength(), 0, img_rename, "更改为 " + name, null,
-					"建议修改为 : " + name);
+			if (!isSelfClose) {
+				int start2 = mapEndNameRegion.getOffset()
+						- mapRegion.getOffset();
+				mapStr.replace(start2, start2 + map.getName().length(), name);
+			}
+			mapStr.replace(start1, start1 + map.getName().length(), name);
+			cps[i] = new CompletionProposal(mapStr.toString(),
+					mapRegion.getOffset(), mapRegion.getLength(), 0,
+					img_rename, "更改为 " + name, null, "建议修改为 : " + name);
 		}
 		cps[cps.length - 1] = new CompletionProposal("", mapRegion.getOffset(),
 				mapRegion.getLength(), 0, img_remove, "删除Tag : " + tagName,
@@ -423,7 +411,7 @@ public class CompletionProposalCreator {
 		map.iterate(new IterationHandle() {
 
 			public int process(CompositeMap map) {
-				if (!map.getName().equalsIgnoreCase("dataset"))
+				if (!map.getName().equalsIgnoreCase("dataSet"))
 					return 0;
 				String ds = map.getString("id");
 				if (ds != null)
@@ -432,34 +420,6 @@ public class CompletionProposalCreator {
 			}
 		}, true);
 		return set;
-	}
-
-	private String getLeadingPrefix(IDocument doc, CompositeMapInDocument relMap) {
-		IRegion startRegion = relMap.getStart();
-		int offset = startRegion.getOffset();
-		try {
-			int line = doc.getLineOfOffset(offset);
-			int lineOffset = doc.getLineOffset(line);
-			String str = doc.get(lineOffset, offset - lineOffset);
-			if (str.trim().length() == 0)
-				return str;
-			char cs[] = str.toCharArray();
-			for (int i = 0; i < cs.length; i++)
-				if (!Character.isWhitespace(cs[i]))
-					cs[i] = ' ';
-			return new String(cs);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
-
-	private IRegion getMapRegion(IDocument doc, CompositeMapInDocument relMap) {
-		IRegion sRegion = relMap.getStart();
-		IRegion eRegion = relMap.getEnd();
-		IRegion region = new Region(sRegion.getOffset(), eRegion.getOffset()
-				+ eRegion.getLength() - sRegion.getOffset());
-		return region;
 	}
 
 	private CompositeMap getOuterDataSetMap(CompositeMap map) {
@@ -479,10 +439,10 @@ public class CompletionProposalCreator {
 		rootMap.iterate(new IterationHandle() {
 
 			public int process(CompositeMap map) {
-				if (map.getName().equals("view")) {
+				if (map.getName().equalsIgnoreCase("view")) {
 					path[0] = map;
-				} else if (map.getName().equals("script")
-						&& map.getParent().getName().equals("view")) {
+				} else if (map.getName().equalsIgnoreCase("script")
+						&& map.getParent().getName().equalsIgnoreCase("view")) {
 					path[1] = map;
 				} else if (map.getName().equalsIgnoreCase("dataSets")) {
 					path[2] = map;
@@ -501,5 +461,13 @@ public class CompletionProposalCreator {
 				return false;
 		}
 		return true;
+	}
+
+	private String getString(IDocument doc, IRegion region) {
+		try {
+			return doc.get(region.getOffset(), region.getLength());
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 }
