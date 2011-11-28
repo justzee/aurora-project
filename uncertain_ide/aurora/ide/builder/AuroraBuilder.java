@@ -1,5 +1,6 @@
 package aurora.ide.builder;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,9 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 	private IProgressMonitor monitor;
 	private int filecount = 0;
 	private IPath webPath;
+	private ArrayList<Long> scrals = new ArrayList<Long>(5000);
+	private ArrayList<Long> bmals = new ArrayList<Long>(5000);
+	private long fbStart;
 
 	class SampleDeltaVisitor implements IResourceDeltaVisitor {
 		public boolean visit(IResourceDelta delta) throws CoreException {
@@ -133,6 +137,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
+		BuildContext.initBuildLevel();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
@@ -171,7 +176,22 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			});
 			this.monitor = monitor;
 			monitor.beginTask("builder " + getProject().getName(), filecount);
+			fbStart = System.currentTimeMillis();
+			bmals.clear();
+			scrals.clear();
 			getProject().accept(new SampleResourceVisitor());
+			System.out.println("TIME:" + (System.currentTimeMillis() - fbStart)
+					/ 1000.0);
+			long tt = 0;
+			for (long t : bmals)
+				tt += t;
+			System.out.println("BM:" + tt * 1f / bmals.size() + " FILES:"
+					+ bmals.size() + " TOTALTIME:" + tt);
+			tt = 0;
+			for (long t : scrals)
+				tt += t;
+			System.out.println("SCR:" + tt * 1f / scrals.size() + " FILES:"
+					+ scrals.size() + " TOTALTIME:" + tt);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -219,6 +239,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		monitor.worked(1);
 		if (!webPath.isPrefixOf(resource.getFullPath()))
 			return;
+		long ts = System.currentTimeMillis();
 		if (resource instanceof IFile) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
@@ -229,34 +250,35 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 				new UncertainLocalValidator(file).validate();
 			} else if ("bm".equals(ext)) {
 				new BmValidator(file).validate();
+				bmals.add(System.currentTimeMillis() - ts);
 			} else if ("svc".equals(ext)) {
 				new SvcValidator(file).validate();
 			} else if ("screen".equals(ext)) {
 				new ScreenValidator(file).validate();
+				scrals.add(System.currentTimeMillis() - ts);
 			} else if ("config".equals(ext)) {
 			}
 
 		} else if (resource instanceof IFolder) {
 			IFolder folder = (IFolder) resource;
+			if (!folder.getName().equals("WEB-INF")) {
+				return;
+			}
 			try {
 				if (folder.getProject().getPersistentProperty(
 						ProjectPropertyPage.WebQN) != null)
 					return;
 				folder.deleteMarkers(CONFIG_PROBLEM, false,
 						IResource.DEPTH_ZERO);
-				if (folder.getName().equals("WEB-INF")) {
-					web_infs.add(folder);
-
-					if (web_infs.size() > 1) {
-						for (IFolder f : web_infs) {
-							f.deleteMarkers(CONFIG_PROBLEM, false,
-									IResource.DEPTH_ZERO);
-							IMarker marker = f.createMarker(CONFIG_PROBLEM);
-							marker.setAttribute(IMarker.MESSAGE,
-									"有多个WEB-INF目录!");
-							marker.setAttribute(IMarker.SEVERITY,
-									IMarker.SEVERITY_ERROR);
-						}
+				web_infs.add(folder);
+				if (web_infs.size() > 1) {
+					for (IFolder f : web_infs) {
+						f.deleteMarkers(CONFIG_PROBLEM, false,
+								IResource.DEPTH_ZERO);
+						IMarker marker = f.createMarker(CONFIG_PROBLEM);
+						marker.setAttribute(IMarker.MESSAGE, "有多个WEB-INF目录!");
+						marker.setAttribute(IMarker.SEVERITY,
+								IMarker.SEVERITY_ERROR);
 					}
 				}
 			} catch (CoreException e) {

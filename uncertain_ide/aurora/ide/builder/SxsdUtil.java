@@ -2,6 +2,7 @@ package aurora.ide.builder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,9 @@ public final class SxsdUtil {
 			"http://www.uncertain-framework.org/schema/simple-schema",
 			"AnyElement");
 
+	private static HashMap<String, List<Element>> childElementCache = new HashMap<String, List<Element>>(
+			1000);
+
 	/**
 	 * 获取CompositeMap结点声明的所有属性
 	 * 
@@ -32,7 +36,7 @@ public final class SxsdUtil {
 	 */
 
 	public static List<Attribute> getAttributesNotNull(CompositeMap map)
-			throws RuntimeException {
+			throws Exception {
 		Element ele = LoadSchemaManager.getSchemaManager().getElement(map);
 		if (ele == null)
 			return new ArrayList<Attribute>();
@@ -47,7 +51,6 @@ public final class SxsdUtil {
 		try {
 			element = LoadSchemaManager.getSchemaManager().getElement(map);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 		}
 		return element;
 	}
@@ -94,10 +97,13 @@ public final class SxsdUtil {
 	 * @return
 	 */
 	private static List<Element> getChildElements(CompositeMap map) {
-		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+
+		Element element = getMapElement(map);
+		List<Element> availableChilds = new ArrayList<Element>();
+		if (element == null)
+			return availableChilds;
 		Set<?> schemaChilds = CompositeMapUtil.getSchemaChilds(element,
 				LoadSchemaManager.getSchemaManager());
-		List<Element> availableChilds = new ArrayList<Element>();
 
 		if (schemaChilds != null) {
 			Iterator<?> ite = schemaChilds.iterator();
@@ -119,19 +125,21 @@ public final class SxsdUtil {
 	 * @return 非null List
 	 */
 	public static List<Element> getAvailableChildElements(CompositeMap map) {
-		List<Element> childs = getAvailableChildElements1(map);
+		String key = notNull(map.getNamespaceURI()) + ":" + map.getName();
+		List<Element> childs = childElementCache.get(key);
+		if (childs != null) {
+			return childs;
+		}
+
+		childs = getAvailableChildElements1(map);
 		if (childs == null)
 			childs = new ArrayList<Element>();
-		Element ele = null;
-		try {
-			ele = LoadSchemaManager.getSchemaManager().getElement(map);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+		Element ele = getMapElement(map);
 		if (ele != null) {
 			childs.addAll(ele.getAllArrays());
 		}
-		Collections.sort(childs);
+		// Collections.sort(childs);
+		childElementCache.put(key, childs);
 		return childs;
 	}
 
