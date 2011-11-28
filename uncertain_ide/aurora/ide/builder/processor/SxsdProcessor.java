@@ -17,6 +17,7 @@ import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
 
@@ -62,12 +63,16 @@ public class SxsdProcessor extends AbstractProcessor {
 			}
 			CompositeMapInfo info = new CompositeMapInfo(m, bc.doc);
 			IRegion region = info.getMapNameRegion();
-			String msg = "Tag : "
-					+ mapName
-					+ (reachMax ? (" , 已超出最大重复数 : " + mc) : (" , 不应该出现在 "
-							+ bc.map.getName() + " 下"));
-			AuroraBuilder.addMarker(bc.file, msg, info.getStartLine() + 1,
-					region, BuildContext.LEVEL_UNDEFINED_TAG,
+			int line = info.getLineOfRegion(region);
+			String msg = null;
+			if (reachMax)
+				msg = String.format(BuildMessages.get("build.reachmax"),
+						mapName, mc);
+			else
+				msg = String.format(BuildMessages.get("build.shouldnotbehere"),
+						mapName, bc.map.getName());
+			AuroraBuilder.addMarker(bc.file, msg, line + 1, region,
+					BuildContext.LEVEL_UNDEFINED_TAG,
 					AuroraBuilder.UNDEFINED_TAG);
 		}
 	}
@@ -106,9 +111,11 @@ public class SxsdProcessor extends AbstractProcessor {
 				continue;
 			IRegion region = bc.info.getAttrNameRegion(k);
 			int line = bc.info.getLineOfRegion(region);
-			IMarker marker = AuroraBuilder.addMarker(bc.file, "属性 : " + k
-					+ " , 未在 [ " + bc.map.getName() + " ] 的Schema中定义过",
-					line + 1, region, BuildContext.LEVEL_UNDEFINED_ATTRIBUTE,
+			String msg = String.format(
+					BuildMessages.get("build.attribute.undefined"), k,
+					bc.map.getName());
+			IMarker marker = AuroraBuilder.addMarker(bc.file, msg, line + 1,
+					region, BuildContext.LEVEL_UNDEFINED_ATTRIBUTE,
 					AuroraBuilder.UNDEFINED_ATTRIBUTE);
 			if (marker != null) {
 				try {

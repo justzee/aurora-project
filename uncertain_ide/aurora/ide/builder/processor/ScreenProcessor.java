@@ -13,6 +13,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.search.core.Util;
 
@@ -32,10 +33,11 @@ public class ScreenProcessor extends AbstractProcessor {
 		if (SxsdUtil.isScreenReference(a.getAttributeType())) {
 			String name = a.getName();
 			String value = bc.map.getString(name);
-			int line = bc.info.getStartLine() + 1;
 			IRegion vregion = bc.info.getAttrValueRegion2(name);
+			int line = bc.info.getLineOfRegion(vregion) + 1;
 			if (value.length() == 0) {
-				String msg = name + " 不能为空";
+				String msg = String.format(
+						BuildMessages.get("build.notbeempty"), name);
 				AuroraBuilder.addMarker(bc.file, msg, line, vregion,
 						BuildContext.LEVEL_UNDEFINED_SCREEN,
 						AuroraBuilder.UNDEFINED_SCREEN);
@@ -52,12 +54,11 @@ public class ScreenProcessor extends AbstractProcessor {
 			IContainer webDir = Util.findWebInf(bc.file).getParent();
 			IPath path = new Path(value).makeRelativeTo(webDir.getFullPath())
 					.makeAbsolute();
-			// System.out.println(path);
 			IFile findScreenFile = webDir.getFile(path);
-			// System.out.println(findScreenFile.getLocation());
 			if (findScreenFile != null && findScreenFile.exists())
 				return;
-			String msg = name + " : " + value + " 不存在";
+			String msg = String.format(BuildMessages.get("build.notexists"),
+					name, value);
 			AuroraBuilder.addMarker(bc.file, msg, line, vregion,
 					BuildContext.LEVEL_UNDEFINED_SCREEN,
 					AuroraBuilder.UNDEFINED_SCREEN);

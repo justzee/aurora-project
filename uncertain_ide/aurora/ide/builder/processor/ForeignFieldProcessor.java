@@ -13,6 +13,7 @@ import uncertain.schema.Attribute;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.preferencepages.BuildLevelPage;
@@ -87,10 +88,12 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 					}
 				}
 			}
+			int line = bc.info.getLineOfRegion(region);
 			// 未在参照bm中找到field
-			AuroraBuilder.addMarker(bc.file, a.getName() + " : " + value
-					+ " 没有在参照BM : " + refModel + " 中定义",
-					bc.info.getStartLine() + 1, region, level,
+			String msg = String.format(
+					BuildMessages.get("build.foreignfield.undefined"),
+					a.getName(), value, refModel);
+			AuroraBuilder.addMarker(bc.file, msg, line + 1, region, level,
 					AuroraBuilder.UNDEFINED_FOREIGNFIELD);
 		} else {
 			// 参照BM不存在,此处不作处理,在BmProcessor中处理

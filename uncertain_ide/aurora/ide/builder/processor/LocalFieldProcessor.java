@@ -18,6 +18,7 @@ import aurora.bm.BusinessModel;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.helpers.AuroraResourceUtil;
@@ -112,11 +113,11 @@ public class LocalFieldProcessor extends AbstractProcessor {
 			CompositeMapInfo info = new CompositeMapInfo(map, doc);
 			IRegion region = info.getAttrValueRegion2(name);
 			int line = info.getLineOfRegion(region);
-
-			AuroraBuilder
-					.addMarker(file, name + " : " + value + " 未在BM中定义过",
-							line + 1, region, level,
-							AuroraBuilder.UNDEFINED_LOCALFIELD);
+			String msg = String.format(
+					BuildMessages.get("build.localfield.undefined"), name,
+					value);
+			AuroraBuilder.addMarker(file, msg, line + 1, region, level,
+					AuroraBuilder.UNDEFINED_LOCALFIELD);
 		}
 	}
 
