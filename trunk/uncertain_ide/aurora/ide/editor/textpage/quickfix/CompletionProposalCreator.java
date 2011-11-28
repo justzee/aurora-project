@@ -110,11 +110,12 @@ public class CompletionProposalCreator {
 	}
 
 	private ICompletionProposal[] getAttributeProposal() {
-		CompositeMap map = QuickAssistUtil.findMap(rootMap, line);
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, line);
 		String value = map.getString(word);
 		if (value == null)// 很可能是Annotation发生错位...
 			return null;
 		CompositeMapInfo info = new CompositeMapInfo(map, doc);
+		info.print();
 		IRegion attrRegion = info.getAttrRegion(word);
 		// FIXME 属性值中含有特殊字符,被转义,查找失败,返回null
 		if (attrRegion == null)
@@ -130,7 +131,6 @@ public class CompletionProposalCreator {
 		try {
 			definedAttribute = SxsdUtil.getAttributesNotNull(map);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		}// map的合法属性
 		for (Attribute attr : definedAttribute) {
@@ -160,7 +160,7 @@ public class CompletionProposalCreator {
 	private ICompletionProposal[] getDataSetProposal() {
 		if (!isValidWord(word))
 			return null;
-		CompositeMap map = QuickAssistUtil.findMap(rootMap, line);
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, line);
 		@SuppressWarnings("unchecked")
 		Map<String, String> nsMapping = rootMap.getNamespaceMapping();
 		String aPrefix = map
@@ -350,7 +350,7 @@ public class CompletionProposalCreator {
 	}
 
 	private ICompletionProposal[] getTagProposal() {
-		CompositeMap map = QuickAssistUtil.findMap(rootMap, line);
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, line);
 		final String tagName = map.getName();
 		CompositeMap parent = map.getParent();
 		List<Element> aChilds = SxsdUtil.getAvailableChildElements(parent);
@@ -370,20 +370,29 @@ public class CompletionProposalCreator {
 		IRegion mapNameRegion = info.getMapNameRegion();
 		IRegion mapEndNameRegion = info.getMapEntTagNameRegion();
 		boolean isSelfClose = mapNameRegion.equals(mapEndNameRegion);
-		int start1 = mapNameRegion.getOffset() - mapRegion.getOffset();
-		StringBuilder mapStr = new StringBuilder(getString(doc, mapRegion));
+		StringBuilder mapStr = null;
+		int start1 = 0, start2 = 0;
+		if (!isSelfClose) {
+			start2 = mapEndNameRegion.getOffset() - mapRegion.getOffset();
+			start1 = mapNameRegion.getOffset() - mapRegion.getOffset();
+			mapStr = new StringBuilder(getString(doc, mapRegion));
+		}
 		ICompletionProposal[] cps = new ICompletionProposal[list.size() + 1];
 		for (int i = 0; i < cps.length - 1; i++) {
 			String name = list.get(i).name;
 			if (!isSelfClose) {
-				int start2 = mapEndNameRegion.getOffset()
-						- mapRegion.getOffset();
-				mapStr.replace(start2, start2 + map.getName().length(), name);
+				mapStr.replace(start2, start2 + tagName.length(), name);
+				mapStr.replace(start1, start1 + tagName.length(), name);
+				cps[i] = new CompletionProposal(mapStr.toString(),
+						mapRegion.getOffset(), mapRegion.getLength(),
+						mapNameRegion.getOffset() - mapRegion.getOffset()
+								+ name.length(), img_rename, "更改为 " + name,
+						null, "建议修改为 : " + name);
+				continue;
 			}
-			mapStr.replace(start1, start1 + map.getName().length(), name);
-			cps[i] = new CompletionProposal(mapStr.toString(),
-					mapRegion.getOffset(), mapRegion.getLength(), 0,
-					img_rename, "更改为 " + name, null, "建议修改为 : " + name);
+			cps[i] = new CompletionProposal(name, mapNameRegion.getOffset(),
+					mapNameRegion.getLength(), name.length(), img_rename,
+					"更改为 " + name, null, "建议修改为 : " + name);
 		}
 		cps[cps.length - 1] = new CompletionProposal("", mapRegion.getOffset(),
 				mapRegion.getLength(), 0, img_remove, "删除Tag : " + tagName,

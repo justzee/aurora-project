@@ -1,6 +1,7 @@
 package aurora.ide.editor.textpage.hover;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultTextHover;
@@ -67,19 +68,27 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 			}
 			if (map == null)
 				return null;
-			CompositeMap cursorMap = QuickAssistUtil.findMap(map, line);
+			CompositeMap cursorMap = QuickAssistUtil.findMap(map, doc, line);
 			if (word.equals(cursorMap.getName())) {
 				word = SxsdUtil.getHtmlDocument(cursorMap);
 			} else {
-				for (Attribute a : SxsdUtil.getAttributesNotNull(cursorMap)) {
-					if (word.equalsIgnoreCase(a.getName())) {
-						word = a.getName() + "<br/>"
-								+ SxsdUtil.notNull(a.getDocument());
-						if (SxsdUtil.getTypeNameNotNull(a.getAttributeType())
-								.length() > 0)
-							word += "<br/>Type : "
-									+ SxsdUtil.getTypeNameNotNull(a
-											.getAttributeType());
+				List<Attribute> list = null;
+				try {
+					list = SxsdUtil.getAttributesNotNull(cursorMap);
+				} catch (Exception e) {
+					word = e.getMessage();
+				}
+				if (list != null) {
+					for (Attribute a : list) {
+						if (word.equalsIgnoreCase(a.getName())) {
+							word = a.getName() + "<br/>"
+									+ SxsdUtil.notNull(a.getDocument());
+							if (SxsdUtil.getTypeNameNotNull(
+									a.getAttributeType()).length() > 0)
+								word += "<br/>Type : "
+										+ SxsdUtil.getTypeNameNotNull(a
+												.getAttributeType());
+						}
 					}
 				}
 			}
@@ -189,7 +198,7 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 	}
 
 	private boolean isWordPart(char c) {
-		return Character.isJavaIdentifierPart(c) || c == '-';
+		return c == '-' || Character.isJavaIdentifierPart(c);
 	}
 
 }

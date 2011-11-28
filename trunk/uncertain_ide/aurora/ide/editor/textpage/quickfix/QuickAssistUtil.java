@@ -2,25 +2,38 @@ package aurora.ide.editor.textpage.quickfix;
 
 import java.util.List;
 
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+
 import uncertain.composite.CompositeMap;
-import uncertain.util.resource.Location;
+import aurora.ide.builder.CompositeMapInfo;
 
 public class QuickAssistUtil {
 	/**
 	 * 在一个CompositeMap 中查找一个子结点map,这个子节点是最小的包含指定行的map
 	 * 
 	 * @param rootMap
+	 * @param doc
 	 * @param line
 	 *            行号 从0开始
 	 * @return
 	 */
-	public static CompositeMap findMap(CompositeMap rootMap, int line) {
+	public static CompositeMap findMap(CompositeMap rootMap, IDocument doc,
+			int line) {
 		@SuppressWarnings("unchecked")
 		List<CompositeMap> childs = rootMap.getChildsNotNull();
 		for (CompositeMap map : childs) {
-			Location loc = map.getLocationNotNull();
-			if (loc.getStartLine() <= line + 1 && loc.getEndLine() >= line + 1)
-				return findMap(map, line);
+			CompositeMapInfo info = new CompositeMapInfo(map, doc);
+			int startLine = info.getLineOfRegion(info.getStartTagRegion());
+			IRegion region = info.getEndTagRegion();
+			int endLine = startLine;
+			try {
+				endLine = doc.getLineOfOffset(region.getOffset()
+						+ region.getLength());
+			} catch (Exception e) {
+			}
+			if (startLine <= line && endLine >= line)
+				return findMap(map, doc, line);
 		}
 		return rootMap;
 	}
