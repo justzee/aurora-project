@@ -250,7 +250,6 @@ public class CompositeMapInfo {
 
 	/**
 	 * 返回当前CompositeMap的开始结点标签的Region<br/>
-	 * 当开始结点跨越多行时,该方法不能返回正确的值
 	 * 
 	 * @return
 	 */
@@ -260,7 +259,6 @@ public class CompositeMapInfo {
 
 	/**
 	 * 返回当前CompositeMap的结束结点标签的Region<br/>
-	 * 当该节点自闭且跨越多行时,该方法不能返回正确的值
 	 * 
 	 * @return
 	 */
@@ -299,16 +297,33 @@ public class CompositeMapInfo {
 		return endLine;
 	}
 
+	/**
+	 * for test only
+	 */
 	public void print() {
-		System.out.println("*** " + currentMap.getName());
-		System.out.println("MapRegion:" + mapRegion);
-		System.out.println("StartRegion:" + startRegion);
-		System.out.println("EndRegion:" + endRegion);
+		System.out.println("MapName     : " + currentMap.getName());
+		System.out.println("MapRegion   : " + mapRegion);
+		System.out.println("NameRegion  : " + mapNameRegion);
+		System.out.println("StartRegion : " + startRegion);
+		System.out.println("EndRegion   : " + endRegion);
+		int maxKeyLength = 0, maxValueLength = 0;
+		for (String s : attrMap.keySet()) {
+			if (s.length() > maxKeyLength)
+				maxKeyLength = s.length();
+			String v = ((String) attrMap.get(s)[0]);
+			if (v == null)
+				continue;
+			if (v.length() > maxValueLength)
+				maxValueLength = v.length();
+		}
+
 		for (String s : attrMap.keySet()) {
 			Object[] objs = attrMap.get(s);
-			System.out.println(s + "=" + objs[0] + "\t\t" + objs[1] + "~"
-					+ objs[2]);
+			System.out.printf("%-" + (maxKeyLength + 1) + "s= %-"
+					+ (maxValueLength + 1) + "s %s ~~~~~ %s \n", s, objs[0],
+					objs[1], objs[2]);
 		}
+		System.out.println();
 	}
 
 	public int getLineOfRegion(IRegion region) {
