@@ -13,6 +13,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
 
@@ -53,9 +54,11 @@ public class DataSetProcessor extends AbstractProcessor {
 				continue;
 			CompositeMapInfo info = ((BuildContext) objs[2]).info;
 			IRegion region = info.getAttrValueRegion2(name);
-			IMarker marker = AuroraBuilder.addMarker(file, name + " : " + value
-					+ " 未在本页面中定义过", info.getStartLine() + 1, region,
-					BuildContext.LEVEL_UNDEFINED_DATASET,
+			int line = info.getLineOfRegion(region);
+			String msg = String.format(
+					BuildMessages.get("build.dataset.undefined"), name, value);
+			IMarker marker = AuroraBuilder.addMarker(file, msg, line + 1,
+					region, BuildContext.LEVEL_UNDEFINED_DATASET,
 					AuroraBuilder.UNDEFINED_DATASET);
 			if (marker != null) {
 				try {

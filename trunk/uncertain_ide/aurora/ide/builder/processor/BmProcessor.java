@@ -13,6 +13,7 @@ import uncertain.schema.IType;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.helpers.ApplicationException;
 
@@ -47,13 +48,15 @@ public class BmProcessor extends AbstractProcessor {
 			}
 			if (!(resource instanceof IFile)) {
 				IRegion region = bc.info.getAttrValueRegion2(name);
+				int line = bc.info.getLineOfRegion(region);
 				String msg = null;
 				if (bm.length() == 0)
-					msg = name + " 不能为空";
+					msg = String.format(BuildMessages.get("build.notbeempty"),
+							name);
 				else
-					msg = name + " : " + bm + " , BM不存在";
-				AuroraBuilder.addMarker(bc.file, msg,
-						bc.info.getStartLine() + 1, region,
+					msg = String.format(BuildMessages.get("build.notexists"),
+							name, bm);
+				AuroraBuilder.addMarker(bc.file, msg, line + 1, region,
 						BuildContext.LEVEL_UNDEFINED_BM,
 						AuroraBuilder.UNDEFINED_BM);
 			}

@@ -7,6 +7,7 @@ import org.eclipse.jface.text.IRegion;
 import uncertain.composite.CompositeMap;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.BuildMessages;
 
 public class NamespaceProcessor extends AbstractProcessor {
 
@@ -17,8 +18,10 @@ public class NamespaceProcessor extends AbstractProcessor {
 		if (bc.map.getNamespaceURI() == null) {
 			String name = bc.map.getName();
 			IRegion region = bc.info.getMapNameRegion();
-			AuroraBuilder.addMarker(bc.file, "标签 : " + name + " 没有命名空间",
-					bc.info.getStartLine() + 1, region,
+			int line = bc.info.getLineOfRegion(region);
+			String msg = String.format(BuildMessages.get("build.nonamespace"),
+					name);
+			AuroraBuilder.addMarker(bc.file, msg, line + 1, region,
 					BuildContext.LEVEL_NONOENAMESPACE,
 					AuroraBuilder.NONENAMESPACE);
 		}
@@ -26,7 +29,6 @@ public class NamespaceProcessor extends AbstractProcessor {
 
 	@Override
 	public void processComplete(IFile file, CompositeMap map, IDocument doc) {
-		// TODO Auto-generated method stub
 
 	}
 
