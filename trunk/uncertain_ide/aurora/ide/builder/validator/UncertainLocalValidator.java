@@ -10,15 +10,13 @@ import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.builder.AuroraBuilder;
+import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.processor.AbstractProcessor;
-import aurora.ide.preferencepages.BuildLevelPage;
 
 public class UncertainLocalValidator extends AbstractValidator {
-	private int level;
 
 	public UncertainLocalValidator(IFile file) {
 		super(file);
-		level = BuildLevelPage.getBuildLevel(AuroraBuilder.CONFIG_PROBLEM);
 	}
 
 	public UncertainLocalValidator() {
@@ -28,27 +26,29 @@ public class UncertainLocalValidator extends AbstractValidator {
 	public AbstractProcessor[] getMapProcessor() {
 		return new AbstractProcessor[] { new AbstractProcessor() {
 
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			@Override
-			public void processMap(IFile file, CompositeMap map, IDocument doc) {
-				if (level == 0)
+			public void processMap(BuildContext bc) {
+				if (BuildContext.LEVEL_CONFIG_PROBLEM == 0)
 					return;
-				if (map.getName().equalsIgnoreCase("path-config")) {
-					int line = map.getLocationNotNull().getStartLine();
-					for (Map.Entry entry : (Set<Map.Entry>) map.entrySet()) {
+				if (bc.map.getName().equalsIgnoreCase("path-config")) {
+					for (Map.Entry entry : (Set<Map.Entry>) bc.map.entrySet()) {
 						String key = (String) entry.getKey();
-						String value = map.getString(key);
-						IRegion region = getValueRegion(doc, line - 1, key,
-								value);
+						String value = bc.map.getString(key);
+						IRegion region = bc.info.getAttrValueRegion2(key);
+						int line = bc.info.getLineOfRegion(region) + 1;
 						File f = new File(value);
 						if (f.exists()) {
 							if (!f.isDirectory())
-								AuroraBuilder.addMarker(file, key + " : "
+								AuroraBuilder.addMarker(bc.file, key + " : "
 										+ value + " 存在 , 但不是一个目录", line,
-										region, level,
+										region,
+										BuildContext.LEVEL_CONFIG_PROBLEM,
 										AuroraBuilder.CONFIG_PROBLEM);
 						} else
-							AuroraBuilder.addMarker(file, key + " : " + value
-									+ " 不存在 ", line, region, level,
+							AuroraBuilder.addMarker(bc.file, key + " : "
+									+ value + " 不存在 ", line, region,
+									BuildContext.LEVEL_CONFIG_PROBLEM,
 									AuroraBuilder.CONFIG_PROBLEM);
 					}
 				}
