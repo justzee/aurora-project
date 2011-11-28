@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import uncertain.composite.CompositeMap;
+import uncertain.composite.TextParser;
 import uncertain.proc.AbstractEntry;
 import uncertain.proc.ProcedureRunner;
 import com.kingdee.bos.ebservice.EBException;
@@ -36,7 +37,52 @@ public class PayAction extends AbstractEntry {
 	public String usedesc;
 	public String urgent;
 	public String payeetype;	
+	String payeeCountry;
+	String payeeProvince;
+	String payeeCity;
+	String payeeAreaCode;
+	String payeeCnapsCode;
 	
+	public String getPayeecountry() {
+		return payeeCountry;
+	}
+
+	public void setPayeecountry(String payeeCountry) {
+		this.payeeCountry = payeeCountry;
+	}
+
+	public String getPayeeprovince() {
+		return payeeProvince;
+	}
+
+	public void setPayeeprovince(String payeeProvince) {
+		this.payeeProvince = payeeProvince;
+	}
+
+	public String getPayeecity() {
+		return payeeCity;
+	}
+
+	public void setPayeecity(String payeeCity) {
+		this.payeeCity = payeeCity;
+	}
+
+	public String getPayeeareacode() {
+		return payeeAreaCode;
+	}
+
+	public void setPayeeareacode(String payeeAreaCode) {
+		this.payeeAreaCode = payeeAreaCode;
+	}
+
+	public String getPayeecnapscode() {
+		return payeeCnapsCode;
+	}
+
+	public void setPayeecnapscode(String payeeCnapsCode) {
+		this.payeeCnapsCode = payeeCnapsCode;
+	}
+
 	public String getUrgent() {
 		return urgent;
 	}
@@ -200,13 +246,19 @@ public class PayAction extends AbstractEntry {
 				String payeeType=cmrecord.getString(this.getPayeetype(),"company");				
 				String descString=cmrecord.getString(this.getDesc());
 				
+				String payeeCountryString=cmrecord.getString(this.getPayeecountry());
+				String payeeProvinceString=cmrecord.getString(this.getPayeeprovince());
+				String payeeCityString=cmrecord.getString(this.getPayeecity());
+				String payeeAreaCodeString=cmrecord.getString(this.getPayeeareacode());
+				String payeeCnapsCodeString=cmrecord.getString(this.getPayeecnapscode());
+				
 				String detailSeqID1 = Sequence.genSequence();
 				CompositeMap detail = new CompositeMap(detailSeqID1);
 				detail.put(this.getDetailbizno(), detailBizNo);
 				returnlist.addChild(detail);
 				PaymentDetail pd = createPaymentDetail(detailSeqID1,
 						detailBizNo, oppAccNo, name, payeeType, bank,
-						address, amount, "-1", useCn, urgentString, descString);
+						address, amount, "-1", useCn, urgentString, descString, payeeCountryString, payeeProvinceString, payeeCityString, payeeAreaCodeString, payeeCnapsCodeString);
 				cl.add(pd);
 
 			}
@@ -269,22 +321,34 @@ public class PayAction extends AbstractEntry {
 	protected PaymentDetail createPaymentDetail(String detailSeqID,
 			String detailBizNo, String acc, String name, String payeeType,
 			String bank, String address, String amount, String useCode,
-			String useCN, String urgentString, String descString) {
+			String useCN, String urgentString, String descString,String payeeCountry,String payeeProvince,String payeeCity,String payeeAreaCode,String payeeCnapsCode) {
 		PaymentDetail detail = new PaymentDetail();
 		detail.setDetailSeqID(detailSeqID);// Sequence.genSequence()
-		detail.setDetailBizNo(detailBizNo);
-		detail.setAmount(amount);
+		detail.setDetailBizNo(detailBizNo);		
 		detail.setPayeeAccNo(acc);
 		detail.setPayeeAccName(name);
+		detail.setPayeeType(payeeType);	
 		detail.setPayeeBankName(bank);
-		detail.setDesc(descString);
-		detail.setPayeeType(payeeType);		
+		detail.setPayeeBankAddr(address);
+		if(payeeCountry!=null)
+			detail.setPayeeCountry(payeeCountry);
+		if(payeeProvince!=null)
+			detail.setPayeeProvince(payeeProvince);
+		if(payeeCity!=null)
+			detail.setPayeeCity(payeeCity);
+		if(payeeAreaCode!=null)
+			detail.setPayeeAreaCode(payeeAreaCode);
+		if(payeeCnapsCode!=null)
+			detail.setPayeeCnapsCode(payeeCnapsCode);		
+		
+		detail.setAmount(amount);
+		detail.setUrgent(urgentString);
 		detail.setUseCode(useCode);
 		detail.setUse(useCN);
-		detail.setPayeeBankAddr(address);
-		detail.setUrgent(urgentString);
+		detail.setDesc(descString);		
+		
 		String keyCode = "CPIC0001";
-		;
+		
 		String des = DES.des_encrypt(keyCode, detail.getPayeeAccNo()
 				+ detail.getAmount());
 		detail.setVerifyField(des);
