@@ -10,11 +10,10 @@ import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
-import uncertain.schema.IType;
-import uncertain.schema.SimpleType;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.builder.AuroraBuilder;
-import aurora.ide.builder.validator.AbstractValidator;
+import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.SxsdUtil;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.preferencepages.BuildLevelPage;
 import aurora.ide.search.cache.CacheManager;
@@ -27,28 +26,26 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 	private int level;
 
 	@Override
-	public void processMap(IFile file, CompositeMap map, IDocument doc) {
-		String ext = "_" + file.getFileExtension().toUpperCase();
+	public void processMap(BuildContext bc) {
+		String ext = "_" + bc.file.getFileExtension().toUpperCase();
 		level = BuildLevelPage
 				.getBuildLevel(AuroraBuilder.UNDEFINED_FOREIGNFIELD + ext);
 		if (level == 0)
 			return;
-		processAttribute(file, map, doc);
+		processAttribute(bc);
 	}
 
 	@Override
-	public void visitAttribute(Attribute a, IFile file, CompositeMap map,
-			IDocument doc) {
-		if (!isForeignFieldReference(a.getAttributeType()))
+	public void visitAttribute(Attribute a, BuildContext bc) {
+		if (!SxsdUtil.isForeignFieldReference(a.getAttributeType()))
 			return;
 		String name = a.getName();
-		String value = map.getString(name);
-		int line = map.getLocationNotNull().getStartLine();
-		IRegion region = AbstractValidator.getValueRegion(doc, line - 1, name,
-				value);
-		String refModel = (String) Util.getReferenceModelPKG(map.getParent());
+		String value = bc.map.getString(name);
+		IRegion region = bc.info.getAttrValueRegion2(name);
+		String refModel = (String) Util
+				.getReferenceModelPKG(bc.map.getParent());
 		if (refModel == null)
-			refModel = (String) Util.getReferenceModelPKG(map.getParent()
+			refModel = (String) Util.getReferenceModelPKG(bc.map.getParent()
 					.getParent());
 		if (refModel == null) {
 			// AuroraBuilder.addMarker(file, a.getName() + " : " + value +
@@ -58,14 +55,12 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 		}
 		IResource bmfile = null;
 		try {
-			bmfile = BMUtil.getBMResourceFromClassPath(file.getProject(),
+			bmfile = BMUtil.getBMResourceFromClassPath(bc.file.getProject(),
 					refModel);
 		} catch (ApplicationException e) {
 			e.printStackTrace();
 		}
 		if (bmfile instanceof IFile) {
-			// System.out.println("find bm:" +
-			// refModel.toString());
 			CompositeMap bmmap = null;
 			try {
 				bmmap = CacheManager.getCompositeMapCacher().getCompositeMap(
@@ -93,21 +88,13 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 				}
 			}
 			// 未在参照bm中找到field
-			AuroraBuilder.addMarker(file, a.getName() + " : " + value
-					+ " 没有在参照BM : " + refModel + " 中定义", line, region, level,
+			AuroraBuilder.addMarker(bc.file, a.getName() + " : " + value
+					+ " 没有在参照BM : " + refModel + " 中定义",
+					bc.info.getStartLine() + 1, region, level,
 					AuroraBuilder.UNDEFINED_FOREIGNFIELD);
 		} else {
-			// 参照BM不存在,此处不作处理
+			// 参照BM不存在,此处不作处理,在BmProcessor中处理
 		}
-	}
-
-	private boolean isForeignFieldReference(IType attributeType) {
-		if (attributeType instanceof SimpleType) {
-			return AbstractSearchService.foreignFieldReference
-					.equals(((SimpleType) attributeType)
-							.getReferenceTypeQName());
-		}
-		return false;
 	}
 
 	@Override

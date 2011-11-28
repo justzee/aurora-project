@@ -1,20 +1,16 @@
 package aurora.ide.builder.processor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
-import uncertain.schema.Element;
-import aurora.ide.builder.AuroraBuilder;
-import aurora.ide.helpers.LoadSchemaManager;
+import aurora.ide.builder.BuildContext;
 
 public abstract class AbstractProcessor {
-	public abstract void processMap(IFile file, CompositeMap map, IDocument doc);
+	public abstract void processMap(BuildContext bc);
 
 	/**
 	 * 调用此方法应重写visitAttribute方法,以完成相应操作
@@ -22,34 +18,17 @@ public abstract class AbstractProcessor {
 	 * @param file
 	 * @param map
 	 * @param doc
+	 * @param info
 	 */
-	public final void processAttribute(IFile file, CompositeMap map,
-			IDocument doc) {
-		List<Attribute> list;
-		try {
-			list = getAttributesInSchemaNotNull(map);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			AuroraBuilder.addMarker(file, e.getMessage(), map
-					.getLocationNotNull().getStartLine() - 1,
-					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
+	public final void processAttribute(BuildContext bc) {
+		List<Attribute> list = bc.list;
+		if (list == null) {
 			return;
 		}
 		for (Attribute a : list) {
-			if (map.get(a.getName()) != null)
-				visitAttribute(a, file, map, doc);
+			if (bc.map.get(a.getName()) != null)
+				visitAttribute(a, bc);
 		}
-	}
-
-	public List<Attribute> getAttributesInSchemaNotNull(CompositeMap map)
-			throws RuntimeException {
-		Element ele = LoadSchemaManager.getSchemaManager().getElement(map);
-		if (ele == null)
-			return new ArrayList<Attribute>();
-		List<Attribute> list = ele.getAllAttributes();
-		if (list == null)
-			return new ArrayList<Attribute>();
-		return list;
 	}
 
 	/**
@@ -71,8 +50,7 @@ public abstract class AbstractProcessor {
 	 * @param map
 	 * @param doc
 	 */
-	protected void visitAttribute(Attribute a, IFile file, CompositeMap map,
-			IDocument doc) {
+	protected void visitAttribute(Attribute a, BuildContext bc) {
 	}
 
 }

@@ -9,53 +9,41 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.Region;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.builder.AuroraBuilder;
+import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.builder.validator.AbstractValidator;
-import aurora.ide.editor.textpage.IColorConstants;
-import aurora.ide.preferencepages.BuildLevelPage;
-import aurora.ide.search.core.Util;
 
 public class SxsdProcessor extends AbstractProcessor {
-	private int attrLevel;
-	private int tagLevel;
 
-	/**
-	 * 检查当前结点map是否可以出现其父结点下中(如果当前结点不是根节点)
-	 * 
-	 * @param file
-	 * @param map
-	 * @param doc
-	 */
-	private void checkTag(IFile file, CompositeMap map, IDocument doc) {
-		tagLevel = BuildLevelPage.getBuildLevel(AuroraBuilder.UNDEFINED_TAG);
-		if (tagLevel == 0)
+	private void checkTag(BuildContext bc) {
+		if (BuildContext.LEVEL_UNDEFINED_TAG == 0)
 			return;
-		List<Element> childs = SxsdUtil.getAvailableChildElements(map);
-		List<CompositeMap> childMap = map.getChildsNotNull();
+		List<Element> childs = SxsdUtil.getAvailableChildElements(bc.map);
+		@SuppressWarnings("unchecked")
+		List<CompositeMap> childMap = bc.map.getChildsNotNull();
 		HashMap<String, Integer> countMap = new HashMap<String, Integer>(20);
+
 		L: for (CompositeMap m : childMap) {
 			// // ignore AnyElement
 			Element elem = SxsdUtil.getMapElement(m);
-			if (elem == null || SxsdUtil.isExtOfAnyElement(elem))
+			if (elem != null && SxsdUtil.isExtOfAnyElement(elem))
 				continue;
 			// ///
 			String uri = m.getNamespaceURI();
 			if (uri == null || !uri.startsWith("http:"))
 				continue;
 			String mapName = m.getName();
-			if (countMap.get(mapName) == null)
-				countMap.put(mapName, 1);
-			else
-				countMap.put(mapName, countMap.get(mapName) + 1);
+			Integer c = countMap.get(mapName);
+			if (c == null)
+				c = 0;
+			countMap.put(mapName, c + 1);
 			boolean reachMax = false;
 			int mc = 0;
 			for (int i = 0; i < childs.size(); i++) {
@@ -72,70 +60,56 @@ public class SxsdProcessor extends AbstractProcessor {
 					continue L;
 				}
 			}
-			int line = m.getLocationNotNull().getStartLine();
-			if (line == 0)
-				line = 1;
-			IRegion region = null;
-			try {
-				region = Util.getDocumentRegion(doc.getLineOffset(line - 1),
-						doc.getLineLength(line - 1), m.getRawName(), doc,
-						IColorConstants.TAG_NAME);
-			} catch (BadLocationException e) {
-				region = new Region(0, 0);
-				e.printStackTrace();
-			}
+			CompositeMapInfo info = new CompositeMapInfo(m, bc.doc);
+			IRegion region = info.getMapNameRegion();
 			String msg = "Tag : "
 					+ mapName
 					+ (reachMax ? (" , 已超出最大重复数 : " + mc) : (" , 不应该出现在 "
-							+ map.getName() + " 下"));
-			AuroraBuilder.addMarker(file, msg, line, region, tagLevel,
+							+ bc.map.getName() + " 下"));
+			AuroraBuilder.addMarker(bc.file, msg, info.getStartLine() + 1,
+					region, BuildContext.LEVEL_UNDEFINED_TAG,
 					AuroraBuilder.UNDEFINED_TAG);
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void processMap(IFile file, CompositeMap map, IDocument doc) {
-		String uri = map.getNamespaceURI();
+	public void processMap(BuildContext bc) {
+		String uri = bc.map.getNamespaceURI();
 		if (uri == null || !uri.startsWith("http:"))
 			return;
-		checkTag(file, map, doc);
+		checkTag(bc);
+		// 如果标签未在schema中定义过(比如拼写错误),则不检查其属性(肯定是未定义的,无意义)
+		if (SxsdUtil.getMapElement(bc.map) == null)
+			return;
 
-		attrLevel = BuildLevelPage
-				.getBuildLevel(AuroraBuilder.UNDEFINED_ATTRIBUTE);
-		if (attrLevel == 0)
+		if (BuildContext.LEVEL_UNDEFINED_ATTRIBUTE == 0)
 			return;
 
 		// 特别处理record标签
-		if (map.getName().equals("record")
-				&& map.getParent().getName().equals("datas"))
+		if (bc.map.getName().equals("record")
+				&& bc.map.getParent().getName().equals("datas"))
 			return;
 		Set<String> nameSet = new HashSet<String>();
-		List<Attribute> list;
-		try {
-			list = getAttributesInSchemaNotNull(map);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			AuroraBuilder.addMarker(file, e.getMessage(), map
-					.getLocationNotNull().getStartLine() - 1,
-					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
+		if (bc.list == null) {
+			AuroraBuilder.addMarker(bc.file, bc.nullListMsg,
+					bc.info.getStartLine() + 1, IMarker.SEVERITY_ERROR,
+					AuroraBuilder.FATAL_ERROR);
 			return;
 		}
-		for (Attribute a : list) {
+		for (Attribute a : bc.list) {
 			nameSet.add(a.getName().toLowerCase());
 		}
-		for (Map.Entry entry : (Set<Map.Entry>) map.entrySet()) {
+		for (Map.Entry entry : (Set<Map.Entry>) bc.map.entrySet()) {
 			String k = (String) entry.getKey();
 			if (nameSet.contains(k.toLowerCase()))
 				continue;
-			int line = map.getLocationNotNull().getStartLine();
-			if (line == 0)
-				line = 1;
-			IRegion region = AbstractValidator.getAttributeRegion(doc, map
-					.getLocationNotNull().getStartLine() - 1, k);
-			IMarker marker = AuroraBuilder.addMarker(file, "属性 : " + k
-					+ " , 未在 [ " + map.getName() + " ] 的Schema中定义过", line,
-					region, attrLevel, AuroraBuilder.UNDEFINED_ATTRIBUTE);
+			IRegion region = bc.info.getAttrNameRegion(k);
+			int line = bc.info.getLineOfRegion(region);
+			IMarker marker = AuroraBuilder.addMarker(bc.file, "属性 : " + k
+					+ " , 未在 [ " + bc.map.getName() + " ] 的Schema中定义过",
+					line + 1, region, BuildContext.LEVEL_UNDEFINED_ATTRIBUTE,
+					AuroraBuilder.UNDEFINED_ATTRIBUTE);
 			if (marker != null) {
 				try {
 					marker.setAttribute("ATTRIBUTE_NAME", k);

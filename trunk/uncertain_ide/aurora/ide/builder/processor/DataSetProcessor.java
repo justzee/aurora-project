@@ -12,54 +12,50 @@ import org.eclipse.jface.text.IRegion;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import aurora.ide.builder.AuroraBuilder;
+import aurora.ide.builder.BuildContext;
+import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.builder.validator.AbstractValidator;
-import aurora.ide.preferencepages.BuildLevelPage;
 
 public class DataSetProcessor extends AbstractProcessor {
 	private Set<String> datasetSet = new HashSet<String>();
 	private Set<Object[]> dataSetTask = new HashSet<Object[]>();
-	private int level;
 
 	@Override
-	public void processMap(IFile file, CompositeMap map, IDocument doc) {
-		level = BuildLevelPage.getBuildLevel(AuroraBuilder.UNDEFINED_DATASET);
-		if (level == 0)
+	public void processMap(BuildContext bc) {
+		if (BuildContext.LEVEL_UNDEFINED_DATASET == 0)
 			return;
-		processAttribute(file, map, doc);
+		processAttribute(bc);
 	}
 
 	@Override
-	public void visitAttribute(Attribute a, IFile file, CompositeMap map,
-			IDocument doc) {
+	public void visitAttribute(Attribute a, BuildContext bc) {
 		if (SxsdUtil.isDataSetReference(a.getAttributeType())) {
 			String name = a.getName();
-			String value = map.getString(name);
-			if (map.getName().equalsIgnoreCase("dataSet")) {
+			String value = bc.map.getString(name);
+			if (bc.map.getName().equalsIgnoreCase("dataSet")) {
 				if (name.equalsIgnoreCase("id")) {
 					datasetSet.add(value);
 					return;
 				}
 			}
-			dataSetTask.add(new Object[] { name, value, map });
+			dataSetTask.add(new Object[] { name, value, bc });
 		}
 	}
 
 	@Override
 	public void processComplete(IFile file, CompositeMap map1, IDocument doc) {
-		if (level == 0)
+		if (BuildContext.LEVEL_UNDEFINED_DATASET == 0)
 			return;
 		for (Object[] objs : dataSetTask) {
 			String name = (String) objs[0];
 			String value = (String) objs[1];
 			if (datasetSet.contains(value))
 				continue;
-			CompositeMap map = (CompositeMap) objs[2];
-			int line = map.getLocationNotNull().getStartLine();
-			IRegion region = AbstractValidator.getValueRegion(doc, line - 1,
-					name, value);
+			CompositeMapInfo info = ((BuildContext) objs[2]).info;
+			IRegion region = info.getAttrValueRegion2(name);
 			IMarker marker = AuroraBuilder.addMarker(file, name + " : " + value
-					+ " 未在本页面中定义过", line, region, level,
+					+ " 未在本页面中定义过", info.getStartLine() + 1, region,
+					BuildContext.LEVEL_UNDEFINED_DATASET,
 					AuroraBuilder.UNDEFINED_DATASET);
 			if (marker != null) {
 				try {
@@ -71,5 +67,4 @@ public class DataSetProcessor extends AbstractProcessor {
 			}
 		}
 	}
-
 }
