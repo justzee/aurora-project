@@ -14,6 +14,11 @@ public class CustomSettingPreferencePage extends FieldEditorPreferencePage
 	protected final static String screenEditorInitPageId = "screenEditorInitPageId";
 	protected final static String bmEditorInitPageId = "bmEditorInitPageId";
 	protected final static String intinebuildId = "intimebuildId";
+	static IPreferenceStore store = AuroraPlugin.getDefault()
+			.getPreferenceStore();
+	static {
+		store.setDefault(intinebuildId, "true");
+	}
 	private static String[][] screenPage = {
 			{ LocaleMessage.getString("screen.file"), "0" },
 			{ LocaleMessage.getString("source.file"), "1" },
@@ -26,12 +31,10 @@ public class CustomSettingPreferencePage extends FieldEditorPreferencePage
 
 	public CustomSettingPreferencePage() {
 		super(FieldEditorPreferencePage.GRID);
-		IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
 		setPreferenceStore(store);
 	}
 
 	public void init(IWorkbench workbench) {
-
 	}
 
 	@Override
