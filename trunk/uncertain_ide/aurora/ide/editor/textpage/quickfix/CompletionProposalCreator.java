@@ -62,6 +62,7 @@ public class CompletionProposalCreator {
 	private int line = 0;
 	private String word;
 	private String markerType;
+	private int markerOffset;
 
 	private String bm;
 
@@ -70,12 +71,12 @@ public class CompletionProposalCreator {
 		this.rootMap = rootMap;
 		this.doc = doc;
 		this.marker = marker;
-		int offset = marker.getAttribute(IMarker.CHAR_START, 0);
-		int length = marker.getAttribute(IMarker.CHAR_END, 0) - offset;
-		markerRegion = new Region(offset, length);
+		markerOffset = marker.getAttribute(IMarker.CHAR_START, 0);
+		int length = marker.getAttribute(IMarker.CHAR_END, 0) - markerOffset;
+		markerRegion = new Region(markerOffset, length);
 		try {
-			line = doc.getLineOfOffset(offset);
-			word = doc.get(offset, length);
+			line = doc.getLineOfOffset(markerOffset);
+			word = doc.get(markerOffset, length);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
@@ -110,12 +111,11 @@ public class CompletionProposalCreator {
 	}
 
 	private ICompletionProposal[] getAttributeProposal() {
-		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, line);
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, markerOffset);
 		String value = map.getString(word);
 		if (value == null)// 很可能是Annotation发生错位...
 			return null;
 		CompositeMapInfo info = new CompositeMapInfo(map, doc);
-		info.print();
 		IRegion attrRegion = info.getAttrRegion(word);
 		// FIXME 属性值中含有特殊字符,被转义,查找失败,返回null
 		if (attrRegion == null)
@@ -160,7 +160,7 @@ public class CompletionProposalCreator {
 	private ICompletionProposal[] getDataSetProposal() {
 		if (!isValidWord(word))
 			return null;
-		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, line);
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, markerOffset);
 		@SuppressWarnings("unchecked")
 		Map<String, String> nsMapping = rootMap.getNamespaceMapping();
 		String aPrefix = map
@@ -350,7 +350,7 @@ public class CompletionProposalCreator {
 	}
 
 	private ICompletionProposal[] getTagProposal() {
-		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, line);
+		CompositeMap map = QuickAssistUtil.findMap(rootMap, doc, markerOffset);
 		final String tagName = map.getName();
 		CompositeMap parent = map.getParent();
 		List<Element> aChilds = SxsdUtil.getAvailableChildElements(parent);

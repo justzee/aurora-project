@@ -43,8 +43,7 @@ public class CompositeMapInfo {
 		try {
 			regionMapping();
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-			// e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
