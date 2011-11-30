@@ -29,6 +29,10 @@ public class BuildContext {
 	public List<Attribute> list;
 	public String nullListMsg;
 
+	static {
+		initBuildLevel();
+	}
+
 	public BuildContext() {
 
 	}
