@@ -243,8 +243,7 @@ public class CompositeMapInfo {
 			return null;
 		IRegion sr = (Region) objs[1];
 		IRegion er = (Region) objs[2];
-		return new Region(sr.getOffset(), er.getOffset() + er.getLength()
-				- sr.getOffset());
+		return RegionUtil.union(sr, er);
 	}
 
 	/**

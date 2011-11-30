@@ -2,6 +2,7 @@ package aurora.ide.editor.textpage.hover;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultTextHover;
@@ -23,6 +24,8 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
+import aurora.ide.builder.CompositeMapInfo;
+import aurora.ide.builder.RegionUtil;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
@@ -54,22 +57,26 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 
 		try {
 			doc = textViewer.getDocument();
-			final int line = doc.getLineOfOffset(hoverRegion.getOffset());
 			String word = doc.get(hoverRegion.getOffset(),
 					hoverRegion.getLength());
 			if (word == null || word.trim().length() == 0)
 				return null;
-			if (isAttributeValue(doc, line, hoverRegion.getOffset(),
-					hoverRegion.getLength()))
-				return html(word);
 			try {
 				map = CompositeMapUtil.loaderFromString(doc.get());
 			} catch (Exception e) {
-			}
-			if (map == null)
 				return null;
+			}
 			CompositeMap cursorMap = QuickAssistUtil.findMap(map, doc,
 					hoverRegion.getOffset());
+			CompositeMapInfo info = new CompositeMapInfo(cursorMap, doc);
+			@SuppressWarnings("unchecked")
+			Set<String> keySet = cursorMap.keySet();
+			for (String key : keySet) {
+				IRegion region = info.getAttrValueRegion2(key);
+				if (RegionUtil.isSubRegion(region, hoverRegion)) {
+					return html(cursorMap.getString(key));
+				}
+			}
 			if (word.equals(cursorMap.getName())) {
 				word = SxsdUtil.getHtmlDocument(cursorMap);
 			} else {

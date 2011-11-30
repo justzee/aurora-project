@@ -293,24 +293,26 @@ public class CompletionProposalCreator {
 				new Path(bmHomeStr + "/" + prefix));
 		final ArrayList<SortElement> list = new ArrayList<SortElement>();
 		try {
-			folder.accept(new IResourceVisitor() {
+			if (folder.exists())
+				folder.accept(new IResourceVisitor() {
 
-				public boolean visit(IResource resource) throws CoreException {
-					if (resource instanceof IFile) {
-						IFile file = (IFile) resource;
-						if ("bm".equalsIgnoreCase(file.getFileExtension())) {
-							String fn = file.getName();
-							fn = fn.substring(0, fn.length() - 3);
-							int ed = QuickAssistUtil.getApproiateEditDistance(
-									bm, fn);
-							if (ed != -1) {
-								list.add(new SortElement(fn, ed));
+					public boolean visit(IResource resource)
+							throws CoreException {
+						if (resource instanceof IFile) {
+							IFile file = (IFile) resource;
+							if ("bm".equalsIgnoreCase(file.getFileExtension())) {
+								String fn = file.getName();
+								fn = fn.substring(0, fn.length() - 3);
+								int ed = QuickAssistUtil
+										.getApproiateEditDistance(bm, fn);
+								if (ed != -1) {
+									list.add(new SortElement(fn, ed));
+								}
 							}
 						}
+						return true;
 					}
-					return true;
-				}
-			}, IResource.DEPTH_ONE, false);
+				}, IResource.DEPTH_ONE, false);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -476,7 +478,7 @@ public class CompletionProposalCreator {
 		try {
 			return doc.get(region.getOffset(), region.getLength());
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 }
