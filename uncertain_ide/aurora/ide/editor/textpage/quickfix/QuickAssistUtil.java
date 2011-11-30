@@ -7,15 +7,17 @@ import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.builder.CompositeMapInfo;
+import aurora.ide.builder.RegionUtil;
 
 public class QuickAssistUtil {
 	/**
-	 * 在一个CompositeMap 中查找一个子结点map,这个子节点是最小的包含指定行的map
+	 * 在一个CompositeMap 中查找一个子结点map,这个子节点是最小的包含指定offste的map
 	 * 
 	 * @param rootMap
+	 *            根节点
 	 * @param doc
+	 *            相应的IDocument
 	 * @param offset
-	 *            offset 从0开始
 	 * @return
 	 */
 	public static CompositeMap findMap(CompositeMap rootMap, IDocument doc,
@@ -25,8 +27,7 @@ public class QuickAssistUtil {
 		for (CompositeMap map : childs) {
 			CompositeMapInfo info = new CompositeMapInfo(map, doc);
 			IRegion region = info.getMapRegion();
-			if (offset >= region.getOffset()
-					&& offset <= region.getOffset() + region.getLength())
+			if (RegionUtil.isInRegion(region, offset))
 				return findMap(map, doc, offset);
 		}
 		return rootMap;
