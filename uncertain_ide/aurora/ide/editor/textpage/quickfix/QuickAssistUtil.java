@@ -14,26 +14,20 @@ public class QuickAssistUtil {
 	 * 
 	 * @param rootMap
 	 * @param doc
-	 * @param line
-	 *            行号 从0开始
+	 * @param offset
+	 *            offset 从0开始
 	 * @return
 	 */
 	public static CompositeMap findMap(CompositeMap rootMap, IDocument doc,
-			int line) {
+			int offset) {
 		@SuppressWarnings("unchecked")
 		List<CompositeMap> childs = rootMap.getChildsNotNull();
 		for (CompositeMap map : childs) {
 			CompositeMapInfo info = new CompositeMapInfo(map, doc);
-			int startLine = info.getLineOfRegion(info.getStartTagRegion());
-			IRegion region = info.getEndTagRegion();
-			int endLine = startLine;
-			try {
-				endLine = doc.getLineOfOffset(region.getOffset()
-						+ region.getLength());
-			} catch (Exception e) {
-			}
-			if (startLine <= line && endLine >= line)
-				return findMap(map, doc, line);
+			IRegion region = info.getMapRegion();
+			if (offset >= region.getOffset()
+					&& offset <= region.getOffset() + region.getLength())
+				return findMap(map, doc, offset);
 		}
 		return rootMap;
 	}

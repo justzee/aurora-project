@@ -68,7 +68,8 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 			}
 			if (map == null)
 				return null;
-			CompositeMap cursorMap = QuickAssistUtil.findMap(map, doc, line);
+			CompositeMap cursorMap = QuickAssistUtil.findMap(map, doc,
+					hoverRegion.getOffset());
 			if (word.equals(cursorMap.getName())) {
 				word = SxsdUtil.getHtmlDocument(cursorMap);
 			} else {
