@@ -418,7 +418,7 @@ public class Util {
 				path = path.makeRelativeTo(requestPath);
 			}
 			String[] split = path.toString().split("\\?");
-			if (split == null)
+			if (split == null||split.length==0)
 				return null;
 			path = new Path(split[0]);
 			IPath relativePath = parentPath.makeRelativeTo(rootPath);
