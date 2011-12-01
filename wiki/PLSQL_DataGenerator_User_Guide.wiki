@@ -46,18 +46,18 @@
  有几个特定的函数是可用的：
   *    Signal(Min, Max, Delta, Noise) 返回技术测定数据（像温度这样的）。Min（最小）和 Max（最大）决定了范围， Delta（△）为最大更改量，你还可以添加一些 Noise（噪声）。例如：Signal(-10, 20, 0.1, 0.1)。
   *    Random(`[`Min`]`, Max) 返回Min（最小）和 Max（最大）之间的随机数。如果只指定了 Max ，那么 Min 就被设为 0 。对于日期字段，你可以输入Min（最小）和 Max（最大）的日期。
-  *    Sequence(Start, `[`Inc`]`, `[`WithinParent`]`) 返回序号。Start 为开始值，Inc 为增量（默认为 1）。对于明细表，你可以再指定 WithinParent 关键词来指出序列应该为每个父记录进行重新安排。
+  *    Sequence(Start, `[`Inc`]`, `[``WithinParent``]`) 返回序号。Start 为开始值，Inc 为增量（默认为 1）。对于明细表，你可以再指定 `WithinParent` 关键词来指出序列应该为每个父记录进行重新安排。
   *    List('item'(weight), 'item'(weight), ...) 随机地返回指定项目（item）之一。加权数（weight）可以被添加到两个括号之间，允许特定项目比其他项目出现的几率更大。 例如：List('CLERK'(50), 'SALESMAN'(30), 'MANAGER'(10))
   *    List(select statement) 像前面的 List 函数，但项目是通过 SQL select statement（select 语句）返回的。
-  *    Text(`[`Style`]`, MaxCharacters, `[`WordsPerLine, LinesPerParagraph`]`) 这个函数返回文本。可选择的 Style（字体）参数可以是 LorumIpsum（默认）、英语、德语或日语。它还可以是像 `[`aA`]` 这样的字符集，在这种情况下，词汇从指定的字符集中产生。 MaxCharacters 决定了生成的文本的最大大小，WordsPerLine 和 LinesPerParagraph 决定了行和段落的大小。指定的大小可以是指定的数字或范围（最小..最大）。
+  *    Text(`[`Style`]`, `MaxCharacters`, `[``WordsPerLine`, `LinesPerParagraph``]`) 这个函数返回文本。可选择的 Style（字体）参数可以是 `LorumIpsum`（默认）、英语、德语或日语。它还可以是像 `[`aA`]` 这样的字符集，在这种情况下，词汇从指定的字符集中产生。 `MaxCharacters` 决定了生成的文本的最大大小，`WordsPerLine` 和 `LinesPerParagraph` 决定了行和段落的大小。指定的大小可以是指定的数字或范围（最小..最大）。
   *    File(path, path, ...) 从特定的路径（path）中随机地选择一个文件，并插入内容。允许你输入二进制数据（像图片这样的）到数据库中。路径可以使用通配符，像 d:\images\`*`.bmp 这样的。
 
  你可以通过使用下列函数更改前面函数的文本结果：
   *    Uppercase()
-  *    LowerCase()
-  *    InitCaps()
+  *    `LowerCase`()
+  *    `InitCaps`()
 
- 例如：InitCaps( List(select ename from emp) )
+ 例如：`InitCaps`( List(select ename from emp) )
  还有几个预先定义的数据集可用于生成或多或少的真实数据。你可以使用下列定义：
   *    Firstname – 一般列表中的名
   *    Lastname – 一般列表中的姓
@@ -77,7 +77,7 @@
   *    Elements.Name – 化学元素（名称）
   *    Elements.Symbol – 化学元素（符号）
 
-这些数据集可以在 DataGenerator\UserData 目录中找到，文件名为elements.txt 和 components.txt 。如果需要，你可以添加自己的集。添加一个逗号分隔的文件很简单，在文件中第一行两个方括号之间保存着描述。你可以通过指定“文件名.描述”来使用你的文件中的数据，就像两个例子那样。
+这些数据集可以在 `DataGenerator`\`UserData` 目录中找到，文件名为elements.txt 和 components.txt 。如果需要，你可以添加自己的集。添加一个逗号分隔的文件很简单，在文件中第一行两个方括号之间保存着描述。你可以通过指定“文件名.描述”来使用你的文件中的数据，就像两个例子那样。
 上面提及的所有函数和数据都可以添加到一起，例如：Random(10..99) + '-' + `[`A(4)`]` 。 “+”是可选的，可以用空格代替。
 
  === * 3. 选项 * ===
