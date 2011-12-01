@@ -13,9 +13,6 @@ import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.TextAttribute;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -27,11 +24,8 @@ import uncertain.schema.Attribute;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.RegionUtil;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
-import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.search.core.Util;
 
 public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 	private ISourceViewer sourceViewer;
@@ -54,58 +48,63 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 		String hover = getMarkerInfo(sourceViewer, hoverRegion);
 		if (hover != null)
 			return html(hover);
-
+		doc = textViewer.getDocument();
+		String word = null;
 		try {
-			doc = textViewer.getDocument();
-			String word = doc.get(hoverRegion.getOffset(),
-					hoverRegion.getLength());
-			if (word == null || word.trim().length() == 0)
-				return null;
-			try {
-				map = CompositeMapUtil.loaderFromString(doc.get());
-			} catch (Exception e) {
-				return null;
-			}
-			CompositeMap cursorMap = QuickAssistUtil.findMap(map, doc,
-					hoverRegion.getOffset());
-			CompositeMapInfo info = new CompositeMapInfo(cursorMap, doc);
+			word = doc.get(hoverRegion.getOffset(), hoverRegion.getLength());
+		} catch (BadLocationException e1) {
+		}
+		if (word == null || word.trim().length() == 0)
+			return null;
+		try {
+			map = CompositeMapUtil.loaderFromString(doc.get());
+		} catch (Exception e) {
+			return null;
+		}
+		CompositeMap cursorMap = QuickAssistUtil.findMap(map, doc,
+				hoverRegion.getOffset());
+		CompositeMapInfo info = new CompositeMapInfo(cursorMap, doc);
+		if (hoverRegion.equals(info.getMapNameRegion())
+				|| hoverRegion.equals(info.getMapEntTagNameRegion())) {
+			return html(SxsdUtil.getHtmlDocument(cursorMap));
+		} else {
 			@SuppressWarnings("unchecked")
 			Set<String> keySet = cursorMap.keySet();
 			for (String key : keySet) {
-				IRegion region = info.getAttrValueRegion2(key);
+				IRegion region = info.getAttrNameRegion(key);
+				if (hoverRegion.equals(region)) {
+					return html(getAttrDocument(cursorMap, key));
+				}
+				region = info.getAttrValueRegion2(key);
 				if (RegionUtil.isSubRegion(region, hoverRegion)) {
 					return html(cursorMap.getString(key));
 				}
 			}
-			if (word.equals(cursorMap.getName())) {
-				word = SxsdUtil.getHtmlDocument(cursorMap);
-			} else {
-				List<Attribute> list = null;
-				try {
-					list = SxsdUtil.getAttributesNotNull(cursorMap);
-				} catch (Exception e) {
-					word = e.getMessage();
-				}
-				if (list != null) {
-					for (Attribute a : list) {
-						if (word.equalsIgnoreCase(a.getName())) {
-							word = a.getName() + "<br/>"
-									+ SxsdUtil.notNull(a.getDocument());
-							if (SxsdUtil.getTypeNameNotNull(
-									a.getAttributeType()).length() > 0)
-								word += "<br/>Type : "
-										+ SxsdUtil.getTypeNameNotNull(a
-												.getAttributeType());
-						}
-					}
+		}
+		return html(word);
+	}
+
+	private String getAttrDocument(CompositeMap map, String attrName) {
+		StringBuilder sb = new StringBuilder(200);
+		List<Attribute> list = null;
+		try {
+			list = SxsdUtil.getAttributesNotNull(map);
+			for (Attribute a : list) {
+				if (attrName.equalsIgnoreCase(a.getName())) {
+					sb.append(a.getName() + "<br/>"
+							+ SxsdUtil.notNull(a.getDocument()));
+					if (SxsdUtil.getTypeNameNotNull(a.getAttributeType())
+							.length() > 0)
+						sb.append("<br/>Type : "
+								+ SxsdUtil.getTypeNameNotNull(a
+										.getAttributeType()));
+					return sb.toString();
 				}
 			}
-			return html(word);
 		} catch (Exception e) {
-			e.printStackTrace();
+			sb.append(e.getMessage());
 		}
-
-		return null;
+		return attrName;
 	}
 
 	@Override
@@ -175,34 +174,6 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 		sb.append(str.replace("\\n", "<br/>"));
 		sb.append("</body></html>");
 		return sb.toString();
-	}
-
-	private boolean isAttributeValue(IDocument doc, int line, int offset,
-			int length) {
-		try {
-			XMLTagScanner scanner = Util.getXMLTagScanner();
-			int lineoffset = doc.getLineOffset(line);
-			int linelength = doc.getLineLength(line);
-			scanner.setRange(doc, lineoffset, linelength);
-			IToken token = Token.EOF;
-			while ((token = scanner.nextToken()) != Token.EOF) {
-				if (token.getData() instanceof TextAttribute) {
-					TextAttribute text = (TextAttribute) token.getData();
-					if (new Position(scanner.getTokenOffset(),
-							scanner.getTokenLength()).overlapsWith(offset,
-							length)) {
-						if (text.getForeground().getRGB()
-								.equals(IColorConstants.STRING)) {
-							return true;
-						}
-						break;
-					}
-				}
-			}
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 
 	private boolean isWordPart(char c) {

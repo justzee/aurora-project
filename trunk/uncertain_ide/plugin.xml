@@ -585,7 +585,11 @@
 
     <extension id="auroraBuilder" name="Aurora Project Builder" 
         point="org.eclipse.core.resources.builders">
-        <builder hasNature="true">
+        <builder
+              callOnEmptyDelta="false"
+              hasNature="true"
+              isConfigurable="true"
+              supportsConfigurations="true">
             <run class="aurora.ide.builder.AuroraBuilder">
             </run>
         </builder>
@@ -851,6 +855,12 @@
        <showInPart
              id="org.eclipse.team.ui.GenericHistoryView">
        </showInPart>
+    </perspectiveExtension>
+    <perspectiveExtension
+          targetID="org.eclipse.ui.resourcePerspective">
+       <perspectiveShortcut
+             id="aurora.ide.perspectives.AuroraPerspective">
+       </perspectiveShortcut>
     </perspectiveExtension>
  </extension>
 
