@@ -1,113 +1,177 @@
 package aurora.ide.editor.textpage.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.ITypedRegion;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
-import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
+import aurora.ide.AuroraPlugin;
+import aurora.ide.builder.CompositeMapInfo;
+import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;
-import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
+import aurora.ide.editor.textpage.format.JSBeautifier;
+import aurora.ide.editor.textpage.format.sqlformat.PLSQLFormat;
+import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
 import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.helpers.DialogUtil;
 
-public class CFormatAction extends Action {
+public class CFormatAction extends Action implements IEditorActionDelegate {
+	private static final int XML = 0;
+	private static final int SQL = 1;
+	private static final int JS = 2;
 
 	private IEditorPart activeEditor;
 	private FormatJS formatJS;
+	private FormatSQL formatSQL;
+	private CompositeMap selectMap;
+	private IDocument doc;
+	private TextPage page;
 
 	public CFormatAction() {
-		this.setActionDefinitionId("aurora.ide.editor.format.collaborateEditor");
+		this.setActionDefinitionId("aurora.ide.format");
 		formatJS = new FormatJS();
+		formatSQL = new FormatSQL();
 	}
 
 	@Override
 	public void run() {
+		activeEditor = (TextPage) ((BaseCompositeMapEditor) AuroraPlugin
+				.getActivePage().getActiveEditor()).getActiveEditor();
+		page = (TextPage) activeEditor;
 		try {
-			boolean fJS = isInJS();
-			if (fJS) {
-				formatJS.run(null);
-			} else {
-				formatXML(null);
+			switch (getSelectionType()) {
+			case JS:
+				formatJS();
+				// formatJS.setActiveEditor(null, activeEditor);
+				// formatJS.run(null);
+				break;
+			case SQL:
+				formatSQL();
+				// /formatSQL.setActiveEditor(null, activeEditor);
+				// formatSQL.run(null);
+				break;
+			case XML:
+				formatXML();
+				break;
 			}
-		} catch (BadLocationException e) {
+		} catch (Exception e) {
 		}
 	}
 
-	private boolean isInJS() throws BadLocationException {
-		TextPage tp = (TextPage) activeEditor;
-		IDocument document = tp.getInputDocument();
-		ITypedRegion region = document.getPartition(tp.getSelectedRange().x);
-		ITypedRegion parentRegion = document
-				.getPartition(region.getOffset() - 1);
-		String parentNode = document.get(parentRegion.getOffset(),
-				parentRegion.getLength());
-		if (!XMLPartitionScanner.XML_CDATA.equals(region.getType())
-				|| !parentNode.toLowerCase().matches("<script( .*){0,1}>")) {
-
-			return false;
-		}
-		return true;
+	private int getSelectionType() throws Exception {
+		doc = page.getInputDocument();
+		CompositeMap rootMap = page.toCompoisteMap();
+		selectMap = QuickAssistUtil.findMap(rootMap, doc,
+				page.getSelectedRange().x);
+		String mapName = selectMap.getName();
+		if (mapName.equalsIgnoreCase("script"))
+			return JS;
+		if (mapName.toLowerCase().matches(".+-sql"))
+			return SQL;
+		return XML;
 	}
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-		activeEditor = targetEditor;
-		formatJS.setActiveEditor(action, targetEditor);
+		// activeEditor = targetEditor;
+		// formatJS.setActiveEditor(action, targetEditor);
 	}
 
-	public void formatXML(IAction action) {
-		if (activeEditor == null || !(activeEditor instanceof TextPage)) {
-			DialogUtil.showErrorMessageBox("这个类不是" + TextPage.class.getName());
-			return;
-		}
-		TextPage tp = (TextPage) activeEditor;
-
-		IDocument document = tp.getInputDocument();
-		String content = document.get();
+	private void formatXML() {
+		String content = doc.get();
 		if (content == null) {
 			return;
 		}
-		int cursorLine = tp.getCursorLine();
-		CompositeLoader cl = AuroraResourceUtil.getCompsiteLoader();
-		InputStream is = null;
+		int offset = page.getSelectedRange().x;
 		try {
-			is = new ByteArrayInputStream(content.getBytes("UTF-8"));
-			CompositeMap data = cl.loadFromStream(is);
+			CompositeMap data = page.toCompoisteMap();
 			String formatContent = AuroraResourceUtil.xml_decl
 					+ XMLOutputter.defaultInstance().toXML(data, true);
-			tp.refresh(formatContent);
-		} catch (IOException e) {
-e.printStackTrace();
-		} catch (SAXException e) {
-		} finally {
-			try {
-				if (is != null)
-					is.close();
-			} catch (IOException e) {
-				DialogUtil.showExceptionMessageBox("关闭" + is + "错误！", e);
-			}
-		}
-		document = tp.getInputDocument();
-		;
-		try {
-			int offset = document.getLineOffset(cursorLine);
-			int length = document.getLineLength(cursorLine);
-			if (offset == 0 || length == 0)
+			if (content.equals(formatContent))
 				return;
-			tp.setHighlightRange(offset, length, true);
-		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			page.refresh(formatContent);
+			if (offset >= formatContent.length())
+				offset = formatContent.length();
+			page.setHighlightRange(offset, 0, true);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
 	}
 
+	private void formatJS() {
+		int offset = page.getSelectedRange().x;
+		CompositeMapInfo info = new CompositeMapInfo(selectMap, doc);
+		IRegion startRegion = info.getStartTagRegion();
+		IRegion endRegion = info.getEndTagRegion();
+		int jsOffset = startRegion.getOffset() + startRegion.getLength()
+				+ "<![CDATA[".length();
+		int jsLength = endRegion.getOffset() - "]]>".length() - jsOffset;
+		String jsCode;
+		try {
+			jsCode = doc.get(jsOffset, jsLength);
+			if (jsCode == null || jsCode.trim().length() == 0)
+				return;
+			String prefix = info.getLeadPrefix();
+			JSBeautifier bf = new JSBeautifier();
+			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
+			String jsCodeNew = (XMLOutputter.LINE_SEPARATOR + bf.beautify(
+					jsCode, bf.opts)).replaceAll("\n",
+					XMLOutputter.LINE_SEPARATOR + indent)
+					+ XMLOutputter.LINE_SEPARATOR + prefix;
+			if (jsCodeNew.equals(jsCode)) {
+				return;
+			}
+			doc.replace(jsOffset, jsLength, jsCodeNew);
+			page.setHighlightRange(offset, 0, true);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	private void formatSQL() {
+		int offset = page.getSelectedRange().x;
+		CompositeMapInfo info = new CompositeMapInfo(selectMap, doc);
+		IRegion startRegion = info.getStartTagRegion();
+		IRegion endRegion = info.getEndTagRegion();
+		int sqlOffset = startRegion.getOffset() + startRegion.getLength()
+				+ "<![CDATA[".length();
+		int sqlLength = endRegion.getOffset() - "]]>".length() - sqlOffset;
+		String sqlCode;
+		try {
+			sqlCode = doc.get(sqlOffset, sqlLength);
+			if (sqlCode == null || sqlCode.trim().length() == 0)
+				return;
+			String prefix = info.getLeadPrefix();
+			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
+			PLSQLFormat sqlformat = new PLSQLFormat(sqlCode);
+			String sqlCodeNew = sqlformat.format();
+			StringBuilder sb = new StringBuilder(5000);
+			sb.append(XMLOutputter.LINE_SEPARATOR);
+			for (String line : sqlCodeNew.split("\n|\r\n")) {
+				sb.append(indent + line + XMLOutputter.LINE_SEPARATOR);
+			}
+			sb.append(prefix);
+			sqlCodeNew = sb.toString();
+			if (sqlCodeNew.equals(sqlCode)) {
+				return;
+			}
+			doc.replace(sqlOffset, sqlLength, sqlCodeNew);
+			page.setHighlightRange(offset, 0, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	public void run(IAction action) {
+		run();
+	}
+
+	public void selectionChanged(IAction action, ISelection selection) {
+	}
 }

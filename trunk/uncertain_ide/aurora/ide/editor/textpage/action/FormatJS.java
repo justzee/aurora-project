@@ -1,7 +1,6 @@
 package aurora.ide.editor.textpage.action;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.viewers.ISelection;
@@ -27,50 +26,51 @@ public class FormatJS implements IEditorActionDelegate {
 
 	public void run(IAction action) {
 		if (activeEditor == null || !(activeEditor instanceof TextPage)) {
-			DialogUtil.showErrorMessageBox("这个类不是" + TextPage.class.getName());
 			return;
 		}
 		TextPage tp = (TextPage) activeEditor;
 		IDocument document = tp.getInputDocument();
-		int cursorLine = tp.getCursorLine();
+		int offset = tp.getSelectedRange().x;
 		try {
-			int x = tp.getSelectedRange().x;
-			if (x <= 0)
+			if (offset <= 0)
 				return;
-			ITypedRegion region = document.getPartition(x);
-			ITypedRegion parentRegion = document.getPartition(region.getOffset() - 1);
-			String parentNode = document.get(parentRegion.getOffset(), parentRegion.getLength());
+			ITypedRegion region = document.getPartition(offset);
+			ITypedRegion parentRegion = document.getPartition(region
+					.getOffset() - 1);
+			String parentNode = document.get(parentRegion.getOffset(),
+					parentRegion.getLength());
 			int startLine = document.getLineOfOffset(parentRegion.getOffset());
-			String txt = document.get(document.getLineOffset(startLine), document.getLineLength(startLine));
+			String txt = document.get(document.getLineOffset(startLine),
+					document.getLineLength(startLine));
 			int index = txt.toLowerCase().indexOf("<script");
 			if (index <= 0)
 				return;
 			String prefix = txt.substring(0, index);
-			if (!XMLPartitionScanner.XML_CDATA.equals(region.getType()) || !parentNode.toLowerCase().matches("<script( .*){0,1}>")) {
+			if (!XMLPartitionScanner.XML_CDATA.equals(region.getType())
+					|| !parentNode.toLowerCase().matches("<script( .*){0,1}>")) {
 				DialogUtil.showErrorMessageBox("此区域非javascript代码");
 				return;
 			}
+
 			int begin = region.getOffset() + "<![CDATA[".length();
-			int length = region.getLength() - "<![CDATA[".length() - "]]>".length();
+			int length = region.getLength() - "<![CDATA[".length()
+					- "]]>".length();
 			String jsCode = document.get(begin, length);
 			if (jsCode == null || jsCode.trim().length() == 0)
 				return;
 			JSBeautifier bf = new JSBeautifier();
 			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
-			jsCode = ("\n" + bf.beautify(jsCode, bf.opts)).replaceAll("\n", "\n" + indent) + "\n" + prefix;
-			document.replace(begin, length, jsCode);
+			String jsCodeNew = (XMLOutputter.LINE_SEPARATOR + bf.beautify(
+					jsCode, bf.opts)).replaceAll("\n",
+					XMLOutputter.LINE_SEPARATOR + indent)
+					+ XMLOutputter.LINE_SEPARATOR + prefix;
+			if (jsCodeNew.equals(jsCode))
+				return;
+			document.replace(begin, length, jsCodeNew);
+			tp.setHighlightRange(offset, 0, true);
 		} catch (Throwable e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
-		}
-		try {
-			int offset = document.getLineOffset(cursorLine);
-			int length = document.getLineLength(cursorLine);
-			if (offset == 0 || length == 0)
-				return;
-			tp.setHighlightRange(offset, length, true);
-		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
 		}
 	}
 

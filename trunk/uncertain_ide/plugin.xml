@@ -162,29 +162,12 @@
 	      id="aurora.ide.editor.textpage.format"
 	   targetID="aurora.ide.editor.textpage.context"> 
 	      <action
-	         id="aurora.ide.editor.textpage.FormatAction" 
-	         label="格式化XML"
-	         menubarPath="additions" 
-	         class="aurora.ide.editor.textpage.action.FormatAction"> 
+             class="aurora.ide.editor.textpage.action.CFormatAction"
+             definitionId="aurora.ide.format"
+             id="aurora.ide.editor.textpage.FormatAction"
+             label="格式化"
+             menubarPath="additions"> 
 	      </action>
-       <action
-             class="aurora.ide.editor.textpage.action.FormatJS"
-             id="aurora.ide.editor.textpage.FormatJS"
-             label="格式化JS"
-             menubarPath="additions">
-       </action>
-       <action
-             class="aurora.ide.editor.textpage.action.FormatSQL"
-             id="aurora.ide.editor.textpage.FormatSQL"
-             label="格式化SQL"
-             menubarPath="additions">
-          <enablement>
-             <objectState
-                   name="name"
-                   value="*.bm">
-             </objectState>
-          </enablement>
-       </action>
        <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
              id="aurora.ide.editor.textpage.GetFileNameAction"
@@ -672,44 +655,34 @@
           id="aurora.ide.commands"
           name="Aurora commands">
     </category>
+    <category
+          id="aurora.search.commands.category"
+          name="Aurora Command Category">
+    </category>
     <command
           categoryId="aurora.ide.commands"
           description="Format Aurora Source Code"
           id="aurora.ide.format"
-          name="aurora format ">
+          name="Aurora format ">
+    </command>
+    <command
+          categoryId="aurora.search.commands.category"
+          id="aurora.ide.search.command.FiledReferenceCommand"
+          name="Reference Command">
     </command>
  </extension>
   
-  <extension
-         point="org.eclipse.ui.commands">
-      <category
-            name="Aurora Command Category"
-            id="aurora.search.commands.category">
-      </category>
-      <command
-            name="Reference Command"
-            categoryId="aurora.search.commands.category"
-            id="aurora.ide.search.command.FiledReferenceCommand">
-      </command>
-   </extension>
  <extension
        point="org.eclipse.ui.bindings">
     <key
           commandId="aurora.ide.format"
-          contextId="aurora.ide.EditorScope"
+          contextId="org.eclipse.ui.textEditorScope"
           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-          sequence="M1+M2+P">
+          sequence="M1+M2+F">
     </key>
       
  </extension>
  <!--shiliyan3310-2011-08-08-->
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            commandId="aurora.ide.search.command.FiledReferenceCommand"
-            class="aurora.ide.search.command.FiledReferenceCommand">
-      </handler>
-   </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
@@ -718,6 +691,13 @@
             sequence="M1+M2+G"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="aurora.ide.search.command.FiledReferenceCommand"
+            class="aurora.ide.search.command.FiledReferenceCommand">
+      </handler>
    </extension>
  <extension 
     id="aurora.ide.search.ui.SearchReferenceResultPage"
