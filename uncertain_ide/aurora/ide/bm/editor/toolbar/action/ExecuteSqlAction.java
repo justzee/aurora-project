@@ -59,7 +59,7 @@ public class ExecuteSqlAction extends Action {
 		}
 		String action = sql.trim().split(" ")[0];
 		ResultSet resultSet = null;
-		PreparedStatement stmt;
+		PreparedStatement stmt = null;
 		int resultCount = 0;
 		try {
 			stmt = conn.prepareStatement(sql);
@@ -85,6 +85,17 @@ public class ExecuteSqlAction extends Action {
 			return;
 		}
 		viewer.refresh(resultSet, resultCount);
+		try {
+			resultSet.close();
+			stmt.close();
+		} catch (SQLException e) {
+			try {
+				stmt.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
 	}
 
 	public static ImageDescriptor getDefaultImageDescriptor() {
