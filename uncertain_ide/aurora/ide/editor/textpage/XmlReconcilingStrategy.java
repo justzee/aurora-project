@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import aurora.ide.builder.IntimeBuilder;
+import aurora.ide.editor.outline.OutlineReconcile;
 import aurora.ide.helpers.DialogUtil;
 
 public class XmlReconcilingStrategy implements IReconcilingStrategy,
@@ -30,6 +31,7 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy,
 		listeners.add(new XmlErrorReconcile(mSourceViewer));
 		listeners.add(new ProjectionReconcile(mSourceViewer));
 		listeners.add(new IntimeBuilder(mSourceViewer));
+		listeners.add(new OutlineReconcile(mSourceViewer));
 	}
 
 	public void reconcile(IRegion partition) {
