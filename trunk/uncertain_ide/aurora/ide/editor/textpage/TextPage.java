@@ -1,9 +1,6 @@
 package aurora.ide.editor.textpage;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
@@ -15,8 +12,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
-import org.eclipse.jface.text.ITextListener;
-import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -35,7 +30,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
@@ -44,10 +38,8 @@ import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.helpers.CompositeMapLocatorParser;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
-import aurora.ide.helpers.LogUtil;
 
 public class TextPage extends TextEditor implements IViewer {
 	/** The ID of this editor as defined in plugin.xml */
@@ -79,12 +71,10 @@ public class TextPage extends TextEditor implements IViewer {
 
 	// add by shiliyan
 	public Object getAdapter(Class adapter) {
-
 		if (Display.getCurrent() != null && IAnnotationModel.class.equals(adapter)) {
 			return this.getAnnotationModel();
 		} else if (adapter == IContentOutlinePage.class) {
 			outline = new BaseOutlinePage(this);
-			this.addListenerObject(outline);
 			return outline;
 		}
 		return super.getAdapter(adapter);
@@ -138,11 +128,6 @@ public class TextPage extends TextEditor implements IViewer {
 					return;
 				}
 				refresh(true);
-				/*try {
-					//CompositeMap map = toCompoisteMap();//CompositeMapUtil.loaderFromString(event.getText());
-					//outline.refresh(map);
-				} catch (ApplicationException e) {
-				}*/
 			}
 
 			public void documentAboutToBeChanged(DocumentEvent event) {
@@ -283,22 +268,9 @@ public class TextPage extends TextEditor implements IViewer {
 		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
-
 		viewer.getTextWidget().addCaretListener(new CaretListener() {
 			public void caretMoved(CaretEvent event) {
-				CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
-				try {
-					InputStream content = new ByteArrayInputStream(getContent().getBytes("UTF-8"));
-					int cursorLine = getSourceViewer().getTextWidget().getLineAtOffset(event.caretOffset);
-					CompositeMap cm = parser.getCompositeMapFromLine(content, cursorLine);
-					if (cm != null) {
-						outline.selectNode(cm);
-					}
-				} catch (SAXException e) {
-					// DialogUtil.showExceptionMessageBox(e);
-				} catch (IOException e) {
-					LogUtil.getInstance().logError(EDITOR_CONTEXT, e);
-				}
+				outline.selectNode(event.caretOffset);
 			}
 		});
 		return viewer;
