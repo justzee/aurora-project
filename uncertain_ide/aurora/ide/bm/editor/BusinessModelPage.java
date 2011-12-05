@@ -57,9 +57,9 @@ import aurora.ide.node.action.ActionListener;
 import aurora.ide.node.action.RefreshAction;
 import aurora.ide.node.action.RemoveElementAction;
 
-public class BussinessModelPage extends CompositeMapPage {
-	private static final String PageId = "BussinessModelPage";
-	private static final String PageTitle = LocaleMessage.getString("bussiness.model.file");
+public class BusinessModelPage extends CompositeMapPage {
+	private static final String PageId = "BusinessModelPage";
+	private static final String PageTitle = LocaleMessage.getString("business.model.file");
 	private CTabFolder mTabFolder;
 	private CompositeMap data;
 	private SashForm sashForm;
@@ -82,7 +82,7 @@ public class BussinessModelPage extends CompositeMapPage {
 		customerTitles.put("operations", "自定义操作");
 	}
 
-	public BussinessModelPage(FormEditor editor) {
+	public BusinessModelPage(FormEditor editor) {
 		super(editor, PageId, PageTitle);
 	}
 

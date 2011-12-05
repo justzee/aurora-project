@@ -61,7 +61,7 @@ public class BMFromProcedurePage extends WizardPage {
 	public BMFromProcedurePage(IProject project) {
 		super("wizardPage");
 		this.project = project;
-		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
+		setTitle(LocaleMessage.getString("business.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
 	}
 

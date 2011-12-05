@@ -45,7 +45,7 @@ public class BMMainConfigPage extends WizardPageRefreshable {
 
 	public BMMainConfigPage(ISelection selection, BMFromDBWizard bmWizard) {
 		super("wizardPage");
-		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
+		setTitle(LocaleMessage.getString("business.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
 		this.selection = selection;
 		this.wizard = bmWizard;

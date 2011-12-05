@@ -370,7 +370,7 @@ class BMSelectionPage extends WizardPage {
 		layout.numColumns = 2;
 		bmilesGroup.setLayout(layout);
 		bmilesGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		bmilesGroup.setText(LocaleMessage.getString("bussiness.model.files"));
+		bmilesGroup.setText(LocaleMessage.getString("business.model.files"));
 
 		bmselectionsText = new Text(bmilesGroup, SWT.NONE);
 		bmselectionsText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

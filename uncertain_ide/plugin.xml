@@ -61,7 +61,7 @@
        </context>
    </extension>
    <extension
-         id="BussinessModelEditor"
+         id="BusinessModelEditor"
          point="org.eclipse.ui.editors">
       <editor
             class="aurora.ide.screen.editor.ServiceEditor"
@@ -79,11 +79,11 @@
             name="%editor.sxsd">
       </editor>
       <editor
-            class="aurora.ide.bm.editor.BussinessModelEditor"
+            class="aurora.ide.bm.editor.BusinessModelEditor"
             default="true"
             filenames="*.bm"
             icon="icons/bm.gif"
-            id="aurora.ide.BussinessModelEditor"
+            id="aurora.ide.BusinessModelEditor"
             name="%editor.bm">
       </editor>
       <!--
