@@ -16,16 +16,16 @@ import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.preferencepages.CustomSettingPreferencePage;
 
-public class BussinessModelEditor extends BaseCompositeMapEditor {
+public class BusinessModelEditor extends BaseCompositeMapEditor {
 
-    protected BussinessModelPage mainFormPage;
+    protected BusinessModelPage mainFormPage;
     private SQLExecutePage       sqlPage    = new SQLExecutePage(this);
     private ViewSource           viewSource = new ViewSource(this);
     int                          SQLPageIndex;
     private int                  viewSourceIndex;
 
     public CompositeMapPage initMainViewerPage() {
-        mainFormPage = new BussinessModelPage(this);
+        mainFormPage = new BusinessModelPage(this);
         return mainFormPage;
     }
 

@@ -47,7 +47,7 @@ public class BMFromSQLWizardPage extends WizardPage {
 	 */
 	public BMFromSQLWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
+		setTitle(LocaleMessage.getString("business.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
 		this.selection = selection;
 	}

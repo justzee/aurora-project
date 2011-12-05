@@ -47,7 +47,7 @@ public class BMFieldsPage extends WizardPage {
 	private GridViewer gridViewer;
 	public BMFieldsPage(ISelection selection, BMFromDBWizard bmWizard) {
 		super("wizardPage");
-		setTitle(LocaleMessage.getString("bussiness.model.editor.file"));
+		setTitle(LocaleMessage.getString("business.model.editor.file"));
 		setDescription(LocaleMessage.getString("bm.wizard.desc"));
 		this.wizard = bmWizard;
 	}

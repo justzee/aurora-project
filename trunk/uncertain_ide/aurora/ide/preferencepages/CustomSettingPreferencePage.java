@@ -24,7 +24,7 @@ public class CustomSettingPreferencePage extends FieldEditorPreferencePage
 			{ LocaleMessage.getString("source.file"), "1" },
 			{ LocaleMessage.getString("preview"), "2" } };
 	private static String[][] bmPage = {
-			{ LocaleMessage.getString("bussiness.model.file"), "0" },
+			{ LocaleMessage.getString("business.model.file"), "0" },
 			{ LocaleMessage.getString("source.file"), "1" },
 			{ LocaleMessage.getString("auto.sql.test"), "2" },
 			{ LocaleMessage.getString("view.source"), "3" } };
