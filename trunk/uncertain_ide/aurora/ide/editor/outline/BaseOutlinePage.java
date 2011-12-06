@@ -7,13 +7,14 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import uncertain.composite.CompositeMap;
@@ -32,56 +33,81 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	private CompositeMap input;
 	private CompositeMap selectMap;
 	private IDocument document;
-	private TreeItem selectItem;
-	private LabelTree<CompositeMap> labelRoot;
+	private OutlineTree<CompositeMap> labelRoot;
+	private OutlineTree<CompositeMap> selectTree;
+	private Selected selected = new Selected();
 
 	public BaseOutlinePage(TextPage editor) {
 		this.editor = editor;
-		loadInput();
+		try {
+			loadInput();
+		} catch (ApplicationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void selectNode(int offset) {
 		try {
-			selectMap = QuickAssistUtil.findMap(input, document, offset);
-		} catch (Exception e) {
-			return;
-		}
-		if (null == selectMap || 0 >= getTreeViewer().getTree().getItemCount()) {
-			return;
-		}
-		CompositeMapInfo selectMapInfo = new CompositeMapInfo(selectMap, document);
-		findTreeItem(selectMapInfo, getTreeViewer().getTree().getItem(0));
-		if (null != selectItem && !selectItem.isDisposed() && null != selectItem.getData()) {
-			getTreeViewer().getTree().setSelection(selectItem);
-		}
-	}
+			long s = System.currentTimeMillis();
+			CompositeMap temp = QuickAssistUtil.findMap(input, document, offset);
+			System.out.println("selectNode-findMap:" + (System.currentTimeMillis() - s));
+			if (null != selectMap && equalsRange(temp.getLocationNotNull().getRange(), selectMap.getLocationNotNull().getRange())) {
+				return;
+			} else {
+				selectMap = temp;
 
-	private void loadInput() {
-		try {
-			this.document = editor.getInputDocument();
-			this.input = CompositeMapUtil.loaderFromString(document.get());
-			CompositeMap virtualNode = new CompositeMap("VirtualNode");
-			labelRoot = new LabelTree<CompositeMap>(virtualNode);
-			labelRoot.add(input);
-			fillLabel(input, labelRoot.getChild(0));
-		} catch (ApplicationException e) {
+				s = System.currentTimeMillis();
+				findOutlineTree(labelRoot);
+				System.out.println("selectNode-findOutlineTree:" + (System.currentTimeMillis() - s));
+
+				s = System.currentTimeMillis();
+				getTreeViewer().removeSelectionChangedListener(selected);
+				System.out.println("selectNode-removeSelectionChangedListener:" + (System.currentTimeMillis() - s));
+
+				s = System.currentTimeMillis();
+				getTreeViewer().setSelection(new StructuredSelection(selectTree));
+				System.out.println("selectNode-StructuredSelection:" + (System.currentTimeMillis() - s));
+
+				s = System.currentTimeMillis();
+				getTreeViewer().addSelectionChangedListener(selected);
+				System.out.println("selectNode-addSelectionChangedListener:" + (System.currentTimeMillis() - s));
+			}
+		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 	}
 
-	private void findTreeItem(CompositeMapInfo selectMapInfo, TreeItem item) {
-		CompositeMapInfo mapInfo = new CompositeMapInfo(((LabelTree<CompositeMap>) item.getData()).getData(), document);
-		if (mapInfo.getMapRegion().equals(selectMapInfo.getMapRegion())) {
-			selectItem = item;
+	private void loadInput() throws ApplicationException {
+		this.document = editor.getInputDocument();
+		this.input = CompositeMapUtil.loaderFromString(document.get());
+		CompositeMap virtualNode = new CompositeMap("VirtualNode");
+		labelRoot = new OutlineTree<CompositeMap>(virtualNode);
+		labelRoot.add(input);
+		fillLabel(input, labelRoot.getChild(0));
+	}
+
+	private void findOutlineTree(OutlineTree<CompositeMap> label) {
+		CompositeMap map = label.getData();
+		if (equalsRange(map.getLocationNotNull().getRange(), selectMap.getLocationNotNull().getRange())) {
+			selectTree = label;
 			return;
 		}
-		for (int i = 0; i < item.getItemCount(); i++) {
-			findTreeItem(selectMapInfo, item.getItem(0));
+		for (int i = 0; i < label.getChildrenCount(); i++) {
+			findOutlineTree(label.getChild(i));
 		}
 	}
 
+	private boolean equalsRange(int[] a, int[] b) {
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@SuppressWarnings("unchecked")
-	private void fillLabel(CompositeMap map, LabelTree<CompositeMap> labelTree) {
+	private void fillLabel(CompositeMap map, OutlineTree<CompositeMap> labelTree) {
 		Iterator<CompositeMap> it = map.getChildIterator();
 		for (int i = 0; null != it && it.hasNext(); i++) {
 			CompositeMap cm = it.next();
@@ -97,37 +123,57 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		getTreeViewer().setContentProvider(new OutlineContentProvider());
 
 		getTreeViewer().setInput(labelRoot);
-		getTreeViewer().expandAll();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void selectionChanged(SelectionChangedEvent event) {
-		TreeSelection selection = (TreeSelection) event.getSelection();
-		LabelTree<CompositeMap> lt = (LabelTree<CompositeMap>) selection.getFirstElement();
-		CompositeMap data = lt.getData();
-		if (null == data) {
-			return;
-		}
-		CompositeMapInfo info = new CompositeMapInfo(data, document);
-		IRegion region = info.getMapNameRegion();
-		TextSelection tt = new TextSelection(region.getOffset(), region.getLength());
-		editor.getEditorSite().getSelectionProvider().setSelection(tt);
+		getTreeViewer().addSelectionChangedListener(selected);
 	}
 
 	public void refresh() {
-		loadInput();
-
-		get(getTreeViewer().getTree().getItem(0), labelRoot.getChild(0));
+		if (null == selectTree)
+			return;
+		try {
+			loadInput();
+		} catch (ApplicationException e) {
+			// e.printStackTrace();
+			return;
+		}
+		OutlineTree<CompositeMap> rootNode = null;
+		if (null == selectTree.getParent()) {
+			rootNode = selectTree;
+		} else {
+			rootNode = selectTree.getParent();
+		}
+		correct(rootNode, labelRoot.findChild(rootNode.getId()));
+		getTreeViewer().refresh(rootNode);
 	}
 
-	void get(TreeItem ti, LabelTree<CompositeMap> lt) {
-		LabelTree<CompositeMap> cm = (LabelTree<CompositeMap>) ti.getData();
+	private void correct(OutlineTree<CompositeMap> ing, OutlineTree<CompositeMap> ed) {
+		if (!ing.getData().equals(ed.getData())) {
+			ing.setData(ed.getData());
+		}
+		if (ing.getChildrenCount() != ed.getChildrenCount()) {
+			ing.removeAll();
+			for (int i = 0; i < ed.getChildrenCount(); i++) {
+				ing.add(ed.getChild(i));
+			}
+		} else {
+			for (int i = 0; i < ed.getChildrenCount(); i++) {
+				correct(ing.getChild(i), ed.getChild(i));
+			}
+		}
+	}
 
-		if (cm.equals(lt)) {
-			System.out.println(lt.getId() + lt.getData().getRawName());
-			System.out.println(cm.getId() + cm.getData().getRawName());
-			System.out.println(selectItem);
+	class Selected implements ISelectionChangedListener {
+		@SuppressWarnings("unchecked")
+		public void selectionChanged(SelectionChangedEvent event) {
+			TreeSelection selection = (TreeSelection) event.getSelection();
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) selection.getFirstElement();
+			if (null == lt || null == lt.getData()) {
+				return;
+			}
+			CompositeMap data = lt.getData();
+			CompositeMapInfo info = new CompositeMapInfo(data, document);
+			IRegion region = info.getMapNameRegion();
+			TextSelection tt = new TextSelection(region.getOffset(), region.getLength());
+			editor.getEditorSite().getSelectionProvider().setSelection(tt);
 		}
 	}
 
@@ -136,21 +182,21 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		public Object[] getChildren(Object parentElement) {
 			if (parentElement == null)
 				return null;
-			LabelTree<String> lt = (LabelTree<String>) parentElement;
+			OutlineTree<String> lt = (OutlineTree<String>) parentElement;
 			return lt.getChildren().toArray();
 		}
 
 		public Object getParent(Object element) {
 			if (element == null)
 				return null;
-			LabelTree<String> lt = (LabelTree<String>) element;
+			OutlineTree<String> lt = (OutlineTree<String>) element;
 			return lt.getParent();
 		}
 
 		public boolean hasChildren(Object element) {
 			if (element == null)
 				return false;
-			LabelTree<String> lt = (LabelTree<String>) element;
+			OutlineTree<String> lt = (OutlineTree<String>) element;
 			return lt.getChildrenCount() > 0;
 		}
 
@@ -169,7 +215,7 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	class OutlineLabelProvider extends BaseLabelProvider implements ILabelProvider {
 		@SuppressWarnings("unchecked")
 		public String getText(Object obj) {
-			LabelTree<CompositeMap> lt = (LabelTree<CompositeMap>) obj;
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) obj;
 			String elementText = null;
 			CompositeMap elemenntCm = lt.getData();
 			String tagName = elemenntCm.getRawName();
@@ -184,7 +230,7 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 		@SuppressWarnings("unchecked")
 		public Image getImage(Object element) {
-			LabelTree<String> lt = (LabelTree<String>) element;
+			OutlineTree<String> lt = (OutlineTree<String>) element;
 			if (lt.getChildrenCount() > 0) {
 				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
 			} else {
