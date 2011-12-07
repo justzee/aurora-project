@@ -143,26 +143,41 @@
       </objectContribution>
 	   <viewerContribution 
 	      id="aurora.ide.editor.textpage.format"
-	   targetID="aurora.ide.editor.textpage.context"> 
+	   targetID="aurora.ide.editor.textpage.context">
+       <menu
+             id="aurora.ide.sourcemenu"
+             label="Source"
+             path="additions">
+          <groupMarker
+                name="context">
+          </groupMarker>
+       </menu> 
 	      <action
              class="aurora.ide.editor.textpage.action.CFormatAction"
              definitionId="aurora.ide.format"
              id="aurora.ide.editor.textpage.FormatAction"
              label="格式化"
-             menubarPath="additions"> 
+             menubarPath="aurora.ide.sourcemenu/context"> 
 	      </action>
+       <action
+             class="aurora.ide.editor.textpage.action.ToggleCommentAction2"
+             definitionId="aurora.ide.togglecomment2"
+             id="aurora.ide.editor.textpage.togglecomment2"
+             label="切换块注释"
+             menubarPath="aurora.ide.sourcemenu/context">
+       </action>
        <action
              class="aurora.ide.editor.textpage.action.ToggleCommentAction"
              definitionId="aurora.ide.togglecomment"
              id="aurora.ide.editor.textpage.togglecomment"
-             label="切换注释"
-             menubarPath="additions">
+             label="切换行注释"
+             menubarPath="aurora.ide.sourcemenu/context">
        </action>
        <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
              id="aurora.ide.editor.textpage.GetFileNameAction"
              label="复制文件名"
-             menubarPath="additions">
+             menubarPath="aurora.ide.sourcemenu/context">
        </action>
 	   </viewerContribution>
     <objectContribution
