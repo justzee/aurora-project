@@ -18,6 +18,8 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
+import org.eclipse.swt.custom.CaretEvent;
+import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -277,11 +279,11 @@ public class TextPage extends TextEditor implements IViewer {
 				getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
-		// viewer.getTextWidget().addCaretListener(new CaretListener() {
-		// public void caretMoved(CaretEvent event) {
-		// outline.selectNode(event.caretOffset);
-		// }
-		// });
+		viewer.getTextWidget().addCaretListener(new CaretListener() {
+			public void caretMoved(CaretEvent event) {
+				outline.selectNode(event.caretOffset);
+			}
+		});
 		return viewer;
 	}
 
