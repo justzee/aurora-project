@@ -36,50 +36,41 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	private OutlineTree<CompositeMap> labelRoot;
 	private OutlineTree<CompositeMap> selectTree;
 	private Selected selected = new Selected();
+	private boolean error = false;
 
 	public BaseOutlinePage(TextPage editor) {
 		this.editor = editor;
-		try {
-			loadInput();
-		} catch (ApplicationException e) {
-			e.printStackTrace();
-		}
+		loadInput();
 	}
 
 	public void selectNode(int offset) {
-		try {
-			long s = System.currentTimeMillis();
-			CompositeMap temp = QuickAssistUtil.findMap(input, document, offset);
-			System.out.println("selectNode-findMap:" + (System.currentTimeMillis() - s));
-			if (null != selectMap && equalsRange(temp.getLocationNotNull().getRange(), selectMap.getLocationNotNull().getRange())) {
-				return;
-			} else {
-				selectMap = temp;
-
-				s = System.currentTimeMillis();
-				findOutlineTree(labelRoot);
-				System.out.println("selectNode-findOutlineTree:" + (System.currentTimeMillis() - s));
-
-				s = System.currentTimeMillis();
-				getTreeViewer().removeSelectionChangedListener(selected);
-				System.out.println("selectNode-removeSelectionChangedListener:" + (System.currentTimeMillis() - s));
-
-				s = System.currentTimeMillis();
-				getTreeViewer().setSelection(new StructuredSelection(selectTree));
-				System.out.println("selectNode-StructuredSelection:" + (System.currentTimeMillis() - s));
-
-				s = System.currentTimeMillis();
-				getTreeViewer().addSelectionChangedListener(selected);
-				System.out.println("selectNode-addSelectionChangedListener:" + (System.currentTimeMillis() - s));
+		if (!error) {
+			try {
+				CompositeMap temp = QuickAssistUtil.findMap(input, document, offset);
+				if (null != selectMap && equalsRange(temp.getLocationNotNull().getRange(), selectMap.getLocationNotNull().getRange())) {
+					return;
+				} else {
+					selectMap = temp;
+					findOutlineTree(labelRoot);
+					getTreeViewer().removeSelectionChangedListener(selected);
+					getTreeViewer().setSelection(new StructuredSelection(selectTree));
+					getTreeViewer().addSelectionChangedListener(selected);
+				}
+			} catch (Exception e) {
+				// e.printStackTrace();
 			}
-		} catch (Exception e) {
-			// e.printStackTrace();
 		}
 	}
 
-	private void loadInput() throws ApplicationException {
-		this.document = editor.getInputDocument();
-		this.input = CompositeMapUtil.loaderFromString(document.get());
+	private void loadInput() {
+		try {
+			input = CompositeMapUtil.loaderFromString(editor.getInputDocument().get());
+			document = editor.getInputDocument();
+			error = false;
+		} catch (ApplicationException e) {
+			error = true;
+			return;
+		}
 		CompositeMap virtualNode = new CompositeMap("VirtualNode");
 		labelRoot = new OutlineTree<CompositeMap>(virtualNode);
 		labelRoot.add(input);
@@ -127,12 +118,11 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	}
 
 	public void refresh() {
-		if (null == selectTree)
+		if (null == selectTree) {
 			return;
-		try {
-			loadInput();
-		} catch (ApplicationException e) {
-			// e.printStackTrace();
+		}
+		loadInput();
+		if (error) {
 			return;
 		}
 		OutlineTree<CompositeMap> rootNode = null;
