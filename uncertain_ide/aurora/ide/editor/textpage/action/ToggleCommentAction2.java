@@ -1,17 +1,23 @@
 package aurora.ide.editor.textpage.action;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorPart;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 
-public class ToggleCommentAction2 extends Action {
+public class ToggleCommentAction2 extends Action implements
+		IEditorActionDelegate {
+	IEditorPart activeEditor;
 
 	public ToggleCommentAction2() {
 		setActionDefinitionId("aurora.ide.togglecomment2");
@@ -88,5 +94,31 @@ public class ToggleCommentAction2 extends Action {
 		if (text.substring(idx + s.length()).trim().length() > 0)
 			return false;
 		return true;
+	}
+
+	public void run(IAction action) {
+		if (activeEditor == null || !(activeEditor instanceof TextPage)) {
+			return;
+		}
+		TextPage tp = (TextPage) activeEditor;
+		try {
+			comment(tp);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void selectionChanged(IAction action, ISelection selection) {
+		action.setEnabled(false);
+		if (!(selection instanceof TextSelection))
+			return;
+		String text = ((TextSelection) selection).getText();
+		if (text == null || text.length() == 0)
+			return;
+		action.setEnabled(true);
+	}
+
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		this.activeEditor = targetEditor;
 	}
 }
