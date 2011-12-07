@@ -29,13 +29,12 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 			final Object source) {
 		IDataFilter filter = new IDataFilter() {
 			public boolean found(CompositeMap map, Attribute attrib) {
-				if (attrib == null) {
+				if (attrib == null ) {
 					return false;
 				}
 				Object pattern = getSearchPattern(roots, source);
 				Object data = map.get(attrib.getName());
-				return pattern == null ? false : pattern.equals(data)
-						|| found(map, attrib);
+				return pattern == null ? false : pattern.equals(data);
 			}
 		};
 		return filter;
