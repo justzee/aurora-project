@@ -210,6 +210,8 @@ public class StatisticsView extends ViewPart {
 			public void run() {
 				projectViewer.setInput(statisticsResult);
 				objectViewer.setInput(statisticsResult);
+				objectViewer.expandAll();
+				projectViewer.expandAll();
 			}
 		});
 	}

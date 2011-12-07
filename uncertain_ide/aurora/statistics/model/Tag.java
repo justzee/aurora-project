@@ -1,5 +1,11 @@
 package aurora.statistics.model;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+
 import aurora.statistics.map.StatisticsMap;
 
 public class Tag {
