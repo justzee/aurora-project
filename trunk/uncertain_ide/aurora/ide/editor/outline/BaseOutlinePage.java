@@ -172,21 +172,21 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		public Object[] getChildren(Object parentElement) {
 			if (parentElement == null)
 				return null;
-			OutlineTree<String> lt = (OutlineTree<String>) parentElement;
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) parentElement;
 			return lt.getChildren().toArray();
 		}
 
 		public Object getParent(Object element) {
 			if (element == null)
 				return null;
-			OutlineTree<String> lt = (OutlineTree<String>) element;
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
 			return lt.getParent();
 		}
 
 		public boolean hasChildren(Object element) {
 			if (element == null)
 				return false;
-			OutlineTree<String> lt = (OutlineTree<String>) element;
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
 			return lt.getChildrenCount() > 0;
 		}
 
@@ -220,13 +220,18 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 		@SuppressWarnings("unchecked")
 		public Image getImage(Object element) {
-			OutlineTree<String> lt = (OutlineTree<String>) element;
-			if (lt.getChildrenCount() > 0) {
-				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
-			} else {
-				String defaultPath = LocaleMessage.getString("element.icon");
-				return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
+			CompositeMap elemenntCm = lt.getData();
+//			
+			Element ele = CompositeMapUtil.getElement(elemenntCm);
+			if (ele != null) {
+				if (ele.isArray()) {
+					return AuroraPlugin.getImageDescriptor(
+							LocaleMessage.getString("array.icon")).createImage();
+				}
 			}
+			String defaultPath = LocaleMessage.getString("element.icon");
+			return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
 		}
 
 		protected String getElementName(CompositeMap element) {
