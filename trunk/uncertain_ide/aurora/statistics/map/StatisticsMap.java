@@ -12,7 +12,8 @@ public class StatisticsMap {
 	}
 
 	public boolean isRoot() {
-		return map.getRoot().equals(map);
+		// return map.getRoot().equals(map);
+		return map.getParent() == null;
 	}
 
 	public int getSize() {
@@ -51,7 +52,7 @@ public class StatisticsMap {
 	public String getType() {
 		return PreferencesTag.INSTANCE().getType(map.getNamespaceURI(),
 				map.getName());
-		
+
 	}
 
 	public boolean isTag() {

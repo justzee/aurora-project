@@ -50,7 +50,6 @@ public class ProjectObjectIteator implements IterationHandle {
 		if (sm.isRoot()) {
 			this.reporter.reportRoot(po, sm);
 		}
-
 		if (sm.isTag()) {
 			this.reporter.reportTag(po, sm);
 		}
