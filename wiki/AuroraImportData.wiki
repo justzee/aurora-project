@@ -36,11 +36,9 @@
 || header_id || in || fnd_interface_headers表中的header_id || true || ||
 || user_id || in || 当前用户user_id || false || ${/session/@user_id} ||
 || separator || in || 导入文本类型时的分隔符 || false || , ||
-|| template_code || in || 模板号,来源于fnd_interface_templates.用于导入数据的预处理 || false|| ||
 || job_id || in || 任务id || false || ||
 || attribute1 || in || 扩展字段1 || false || ||
 || attribute2 || in || 扩展字段2 || false || ||
 || attribute3 || in || 扩展字段3 || false || ||
 || attribute4 || in || 扩展字段4 || false || ||
 || attribute5 || in || 扩展字段5 || false || ||
-|| status_field || out || 导入是否成功 ,成功返回0，反之为-1|| false || /parameter/@is_success ||
