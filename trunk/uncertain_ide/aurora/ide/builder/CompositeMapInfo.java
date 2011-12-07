@@ -332,4 +332,12 @@ public class CompositeMapInfo {
 		}
 	}
 
+	public CompositeMap getCompositeMap() {
+		return currentMap;
+	}
+
+	public IDocument getDocument() {
+		return rootDoc;
+	}
+
 }

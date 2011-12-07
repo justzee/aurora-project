@@ -33,6 +33,20 @@ public class QuickAssistUtil {
 		return rootMap;
 	}
 
+	public static CompositeMapInfo findMapInfo(CompositeMap rootMap,
+			IDocument doc, int offset) {
+		@SuppressWarnings("unchecked")
+		List<CompositeMap> childs = rootMap.getChildsNotNull();
+		CompositeMapInfo info = new CompositeMapInfo(rootMap, doc);
+		for (CompositeMap map : childs) {
+			CompositeMapInfo inf = new CompositeMapInfo(map, doc);
+			IRegion region = inf.getMapRegion();
+			if (RegionUtil.isInRegion(region, offset))
+				return findMapInfo(map, doc, offset);
+		}
+		return info;
+	}
+
 	/**
 	 * 最小编辑距离
 	 * 

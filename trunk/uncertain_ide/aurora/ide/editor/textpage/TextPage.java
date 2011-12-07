@@ -18,8 +18,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
-import org.eclipse.swt.custom.CaretEvent;
-import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -36,6 +34,8 @@ import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.editor.textpage.action.CFormatAction;
+import aurora.ide.editor.textpage.action.ToggleCommentAction;
+import aurora.ide.editor.textpage.action.ToggleCommentAction2;
 import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
@@ -277,11 +277,11 @@ public class TextPage extends TextEditor implements IViewer {
 				getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
-		viewer.getTextWidget().addCaretListener(new CaretListener() {
-			public void caretMoved(CaretEvent event) {
-				outline.selectNode(event.caretOffset);
-			}
-		});
+		// viewer.getTextWidget().addCaretListener(new CaretListener() {
+		// public void caretMoved(CaretEvent event) {
+		// outline.selectNode(event.caretOffset);
+		// }
+		// });
 		return viewer;
 	}
 
@@ -299,6 +299,8 @@ public class TextPage extends TextEditor implements IViewer {
 				IMarker.BOOKMARK, true);
 		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
 		setAction("format", new CFormatAction());
+		setAction("comment", new ToggleCommentAction());
+		setAction("comment2", new ToggleCommentAction2());
 	}
 
 	public void doSave(IProgressMonitor monitor) {

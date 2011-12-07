@@ -1,56 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            category="aurora.ide.wizard"
-            class="aurora.ide.project.wizard.ProjectWizard"
-            finalPerspective="aurora.ide.perspectives.AuroraPerspective"
-            icon="icons/aurora.gif"
-            id="aurora.ide.wizard.ProjectWizard"
-            name="%aurora.project"
-            project="true"/>
-      <category
-            id="aurora.ide.wizard"
-            name="%category.name">
-      </category>
-      <wizard
-            category="aurora.ide.wizard"
-            class="aurora.ide.screen.wizard.ServiceNewWizard"
-            icon="icons/service.gif"
-            id="aurora.ide.wizard.ServiceNewWizard"
+    <extension point="org.eclipse.ui.newWizards">
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.project.wizard.ProjectWizard" 
+            finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
+            icon="icons/aurora.gif" id="aurora.ide.wizard.ProjectWizard" 
+            name="%aurora.project" project="true"/>
+        <category id="aurora.ide.wizard" name="%category.name">
+        </category>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.screen.wizard.ServiceNewWizard" 
+            icon="icons/service.gif" id="aurora.ide.wizard.ServiceNewWizard" 
             name="%wizard.screen.file">
-      </wizard>
-      <wizard
-            category="aurora.ide.wizard"
-            class="aurora.ide.sxsd.editor.SxsdNewWizard"
-            icon="icons/sxsd.gif"
-            id="aurora.ide.wizard.SxsdNewWizard"
-            name="%wizard.sxsd.file">
-      </wizard>
-      <wizard
-            category="aurora.ide.wizard"
-            class="aurora.ide.bm.wizard.table.BMFromDBWizard"
-            icon="icons/bm.gif"
-            id="aurora.ide.wizard.BMFromDBWizard"
+        </wizard>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.sxsd.editor.SxsdNewWizard" icon="icons/sxsd.gif" 
+            id="aurora.ide.wizard.SxsdNewWizard" name="%wizard.sxsd.file">
+        </wizard>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.bm.wizard.table.BMFromDBWizard" 
+            icon="icons/bm.gif" id="aurora.ide.wizard.BMFromDBWizard" 
             name="%wizard.create.bm.from.database">
-      </wizard>
-      <wizard
-            category="aurora.ide.wizard"
-            class="aurora.ide.bm.wizard.sql.BMFromSQLWizard"
-            icon="icons/sql.gif"
-            id="aurora.ide.wizard.BMFromSQLWizard"
+        </wizard>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.bm.wizard.sql.BMFromSQLWizard" 
+            icon="icons/sql.gif" id="aurora.ide.wizard.BMFromSQLWizard" 
             name="%wizard.create.bm.from.sql">
-      </wizard>
-      <wizard
-            category="aurora.ide.wizard"
-            class="aurora.ide.bm.wizard.procedure.BMFromProcedure"
-            icon="icons/sql.gif"
-            id="aurora.ide.wizard.BMFromProcedure"
+        </wizard>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.bm.wizard.procedure.BMFromProcedure" 
+            icon="icons/sql.gif" id="aurora.ide.wizard.BMFromProcedure" 
             name="从数据库过程创建BM文件">
-      </wizard>
-   </extension>
+        </wizard>
+    </extension>
       <extension
           point="org.eclipse.ui.contexts">
        <context
@@ -169,21 +152,16 @@
              menubarPath="additions"> 
 	      </action>
        <action
+             class="aurora.ide.editor.textpage.action.ToggleCommentAction"
+             definitionId="aurora.ide.togglecomment"
+             id="aurora.ide.editor.textpage.togglecomment"
+             label="切换注释"
+             menubarPath="additions">
+       </action>
+       <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
              id="aurora.ide.editor.textpage.GetFileNameAction"
              label="复制文件名"
-             menubarPath="additions">
-       </action>
-       <action
-             class="aurora.ide.editor.textpage.action.AnnotateSeletionAction"
-             id="aurora.ide.editor.textpage.annotateseletionaction"
-             label="注释"
-             menubarPath="additions">
-       </action>
-       <action
-             class="aurora.ide.editor.textpage.action.CancelAnnotateSeletionAction"
-             id="aurora.ide.editor.textpage.cancelannotateseletionaction"
-             label="取消注释"
              menubarPath="additions">
        </action>
 	   </viewerContribution>
@@ -670,6 +648,18 @@
           id="aurora.ide.search.command.FiledReferenceCommand"
           name="Reference Command">
     </command>
+    <command
+          categoryId="aurora.ide.commands"
+          description="Toggle comment"
+          id="aurora.ide.togglecomment"
+          name="Aurora Toggle Line Comment">
+    </command>
+    <command
+          categoryId="aurora.ide.commands"
+          description="Toggle comment2"
+          id="aurora.ide.togglecomment2"
+          name="Aurora Toggle Block Comment">
+    </command>
  </extension>
   
  <extension
@@ -679,19 +669,27 @@
           contextId="org.eclipse.ui.textEditorScope"
           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
           sequence="M1+M2+F">
-    </key>
-      
- </extension>
- <!--shiliyan3310-2011-08-08-->
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
+    </key> <!--shiliyan3310-2011-08-08-->
+       <key
             commandId="aurora.ide.search.command.FiledReferenceCommand"
             contextId="org.eclipse.ui.textEditorScope"
             sequence="M1+M2+G"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
-   </extension>
+       <key
+             commandId="aurora.ide.togglecomment"
+             contextId="org.eclipse.ui.textEditorScope"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M1+/">
+       </key>
+       <key
+             commandId="aurora.ide.togglecomment2"
+             contextId="org.eclipse.ui.textEditorScope"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M1+M2+/">
+       </key>
+ </extension>
+
    <extension
          point="org.eclipse.ui.handlers">
       <handler
@@ -858,4 +856,14 @@
             id="aurora.ide.viewer.statistics.StatisticsView">
       </view>
    </extension>
+    <extension
+          point="org.eclipse.core.runtime.contentTypes">
+       <content-type
+             default-charset="UTF-8"
+             file-extensions="screen,svc,bm,config"
+             id="aurora.ide.sourcefile"
+             name="Aurora Source File"
+             priority="normal">
+       </content-type>
+    </extension>
 </plugin>
