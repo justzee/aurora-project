@@ -15,12 +15,12 @@ import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 
-public class ToggleCommentAction2 extends Action implements
+public class ToggleBlockCommentAction extends Action implements
 		IEditorActionDelegate {
 	IEditorPart activeEditor;
 
-	public ToggleCommentAction2() {
-		setActionDefinitionId("aurora.ide.togglecomment2");
+	public ToggleBlockCommentAction() {
+		setActionDefinitionId("aurora.ide.toggleblockcomment");
 	}
 
 	public void run() {
@@ -80,16 +80,17 @@ public class ToggleCommentAction2 extends Action implements
 		}
 	}
 
+	/*
+	 * 不对嵌套的注释(非法)进行检测,仅检测两端是否符合要求
+	 */
 	private boolean isCommentOf(String text, String p, String s) {
 		int idx = text.indexOf(p);
 		if (idx == -1)
 			return false;
 		if (text.substring(0, idx).trim().length() > 0)
 			return false;
-		idx = text.indexOf(s, idx + p.length());
+		idx = text.lastIndexOf(s);
 		if (idx == -1)
-			return false;
-		if (idx != text.lastIndexOf(s))
 			return false;
 		if (text.substring(idx + s.length()).trim().length() > 0)
 			return false;

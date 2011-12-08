@@ -156,27 +156,27 @@
              class="aurora.ide.editor.textpage.action.CFormatAction"
              definitionId="aurora.ide.format"
              id="aurora.ide.editor.textpage.FormatAction"
-             label="格式化"
+             label="%source.format"
              menubarPath="aurora.ide.sourcemenu/context"> 
 	      </action>
        <action
-             class="aurora.ide.editor.textpage.action.ToggleCommentAction2"
-             definitionId="aurora.ide.togglecomment2"
-             id="aurora.ide.editor.textpage.togglecomment2"
-             label="切换块注释"
+             class="aurora.ide.editor.textpage.action.ToggleBlockCommentAction"
+             definitionId="aurora.ide.toggleblockcomment"
+             id="aurora.ide.editor.textpage.toggleblockcomment"
+             label="%source.toggleblockcomment"
              menubarPath="aurora.ide.sourcemenu/context">
        </action>
        <action
              class="aurora.ide.editor.textpage.action.ToggleCommentAction"
              definitionId="aurora.ide.togglecomment"
              id="aurora.ide.editor.textpage.togglecomment"
-             label="切换行注释"
+             label="%source.togglecomment"
              menubarPath="aurora.ide.sourcemenu/context">
        </action>
        <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
              id="aurora.ide.editor.textpage.GetFileNameAction"
-             label="复制文件名"
+             label="%source.copyfilename"
              menubarPath="aurora.ide.sourcemenu/context">
        </action>
 	   </viewerContribution>
@@ -665,14 +665,14 @@
     </command>
     <command
           categoryId="aurora.ide.commands"
-          description="Toggle comment"
+          description="Toggle Line Comment"
           id="aurora.ide.togglecomment"
           name="Aurora Toggle Line Comment">
     </command>
     <command
           categoryId="aurora.ide.commands"
-          description="Toggle comment2"
-          id="aurora.ide.togglecomment2"
+          description="Toggle Block Comment"
+          id="aurora.ide.toggleblockcomment"
           name="Aurora Toggle Block Comment">
     </command>
  </extension>
@@ -698,7 +698,7 @@
              sequence="M1+/">
        </key>
        <key
-             commandId="aurora.ide.togglecomment2"
+             commandId="aurora.ide.toggleblockcomment"
              contextId="org.eclipse.ui.textEditorScope"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="M1+M2+/">
