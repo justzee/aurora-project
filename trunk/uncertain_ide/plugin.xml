@@ -69,6 +69,13 @@
             id="aurora.ide.BusinessModelEditor"
             name="%editor.bm">
       </editor>
+      <editor
+            default="true"
+            name="Aurora Meta Example"
+            extensions="meta"
+            class="aurora.ide.meta.gef.editors.VScreenEditor"
+            id="aurora.ide.meta.gef.editors.VScreenEditor">
+      </editor>
       <!--
       <editor
             class="aurora.ide.editor.CollaborateEditor"
