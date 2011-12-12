@@ -128,29 +128,29 @@ public class VScreenEditorPaletteFactory {
 						"images/parallel16.gif"));
 		entries.add(combined);
 
-		combined = new CombinedTemplateCreationEntry("Parallel Activity",
-				"Create a  Parallel Activity", BOX.class, new SimpleFactory(
+		combined = new CombinedTemplateCreationEntry("Grid",
+				"Create a  Grid", Grid.class, new SimpleFactory(
 						Grid.class), ImageDescriptor.createFromFile(
 						AuroraPlugin.class, "images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
 
-		combined = new CombinedTemplateCreationEntry("Parallel Activity",
-				"Create a  Parallel Activity", TabFolder.class,
-				new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
-						AuroraPlugin.class, "images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
-		entries.add(combined);
-
-		combined = new CombinedTemplateCreationEntry("Parallel Activity",
-				"Create a  Parallel Activity", TabItem.class,
-				new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
-						AuroraPlugin.class, "images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
-		entries.add(combined);
+//		combined = new CombinedTemplateCreationEntry("Parallel Activity",
+//				"Create a  Parallel Activity", TabFolder.class,
+//				new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
+//						AuroraPlugin.class, "images/parallel16.gif"),
+//				ImageDescriptor.createFromFile(AuroraPlugin.class,
+//						"images/parallel16.gif"));
+//		entries.add(combined);
+//
+//		combined = new CombinedTemplateCreationEntry("Parallel Activity",
+//				"Create a  Parallel Activity", TabItem.class,
+//				new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
+//						AuroraPlugin.class, "images/parallel16.gif"),
+//				ImageDescriptor.createFromFile(AuroraPlugin.class,
+//						"images/parallel16.gif"));
+//		entries.add(combined);
 
 		drawer.addAll(entries);
 		return drawer;

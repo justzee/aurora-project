@@ -14,6 +14,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
 import aurora.ide.meta.gef.editors.models.Form;
+import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Label;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
@@ -33,11 +34,13 @@ public class AuroraPartFactory implements EditPartFactory {
 			part = new BoxPart();
 		} else if (model instanceof Input) {
 			part = new InputPart();
-		} else{
+		} else if (model instanceof Grid) {
+			part = new GridPart();
+		} else {
 			part = new BoxPart();
 
 		}
-		
+
 		// else if (model instanceof SequentialActivity)
 		// part = new SequentialActivityPart();
 		// else if (model instanceof Activity)

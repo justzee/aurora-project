@@ -27,6 +27,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	private String type = "";
 
 	private String prompt = "";
+	
+	private String bindTarget = "";
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		listeners.addPropertyChangeListener(l);
@@ -149,6 +151,14 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 		String old = this.prompt;
 		this.prompt = prompt;
 		firePropertyChange(PROMPT, old, prompt);
+	}
+
+	public String getBindTarget() {
+		return bindTarget;
+	}
+
+	public void setBindTarget(String bindTarget) {
+		this.bindTarget = bindTarget;
 	}
 
 }
