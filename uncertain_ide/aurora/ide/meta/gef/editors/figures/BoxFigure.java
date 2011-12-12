@@ -13,7 +13,6 @@ package aurora.ide.meta.gef.editors.figures;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.GroupBoxBorder;
 import org.eclipse.draw2d.Label;
 
 import aurora.ide.meta.gef.editors.models.BOX;
@@ -35,17 +34,18 @@ public class BoxFigure extends Figure {
 	// private Text text = new Text();
 
 	private String type;
+
 	public String getType() {
 		return type;
 	}
 
 	public void setType(String type) {
 		this.type = type;
-		if(BOX.HBOX.equals(type)){
-			this.setBorder(new GroupBoxBorder("Hbox"));
+		if (BOX.HBOX.equals(type)) {
+			this.setBorder(new VirtualBoxBorder("H"));
 		}
-		if(BOX.VBOX.equals(type)){
-			this.setBorder(new GroupBoxBorder("Vbox"));
+		if (BOX.VBOX.equals(type)) {
+			this.setBorder(new VirtualBoxBorder("V"));
 		}
 	}
 
@@ -149,7 +149,5 @@ public class BoxFigure extends Figure {
 		hasFocus = b;
 		repaint();
 	}
-
-	
 
 }
