@@ -34,6 +34,7 @@
 
 || *属性名* || *类型* || *描述* || *必须* || *默认值* ||
 || header_id || in || fnd_interface_headers表中的header_id || true || ||
+|| dataSourceName || in || 导入数据库的dataSourceName || fasle || ||
 || user_id || in || 当前用户user_id || false || ${/session/@user_id} ||
 || separator || in || 导入文本类型时的分隔符 || false || , ||
 || job_id || in || 任务id || false || ||
