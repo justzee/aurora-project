@@ -35,7 +35,7 @@ public class SaveToDBJob extends Job {
 			return Status.CANCEL_STATUS;
 		}
 		IProject project = AuroraPlugin.getWorkspace().getRoot()
-				.getProject(statistician.getProject().getProjectName());
+				.getProject(statistician.getProject().getEclipseProjectName());
 		if (!project.exists()) {
 			showMessage("工程不存在，无法保存");
 			return Status.CANCEL_STATUS;

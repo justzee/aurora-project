@@ -215,7 +215,7 @@ public class StatisticianRunner implements IRunningListener {
 	protected Statistician projectStatistician(Object object) {
 		if (object instanceof IProject) {
 			IProject project = (IProject) object;
-			StatisticsProject sp = new StatisticsProject(project.getName());
+			StatisticsProject sp = new StatisticsProject(project.getName(),project.getName());
 			RepositoryInfo repInfo = createCVSInfo(project);
 
 			if (repInfo == null) {
