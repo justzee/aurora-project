@@ -19,4 +19,6 @@ public interface IProperties {
 	String COL = "col";
 	String TITLE = "title";
 	String LABELWIDTH = "labelWidth";
+	String REQUIRED = "required";
+	String READONLY = "readOnly";
 }
