@@ -17,6 +17,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.meta.gef.editors.ImagesUtils;
@@ -33,8 +34,7 @@ public class InputField extends Figure {
 	private boolean selected;
 	private boolean hasFocus;
 	private int labelWidth;
-	private String prompt = "prompt : ";
-	private String type;
+	private Input model = null;
 
 	public InputField() {
 		// this.add(label);
@@ -43,6 +43,10 @@ public class InputField extends Figure {
 		// text.setTextAlignment(PositionConstants.CENTER);
 		// this.setLayoutManager(new FlowLayout());
 		// init();
+	}
+
+	public void setModel(Input model) {
+		this.model = model;
 	}
 
 	public int getLabelWidth() {
@@ -58,24 +62,9 @@ public class InputField extends Figure {
 		super.setBounds(rect);
 	}
 
-	private void init() {
-		// label.setText(prompt);
-		// text.setText("c");
-		// this.validate();
-	}
-
 	@Override
 	public void handleFocusGained(FocusEvent event) {
 		super.handleFocusGained(event);
-	}
-
-	public void setPrompt(String prompt) {
-		this.prompt = prompt;
-
-	}
-
-	public String getPrompt() {
-		return prompt;
 	}
 
 	/**
@@ -84,7 +73,7 @@ public class InputField extends Figure {
 	protected void paintFigure(Graphics graphics) {
 
 		super.paintFigure(graphics);
-
+		String prompt = model.getPrompt();
 		Dimension textExtents = FigureUtilities.getTextExtents(prompt,
 				getFont());
 		Rectangle textRectangle = new Rectangle();
@@ -111,7 +100,17 @@ public class InputField extends Figure {
 		inputRectangle.width = j <= 0 ? 0 : j;
 		inputRectangle.height = getBounds().height - 1;
 
-		FigureUtilities.paintEtchedBorder(graphics, inputRectangle);
+		// FigureUtilities.paintEtchedBorder(graphics, inputRectangle);
+		graphics.setForegroundColor(ColorConstants.BORDER);
+		graphics.drawRectangle(inputRectangle.getResized(-1, -1));
+		Rectangle r = inputRectangle.getTranslated(1, 1).getResized(-2, -2);
+		Color bgColor = ColorConstants.WHITE;
+		if (model.isRequired())
+			bgColor = ColorConstants.REQUIRED;
+		if (model.isReadOnly())
+			bgColor = ColorConstants.READONLY;
+		graphics.setBackgroundColor(bgColor);
+		graphics.fillRectangle(r);
 
 		Image image = getImage();
 
@@ -121,28 +120,17 @@ public class InputField extends Figure {
 					getImageLocation().y, 16, 16, imageR.getTopRight().x - 18,
 					imageR.getTopRight().y, 16, 16);
 		}
-
-		// image = new Image(display, imageData);
-		// offScreenImageGC.drawImage(
-		// image, 
-		// 0,
-		// 42,
-		// 16,
-		// 16,
-		// 0,
-		// 0,
-		// 16,
-		// 16);
 	}
 
 	private Image getImage() {
-		if (Input.TEXT.equals(type))
+		if (Input.TEXT.equals(model.getType()))
 			return null;
 		return ImagesUtils.getImage("itembar");
 	}
 
 	private Point getImageLocation() {
 		Point p = new Point(0, 0);
+		String type = model.getType();
 		if (Input.Combo.equals(type)) {
 			return p.setY(0);
 		}
@@ -177,13 +165,4 @@ public class InputField extends Figure {
 		hasFocus = b;
 		repaint();
 	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 }

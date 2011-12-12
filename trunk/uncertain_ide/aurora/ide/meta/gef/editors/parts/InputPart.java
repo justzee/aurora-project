@@ -5,7 +5,7 @@ import org.eclipse.gef.EditPolicy;
 
 import aurora.ide.meta.gef.editors.figures.BoxFigure;
 import aurora.ide.meta.gef.editors.figures.InputField;
-import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
@@ -18,7 +18,7 @@ public class InputPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
 	 */
 	protected IFigure createFigure() {
-	
+
 		// l.setIcon(FlowImages.GEAR);
 		return new InputField();
 	}
@@ -27,17 +27,16 @@ public class InputPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
 	 */
 	protected void refreshVisuals() {
-		type = this.getComponent().getType();
-		this.getFigure().setLocation(
-				((AuroraComponent) this.getModel()).getLocation());
-		
-		((InputField) getFigure()).setPrompt("prompt:");
-		((InputField) getFigure()).setType(type);
-		IFigure parent = ((InputField) getFigure()).getParent();
+		InputField figure = (InputField) getFigure();
+		Input model = (Input) getModel();
+		figure.setLocation(model.getLocation());
+		figure.setModel(model);
+
+		IFigure parent = figure.getParent();
 		if (parent instanceof BoxFigure) {
-			((InputField) getFigure()).setLabelWidth(((BoxFigure) parent).getLabelWidth());
+			figure.setLabelWidth(((BoxFigure) parent).getLabelWidth());
 		} else {
-			((InputField) getFigure()).setLabelWidth(ViewDiagram.DLabelWidth);
+			figure.setLabelWidth(ViewDiagram.DLabelWidth);
 		}
 		super.refreshVisuals();
 

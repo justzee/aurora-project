@@ -7,6 +7,7 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.TitleBarBorder;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.meta.gef.editors.ImagesUtils;
@@ -21,7 +22,7 @@ public class FormBorder extends TitleBarBorder {
 	@Override
 	public void paint(IFigure figure, Graphics g, Insets insets) {
 		tempRect.setBounds(getPaintRectangle(figure, insets));
-		
+
 		FigureUtilities.paintEtchedBorder(g, tempRect);
 		Rectangle rec = tempRect;
 		rec.height = Math.min(rec.height, getTextExtents(figure).height
@@ -30,7 +31,8 @@ public class FormBorder extends TitleBarBorder {
 
 		g.fillRectangle(rec);
 		Image i = ImagesUtils.getImage("toolbar_bg");
-		Rectangle src =new Rectangle(i.getBounds().x,i.getBounds().y,i.getBounds().width,i.getBounds().height);
+		Rectangle src = new Rectangle(i.getBounds().x, i.getBounds().y,
+				i.getBounds().width, i.getBounds().height);
 		g.drawImage(i, src, rec);
 
 		int x = rec.x + padding.left;
@@ -47,9 +49,14 @@ public class FormBorder extends TitleBarBorder {
 		g.setFont(getFont(figure));
 		g.setForegroundColor(getTextColor());
 		g.drawString(getLabel(), x, y);
-	
+
 		FigureUtilities.paintEtchedBorder(g, tempRect);
 
-		}
+	}
+
+	@Override
+	public Color getTextColor() {
+		return ColorConstants.TITLETEXT;
+	}
 
 }
