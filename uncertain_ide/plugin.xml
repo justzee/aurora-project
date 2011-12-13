@@ -857,7 +857,7 @@
        </showInPart>
     </perspectiveExtension>
     <perspectiveExtension
-          targetID="org.eclipse.ui.resourcePerspective">
+          targetID="*">
        <perspectiveShortcut
              id="aurora.ide.perspectives.AuroraPerspective">
        </perspectiveShortcut>
