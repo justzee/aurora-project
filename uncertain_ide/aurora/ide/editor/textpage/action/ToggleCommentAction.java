@@ -138,7 +138,7 @@ public class ToggleCommentAction extends Action implements
 				// regions.length can never be 1
 				if (regions.length > 3 || !isWhiteRegion(doc, regions[0])) {
 					commentSelectedXML(doc, selectionProvider, sRange.x,
-							sRange.x);
+							sRange.y);
 					return;
 				}
 				if (regions.length == 3 && !isWhiteRegion(doc, regions[2])) {
