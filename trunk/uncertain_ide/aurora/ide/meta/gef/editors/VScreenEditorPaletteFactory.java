@@ -21,6 +21,7 @@ import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.VBox;
@@ -147,6 +148,15 @@ public class VScreenEditorPaletteFactory {
 						"images/parallel16.gif"));
 		entries.add(combined);
 
+		
+
+		combined = new CombinedTemplateCreationEntry("Grid Column",
+				"Create a  Grid Column", GridColumn.class,
+				new SimpleFactory(GridColumn.class), ImageDescriptor.createFromFile(
+						AuroraPlugin.class, "images/parallel16.gif"),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
+						"images/parallel16.gif"));
+		entries.add(combined);
 		// combined = new CombinedTemplateCreationEntry("Parallel Activity",
 		// "Create a  Parallel Activity", TabFolder.class,
 		// new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(

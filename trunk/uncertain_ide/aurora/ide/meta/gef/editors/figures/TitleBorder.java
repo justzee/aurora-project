@@ -12,11 +12,17 @@ import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.meta.gef.editors.ImagesUtils;
 
-public class FormBorder extends TitleBarBorder {
+public class TitleBorder extends TitleBarBorder {
 	private Insets padding = new Insets(1, 3, 2, 2);
+	private String imageKey = "toolbar_bg";
 
-	public FormBorder(String string) {
+	public TitleBorder(String string) {
 		super(string);
+	}
+
+	public TitleBorder(String title, String imageKey) {
+		super(title);
+		this.imageKey = imageKey;
 	}
 
 	@Override
@@ -24,15 +30,19 @@ public class FormBorder extends TitleBarBorder {
 		tempRect.setBounds(getPaintRectangle(figure, insets));
 
 		FigureUtilities.paintEtchedBorder(g, tempRect);
+
+		
+		
 		Rectangle rec = tempRect;
-		rec.height = Math.min(rec.height, getTextExtents(figure).height
-				+ padding.getHeight());
+//		rec.height = Math.min(rec.height, getTextExtents(figure).height
+//				+ padding.getHeight());
+		rec.height = 25;
 		g.clipRect(rec);
 
 		g.fillRectangle(rec);
-		Image i = ImagesUtils.getImage("toolbar_bg");
+		Image i = getBGImage();
 		Rectangle src = new Rectangle(i.getBounds().x, i.getBounds().y,
-				i.getBounds().width, i.getBounds().height);
+				i.getBounds().width, 25);
 		g.drawImage(i, src, rec);
 
 		int x = rec.x + padding.left;
@@ -52,6 +62,10 @@ public class FormBorder extends TitleBarBorder {
 
 		FigureUtilities.paintEtchedBorder(g, tempRect);
 
+	}
+
+	private Image getBGImage() {
+		return ImagesUtils.getImage(imageKey);
 	}
 
 	@Override

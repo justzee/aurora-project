@@ -23,6 +23,8 @@ public class ImagesUtils {
 		{
 			this.put("toolbar_bg", "toolbar_bg.gif");
 			this.put("itembar", "itembar.gif");
+			this.put("btn", "btn.gif");
+			this.put("grid_bg", "grid_bg.gif");
 		}
 	};
 

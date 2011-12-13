@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.parts.BoxPart;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
+import aurora.ide.meta.gef.editors.parts.GridColumnPart;
 import aurora.ide.meta.gef.editors.parts.GridPart;
 import aurora.ide.meta.gef.editors.parts.InputPart;
 
@@ -18,6 +19,9 @@ public class GraphLayoutManager {
 		}
 		if(ep instanceof GridPart){
 			return new GridBackLayout();
+		}
+		if(ep instanceof GridColumnPart){
+			return new GridColumnBackLayout();
 		}
 		return new BackLayout();
 	}

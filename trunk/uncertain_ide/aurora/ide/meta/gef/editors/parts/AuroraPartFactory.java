@@ -16,6 +16,7 @@ import org.eclipse.gef.EditPartFactory;
 import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Label;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
@@ -39,7 +40,9 @@ public class AuroraPartFactory implements EditPartFactory {
 			part = new GridPart();
 		} else if (model instanceof Button) {
 			part = new ButtonPart();
-		} else {
+		} else if (model instanceof GridColumn) {
+			part = new GridColumnPart();
+		}else {
 			part = new BoxPart();
 
 		}

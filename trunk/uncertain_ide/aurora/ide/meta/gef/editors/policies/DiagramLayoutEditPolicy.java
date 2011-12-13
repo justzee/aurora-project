@@ -37,20 +37,20 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	protected void decorateChild(EditPart child) {
-		System.out.println("decorateChild");
+//		System.out.println("decorateChild");
 		super.decorateChild(child);
 	}
 
 	@Override
 	protected void decorateChildren() {
-		System.out.println("decorateChildren");
+//		System.out.println("decorateChildren");
 		super.decorateChildren();
 	}
 
 	@Override
 	public EditPart getTargetEditPart(Request request) {
 	
-		System.out.println(request.getType());
+//		System.out.println(request.getType());
 		return super.getTargetEditPart(request);
 	}
 
