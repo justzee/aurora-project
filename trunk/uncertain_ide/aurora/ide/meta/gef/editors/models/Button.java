@@ -1,20 +1,18 @@
 package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.graphics.Image;
-
-import aurora.ide.meta.gef.editors.ImagesUtils;
 
 public class Button extends AuroraComponent {
+	public static final String ADD = "add";
 	public static final String SAVE = "save";
 	public static final String DELETE = "delete";
 	public static final String CLEAR = "clear";
-	public static final String ADD = "add";
+	public static final String EXCEL = "excel";
 	public static final String DEFAULT = "default";
 
 	private String buttonType = DEFAULT;
 	private String text = "button";
-	private String icon;
+	private String icon = "";
 	private String function;
 	private String title;
 
@@ -40,19 +38,6 @@ public class Button extends AuroraComponent {
 		return icon;
 	}
 
-	// 在 figure 中使用
-	public Image getImage() {
-		if (CLEAR.equals(buttonType))
-			return ImagesUtils.getImage("aurora/clear.gif");
-		else if (ADD.equals(buttonType))
-			return ImagesUtils.getImage("aurora/add.gif");
-		else if (DELETE.equals(buttonType))
-			return ImagesUtils.getImage("aurora/delete.gif");
-		else if (SAVE.equals(buttonType))
-			return ImagesUtils.getImage("aurora/save.gif");
-		return ImagesUtils.getImage("aurora/default.gif");
-	}
-
 	public String getText() {
 		if (CLEAR.equals(buttonType))
 			return "清除";
@@ -62,6 +47,8 @@ public class Button extends AuroraComponent {
 			return "删除";
 		else if (SAVE.equals(buttonType))
 			return "保存";
+		else if (EXCEL.equals(buttonType))
+			return "导出";
 		return text;
 	}
 
@@ -70,7 +57,7 @@ public class Button extends AuroraComponent {
 	}
 
 	public void setButtonType(String buttonType) {
-		if (this.buttonType.equals(buttonType))
+		if (eq(this.buttonType, buttonType))
 			return;
 		String oldV = this.buttonType;
 		this.buttonType = buttonType;

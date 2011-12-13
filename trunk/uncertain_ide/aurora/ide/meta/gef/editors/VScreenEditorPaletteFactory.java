@@ -95,7 +95,6 @@ public class VScreenEditorPaletteFactory {
 				new SimpleFactory(Button.class) {
 					public Object getNewObject() {
 						Button newObject = (Button) super.getNewObject();
-						newObject.setButtonType(Button.SAVE);
 						return newObject;
 					}
 				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
