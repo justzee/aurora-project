@@ -13,6 +13,7 @@ package aurora.ide.meta.gef.editors.parts;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
+import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.Input;
@@ -36,6 +37,8 @@ public class AuroraPartFactory implements EditPartFactory {
 			part = new InputPart();
 		} else if (model instanceof Grid) {
 			part = new GridPart();
+		} else if (model instanceof Button) {
+			part = new ButtonPart();
 		} else {
 			part = new BoxPart();
 
