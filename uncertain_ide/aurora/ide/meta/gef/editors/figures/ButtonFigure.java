@@ -31,18 +31,17 @@ public class ButtonFigure extends Figure {
 
 	private boolean selected;
 	private boolean hasFocus;
-	static Image bgImg = ImagesUtils.getImage("btn.gif");
+	private static Image bgImg = ImagesUtils.getImage("btn.gif");
+	private static String[] buttonTypes = { Button.ADD, Button.SAVE,
+			Button.DELETE, Button.CLEAR, Button.EXCEL };
+	private static Image stdimg = ImagesUtils
+			.getImage("aurora/toolbar_btn.gif");
+	private static Image defaultimg = ImagesUtils
+			.getImage("aurora/default.gif");
+
 	private Button model = null;
-	private String type;
 
 	public ButtonFigure() {
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
 	}
 
 	@Override
@@ -68,22 +67,39 @@ public class ButtonFigure extends Figure {
 		g.drawImage(bgImg, 3, 4, 3, 2, rect.x + dim.width - 3, rect.y
 				+ dim.height - 2, 3, 2);// br
 
-		String prompt = model.getText();
-		Dimension textExtents = FigureUtilities.getTextExtents(prompt,
+		String text = model.getText();
+		Dimension textExtents = FigureUtilities.getTextExtents(text,
 				getFont());
-		Image icon = model.getImage();
-		if (icon == null) {
-			g.drawString(prompt, rect.x + (dim.width - textExtents.width) / 2,
+		Rectangle r1 = getStdImgRect();
+		if (r1 == null) {
+			g.drawString(text, rect.x + (dim.width - textExtents.width) / 2,
 					rect.y + (dim.height - textExtents.height) / 2);
 		} else {
-			Rectangle r1 = new Rectangle(icon.getBounds());
 			Rectangle r2 = new Rectangle(rect.x
 					+ (dim.width - textExtents.width - 16) / 2, rect.y
-					+ (dim.height - r1.height) / 2, 16, 16);
-			g.drawImage(icon, r1, r2);
-			g.drawString(prompt, rect.x + (dim.width - textExtents.width) / 2
+					+ (dim.height - r1.height) / 2, 16, 17);
+			g.drawImage(getBgImage(), r1, r2);
+			g.drawString(text, rect.x + (dim.width - textExtents.width) / 2
 					+ 8, rect.y + (dim.height - textExtents.height) / 2);
 		}
+	}
+
+	private Rectangle getStdImgRect() {
+		String btype = model.getButtonType();
+		for (int i = 0; i < buttonTypes.length; i++) {
+			if (buttonTypes[i].equals(btype)) {
+				return new Rectangle(0, 17 * i, 16, 17);
+			}
+		}
+		if (model.getIcon() == null || model.getIcon().length() == 0)
+			return null;
+		return new Rectangle(defaultimg.getBounds());
+	}
+
+	private Image getBgImage() {
+		if (model.getButtonType().equals(Button.DEFAULT))
+			return defaultimg;
+		return stdimg;
 	}
 
 	/**
