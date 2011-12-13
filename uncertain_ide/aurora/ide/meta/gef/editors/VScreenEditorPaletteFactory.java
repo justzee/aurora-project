@@ -18,12 +18,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.meta.gef.editors.models.BOX;
+import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
-import aurora.ide.meta.gef.editors.models.TabFolder;
-import aurora.ide.meta.gef.editors.models.TabItem;
 import aurora.ide.meta.gef.editors.models.VBox;
 
 public class VScreenEditorPaletteFactory {
@@ -90,6 +89,19 @@ public class VScreenEditorPaletteFactory {
 						"images/gear16.gif"), ImageDescriptor.createFromFile(
 						Input.class, "images/gear16.gif"));
 		entries.add(combined);
+		// /button
+		combined = new CombinedTemplateCreationEntry("Button",
+				"Create a Button", Button.class,
+				new SimpleFactory(Button.class) {
+					public Object getNewObject() {
+						Button newObject = (Button) super.getNewObject();
+						newObject.setButtonType(Button.SAVE);
+						return newObject;
+					}
+				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
+						"images/gear16.gif"), ImageDescriptor.createFromFile(
+						Button.class, "images/gear16.gif"));
+		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Form", "Create a  Form",
 				Grid.class, new SimpleFactory(Form.class),
@@ -105,7 +117,7 @@ public class VScreenEditorPaletteFactory {
 						newObject.setType(BOX.HBOX);
 						newObject.setCol(50);
 						newObject.setRow(1);
-//						newObject.set
+						// newObject.set
 						return newObject;
 					}
 				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
@@ -128,29 +140,29 @@ public class VScreenEditorPaletteFactory {
 						"images/parallel16.gif"));
 		entries.add(combined);
 
-		combined = new CombinedTemplateCreationEntry("Grid",
-				"Create a  Grid", Grid.class, new SimpleFactory(
-						Grid.class), ImageDescriptor.createFromFile(
-						AuroraPlugin.class, "images/parallel16.gif"),
+		combined = new CombinedTemplateCreationEntry("Grid", "Create a  Grid",
+				Grid.class, new SimpleFactory(Grid.class),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
+						"images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
 
-//		combined = new CombinedTemplateCreationEntry("Parallel Activity",
-//				"Create a  Parallel Activity", TabFolder.class,
-//				new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
-//						AuroraPlugin.class, "images/parallel16.gif"),
-//				ImageDescriptor.createFromFile(AuroraPlugin.class,
-//						"images/parallel16.gif"));
-//		entries.add(combined);
-//
-//		combined = new CombinedTemplateCreationEntry("Parallel Activity",
-//				"Create a  Parallel Activity", TabItem.class,
-//				new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
-//						AuroraPlugin.class, "images/parallel16.gif"),
-//				ImageDescriptor.createFromFile(AuroraPlugin.class,
-//						"images/parallel16.gif"));
-//		entries.add(combined);
+		// combined = new CombinedTemplateCreationEntry("Parallel Activity",
+		// "Create a  Parallel Activity", TabFolder.class,
+		// new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
+		// AuroraPlugin.class, "images/parallel16.gif"),
+		// ImageDescriptor.createFromFile(AuroraPlugin.class,
+		// "images/parallel16.gif"));
+		// entries.add(combined);
+		//
+		// combined = new CombinedTemplateCreationEntry("Parallel Activity",
+		// "Create a  Parallel Activity", TabItem.class,
+		// new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
+		// AuroraPlugin.class, "images/parallel16.gif"),
+		// ImageDescriptor.createFromFile(AuroraPlugin.class,
+		// "images/parallel16.gif"));
+		// entries.add(combined);
 
 		drawer.addAll(entries);
 		return drawer;
