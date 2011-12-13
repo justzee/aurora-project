@@ -13,9 +13,14 @@ package aurora.ide.meta.gef.editors.figures;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.GroupBoxBorder;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.geometry.Insets;
 
 import aurora.ide.meta.gef.editors.models.BOX;
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.GridColumn;
 
 /**
  * A customized Label for SimpleActivities. Primary selection is denoted by
@@ -23,7 +28,7 @@ import aurora.ide.meta.gef.editors.models.BOX;
  * 
  * @author Daniel Lee
  */
-public class BoxFigure extends Figure {
+public class GridColumnFigure extends Figure {
 
 	private boolean selected;
 	private boolean hasFocus;
@@ -34,25 +39,26 @@ public class BoxFigure extends Figure {
 	// private Text text = new Text();
 
 	private String type;
-
 	public String getType() {
 		return type;
 	}
 
 	public void setType(String type) {
 		this.type = type;
-		if (BOX.HBOX.equals(type)) {
-			this.setBorder(new VirtualBoxBorder("H"));
+		if(BOX.HBOX.equals(type)){
+			this.setBorder(new GroupBoxBorder());
 		}
-		if (BOX.VBOX.equals(type)) {
-			this.setBorder(new VirtualBoxBorder("V"));
+		if(BOX.VBOX.equals(type)){
+			this.setBorder(new GroupBoxBorder("Vbox"));
 		}
 	}
 
 	private Figure titleBar = new Label("敬请期待。。。。");
 	private Figure bodyArea = new Figure();
+	private GridColumn grid;
+	private int columnHight = 25;
 
-	public BoxFigure() {
+	public GridColumnFigure() {
 		// GridLayout gridLayout = new GridLayout();
 		// gridLayout.numColumns = 1;
 		// gridLayout.horizontalSpacing = 10;
@@ -67,7 +73,7 @@ public class BoxFigure extends Figure {
 		// this.setBorder(border2);
 		// this.setBorder(new FrameBorder("a"));
 		// this.setBorder(new GroupBoxBorder("xx"));
-		this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
+		this.setBorder(new GridColumnBorder("prompt","grid_bg",this));
 		// titleBar.setBorder(new TitleBarBorder());
 
 		// gridLayout = new GridLayout();
@@ -149,5 +155,22 @@ public class BoxFigure extends Figure {
 		hasFocus = b;
 		repaint();
 	}
+
+	public void setModel(GridColumn component) {
+		this.grid = component;
+		
+	}
+
+	public int getColumnHight() {
+		
+		return columnHight ;
+	}
+
+	public void setColumnHight(int columnHight) {
+		this.columnHight = columnHight;
+		this.repaint();
+	}
+
+	
 
 }

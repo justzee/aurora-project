@@ -4,18 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.draw2d.ScrollBar;
-import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
-import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
-import aurora.ide.meta.gef.editors.parts.GridPart;
+import aurora.ide.meta.gef.editors.parts.GridColumnPart;
 
-public class GridBackLayout extends BackLayout {
+public class GridColumnBackLayout extends BackLayout {
 
 	private int col;
 	private int row;
@@ -35,15 +32,15 @@ public class GridBackLayout extends BackLayout {
 	private int[] maxColWidths;
 	private int[] maxRowHights;
 	private int realRow;
-	private int maxDepth = 0;
-	private Map<ComponentPart, Integer> depthMap = new HashMap<ComponentPart, Integer>();
 
 	private Map<ComponentPart, Rectangle> partMap;
+	private ComponentPart editPart;
 
 	public Rectangle layout(ComponentPart parent) {
 
-		if (parent instanceof GridPart) {
-			box = (Grid) parent.getComponent();
+		if (parent instanceof GridColumnPart) {
+			this.editPart = parent;
+			box = (GridColumn) parent.getComponent();
 			col = 100;
 			row = 1;
 			Rectangle fBounds = parent.getFigure().getBounds();
@@ -94,40 +91,8 @@ public class GridBackLayout extends BackLayout {
 			Rectangle layout = this.partMap.get(ep);
 			applyToFigure(ep, layout);
 		}
-		calculateChildDepth(parent, 1);
-		applyToALlChildCH(parent);
-
 		calculateRectangle = calculateRectangle(parent);
 		return calculateRectangle;
-	}
-
-	private void applyToALlChildCH(ComponentPart parent) {
-		List children = parent.getChildren();
-		int columnHight = 25;
-		for (int i = 0; i < children.size(); i++) {
-			ComponentPart cp = (ComponentPart) children.get(i);
-			if (cp.getChildren().size() > 0) {
-				((GridColumnFigure) cp.getFigure()).setColumnHight(columnHight);
-			} else {
-				Integer depth = depthMap.get(cp);
-				int l = this.maxDepth - depth+1;
-				((GridColumnFigure) cp.getFigure())
-						.setColumnHight((columnHight * l));
-			}
-			applyToALlChildCH(cp);
-		}
-
-	}
-
-	private void calculateChildDepth(ComponentPart parent, int depth) {
-		List children = parent.getChildren();
-		for (int i = 0; i < children.size(); i++) {
-			maxDepth = Math.max(maxDepth, depth);
-			depthMap.put((ComponentPart) children.get(i), depth);
-			int t = depth;
-			t++;
-			calculateChildDepth((ComponentPart) children.get(i), t);
-		}
 	}
 
 	private void calculateMaxWidthHight() {
@@ -161,6 +126,7 @@ public class GridBackLayout extends BackLayout {
 				rr.setLocation(location);
 				rr.setHeight(selfRectangle.height - 25);
 				location.x += maxColWidths[j] + 0 - 1;
+
 			}
 			location.x = 0 + selfRectangle.getTopLeft().x;
 			location.y = location.y + maxRowHights[i] + 0;
@@ -175,52 +141,13 @@ public class GridBackLayout extends BackLayout {
 			ComponentPart cp = (ComponentPart) children.get(i);
 			selfRectangle.union(cp.getFigure().getBounds().getCopy());
 		}
-		if (selfRectangle.width > this.selfRectangle.width) {
+
+		if (!selfRectangle.isEmpty()) {
 			// return selfRectangle.expand(1, 1);
-			return this.selfRectangle.getCopy().setWidth(selfRectangle.width);
+			return selfRectangle;
 		}
-		// ScrollBar horizontalScrollBar = ((ScrollPane)
-		// parent.getFigure()).getHorizontalScrollBar();
-		// horizontalScrollBar.setBounds(
-		// new Rectangle(selfRectangle.x,
-		// selfRectangle.getBottomLeft().y - 25,
-		// selfRectangle.width, 35));
-		// horizontalScrollBar.setVisible(true);
-
 		selfRectangle = parent.getComponent().getBounds();
-		return this.selfRectangle.setWidth(selfRectangle.width);
+		return selfRectangle;
 	}
-
-	// 按顺序布局，列大小不相等算法。
-	protected Rectangle newChildLocation(Rectangle layout) {
-		if (lastCol == col) {
-			lastRow++;
-			lastCol = 0;
-			location.x = 0 + selfRectangle.getTopLeft().x;
-			location.y = location.y + maxColHight + 0;
-			maxColHight = 0;
-		}
-		layout.setLocation(location.getCopy());
-		location.x += layout.width + 0;
-		lastCol++;
-		maxColHight = Math.max(maxColHight, layout.height);
-		return layout.getCopy();
-	}
-
-	// gcf.setColumnHight(this.getColumnHight());
-
-	// public int getColumnHight() {
-	// int columnHight = 25;
-	//
-	// List children = editPart.getFigure().getChildren();
-	// for (int i = 0; i < children.size();) {
-	// GridColumnFigure gcf = (GridColumnFigure) children.get(i);
-	// columnHight += gcf.getColumnHight();
-	// break;
-	// }
-	// System.out.println(columnHight);
-	//
-	// return columnHight - 25;
-	// }
 
 }

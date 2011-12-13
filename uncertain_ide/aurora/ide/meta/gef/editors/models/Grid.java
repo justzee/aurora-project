@@ -3,28 +3,23 @@ package aurora.ide.meta.gef.editors.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Grid extends Container {
-	// TODO col??
-	private List<String> colNames = new ArrayList<String>();
+import org.eclipse.draw2d.geometry.Dimension;
+
+public class Grid extends GridColumn {
+	
 	private boolean hasToolbar;
 	// TODO button?
 	private List<String> toobarButtons = new ArrayList<String>();
 	private boolean hasNavBar;
 	private String navBarType;
 
-	public List<String> getColNames() {
-		return colNames;
+	
+
+	public Grid() {
+		super();
+		this.setSize(new Dimension(800, 380));
 	}
 
-	public void removeCol(String col) {
-		colNames.remove(col);
-		firePropertyChange(REMOVE_COL, col, null);
-	}
-
-	public void addCol(String col) {
-		colNames.add(col);
-		firePropertyChange(ADD_COl, null, col);
-	}
 
 	public boolean isHasToolbar() {
 		return hasToolbar;

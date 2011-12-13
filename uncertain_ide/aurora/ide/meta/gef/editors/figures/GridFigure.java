@@ -15,6 +15,7 @@ import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GroupBoxBorder;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.ScrollPane;
 
 import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Grid;
@@ -69,9 +70,11 @@ public class GridFigure extends Figure {
 		// this.setBorder(border2);
 		// this.setBorder(new FrameBorder("a"));
 		// this.setBorder(new GroupBoxBorder("xx"));
-		this.setBorder(new FormBorder("大家好 ： 敬请期待。。。"));
+		this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
 		// titleBar.setBorder(new TitleBarBorder());
-
+		
+		
+		
 		// gridLayout = new GridLayout();
 		// gridLayout.numColumns = 3;
 		// gridLayout.horizontalSpacing = 10;

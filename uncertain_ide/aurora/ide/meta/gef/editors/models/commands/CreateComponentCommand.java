@@ -31,7 +31,7 @@ public class CreateComponentCommand extends Command {
 
 	public void execute() {
 		if (this.location != null) {
-			System.out.println(location);
+//			System.out.println(location);
 			this.child.setLocation(this.location);
 		}
 	
