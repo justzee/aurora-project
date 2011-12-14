@@ -24,6 +24,8 @@ import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
+import aurora.ide.meta.gef.editors.models.Navbar;
+import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.VBox;
 
 public class VScreenEditorPaletteFactory {
@@ -157,21 +159,21 @@ public class VScreenEditorPaletteFactory {
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
-		// combined = new CombinedTemplateCreationEntry("Parallel Activity",
-		// "Create a  Parallel Activity", TabFolder.class,
-		// new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
-		// AuroraPlugin.class, "images/parallel16.gif"),
-		// ImageDescriptor.createFromFile(AuroraPlugin.class,
-		// "images/parallel16.gif"));
-		// entries.add(combined);
-		//
-		// combined = new CombinedTemplateCreationEntry("Parallel Activity",
-		// "Create a  Parallel Activity", TabItem.class,
-		// new SimpleFactory(Grid.class), ImageDescriptor.createFromFile(
-		// AuroraPlugin.class, "images/parallel16.gif"),
-		// ImageDescriptor.createFromFile(AuroraPlugin.class,
-		// "images/parallel16.gif"));
-		// entries.add(combined);
+		 combined = new CombinedTemplateCreationEntry("Toolbar",
+		 "Create a  Toolbar ", Toolbar.class,
+		 new SimpleFactory(Toolbar.class), ImageDescriptor.createFromFile(
+		 AuroraPlugin.class, "images/parallel16.gif"),
+		 ImageDescriptor.createFromFile(AuroraPlugin.class,
+		 "images/parallel16.gif"));
+		 entries.add(combined);
+		
+		 combined = new CombinedTemplateCreationEntry("Navbar",
+		 "Create a  Navbar", Navbar.class,
+		 new SimpleFactory(Navbar.class), ImageDescriptor.createFromFile(
+		 AuroraPlugin.class, "images/parallel16.gif"),
+		 ImageDescriptor.createFromFile(AuroraPlugin.class,
+		 "images/parallel16.gif"));
+		 entries.add(combined);
 
 		drawer.addAll(entries);
 		return drawer;

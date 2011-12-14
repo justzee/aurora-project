@@ -7,6 +7,8 @@ import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.GridColumnPart;
 import aurora.ide.meta.gef.editors.parts.GridPart;
 import aurora.ide.meta.gef.editors.parts.InputPart;
+import aurora.ide.meta.gef.editors.parts.NavbarPart;
+import aurora.ide.meta.gef.editors.parts.ToolbarPart;
 
 public class GraphLayoutManager {
 
@@ -22,6 +24,12 @@ public class GraphLayoutManager {
 		}
 		if(ep instanceof GridColumnPart){
 			return new GridColumnBackLayout();
+		}
+		if(ep instanceof ToolbarPart){
+			return new ToolbarBackLayout();
+		}
+		if(ep instanceof NavbarPart){
+			return new ToolbarBackLayout();
 		}
 		return new BackLayout();
 	}

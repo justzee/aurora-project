@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
-public class Toolbar extends AuroraComponent {
+public class Toolbar extends Container {
 
 	static final long serialVersionUID = 1;
 

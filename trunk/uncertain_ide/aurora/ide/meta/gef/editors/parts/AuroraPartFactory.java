@@ -19,6 +19,8 @@ import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Label;
+import aurora.ide.meta.gef.editors.models.Navbar;
+import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 
 /**
@@ -42,7 +44,11 @@ public class AuroraPartFactory implements EditPartFactory {
 			part = new ButtonPart();
 		} else if (model instanceof GridColumn) {
 			part = new GridColumnPart();
-		}else {
+		} else if (model instanceof Toolbar) {
+			part = new ToolbarPart();
+		} else if (model instanceof Navbar) {
+			part = new NavbarPart();
+		} else {
 			part = new BoxPart();
 
 		}
