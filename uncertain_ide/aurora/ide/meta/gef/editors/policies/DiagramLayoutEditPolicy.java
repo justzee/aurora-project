@@ -12,9 +12,11 @@ import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
+import aurora.ide.meta.gef.editors.models.commands.MoveRemoteChildCmpCmd;
 import aurora.ide.meta.gef.editors.parts.LabelPart;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
+	private EditPart targetEditPart = null;
 
 	protected Command createAddCommand(EditPart child, Object constraint) {
 		return null;
@@ -50,9 +52,8 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	public EditPart getTargetEditPart(Request request) {
-
-		// System.out.println(request.getType());
-		return super.getTargetEditPart(request);
+		targetEditPart = super.getTargetEditPart(request);
+		return targetEditPart;
 	}
 
 	@Override
@@ -79,14 +80,21 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	protected Command createAddCommand(EditPart child, EditPart after) {
-		return null;
+		if (targetEditPart == null)
+			return null;
+		MoveRemoteChildCmpCmd cmd = new MoveRemoteChildCmpCmd();
+		cmd.setEditPartToMove(child);
+		if (targetEditPart.getModel() instanceof Container)
+			cmd.setTargetContainer(targetEditPart);
+		cmd.setReferenceEditPart(after);
+		return cmd;
 	}
 
 	@Override
 	protected Command createMoveChildCommand(EditPart child, EditPart after) {
 		MoveChildCmpCmd cmd = new MoveChildCmpCmd();
-		cmd.setChild(child);
-		cmd.setAfterEditPart(after);
+		cmd.setEditPartToMove(child);
+		cmd.setReferenceEditPart(after);
 		return cmd;
 	}
 }
