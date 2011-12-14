@@ -9,6 +9,7 @@ import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 
 public class MoveChildCmpCmd extends Command {
+	private Container container;
 	private EditPart epParent;
 	private AuroraComponent acToMove;
 	private AuroraComponent acRel = null;
@@ -17,14 +18,15 @@ public class MoveChildCmpCmd extends Command {
 	public MoveChildCmpCmd() {
 	}
 
-	public void setChild(EditPart child) {
+	public void setEditPartToMove(EditPart child) {
 		epParent = child.getParent();
+		container = (Container) epParent.getModel();
 		acToMove = (AuroraComponent) child.getModel();
 	}
 
-	public void setAfterEditPart(EditPart after) {
-		if (after != null)
-			acRel = (AuroraComponent) after.getModel();
+	public void setReferenceEditPart(EditPart reference) {
+		if (reference != null)
+			acRel = (AuroraComponent) reference.getModel();
 	}
 
 	@Override
@@ -34,17 +36,15 @@ public class MoveChildCmpCmd extends Command {
 
 	@Override
 	public void execute() {
-		List<AuroraComponent> children = ((Container) epParent.getModel())
-				.getChildren();
-		oriIndex = strictIndexOf(children, acToMove);
+		List<AuroraComponent> children = container.getChildren();
+		oriIndex = children.indexOf(acToMove);
 		children.remove(oriIndex);
 		if (acRel == null) {
-			children.add(acToMove);
+			container.addChild(acToMove);
 		} else {
-			int idx = strictIndexOf(children, acRel);
-			children.add(idx, acToMove);
+			int idx = children.indexOf(acRel);
+			container.addChild(acToMove, idx);
 		}
-		epParent.refresh();
 	}
 
 	@Override
@@ -54,18 +54,8 @@ public class MoveChildCmpCmd extends Command {
 
 	@Override
 	public void undo() {
-		List<AuroraComponent> children = ((Container) epParent.getModel())
-				.getChildren();
+		List<AuroraComponent> children = container.getChildren();
 		children.remove(acToMove);
-		children.add(oriIndex, acToMove);
-		epParent.refresh();
+		container.addChild(acToMove, oriIndex);
 	}
-
-	private int strictIndexOf(List list, Object ele) {
-		for (int i = 0; i < list.size(); i++)
-			if (list.get(i) == ele)
-				return i;
-		return -1;
-	}
-
 }
