@@ -51,6 +51,7 @@ public class ButtonFigure extends Figure {
 
 	protected void paintFigure(Graphics g) {
 		super.paintFigure(g);
+		g.pushState();
 		Rectangle rect = getBounds();
 		Dimension dim = model.getSize();
 		if (!model.isStdButton()) {
@@ -73,6 +74,7 @@ public class ButtonFigure extends Figure {
 		String text = model.getText();
 		Dimension textExtents = FigureUtilities.getTextExtents(text, getFont());
 		Rectangle r1 = getStdImgRect();
+		g.setForegroundColor(ColorConstants.BLACK);
 		if (r1 == null) {
 			g.drawString(text, rect.x + (dim.width - textExtents.width) / 2,
 					rect.y + (dim.height - textExtents.height) / 2);
@@ -85,6 +87,7 @@ public class ButtonFigure extends Figure {
 					rect.x + (dim.width - textExtents.width) / 2 + 8, rect.y
 							+ (dim.height - textExtents.height) / 2);
 		}
+		g.popState();
 	}
 
 	private Rectangle getStdImgRect() {
