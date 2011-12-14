@@ -1,19 +1,20 @@
 package aurora.ide.meta.gef.editors.layout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.draw2d.ScrollBar;
-import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
 import aurora.ide.meta.gef.editors.models.Grid;
-import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.GridPart;
+import aurora.ide.meta.gef.editors.parts.NavbarPart;
+import aurora.ide.meta.gef.editors.parts.ToolbarPart;
 
 public class GridBackLayout extends BackLayout {
 
@@ -28,7 +29,7 @@ public class GridBackLayout extends BackLayout {
 	private Rectangle selfRectangle = new Rectangle();
 
 	private Point location = new Point();
-	private GridColumn box;
+	private Grid box;
 	private int t_col = 0;
 	private int t_row = 0;
 	private ComponentPart[][] childs;
@@ -39,16 +40,21 @@ public class GridBackLayout extends BackLayout {
 	private Map<ComponentPart, Integer> depthMap = new HashMap<ComponentPart, Integer>();
 
 	private Map<ComponentPart, Rectangle> partMap;
+	private GridPart gridPart;
+	private ToolbarPart toolbarPart;
+	private NavbarPart navbarPart;
+	private int navbarHight;
 
 	public Rectangle layout(ComponentPart parent) {
 
 		if (parent instanceof GridPart) {
+			gridPart = (GridPart) parent;
 			box = (Grid) parent.getComponent();
 			col = 100;
 			row = 1;
 			Rectangle fBounds = parent.getFigure().getBounds();
 			selfRectangle = fBounds.isEmpty() ? box.getBounds() : fBounds;
-			titleHight = 25;
+			titleHight = this.hasToolbar() ? 25 : 0;
 			location.x = 0;
 			location.y = titleHight + 0 - 1;
 			location.translate(selfRectangle.getTopLeft());
@@ -59,13 +65,19 @@ public class GridBackLayout extends BackLayout {
 				maxColWidths[i] = 0;
 			}
 			partMap = new HashMap<ComponentPart, Rectangle>();
+			navbarPart = getNavbarPart();
+			toolbarPart = getToolbarPart();
+			navbarHight = navbarPart == null ? 0 : 25;
 		}
 
-		List children = parent.getChildren();
+		List children = getColumns(parent);
+		
 		realRow = children.size() / col
 				+ ((children.size() % col) == 0 ? 0 : 1);
 		Rectangle calculateRectangle = calculateRectangle(parent);
 		if (realRow == 0) {
+			layoutToolbar(calculateRectangle);
+			layoutNavbar(calculateRectangle);
 			return calculateRectangle;
 		}
 		childs = new ComponentPart[realRow][col];
@@ -98,29 +110,95 @@ public class GridBackLayout extends BackLayout {
 		applyToALlChildCH(parent);
 
 		calculateRectangle = calculateRectangle(parent);
+		layoutToolbar(calculateRectangle);
+		layoutNavbar(calculateRectangle);
 		return calculateRectangle;
 	}
 
-	private void applyToALlChildCH(ComponentPart parent) {
+	private void layoutToolbar(Rectangle calculateRectangle) {
+		Point location = new Point();
+		location.translate(selfRectangle.getTopLeft());
+		if (this.toolbarPart != null) {
+			Rectangle layout = GraphLayoutManager.layout(toolbarPart);
+			Rectangle setLocation = layout.getCopy().setLocation(location);
+			setLocation.setWidth(calculateRectangle.width);
+			this.applyToFigure(toolbarPart, setLocation);
+		}
+	}
+
+	private void layoutNavbar(Rectangle calculateRectangle) {
+		Point bottomLeft = selfRectangle.getBottomLeft();
+		Point setY = bottomLeft.getCopy().setY(bottomLeft.y - 25);
+		if (this.navbarPart != null) {
+			Rectangle layout = GraphLayoutManager.layout(toolbarPart);
+			Rectangle setLocation = layout.getCopy().setLocation(setY);
+			setLocation.setWidth(calculateRectangle.width);
+			this.applyToFigure(navbarPart, setLocation);
+		}
+	}
+
+	private ToolbarPart getToolbarPart() {
+		List children = this.gridPart.getChildren();
+		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+			Object object = (Object) iterator.next();
+			if (object instanceof ToolbarPart) {
+				return (ToolbarPart) object;
+			}
+		}
+		return null;
+	}
+
+	private NavbarPart getNavbarPart() {
+		List children = this.gridPart.getChildren();
+		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+			Object object = (Object) iterator.next();
+			if (object instanceof NavbarPart) {
+				return (NavbarPart) object;
+			}
+		}
+		return null;
+	}
+
+	private List getColumns(ComponentPart parent) {
+		List<ComponentPart> columns = new ArrayList<ComponentPart>();
 		List children = parent.getChildren();
+		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+			Object object = (Object) iterator.next();
+			if (object instanceof NavbarPart || object instanceof ToolbarPart) {
+				continue;
+			}
+			columns.add((ComponentPart) object);
+		}
+		return columns;
+	}
+
+	private void applyToALlChildCH(ComponentPart parent) {
+		List children = getColumns(parent);
 		int columnHight = 25;
 		for (int i = 0; i < children.size(); i++) {
 			ComponentPart cp = (ComponentPart) children.get(i);
-			if (cp.getChildren().size() > 0) {
+			if (getColumns(cp).size() > 0) {
 				((GridColumnFigure) cp.getFigure()).setColumnHight(columnHight);
 			} else {
 				Integer depth = depthMap.get(cp);
-				int l = this.maxDepth - depth+1;
+				int l = this.maxDepth - depth + 1;
 				((GridColumnFigure) cp.getFigure())
 						.setColumnHight((columnHight * l));
 			}
 			applyToALlChildCH(cp);
 		}
+	}
 
+	private boolean hasToolbar() {
+		return getToolbarPart() != null;
+	}
+
+	private boolean hasNavbar() {
+		return this.getNavbarPart() != null;
 	}
 
 	private void calculateChildDepth(ComponentPart parent, int depth) {
-		List children = parent.getChildren();
+		List children = getColumns(parent);
 		for (int i = 0; i < children.size(); i++) {
 			maxDepth = Math.max(maxDepth, depth);
 			depthMap.put((ComponentPart) children.get(i), depth);
@@ -159,7 +237,7 @@ public class GridBackLayout extends BackLayout {
 					return;
 				Rectangle rr = this.partMap.get(rp);
 				rr.setLocation(location);
-				rr.setHeight(selfRectangle.height - 25);
+				rr.setHeight(selfRectangle.height - titleHight - navbarHight);
 				location.x += maxColWidths[j] + 0 - 1;
 			}
 			location.x = 0 + selfRectangle.getTopLeft().x;
@@ -170,7 +248,7 @@ public class GridBackLayout extends BackLayout {
 	private Rectangle calculateRectangle(ComponentPart parent) {
 		Rectangle selfRectangle = zero.getCopy().setLocation(
 				parent.getFigure().getBounds().getLocation());
-		List children = parent.getChildren();
+		List children = getColumns(parent);
 		for (int i = 0; i < children.size(); i++) {
 			ComponentPart cp = (ComponentPart) children.get(i);
 			selfRectangle.union(cp.getFigure().getBounds().getCopy());
@@ -190,37 +268,5 @@ public class GridBackLayout extends BackLayout {
 		selfRectangle = parent.getComponent().getBounds();
 		return this.selfRectangle.setWidth(selfRectangle.width);
 	}
-
-	// 按顺序布局，列大小不相等算法。
-	protected Rectangle newChildLocation(Rectangle layout) {
-		if (lastCol == col) {
-			lastRow++;
-			lastCol = 0;
-			location.x = 0 + selfRectangle.getTopLeft().x;
-			location.y = location.y + maxColHight + 0;
-			maxColHight = 0;
-		}
-		layout.setLocation(location.getCopy());
-		location.x += layout.width + 0;
-		lastCol++;
-		maxColHight = Math.max(maxColHight, layout.height);
-		return layout.getCopy();
-	}
-
-	// gcf.setColumnHight(this.getColumnHight());
-
-	// public int getColumnHight() {
-	// int columnHight = 25;
-	//
-	// List children = editPart.getFigure().getChildren();
-	// for (int i = 0; i < children.size();) {
-	// GridColumnFigure gcf = (GridColumnFigure) children.get(i);
-	// columnHight += gcf.getColumnHight();
-	// break;
-	// }
-	// System.out.println(columnHight);
-	//
-	// return columnHight - 25;
-	// }
 
 }

@@ -14,7 +14,7 @@ public class Toolbar extends Container {
 	protected List<AuroraComponent> children = new ArrayList<AuroraComponent>();
 
 	public Toolbar() {
-		this.setSize(new Dimension(600, 80));
+		this.setSize(new Dimension(10, 25));
 	}
 
 	public void addChild(AuroraComponent child) {

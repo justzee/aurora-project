@@ -4,9 +4,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
-import aurora.ide.meta.gef.editors.figures.BoxFigure;
 import aurora.ide.meta.gef.editors.figures.ToolbarFigure;
-import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.policies.DiagramLayoutEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
@@ -33,6 +31,7 @@ public class ToolbarPart extends ContainerPart {
 //		BoxFigure figure = (ToolbarFigure) getFigure();
 //		figure.setLabelWidth(model.getLabelWidth());
 //		figure.setType(model.getType());
+		
 		super.refreshVisuals();
 
 	}

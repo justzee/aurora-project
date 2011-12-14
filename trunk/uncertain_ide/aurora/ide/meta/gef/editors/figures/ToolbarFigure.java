@@ -68,6 +68,7 @@ public class ToolbarFigure extends Figure {
 		// this.setBorder(new FrameBorder("a"));
 		// this.setBorder(new GroupBoxBorder("xx"));
 		this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
+		
 		// titleBar.setBorder(new TitleBarBorder());
 
 		// gridLayout = new GridLayout();

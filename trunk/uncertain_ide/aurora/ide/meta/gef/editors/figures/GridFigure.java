@@ -37,16 +37,17 @@ public class GridFigure extends Figure {
 	// private Text text = new Text();
 
 	private String type;
+
 	public String getType() {
 		return type;
 	}
 
 	public void setType(String type) {
 		this.type = type;
-		if(BOX.HBOX.equals(type)){
+		if (BOX.HBOX.equals(type)) {
 			this.setBorder(new GroupBoxBorder("Hbox"));
 		}
-		if(BOX.VBOX.equals(type)){
+		if (BOX.VBOX.equals(type)) {
 			this.setBorder(new GroupBoxBorder("Vbox"));
 		}
 	}
@@ -68,13 +69,11 @@ public class GridFigure extends Figure {
 		// TitleBarBorder border2 = new TitleBarBorder("title");
 		//
 		// this.setBorder(border2);
-		// this.setBorder(new FrameBorder("a"));
+		this.setBorder(new GridBorder());
 		// this.setBorder(new GroupBoxBorder("xx"));
-		this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
+		// this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
 		// titleBar.setBorder(new TitleBarBorder());
-		
-		
-		
+
 		// gridLayout = new GridLayout();
 		// gridLayout.numColumns = 3;
 		// gridLayout.horizontalSpacing = 10;
@@ -157,9 +156,7 @@ public class GridFigure extends Figure {
 
 	public void setModel(Grid component) {
 		this.grid = component;
-		
-	}
 
-	
+	}
 
 }
