@@ -10,6 +10,7 @@ import org.eclipse.gef.requests.CreateRequest;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
+import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
 import aurora.ide.meta.gef.editors.parts.LabelPart;
 
@@ -37,20 +38,20 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	protected void decorateChild(EditPart child) {
-//		System.out.println("decorateChild");
+		// System.out.println("decorateChild");
 		super.decorateChild(child);
 	}
 
 	@Override
 	protected void decorateChildren() {
-//		System.out.println("decorateChildren");
+		// System.out.println("decorateChildren");
 		super.decorateChildren();
 	}
 
 	@Override
 	public EditPart getTargetEditPart(Request request) {
-	
-//		System.out.println(request.getType());
+
+		// System.out.println(request.getType());
 		return super.getTargetEditPart(request);
 	}
 
@@ -62,12 +63,11 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	protected Command getCreateCommand(CreateRequest request) {
 		if (request.getNewObject() instanceof AuroraComponent) {
+			EditPart reference = getInsertionReference(request);
 			CreateComponentCommand cmd = new CreateComponentCommand();
 			cmd.setDiagram((Container) getHost().getModel());
 			cmd.setChild((AuroraComponent) request.getNewObject());
-			cmd.setLocation(request.getLocation());
-//			Rectangle constraint = (Rectangle) getConstraintFor(request);
-//			cmd.setLocation(	request.getLocation());
+			cmd.setReferenceEditPart(reference);
 			return cmd;
 		}
 		return null;
@@ -84,7 +84,9 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	protected Command createMoveChildCommand(EditPart child, EditPart after) {
-		// TODO Auto-generated method stub
-		return null;
+		MoveChildCmpCmd cmd = new MoveChildCmpCmd();
+		cmd.setChild(child);
+		cmd.setAfterEditPart(after);
+		return cmd;
 	}
 }

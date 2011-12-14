@@ -20,6 +20,18 @@ public class Button extends AuroraComponent {
 		setSize(new Dimension(80, 20));
 	}
 
+	public void setSize(Dimension dim) {
+		if (isStdButton()) {
+			dim.height = 20;
+			dim.width = 48;
+		}
+		super.setSize(dim);
+	}
+
+	public boolean isStdButton() {
+		return !buttonType.equals(DEFAULT);
+	}
+
 	protected boolean eq(Object o1, Object o2) {
 		if (o1 == null)
 			return o2 == null;
@@ -62,6 +74,9 @@ public class Button extends AuroraComponent {
 		String oldV = this.buttonType;
 		this.buttonType = buttonType;
 		firePropertyChange("BUTTONTYPE", oldV, buttonType);
+		if (isStdButton()) {
+			super.setSize(new Dimension(48, 20));
+		}
 	}
 
 	public void setFunction(String function) {

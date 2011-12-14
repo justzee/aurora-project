@@ -53,23 +53,25 @@ public class ButtonFigure extends Figure {
 		super.paintFigure(g);
 		Rectangle rect = getBounds();
 		Dimension dim = model.getSize();
-		g.drawImage(bgImg, 0, 0, 3, 2, rect.x, rect.y, 3, 2);// tl
-		g.drawImage(bgImg, 0, 6, 1, 2, rect.x + 3, rect.y, dim.width - 6, 2);// tc
-		g.drawImage(bgImg, 3, 0, 3, 2, rect.x + dim.width - 3, rect.y, 3, 2);// tr
-		g.drawImage(bgImg, 0, 24, 3, 1, rect.x, rect.y + 2, 3, dim.height - 4);// ml
-		g.drawImage(bgImg, 3, 24, 3, 1, rect.x + dim.width - 3, rect.y + 2, 3,
-				dim.height - 4);// mr
-		g.drawImage(bgImg, 0, 1096, 1, dim.height - 4, rect.x + 3, rect.y + 2,
-				dim.width - 6, dim.height - 4);// mc
-		g.drawImage(bgImg, 0, 4, 3, 2, rect.x, rect.y + dim.height - 2, 3, 2);// bl
-		g.drawImage(bgImg, 0, 16, 1, 2, rect.x + 3, rect.y + dim.height - 2,
-				dim.width - 3, 2);// bc
-		g.drawImage(bgImg, 3, 4, 3, 2, rect.x + dim.width - 3, rect.y
-				+ dim.height - 2, 3, 2);// br
-
+		if (!model.isStdButton()) {
+			g.drawImage(bgImg, 0, 0, 3, 2, rect.x, rect.y, 3, 2);// tl
+			g.drawImage(bgImg, 0, 6, 1, 2, rect.x + 3, rect.y, dim.width - 6, 2);// tc
+			g.drawImage(bgImg, 3, 0, 3, 2, rect.x + dim.width - 3, rect.y, 3, 2);// tr
+			g.drawImage(bgImg, 0, 24, 3, 1, rect.x, rect.y + 2, 3,
+					dim.height - 4);// ml
+			g.drawImage(bgImg, 3, 24, 3, 1, rect.x + dim.width - 3, rect.y + 2,
+					3, dim.height - 4);// mr
+			g.drawImage(bgImg, 0, 1096, 1, dim.height - 4, rect.x + 3,
+					rect.y + 2, dim.width - 6, dim.height - 4);// mc
+			g.drawImage(bgImg, 0, 4, 3, 2, rect.x, rect.y + dim.height - 2, 3,
+					2);// bl
+			g.drawImage(bgImg, 0, 16, 1, 2, rect.x + 3,
+					rect.y + dim.height - 2, dim.width - 3, 2);// bc
+			g.drawImage(bgImg, 3, 4, 3, 2, rect.x + dim.width - 3, rect.y
+					+ dim.height - 2, 3, 2);// br
+		}
 		String text = model.getText();
-		Dimension textExtents = FigureUtilities.getTextExtents(text,
-				getFont());
+		Dimension textExtents = FigureUtilities.getTextExtents(text, getFont());
 		Rectangle r1 = getStdImgRect();
 		if (r1 == null) {
 			g.drawString(text, rect.x + (dim.width - textExtents.width) / 2,
@@ -79,8 +81,9 @@ public class ButtonFigure extends Figure {
 					+ (dim.width - textExtents.width - 16) / 2, rect.y
 					+ (dim.height - r1.height) / 2, 16, 17);
 			g.drawImage(getBgImage(), r1, r2);
-			g.drawString(text, rect.x + (dim.width - textExtents.width) / 2
-					+ 8, rect.y + (dim.height - textExtents.height) / 2);
+			g.drawString(text,
+					rect.x + (dim.width - textExtents.width) / 2 + 8, rect.y
+							+ (dim.height - textExtents.height) / 2);
 		}
 	}
 
@@ -97,9 +100,7 @@ public class ButtonFigure extends Figure {
 	}
 
 	private Image getBgImage() {
-		if (model.getButtonType().equals(Button.DEFAULT))
-			return defaultimg;
-		return stdimg;
+		return model.isStdButton() ? stdimg : defaultimg;
 	}
 
 	/**

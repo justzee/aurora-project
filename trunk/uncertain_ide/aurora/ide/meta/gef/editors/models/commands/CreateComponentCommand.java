@@ -1,11 +1,11 @@
 package aurora.ide.meta.gef.editors.models.commands;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
+import java.util.List;
+
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
-import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Container;
 
 /**
@@ -14,8 +14,7 @@ public class CreateComponentCommand extends Command {
 	protected Container container;
 
 	protected AuroraComponent child;
-
-	protected Point location;
+	private EditPart reference = null;
 
 	public void setDiagram(Container container) {
 		this.container = container;
@@ -25,18 +24,15 @@ public class CreateComponentCommand extends Command {
 		this.child = child;
 	}
 
-	public void setLocation(Point location) {
-		this.location = location;
-	}
-
 	public void execute() {
-		if (this.location != null) {
-//			System.out.println(location);
-			this.child.setLocation(this.location);
+		if (reference == null)
+			container.addChild(child);
+		else {
+			AuroraComponent ac = (AuroraComponent) reference.getModel();
+			List<AuroraComponent> list = container.getChildren();
+			int idx = list.indexOf(ac);
+			container.addChild(child, idx);
 		}
-	
-		this.container.addChild(child);
-
 	}
 
 	public String getLabel() {
@@ -49,5 +45,9 @@ public class CreateComponentCommand extends Command {
 
 	public void undo() {
 		container.removeChild(child);
+	}
+
+	public void setReferenceEditPart(EditPart reference) {
+		this.reference = reference;
 	}
 }
