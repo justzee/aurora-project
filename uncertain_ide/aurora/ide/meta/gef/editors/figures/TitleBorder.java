@@ -44,7 +44,8 @@ public class TitleBorder extends TitleBarBorder {
 		Rectangle src = new Rectangle(i.getBounds().x, i.getBounds().y,
 				i.getBounds().width, 25);
 		g.drawImage(i, src, rec);
-
+	
+		
 		int x = rec.x + padding.left;
 		int y = rec.y + padding.top;
 

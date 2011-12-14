@@ -7,9 +7,10 @@ import java.util.Map;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-import aurora.ide.meta.gef.editors.models.BOX;
-import aurora.ide.meta.gef.editors.parts.BoxPart;
+import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
+import aurora.ide.meta.gef.editors.parts.NavbarPart;
+import aurora.ide.meta.gef.editors.parts.ToolbarPart;
 
 public class ToolbarBackLayout extends BackLayout {
 
@@ -24,7 +25,7 @@ public class ToolbarBackLayout extends BackLayout {
 	private Rectangle selfRectangle = new Rectangle();
 
 	private Point location = new Point();
-	private BOX box;
+	private Container box;
 	private int t_col = 0;
 	private int t_row = 0;
 	private ComponentPart[][] childs;
@@ -36,13 +37,13 @@ public class ToolbarBackLayout extends BackLayout {
 
 	public Rectangle layout(ComponentPart parent) {
 
-		if (parent instanceof BoxPart) {
-			box = (BOX) parent.getComponent();
-			col = box.getCol();
-			row = box.getRow();
+		if (parent instanceof ToolbarPart || parent instanceof NavbarPart) {
+			box = (Container) parent.getComponent();
+			col = 100;
+			row = 1;
 			Rectangle fBounds = parent.getFigure().getBounds();
 			selfRectangle = fBounds.isEmpty() ? box.getBounds() : fBounds;
-			titleHight = box.getHeadHight();
+			titleHight = 0;
 			location.x = PADDING.left;
 			location.y = titleHight + PADDING.top;
 			location.translate(selfRectangle.getTopLeft());
@@ -139,6 +140,10 @@ public class ToolbarBackLayout extends BackLayout {
 		if (!selfRectangle.isEmpty()) {
 			return selfRectangle.expand(5, 5);
 		}
+		// return this.selfRectangle.getCopy()
+		// .setWidth(
+		// ((ComponentPart) parent.getParent()).getFigure()
+		// .getBounds().width);
 		selfRectangle = parent.getComponent().getBounds();
 		return selfRectangle;
 	}
