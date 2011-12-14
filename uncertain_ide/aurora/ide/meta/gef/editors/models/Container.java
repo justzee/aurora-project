@@ -42,4 +42,9 @@ public class Container extends AuroraComponent {
 		fireStructureChange(CHILDREN, child);
 	}
 
+	public void removeChild(int idx) {
+		AuroraComponent ac = children.remove(idx);
+		fireStructureChange(CHILDREN, ac);
+	}
+
 }

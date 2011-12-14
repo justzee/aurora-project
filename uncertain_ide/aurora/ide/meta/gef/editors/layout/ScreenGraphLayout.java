@@ -1,8 +1,5 @@
 package aurora.ide.meta.gef.editors.layout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -54,24 +51,24 @@ public class ScreenGraphLayout extends BackLayout {
 
 	private List getSortChildren() {
 		List children = diagram.getChildren();
-		List sortChildren = new ArrayList(children);
-
-		Collections.sort(sortChildren, new Comparator() {
-
-			public int compare(Object o1, Object o2) {
-				ComponentPart ep1 = (ComponentPart) o1;
-				ComponentPart ep2 = (ComponentPart) o2;
-				Rectangle bound1 = ep1.getFigure().getBounds();
-				Rectangle bound2 = ep2.getFigure().getBounds();
-				Rectangle bounds1M = ep1.getComponent().getBounds();
-				Rectangle bounds2M = ep2.getComponent().getBounds();
-				Rectangle epl1 = bound1.isEmpty() ? bounds1M : bound1;
-				Rectangle epl2 = bound2.isEmpty() ? bounds2M : bound2;
-				return epl1.y - epl2.y;
-			}
-
-		});
-		return sortChildren;
+		// List sortChildren = new ArrayList(children);
+		//
+		// Collections.sort(sortChildren, new Comparator() {
+		//
+		// public int compare(Object o1, Object o2) {
+		// ComponentPart ep1 = (ComponentPart) o1;
+		// ComponentPart ep2 = (ComponentPart) o2;
+		// Rectangle bound1 = ep1.getFigure().getBounds();
+		// Rectangle bound2 = ep2.getFigure().getBounds();
+		// Rectangle bounds1M = ep1.getComponent().getBounds();
+		// Rectangle bounds2M = ep2.getComponent().getBounds();
+		// Rectangle epl1 = bound1.isEmpty() ? bounds1M : bound1;
+		// Rectangle epl2 = bound2.isEmpty() ? bounds2M : bound2;
+		// return epl1.y - epl2.y;
+		// }
+		//
+		// });
+		return children;
 	}
 
 	public Rectangle layout(ComponentPart ep) {
