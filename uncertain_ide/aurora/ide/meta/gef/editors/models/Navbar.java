@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
-public class Navbar extends AuroraComponent {
+public class Navbar extends Container {
 
 	static final long serialVersionUID = 1;
 
