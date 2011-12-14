@@ -7,8 +7,8 @@ import aurora.ide.meta.gef.editors.models.Container;
 
 public class DeleteComponentCommand extends Command {
 	protected Container container;
-
 	protected AuroraComponent child;
+	private int oriIndex = -1;
 
 	public Container getContainer() {
 		return container;
@@ -30,7 +30,8 @@ public class DeleteComponentCommand extends Command {
 	// Overridden from Command
 
 	public void execute() {
-		container.removeChild(child);
+		oriIndex = container.getChildren().indexOf(child);
+		container.removeChild(oriIndex);
 	}
 
 	public String getLabel() {
@@ -42,6 +43,6 @@ public class DeleteComponentCommand extends Command {
 	}
 
 	public void undo() {
-		container.addChild(child);
+		container.addChild(child, oriIndex);
 	}
 }
