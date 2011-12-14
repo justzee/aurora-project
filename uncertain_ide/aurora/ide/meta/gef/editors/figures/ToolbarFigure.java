@@ -67,7 +67,7 @@ public class ToolbarFigure extends Figure {
 		// this.setBorder(border2);
 		// this.setBorder(new FrameBorder("a"));
 		// this.setBorder(new GroupBoxBorder("xx"));
-		this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
+		this.setBorder(new TitleBorder(""));
 		
 		// titleBar.setBorder(new TitleBarBorder());
 
@@ -110,24 +110,29 @@ public class ToolbarFigure extends Figure {
 	 * @see org.eclipse.draw2d.Label#paintFigure(org.eclipse.draw2d.Graphics)
 	 */
 	protected void paintFigure(Graphics graphics) {
-		// if (selected) {
-		// graphics.pushState();
-		// graphics.setBackgroundColor(ColorConstants.menuBackgroundSelected);
-		// graphics.fillRectangle(getSelectionRectangle());
-		// graphics.popState();
-		// graphics.setForegroundColor(ColorConstants.white);
-		// }
-		// if (hasFocus) {
-		// graphics.pushState();
-		// graphics.setXORMode(true);
-		// graphics.setForegroundColor(ColorConstants.menuBackgroundSelected);
-		// graphics.setBackgroundColor(ColorConstants.white);
-		// graphics.drawFocus(getSelectionRectangle().resize(-1, -1));
-		// graphics.popState();
-		// }
 		super.paintFigure(graphics);
 	}
 
+	public void paint(Graphics graphics) {
+		if (getLocalBackgroundColor() != null)
+			graphics.setBackgroundColor(getLocalBackgroundColor());
+		if (getLocalForegroundColor() != null)
+			graphics.setForegroundColor(getLocalForegroundColor());
+		if (font != null)
+			graphics.setFont(font);
+
+		graphics.pushState();
+		try {
+			paintFigure(graphics);
+			graphics.restoreState();
+			paintBorder(graphics);
+			paintClientArea(graphics);
+			
+		} finally {
+			graphics.popState();
+		}
+	}
+	
 	/**
 	 * Sets the selection state of this SimpleActivityLabel
 	 * 

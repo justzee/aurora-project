@@ -25,6 +25,11 @@ public class ImagesUtils {
 			this.put("itembar", "itembar.gif");
 			this.put("btn", "btn.gif");
 			this.put("grid_bg", "grid_bg.gif");
+			this.put("navigation", "navigation.gif");
+			this.put("toolbar_sep", "toolbar_sep.gif");
+			this.put("nav1", "nav1.png");
+			this.put("nav2", "nav2.png");
+			
 		}
 	};
 
