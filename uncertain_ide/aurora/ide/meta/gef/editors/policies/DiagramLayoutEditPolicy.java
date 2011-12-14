@@ -1,5 +1,7 @@
 package aurora.ide.meta.gef.editors.policies;
 
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.OrderedLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
@@ -96,5 +98,9 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 		cmd.setEditPartToMove(child);
 		cmd.setReferenceEditPart(after);
 		return cmd;
+	}
+
+	protected boolean isLayoutHorizontal() {
+		return false;
 	}
 }

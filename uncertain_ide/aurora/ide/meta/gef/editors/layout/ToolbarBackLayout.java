@@ -43,9 +43,9 @@ public class ToolbarBackLayout extends BackLayout {
 			row = 1;
 			Rectangle fBounds = parent.getFigure().getBounds();
 			selfRectangle = fBounds.isEmpty() ? box.getBounds() : fBounds;
-			titleHight = 0;
-			location.x = PADDING.left;
-			location.y = titleHight + PADDING.top;
+			titleHight = 2;
+			location.x = 2;
+			location.y = titleHight + 0;
 			location.translate(selfRectangle.getTopLeft());
 			t_col = 0;
 			t_row = 0;
@@ -122,46 +122,15 @@ public class ToolbarBackLayout extends BackLayout {
 					return;
 				Rectangle rr = this.partMap.get(rp);
 				rr.setLocation(location);
-				location.x += maxColWidths[j] + PADDING.left;
+				location.x += maxColWidths[j] + 0;
 			}
-			location.x = PADDING.left + selfRectangle.getTopLeft().x;
-			location.y = location.y + maxRowHights[i] + PADDING.top;
+			location.x = 0 + selfRectangle.getTopLeft().x;
+			location.y = location.y + maxRowHights[i] + 0;
 		}
 	}
 
 	private Rectangle calculateRectangle(ComponentPart parent) {
-		Rectangle selfRectangle = zero.getCopy().setLocation(
-				parent.getFigure().getBounds().getLocation());
-		List children = parent.getChildren();
-		for (int i = 0; i < children.size(); i++) {
-			ComponentPart cp = (ComponentPart) children.get(i);
-			selfRectangle.union(cp.getFigure().getBounds().getCopy());
-		}
-		if (!selfRectangle.isEmpty()) {
-			return selfRectangle.expand(5, 5);
-		}
-		// return this.selfRectangle.getCopy()
-		// .setWidth(
-		// ((ComponentPart) parent.getParent()).getFigure()
-		// .getBounds().width);
-		selfRectangle = parent.getComponent().getBounds();
-		return selfRectangle;
-	}
-
-	// 按顺序布局，列大小不相等算法。
-	protected Rectangle newChildLocation(Rectangle layout) {
-		if (lastCol == col) {
-			lastRow++;
-			lastCol = 0;
-			location.x = PADDING.left + selfRectangle.getTopLeft().x;
-			location.y = location.y + maxColHight + PADDING.top;
-			maxColHight = 0;
-		}
-		layout.setLocation(location.getCopy());
-		location.x += layout.width + PADDING.left;
-		lastCol++;
-		maxColHight = Math.max(maxColHight, layout.height);
-		return layout.getCopy();
+		return this.selfRectangle.getCopy();
 	}
 
 }
