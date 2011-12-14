@@ -130,7 +130,7 @@ public class GridBackLayout extends BackLayout {
 		Point bottomLeft = selfRectangle.getBottomLeft();
 		Point setY = bottomLeft.getCopy().setY(bottomLeft.y - 25);
 		if (this.navbarPart != null) {
-			Rectangle layout = GraphLayoutManager.layout(toolbarPart);
+			Rectangle layout = GraphLayoutManager.layout(navbarPart);
 			Rectangle setLocation = layout.getCopy().setLocation(setY);
 			setLocation.setWidth(calculateRectangle.width);
 			this.applyToFigure(navbarPart, setLocation);

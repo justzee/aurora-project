@@ -14,8 +14,11 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Image;
 
-import aurora.ide.meta.gef.editors.models.BOX;
+import aurora.ide.meta.gef.editors.ImagesUtils;
 
 /**
  * A customized Label for SimpleActivities. Primary selection is denoted by
@@ -32,61 +35,13 @@ public class NavbarFigure extends Figure {
 
 	private Label label = new Label();
 	// private Text text = new Text();
-
+	private String[] texts = { "页数:", "共 页", "每页显示", "条", "显示 - 共 条" };
 	private String type;
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-		if (BOX.HBOX.equals(type)) {
-			this.setBorder(new VirtualBoxBorder("H"));
-		}
-		if (BOX.VBOX.equals(type)) {
-			this.setBorder(new VirtualBoxBorder("V"));
-		}
-	}
 
 	private Figure titleBar = new Label("敬请期待。。。。");
 	private Figure bodyArea = new Figure();
 
 	public NavbarFigure() {
-		// GridLayout gridLayout = new GridLayout();
-		// gridLayout.numColumns = 1;
-		// gridLayout.horizontalSpacing = 10;
-		// gridLayout.marginHeight = 10;
-		// gridLayout.marginWidth = 10;
-		// gridLayout.verticalSpacing = 10;
-		// this.setLayoutManager(gridLayout);
-		// ViewDiagramLayout ly = new ViewDiagramLayout(false);
-		this.setLayoutManager(new DummyLayout());
-		// TitleBarBorder border2 = new TitleBarBorder("title");
-		//
-		// this.setBorder(border2);
-		// this.setBorder(new FrameBorder("a"));
-		// this.setBorder(new GroupBoxBorder("xx"));
-		this.setBorder(new TitleBorder("大家好 ： 敬请期待。。。"));
-		// titleBar.setBorder(new TitleBarBorder());
-
-		// gridLayout = new GridLayout();
-		// gridLayout.numColumns = 3;
-		// gridLayout.horizontalSpacing = 10;
-		// gridLayout.marginHeight = 10;
-		// gridLayout.marginWidth = 10;
-		// gridLayout.verticalSpacing = 10;
-		// bodyArea.setLayoutManager(gridLayout);
-		//
-		// this.add(bodyArea);
-		//
-		//
-		// titleBar.setSize(150, 35);
-		// bodyArea.setSize(150,75);
-		// this.setSize(160, 120);
-		// this.setPreferredSize(260, 120);
-
-		// TitleBarBorder
 	}
 
 	public int getLabelWidth() {
@@ -101,30 +56,185 @@ public class NavbarFigure extends Figure {
 	public void handleFocusGained(FocusEvent event) {
 		// TODO Auto-generated method stub
 		super.handleFocusGained(event);
-		this.getBounds();
 
 	}
+
+	// @Override
+	// public void paint(Graphics graphics) {
+	// if (getLocalBackgroundColor() != null)
+	// graphics.setBackgroundColor(getLocalBackgroundColor());
+	// if (getLocalForegroundColor() != null)
+	// graphics.setForegroundColor(getLocalForegroundColor());
+	// if (font != null)
+	// graphics.setFont(font);
+	//
+	// graphics.pushState();
+	// try {
+	// paintBorder(graphics);
+	// paintFigure(graphics);
+	// graphics.restoreState();
+	//
+	// paintClientArea(graphics);
+	//
+	// } finally {
+	// graphics.popState();
+	// }
+	// }
 
 	/**
 	 * @see org.eclipse.draw2d.Label#paintFigure(org.eclipse.draw2d.Graphics)
 	 */
 	protected void paintFigure(Graphics graphics) {
-		// if (selected) {
-		// graphics.pushState();
-		// graphics.setBackgroundColor(ColorConstants.menuBackgroundSelected);
-		// graphics.fillRectangle(getSelectionRectangle());
-		// graphics.popState();
-		// graphics.setForegroundColor(ColorConstants.white);
-		// }
-		// if (hasFocus) {
-		// graphics.pushState();
-		// graphics.setXORMode(true);
-		// graphics.setForegroundColor(ColorConstants.menuBackgroundSelected);
-		// graphics.setBackgroundColor(ColorConstants.white);
-		// graphics.drawFocus(getSelectionRectangle().resize(-1, -1));
-		// graphics.popState();
-		// }
 		super.paintFigure(graphics);
+
+		Rectangle bounds = this.getBounds().getCopy();
+		graphics.clipRect(bounds);
+
+		Image image1 = getImage("nav1");
+		Rectangle copy = bounds.getCopy();
+		
+		
+//		copy.translate(imageBounds.width, 0);
+//		copy.setSize(nav2X - copy.x, 25);
+		org.eclipse.swt.graphics.Rectangle imageBounds = image1.getBounds();
+		
+		Rectangle src = new Rectangle(imageBounds.x, imageBounds.y,
+				2, 25);
+		graphics.drawImage(image1, src, copy);
+		
+		
+
+		
+		graphics.drawImage(image1, imageBounds.x, imageBounds.y,
+				imageBounds.width, imageBounds.height, copy.x, copy.y,
+				imageBounds.width, 25);
+
+		Image image2 = getImage("nav2");
+
+		Point topRight = copy.getTopRight();
+		org.eclipse.swt.graphics.Rectangle imageBounds2 = image2.getBounds();
+		int nav2X = topRight.x - imageBounds2.width;
+		
+		graphics.drawImage(image2, imageBounds2.x, imageBounds2.y,
+				imageBounds2.width, imageBounds2.height, nav2X, topRight.y+1,
+				imageBounds2.width, 24);
+
+		
+
+		// int textIndex = 0;
+		// Rectangle bounds = this.getBounds().getCopy();
+		// graphics.clipRect(bounds);
+		// Image image = getImage("navigation");
+		// Rectangle copy = bounds.getCopy();
+		// Rectangle imageR = copy.translate(2, 5);
+		// // 首页
+		// graphics.drawImage(image, getImageLocation(0).x,
+		// getImageLocation(0).y,
+		// 16, 16, imageR.x, imageR.y, 16, 16);
+		// imageR.translate(2 + 16, 0);
+		// // 前一页
+		// graphics.drawImage(image, getImageLocation(0).x,
+		// getImageLocation(2).y,
+		// 16, 16, imageR.x, imageR.y, 16, 16);
+		// imageR.translate(2 + 16, 0);
+		// // 分割
+		// Image sep = this.getImage("toolbar_sep");
+		// org.eclipse.swt.graphics.Rectangle sepBounds = sep.getBounds();
+		// graphics.drawImage(image, sepBounds.x, sepBounds.y, sepBounds.width,
+		// sepBounds.height, imageR.x, imageR.y, sepBounds.width,
+		// sepBounds.height);
+		// imageR.translate(2 + sepBounds.width, 0);
+		// // 页数
+		// Dimension textExtents = FigureUtilities.getTextExtents(
+		// texts[textIndex], getFont());
+		// graphics.drawText(texts[textIndex], imageR.getLocation());
+		// textIndex++;
+		// imageR.translate(2 + textExtents.width, -1);
+		//
+		// // input
+		// Rectangle inputR = imageR.getCopy().setSize(30, 20);
+		// graphics.setForegroundColor(ColorConstants.BORDER);
+		// graphics.setBackgroundColor(ColorConstants.WHITE);
+		// graphics.fillRectangle(inputR.getResized(-2, -2));
+		// graphics.drawRectangle(inputR.getResized(-2, -2));
+		// imageR.translate(2 + 30, 1);
+		// // "共 页",
+		//
+		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
+		// getFont());
+		// graphics.drawText(texts[textIndex], imageR.getLocation());
+		// textIndex++;
+		// imageR.translate(2 + textExtents.width, 0);
+		//
+		// // 分割
+		//
+		// graphics.drawImage(image, sepBounds.x, sepBounds.y, sepBounds.width,
+		// sepBounds.height, imageR.x, imageR.y, sepBounds.width,
+		// sepBounds.height);
+		// imageR.translate(2 + sepBounds.width, 0);
+		//
+		// // 后一页
+		// graphics.drawImage(image, getImageLocation(0).x,
+		// getImageLocation(3).y,
+		// 16, 16, imageR.x, imageR.y, 16, 16);
+		// imageR.translate(2 + 16, 0);
+		// // 最后一页
+		// graphics.drawImage(image, getImageLocation(0).x,
+		// getImageLocation(1).y,
+		// 16, 16, imageR.x, imageR.y, 16, 16);
+		// imageR.translate(2 + 16, 0);
+		// // 刷新
+		// graphics.drawImage(image, getImageLocation(0).x,
+		// getImageLocation(4).y,
+		// 16, 16, imageR.x, imageR.y, 16, 16);
+		// imageR.translate(2 + 16, 0);
+		// // "每页显示",,
+		//
+		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
+		// getFont());
+		// graphics.drawText(texts[textIndex], imageR.getLocation());
+		// textIndex++;
+		// imageR.translate(2 + textExtents.width, -1);
+		//
+		// // input
+		// inputR = imageR.getCopy().setSize(50, 20);
+		// graphics.setForegroundColor(ColorConstants.BORDER);
+		// graphics.setBackgroundColor(ColorConstants.WHITE);
+		// graphics.fillRectangle(inputR.getResized(-2, -2));
+		// graphics.drawRectangle(inputR.getResized(-2, -2));
+		// imageR.translate(2 + 50, 1);
+		// // combo
+		// image = getImage("itembar");
+		//
+		// if (image != null) {
+		// graphics.drawImage(image, 0, 0, 16, 16,
+		// inputR.getTopRight().x - 18, inputR.getTopRight().y, 16, 16);
+		// }
+		//
+		// // "条"
+		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
+		// getFont());
+		// graphics.drawText(texts[textIndex], imageR.getLocation());
+		// textIndex++;
+		// // imageR.translate(2 + textExtents.width, -1);
+		// // "显示 - 共 条"
+		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
+		// getFont());
+		// graphics.drawText(texts[textIndex], new Point(bounds.getTopRight().x
+		// - textExtents.width, bounds.getTopRight().y - 1));
+		// textIndex++;
+		// // TODO 比较长度
+
+	}
+
+	private Image getImage(String key) {
+		return ImagesUtils.getImage(key);
+	}
+
+	private Point getImageLocation(int index) {
+		Point p = new Point(0, 0);
+		p.setY(index * 16);
+		return p;
 	}
 
 	/**
