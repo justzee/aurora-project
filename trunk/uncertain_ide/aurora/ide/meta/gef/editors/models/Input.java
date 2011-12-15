@@ -4,6 +4,10 @@ import org.eclipse.draw2d.geometry.Dimension;
 
 public class Input extends AuroraComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1913613647491922330L;
 	public static final String TEXT = "text";
 	public static final String Combo = "combo";
 	public static final String LOV = "lov";

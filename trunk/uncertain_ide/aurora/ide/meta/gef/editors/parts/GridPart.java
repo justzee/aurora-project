@@ -5,7 +5,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
 import aurora.ide.meta.gef.editors.figures.GridFigure;
-import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.policies.FormLayoutEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
@@ -28,7 +28,7 @@ public class GridPart extends ContainerPart {
 	}
 
 	protected void refreshVisuals() {
-		((GridFigure) getFigure()).setModel((Grid)this.getComponent());
+		((GridFigure) getFigure()).setModel((Container)this.getComponent());
 		super.refreshVisuals();
 	}
 

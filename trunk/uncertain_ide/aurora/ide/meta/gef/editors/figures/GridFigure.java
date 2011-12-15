@@ -4,7 +4,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 
-import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.Container;
 
 /**
  * 
@@ -12,7 +12,7 @@ import aurora.ide.meta.gef.editors.models.Grid;
 public class GridFigure extends Figure {
 
 	private int labelWidth;
-	private Grid grid;
+	private Container grid;
 
 	public GridFigure() {
 		this.setLayoutManager(new DummyLayout());
@@ -39,7 +39,7 @@ public class GridFigure extends Figure {
 		super.paintFigure(graphics);
 	}
 
-	public void setModel(Grid component) {
+	public void setModel(Container component) {
 		this.grid = component;
 
 	}

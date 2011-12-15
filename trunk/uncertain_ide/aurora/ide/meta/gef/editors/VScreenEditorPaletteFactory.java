@@ -17,8 +17,8 @@ import org.eclipse.gef.requests.SimpleFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import aurora.ide.AuroraPlugin;
-import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
@@ -102,37 +102,27 @@ public class VScreenEditorPaletteFactory {
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Form", "Create a  Form",
-				Grid.class, new SimpleFactory(Form.class),
+				Form.class, new SimpleFactory(Form.class),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
+						"images/parallel16.gif"),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
+						"images/parallel16.gif"));
+		entries.add(combined);
+		combined = new CombinedTemplateCreationEntry("Form", "Create a  FieldSet",
+				FieldSet.class, new SimpleFactory(FieldSet.class),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("HBox", "Create a  HBox",
-				Grid.class, new SimpleFactory(HBox.class) {
-					public Object getNewObject() {
-						BOX newObject = (BOX) super.getNewObject();
-						newObject.setType(BOX.HBOX);
-						newObject.setCol(50);
-						newObject.setRow(1);
-						// newObject.set
-						return newObject;
-					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
+				Grid.class, new SimpleFactory(HBox.class), ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("VBox", "Create a  VBox",
-				Grid.class, new SimpleFactory(VBox.class) {
-					public Object getNewObject() {
-						BOX newObject = (BOX) super.getNewObject();
-						newObject.setType(BOX.VBOX);
-						newObject.setCol(1);
-						newObject.setRow(50);
-						return newObject;
-					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
+				Grid.class, new SimpleFactory(VBox.class), ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));

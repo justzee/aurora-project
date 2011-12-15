@@ -1,6 +1,7 @@
 package aurora.ide.meta.gef.editors.models;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
@@ -51,6 +52,16 @@ public class Container extends AuroraComponent {
 
 	public boolean isResponsibleChild(AuroraComponent component) {
 		return true;
+	}
+
+	public AuroraComponent getFirstChild(Class clazz) {
+		List<AuroraComponent> children = this.getChildren();
+		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+			AuroraComponent auroraComponent = (AuroraComponent) iterator.next();
+			if (auroraComponent.getClass().equals(clazz))
+				return (AuroraComponent) auroraComponent;
+		}
+		return null;
 	}
 
 }

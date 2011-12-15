@@ -4,6 +4,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
 import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
@@ -26,9 +27,11 @@ public class AuroraPartFactory implements EditPartFactory {
 		// part = new LabelPart();
 		else if (model instanceof Form) {
 			part = new BoxPart();
-		}else if (model instanceof HBox) {
+		} else if (model instanceof FieldSet) {
 			part = new BoxPart();
-		}else if (model instanceof VBox) {
+		} else if (model instanceof HBox) {
+			part = new BoxPart();
+		} else if (model instanceof VBox) {
 			part = new BoxPart();
 		} else if (model instanceof Input) {
 			part = new InputPart();
@@ -43,7 +46,7 @@ public class AuroraPartFactory implements EditPartFactory {
 		} else if (model instanceof Navbar) {
 			part = new NavbarPart();
 		}
-		if(part == null){
+		if (part == null) {
 			System.out.println();
 		}
 		part.setModel(model);

@@ -1,6 +1,6 @@
 package aurora.ide.meta.gef.editors.models;
 
-public class Form extends BOX {
+public class FieldSet extends BOX {
 	/**
 	 * 
 	 */

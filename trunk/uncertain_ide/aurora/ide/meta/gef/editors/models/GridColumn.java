@@ -6,9 +6,14 @@ import java.util.List;
 import org.eclipse.draw2d.geometry.Dimension;
 
 public class GridColumn extends Container {
-	
-	private List<GridColumn> cols = new ArrayList<GridColumn>();
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3032139528088861361L;
+
+	private List<GridColumn> cols = new ArrayList<GridColumn>();
+	// 界面默认的行高 25
 	private int rowHight = 25;
 
 	public int getRowHight() {
@@ -23,23 +28,22 @@ public class GridColumn extends Container {
 		return cols;
 	}
 
-	public List<GridColumn> getColNames() {
-		return cols;
-	}
-
 	public GridColumn() {
 		super();
-		this.setSize(new Dimension(100, rowHight*2+10));
-	}
-
-	public void removeCol(GridColumn col) {
-		cols.remove(col);
-		firePropertyChange(REMOVE_COL, col, null);
+		this.setSize(new Dimension(100, rowHight * 2 + 10));
 	}
 
 	public void addCol(GridColumn col) {
 		cols.add(col);
-		firePropertyChange(ADD_COl, null, col);
+		this.addChild(col);
 	}
-	
+
+	/**
+	 * 
+	 * 仅允许增加 GridColumn
+	 * */
+	public boolean isResponsibleChild(AuroraComponent child) {
+		return child instanceof GridColumn;
+	}
+
 }
