@@ -92,7 +92,12 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 			ISourceViewer sourceViewer, String contentType) {
 		if (contentType.equals(XMLPartitionScanner.XML_CDATA))
 			return new IAutoEditStrategy[] { new JavaScriptAutoIndentStrategy() };
-		return super.getAutoEditStrategies(sourceViewer, contentType);
+		IAutoEditStrategy[] aes = super.getAutoEditStrategies(sourceViewer,
+				contentType);
+		IAutoEditStrategy[] aes2 = new IAutoEditStrategy[aes.length + 1];
+		System.arraycopy(aes, 0, aes2, 0, aes.length);
+		aes2[aes.length] = new XMLAutoEditStrategy();
+		return aes2;
 	}
 
 	protected JSEditorCodeScanner getCDataScanner() {
