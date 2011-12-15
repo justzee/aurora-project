@@ -7,7 +7,6 @@ import java.util.Map;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.GridColumnPart;

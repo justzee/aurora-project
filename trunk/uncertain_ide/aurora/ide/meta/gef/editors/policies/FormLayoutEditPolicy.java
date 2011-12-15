@@ -13,7 +13,6 @@ import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
-import aurora.ide.meta.gef.editors.parts.LabelPart;
 
 public class FormLayoutEditPolicy extends LayoutEditPolicy  {
 
@@ -23,8 +22,7 @@ public class FormLayoutEditPolicy extends LayoutEditPolicy  {
 
 	protected Command createChangeConstraintCommand(EditPart child,
 			Object constraint) {
-		if (!(child instanceof LabelPart))
-			return null;
+	
 		if (!(constraint instanceof Rectangle))
 			return null;
 

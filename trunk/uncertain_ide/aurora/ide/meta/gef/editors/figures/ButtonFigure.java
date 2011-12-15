@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2010 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+
 package aurora.ide.meta.gef.editors.figures;
 
 import org.eclipse.draw2d.Figure;
@@ -22,15 +13,10 @@ import aurora.ide.meta.gef.editors.ImagesUtils;
 import aurora.ide.meta.gef.editors.models.Button;
 
 /**
- * A customized Label for SimpleActivities. Primary selection is denoted by
- * highlight and focus rectangle. Normal selection is denoted by highlight only.
- * 
- * @author Daniel Lee
  */
 public class ButtonFigure extends Figure {
 
-	private boolean selected;
-	private boolean hasFocus;
+
 	private static Image bgImg = ImagesUtils.getImage("btn.gif");
 	private static String[] buttonTypes = { Button.ADD, Button.SAVE,
 			Button.DELETE, Button.CLEAR, Button.EXCEL };
@@ -104,29 +90,6 @@ public class ButtonFigure extends Figure {
 
 	private Image getBgImage() {
 		return model.isStdButton() ? stdimg : defaultimg;
-	}
-
-	/**
-	 * Sets the selection state of this SimpleActivityLabel
-	 * 
-	 * @param b
-	 *            true will cause the label to appear selected
-	 */
-	public void setSelected(boolean b) {
-		selected = b;
-		repaint();
-	}
-
-	/**
-	 * Sets the focus state of this SimpleActivityLabel
-	 * 
-	 * @param b
-	 *            true will cause a focus rectangle to be drawn around the text
-	 *            of the Label
-	 */
-	public void setFocus(boolean b) {
-		hasFocus = b;
-		repaint();
 	}
 
 	public void setModel(Button model) {

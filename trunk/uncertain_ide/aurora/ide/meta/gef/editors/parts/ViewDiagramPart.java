@@ -1,14 +1,12 @@
 package aurora.ide.meta.gef.editors.parts;
 
 import java.util.EventObject;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.graph.CompoundDirectedGraph;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
@@ -76,11 +74,6 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	protected void addChild(EditPart child, int index) {
-//		Rectangle layout = ((ComponentPart) child).getComponent().getBounds();
-//		ComponentPart previouseChild = this.findPreviouseChild(layout);
-//		if (previouseChild != null) {
-//			index = getChildren().indexOf(previouseChild) +1;
-//		}
 		super.addChild(child, index);
 	}
 
