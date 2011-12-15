@@ -108,21 +108,23 @@ public class VScreenEditorPaletteFactory {
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
-		combined = new CombinedTemplateCreationEntry("Form", "Create a  FieldSet",
-				FieldSet.class, new SimpleFactory(FieldSet.class),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"),
+		combined = new CombinedTemplateCreationEntry("FieldSet",
+				"Create a  FieldSet", FieldSet.class, new SimpleFactory(
+						FieldSet.class), ImageDescriptor.createFromFile(
+						AuroraPlugin.class, "images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("HBox", "Create a  HBox",
-				Grid.class, new SimpleFactory(HBox.class), ImageDescriptor.createFromFile(AuroraPlugin.class,
+				Grid.class, new SimpleFactory(HBox.class),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("VBox", "Create a  VBox",
-				Grid.class, new SimpleFactory(VBox.class), ImageDescriptor.createFromFile(AuroraPlugin.class,
+				Grid.class, new SimpleFactory(VBox.class),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
