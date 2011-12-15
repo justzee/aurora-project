@@ -5,11 +5,6 @@ public class BOX extends Container {
 	private int col = 3;
 	private String title;
 	private int labelWidth = 80;
-	private String type;
-	
-	public static String FORM = "form";
-	public static String HBOX = "hbox";
-	public static String VBOX= "vbox";
 	
 	/**
 	 * 
@@ -20,16 +15,7 @@ public class BOX extends Container {
 		return row;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public void setRow(int row) {
-
 		if (this.row == row) {
 			return;
 		}
@@ -43,7 +29,6 @@ public class BOX extends Container {
 	}
 
 	public void setCol(int col) {
-
 		if (this.col == col) {
 			return;
 		}
@@ -61,23 +46,16 @@ public class BOX extends Container {
 	}
 
 	public void setLabelWidth(int labelWidth) {
-
-
 		if (this.labelWidth ==labelWidth) {
 			return;
 		}
 		int old = this.labelWidth;
 		this.labelWidth = labelWidth;
 		firePropertyChange(LABELWIDTH, old, labelWidth);
-
-	
-		
-		
 		this.labelWidth = labelWidth;
 	}
 
 	public void setTitle(String title) {
-
 		if (this.title.equals(title)) {
 			return;
 		}
@@ -88,8 +66,13 @@ public class BOX extends Container {
 	}
 
 	public int getHeadHight() {
-
 		return 0;
+	}
+	public boolean isResponsibleChild(AuroraComponent component) {
+		if (component instanceof Toolbar || component instanceof Navbar
+				|| component instanceof GridColumn)
+			return false;
+		return super.isResponsibleChild(component);
 	}
 
 }

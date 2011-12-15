@@ -1,79 +1,76 @@
 package aurora.ide.meta.gef.editors.models;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
 public class Grid extends GridColumn {
-	
-	private boolean hasToolbar;
-	// TODO button?
-	private List<String> toobarButtons = new ArrayList<String>();
-	private boolean hasNavBar;
-	private String navBarType;
 
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3083738388276859573L;
+	private Toolbar toolbar;
+	private Navbar navBar;
 
 	public Grid() {
 		super();
 		this.setSize(new Dimension(800, 380));
 	}
 
-
-	public boolean isHasToolbar() {
-		return hasToolbar;
+	public boolean hasToolbar() {
+		return getToolbar() != null;
 	}
 
-	public void setHasToolbar(boolean hasToolbar) {
-		this.hasToolbar = hasToolbar;
-		if (this.hasToolbar == hasToolbar) {
-			return;
-		}
-		boolean old = this.hasToolbar;
-		this.hasToolbar = hasToolbar;
-		firePropertyChange(HAS_TOOLBAR, old, hasToolbar);
+	public Toolbar getToolbar() {
+		if (toolbar != null)
+			return toolbar;
+		else
+			return (Toolbar) getFirstChild(Toolbar.class);
 	}
 
-	public List<String> getToobarButtons() {
-		return toobarButtons;
+	public void setToolbar(Toolbar tl) {
+		this.toolbar = tl;
+		this.addChild(tl);
 	}
 
-	public void addToobarButton(String type) {
-		toobarButtons.add(type);
-		firePropertyChange(ADD_TOOLBAR_BUTTON, null, type);
+	@SuppressWarnings("unchecked")
+	public List<Button> getToobarButtons() {
+		return this.getToolbar() != null ? getToolbar().getButtons()
+				: Collections.EMPTY_LIST;
 	}
 
-	public void removeToobarButton(String type) {
-		toobarButtons.remove(type);
-		firePropertyChange(REMOVE_TOOLBAR_BUTTON, type, null);
+	public boolean hasNavBar() {
+		return getNavbar() != null;
 	}
 
-	public boolean isHasNavBar() {
-		return hasNavBar;
+	public Navbar getNavbar() {
+		if (navBar != null)
+			return navBar;
+		else
+			return (Navbar) getFirstChild(Navbar.class);
 	}
 
-	public void setHasNavBar(boolean hasNavBar) {
-		this.hasNavBar = hasNavBar;
-		if (this.hasNavBar == hasNavBar) {
-			return;
-		}
-		boolean old = this.hasNavBar;
-		this.hasNavBar = hasNavBar;
-		firePropertyChange(HAS_NAVBAR, old, hasNavBar);
+	public void setNavBar(Navbar nb) {
+		this.navBar = nb;
+		this.addChild(nb);
 	}
 
 	public String getNavBarType() {
-		return navBarType;
+		return getNavbar() == null ? "" : getNavbar().getType();
 	}
 
 	public void setNavBarType(String navBarType) {
-		this.navBarType = navBarType;
-		if (this.navBarType.equals(navBarType)) {
-			return;
+		if (getNavbar() != null) {
+			getNavbar().setType(navBarType);
 		}
-		String old = this.navBarType;
-		this.navBarType = navBarType;
-		firePropertyChange(NAVBAR_TYPE, old, navBarType);
+	}
+
+	@Override
+	public boolean isResponsibleChild(AuroraComponent child) {
+		if (child instanceof Toolbar || child instanceof Navbar)
+			return this.getFirstChild(child.getClass()) == null;
+		return super.isResponsibleChild(child);
 	}
 }

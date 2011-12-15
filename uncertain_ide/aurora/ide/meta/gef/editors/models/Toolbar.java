@@ -13,7 +13,7 @@ public class Toolbar extends Container {
 	private List<Button> buttons;
 
 	public Toolbar() {
-		this.setSize(new Dimension(0, 25));
+		this.setSize(new Dimension(1, 25));
 	}
 
 	public void addButton(Button b) {

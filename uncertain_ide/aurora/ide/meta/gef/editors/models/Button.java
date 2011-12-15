@@ -3,6 +3,10 @@ package aurora.ide.meta.gef.editors.models;
 import org.eclipse.draw2d.geometry.Dimension;
 
 public class Button extends AuroraComponent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1177281488586303137L;
 	public static final String ADD = "add";
 	public static final String SAVE = "save";
 	public static final String DELETE = "delete";

@@ -10,7 +10,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
-import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.GridPart;
 import aurora.ide.meta.gef.editors.parts.NavbarPart;
@@ -29,7 +29,7 @@ public class GridBackLayout extends BackLayout {
 	private Rectangle selfRectangle = new Rectangle();
 
 	private Point location = new Point();
-	private Grid box;
+	private Container box;
 	private int t_col = 0;
 	private int t_row = 0;
 	private ComponentPart[][] childs;
@@ -49,7 +49,7 @@ public class GridBackLayout extends BackLayout {
 
 		if (parent instanceof GridPart) {
 			gridPart = (GridPart) parent;
-			box = (Grid) parent.getComponent();
+			box = (Container) parent.getComponent();
 			col = 100;
 			row = 1;
 			Rectangle fBounds = parent.getFigure().getBounds();

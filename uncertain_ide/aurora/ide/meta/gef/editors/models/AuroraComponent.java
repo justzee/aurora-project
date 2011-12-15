@@ -26,7 +26,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 
 	private String type = "";
 
-	private String prompt = "prompt";
+	private String prompt = "prompt : ";
 	
 	private String bindTarget = "";
 
