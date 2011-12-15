@@ -2,15 +2,12 @@ package aurora.ide.meta.gef.editors.parts;
 
 import org.eclipse.draw2d.AbstractLabeledBorder;
 import org.eclipse.draw2d.Border;
-import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
 import aurora.ide.meta.gef.editors.figures.BoxFigure;
 import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.policies.DiagramLayoutEditPolicy;
-import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
-import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
 
 public class BoxPart extends ContainerPart {
 
@@ -36,7 +33,6 @@ public class BoxPart extends ContainerPart {
 		if (border instanceof AbstractLabeledBorder) {
 			((AbstractLabeledBorder) border).setLabel(model.getTitle());
 		}
-		figure.setBox(model);
 		super.refreshVisuals();
 
 	}

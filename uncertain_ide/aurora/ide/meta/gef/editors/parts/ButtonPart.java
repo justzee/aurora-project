@@ -16,17 +16,17 @@ public class ButtonPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
 	 */
 	protected IFigure createFigure() {
-		return new ButtonFigure();
+		ButtonFigure buttonFigure = new ButtonFigure();
+		Button model = getModel();
+		buttonFigure.setModel(model);
+		return buttonFigure;
 	}
 
 	/**
 	 * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
 	 */
 	protected void refreshVisuals() {
-		ButtonFigure figure = getFigure();
-		Button model = getModel();
-		figure.setLocation(model.getLocation());
-		figure.setModel(model);
+		
 		super.refreshVisuals();
 	}
 
