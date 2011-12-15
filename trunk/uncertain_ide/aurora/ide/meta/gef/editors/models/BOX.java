@@ -5,7 +5,7 @@ public class BOX extends Container {
 	private int col = 3;
 	private String title;
 	private int labelWidth = 80;
-	
+
 	/**
 	 * 
 	 */
@@ -46,7 +46,7 @@ public class BOX extends Container {
 	}
 
 	public void setLabelWidth(int labelWidth) {
-		if (this.labelWidth ==labelWidth) {
+		if (this.labelWidth == labelWidth) {
 			return;
 		}
 		int old = this.labelWidth;
@@ -68,7 +68,10 @@ public class BOX extends Container {
 	public int getHeadHight() {
 		return 0;
 	}
+
 	public boolean isResponsibleChild(AuroraComponent component) {
+		if (component instanceof Grid)
+			return true;
 		if (component instanceof Toolbar || component instanceof Navbar
 				|| component instanceof GridColumn)
 			return false;

@@ -2,18 +2,17 @@ package aurora.ide.meta.gef.editors.layout;
 
 import java.util.List;
 
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.ViewDiagramPart;
 
 public class ScreenGraphLayout extends BackLayout {
-	// private Point last = new Point(PADDING.left, PADDING.top);
+	private static final Insets PADDING = new Insets(8, 16, 8, 6);//8,6,8,6
 	private ViewDiagramPart diagram;
 
 	private Rectangle last = new Rectangle(0, 0, 0, 0);
-	private Rectangle zero = new Rectangle(0, 0, 0, 0);
-
 	public ScreenGraphLayout(ViewDiagramPart diagram) {
 		this.diagram = diagram;
 	}
@@ -60,23 +59,4 @@ public class ScreenGraphLayout extends BackLayout {
 		last = layout.getCopy();
 		return layout.getCopy();
 	}
-
-	private ComponentPart findPreviouseChild(ComponentPart ep, Rectangle layout) {
-		List children = getSortChildren();
-		for (int i = 0; i < children.size(); i++) {
-			ComponentPart child = (ComponentPart) children.get(i);
-			Rectangle bounds = child.getFigure().getBounds();
-			if (layout.y <= bounds.y + bounds.height + PADDING.top
-					&& (!child.equals(ep))) {
-				return child;
-			}
-			if (i == children.size() - 1 && (!child.equals(ep))) {
-				return child;
-			}
-		}
-
-		return null;
-
-	}
-
 }

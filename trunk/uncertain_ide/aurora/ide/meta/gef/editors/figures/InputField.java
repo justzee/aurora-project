@@ -5,6 +5,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -13,12 +14,12 @@ import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.meta.gef.editors.ImagesUtils;
 import aurora.ide.meta.gef.editors.models.Input;
+import aurora.ide.meta.gef.editors.models.ViewDiagram;
 
 /**
  */
 public class InputField extends Figure {
 
-	private int labelWidth;
 	private Input model = null;
 
 	public InputField() {
@@ -29,12 +30,15 @@ public class InputField extends Figure {
 	}
 
 	public int getLabelWidth() {
-		return labelWidth;
+		IFigure parent = getParent();
+		if (parent instanceof BoxFigure) {
+			return ((BoxFigure) parent).getLabelWidth();
+		} else {
+			return ViewDiagram.DLabelWidth;
+		}
 	}
 
-	public void setLabelWidth(int labelWidth) {
-		this.labelWidth = labelWidth;
-	}
+	
 
 	@Override
 	public void setBounds(Rectangle rect) {

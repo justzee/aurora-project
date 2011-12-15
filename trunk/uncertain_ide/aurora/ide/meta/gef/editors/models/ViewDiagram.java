@@ -10,6 +10,8 @@ public class ViewDiagram extends Container {
 
 	@Override
 	public boolean isResponsibleChild(AuroraComponent component) {
+		if(component instanceof Grid)
+			return true;
 		if (component instanceof Toolbar || component instanceof Navbar
 				|| component instanceof GridColumn)
 			return false;
