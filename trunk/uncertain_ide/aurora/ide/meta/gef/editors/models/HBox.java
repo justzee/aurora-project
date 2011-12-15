@@ -24,7 +24,7 @@ public class HBox extends BOX {
 
 	@Override
 	final public int getCol() {
-		return Integer.MAX_VALUE;
+		return 100;
 	}
 
 	@Override
