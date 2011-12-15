@@ -12,7 +12,7 @@ public class VBox extends BOX {
 
 	@Override
 	final public int getRow() {
-		return Integer.MAX_VALUE;
+		return 100;
 	}
 
 	@Override
