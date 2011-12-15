@@ -22,6 +22,8 @@ public class Container extends AuroraComponent {
 	}
 
 	public void addChild(AuroraComponent child, int index) {
+		if (!isResponsibleChild(child))
+			return;
 		if (index >= 0)
 			children.add(index, child);
 		else
@@ -45,6 +47,10 @@ public class Container extends AuroraComponent {
 	public void removeChild(int idx) {
 		AuroraComponent ac = children.remove(idx);
 		fireStructureChange(CHILDREN, ac);
+	}
+
+	public boolean isResponsibleChild(AuroraComponent component) {
+		return true;
 	}
 
 }
