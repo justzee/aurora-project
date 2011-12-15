@@ -80,14 +80,14 @@ public class InputField extends Figure {
 		inputRectangle.height = getBounds().height - 1;
 
 		// FigureUtilities.paintEtchedBorder(graphics, inputRectangle);
-		graphics.setForegroundColor(ColorConstants.BORDER);
+		graphics.setForegroundColor(ColorConstants.EDITOR_BORDER);
 		graphics.drawRectangle(inputRectangle.getResized(-1, -1));
 		Rectangle r = inputRectangle.getTranslated(1, 1).getResized(-2, -2);
 		Color bgColor = ColorConstants.WHITE;
 		if (model.isRequired())
-			bgColor = ColorConstants.REQUIRED;
+			bgColor = ColorConstants.REQUIRED_BG;
 		if (model.isReadOnly())
-			bgColor = ColorConstants.READONLY;
+			bgColor = ColorConstants.READONLY_BG;
 		graphics.setBackgroundColor(bgColor);
 		graphics.fillRectangle(r);
 
