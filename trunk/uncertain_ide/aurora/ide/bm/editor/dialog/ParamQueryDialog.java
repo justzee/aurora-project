@@ -21,7 +21,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -45,12 +44,9 @@ public class ParamQueryDialog extends Dialog {
 	private ComboBoxCellEditor cboCellEditor;
 	private TableViewer tableViewer;
 	private boolean repeat;
-	private Shell parent;
-	private int maxStringLength = 0;
 
 	public ParamQueryDialog(Shell parent, String sql) {
 		super(parent);
-		this.parent = parent;
 		initDialog(sql);
 	}
 
@@ -69,25 +65,11 @@ public class ParamQueryDialog extends Dialog {
 			Parameter p = new Parameter();
 			p.setIndex(index);
 			p.setName(s);
-			int maxLength = getStringWidth(s) + s.length();
-			maxStringLength = maxLength < maxStringLength ? maxStringLength : maxLength;
 			unRepeatParameter.add(p);
 			index++;
 		}
-		maxStringLength = maxStringLength < 40 ? 40 : maxStringLength;
 		parameter = unRepeatParameter;
 		repeat = false;
-	}
-
-	private int getStringWidth(String string) {
-		int width = 0;
-		GC gc = new GC(parent);
-		for (int i = 0; i < string.length(); i++) {
-			char c = string.charAt(i);
-			width += gc.getCharWidth(c);
-		}
-		gc.dispose();
-		return width;
 	}
 
 	public String[] getValues() {
@@ -175,18 +157,16 @@ public class ParamQueryDialog extends Dialog {
 		table.setEnabled(true);
 
 		TableColumn colIndex = new TableColumn(table, SWT.NONE);
-		colIndex.setWidth(25);
 		colIndex.setText("");
 		tclayout.setColumnData(colIndex, new ColumnWeightData(25, 25, false));
 		colIndex.setResizable(false);
 
 		TableColumn colName = new TableColumn(table, SWT.NONE);
-		colName.setWidth(maxStringLength);
 		colName.setText("参数名");
-		tclayout.setColumnData(colName, new ColumnWeightData(maxStringLength, maxStringLength, false));
+		colName.pack();
+		tclayout.setColumnData(colName, new ColumnWeightData(100, 100, false));
 
 		TableColumn colValue = new TableColumn(table, SWT.NONE);
-		colValue.setWidth(235);
 		colValue.setText("参数值");
 		tclayout.setColumnData(colValue, new ColumnWeightData(235, 100, true));
 		tableViewer.setColumnProperties(new String[] { "", "Name", "Value" });
@@ -194,6 +174,11 @@ public class ParamQueryDialog extends Dialog {
 		tableViewer.setContentProvider(new ContentProvider());
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setInput(parameter);
+		for (TableColumn tColumn : tableViewer.getTable().getColumns()) {
+			if (!tColumn.getText().equals("参数值")) {
+				tColumn.pack();
+			}
+		}
 
 		cboCellEditor = new ComboBoxCellEditor(tableViewer.getTable(), new String[] {});
 
