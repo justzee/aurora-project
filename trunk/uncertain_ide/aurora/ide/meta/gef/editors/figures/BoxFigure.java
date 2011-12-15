@@ -24,11 +24,7 @@ public class BoxFigure extends Figure {
 	}
 
 	public int getLabelWidth() {
-		return labelWidth;
-	}
-
-	public void setLabelWidth(int labelWidth) {
-		this.labelWidth = labelWidth;
+		return box.getLabelWidth();
 	}
 
 	@Override
@@ -45,7 +41,7 @@ public class BoxFigure extends Figure {
 
 	public void setBox(BOX model) {
 		this.box = model;
-		setLabelWidth(model.getLabelWidth());
+		
 		if (model instanceof HBox) {
 			this.setBorder(new VirtualBoxBorder("H"));
 		}

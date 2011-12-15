@@ -19,14 +19,6 @@ public class GridFigure extends Figure {
 		this.setBorder(new GridBorder());
 	}
 
-	public int getLabelWidth() {
-		return labelWidth;
-	}
-
-	public void setLabelWidth(int labelWidth) {
-		this.labelWidth = labelWidth;
-	}
-
 	@Override
 	public void handleFocusGained(FocusEvent event) {
 		super.handleFocusGained(event);
