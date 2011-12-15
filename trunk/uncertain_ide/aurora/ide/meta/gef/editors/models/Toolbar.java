@@ -24,18 +24,17 @@ public class Toolbar extends Container {
 		this.addChild(b);
 	}
 
-	/**
-	 * 
-	 * 仅允许增加 Button
-	 * */
-	@Override
-	public void addChild(AuroraComponent child, int index) {
-		if (child instanceof Button)
-			super.addChild(child, index);
-	}
-
 	@SuppressWarnings("unchecked")
 	public List<Button> getButtons() {
 		return buttons == null ? Collections.EMPTY_LIST : buttons;
 	}
+
+	/**
+	 * 
+	 * 仅允许增加 Button
+	 * */
+	public boolean isResponsibleChild(AuroraComponent child) {
+		return child instanceof Button;
+	}
+
 }
