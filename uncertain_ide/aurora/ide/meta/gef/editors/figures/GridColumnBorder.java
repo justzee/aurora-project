@@ -15,7 +15,7 @@ import aurora.ide.meta.gef.editors.ImagesUtils;
 public class GridColumnBorder extends AbstractLabeledBorder {
 
 //	private Insets padding = new Insets(1, 3, 2, 2);
-	private String imageKey = "toolbar_bg";
+	private String imageKey ;
 	private GridColumnFigure figure;
 
 	public GridColumnBorder(String title, String imageKey,
