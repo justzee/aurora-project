@@ -1,10 +1,16 @@
 package aurora.ide.meta.gef.editors.models;
 
+import org.eclipse.draw2d.geometry.Dimension;
+
 public class VBox extends BOX {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 588460053081220683L;
+
+	public VBox() {
+		setSize(new Dimension(300, 80));
+	}
 
 	public int getHeadHight() {
 		return 5;

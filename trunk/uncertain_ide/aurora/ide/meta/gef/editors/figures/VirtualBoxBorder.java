@@ -10,11 +10,14 @@ import org.eclipse.swt.graphics.Image;
 import aurora.ide.meta.gef.editors.ImagesUtils;
 
 public class VirtualBoxBorder extends AbstractLabeledBorder {
-	String text = null;
-	static Image img = ImagesUtils.getImage("element.gif");
+	static Image vImg = ImagesUtils.getImage("palette/vertical.gif");
+	static Image hImg = ImagesUtils.getImage("palette/horizontal.gif");
+	String type = null;
 
-	public VirtualBoxBorder(String text) {
-		this.text = text;
+	public VirtualBoxBorder(String type) {
+		this.type = type;
+		if (this.type == null)
+			throw new NullPointerException("Border type can not be null.");
 	}
 
 	public void paint(IFigure figure, Graphics g, Insets insets) {
@@ -22,13 +25,14 @@ public class VirtualBoxBorder extends AbstractLabeledBorder {
 		Rectangle rect = figure.getBounds();
 		g.clipRect(rect);
 		Rectangle r = rect.getResized(-1, -1);
-		g.setForegroundColor(ColorConstants.VBORDER);
+		g.setForegroundColor(ColorConstants.VIRTUAL_BORDER);
 		g.setLineStyle(Graphics.LINE_DOT);
 		g.drawRectangle(r);
+		Image img = "H".equals(type) ? hImg : vImg;
 		if (img != null) {
 			g.drawImage(img, r.x, r.y);
 		} else {
-			g.drawText(text, r.x, r.y);
+			g.drawText(type, r.x + 2, r.y);
 		}
 		g.popState();
 	}

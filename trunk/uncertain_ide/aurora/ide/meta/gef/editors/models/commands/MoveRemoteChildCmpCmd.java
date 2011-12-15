@@ -41,6 +41,11 @@ public class MoveRemoteChildCmpCmd extends Command {
 	}
 
 	@Override
+	public String getLabel() {
+		return "Move Component";
+	}
+
+	@Override
 	public void execute() {
 		List<AuroraComponent> srcList = srcContainer.getChildren();
 		List<AuroraComponent> destList = destContainer.getChildren();

@@ -1,5 +1,7 @@
 package aurora.ide.meta.gef.editors.parts;
 
+import org.eclipse.draw2d.AbstractLabeledBorder;
+import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
@@ -30,7 +32,10 @@ public class BoxPart extends ContainerPart {
 	protected void refreshVisuals() {
 		BOX model = (BOX) getModel();
 		BoxFigure figure = (BoxFigure) getFigure();
-		
+		Border border = figure.getBorder();
+		if (border instanceof AbstractLabeledBorder) {
+			((AbstractLabeledBorder) border).setLabel(model.getTitle());
+		}
 		figure.setBox(model);
 		super.refreshVisuals();
 

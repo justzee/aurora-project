@@ -16,8 +16,6 @@ public class ButtonPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
 	 */
 	protected IFigure createFigure() {
-
-		// l.setIcon(FlowImages.GEAR);
 		return new ButtonFigure();
 	}
 
@@ -25,19 +23,19 @@ public class ButtonPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
 	 */
 	protected void refreshVisuals() {
-		ButtonFigure figure = (ButtonFigure) getFigure();
-		Button model = (Button) getModel();
+		ButtonFigure figure = getFigure();
+		Button model = getModel();
 		figure.setLocation(model.getLocation());
 		figure.setModel(model);
-
-		IFigure parent = figure.getParent();
-		// if (parent instanceof BoxFigure) {
-		// figure.setLabelWidth(((BoxFigure) parent).getLabelWidth());
-		// } else {
-		// figure.setLabelWidth(ViewDiagram.DLabelWidth);
-		// }
 		super.refreshVisuals();
+	}
 
+	public Button getModel() {
+		return (Button) super.getModel();
+	}
+
+	public ButtonFigure getFigure() {
+		return (ButtonFigure) super.getFigure();
 	}
 
 	public String getType() {

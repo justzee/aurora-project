@@ -30,6 +30,11 @@ public class MoveChildCmpCmd extends Command {
 	}
 
 	@Override
+	public String getLabel() {
+		return "Move Component";
+	}
+
+	@Override
 	public boolean canExecute() {
 		return true;
 	}
