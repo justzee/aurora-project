@@ -24,7 +24,7 @@ public class HBox extends BOX {
 
 	@Override
 	final public int getCol() {
-		return 100;
+		return 1000;
 	}
 
 	@Override
