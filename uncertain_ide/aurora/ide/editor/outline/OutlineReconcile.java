@@ -45,8 +45,11 @@ public class OutlineReconcile implements IReconcileListener {
 				}
 
 				ContentOutline outline = (ContentOutline) view;
-				BaseOutlinePage outlineView = (BaseOutlinePage) outline.getCurrentPage();
-				outlineView.refresh();
+
+				if (outline.getCurrentPage() instanceof BaseOutlinePage) {
+					BaseOutlinePage outlineView = (BaseOutlinePage) outline.getCurrentPage();
+					outlineView.refresh();
+				}
 			}
 		});
 	}
