@@ -1,13 +1,10 @@
 package aurora.ide.meta.gef.editors.parts;
 
 import java.util.EventObject;
-import java.util.Map;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.graph.CompoundDirectedGraph;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.commands.CommandStackListener;
@@ -31,25 +28,10 @@ public class ViewDiagramPart extends ContainerPart {
 	protected IFigure createFigure() {
 		Figure figure = new FreeformLayer();
 		ViewDiagramLayout manager = new ViewDiagramLayout(false, this);
-
-		// manager.setStretchMinorAxis(false);
-
-		manager.setMajorSpacing(80);
-		manager.setMinorSpacing(50);
-
 		figure.setLayoutManager(manager);
-
-		// figure.setSize(1000, 1000);
 		return figure;
 	}
 
-	public void applyGraphResults(CompoundDirectedGraph graph, Map map) {
-		Dimension size2 = this.getFigure().getSize();
-		for (int i = 0; i < getChildren().size(); i++) {
-			ComponentPart part = (ComponentPart) getChildren().get(i);
-			part.applyGraphResults(graph, map);
-		}
-	}
 
 	@Override
 	protected void createEditPolicies() {
@@ -58,7 +40,6 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	public void activate() {
-		// TODO Auto-generated method stub
 		super.activate();
 		getViewer().getEditDomain().getCommandStack()
 				.addCommandStackListener(stackListener);
@@ -66,7 +47,6 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	public void deactivate() {
-		// TODO Auto-generated method stub
 		getViewer().getEditDomain().getCommandStack()
 				.removeCommandStackListener(stackListener);
 		super.deactivate();
@@ -76,6 +56,5 @@ public class ViewDiagramPart extends ContainerPart {
 	protected void addChild(EditPart child, int index) {
 		super.addChild(child, index);
 	}
-
 
 }

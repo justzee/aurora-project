@@ -14,19 +14,19 @@ import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
 
 public class BoxPart extends ContainerPart {
 
+
 	@Override
 	protected IFigure createFigure() {
-		Figure figure = new BoxFigure();
-
+		BoxFigure figure = new BoxFigure();
+		BOX model = (BOX) getModel();
+		figure.setBox(model);
 		return figure;
 	}
 
 	@Override
 	protected void createEditPolicies() {
+		super.createEditPolicies();
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new DiagramLayoutEditPolicy());
-		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
-				new NodeDirectEditPolicy());
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
 	}
 
 	protected void refreshVisuals() {

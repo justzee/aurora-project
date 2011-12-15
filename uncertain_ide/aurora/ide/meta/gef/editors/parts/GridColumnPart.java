@@ -7,8 +7,6 @@ import org.eclipse.gef.EditPolicy;
 import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.policies.FormLayoutEditPolicy;
-import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
-import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
 
 public class GridColumnPart extends ContainerPart {
 
@@ -21,14 +19,13 @@ public class GridColumnPart extends ContainerPart {
 
 	@Override
 	protected void createEditPolicies() {
+		super.createEditPolicies();
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new FormLayoutEditPolicy());
-		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
-				new NodeDirectEditPolicy());
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
 	}
 
 	protected void refreshVisuals() {
-		((GridColumnFigure) getFigure()).setModel((GridColumn)this.getComponent());
+		((GridColumnFigure) getFigure()).setModel((GridColumn) this
+				.getComponent());
 		super.refreshVisuals();
 	}
 
