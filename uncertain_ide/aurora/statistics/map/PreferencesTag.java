@@ -25,7 +25,6 @@ public class PreferencesTag {
 
 	private Map<String, List<String>> defaultMap = new HashMap<String, List<String>>() {
 		private static final long serialVersionUID = -2136894063010579177L;
-
 		{
 			//TODO
 			// this.put(key, value)

@@ -1,5 +1,6 @@
 package aurora.ide.statistics.viewer;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ class ObjectNode {
 	String refInCount;
 	// 7
 	String refOutCount;
-	//8
+	// 8
 	String maxTagName;
 
 	Object parent;
@@ -39,8 +40,7 @@ class ObjectNode {
 
 // static final private String[] oViewColTitles = { "类别", "文件名", "路径", "文件大小",
 // "脚本大小", "标签数量", "引用次数", "被引用次数" };
-class ObjectViewContentProvider implements IStructuredContentProvider,
-		ITreeContentProvider {
+class ObjectViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 
 	public void dispose() {
 
@@ -64,8 +64,7 @@ class ObjectViewContentProvider implements IStructuredContentProvider,
 		return null;
 	}
 
-	private ObjectNode createObjectNode(ProjectObject o,
-			ObjectStatisticsResult osr) {
+	private ObjectNode createObjectNode(ProjectObject o, ObjectStatisticsResult osr) {
 		ObjectNode on = new ObjectNode();
 		on.category = o.getType();
 		on.fileName = o.getName();
@@ -97,12 +96,9 @@ class ObjectViewContentProvider implements IStructuredContentProvider,
 
 	public Object[] getElements(Object inputElement) {
 		if (inputElement instanceof StatisticsResult) {
-			ObjectStatisticsResult bmStatisticsResult = ((StatisticsResult) inputElement)
-					.getBMStatisticsResult();
-			ObjectStatisticsResult sreenStatisticsResult = ((StatisticsResult) inputElement)
-					.getSreenStatisticsResult();
-			ObjectStatisticsResult svcStatisticsResult = ((StatisticsResult) inputElement)
-					.getSVCStatisticsResult();
+			ObjectStatisticsResult bmStatisticsResult = ((StatisticsResult) inputElement).getBMStatisticsResult();
+			ObjectStatisticsResult sreenStatisticsResult = ((StatisticsResult) inputElement).getSreenStatisticsResult();
+			ObjectStatisticsResult svcStatisticsResult = ((StatisticsResult) inputElement).getSVCStatisticsResult();
 			List<Object> result = new ArrayList<Object>();
 			if (bmStatisticsResult != null)
 				result.add(bmStatisticsResult);
@@ -154,9 +150,9 @@ class ObjectViewLabelProvider implements ITableLabelProvider {
 			case 2:
 				return node.path;
 			case 3:
-				return node.fileSize;
+				return conversion(node.fileSize);
 			case 4:
-				return node.scriptSize;
+				return conversion(node.scriptSize);
 			case 5:
 				return node.tagCount;
 			case 6:
@@ -168,4 +164,20 @@ class ObjectViewLabelProvider implements ITableLabelProvider {
 		return null;
 	}
 
+	private String conversion(String value) {
+		if (value.matches("\\d+")) {
+			DecimalFormat df = new DecimalFormat("#.00");
+			double v = Double.parseDouble(value);
+			if (value.length() > 3 && value.length() <= 6) {
+				v /= 1024.0;
+				return df.format(v) + " KB";
+			} else if (value.length() > 6) {
+				v /= (1024.0 * 1024.0);
+				return df.format(v) + " MB";
+			} else {
+				return (int) v + " Byte";
+			}
+		}
+		return value;
+	}
 }

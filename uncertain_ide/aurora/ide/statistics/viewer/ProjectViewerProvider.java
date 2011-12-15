@@ -1,5 +1,6 @@
 package aurora.ide.statistics.viewer;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +29,7 @@ class ProjectNode {
 	Object parent;
 }
 
-class ProjectViewContentProvider implements IStructuredContentProvider,
-		ITreeContentProvider {
+class ProjectViewContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 
 	public void dispose() {
 
@@ -47,31 +47,23 @@ class ProjectViewContentProvider implements IStructuredContentProvider,
 				nodes[i] = new ProjectNode();
 				// TODO i18n
 				nodes[i].name = ps[i];
-				nodes[i].value = ((StatisticsProject) parentElement)
-						.getProperty(i);
+				nodes[i].value = ((StatisticsProject) parentElement).getProperty(i);
 				nodes[i].parent = parentElement;
 			}
 			return nodes;
 		}
 		if (parentElement instanceof ObjectStatisticsResult) {
 			ObjectStatisticsResult osr = (ObjectStatisticsResult) parentElement;
-			ProjectNode fileSize = createProjectNode("file size", osr,
-					osr.getMaxFileSize(), osr.getMinFileSize(),
-					osr.getTotalFileSize(), osr.getAverageFileSize());
-			ProjectNode scriptSize = createProjectNode("script size", osr,
-					osr.getMaxScriptSize(), osr.getMinScriptSize(),
-					osr.getTotalScriptSize(), osr.getAverageScriptSize());
+			ProjectNode fileSize = createProjectNode("file size", osr, osr.getMaxFileSize(), osr.getMinFileSize(), osr.getTotalFileSize(), osr.getAverageFileSize());
+			ProjectNode scriptSize = createProjectNode("script size", osr, osr.getMaxScriptSize(), osr.getMinScriptSize(), osr.getTotalScriptSize(), osr.getAverageScriptSize());
 
-			ProjectNode tagCount = createProjectNode("tags", osr,
-					osr.getMaxTagCount(), osr.getMinTagCount(),
-					osr.getTotalTagCount(), osr.getAverageTagCount());
+			ProjectNode tagCount = createProjectNode("tags", osr, osr.getMaxTagCount(), osr.getMinTagCount(), osr.getTotalTagCount(), osr.getAverageTagCount());
 			return new ProjectNode[] { fileSize, scriptSize, tagCount };
 		}
 		return null;
 	}
 
-	private ProjectNode createProjectNode(String nodeName, Object parent,
-			int max, int min, int total, int average) {
+	private ProjectNode createProjectNode(String nodeName, Object parent, int max, int min, int total, int average) {
 		ProjectNode node = new ProjectNode();
 		node.name = nodeName;
 		node.parent = parent;
@@ -93,21 +85,16 @@ class ProjectViewContentProvider implements IStructuredContentProvider,
 	}
 
 	public boolean hasChildren(Object element) {
-		return element instanceof StatisticsProject
-				|| element instanceof ObjectStatisticsResult;
+		return element instanceof StatisticsProject || element instanceof ObjectStatisticsResult;
 	}
 
 	public Object[] getElements(Object inputElement) {
 		if (inputElement instanceof StatisticsResult) {
-			ObjectStatisticsResult bmStatisticsResult = ((StatisticsResult) inputElement)
-					.getBMStatisticsResult();
-			ObjectStatisticsResult sreenStatisticsResult = ((StatisticsResult) inputElement)
-					.getSreenStatisticsResult();
-			ObjectStatisticsResult svcStatisticsResult = ((StatisticsResult) inputElement)
-					.getSVCStatisticsResult();
+			ObjectStatisticsResult bmStatisticsResult = ((StatisticsResult) inputElement).getBMStatisticsResult();
+			ObjectStatisticsResult sreenStatisticsResult = ((StatisticsResult) inputElement).getSreenStatisticsResult();
+			ObjectStatisticsResult svcStatisticsResult = ((StatisticsResult) inputElement).getSVCStatisticsResult();
 
-			StatisticsProject project = ((StatisticsResult) inputElement)
-					.getProject();
+			StatisticsProject project = ((StatisticsResult) inputElement).getProject();
 			List<Object> result = new ArrayList<Object>();
 			if (project != null)
 				result.add(project);
@@ -148,7 +135,12 @@ class ProjectViewLabelProvider implements ITableLabelProvider {
 
 	public String getColumnText(Object element, int columnIndex) {
 		if (element instanceof StatisticsProject && columnIndex == 0) {
-			return ((StatisticsProject) element).getProjectName();
+			String s = ((StatisticsProject) element).getProjectName();
+			if ("no project".equals(s)) {
+				return "空项目";
+			} else {
+				return s;
+			}
 		}
 		if (element instanceof ObjectStatisticsResult && columnIndex == 0) {
 			return ((ObjectStatisticsResult) element).getType();
@@ -157,18 +149,70 @@ class ProjectViewLabelProvider implements ITableLabelProvider {
 			ProjectNode node = (ProjectNode) element;
 			switch (columnIndex) {
 			case 0:
-				return node.name;
+				if ("file size".equals(node.name)) {
+					return "文件大小";
+				} else if ("script size".equals(node.name)) {
+					return "脚本大小";
+				} else if ("tags".equals(node.name)) {
+					return "标签数量";
+				} else if ("projectName".equals(node.name)) {
+					return "项目名";
+				} else if ("storer".equals(node.name)) {
+					return "保存人";
+				} else if ("storeDate".equals(node.name)) {
+					return "保存时间";
+				} else if ("repositoryType".equals(node.name)) {
+					return "资源库类型";
+				} else if ("repositoryRevesion".equals(node.name)) {
+					return "资源库版本";
+				} else if ("repositoryPath".equals(node.name)) {
+					return "资源库路径";
+				} else {
+					return node.name;
+				}
 			case 1:
-				return node.value;
+				if (node.name.indexOf("size") >= 0) {
+					return conversion(node.value);
+				} else if ("no project".equals(node.value)) {
+					return "空项目";
+				} else {
+					return node.value;
+				}
 			case 2:
+				if (node.name.indexOf("size") >= 0) {
+					return conversion(node.max);
+				}
 				return node.max;
 			case 3:
+				if (node.name.indexOf("size") >= 0) {
+					return conversion(node.min);
+				}
 				return node.min;
 			case 4:
+				if (node.name.indexOf("size") >= 0) {
+					return conversion(node.average);
+				}
 				return node.average;
 			}
 		}
 		return null;
+	}
+
+	private String conversion(String value) {
+		if (value.matches("\\d+")) {
+			DecimalFormat df = new DecimalFormat("#.00");
+			double v = Double.parseDouble(value);
+			if (value.length() > 3 && value.length() <= 6) {
+				v /= 1024.0;
+				return df.format(v) + " KB";
+			} else if (value.length() > 6) {
+				v /= (1024.0 * 1024.0);
+				return df.format(v) + " MB";
+			} else {
+				return (int) v + " Byte";
+			}
+		}
+		return value;
 	}
 
 }

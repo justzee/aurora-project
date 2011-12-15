@@ -24,12 +24,9 @@ public class StatisticsProject {
 	// id
 	private String projectId = "";
 
-	static final public String[] PROPERTIES = { "projectName", "storer",
-			"storeDate", "repositoryType", "repositoryRevesion",
-			"repositoryPath" };
+	static final public String[] PROPERTIES = { "projectName", "storer", "storeDate", "repositoryType", "repositoryRevesion", "repositoryPath" };
 
-	public static final StatisticsProject NONE_PROJECT = new StatisticsProject(
-			"no project");
+	public static final StatisticsProject NONE_PROJECT = new StatisticsProject("no project");
 
 	public StatisticsProject(String string) {
 		this.projectName = string;

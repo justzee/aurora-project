@@ -23,6 +23,7 @@ public class DatabaseAction implements SQL {
 	private List<ProjectObject> poList;
 	private StatisticsResult result;
 	private Map<Integer, ProjectObject> poMap;
+	private int BATCH_SIZE = 10000;
 
 	public DatabaseAction(Statistician statistician) {
 		this.project = statistician.getProject();
@@ -57,8 +58,7 @@ public class DatabaseAction implements SQL {
 		// project_object
 		// object_tag
 		try {
-			PreparedStatement prepareStatement = connection
-					.prepareStatement(selectProjectID);
+			PreparedStatement prepareStatement = connection.prepareStatement(selectProjectID);
 			int objectID = prepareStatement.executeQuery().getInt(1);
 			po.setObjectId(String.valueOf(objectID));
 		} catch (SQLException e) {
@@ -66,11 +66,9 @@ public class DatabaseAction implements SQL {
 		}
 	}
 
-	private void saveObjects(Connection connection, int maxObjectID)
-			throws SQLException {
-
+	private void saveObjects(int partSize, Connection connection, int maxObjectID) throws SQLException {
 		PreparedStatement prepareStatement = null;
-
+		int count = 0;
 		try {
 			prepareStatement = connection.prepareStatement(insertObjectSql);
 			for (ProjectObject po : poList) {
@@ -84,9 +82,17 @@ public class DatabaseAction implements SQL {
 				prepareStatement.setInt(6, po.getFileSize());
 				prepareStatement.setInt(7, po.getScriptSize());
 				prepareStatement.addBatch();
+				count++;
+				if (count >= partSize) {
+					prepareStatement.executeBatch();
+					prepareStatement.close();
+					prepareStatement = connection.prepareStatement(insertObjectSql);
+					count = 0;
+				}
 			}
-			prepareStatement.executeBatch();
-
+			if (count > 0) {
+				prepareStatement.executeBatch();
+			}
 		} finally {
 			if (prepareStatement != null) {
 				try {
@@ -98,17 +104,17 @@ public class DatabaseAction implements SQL {
 		}
 	}
 
-	private void saveTags(Connection connection) throws SQLException {
+	private void saveTags(int partSize, Connection connection) throws SQLException {
+
 		PreparedStatement prepareStatement = null;
 		try {
 			prepareStatement = connection.prepareStatement(insertTagSql);
+			int count = 0;
 			for (ProjectObject po : poList) {
 				List<Tag> tags = po.getTags();
 				for (Tag tag : tags) {
-					prepareStatement.setInt(1,
-							Integer.valueOf(po.getObjectId()));
-					prepareStatement.setInt(2,
-							Integer.valueOf(po.getProjectId()));
+					prepareStatement.setInt(1, Integer.valueOf(po.getObjectId()));
+					prepareStatement.setInt(2, Integer.valueOf(po.getProjectId()));
 					prepareStatement.setString(3, tag.getType());
 					prepareStatement.setString(4, tag.getName());
 					prepareStatement.setString(5, tag.getNamespace());
@@ -118,15 +124,28 @@ public class DatabaseAction implements SQL {
 					prepareStatement.setInt(9, tag.getCount());
 					prepareStatement.setInt(10, tag.getSize());
 					prepareStatement.addBatch();
+					count++;
+				}
+				if (count >= partSize) {
+					prepareStatement.executeBatch();
+					prepareStatement.close();
+					prepareStatement = connection.prepareStatement(insertTagSql);
+					count = 0;
 				}
 			}
-			prepareStatement.executeBatch();
-
+			if (count > 0) {
+				prepareStatement.executeBatch();
+			}
 		} finally {
 			if (prepareStatement != null) {
 				try {
 					prepareStatement.close();
 				} catch (SQLException e) {
+					/*
+					 * Oracel 10G的JDBC Driver限制最大Batch size是16383条，
+					 * 如果addBatch超过这个限制， 那么executeBatch时就会出现 “无效的批值”（Invalid
+					 * Batch Value） 异常。
+					 */
 					e.printStackTrace();
 				}
 			}
@@ -134,7 +153,7 @@ public class DatabaseAction implements SQL {
 
 	}
 
-	public void selectALl(Connection connection) throws SQLException {
+	public void selectAll(Connection connection) throws SQLException {
 		String s1 = "select * from statistics_project";
 		String s2 = "select * from project_object";
 		String s3 = "select * from object_tag";
@@ -205,12 +224,9 @@ public class DatabaseAction implements SQL {
 			for (ProjectObject po : poList) {
 				List<Dependency> dependencies = po.getDependencies();
 				for (Dependency d : dependencies) {
-					prepareStatement
-							.setInt(1, Integer.valueOf(d.getObjectID()));
-					prepareStatement.setInt(2,
-							Integer.valueOf(po.getProjectId()));
-					prepareStatement.setInt(3,
-							Integer.valueOf(d.getDependencyObjectID()));
+					prepareStatement.setInt(1, Integer.valueOf(d.getObjectID()));
+					prepareStatement.setInt(2, Integer.valueOf(po.getProjectId()));
+					prepareStatement.setInt(3, Integer.valueOf(d.getDependencyObjectID()));
 					prepareStatement.addBatch();
 				}
 			}
@@ -226,8 +242,7 @@ public class DatabaseAction implements SQL {
 		}
 	}
 
-	static public StatisticsProject[] readAllProject(Connection connection)
-			throws SQLException {
+	static public StatisticsProject[] readAllProject(Connection connection) throws SQLException {
 
 		List<StatisticsProject> ps = new ArrayList<StatisticsProject>();
 
@@ -251,8 +266,7 @@ public class DatabaseAction implements SQL {
 				project.setRepositoryPath(repositoryPath);
 				project.setRepositoryRevision(repositoryRevision);
 				project.setRepositoryType(repositoryType);
-				project.setStoreDate(DateFormat.getDateInstance(
-						DateFormat.DEFAULT).format(storeDate));
+				project.setStoreDate(DateFormat.getDateInstance(DateFormat.DEFAULT).format(storeDate));
 				project.setStorer(storer);
 				ps.add(project);
 
@@ -337,8 +351,8 @@ public class DatabaseAction implements SQL {
 		try {
 			setProjectID(connection);
 			int maxObjectID = getMaxObjectID(connection);
-			this.saveObjects(connection, maxObjectID);
-			this.saveTags(connection);
+			this.saveObjects(BATCH_SIZE, connection, maxObjectID);
+			this.saveTags(BATCH_SIZE, connection);
 			saveDependencies(connection);
 		} catch (SQLException e) {
 			Status es = new Status(Status.ERROR);
@@ -417,8 +431,7 @@ public class DatabaseAction implements SQL {
 		String pid = this.project.getProjectId();
 		PreparedStatement prepareStatement = null;
 		try {
-			prepareStatement = connection
-					.prepareStatement(selectAllDependenciesSql);
+			prepareStatement = connection.prepareStatement(selectAllDependenciesSql);
 			prepareStatement.setInt(1, Integer.valueOf(pid));
 			ResultSet rs = prepareStatement.executeQuery();
 			int index = 0;
