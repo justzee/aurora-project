@@ -255,7 +255,7 @@ public class GridBackLayout extends BackLayout {
 		}
 		if (selfRectangle.width > this.selfRectangle.width) {
 			// return selfRectangle.expand(1, 1);
-			return this.selfRectangle.getCopy().setWidth(selfRectangle.width);
+			return this.selfRectangle.getCopy().setWidth(selfRectangle.width+50);
 		}
 		// ScrollBar horizontalScrollBar = ((ScrollPane)
 		// parent.getFigure()).getHorizontalScrollBar();

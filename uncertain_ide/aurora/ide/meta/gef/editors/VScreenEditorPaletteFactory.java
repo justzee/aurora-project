@@ -51,9 +51,8 @@ public class VScreenEditorPaletteFactory {
 						newObject.setType(Input.TEXT);
 						return newObject;
 					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/gear16.gif"), ImageDescriptor.createFromFile(
-						Input.class, "images/gear16.gif"));
+				}, ImagesUtils.getImageDescriptor("palette/input_edit.png"),
+				ImagesUtils.getImageDescriptor("palette/input_edit.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Combox",
@@ -64,9 +63,8 @@ public class VScreenEditorPaletteFactory {
 						newObject.setType(Input.Combo);
 						return newObject;
 					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/gear16.gif"), ImageDescriptor.createFromFile(
-						Input.class, "images/gear16.gif"));
+				}, ImagesUtils.getImageDescriptor("palette/itembar_01.png"),
+				ImagesUtils.getImageDescriptor("palette/itembar_01.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Cal", "Create a new Cal",
@@ -76,9 +74,8 @@ public class VScreenEditorPaletteFactory {
 						newObject.setType(Input.CAL);
 						return newObject;
 					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/gear16.gif"), ImageDescriptor.createFromFile(
-						Input.class, "images/gear16.gif"));
+				}, ImagesUtils.getImageDescriptor("palette/itembar_02.png"),
+				ImagesUtils.getImageDescriptor("palette/itembar_02.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("LOV", "Create a new Lov",
@@ -88,9 +85,8 @@ public class VScreenEditorPaletteFactory {
 						newObject.setType(Input.LOV);
 						return newObject;
 					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/gear16.gif"), ImageDescriptor.createFromFile(
-						Input.class, "images/gear16.gif"));
+				}, ImagesUtils.getImageDescriptor("palette/itembar_03.png"),
+				ImagesUtils.getImageDescriptor("palette/itembar_03.png"));
 		entries.add(combined);
 		// /button
 		combined = new CombinedTemplateCreationEntry("Button",
@@ -100,9 +96,9 @@ public class VScreenEditorPaletteFactory {
 						Button newObject = (Button) super.getNewObject();
 						return newObject;
 					}
-				}, ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/gear16.gif"), ImageDescriptor.createFromFile(
-						Button.class, "images/gear16.gif"));
+				},
+				ImagesUtils.getImageDescriptor("palette/toolbar_btn_01.png"),
+				ImagesUtils.getImageDescriptor("palette/toolbar_btn_01.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Form", "Create a  Form",
@@ -150,30 +146,27 @@ public class VScreenEditorPaletteFactory {
 						"images/parallel16.gif"));
 		entries.add(combined);
 
-		
-
 		combined = new CombinedTemplateCreationEntry("Grid Column",
-				"Create a  Grid Column", GridColumn.class,
-				new SimpleFactory(GridColumn.class), ImageDescriptor.createFromFile(
+				"Create a  Grid Column", GridColumn.class, new SimpleFactory(
+						GridColumn.class), ImageDescriptor.createFromFile(
 						AuroraPlugin.class, "images/parallel16.gif"),
 				ImageDescriptor.createFromFile(AuroraPlugin.class,
 						"images/parallel16.gif"));
 		entries.add(combined);
-		 combined = new CombinedTemplateCreationEntry("Toolbar",
-		 "Create a  Toolbar ", Toolbar.class,
-		 new SimpleFactory(Toolbar.class), ImageDescriptor.createFromFile(
-		 AuroraPlugin.class, "images/parallel16.gif"),
-		 ImageDescriptor.createFromFile(AuroraPlugin.class,
-		 "images/parallel16.gif"));
-		 entries.add(combined);
-		
-		 combined = new CombinedTemplateCreationEntry("Navbar",
-		 "Create a  Navbar", Navbar.class,
-		 new SimpleFactory(Navbar.class), ImageDescriptor.createFromFile(
-		 AuroraPlugin.class, "images/parallel16.gif"),
-		 ImageDescriptor.createFromFile(AuroraPlugin.class,
-		 "images/parallel16.gif"));
-		 entries.add(combined);
+		combined = new CombinedTemplateCreationEntry("Toolbar",
+				"Create a  Toolbar ", Toolbar.class, new SimpleFactory(
+						Toolbar.class), ImageDescriptor.createFromFile(
+						AuroraPlugin.class, "images/parallel16.gif"),
+				ImageDescriptor.createFromFile(AuroraPlugin.class,
+						"images/parallel16.gif"));
+		entries.add(combined);
+
+		combined = new CombinedTemplateCreationEntry("Navbar",
+				"Create a  Navbar", Navbar.class, new SimpleFactory(
+						Navbar.class),
+				ImagesUtils.getImageDescriptor("palette/navigation_04.png"),
+				ImagesUtils.getImageDescriptor("palette/navigation_04.png"));
+		entries.add(combined);
 
 		drawer.addAll(entries);
 		return drawer;

@@ -1,17 +1,11 @@
 package aurora.ide.meta.gef.editors.figures;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.draw2d.graph.CompoundDirectedGraph;
-import org.eclipse.draw2d.graph.CompoundDirectedGraphLayout;
-import org.eclipse.draw2d.graph.Subgraph;
 
 import aurora.ide.meta.gef.editors.layout.ScreenGraphLayout;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
@@ -36,6 +30,7 @@ public class ViewDiagramLayout extends FlowLayout {
 
 		ScreenGraphLayout ly = new ScreenGraphLayout((ViewDiagramPart)diagram);
 		ly.layout();
+		parent.repaint();
 //		diagram.getFigure().repaint();
 		
 //		CompoundDirectedGraph graph = new CompoundDirectedGraph();

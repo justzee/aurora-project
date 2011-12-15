@@ -1,7 +1,5 @@
 package aurora.ide.meta.gef.editors.policies;
 
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.OrderedLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
@@ -15,7 +13,6 @@ import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveRemoteChildCmpCmd;
-import aurora.ide.meta.gef.editors.parts.LabelPart;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private EditPart targetEditPart = null;
@@ -26,8 +23,7 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	protected Command createChangeConstraintCommand(EditPart child,
 			Object constraint) {
-		if (!(child instanceof LabelPart))
-			return null;
+
 		if (!(constraint instanceof Rectangle))
 			return null;
 

@@ -1,13 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2010 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+
 package aurora.ide.meta.gef.editors;
 
 import java.io.ByteArrayInputStream;
@@ -55,10 +46,6 @@ import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.parts.AuroraPartFactory;
 
-/**
- * 
- * @author hudsonr Created on Jun 27, 2003
- */
 public class VScreenEditor extends GraphicalEditorWithPalette {
 
 	ViewDiagram diagram;

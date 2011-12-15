@@ -29,10 +29,6 @@ public class NavbarPart extends ContainerPart {
 	}
 
 	protected void refreshVisuals() {
-//		BOX model = (BOX) getModel();
-//		BoxFigure figure = (BoxFigure) getFigure();
-//		figure.setLabelWidth(model.getLabelWidth());
-//		figure.setType(model.getType());
 		super.refreshVisuals();
 
 	}

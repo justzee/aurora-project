@@ -14,27 +14,6 @@ public class ScreenGraphLayout extends BackLayout {
 	private Rectangle last = new Rectangle(0, 0, 0, 0);
 	private Rectangle zero = new Rectangle(0, 0, 0, 0);
 
-	// public Subgraph layout(Subgraph graph) {
-	//
-	// NodeList members = graph.members;
-	// Insets insets = graph.insets;
-	// insets.top;
-	// insets.left;
-	// insets.bottom;
-	// insets.right;
-	// for (int i = 0; i < members.size(); i++) {
-	// Node node = members.getNode(i);
-	// node.width;
-	// node.height;
-	// node.x;
-	// node.y;
-	//
-	// if(node instanceof Subgraph){
-	// node = layout((Subgraph)node);
-	// }
-	// }
-	// return graph;
-	// }
 	public ScreenGraphLayout(ViewDiagramPart diagram) {
 		this.diagram = diagram;
 	}
@@ -76,13 +55,6 @@ public class ScreenGraphLayout extends BackLayout {
 	}
 
 	protected Rectangle newChildLocation(ComponentPart ep, Rectangle layout) {
-		// System.out.println(layout);
-		// this.getPreviousPage(page)
-		// Rectangle last = new Rectangle(0, 0, 0, 0);
-		// ComponentPart pPart = findPreviouseChild(ep,layout);
-
-		// if (pPart != null)
-		// last = pPart.getFigure().getBounds();
 		layout.x = PADDING.left;
 		layout.y = last.y + last.height + PADDING.top;
 		last = layout.getCopy();
