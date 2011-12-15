@@ -1,10 +1,10 @@
-
 package aurora.ide.meta.gef.editors.figures;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
@@ -15,7 +15,6 @@ import aurora.ide.meta.gef.editors.models.Button;
 /**
  */
 public class ButtonFigure extends Figure {
-
 
 	private static Image bgImg = ImagesUtils.getImage("btn.gif");
 	private static String[] buttonTypes = { Button.ADD, Button.SAVE,
@@ -40,7 +39,8 @@ public class ButtonFigure extends Figure {
 		g.pushState();
 		Rectangle rect = getBounds();
 		Dimension dim = model.getSize();
-		if (!model.isStdButton()) {
+		IFigure parentFigure = getParent();
+		if (!(parentFigure instanceof ToolbarFigure)) {
 			g.drawImage(bgImg, 0, 0, 3, 2, rect.x, rect.y, 3, 2);// tl
 			g.drawImage(bgImg, 0, 6, 1, 2, rect.x + 3, rect.y, dim.width - 6, 2);// tc
 			g.drawImage(bgImg, 3, 0, 3, 2, rect.x + dim.width - 3, rect.y, 3, 2);// tr
