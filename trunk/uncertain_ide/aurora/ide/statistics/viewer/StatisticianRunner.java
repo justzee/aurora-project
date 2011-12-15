@@ -65,8 +65,7 @@ public class StatisticianRunner implements IRunningListener {
 		job.schedule();
 	}
 
-	private void privateRunning(Statistician st, Object[] objects,
-			final IProgressMonitor monitor) {
+	private void privateRunning(Statistician st, Object[] objects, final IProgressMonitor monitor) {
 
 		fNumberOfFilesToScan = objects.length;
 		Job monitorUpdateJob = new Job("Aurora Statistician Progress") {
@@ -91,15 +90,11 @@ public class StatisticianRunner implements IRunningListener {
 			}
 
 			private void updateMonitor(IProgressMonitor monitor) {
-				final Object[] args = { fCurrentFileName,
-						new Integer(fNumberOfScannedFiles),
-						new Integer(fNumberOfFilesToScan) };
+				final Object[] args = { fCurrentFileName, new Integer(fNumberOfScannedFiles), new Integer(fNumberOfFilesToScan) };
 				if (isStatistician) {
-					monitor.subTask("分析 :"
-							+ MessageFormater.format(Message._scanning, args));
+					monitor.subTask("分析 :" + MessageFormater.format(Message._scanning, args));
 				} else {
-					monitor.subTask("统计 :"
-							+ MessageFormater.format(Message._scanning, args));
+					monitor.subTask("统计 :" + MessageFormater.format(Message._scanning, args));
 				}
 				int steps = fNumberOfScannedFiles - fLastNumberOfScannedFiles;
 				if (steps < 0) {
@@ -127,8 +122,7 @@ public class StatisticianRunner implements IRunningListener {
 		}
 	}
 
-	public Statistician fillStatistician(Statistician st, Object[] objects,
-			IProgressMonitor monitor) {
+	public Statistician fillStatistician(Statistician st, Object[] objects, IProgressMonitor monitor) {
 		int i = 1;
 		for (Object o : objects) {
 			if (monitor.isCanceled())
@@ -170,8 +164,7 @@ public class StatisticianRunner implements IRunningListener {
 	}
 
 	private Statistician noProjectStatistician() {
-		return new Statistician(StatisticsProject.NONE_PROJECT,
-				LoadSchemaManager.getSchemaManager());
+		return new Statistician(StatisticsProject.NONE_PROJECT, LoadSchemaManager.getSchemaManager());
 	}
 
 	public boolean notice(ProjectObject po, int poIndex) {
@@ -197,9 +190,7 @@ public class StatisticianRunner implements IRunningListener {
 					try {
 						((IProject) objects[0]).accept(finder);
 						List<IResource> result = finder.getResult();
-						privateRunning(st,
-								result.toArray(new IResource[result.size()]),
-								monitor);
+						privateRunning(st, result.toArray(new IResource[result.size()]), monitor);
 					} catch (CoreException e) {
 						e.printStackTrace();
 					}
@@ -220,7 +211,6 @@ public class StatisticianRunner implements IRunningListener {
 
 			if (repInfo == null) {
 				repInfo = this.createSVNInfo(project);
-
 			}
 
 			if (repInfo != null) {
@@ -240,14 +230,12 @@ public class StatisticianRunner implements IRunningListener {
 			return null;
 		String repository = readFolderSync.getRepository();
 		String root = readFolderSync.getRoot();
-		String projectCVSPath = root + FolderSyncInfo.SERVER_SEPARATOR
-				+ repository;
+		String projectCVSPath = root + FolderSyncInfo.SERVER_SEPARATOR + repository;
 
 		CVSEntryLineTag tag = readFolderSync.getTag();
 		String tagLabel = CVSTag.getTagLabel(tag);
 
-		CVSRepositoryLocation location = new CVSRepositoryLocation(
-				projectCVSPath);
+		CVSRepositoryLocation location = new CVSRepositoryLocation(projectCVSPath);
 		RepositoryInfo info = new RepositoryInfo(projectCVSPath, tagLabel);
 		info.setUserName(location.getUserName());
 		info.setType(RepositoryInfo.CVS);
@@ -255,12 +243,10 @@ public class StatisticianRunner implements IRunningListener {
 	}
 
 	private RepositoryInfo createSVNInfo(IProject project) {
-		File file = project.getFolder(".svn").getFile("entries").getLocation()
-				.toFile();
+		File file = project.getFolder(".svn").getFile("entries").getLocation().toFile();
 		try {
 			FileInputStream fis = new FileInputStream(file);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					fis), 512);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis), 512);
 
 			String revision = "";
 			String url = "";

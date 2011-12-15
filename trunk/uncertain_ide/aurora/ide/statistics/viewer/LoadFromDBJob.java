@@ -11,10 +11,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.statistics.DBManager;
-import aurora.statistics.DatabaseAction;
 import aurora.statistics.Statistician;
 import aurora.statistics.map.StatisticsResult;
 import aurora.statistics.model.StatisticsProject;
@@ -22,50 +20,56 @@ import aurora.statistics.model.StatisticsProject;
 public class LoadFromDBJob extends Job {
 
 	private Statistician statistician;
+	private StatisticsProject statisticsProject;
+	private IProject project;
+	private StatisticsView statisticsView;
 
-	public LoadFromDBJob(Statistician statistician) {
+	public LoadFromDBJob(IProject project, Statistician statistician, StatisticsProject statisticsProject, StatisticsView statisticsView) {
 		super("从数据库加载数据");
+		this.project = project;
 		this.statistician = statistician;
+		this.statisticsProject = statisticsProject;
+		this.statisticsView = statisticsView;
 	}
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		IProject project = AuroraPlugin.getWorkspace().getRoot()
-				.getProject("hr_aurora");
 		DBManager dm = new DBManager(project);
-		Connection connection;
-		//TODO 未完 待续。。。。
+		Connection connection = null;
+		monitor.beginTask("数据读取中....", 80);
 		try {
+			monitor.worked(10);
+			monitor.setTaskName("获取数据库连接");
 			connection = dm.getConnection();
-			// DatabaseAction.dropTables(connection);
-			StatisticsProject[] readAllProject = DatabaseAction
-					.readAllProject(connection);
-			Statistician s = new Statistician(readAllProject[0], null);
+			Statistician s = new Statistician(statisticsProject, null);
+			monitor.worked(20);
+			monitor.setTaskName("读取统计数据");
 			StatisticsResult read = s.read(connection);
-			connection.close();
-//			a.d.d();
-		} catch (ApplicationException e ) {
+			statisticsView.setInput(read, s);
+		} catch (ApplicationException e) {
 			showMessage(e.getMessage());
 		} catch (SQLException e) {
 			// java.sql.SQLException: ORA-00942: 表或视图不存在
 			if (e.getMessage().startsWith("ORA-00942"))
-				showMessage("表或视图不存在,请先进行保存操作");
+				showMessage("表或视图不存在");
 			e.printStackTrace();
+		} finally {
+			try {
+				if (null != connection && (!connection.isClosed())) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-
 		return Status.OK_STATUS;
 	}
 
 	private void showMessage(final String message) {
 		Display.getDefault().asyncExec(new Runnable() {
-
 			public void run() {
-				MessageDialog.openInformation(Display.getDefault()
-						.getActiveShell(), "统计分析", message);
-
+				MessageDialog.openInformation(Display.getDefault().getActiveShell(), "统计分析", message);
 			}
-
 		});
-
 	}
 }

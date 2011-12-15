@@ -15,7 +15,6 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.statistics.DBManager;
 import aurora.statistics.DatabaseAction;
 import aurora.statistics.Statistician;
-import aurora.statistics.model.StatisticsProject;
 
 public class SaveToDBJob extends Job {
 
@@ -28,14 +27,7 @@ public class SaveToDBJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		if (statistician == null
-				|| StatisticsProject.NONE_PROJECT.equals(statistician
-						.getProject())) {
-			showMessage("工程不存在，无法保存");
-			return Status.CANCEL_STATUS;
-		}
-		IProject project = AuroraPlugin.getWorkspace().getRoot()
-				.getProject(statistician.getProject().getEclipseProjectName());
+		IProject project = AuroraPlugin.getWorkspace().getRoot().getProject(statistician.getProject().getEclipseProjectName());
 		if (!project.exists()) {
 			showMessage("工程不存在，无法保存");
 			return Status.CANCEL_STATUS;
@@ -82,8 +74,7 @@ public class SaveToDBJob extends Job {
 		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
-				MessageDialog.openInformation(Display.getDefault()
-						.getActiveShell(), "统计分析", message);
+				MessageDialog.openInformation(Display.getDefault().getActiveShell(), "统计分析", message);
 
 			}
 
