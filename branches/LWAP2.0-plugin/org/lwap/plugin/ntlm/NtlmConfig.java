@@ -1,5 +1,8 @@
 package org.lwap.plugin.ntlm;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import jcifs.Config;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.IObjectRegistry;
@@ -68,7 +71,18 @@ public class NtlmConfig {
 	public DomainInstance getDomainInstance(String domain) {
 		return (DomainInstance) domainInstances.get(domain);
 	}	
-
+	
+	public DomainInstance getDefaultDomainInstance(){
+		Set keySet=domainInstances.keySet();
+		Iterator iterator =keySet.iterator();
+		if(keySet.size()==1){
+			while(iterator.hasNext()){
+				return (DomainInstance) domainInstances.get(iterator.next());
+			}
+		}
+		return null;
+	}
+	
 	public void addInstances(DomainInstance[] domainInstance) {
 		domainInstances = new CompositeMap();
 		int l = domainInstance.length;
