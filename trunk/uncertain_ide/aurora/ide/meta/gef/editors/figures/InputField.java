@@ -1,4 +1,3 @@
-
 package aurora.ide.meta.gef.editors.figures;
 
 import org.eclipse.draw2d.Figure;
@@ -37,8 +36,6 @@ public class InputField extends Figure {
 			return ViewDiagram.DLabelWidth;
 		}
 	}
-
-	
 
 	@Override
 	public void setBounds(Rectangle rect) {
@@ -106,23 +103,32 @@ public class InputField extends Figure {
 	}
 
 	private Image getImage() {
-		if (Input.TEXT.equals(model.getType()))
-			return null;
-		return ImagesUtils.getImage("itembar");
+		String type = model.getType();
+		if (Input.Combo.equals(type))
+			return ImagesUtils.getImage("palette/itembar_01.png");
+		if (Input.CAL.equals(type))
+			return ImagesUtils.getImage("palette/itembar_02.png");
+		if (Input.LOV.equals(type))
+			return ImagesUtils.getImage("palette/itembar_03.png");
+		if (Input.TEXT.equals(type))
+			return ImagesUtils.getImage("palette/itembar_04.png");
+		if (Input.NUMBER.equals(type))
+			return ImagesUtils.getImage("palette/itembar_05.png");
+		return null;
 	}
 
 	private Point getImageLocation() {
 		Point p = new Point(0, 0);
-		String type = model.getType();
-		if (Input.Combo.equals(type)) {
-			return p.setY(0);
-		}
-		if (Input.CAL.equals(type)) {
-			return p.setY(22);
-		}
-		if (Input.LOV.equals(type)) {
-			return p.setY(42);
-		}
+		// String type = model.getType();
+		// if (Input.Combo.equals(type)) {
+		// return p.setY(0);
+		// }
+		// if (Input.CAL.equals(type)) {
+		// return p.setY(20);
+		// }
+		// if (Input.LOV.equals(type)) {
+		// return p.setY(42);
+		// }
 		return p;
 	}
 }

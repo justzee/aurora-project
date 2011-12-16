@@ -4,6 +4,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
 import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.CheckBox;
 import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
@@ -11,6 +12,7 @@ import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Navbar;
+import aurora.ide.meta.gef.editors.models.Radio;
 import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.VBox;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
@@ -33,6 +35,10 @@ public class AuroraPartFactory implements EditPartFactory {
 			part = new BoxPart();
 		} else if (model instanceof VBox) {
 			part = new BoxPart();
+		} else if (model instanceof CheckBox) {
+			part = new CheckBoxPart();
+		} else if (model instanceof Radio) {
+			part = new RadioPart();
 		} else if (model instanceof Input) {
 			part = new InputPart();
 		} else if (model instanceof Grid) {
