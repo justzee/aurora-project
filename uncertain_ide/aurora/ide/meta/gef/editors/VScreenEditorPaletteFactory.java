@@ -111,7 +111,7 @@ public class VScreenEditorPaletteFactory {
 		entries.add(combined);
 		// radio
 		combined = new CombinedTemplateCreationEntry("Radio", "Create a Radio",
-				CheckBox.class, new SimpleFactory(Radio.class),
+				Radio.class, new SimpleFactory(Radio.class),
 				ImagesUtils.getImageDescriptor("palette/radio_01.png"),
 				ImagesUtils.getImageDescriptor("palette/radio_01.png"));
 		entries.add(combined);
