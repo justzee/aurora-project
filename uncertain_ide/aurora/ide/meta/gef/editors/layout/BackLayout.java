@@ -3,7 +3,6 @@ package aurora.ide.meta.gef.editors.layout;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-import aurora.ide.meta.gef.editors.parts.BoxPart;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
 
 public class BackLayout {
@@ -21,6 +20,7 @@ public class BackLayout {
 
 	protected void applyToFigure(ComponentPart ep, Rectangle layout) {
 		ep.getFigure().setBounds(layout);
+//		ep.getComponent().setILocation(layout.getLocation());
 		
 	}
 }

@@ -38,8 +38,9 @@ public abstract class ComponentPart extends AbstractGraphicalEditPart implements
 	}
 
 	protected void refreshVisuals() {
-		this.getFigure().setBounds(this.getComponent().getBounds());
-		super.refreshVisuals();
+//		this.getFigure().setBounds(this.getComponent().getBounds());
+//		super.refreshVisuals();
+		this.getFigure().repaint();
 	}
 
 	protected void createEditPolicies() {
