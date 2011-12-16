@@ -1,5 +1,7 @@
 package aurora.ide.meta.gef.editors.figures;
 
+import org.eclipse.draw2d.AbstractLabeledBorder;
+import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
@@ -37,19 +39,22 @@ public class BoxFigure extends Figure {
 	 */
 	protected void paintFigure(Graphics graphics) {
 		super.paintFigure(graphics);
+		if (box instanceof FieldSet) {
+			Border border = getBorder();
+			if (border instanceof AbstractLabeledBorder) {
+				((AbstractLabeledBorder) border).setLabel(box.getTitle());
+			}
+		}
 	}
 
 	public void setBox(BOX model) {
 		this.box = model;
-		
 		if (model instanceof HBox) {
 			this.setBorder(new VirtualBoxBorder("H"));
-		}
-		if (model instanceof VBox) {
+		} else if (model instanceof VBox) {
 			this.setBorder(new VirtualBoxBorder("V"));
-		}
-		if (model instanceof FieldSet) {
-			this.setBorder(new VirtualBoxBorder("V"));
+		} else if (model instanceof FieldSet) {
+			this.setBorder(new FieldsetBorder(model.getTitle()));
 		}
 	}
 
