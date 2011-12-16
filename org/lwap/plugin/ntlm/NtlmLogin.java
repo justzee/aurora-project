@@ -100,7 +100,7 @@ public class NtlmLogin extends AbstractServiceHandle {
 				return null;
 			}
 		} catch (Exception e) {
-			mLogger.log(Level.SEVERE,"NTLM authenticate fail");
+			mLogger.log(Level.SEVERE,"NTLM authenticate fail",e);
 			//域验证不通过，跳入普通处理方式
 			return null;
 		}
