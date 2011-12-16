@@ -9,10 +9,14 @@ import org.eclipse.gef.requests.CreateRequest;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.FieldSet;
+import aurora.ide.meta.gef.editors.models.Form;
+import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveRemoteChildCmpCmd;
+import aurora.ide.meta.gef.editors.parts.BoxPart;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private EditPart targetEditPart = null;
@@ -56,16 +60,19 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	public void showTargetFeedback(Request request) {
-		// TODO Auto-generated method stub
 		super.showTargetFeedback(request);
 	}
 
 	protected Command getCreateCommand(CreateRequest request) {
 		if (request.getNewObject() instanceof AuroraComponent) {
+			Container parentModel = (Container) getHost().getModel();
+			AuroraComponent ac = (AuroraComponent) request.getNewObject();
+			if (!parentModel.isResponsibleChild(ac))
+				return null;
 			EditPart reference = getInsertionReference(request);
 			CreateComponentCommand cmd = new CreateComponentCommand();
-			cmd.setDiagram((Container) getHost().getModel());
-			cmd.setChild((AuroraComponent) request.getNewObject());
+			cmd.setDiagram(parentModel);
+			cmd.setChild(ac);
 			cmd.setReferenceEditPart(reference);
 			return cmd;
 		}
@@ -97,6 +104,14 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	}
 
 	protected boolean isLayoutHorizontal() {
+		if (getHost() instanceof BoxPart) {
+			Class<? extends Object> modelClass = getHost().getModel()
+					.getClass();
+			if (modelClass.equals(HBox.class)
+					|| modelClass.equals(FieldSet.class)
+					|| modelClass.equals(Form.class))
+				return true;
+		}
 		return false;
 	}
 }

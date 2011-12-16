@@ -27,7 +27,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	private String type = "";
 
 	private String prompt = "prompt : ";
-	
+
 	private String bindTarget = "";
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -70,7 +70,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	}
 
 	public void setLocation(Point p) {
-		if (this.location.equals(p)) {
+		if (eq(this.location, p)) {
 			return;
 		}
 		Point old = this.location;
@@ -88,7 +88,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	}
 
 	public void setSize(Dimension size) {
-		if (this.size.equals(size)) {
+		if (eq(this.size, size)) {
 			return;
 		}
 		Dimension old = this.size;
@@ -102,8 +102,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	}
 
 	public void setBounds(Rectangle bounds) {
-
-		if (this.bounds.equals(bounds)) {
+		if (eq(this.bounds, bounds)) {
 			return;
 		}
 		Rectangle old = this.bounds;
@@ -119,7 +118,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	}
 
 	public void setName(String name) {
-		if (this.name.equals(name)) {
+		if (eq(this.name, name)) {
 			return;
 		}
 		String old = this.name;
@@ -132,7 +131,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	}
 
 	public void setType(String type) {
-		if (this.type.equals(type)) {
+		if (eq(this.type, type)) {
 			return;
 		}
 		String old = this.type;
@@ -145,7 +144,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 	}
 
 	public void setPrompt(String prompt) {
-		if (this.prompt.equals(prompt)) {
+		if (eq(this.prompt, prompt)) {
 			return;
 		}
 		String old = this.prompt;
@@ -159,6 +158,12 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 
 	public void setBindTarget(String bindTarget) {
 		this.bindTarget = bindTarget;
+	}
+
+	protected boolean eq(Object o1, Object o2) {
+		if (o1 == null)
+			return o2 == null;
+		return o1.equals(o2);
 	}
 
 }

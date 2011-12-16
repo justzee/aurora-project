@@ -56,7 +56,7 @@ public class BOX extends Container {
 	}
 
 	public void setTitle(String title) {
-		if (this.title.equals(title)) {
+		if (eq(this.title, title)) {
 			return;
 		}
 		String old = this.title;
