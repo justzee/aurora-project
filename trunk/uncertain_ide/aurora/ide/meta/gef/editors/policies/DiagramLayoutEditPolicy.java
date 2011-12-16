@@ -12,11 +12,12 @@ import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.HBox;
+import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveRemoteChildCmpCmd;
-import aurora.ide.meta.gef.editors.parts.BoxPart;
+import aurora.ide.meta.gef.editors.parts.ContainerPart;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private EditPart targetEditPart = null;
@@ -104,12 +105,13 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	}
 
 	protected boolean isLayoutHorizontal() {
-		if (getHost() instanceof BoxPart) {
-			Class<? extends Object> modelClass = getHost().getModel()
-					.getClass();
+		EditPart part = getHost();
+		if (part instanceof ContainerPart) {
+			Class<? extends Object> modelClass = part.getModel().getClass();
 			if (modelClass.equals(HBox.class)
 					|| modelClass.equals(FieldSet.class)
-					|| modelClass.equals(Form.class))
+					|| modelClass.equals(Form.class)
+					|| modelClass.equals(Toolbar.class))
 				return true;
 		}
 		return false;
