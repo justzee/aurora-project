@@ -33,17 +33,24 @@ public class NtlmAuthenticator {
 		msg = req.getHeader("Authorization");
 		if (msg != null && msg.startsWith("NTLM ")) {
 			byte[] token = Base64.decode(msg.substring(5));
+			Type1Message type1=null;
+			Type3Message type3;
 			if (token[8] == 1) {
-				Type1Message type1 = new Type1Message(token);
+				type1 = new Type1Message(token);
 				defaultDomain = type1.getSuppliedDomain();				
 			} else if (token[8] == 3) {
-				Type3Message type3 = new Type3Message(token);
+				type3 = new Type3Message(token);
 				defaultDomain = type3.getDomain();
 			}
-			DomainInstance domainInstance = (DomainInstance) this.ntlmConfig
-					.getDomainInstance(defaultDomain);
+			DomainInstance domainInstance;
+			if(defaultDomain==null){
+				domainInstance = (DomainInstance) this.ntlmConfig.getDefaultDomainInstance();
+			}else	{
+				domainInstance = (DomainInstance) this.ntlmConfig.getDomainInstance(defaultDomain);
+			}			
 			if (domainInstance == null)
-				throw new RuntimeException("defaultDomain is null");
+				throw new RuntimeException("DomainInstance is null;defaultDomain:"+defaultDomain+";Workstation:"+type1.getSuppliedWorkstation());
+		
 			domainController=domainInstance.getDomainController();
 			
 			Config.setProperty("jcifs.smb.client.domain", domainInstance.getDomain());
