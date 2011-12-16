@@ -1,5 +1,6 @@
 package aurora.ide.meta.gef.editors.layout;
 
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.parts.BoxPart;
@@ -11,25 +12,28 @@ import aurora.ide.meta.gef.editors.parts.NavbarPart;
 import aurora.ide.meta.gef.editors.parts.ToolbarPart;
 
 public class GraphLayoutManager {
+	private static final Insets BOX_PADDING = new Insets(8, 16, 8, 6);
 
 	static BackLayout createLayout(ComponentPart ep) {
 		if (ep instanceof BoxPart) {
-			return new BoxBackLayout();
+			RowColBackLayout rowColBackLayout = new RowColBackLayout();
+			rowColBackLayout.setPadding(BOX_PADDING);
+			return rowColBackLayout;
 		}
-		if(ep instanceof InputPart){
+		if (ep instanceof InputPart) {
 			return new InputFieldLayout();
 		}
-		if(ep instanceof GridPart){
-			return new GridBackLayout();
+		if (ep instanceof GridPart) {
+			return new GridBackLayout2();
 		}
-		if(ep instanceof GridColumnPart){
-			return new GridColumnBackLayout();
+		if (ep instanceof GridColumnPart) {
+			return new GridColumnBackLayout2();
 		}
-		if(ep instanceof ToolbarPart){
-			return new ToolbarBackLayout();
+		if (ep instanceof ToolbarPart) {
+			return new ToolbarBackLayout2();
 		}
-		if(ep instanceof NavbarPart){
-			return new ToolbarBackLayout();
+		if (ep instanceof NavbarPart) {
+			return new ToolbarBackLayout2();
 		}
 		return new BackLayout();
 	}

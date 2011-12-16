@@ -6,13 +6,16 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
-public class Toolbar extends Container {
+public class Toolbar extends RowCol {
 
 	static final long serialVersionUID = 1;
 
 	private List<Button> buttons;
 
 	public Toolbar() {
+		this.row = 1;
+		this.col = 999;
+		this.headHight = 2;
 		this.setSize(new Dimension(1, 25));
 	}
 

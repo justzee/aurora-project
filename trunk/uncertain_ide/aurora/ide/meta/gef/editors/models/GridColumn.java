@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
-public class GridColumn extends Container {
+public class GridColumn extends RowCol {
 
 	/**
 	 * 
@@ -30,9 +30,13 @@ public class GridColumn extends Container {
 
 	public GridColumn() {
 		super();
+		this.row = 1;
+		this.col = 999;
+		this.headHight = 25;
 		this.setSize(new Dimension(100, rowHight * 2 + 10));
 	}
 
+	
 	public void addCol(GridColumn col) {
 		cols.add(col);
 		this.addChild(col);
