@@ -36,12 +36,6 @@ public class Button extends AuroraComponent {
 		return !buttonType.equals(DEFAULT);
 	}
 
-	protected boolean eq(Object o1, Object o2) {
-		if (o1 == null)
-			return o2 == null;
-		return o1.equals(o2);
-	}
-
 	public String getButtonType() {
 		return buttonType;
 	}
@@ -100,7 +94,7 @@ public class Button extends AuroraComponent {
 	}
 
 	public void setText(String text) {
-		if (this.text.equals(text))
+		if (eq(this.text, text))
 			return;
 		String oldV = this.text;
 		this.text = text;
