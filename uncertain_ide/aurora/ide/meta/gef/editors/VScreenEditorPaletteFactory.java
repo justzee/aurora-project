@@ -18,6 +18,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.CheckBox;
 import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
@@ -25,6 +26,7 @@ import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Navbar;
+import aurora.ide.meta.gef.editors.models.Radio;
 import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.VBox;
 
@@ -49,6 +51,18 @@ public class VScreenEditorPaletteFactory {
 					public Object getNewObject() {
 						Input newObject = (Input) super.getNewObject();
 						newObject.setType(Input.TEXT);
+						return newObject;
+					}
+				}, ImagesUtils.getImageDescriptor("palette/input_edit.png"),
+				ImagesUtils.getImageDescriptor("palette/input_edit.png"));
+		entries.add(combined);
+		// number field
+		combined = new CombinedTemplateCreationEntry("NumberField",
+				"Create a new NumberField", Input.class, new SimpleFactory(
+						Input.class) {
+					public Object getNewObject() {
+						Input newObject = (Input) super.getNewObject();
+						newObject.setType(Input.NUMBER);
 						return newObject;
 					}
 				}, ImagesUtils.getImageDescriptor("palette/input_edit.png"),
@@ -87,6 +101,19 @@ public class VScreenEditorPaletteFactory {
 					}
 				}, ImagesUtils.getImageDescriptor("palette/itembar_03.png"),
 				ImagesUtils.getImageDescriptor("palette/itembar_03.png"));
+		entries.add(combined);
+		// checkbox
+		combined = new CombinedTemplateCreationEntry("CheckBox",
+				"Create a CheckBox", CheckBox.class, new SimpleFactory(
+						CheckBox.class),
+				ImagesUtils.getImageDescriptor("palette/checkbox_01.png"),
+				ImagesUtils.getImageDescriptor("palette/checkbox_01.png"));
+		entries.add(combined);
+		// radio
+		combined = new CombinedTemplateCreationEntry("Radio", "Create a Radio",
+				CheckBox.class, new SimpleFactory(Radio.class),
+				ImagesUtils.getImageDescriptor("palette/radio_01.png"),
+				ImagesUtils.getImageDescriptor("palette/radio_01.png"));
 		entries.add(combined);
 		// /button
 		combined = new CombinedTemplateCreationEntry("Button",

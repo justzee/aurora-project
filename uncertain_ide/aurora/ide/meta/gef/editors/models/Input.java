@@ -12,6 +12,7 @@ public class Input extends AuroraComponent {
 	 */
 	private static final long serialVersionUID = -1913613647491922330L;
 	public static final String TEXT = "text";
+	public static final String NUMBER = "number";
 	public static final String Combo = "combo";
 	public static final String LOV = "lov";
 	public static final String CAL = "cal";
@@ -46,12 +47,12 @@ public class Input extends AuroraComponent {
 		this.readOnly = readOnly;
 		firePropertyChange(READONLY, oldV, readOnly);
 	}
-	private static final String[] bbs =new String[] {
-		"true", "false" };
+
+	private static final String[] bbs = new String[] { "true", "false" };
 	private static final IPropertyDescriptor[] pds = {
 			new TextPropertyDescriptor(PROMPT, "Prompt"),
 			new ComboBoxPropertyDescriptor(REQUIRED, "Required", bbs),
-			new ComboBoxPropertyDescriptor(READONLY, "Readonly",bbs ) };
+			new ComboBoxPropertyDescriptor(READONLY, "Readonly", bbs) };
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		return pds;
@@ -59,14 +60,15 @@ public class Input extends AuroraComponent {
 
 	public Object getPropertyValue(Object propName) {
 		if (REQUIRED.equals(propName))
-			return this.isRequired()?0:1;
+			return this.isRequired() ? 0 : 1;
 		if (READONLY.equals(propName))
-			return this.isReadOnly()?0:1;
+			return this.isReadOnly() ? 0 : 1;
 		return super.getPropertyValue(propName);
 	}
-//	private int indexOF(String s){
-//		if(bbs[0].equals(s))
-//	}
+
+	// private int indexOF(String s){
+	// if(bbs[0].equals(s))
+	// }
 
 	public void setPropertyValue(Object propName, Object val) {
 		if (REQUIRED.equals(propName))
