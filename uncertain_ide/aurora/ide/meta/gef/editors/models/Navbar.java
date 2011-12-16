@@ -2,7 +2,7 @@ package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
-public class Navbar extends Container {
+public class Navbar extends RowCol {
 
 	static final long serialVersionUID = 1;
 	
@@ -13,6 +13,9 @@ public class Navbar extends Container {
 	
 	
 	public Navbar() {
+		this.row = 1;
+		this.col = 999;
+		this.headHight = 2;
 		this.setSize(new Dimension(1, 25));
 	}
 

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
@@ -13,6 +14,7 @@ import aurora.ide.meta.gef.editors.parts.ComponentPart;
 
 public class BoxBackLayout extends BackLayout {
 
+	private static final Insets PADDING = new Insets(8, 16, 8, 6);
 	private int col;
 	private int row;
 	private int maxColHight;
