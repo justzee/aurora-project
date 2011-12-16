@@ -9,8 +9,11 @@ import java.io.Serializable;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
-public class AuroraComponent implements Cloneable, Serializable, IProperties {
+public class AuroraComponent implements Cloneable, Serializable, IProperties,IPropertySource {
 
 	transient protected PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
@@ -42,14 +45,6 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 		listeners.firePropertyChange(prop, null, child);
 	}
 
-	public Object getEditableValue() {
-		return this;
-	}
-
-	public Object getPropertyValue(Object propName) {
-		// TODO
-		return null;
-	}
 
 	private void readObject(ObjectInputStream in) throws IOException,
 			ClassNotFoundException {
@@ -61,13 +56,6 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 		listeners.removePropertyChangeListener(l);
 	}
 
-	public void resetPropertyValue(Object propName) {
-		// TODO
-	}
-
-	public void setPropertyValue(Object propName, Object val) {
-		// TODO
-	}
 
 	public void setLocation(Point p) {
 		if (eq(this.location, p)) {
@@ -165,5 +153,43 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties {
 			return o2 == null;
 		return o1.equals(o2);
 	}
+	public Object getEditableValue() {
+		return this;
+	}
+
+	private static final IPropertyDescriptor[] pds = { new TextPropertyDescriptor(
+			PROMPT, "Prompt") };
+
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return pds;
+	}
+
+	public Object getPropertyValue(Object propName) {
+		if (PROMPT.equals(propName))
+			return this.getPrompt();
+		return null;
+	}
+
+	public boolean isPropertySet(Object propName) {
+		return true;
+	}
+
+	public void resetPropertyValue(Object propName) {
+	}
+
+	public void setPropertyValue(Object propName, Object val) {
+
+		if (PROMPT.equals(propName))
+			this.setPrompt(val.toString()+" :"); 
+	}
+
+//	public void setIBounds(Rectangle layout) {
+//		this.bounds = layout;
+//		
+//	}
+//
+//	public void setILocation(Point location) {
+//		this.location = location;
+//	}
 
 }
