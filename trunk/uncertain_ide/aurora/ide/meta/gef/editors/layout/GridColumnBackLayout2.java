@@ -12,7 +12,7 @@ public class GridColumnBackLayout2 extends RowColBackLayout {
 
 	public GridColumnBackLayout2() {
 		location.x = 1;
-		location.y = -1;
+//		location.y = -1;
 		this.setPadding(padding);
 	}
 	protected void calculateChildLocation() {

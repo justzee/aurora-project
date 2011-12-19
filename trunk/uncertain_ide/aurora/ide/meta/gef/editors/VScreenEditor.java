@@ -21,18 +21,18 @@ import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
-import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
-import org.eclipse.gef.ui.parts.GraphicalEditorWithPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -46,7 +46,7 @@ import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.parts.AuroraPartFactory;
 
-public class VScreenEditor extends GraphicalEditorWithPalette {
+public class VScreenEditor extends FlayoutBMGEFEditor {
 
 	ViewDiagram diagram;
 	private PaletteRoot root;
@@ -122,14 +122,14 @@ public class VScreenEditor extends GraphicalEditorWithPalette {
 
 	}
 
-	/**
-	 * @see org.eclipse.gef.ui.parts.GraphicalEditorWithPalette#initializePaletteViewer()
-	 */
-	protected void initializePaletteViewer() {
-		super.initializePaletteViewer();
-		getPaletteViewer().addDragSourceListener(
-				new TemplateTransferDragSourceListener(getPaletteViewer()));
-	}
+//	/**
+//	 * @see org.eclipse.gef.ui.parts.GraphicalEditorWithPalette#initializePaletteViewer()
+//	 */
+//	protected void initializePaletteViewer() {
+//		super.initializePaletteViewer();
+//		getPaletteViewer().addDragSourceListener(
+//				new TemplateTransferDragSourceListener(getPaletteViewer()));
+//	}
 
 	/**
 	 * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
@@ -240,6 +240,18 @@ public class VScreenEditor extends GraphicalEditorWithPalette {
 			e.printStackTrace();
 			diagram = new ViewDiagram();
 		}
+	}
+
+	@Override
+	protected void createPropertyViewer(Composite c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void createBMViewer(Composite c) {
+		BMViewer bmViewer = new BMViewer(c,this);
+		
 	}
 
 }

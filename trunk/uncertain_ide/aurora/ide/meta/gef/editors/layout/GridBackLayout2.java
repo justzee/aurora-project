@@ -31,18 +31,22 @@ public class GridBackLayout2 extends RowColBackLayout {
 
 	public GridBackLayout2(){
 		location.x = 1;
-		location.y = -1;
+//		location.y = -1;
 		this.setPadding(padding);
 	}
 	
 	
 	
 	public Rectangle layout(ComponentPart parent) {
-
+		
 		init(parent);
 		gridPart = (GridPart)host;
 		navbarPart = getNavbarPart();
 		toolbarPart = getToolbarPart();
+		if(!this.hasToolbar()){
+			location.y = location.y-25;
+		}
+		titleHight = this.hasToolbar() ? 25 : 0;
 		navbarHight = navbarPart == null ? 0 : 25;
 		
 		if (getRealRow() == 0) {
