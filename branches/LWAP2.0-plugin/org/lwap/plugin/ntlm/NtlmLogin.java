@@ -104,6 +104,7 @@ public class NtlmLogin extends AbstractServiceHandle {
 			//域验证不通过，跳入普通处理方式
 			return null;
 		}
+		mLogger.log(Level.INFO, "NTLM authenticate domain:"+ntlm.getDomain()+";Username:"+ntlm.getUsername()+";name:"+ntlm.getName());
 		return ntlm;
 	}
 }
