@@ -37,6 +37,8 @@ public class RowColBackLayout extends BackLayout {
 			host = parent;
 			rowCol = (RowCol) parent.getComponent();
 			col = rowCol.getCol();
+			if (col == 0)
+				return;
 			row = rowCol.getRow();
 			Rectangle fBounds = parent.getFigure().getBounds();
 			selfRectangle = fBounds.isEmpty() ? rowCol.getBounds() : fBounds;
@@ -79,7 +81,7 @@ public class RowColBackLayout extends BackLayout {
 
 	public Rectangle layout(ComponentPart parent) {
 		init(parent);
-		if (getRealRow() == 0) {
+		if (getRealRow() == 0 || this.col == 0) {
 			return calculateRectangle(parent);
 		}
 		calculateMaxWidthHight();
