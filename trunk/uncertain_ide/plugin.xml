@@ -123,6 +123,12 @@
             id="aurora.ide.preferencepages.BuildLevel"
             name="Errors/Warnings">
       </page>
+      <page
+         category="aurora.ide.preferencePage"
+         class="aurora.ide.preferencepages.StatisticianPropertyPage"
+         id="aurora.ide.preferencepages.StatisticianPropertyPage"
+         name="%page.statistician">
+	  </page>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -458,7 +464,7 @@
          id="aurora.ide.projectproperty"
          name="Aurora工程设置"
          objectClass="org.eclipse.core.resources.IProject">
-      <filter name="nature" value="aurora.ide.auroranature"/>
+      	<filter name="nature" value="aurora.ide.auroranature"/>
 	  </page>
 	</extension>
 	<extension  
