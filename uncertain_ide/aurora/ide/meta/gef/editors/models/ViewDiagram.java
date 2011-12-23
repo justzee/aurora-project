@@ -1,5 +1,8 @@
 package aurora.ide.meta.gef.editors.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ViewDiagram extends Container {
 
 	/**
@@ -9,6 +12,8 @@ public class ViewDiagram extends Container {
 	public static final int DLabelWidth = 80;
 	private static Class[] unsupported = { Toolbar.class, Navbar.class,
 			GridColumn.class, TabItem.class };
+
+	private List<Dataset> datasets = new ArrayList<Dataset>();
 
 	@Override
 	public boolean isResponsibleChild(AuroraComponent component) {
@@ -22,6 +27,20 @@ public class ViewDiagram extends Container {
 			if (c.equals(cls))
 				return false;
 		return super.isResponsibleChild(component);
+	}
+	public List<Dataset> getDatasets() {
+		return datasets;
+	}
+
+	public void setDatasets(List<Dataset> datasets) {
+		this.datasets = datasets;
+	}
+
+	public void addDataset(Dataset ds) {
+		datasets.add(ds);
+	}
+	public void removeDataset(Dataset ds) {
+		datasets.remove(ds);
 	}
 
 }

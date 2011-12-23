@@ -31,7 +31,7 @@ public class GridColumnFigure extends Figure {
 	@Override
 	public void handleFocusGained(FocusEvent event) {
 		super.handleFocusGained(event);
-	
+
 	}
 
 	/**
@@ -56,10 +56,13 @@ public class GridColumnFigure extends Figure {
 		// super.paintFigure(graphics);
 	}
 
-	
 	public void setModel(GridColumn component) {
 		this.gridColumn = component;
 
+	}
+
+	public String getPrompt() {
+		return gridColumn.getPrompt();
 	}
 
 	public int getColumnHight() {

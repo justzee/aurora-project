@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
-import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
@@ -30,7 +30,6 @@ import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -43,10 +42,12 @@ import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
 
 import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
+import aurora.ide.meta.gef.editors.dnd.BMTransferDropTargetListener;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.parts.AuroraPartFactory;
-
-public class VScreenEditor extends FlayoutBMGEFEditor {
+//GraphicalEditorWithPalette
+//FlayoutBMGEFEditor
+public class VScreenEditor extends  FlayoutBMGEFEditor {
 
 	ViewDiagram diagram;
 	private PaletteRoot root;
@@ -117,9 +118,11 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 	 */
 	protected void initializeGraphicalViewer() {
 		getGraphicalViewer().setContents(diagram);
-		getGraphicalViewer().addDropTargetListener(
-				new TemplateTransferDropTargetListener(getGraphicalViewer()));
-
+//		getGraphicalViewer().addDropTargetListener(
+//				new TemplateTransferDropTargetListener(getGraphicalViewer()));
+		
+		getGraphicalViewer().addDropTargetListener(new BMTransferDropTargetListener(getGraphicalViewer()));
+//		this.getGraphicalViewer()
 	}
 
 //	/**
@@ -130,6 +133,12 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 //		getPaletteViewer().addDragSourceListener(
 //				new TemplateTransferDragSourceListener(getPaletteViewer()));
 //	}
+
+	@Override
+	public GraphicalViewer getGraphicalViewer() {
+		// TODO Auto-generated method stub
+		return super.getGraphicalViewer();
+	}
 
 	/**
 	 * @see org.eclipse.ui.ISaveablePart#doSave(org.eclipse.core.runtime.IProgressMonitor)
@@ -242,13 +251,13 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 		}
 	}
 
-	@Override
+	
 	protected void createPropertyViewer(Composite c) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	protected void createBMViewer(Composite c) {
 		BMViewer bmViewer = new BMViewer(c,this);
 		
