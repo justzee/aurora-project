@@ -45,6 +45,7 @@ public class LoadFromDBJob extends Job {
 			monitor.worked(20);
 			monitor.setTaskName("读取统计数据");
 			StatisticsResult read = s.read(connection);
+			monitor.worked(40);
 			statisticsView.setInput(read, s);
 		} catch (ApplicationException e) {
 			showMessage(e.getMessage());

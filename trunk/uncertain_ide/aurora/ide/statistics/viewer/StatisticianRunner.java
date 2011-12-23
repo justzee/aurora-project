@@ -6,7 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -16,9 +19,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 
 import uncertain.composite.CompositeMap;
+import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.cache.CacheManager;
@@ -33,6 +38,7 @@ import aurora.statistics.cvs.CVSEntryLineTag;
 import aurora.statistics.cvs.CVSRepositoryLocation;
 import aurora.statistics.cvs.CVSTag;
 import aurora.statistics.cvs.FolderSyncInfo;
+import aurora.statistics.map.PreferencesTag;
 import aurora.statistics.map.StatisticsResult;
 import aurora.statistics.model.ProjectObject;
 import aurora.statistics.model.StatisticsProject;
@@ -110,11 +116,20 @@ public class StatisticianRunner implements IRunningListener {
 		monitorUpdateJob.setSystem(true);
 		monitorUpdateJob.schedule();
 		try {
+			PreferencesTag.INSTANCE().set_1.clear();
+			PreferencesTag.INSTANCE().set_2.clear();
+			setPreferencesTag();
 			st.addRuningListener(this);
 			Statistician statistician = fillStatistician(st, objects, monitor);
 			isStatistician = true;
 			StatisticsResult doStatistic = statistician.doStatistic();
 			statisticsView.setInput(doStatistic, statistician);
+			for(String s:PreferencesTag.INSTANCE().set_1){
+				System.out.println(s);
+			}
+			for(String s:PreferencesTag.INSTANCE().set_2){
+				System.out.println(s);
+			}
 		} finally {
 			isStatistician = false;
 			monitorUpdateJob.cancel();
@@ -138,6 +153,29 @@ public class StatisticianRunner implements IRunningListener {
 			i++;
 		}
 		return st;
+	}
+
+	private void setPreferencesTag() {
+		IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
+		String[] ss = store.getString("statistician.checked").split("!");
+		Map<String, List<String>> map = new HashMap<String, List<String>>();
+		String nameSpace = "";
+		ArrayList<String> list = null;
+		for (String s : ss) {
+			if ("".equals(s.trim())) {
+				continue;
+			} else if (s.indexOf("*") == 0) {
+				if (null != list) {
+					map.put(nameSpace, list);
+				}
+				nameSpace = s.substring(1);
+				list = new ArrayList<String>();
+			} else {
+				list.add(s.substring((s.indexOf(":") > 0 ? (s.indexOf(":") + 1) : 0)));
+			}
+		}
+		map.put(nameSpace, list);
+		PreferencesTag.INSTANCE().setNamespaceMap(map);
 	}
 
 	private ProjectObject createProjectObject(IFile file) {
@@ -191,6 +229,7 @@ public class StatisticianRunner implements IRunningListener {
 						((IProject) objects[0]).accept(finder);
 						List<IResource> result = finder.getResult();
 						privateRunning(st, result.toArray(new IResource[result.size()]), monitor);
+						statisticsView.setSaveEnabled(true);
 					} catch (CoreException e) {
 						e.printStackTrace();
 					}
@@ -206,7 +245,7 @@ public class StatisticianRunner implements IRunningListener {
 	protected Statistician projectStatistician(Object object) {
 		if (object instanceof IProject) {
 			IProject project = (IProject) object;
-			StatisticsProject sp = new StatisticsProject(project.getName(),project.getName());
+			StatisticsProject sp = new StatisticsProject(project.getName(), project.getName());
 			RepositoryInfo repInfo = createCVSInfo(project);
 
 			if (repInfo == null) {
