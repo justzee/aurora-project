@@ -6,15 +6,18 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
-import aurora.ide.meta.gef.editors.parts.ViewDiagramPart;
+import aurora.ide.meta.gef.editors.parts.ContainerPart;
 
 public class ScreenGraphLayout extends BackLayout {
-	private static final Insets PADDING = new Insets(8, 16, 8, 6);//8,6,8,6
-	private ViewDiagramPart diagram;
+	private static final Insets PADDING = new Insets(8, 16, 8, 6);// 8,6,8,6
+	private ContainerPart diagram;
 
 	private Rectangle last = new Rectangle(0, 0, 0, 0);
-	public ScreenGraphLayout(ViewDiagramPart diagram) {
+
+	public ScreenGraphLayout(ContainerPart diagram) {
 		this.diagram = diagram;
+		last = diagram.getFigure().getBounds().getCopy().setSize(0, 0);
+		PADDING.left = last.x + 16;
 	}
 
 	public void layout() {

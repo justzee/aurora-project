@@ -23,16 +23,11 @@ public class CheckBoxFigure extends InputField {
 
 	@Override
 	protected void paintFigure(Graphics g) {
-		String prompt = model.getPrompt();
+		String prompt = model.getPrompt() + " : ";
 		Dimension textExtents = FigureUtilities.getTextExtents(prompt,
 				getFont());
 		Rectangle textRectangle = new Rectangle();
 		int pWidth = this.getLabelWidth() - textExtents.width;
-		if (pWidth < 0) {
-			prompt = prompt.substring(0, 3) + "...";
-			textExtents = FigureUtilities.getTextExtents(prompt, getFont());
-			pWidth = this.getLabelWidth() - textExtents.width;
-		}
 		Rectangle bounds = getBounds();
 		textRectangle.x = pWidth + bounds.x;
 		int i = bounds.height - textExtents.height;
