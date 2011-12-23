@@ -1,20 +1,26 @@
 package aurora.ide.meta.gef.editors.models.commands;
 
-import aurora.ide.meta.gef.editors.models.Form;
+import aurora.ide.meta.gef.editors.models.BOX;
 
 public class BindFormCommand extends DropBMCommand {
-	private Form form;
+	private BOX box;
 
-	public Form getForm() {
-		return form;
+
+
+	public BOX getBox() {
+		return box;
 	}
 
-	public void setForm(Form form) {
-		this.form = form;
+
+
+	public void setBox(BOX box) {
+		this.box = box;
 	}
+
+
 
 	public void execute() {
 		this.createQueryDataset();
-		this.fillForm(form);
+		this.fillForm(box);
 	}
 }
