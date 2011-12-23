@@ -9,3 +9,9 @@
  * @author 牛佳庆
  * 
  */
+ 
+/**
+ * 显示在checkBox右边的描述
+ * @property label
+ * @type String
+ */  
