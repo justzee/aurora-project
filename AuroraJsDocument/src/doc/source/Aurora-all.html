@@ -19,7 +19,10 @@
  * @author 牛佳庆
  * @singleton
  */
-$A = Aurora = {version: '1.0',revision:'$Rev: 3486 $'};
+ 
+Ext.Ajax.timeout = 1800000;
+
+$A = Aurora = {version: '1.0',revision:'$Rev: 4534 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
 	if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -330,10 +333,12 @@ $A.request = function(opt){
 					$A.showErrorMessage(_lang['ajax.error'], _lang['ajax.error.format']);
 					return;
 				}
+                
 				if(res && !res.success){
 					$A.manager.fireEvent('ajaxfailed', $A.manager, url,para,res);
 					if(res.error){
-                        if(res.error.code  && res.error.code == 'session_expired'){
+                        if(res.error.code  && (res.error.code == 'session_expired' || res.error.code == 'login_required')){
+                            $A.manager.fireEvent('timeout', $A.manager);
                             $A.showErrorMessage(_lang['ajax.error'],  _lang['session.expired']);
                         }else{
     						var st = res.error.stackTrace;
@@ -344,9 +349,9 @@ $A.request = function(opt){
     						}else{
     						    $A.showErrorMessage(_lang['ajax.error'], st,null,400,250);
     						}
-    						if(errorCall)
-                            errorCall.call(scope, res, options);
                         }
+						if(errorCall)
+                        errorCall.call(scope, res, options);
 					}								    						    
 				} else {
 					$A.manager.fireEvent('ajaxsuccess', $A.manager, url,para,res);
@@ -537,8 +542,8 @@ $A.TextMetrics = function(){
             //if(!shared){
               var shared = $A.TextMetrics.Instance(el, fixedWidth);
             //}
-            shared.bind(el);
-            shared.setFixedWidth(fixedWidth || 'auto');
+            //shared.bind(el);
+            //shared.setFixedWidth(fixedWidth || 'auto');
             return shared.getSize(text);
         }
     };
@@ -660,11 +665,15 @@ $A.SideBar = function(){
                 var p = '<div class="item-slideBar">'+msg+'</div>';
                 this.bar = Ext.get(Ext.DomHelper.insertFirst(Ext.getBody(),p));
                 this.bar.setStyle('z-index', 999999);
-                this.bar.animate({height: {to: 50, from: 0}},0.35,function(){
+                var screenWidth = $A.getViewportWidth();
+                var x = Math.max(0,(screenWidth - this.bar.getWidth())/2);
+                this.bar.setX(x);
+                this.bar.fadeIn();
+//                this.bar.animate({height: {to: 50, from: 0}},0.35,function(){
                     setTimeout(function(){
                        sf.hide();
                     }, 2000);            
-                },'easeOut','run');
+//                },'easeOut','run');
             }
         },
         hide : function(){
@@ -672,6 +681,7 @@ $A.SideBar = function(){
                 parent.hideSideBar()
             }else{
                 if(this.bar) {
+                    Ext.fly(this.bar).fadeOut();
                     Ext.fly(this.bar).remove();
                     this.bar = null;
                 }
@@ -780,8 +790,9 @@ $A.Masker = function(){
             masker.setStyle('z-index', zi + 1);
             masker.setXY(el.getXY());
             var sp = masker.child('span');
-            var size = $A.TextMetrics.measure(sp,msg);
-            sp.setLeft((w-size.width - 45)/2)
+            //var size = $A.TextMetrics.measure(sp,msg);
+            //sp.setLeft((w-size.width - 45)/2)
+            sp.setLeft((w-sp.getWidth() - 45)/2)
             $A.Masker.container[el.id] = masker;
         },
         unmask : function(el){
@@ -1040,6 +1051,12 @@ $A.getRenderer = function(renderer){
     }
     return rder;
 }
+$A.RowNumberRenderer = function(value,record,name){
+    if(record && record.ds){
+        var ds = record.ds;
+        return (ds.currentPage-1)*ds.pagesize + ds.indexOf(record) + 1;
+    }
+}
 <div id="method-Aurora-formatDate"></div>/**
  * 将日期转换成默认格式的字符串，默认格式是根据Aurora.defaultDateFormat来定义的.如果没有特殊指定,默认格式为yyyy-mm-dd
  * @param {Date} date 转换的日期
@@ -1293,6 +1310,63 @@ $A.stopCustomization = function(){
         $A.CmpManager.remove('_customization');
     }
 }
+<div id="method-Aurora-convertMoney"></div>/**
+ * 将数字金额转换成大写金额.
+ * 
+ * @param {Number} amount 金额
+ * @return {String} 大写金额
+ */
+$A.convertMoney = function(mnum){
+	mnum = Math.abs(mnum);
+	var unitArray = [["元", "万", "亿"], ["仟", "", "拾", "佰"],["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"]];
+	totalarray = new Array();
+
+	totalarray = mnum.toString().split(".");
+	if (totalarray.length == 1) {
+		totalarray[1] = "00"
+	} else if (totalarray[1].length == 1) {
+		totalarray[1] += '0';
+	}
+	integerpart = new Array();
+	decimalpart = new Array();
+	var strout = "";
+	for (var i = 0; i < totalarray[0].length; i++) {
+		integerpart[i] = totalarray[0].charAt(i);
+	}
+	for (var i = 0; i < totalarray[1].length; i++) {
+		decimalpart[i] = totalarray[1].charAt(i);
+	}
+	for (var i = 0; i < integerpart.length; i++) {
+		var strTemp = (integerpart.length - i - 1) % 4 == 0
+				? unitArray[0][parseInt((integerpart.length - i) / 4)]
+				: (integerpart[i] == 0)
+						? ""
+						: unitArray[1][((integerpart.length - i) % 4)]
+		strout = strout + unitArray[2][integerpart[i]] + strTemp;
+	}
+	strout = strout.replace(new RegExp(/零+/g), "零");
+	strout = strout.replace("零万", "万");
+	strout = strout.replace("零亿", "亿");
+	strout = strout.replace("零元", "元");
+	strout = strout.replace("亿万", "亿");
+	var strdec = ""
+	if (decimalpart[0] == 0 && decimalpart[1] == 0) {
+		strdec = "整";
+	} else {
+		if (decimalpart[0] == 0) {
+			strdec = "零"
+		} else {
+			strdec = unitArray[2][decimalpart[0]] + '角';
+		}
+		if (decimalpart[1] != 0) {
+			strdec += unitArray[2][decimalpart[1]] + '分';
+		}
+	}
+	strout += strdec;
+	if (mnum < 0)
+		strout = "负" + strout;
+	return strout;
+}
 $A.setValidInfoType('tip'); 
 <div id="cls-Aurora.DataSet"></div>/**
  * @class Aurora.DataSet
@@ -1313,10 +1387,15 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.pageid = config.pageid;
         this.spara = {};
         this.selected = [];
+        this.sorttype = config.sorttype||'remote';
+        this.maxpagesize = config.maxpagesize || 1000;
         this.pagesize = config.pagesize || 10;
+        if(this.pagesize > this.maxpagesize) 
+        	this.pagesize = this.maxpagesize;
         this.submiturl = config.submiturl || '';
         this.queryurl = config.queryurl || '';
         this.fetchall = config.fetchall||false;
+        this.totalcountfield = config.totalcountfield || 'totalCount';
         this.selectable = config.selectable||false;
         this.selectionmodel = config.selectionmodel||'multiple';
         this.selectfunction = config.selectfunction;
@@ -1337,8 +1416,9 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.initEvents();
         if(config.fields)this.initFields(config.fields)
         if(config.datas && config.datas.length != 0) {
-            this.datas=config.datahead?this.convertData(config.datahead,config.datas):config.datas;
-            this.loadData(this.datas);
+            var datas=config.datahead?this.convertData(config.datahead,config.datas):config.datas;
+            this.autocount = false;
+            this.loadData(datas);
             //this.locate(this.currentIndex); //不确定有没有影响
         }
         if(config.autoquery === true) {
@@ -1394,12 +1474,15 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
 //        this[ou]('beforecreate', this.beforeCreate, this);//TODO:有待测试
         this[ou]('add', bdp, this);
         this[ou]('remove', bdp, this);
+        this[ou]('select', this.onDataSetSelect, this);
         this[ou]('update', bdp, this);
+        this[ou]('indexchange', bdp, this);
         this[ou]('clear', bdp, this);
         this[ou]('load', this.onDataSetLoad, this);
         this[ou]('reject', bdp, this);
         ds[ou]('indexchange',this.onDataSetIndexChange, this);
         ds[ou]('load',this.onBindDataSetLoad, this);
+        ds[ou]('remove',this.onBindDataSetLoad, this);
         ds[ou]('clear',this.removeAll, this);
     },
     <div id="method-Aurora.DataSet-bind"></div>/**
@@ -1438,9 +1521,31 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             this.refreshBindDataSet(bt.getCurrentRecord(),this.getConfig())
         }
     },
+    onDataSetSelect : function(ds,record){
+        var bt = $A.CmpManager.get(this.bindtarget);
+        if(bt){
+            var datas = bt.data;
+            var found = false;
+            for(var i = 0;i<datas.length;i++){
+                var dr = datas[i];
+                var dc = dr.get(this.bindname);
+                if(dc){
+                    for(var j = 0;j<dc.data.length;j++){
+                        var r = dc.data[j];
+                        if(r.id == record.id){
+                            dc.selected = this.selected;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found) break;
+                }
+            }
+        }
+    },
     onDataSetLoad : function(ds,options){
         var record;
-        if(options){
+        if(options && options.opts && options.opts.record){
             record = options.opts.record;
         }else{
             var bt = $A.CmpManager.get(this.bindtarget);
@@ -1451,7 +1556,9 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     },
     refreshBindDataSet: function(record,config){
         if(!record)return;
-        record.set(this.bindname,config,true)//this.getConfig()
+        //record.set(this.bindname,config,true)//this.getConfig()
+        record.data[this.bindname] = config;
+
 //      for(var k in this.fields){
 //          var field = this.fields[k];
 //          if(field.type == 'dataset'){  
@@ -1492,6 +1599,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         c.currentIndex = this.currentIndex;
         c.totalCount = this.totalCount;
         c.totalPage = this.totalPage;
+        c.fields = this.fields;
         return c;
     },
     initEvents : function(){
@@ -1506,10 +1614,9 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             'ajaxfailed',
             <div id="event-Aurora.DataSet-beforecreate"></div>/**
              * @event beforecreate
-             * 数据创建前事件.
+             * 数据创建前事件.返回true则新增一条记录,false则不新增直接返回
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Object} object 新增的数据对象.
-             * @return ${Boolean} result 如果为true则新增一条记录,false则不新增直接返回
              */
             'beforecreate',
             <div id="event-Aurora.DataSet-metachange"></div>/**
@@ -1550,12 +1657,16 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             'remove',
             <div id="event-Aurora.DataSet-beforeremove"></div>/**
              * @event beforeremove
-             * 数据删除前.
+             * 数据删除前.如果为true则删除一条记录,false则不删除直接返回
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Array} records 将要删除的数据集合
-             * @return ${Boolean} result 如果为true则删除一条记录,false则不删除直接返回
              */
             'beforeremove',
+            <div id="event-Aurora.DataSet-afterremove"></div>/**
+             * @event afterremove
+             * @param {Aurora.DataSet} dataSet 当前DataSet.
+             */
+            'afterremove',
             <div id="event-Aurora.DataSet-update"></div>/**
              * @event update
              * 数据更新事件.
@@ -1623,7 +1734,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             'indexchange',
             <div id="event-Aurora.DataSet-beforeselect"></div>/**
              * @event beforeselect
-             * 选择数据前事件.
+             * 选择数据前事件. 返回true表示可以选中,false表示不能选中
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              * @param {Aurora.Record} record 选择的record.
              */ 
@@ -1642,6 +1753,18 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
              * @param {Aurora.Record} record 取消选择的record.
              */
             'unselect',
+            <div id="event-Aurora.DataSet-selectall"></div>/**
+             * @event selectall
+             * 选择数据事件.
+             * @param {Aurora.DataSet} dataSet 当前DataSet.
+             */ 
+            'selectall',
+            <div id="event-Aurora.DataSet-unselectall"></div>/**
+             * @event unselectall
+             * 取消选择数据事件.
+             * @param {Aurora.DataSet} dataSet 当前DataSet.
+             */
+            'unselectall',
             <div id="event-Aurora.DataSet-reject"></div>/**
              * @event reject
              * 数据重置事件.
@@ -1653,7 +1776,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             'reject',
             <div id="event-Aurora.DataSet-beforesubmit"></div>/**
              * @event beforesubmit
-             * 数据提交前事件.
+             * 数据提交前事件.如果为false则中断提交请求
              * @param {Aurora.DataSet} dataSet 当前DataSet.
              */
             'beforesubmit',
@@ -1710,10 +1833,13 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.selected = [];
         if(num && this.fetchall == false) {
             this.totalCount = num;
+            this.totalPage = Math.ceil(this.totalCount/this.pagesize);
         }else{
             this.totalCount = datas.length;
+            this.totalPage = 1;
         }
-        this.totalPage = Math.ceil(this.totalCount/this.pagesize)
+        
+        
         for(var i = 0, len = datas.length; i < len; i++){
             var data = datas[i].data||datas[i];
             for(var key in this.fields){
@@ -1724,9 +1850,9 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             }
             var record = new $A.Record(data,datas[i].field);
             record.setDataSet(this);
-            this.data.add(record);
+            this.data.push(record);
         }
-        if(this.sortInfo) this.sort();
+//        if(this.sortInfo) this.sort();
         
         this.fireEvent("beforeload", this, this.data);
         
@@ -1742,7 +1868,23 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         this.fireEvent("load", this, options);
     },
     sort : function(f, direction){
-        //TODO:grid已经实现服务端排序
+        if(this.getAll().length==0)return;
+        if(this.sorttype == 'remote'){
+            if(direction=='') {
+                delete this.qpara['ORDER_FIELD'];
+                delete this.qpara['ORDER_TYPE'];
+            }else{
+                this.setQueryParameter('ORDER_FIELD', f);
+                this.setQueryParameter('ORDER_TYPE', direction);            
+            }
+            this.query();
+        }else{
+            this.data.sort(function(a, b){
+                var rs = a.get(f) > b.get(f)
+                return (direction == 'desc' ? (rs ? -1 : 1) : (rs ? 1 : -1));
+            })
+            this.fireEvent('refresh',this);
+        }
     },
     <div id="method-Aurora.DataSet-create"></div>/**
      * 创建一条记录
@@ -1781,7 +1923,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         for(var k = 0,l=records.length;k<l;k++){
             var record = records[k];
             if(record.isNew == true){
-                news.add(record);
+                news.push(record);
             }
         }
         return news;
@@ -1920,9 +2062,10 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                     this.removeLocal(this.findById(data['_id']),true); 
                 }
             }
+            this.fireEvent('afterremove',this);
         }
     },
-    removeLocal: function(record,count){
+    removeLocal: function(record,count,notLocate){
         $A.removeInvalidReocrd(this.id, record)
         var index = this.data.indexOf(record);      
         if(index == -1)return;
@@ -1933,6 +2076,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
 //          this.removeAll();
 //          return;
 //        }
+        if(!notLocate)
         if(this.data.length != 0){
             var lindex = this.currentIndex - (this.currentPage-1)*this.pagesize;
             if(lindex<0)return;
@@ -2027,7 +2171,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                 }else{
                     ds.resetConfig();
                 }
-                ds.fireEvent('refresh',ds)
+                ds.fireEvent('refresh',ds);
                 ds.processCurrentRow();
             }
         }
@@ -2045,36 +2189,40 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      */
     selectAll : function(){
         for(var i=0,l=this.data.length;i<l;i++){
-            this.select(this.data[i]);
+            if(!this.execSelectFunction(this.data[i]))continue;
+            this.select(this.data[i],true);
         }
+        this.fireEvent('selectall', this , this.selected);
     },
     <div id="method-Aurora.DataSet-unSelectAll"></div>/**
      * 取消所有选择.
      */
     unSelectAll : function(){
         for(var i=0,l=this.data.length;i<l;i++){
-            this.unSelect(this.data[i]);
+            if(!this.execSelectFunction(this.data[i]))continue;
+            this.unSelect(this.data[i],true);
         }
+        this.fireEvent('unselectall', this , this.selected);
     },
     <div id="method-Aurora.DataSet-select"></div>/**
      * 选择某个record.
      * @param {Aurora.Record} record 需要选择的record.
      */
-    select : function(r){
+    select : function(r,isSelectAll){
         if(!this.selectable)return;
         if(typeof(r) == 'string'||typeof(r) == 'number') r = this.findById(r);
         if(!r) return;
         if(this.selected.indexOf(r) != -1)return;
-        if(!this.execSelectFunction(r))return;
+//        if(!this.execSelectFunction(r))return;
         if(this.fireEvent("beforeselect",this,r)){
             if(this.selectionmodel == 'multiple'){
                 this.selected.add(r);
-                this.fireEvent('select', this, r);
+                this.fireEvent('select', this, r , isSelectAll);
             }else{
                 var or = this.selected[0];
                 this.unSelect(or);
                 this.selected = []
-                this.selected.add(r);
+                this.selected.push(r);
                 this.fireEvent('select', this, r);
             }
         }
@@ -2083,13 +2231,13 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * 取消选择某个record.
      * @param {Aurora.Record} record 需要取消选择的record.
      */
-    unSelect : function(r){
+    unSelect : function(r,isSelectAll){
         if(!this.selectable)return;
         if(typeof(r) == 'string'||typeof(r) == 'number') r = this.findById(r);
         if(!r) return;
         if(this.selected.indexOf(r) == -1) return;
         this.selected.remove(r);
-        this.fireEvent('unselect', this, r);
+        this.fireEvent('unselect', this, r , isSelectAll);
     },
     execSelectFunction:function(r){
         if(this.selectfunction){
@@ -2109,8 +2257,12 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      */
     locate : function(index, force){
         if(this.currentIndex === index && force !== true) return;
+        if(this.fetchall == true && index > ((this.currentPage-1)*this.pagesize + this.data.length)) return;
+        //对于没有autcount的,判断最后一页
+        if(!this.autocount && index > ((this.currentPage-1)*this.pagesize + this.data.length) && this.data.length < this.pagesize) return;
 //      if(valid !== false) if(!this.validCurrent())return;
-        if(index <=0 || (index > this.totalCount + this.getNewRecrods().length))return;
+        if(index<=0)return;
+        if(index <=0 || (this.autocount && (index > this.totalCount + this.getNewRecrods().length)))return;
         var lindex = index - (this.currentPage-1)*this.pagesize;
         if(this.data[lindex - 1]){
             this.currentIndex = index;
@@ -2125,6 +2277,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             }
         }
         this.processCurrentRow();
+        if(this.selectionmodel == 'single') this.select(this.getAt(index-1));
     },
     <div id="method-Aurora.DataSet-goPage"></div>/**
      * 定位到某页.
@@ -2173,7 +2326,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     <div id="method-Aurora.DataSet-nextPage"></div>/**
      * 向后移动一页.
      */
-    nextPage : function(){
+    nextPage : function(){        
         this.goPage(this.currentPage +1);
     },
     <div id="method-Aurora.DataSet-lastPage"></div>/**
@@ -2225,15 +2378,15 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                 if(this.isValid == false) {
                     if(hassub)break;
                 } else {
-                    for(key in dmap){
+                    for(var key in dmap){
                         var ds = dmap[key];
                         if(record.data[key]){
                             ds.reConfig(record.data[key]);
                             if(!ds.validate(false)) {
                                 this.isValid = false;
                                 unvalidRecord = record;
-                            }
-                            ds.reConfig(current.data[key]);//循环校验完毕后,重新定位到当前行
+                            }else
+                            	ds.reConfig(current.data[key]);//循环校验完毕后,重新定位到当前行
                         }
                     }
                     
@@ -2380,7 +2533,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
      * 以json格式返回当前数据集.
      * @return {Object} json 返回的json对象.
      */
-    getJsonData : function(selected){
+    getJsonData : function(selected,fields){
         var datas = [];
         var items = this.data;
         if(selected) items = this.getSelected();
@@ -2391,13 +2544,20 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             d['_id'] = r.id;
             d['_status'] = r.isNew ? 'insert' : 'update';
             for(var k in r.data){
-                var item = d[k];
-                if(item && item.xtype == 'dataset'){
-                    var ds = new $A.DataSet({});//$(item.id);
-                    ds.reConfig(item)
-                    isAdd = isAdd == false ? ds.isModified() :isAdd;
-                    d[k] = ds.getJsonData();
-                }
+            	if(fields && fields.indexOf(k)==-1){
+            		delete d[k];
+            	}else{
+	                var item = d[k];
+	                if(item && item.xtype == 'dataset'){
+	                	//if(item.data.length > 0){
+		                    var ds = new $A.DataSet({});//$(item.id);
+		                    //ds.fields = item.data[0].ds.fields;
+	                    	ds.reConfig(item)
+		                    isAdd = isAdd == false ? ds.isModified() :isAdd;
+		                    d[k] = ds.getJsonData();
+	                	//}
+	                }
+            	}
             }
             if(isAdd||selected){
                 datas.push(d);              
@@ -2437,13 +2597,14 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     <div id="method-Aurora.DataSet-submitSelected"></div>/**
      * 提交选中数据.
      * @param {String} url(可选) 提交的url.
+     * @param {Array} fields(可选) 根据选定的fields提交.
      */
-    submitSelected : function(url){
+    submitSelected : function(url,fields){
         var sf=this,intervalId=setInterval(function(){
             if(!sf.isAllReady(sf.getSelected()))return;
             clearInterval(intervalId);
             if(sf.fireEvent("beforesubmit",sf)){
-                var d = sf.getJsonData(true);
+                var d = sf.getJsonData(true,fields);
                 sf.doSubmit(url,d);
             }
         },10);
@@ -2451,13 +2612,14 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
     <div id="method-Aurora.DataSet-submit"></div>/**
      * 提交数据.
      * @param {String} url(可选) 提交的url.
+     * @param {Array} fields(可选) 根据选定的fields提交.
      */
-    submit : function(url){
+    submit : function(url,fields){
         var sf=this,intervalId=setInterval(function(){
             if(!sf.isAllReady(sf.getAll()))return;
             clearInterval(intervalId);
             if(sf.fireEvent("beforesubmit",sf)){
-                var d = sf.getJsonData();
+                var d = sf.getJsonData(false,fields);
                 sf.doSubmit(url,d);
             }
         },10);
@@ -2517,7 +2679,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         }
         this.fireBindDataSetEvent('submitsuccess',res);
     },
-    commitRecords : function(datas,fire){
+    commitRecords : function(datas,fire,record){
         //this.resetConfig();
         for(var i=0,l=datas.length;i<l;i++){
             var data = datas[i];
@@ -2532,7 +2694,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                     var ds = f.pro['dataset'];
                     ds.reConfig(r.data[f.name]);
                     if(data[k].record) {
-                        ds.commitRecords([].concat(data[k].record), this.getCurrentRecord() == r);                     
+                        ds.commitRecords([].concat(data[k].record),this.getCurrentRecord() === r && fire, r);                     
                     }
                 }else{
                     var ov = r.get(field);
@@ -2547,6 +2709,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
                             r.set(field,nv, true);
                         }else{
                             r.data[field] = nv;
+	                    	if(record)record.data[this.bindname]=this.getConfig();
                         }
                     }
                 }
@@ -2603,7 +2766,7 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
             }
             var rv = data[rf];
             var options = $(op);
-            if(options && rv){
+            if(options && !Ext.isEmpty(rv)){
                 var r = options.find(vf,rv);
                 if(r){
                     v = r.get(df);
@@ -2620,7 +2783,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         if(res == null) return;
         if(!res.result.record) res.result.record = [];
         var records = [].concat(res.result.record);
-        var total = res.result.totalCount;
+        //var total = res.result.totalCount;
+        var total = res.result[this.totalcountfield]
         var datas = [];
         if(records.length > 0){
             for(var i=0,l=records.length;i<l;i++){
@@ -2634,8 +2798,8 @@ $A.DataSet = Ext.extend(Ext.util.Observable,{
         }       
         this.loading = false;
         this.loadData(datas, total, options);
+        if(datas.length != 0)
         this.locate(this.currentIndex,true);
-        
         $A.SideBar.enable = $A.slideBarEnable;
         
     },
@@ -2755,13 +2919,13 @@ $A.Record.prototype = {
         var names = [];
         for(var k in df){
             if(df[k].type !='dataset')
-            names.add(k);
+            names.push(k);
         }
         
         for(var k in rf){
             if(names.indexOf(k) == -1){
                 if(rf[k].type !='dataset')
-                names.add(k);
+                names.push(k);
             }
         }
         for(var i=0,l=names.length;i<l;i++){
@@ -2775,10 +2939,13 @@ $A.Record.prototype = {
     },
     validate : function(name){
         var valid = true;
+        var oldValid = this.valid[name];
         var v = this.get(name);
         var field = this.getMeta().getField(name)
         var validator = field.get('validator');
-        if(Ext.isEmpty(v) && field.get('required') == true){
+        var vv = v;
+        if(v&&v.trim) vv = v.trim();
+        if(Ext.isEmpty(vv) && field.get('required') == true){
             this.valid[name] = _lang['dataset.validate.required'];
             valid =  false;
         }
@@ -2793,8 +2960,8 @@ $A.Record.prototype = {
                 }
             }
         }
-        if(valid==true) delete this.valid[name];
-        this.ds.onRecordValid(this,name,valid);
+        if(valid==true)delete this.valid[name];
+        if((oldValid||this.valid[name])&& oldValid != this.valid[name])this.ds.onRecordValid(this,name,valid);
         return valid;
     },
     setDataSet : function(ds){
@@ -3170,12 +3337,15 @@ $A.Component = Ext.extend(Ext.util.Observable,{
     processListener: function(ou){
     	this.processMouseOverOut(ou)
         if(this.marginwidth||this.marginheight) {
+//        	this.windowResizeListener();//TODO:以后修改服务端component,去掉自身尺寸的判断
             Ext.EventManager[ou](window, "resize", this.windowResizeListener,this);
         }
     },
     processMouseOverOut : function(ou){
-        this.wrap[ou]("mouseover", this.onMouseOver, this);
-        this.wrap[ou]("mouseout", this.onMouseOut, this);
+        if(this.wrap){
+            this.wrap[ou]("mouseover", this.onMouseOver, this);
+            this.wrap[ou]("mouseout", this.onMouseOut, this);
+        }
     },
     initEvents : function(){
     	this.addEvents(
@@ -3480,6 +3650,7 @@ $A.Field = Ext.extend($A.Component,{
     	this.el[ou]("keyup", this.onKeyUp, this);
         this.el[ou]("keydown", this.onKeyDown, this);
         this.el[ou]("keypress", this.onKeyPress, this);
+        this.el[ou]("mouseup", this.onMouseUp, this);
 //        this.el[ou]("mouseover", this.onMouseOver, this);
 //        this.el[ou]("mouseout", this.onMouseOut, this);
     },
@@ -3541,6 +3712,7 @@ $A.Field = Ext.extend($A.Component,{
     	this.clearInvalid();
     	this.initRequired(this.required);
     	this.initReadOnly(this.readonly);
+    	this.initEditable(this.editable);
     	this.initMaxLength(this.maxlength);
     },
 //    onMouseOver : function(e){
@@ -3574,7 +3746,8 @@ $A.Field = Ext.extend($A.Component,{
 //      this.fireEvent("keydown", this, e);
 //    },
     onFocus : function(e){
-        (Ext.isGecko||Ext.isGecko2||Ext.isGecko3) ? this.select() : this.select.defer(10,this);
+        //(Ext.isGecko||Ext.isGecko2||Ext.isGecko3) ? this.select() : this.select.defer(10,this);
+    	this.select();
     	if(this.readonly) return;
         if(!this.hasFocus){
             this.hasFocus = true;
@@ -3588,6 +3761,11 @@ $A.Field = Ext.extend($A.Component,{
 	        this.wrap.addClass(this.focusCss);
             this.fireEvent("focus", this);
         }
+    },
+    onMouseUp : function(e){
+    	if(this.isSelect)
+    		e.stopEvent();
+    	this.isSelect = false;
     },
     processValue : function(v){
     	return v;
@@ -3630,12 +3808,12 @@ $A.Field = Ext.extend($A.Component,{
         return rv;
     },
     setValue : function(v, silent){
-    	$A.Field.superclass.setValue.call(this,v, silent);
     	if(this.emptytext && this.el && v !== undefined && v !== null && v !== ''){
             this.wrap.removeClass(this.emptyTextCss);
         }
         this.setRawValue(this.formatValue((v === null || v === undefined ? '' : v)));
         this.applyEmptyText();
+    	$A.Field.superclass.setValue.call(this,v, silent);
     },
     formatValue : function(v){
         var rder = null;
@@ -3663,6 +3841,9 @@ $A.Field = Ext.extend($A.Component,{
     	}else{
     		this.wrap.removeClass(this.requiredCss);
     	}
+    },
+    initEditable : function(editable){
+    	this.el.dom.readOnly = this.readonly? true :(editable === false);
     },
     initReadOnly : function(readonly){
     	if(this.currentReadOnly == readonly)return;
@@ -3749,6 +3930,7 @@ $A.Field = Ext.extend($A.Component,{
                 range.select();
             }
         }
+        this.isSelect = true;
     },
     setRawValue : function(v){
         if(this.el.dom.value === (v === null || v === undefined ? '' : v)) return;
@@ -3888,6 +4070,41 @@ $A.Label = Ext.extend($A.Component,{
     		value = rder.call(window,value,record, name);
 	    }
 	    this.wrap.update(value);
+    }
+});
+<div id="cls-Aurora.Link"></div>/**
+ * @class Aurora.Link
+ * @extends Aurora.Component
+ * <p>Link组件.
+ * @author njq.niu@hand-china.com
+ * @constructor 
+ */
+$A.Link = Ext.extend($A.Component,{
+    params: {},
+    constructor: function(config) {
+        this.url = config.url || "";
+        $A.Link.superclass.constructor.call(this, config);
+    },
+    processListener: function(ou){
+    },
+    reset : function(){
+        this.params = {};
+    },
+    set : function(name,value){
+        this.params[name]=value;
+    },
+    get : function(name){
+        return this.params[name];
+    },
+    getUrl : function(){
+        var url;
+        var pr = Ext.urlEncode(this.params);
+        if(Ext.isEmpty(pr)){
+            url = this.url;
+        }else{
+            url = this.url +(this.url.indexOf('?') == -1?'?':'&') + Ext.urlEncode(this.params);
+        } 
+        return url;
     }
 });
 <div id="cls-Aurora.Button"></div>/**
@@ -4455,6 +4672,8 @@ $A.NumberField = Ext.extend($A.TextField,{
     	return (isNegative?'-':'')+$A.NumberField.superclass.processMaxLength.call(this, s[0].replace(/[-,]/g,''))+(s[1]?'.'+s[1]:''); 
     },
     initMaxLength : function(maxlength){
+    	if(maxlength && !this.allowdecimals)
+    		this.el.dom.maxLength=maxlength;
     },
     processValue : function(v){
         return this.parseValue(v);
@@ -4589,12 +4808,16 @@ $A.TriggerField = Ext.extend($A.TextField,{
     	this.syncPopup();
     },
     syncPopup:function(){
-    	var xy=this.wrap.getXY(),
+    	var sl = document[Ext.isStrict&&!Ext.isWebKit?'documentElement':'body'].scrollLeft,
+    		st = document[Ext.isStrict&&!Ext.isWebKit?'documentElement':'body'].scrollTop,
+    		xy = this.wrap.getXY(),
+    		_x = xy[0] - sl,
+    		_y = xy[1] - st,
 			W=this.popup.getWidth(),H=this.popup.getHeight(),
 			PH=this.wrap.getHeight(),PW=this.wrap.getWidth(),
 			BH=$A.getViewportHeight()-3,BW=$A.getViewportWidth()-3,
-			x=(xy[0]+W)>BW?((BW-W)<0?xy[0]:(BW-W)):xy[0];
-			y=(xy[1]+PH+H)>BH?((xy[1]-H)<0?(xy[1]+PH):(xy[1]-H)):(xy[1]+PH);
+			x=((_x+W)>BW?((BW-W)<0?_x:(BW-W)):_x)+sl;
+			y=((_y+PH+H)>BH?((_y-H)<0?(_y+PH):(_y-H)):(_y+PH))+st;
     	this.popup.moveTo(x,y);
     	this.shadow.moveTo(x+3,y+3);
     },
@@ -4652,16 +4875,22 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 	},
 	onBlur : function(e){
         if(this.readonly)return;
-		$A.ComboBox.superclass.onBlur.call(this,e);
-		if(!this.isExpanded()) {
-			var raw = this.getRawValue();
-			var record = this.getRecordByDisplay(raw);
-			if(record != null){
-				this.setValue(record.get(this.displayfield));				
-			}else{
-				this.setValue('');
+        if(this.hasFocus){
+			$A.ComboBox.superclass.onBlur.call(this,e);
+			if(!this.isExpanded()) {
+				var raw = this.getRawValue();
+				if(this.fetchrecord===false){
+					this.setValue(raw)
+				}else{
+					var record = this.getRecordByDisplay(raw);
+					if(record != null){
+						this.setValue(record.get(this.displayfield));				
+					}else{
+						this.setValue('');
+					}
+				}
 			}
-		}
+        }
     },
     getRecordByDisplay: function(name){
     	if(!this.optionDataSet)return null;
@@ -4795,7 +5024,7 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 			mw = Math.max(mw,width)||mw;
 		}
 		this.popup.setWidth(mw);
-		var lh = Math.min(this.popup.child('ul').getHeight()+2,this.maxHeight); 
+		var lh = Math.min(this.popup.child('ul').getHeight()+4,this.maxHeight); 
 		this.popup.setHeight(lh<20?20:lh);
     	this.shadow.setWidth(mw);
     	this.shadow.setHeight(lh<20?20:lh);
@@ -4898,6 +5127,7 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 //			this.view.un('mouseover',this.onViewOver,this);
 			this.view.un('mousemove',this.onViewMove,this);
 		}
+		this.processDataSet('un');
     	$A.ComboBox.superclass.destroy.call(this);
 		delete this.view;
 	},
@@ -4935,7 +5165,7 @@ $A.ComboBox = Ext.extend($A.TriggerField, {
 				if(mapping){//TODO: v是空的时候?
 					for(var i=0;i<mapping.length;i++){
 						var map = mapping[i];
-    					var vl = record ? record.get(map.from) : '';
+    					var vl = record ? record.get(map.from) : (this.fetchrecord===false?raw:'');
 //    					var vl = record ? (record.get(map.from)||'') : '';
 //    					if(vl!=''){
     					if(!Ext.isEmpty(vl,true)){
@@ -5330,7 +5560,8 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     },
     initFooter : function(){
     	if(!this.now)this.now=new Ext.Template(this.nowTpl).append(this.popup.child("div.item-dateField-foot").dom,{now:_lang['datepicker.today'],title:new Date().format(this.format)},true);;
-    	this.now.set({"_date":new Date().getTime()});
+    	var now = new Date();
+    	this.now.set({"_date":new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0).getTime()});
     },
     initEvents : function(){
     	$A.DatePicker.superclass.initEvents.call(this);
@@ -5483,17 +5714,19 @@ $A.DatePicker = Ext.extend($A.TriggerField,{
     processDate : function(d){},
     onBlur : function(e){
     	if(this.readonly)return;
-		$A.DatePicker.superclass.onBlur.call(this,e);
-		if(!this.isExpanded()){
-			try{
-                var d = this.getRawValue().parseDate(this.format)
-                this.wrapDate(d);
-				this.setValue(d||"");
-			}catch(e){
-                //alert(e.message);
-				this.setValue("");
+    	if(this.hasFocus){
+			$A.DatePicker.superclass.onBlur.call(this,e);
+			if(!this.isExpanded()){
+				try{
+	                var d = this.getRawValue().parseDate(this.format)
+	                this.wrapDate(d);
+					this.setValue(d||"");
+				}catch(e){
+	                //alert(e.message);
+					this.setValue("");
+				}
 			}
-		}
+    	}
     },
     formatValue : function(date){
     	if(date instanceof Date)return date.format(this.format);
@@ -5673,7 +5906,7 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     	$A.NavBar.superclass.initComponent.call(this, config);
     	this.dataSet = $(this.dataSet);
     	this.navInfo = this.wrap.child('div[atype=displayInfo]');//Ext.get(this.infoId);
-    	if(this.type != "simple"){
+    	if(this.type != "simple" && this.type != "tiny"){
 	    	this.pageInput = $(this.inputId);
 	    	this.currentPage = this.wrap.child('div[atype=currentPage]');
 	    	this.pageInfo = this.wrap.child('div[atype=pageInfo]');//Ext.get(this.pageId);
@@ -5692,11 +5925,11 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     processListener: function(ou){
     	$A.NavBar.superclass.processListener.call(this,ou);
     	this.dataSet[ou]('load', this.onLoad,this);
-    	if(this.type != "simple"){
-	    	this.pageInput[ou]('keydown', this.onInputKeyPress, this);
-	    	if(this.pageSizeInput){
-	    		this.pageSizeInput[ou]('select', this.onInputSelect, this);
-	    	}
+    	if(this.type != "simple" && this.type != "tiny"){
+    		this.pageInput[ou]('change', this.onPageChange, this);
+    		if(this.pageSizeInput){
+    			this.pageSizeInput[ou]('change', this.onPageSizeChange, this);
+    		}
     	}
     },
     initEvents : function(){
@@ -5704,7 +5937,7 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     },
     onLoad : function(){
     	this.navInfo.update(this.creatNavInfo());
-    	if(this.type != "simple"){
+    	if(this.type != "simple" && this.type != "tiny"){
 	    	this.pageInput.setValue(this.dataSet.currentPage);
 	    	this.pageInfo.update(_lang['toolbar.total'] + this.dataSet.totalPage + _lang['toolbar.page']);
 	    	if(this.pageSizeInput&&!this.pageSizeInput.optionDataSet){
@@ -5756,6 +5989,13 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     			html.push(currentPage == totalPage ? '<span>尾页</span>' : this.createAnchor('尾页',totalPage));
     		}
     		return html.join('');
+    	}else if(this.type == 'tiny'){
+    		var html=[],ds=this.dataSet,currentPage=ds.currentPage;
+    		html.push(currentPage == 1 ? '<span>首页</span>' : this.createAnchor('首页',1));
+			html.push(currentPage == 1 ? '<span>上一页</span>' : this.createAnchor('上一页',currentPage-1));
+    		html.push(this.createAnchor('下一页',currentPage+1));
+    		html.push('<span>第'+currentPage+'页</span>');
+    		return html.join('');
     	}else{
 	    	var from = ((this.dataSet.currentPage-1)*this.dataSet.pagesize+1);
 	    	var to = this.dataSet.currentPage*this.dataSet.pagesize;
@@ -5770,23 +6010,26 @@ $A.NavBar = Ext.extend($A.ToolBar,{
     createSplit : function(html){
     	html.push('<span>···</span>');
     },
-    onInputKeyPress : function(input, e){
-    	if(e.keyCode == 13){
-    		var page = parseInt(input.getRawValue());
-    		if(isNaN(page)){
-    			input.setValue(this.dataSet.currentPage);
-    		}else{
-    			if(page>0 && page<=this.dataSet.totalPage) {
-    				this.dataSet.goPage(page);
-    			}else{
-    				input.setValue(this.dataSet.currentPage);
-    			}
-    		}
-    	}    	
+    onPageChange : function(el,value,oldvalue){
+    	if(this.dataSet.totalPage == 0){
+    		el.setValue(1);
+    	}else if(isNaN(value) || value<=0 || value>this.dataSet.totalPage){
+    		el.setValue(oldvalue)
+    	}else if(this.dataSet.currentPage!=value){
+	    	this.dataSet.goPage(value);
+    	}
     },
-    onInputSelect : function(combo,value){
-    	this.dataSet.pagesize=value;
-    	this.dataSet.query();
+    onPageSizeChange : function(el,value,oldvalue){
+    	var max = this.dataSet.maxpagesize;
+    	if(isNaN(value) || value<=0){
+    		el.setValue(oldvalue);
+    	}else if(value > max){
+			$A.showMessage(_lang['toolbar.errormsg'],_lang['toolbar.maxPageSize']+max+_lang['toolbar.item'],null,240);
+			el.setValue(oldvalue);
+		}else if(this.dataSet.pagesize!=value){
+	    	this.dataSet.pagesize=Math.round(value);
+	    	this.dataSet.query();
+    	}
     }
 })
 $A.WindowManager = function(){
@@ -5874,7 +6117,7 @@ $A.Window = Ext.extend($A.Component,{
         sf.closeBtn = sf.wrap.child('div[atype=window.close]');
         if(sf.draggable) sf.initDraggable();
         if(!sf.closeable)sf.closeBtn.hide();
-        if(Ext.isEmpty(config.x)||Ext.isEmpty(config.y)){
+        if(Ext.isEmpty(config.x)||Ext.isEmpty(config.y)||sf.fullScreen){
             sf.center();
         }else{
             sf.move(config.x,config.y);
@@ -5953,7 +6196,7 @@ $A.Window = Ext.extend($A.Component,{
 //        this.shadow.setHeight(this.wrap.getHeight());
         if(this.fullScreen){
         	x=sl;y=st;
-            this.move(x,y,false);
+            this.move(x,y,true);
         	this.shadow.moveTo(x,y)
         }else {
             this.move(x,y)
@@ -5983,7 +6226,7 @@ $A.Window = Ext.extend($A.Component,{
     },
     getTemplate : function() {
         return [
-            '<TABLE class="win-wrap" style="width:{width}px;" cellSpacing="0" cellPadding="0" border="0" {url}>',
+            '<TABLE class="win-wrap" style="left:-1000px;top:-1000px;width:{width}px;" cellSpacing="0" cellPadding="0" border="0" {url}>',
 			'<TBODY>',
 			'<TR style="height:23px;" >',
 				'<TD class="win-caption">',
@@ -6059,10 +6302,10 @@ $A.Window = Ext.extend($A.Component,{
     	var sh = st + this.screenHeight;
     	var tx = e.getPageX()+this.relativeX;
     	var ty = e.getPageY()+this.relativeY;
-    	if(tx<=sl) tx =sl;
-    	if((tx+this.width)>= (sw-3)) tx = sw - this.width - 3;
-    	if(ty<=st) ty =st;
-    	if((ty+this.height)>= (sh-30)) ty = Math.max(sh - this.height - 30,0);
+//    	if(tx<=sl) tx =sl;
+//    	if((tx+this.width)>= (sw-3)) tx = sw - this.width - 3;
+//    	if(ty<=st) ty =st;
+//    	if((ty+this.height)>= (sh-30)) ty = Math.max(sh - this.height - 30,0);
     	this.proxy.moveTo(tx,ty);
     },
     showLoading : function(){
@@ -6282,7 +6525,7 @@ $A.showErrorMessage = function(title,msg,callback,width,height){
 }
 
 $A.showTypeMessage = function(title, msg,width,height,css,callback){
-	var msg = '<div class="win-icon '+css+'"><div class="win-type" style="width:'+(width-60)+'px;height:'+(height-58)+'px;">'+msg+'</div></div>';
+	var msg = '<div class="win-icon '+css+'"><div class="win-type" style="width:'+(width-60)+'px;height:'+(height-62)+'px;">'+msg+'</div></div>';
 	return $A.showOkWindow(title, msg, width, height,callback);	
 } 
 <div id="method-Aurora.Window-showConfirm"></div>/**
@@ -6299,7 +6542,7 @@ $A.showTypeMessage = function(title, msg,width,height,css,callback){
 $A.showConfirm = function(title, msg, okfun,cancelfun, width, height){
 	width = width||300;
 	height = height||100;
-    var msg = '<div class="win-icon win-question"><div class="win-type" style="width:'+(width-60)+'px;height:'+(height-58)+'px;">'+msg+'</div></div>';
+    var msg = '<div class="win-icon win-question"><div class="win-type" style="width:'+(width-60)+'px;height:'+(height-62)+'px;">'+msg+'</div></div>';
     return $A.showOkCancelWindow(title, msg, okfun,cancelfun, width, height);  	
 }
 //$A.hideWindow = function(){
@@ -6409,7 +6652,7 @@ $A.showUploadWindow = function(path,title,source_type,pkvalue,max_size,file_type
  * @param {Object} config 配置对象. 
  */
 $A.Lov = Ext.extend($A.TextField,{
-	selectedClass:'item-comboBox-selected',
+	selectedClass:'autocomplete-selected',
 	viewClass:'item-comboBox-view',
     constructor: function(config) {
         this.isWinOpen = false;
@@ -6419,7 +6662,7 @@ $A.Lov = Ext.extend($A.TextField,{
         this.autocompletesize = 2;
         this.autocompletedelay = 500;
         this.autocompletepagesize = 10;
-        this.maxHeight = 210;
+        this.maxHeight = 240;
         this.context = config.context||'';
         $A.Lov.superclass.constructor.call(this, config);        
     },
@@ -6510,10 +6753,12 @@ $A.Lov = Ext.extend($A.TextField,{
 	        		if(this.showCompleteId)clearTimeout(this.showCompleteId);
 	        		this.showCompleteId=setTimeout(function(){
 	        			var url;
+                        var lp = Ext.urlEncode(sf.getLovPara())
 			        	if(!Ext.isEmpty(sf.lovservice)){
-				            url = sf.context + 'sys_lov.svc?svc='+sf.lovservice +'&'+ Ext.urlEncode(sf.getLovPara());
+//				            url = sf.context + 'sys_lov.svc?svc='+sf.lovservice +'&'+ Ext.urlEncode(sf.getLovPara());
+                            url = sf.context + 'autocrud/'+sf.lovservice+'/query' + (!Ext.isEmpty(lp) ? '?' + lp : '');
 				        }else if(!Ext.isEmpty(sf.lovmodel)){
-				            url = sf.context + 'autocrud/'+sf.lovmodel+'/query?' + Ext.urlEncode(sf.getLovPara());
+				            url = sf.context + 'autocrud/'+sf.lovmodel+'/query' + (!Ext.isEmpty(lp) ? '?' + lp : '');
 				        }
 				        sf.optionDataSet.setQueryUrl(url);
 				       	sf.pagesize=sf.autocompletepagesize;
@@ -6588,9 +6833,8 @@ $A.Lov = Ext.extend($A.TextField,{
     	this.autoCompletePosition();
     	var view = this.autocompleteview;
     	view.addClass(this.viewClass);
-		view.update('<ul></ul>');
-		this.view=view.wrap.child('ul');
-		this.view.on('click', this.onViewClick,this);
+		view.update('');
+		view.wrap.on('click', this.onViewClick,this);
     	view.on('beforerender',this.onQuery,this);
 		view.on('render',this.onRender,this);
     	view.on('hide',this.autoCompleteHide,this);
@@ -6599,8 +6843,8 @@ $A.Lov = Ext.extend($A.TextField,{
     	this.needFetch = true;
 		Ext.Ajax.abort(this.optionDataSet.qtId);
     	var view = this.autocompleteview;
-    	this.view.un('click', this.onViewClick,this);
-		this.view.un('mousemove',this.onViewMove,this);
+    	view.wrap.un('click', this.onViewClick,this);
+		view.wrap.un('mousemove',this.onViewMove,this);
     	view.un('show',this.autoCompleteShow,this);
     	view.un('beforerender',this.onQuery,this);
     	view.un('render',this.onRender,this);
@@ -6616,7 +6860,9 @@ $A.Lov = Ext.extend($A.TextField,{
     	this.autocompleteview.moveTo(x,y);
     },
     onViewClick:function(e,t){
-		if(t.tagName!='LI'){
+    	t = Ext.fly(t);
+		t = (t.parent('TR')||t).dom;
+		if(t.tagName!='TR'){
 		    return;
 		}		
 		this.onSelect(t);
@@ -6624,53 +6870,64 @@ $A.Lov = Ext.extend($A.TextField,{
 		this.focus();
 	},	
 	onViewMove:function(e,t){
-        var index = t.tabIndex;
-        this.selectItem(index);        
+		t = Ext.fly(t);
+		t = t.parent('TR')||t;
+        this.selectItem(t.dom.tabIndex);        
 	},
 	onSelect : function(target){
 		var index = Ext.isNumber(target)?target:target.tabIndex;
-		if(index==-1)return;
+		if(index<-1){
+			if(!this.needFetch)this.fetchRecord();
+			return;
+		}
 		var record = this.optionDataSet.getAt(index);
 		this.commit(record);
 	},
     onQuery : function(){
-    	this.view.update('<li tabIndex="-1">'+_lang['lov.query']+'</li>');
-    	this.view.un('mousemove',this.onViewMove,this);
+    	var view = this.autocompleteview;
+    	view.update('<table cellspacing="0" cellpadding="2"><tr tabIndex="-2"><td>'+_lang['lov.query']+'</td></tr></table>');
+    	view.wrap.un('mousemove',this.onViewMove,this);
     	this.correctViewSize();
     },
     onRender : function(){
     	var datas = this.optionDataSet.getAll();
-		var l=datas.length;
-		var sb = [];
-		for(var i=0;i<l;i++){
-			var text = this.getRenderText(datas[i]);
-			sb.add('<li tabIndex="'+i+'">'+text+'</li>');	//this.litp.applyTemplate(d)等数据源明确以后再修改		
-		}
+		var l=datas.length,view = this.autocompleteview;
+		var sb = ['<table class="autocomplete" cellspacing="0" cellpadding="2">'];
 		this.selectedIndex = null;
-		if(l!=0){
-			this.view.update(sb.join(''));	
-			this.correctViewSize();
-			this.view.on('mousemove',this.onViewMove,this);
-			this.needFetch=false;
+		if(l==0){
+			sb.add('<tr tabIndex="-2"><td>'+_lang['lov.notfound']+'</td></tr></table>');
+			view.update(sb.join(''));
 		}else{
-			this.view.update('<li tabIndex="-1">'+_lang['lov.notfound']+'</li>');	
+			var displayFields = this.binder.ds.getField(this.binder.name).getPropertity('displayFields');
+            if(displayFields && displayFields.length){
+            	sb.add('<tr tabIndex="-2" class="autocomplete-head">');
+            	for(var i = 0,ll = displayFields.length;i < ll;i++){
+            		sb.add('<td>'+displayFields[i].prompt+'</td>');
+            	}
+				sb.add('</tr>');
+            }
+			for(var i=0;i<l;i++){
+				var text = this.getRenderText(datas[i],displayFields);
+				sb.add('<tr tabIndex="'+i+'"'+(i%2==1?' class="autocomplete-row-alt"':'')+'>'+text+'</tr>');	//this.litp.applyTemplate(d)等数据源明确以后再修改		
+			}
+			sb.add('</table>');
+			view.update(sb.join(''));	
+			view.wrap.on('mousemove',this.onViewMove,this);
+			this.needFetch=false;
 		}
+		this.correctViewSize();
     },
     correctViewSize: function(){
-		var widthArray = [];
-		var mw = 150;
-		for(var i=0;i<this.view.dom.childNodes.length;i++){
-			var li=this.view.dom.childNodes[i];
-			var width=$A.TextMetrics.measure(li,li.innerHTML).width;
-			mw = Math.max(mw,width)||mw;
-		}
-		var lh = Math.min(this.autocompleteview.wrap.child('ul').getHeight()+2,this.maxHeight); 
-    	this.autocompleteview.setWidth(mw);
-		this.autocompleteview.setHeight(lh<20?20:lh);
+		var widthArray = [],view = this.autocompleteview,table = view.wrap.child('table');
+		if(table.getWidth() < 150)table.setWidth(150);
+		var lh = Math.min(table.getHeight()+2,this.maxHeight); 
+		view.setHeight(lh<20?20:lh);
+		var mw = view.wrap.getWidth();
+    	view.setWidth(mw);
 		this.autoCompletePosition();
 	},
     selectItem:function(index){
-		if(Ext.isEmpty(index)){
+		if(Ext.isEmpty(index)||index < -1){
 			return;
 		}	
 		var node = this.getNode(index);	
@@ -6683,18 +6940,25 @@ $A.Lov = Ext.extend($A.TextField,{
 		}			
 	},
 	getNode:function(index){
-		var nodes = this.view.dom.childNodes,l = nodes.length;
+		var nodes = this.autocompleteview.wrap.select('tr[tabindex!=-2]').elements,l = nodes.length;
 		if(index >= l) index =  index % l;
 		else if (index < 0) index = l + index % l;
 		return nodes[index];
 	},
-    getRenderText : function(record){
+    getRenderText : function(record,displayFields){
         var rder = $A.getRenderer(this.autocompleterenderer);
         var text = '&#160;';
         if(rder){
             text = rder.call(window,this,record);
         }else{
-            text = record.get(this.autocompletefield);
+        	if(displayFields){
+            	text = '';
+            	for(var i = 0,l = displayFields.length;i < l;i++){
+            		text += '<td>'+record.get(displayFields[i].name)+'</td>';
+            	}
+            }else{
+            	text = '<td>'+record.get(this.autocompletefield)+'</td>';
+            }
         }
 		return text;
 	},
@@ -6715,8 +6979,8 @@ $A.Lov = Ext.extend($A.TextField,{
         if(record && r){
             var mapping = this.getMapping();
             for(var i=0;i<mapping.length;i++){
-                var map = mapping[i];
-                record.set(map.to,r.get(map.from)||'');
+                var map = mapping[i], from = r.get(map.from);
+                record.set(map.to,Ext.isEmpty(from)?'':from);
             }
         }
 //        else{
@@ -6767,15 +7031,12 @@ $A.Lov = Ext.extend($A.TextField,{
     },
     fetchRecord : function(){
         if(this.readonly == true) return;
-        if(!Ext.isEmpty(this.lovurl)){
-//            this.showLovWindow();
-            return;
-        }
         this.fetching = true;
         var v = this.getRawValue(),url;
         
         if(!Ext.isEmpty(this.lovservice)){
-            url = this.context + 'sys_lov.svc?svc='+this.lovservice+'&pagesize=1&pagenum=1&_fetchall=false&_autocount=false&'+ Ext.urlEncode(this.getLovPara());
+//            url = this.context + 'sys_lov.svc?svc='+this.lovservice+'&pagesize=1&pagenum=1&_fetchall=false&_autocount=false&'+ Ext.urlEncode(this.getLovPara());
+            url = this.context + 'autocrud/'+this.lovservice+'/query?pagesize=1&pagenum=1&_fetchall=false&_autocount=false&'+ Ext.urlEncode(this.getLovPara());
         }else if(!Ext.isEmpty(this.lovmodel)){
             url = this.context + 'autocrud/'+this.lovmodel+'/query?pagesize=1&pagenum=1&_fetchall=false&_autocount=false&'+ Ext.urlEncode(this.getLovPara());
         }
@@ -6792,7 +7053,7 @@ $A.Lov = Ext.extend($A.TextField,{
         }
         $A.slideBarEnable = $A.SideBar.enable;
         $A.SideBar.enable = false;
-        if(Ext.isEmpty(v)) {
+        if(Ext.isEmpty(v) || !Ext.isEmpty(this.lovurl)) {
             this.fetching = false;
             record.isReady=true;
             $A.SideBar.enable = $A.slideBarEnable;
@@ -6835,12 +7096,15 @@ $A.Lov = Ext.extend($A.TextField,{
         var v = this.getRawValue();
         this.blur();
         var url;
+        var lp = Ext.urlEncode(this.getLovPara())
         if(!Ext.isEmpty(this.lovurl)){
             url = this.lovurl+'?' + Ext.urlEncode(this.getLovPara()) + '&';
         }else if(!Ext.isEmpty(this.lovservice)){
-            url = this.context + 'sys_lov.screen?url='+encodeURIComponent(this.context + 'sys_lov.svc?svc='+this.lovservice + '&'+ Ext.urlEncode(this.getLovPara()))+'&service='+this.lovservice+'&';           
+            
+//            url = this.context + 'sys_lov.screen?url='+encodeURIComponent(this.context + 'sys_lov.svc?svc='+this.lovservice + '&'+ Ext.urlEncode(this.getLovPara()))+'&service='+this.lovservice+'&';
+            url = this.context + 'sys_lov.screen?url='+encodeURIComponent(this.context + 'autocrud/'+this.lovservice+'/query'+ (!Ext.isEmpty(lp) ? '?' + lp : ''))+'&service='+this.lovservice+'&';
         }else if(!Ext.isEmpty(this.lovmodel)){
-            url = this.context + 'sys_lov.screen?url='+encodeURIComponent(this.context + 'autocrud/'+this.lovmodel+'/query?'+ Ext.urlEncode(this.getLovPara()))+'&service='+this.lovmodel+'&';
+            url = this.context + 'sys_lov.screen?url='+encodeURIComponent(this.context + 'autocrud/'+this.lovmodel+'/query'+ (!Ext.isEmpty(lp) ? '?' + lp : ''))+'&service='+this.lovmodel+'&';
         }
         if(url) {
 	        this.isWinOpen = true;
@@ -6920,7 +7184,7 @@ $A.Popup = Ext.extend($A.Component,{
     	this.shadow.setHeight(h);
     },
     setWidth : function(w){
-    	this.wrap.setWidth(w);
+    	//this.wrap.setWidth(w);
     	this.shadow.setWidth(w);
     },
     getHeight : function(){
@@ -6948,7 +7212,7 @@ $A.Popup = Ext.extend($A.Component,{
     	this.processDataSet('un');
     	delete this.shadow;
     },
-    tpl : ['<div class="item-popup" style="visibility:hidden;background-color:#fff">','</div>'],
+    tpl : ['<div tabIndex="-2" class="item-popup" style="visibility:hidden;background-color:#fff;">','</div>'],
     shadowtpl : ['<div class="item-shadow" style="visibility:hidden;">','</div>']
 });
 <div id="cls-Aurora.MultiLov"></div>/**
@@ -7003,10 +7267,10 @@ $A.MultiLov = Ext.extend($A.Lov,{
     },
     commit:function(ds,lr){
         if(this.win) this.win.close();
-        var record = lr ? lr : this.record;
+        var record = lr ? lr : this.record,
+        	records=ds.getAll(),from="";
         if(record){
     		this.optionDataSet=ds;
-            var records=ds.getAll(),from="";
 	    	for(var j=0;j<records.length;j++){
 	        	if(records[j].get(this.valuefield)){
 	        		var v=records[j].get(this.valuefield);
@@ -7031,9 +7295,6 @@ $A.MultiLov = Ext.extend($A.Lov,{
     },
     processValue : function(v){
     	this.localvalues=[];
-    	if(this.optionDataSet){
-	    	this.optionDataSet.removeAll();
-    	}
     	if(!v)return '';
     	var values=v.split(';'),rv="",records=[];
     	for(var i=0;i<values.length;i++){
@@ -7048,6 +7309,9 @@ $A.MultiLov = Ext.extend($A.Lov,{
     			}
 	    		rv+=this.quote+vs+this.quote+",";
     		}
+    	}
+    	if(this.optionDataSet){
+	    	this.optionDataSet.removeAll();
     	}
     	for(var i=0;i<records.length;i++){
     		this.optionDataSet.add(records[i]);
@@ -7093,9 +7357,12 @@ $A.MultiLov = Ext.extend($A.Lov,{
         }
         if(url) {
 	        this.isWinOpen = true;
-            this.win = new $A.Window({title:this.title||'Lov', url:url+"lovid="+this.id+"&key="+encodeURIComponent(v)+"&gridheight="+(this.lovgridheight||350)+"&innerwidth="+((this.lovwidth||400)-30)+"&innergridwidth="+Math.round(((this.lovwidth||400)-90)/2), height:this.lovheight||400,width:this.lovwidth||400});
+            this.win = new $A.Window({title:this.title||'Lov', url:url+"lovid="+this.id+"&key="+encodeURIComponent(v)+"&gridheight="+(this.lovgridheight||350)+"&innerwidth="+((this.lovwidth||400)-30)+"&innergridwidth="+Math.round(((this.lovwidth||400)-90)/2)+"&lovautoquery="+this.lovautoquery+"&lovlabelwidth="+this.lovlabelwidth, height:this.lovheight||400,width:this.lovwidth||400});
             this.win.on('close',this.onWinClose,this);
         }
+    },
+    destroy : function(){
+        $A.Lov.superclass.destroy.call(this);
     }
 });
 <div id="cls-Aurora.TextArea"></div>/**
@@ -7166,19 +7433,21 @@ $A.Customization = Ext.extend(Ext.util.Observable,{
         var path = window.location.pathname;
         var str = path.indexOf('modules');
         var screen_path = path.substring(str,path.length);
-        var screen = screen_path.substring(screen_path.lastIndexOf('/'), screen_path.length);
-        var parent = this.el.findParent('.win-wrap')
+        var screen = screen_path.substring(screen_path.lastIndexOf('/')+1, screen_path.length);
+        var parent = this.el.parent('.win-wrap')
         if(parent) {
             var url = parent.getAttributeNS("","url");
             if(url){
+                url = url.split('?')[0];
                 var li = url.lastIndexOf('/');
                 if(li != -1){
-                    url = url.substring(li,url.length);
-                    screen_path = screen_path.replaceAll(screen, url);
+                    url = url.substring(li+1,url.length);
                 }
+                screen_path = screen_path.replaceAll(screen, url);
             }
         }
-        new Aurora.Window({id:'sys_customization_edit_window', url:'/hec/modules/sys/sys_customization_edit.screen?screen_path='+screen_path + '&id='+ this.cmp.id, title:'属性设置',height:530,width:780});        
+        var context_path = path.substring(0,str);
+        new Aurora.Window({id:'sys_customization_window', url:context_path + 'modules/sys/sys_customization_window.screen?screen_path='+screen_path + '&id='+ this.cmp.id, title:'个性化设置',height:170,width:400});
         this.onCmpOut();
     },
     hideMask : function(){
