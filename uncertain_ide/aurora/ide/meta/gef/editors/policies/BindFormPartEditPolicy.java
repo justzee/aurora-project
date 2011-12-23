@@ -8,7 +8,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import aurora.ide.meta.gef.editors.models.BOX;
-import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.models.commands.BindFormCommand;
 import aurora.ide.meta.gef.editors.parts.ViewDiagramPart;

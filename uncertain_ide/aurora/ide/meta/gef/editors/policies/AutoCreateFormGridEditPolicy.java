@@ -5,8 +5,10 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.AbstractEditPolicy;
 
+import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.models.commands.AutoCreateFormGridCommand;
+import aurora.ide.meta.gef.editors.parts.ViewDiagramPart;
 import aurora.ide.meta.gef.editors.request.DropBMRequest;
 
 public class AutoCreateFormGridEditPolicy extends AbstractEditPolicy {
@@ -20,12 +22,18 @@ public class AutoCreateFormGridEditPolicy extends AbstractEditPolicy {
 
 	protected Command getBindCommand(DropBMRequest request) {
 		AutoCreateFormGridCommand cmd = new AutoCreateFormGridCommand();
-		// cmd.setDiagram(parentModel);
-		// cmd.setChild(new Input());
 		cmd.setBm(request.getBm());
-		Object model = this.getHost().getModel();
-		cmd.setDiagram((ViewDiagram) model);
+		ViewDiagramPart diagramPart = this.getDiagramPart(getHost());
+		cmd.setDiagram((ViewDiagram) diagramPart.getComponent());
+		Container container = (Container) this.getHost().getModel();
+		cmd.setContainer(container);
 		return cmd;
+	}
+
+	protected ViewDiagramPart getDiagramPart(EditPart ep) {
+		if (ep instanceof ViewDiagramPart)
+			return (ViewDiagramPart) ep;
+		return this.getDiagramPart(ep.getParent());
 	}
 
 	@Override
