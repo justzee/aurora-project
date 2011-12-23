@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 
-
 public class TableContentProvider implements IStructuredContentProvider,
 		ISearchContentProvider {
 
@@ -18,7 +17,8 @@ public class TableContentProvider implements IStructuredContentProvider,
 
 	private TableViewer viewer;
 
-	public TableContentProvider(AbstractTextSearchViewPage page, TableViewer viewer) {
+	public TableContentProvider(AbstractTextSearchViewPage page,
+			TableViewer viewer) {
 		fPage = page;
 		this.viewer = viewer;
 	}
@@ -67,7 +67,7 @@ public class TableContentProvider implements IStructuredContentProvider,
 	}
 
 	private int getElementLimit() {
-		Integer elementLimit = fPage.getElementLimit();
+		Integer elementLimit = fPage == null ? null : fPage.getElementLimit();
 		if (elementLimit == null)
 			return -1;
 		return elementLimit.intValue();

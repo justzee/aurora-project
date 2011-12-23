@@ -3,14 +3,12 @@ package aurora.ide.meta.gef.editors.parts;
 import org.eclipse.draw2d.AbstractLabeledBorder;
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPolicy;
 
 import aurora.ide.meta.gef.editors.figures.BoxFigure;
 import aurora.ide.meta.gef.editors.models.BOX;
-import aurora.ide.meta.gef.editors.policies.DiagramLayoutEditPolicy;
+import aurora.ide.meta.gef.editors.policies.BindFormPartEditPolicy;
 
 public class BoxPart extends ContainerPart {
-
 
 	@Override
 	protected IFigure createFigure() {
@@ -23,7 +21,7 @@ public class BoxPart extends ContainerPart {
 	@Override
 	protected void createEditPolicies() {
 		super.createEditPolicies();
-		installEditPolicy(EditPolicy.LAYOUT_ROLE, new DiagramLayoutEditPolicy());
+		installEditPolicy("Bind_Form", new BindFormPartEditPolicy());
 	}
 
 	protected void refreshVisuals() {

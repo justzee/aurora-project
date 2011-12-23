@@ -25,7 +25,7 @@ public class GraphLayoutManager {
 			return new InputFieldLayout();
 		}
 		if (ep instanceof GridPart) {
-			return new GridBackLayout2();
+			return new GridBackLayout();
 		}
 		if (ep instanceof GridColumnPart) {
 			return new GridColumnBackLayout2();

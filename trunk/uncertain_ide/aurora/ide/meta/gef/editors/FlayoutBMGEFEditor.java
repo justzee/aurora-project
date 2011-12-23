@@ -15,23 +15,21 @@ public abstract class FlayoutBMGEFEditor extends
 	private FlyoutPaletteComposite splitter;
 
 	public void createPartControl(Composite parent) {
-		// splitter = new FlyoutPaletteComposite(parent, SWT.NONE, getSite()
-		// splitter = new FlyoutPaletteComposite(parent, SWT.NONE, getSite()
-		// .getPage(), getPaletteViewerProvider(), getPalettePreferences());
-		// super.createPartControl(splitter);
-		//
-		// splitter.setGraphicalControl(splitter.getChildren()[2]);
-		// splitter.setExternalViewer(this.getPaletteViewerProvider()
-		// .createPaletteViewer(parent));
+	
+		
+//		super.createPartControl(parent);
+		
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
 //		sashForm.SASH_WIDTH = 3;
-		super.createPartControl(sashForm);
+		
 		Composite c = new Composite(sashForm, SWT.BORDER);
 		c.setBackground(ColorConstants.WHITE);
 		c.setLayout(new GridLayout());
 		createBMViewer(c);
 		createPropertyViewer(c);
-		sashForm.setWeights(new int[] { 4, 1 });
+		
+		super.createPartControl(sashForm);
+		sashForm.setWeights(new int[] { 1, 4 });
 	}
 
 	protected abstract void createPropertyViewer(Composite c);

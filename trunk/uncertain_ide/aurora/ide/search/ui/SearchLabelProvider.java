@@ -88,23 +88,23 @@ public class SearchLabelProvider extends LabelProvider implements
 				.getParent().getFullPath(), false);
 		if (fOrder == SHOW_LABEL_PATH) {
 			StyledString str = new StyledString(name);
-			String decorated = MessageFormater.format(fgSeparatorFormat, new String[] {
-					str.getString(), pathString });
+			String decorated = MessageFormater.format(fgSeparatorFormat,
+					new String[] { str.getString(), pathString });
 
 			StyledCellLabelProvider.styleDecoratedString(decorated,
 					StyledString.QUALIFIER_STYLER, str);
 			return getColoredLabelWithCounts(resource, str);
 		}
 
-		StyledString str = new StyledString(MessageFormater.format(fgSeparatorFormat,
-				new String[] { pathString, name }));
+		StyledString str = new StyledString(MessageFormater.format(
+				fgSeparatorFormat, new String[] { pathString, name }));
 		return getColoredLabelWithCounts(resource, str);
 	}
 
 	private StyledString getLineElementLabel(LineElement lineElement) {
 		int lineNumber = lineElement.getLine();
-		String lineNumberString = MessageFormater.format(line_number, new Integer(
-				lineNumber).toString());
+		String lineNumberString = MessageFormater.format(line_number,
+				new Integer(lineNumber).toString());
 
 		StyledString str = new StyledString(lineNumberString,
 				StyledString.QUALIFIER_STYLER);
@@ -227,7 +227,8 @@ public class SearchLabelProvider extends LabelProvider implements
 
 	private StyledString getColoredLabelWithCounts(Object element,
 			StyledString coloredName) {
-		AbstractTextSearchResult result = fPage.getInput();
+		AbstractTextSearchResult result = fPage == null ? null : fPage
+				.getInput();
 		if (result == null)
 			return coloredName;
 
@@ -235,8 +236,8 @@ public class SearchLabelProvider extends LabelProvider implements
 		if (matchCount <= 1)
 			return coloredName;
 
-		String countInfo = MessageFormater
-				.format(count_format, new Integer(matchCount));
+		String countInfo = MessageFormater.format(count_format, new Integer(
+				matchCount));
 		coloredName.append(' ').append(countInfo, StyledString.COUNTER_STYLER);
 		return coloredName;
 	}

@@ -13,7 +13,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
-public class AuroraComponent implements Cloneable, Serializable, IProperties,IPropertySource {
+public class AuroraComponent implements Cloneable, Serializable, IProperties,
+		IPropertySource {
 
 	transient protected PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
@@ -31,7 +32,9 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,IPr
 
 	private String prompt = "prompt : ";
 
-	private String bindTarget = "";
+	// private String bindTarget = "";
+
+	private Dataset bindTarget;
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		listeners.addPropertyChangeListener(l);
@@ -45,7 +48,6 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,IPr
 		listeners.firePropertyChange(prop, null, child);
 	}
 
-
 	private void readObject(ObjectInputStream in) throws IOException,
 			ClassNotFoundException {
 		in.defaultReadObject();
@@ -55,7 +57,6 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,IPr
 	public void removePropertyChangeListener(PropertyChangeListener l) {
 		listeners.removePropertyChangeListener(l);
 	}
-
 
 	public void setLocation(Point p) {
 		if (eq(this.location, p)) {
@@ -140,12 +141,17 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,IPr
 		firePropertyChange(PROMPT, old, prompt);
 	}
 
-	public String getBindTarget() {
+	public Dataset getBindTarget() {
 		return bindTarget;
 	}
 
-	public void setBindTarget(String bindTarget) {
+	public void setBindTarget(Dataset bindTarget) {
 		this.bindTarget = bindTarget;
+		bindTarget.addBind(this);
+	}
+	public void removeBindTarget(){
+		bindTarget.removeBind(this);
+		this.bindTarget = null;
 	}
 
 	protected boolean eq(Object o1, Object o2) {
@@ -153,6 +159,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,IPr
 			return o2 == null;
 		return o1.equals(o2);
 	}
+
 	public Object getEditableValue() {
 		return this;
 	}
@@ -180,16 +187,16 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,IPr
 	public void setPropertyValue(Object propName, Object val) {
 
 		if (PROMPT.equals(propName))
-			this.setPrompt(val.toString()+" :"); 
+			this.setPrompt(val.toString() + " :");
 	}
 
-//	public void setIBounds(Rectangle layout) {
-//		this.bounds = layout;
-//		
-//	}
-//
-//	public void setILocation(Point location) {
-//		this.location = location;
-//	}
+	// public void setIBounds(Rectangle layout) {
+	// this.bounds = layout;
+	//
+	// }
+	//
+	// public void setILocation(Point location) {
+	// this.location = location;
+	// }
 
 }
