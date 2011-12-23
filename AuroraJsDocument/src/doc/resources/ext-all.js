@@ -502,8 +502,12 @@ Ext.Template.prototype = {
 								el.args[0] = values[el.value];
 								return el.format.apply(el.scope, el.args);
 				}
-			}	
-			return arr.map(applyValues).join('');
+			}
+            for(var i=0;i<arr.length;i++){
+                arr[i] = applyValues(arr[i])
+            }
+            //return arr.map(applyValues).join('');
+			return arr.join('');
 		}
 		return this;
 	},	
