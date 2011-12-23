@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import aurora.ide.AuroraPlugin;
-import aurora.ide.bm.editor.dialog.ParamQueryDialog;
+import aurora.ide.dialog.ParamQueryDialog;
 import aurora.ide.editor.core.ISqlViewer;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
