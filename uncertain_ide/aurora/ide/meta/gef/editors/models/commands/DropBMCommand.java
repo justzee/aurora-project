@@ -10,9 +10,9 @@ import org.eclipse.gef.commands.Command;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.Dataset;
-import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.Input;
@@ -92,7 +92,7 @@ public class DropBMCommand extends Command {
 		return fs;
 	}
 
-	protected void fillForm(Form form) {
+	protected void fillForm(BOX form) {
 		form.setBindTarget(qds);
 		try {
 			CompositeMap model = CacheManager.getCompositeMap(bm);
@@ -123,6 +123,7 @@ public class DropBMCommand extends Command {
 				}
 				input.setPrompt(getPrompt(field));
 				input.setType(getType(field));
+				input.setBindTarget(qds);
 				form.addChild(input);
 				// input.setReadOnly(readOnly)
 				// input.setRequired(required)

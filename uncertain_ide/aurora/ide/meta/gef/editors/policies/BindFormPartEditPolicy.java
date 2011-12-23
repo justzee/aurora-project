@@ -7,6 +7,7 @@ import org.eclipse.gef.editpolicies.AbstractEditPolicy;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.models.commands.BindFormCommand;
@@ -25,13 +26,13 @@ public class BindFormPartEditPolicy extends AbstractEditPolicy {
 	protected Command getBindFormCommand(DropBMRequest request) {
 		BindFormCommand cmd = new BindFormCommand();
 		cmd.setBm(request.getBm());
-		Form model = (Form) this.getHost().getModel();
+		BOX model = (BOX) this.getHost().getModel();
 		if (model.getBindTarget() != null) {
 			// TODO
 			MessageDialog.openConfirm(new Shell(), "Dataset绑定",
 					"Dataset已经绑定，是否重置？");
 		}
-		cmd.setForm((Form) model);
+		cmd.setBox((BOX) model);
 		ViewDiagramPart diagramPart = this.getDiagramPart(getHost());
 		cmd.setDiagram((ViewDiagram) diagramPart.getComponent());
 		return cmd;
