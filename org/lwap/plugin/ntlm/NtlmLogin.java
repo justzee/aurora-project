@@ -56,13 +56,14 @@ public class NtlmLogin extends AbstractServiceHandle {
 			if(ntlm==null)
 				return EventModel.HANDLE_NORMAL;			
 		
-			String username=ntlm.getUsername();					
+			String username=ntlm.getUsername();		
+	
 			parameter.put("user_name", username.toUpperCase());
 			root.putObject("/request/@address", context.getObject("/request/@address"),true);
 			root.putObject("/cookie/@JSID/@value", context.getObject("/cookie/@JSID/@value"),true);			
 			mLogger.info("username:"+username);
 			mLogger.info("excute procedure "+ntlmConfig.getProcedure());
-			service.databaseAccess(ntlmConfig.getProcedure(), parameter, model);			
+			service.databaseAccess(ntlmConfig.getProcedure(), parameter, context);	
 		}else{
 			if ("POST".equals(httpRequest.getMethod().toUpperCase())) {
 				if(msg!=null&&msg.startsWith("NTLM"))
