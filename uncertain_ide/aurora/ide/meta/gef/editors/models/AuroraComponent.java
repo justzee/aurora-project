@@ -11,7 +11,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		IPropertySource {
@@ -30,7 +31,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 
 	private String type = "";
 
-	private String prompt = "prompt : ";
+	private String prompt = "prompt";
 
 	// private String bindTarget = "";
 
@@ -149,7 +150,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		this.bindTarget = bindTarget;
 		bindTarget.addBind(this);
 	}
-	public void removeBindTarget(){
+
+	public void removeBindTarget() {
 		bindTarget.removeBind(this);
 		this.bindTarget = null;
 	}
@@ -164,7 +166,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		return this;
 	}
 
-	private static final IPropertyDescriptor[] pds = { new TextPropertyDescriptor(
+	private static final IPropertyDescriptor[] pds = { new StringPropertyDescriptor(
 			PROMPT, "Prompt") };
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
@@ -187,7 +189,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	public void setPropertyValue(Object propName, Object val) {
 
 		if (PROMPT.equals(propName))
-			this.setPrompt(val.toString() + " :");
+			this.setPrompt(val.toString());
 	}
 
 	// public void setIBounds(Rectangle layout) {
