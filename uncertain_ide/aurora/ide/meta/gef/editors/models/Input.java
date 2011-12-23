@@ -1,9 +1,10 @@
 package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
 
 public class Input extends AuroraComponent {
 
@@ -48,11 +49,10 @@ public class Input extends AuroraComponent {
 		firePropertyChange(READONLY, oldV, readOnly);
 	}
 
-	private static final String[] bbs = new String[] { "true", "false" };
 	private static final IPropertyDescriptor[] pds = {
 			new TextPropertyDescriptor(PROMPT, "Prompt"),
-			new ComboBoxPropertyDescriptor(REQUIRED, "Required", bbs),
-			new ComboBoxPropertyDescriptor(READONLY, "Readonly", bbs) };
+			new BooleanPropertyDescriptor(REQUIRED, "Required"),
+			new BooleanPropertyDescriptor(READONLY, "Readonly") };
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		return pds;
@@ -60,9 +60,9 @@ public class Input extends AuroraComponent {
 
 	public Object getPropertyValue(Object propName) {
 		if (REQUIRED.equals(propName))
-			return this.isRequired() ? 0 : 1;
+			return this.isRequired();
 		if (READONLY.equals(propName))
-			return this.isReadOnly() ? 0 : 1;
+			return this.isReadOnly();
 		return super.getPropertyValue(propName);
 	}
 
@@ -72,9 +72,9 @@ public class Input extends AuroraComponent {
 
 	public void setPropertyValue(Object propName, Object val) {
 		if (REQUIRED.equals(propName))
-			this.setRequired(Boolean.valueOf(bbs[Integer.valueOf(val.toString())]));
+			this.setRequired((Boolean) val);
 		if (READONLY.equals(propName))
-			this.setReadOnly(Boolean.valueOf(bbs[Integer.valueOf(val.toString())]));
+			this.setReadOnly((Boolean) val);
 		super.setPropertyValue(propName, val);
 	}
 
