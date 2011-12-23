@@ -3,8 +3,10 @@ package aurora.ide.meta.gef.editors.parts;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.ui.views.properties.IPropertySource;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.IProperties;
@@ -38,8 +40,8 @@ public abstract class ComponentPart extends AbstractGraphicalEditPart implements
 	}
 
 	protected void refreshVisuals() {
-//		this.getFigure().setBounds(this.getComponent().getBounds());
-//		super.refreshVisuals();
+		// this.getFigure().setBounds(this.getComponent().getBounds());
+		// super.refreshVisuals();
 		this.getFigure().repaint();
 	}
 
@@ -48,4 +50,15 @@ public abstract class ComponentPart extends AbstractGraphicalEditPart implements
 				new NodeDirectEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
 	}
+
+	public IPropertySource getPropertySource(Object object) {
+		return (IPropertySource) getModel();
+	}
+
+	@Override
+	protected IFigure createFigure() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
