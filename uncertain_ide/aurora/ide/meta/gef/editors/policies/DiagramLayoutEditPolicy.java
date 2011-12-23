@@ -1,23 +1,30 @@
 package aurora.ide.meta.gef.editors.policies;
 
+import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.DropRequest;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.HBox;
+import aurora.ide.meta.gef.editors.models.TabFolder;
 import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveRemoteChildCmpCmd;
+import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.ContainerPart;
+import aurora.ide.meta.gef.editors.parts.TabBodyPart;
+import aurora.ide.meta.gef.editors.parts.TabFolderPart;
+import aurora.ide.meta.gef.editors.parts.TabItemPart;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private EditPart targetEditPart = null;
@@ -61,6 +68,28 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	public void showTargetFeedback(Request request) {
+		if (targetEditPart != null
+				&& targetEditPart.getClass().equals(TabFolderPart.class)) {
+			if (request instanceof DropRequest) {
+				ComponentPart ref = (ComponentPart) getInsertionReference(request);
+				if (ref == null || (ref instanceof TabBodyPart)) {
+					TabItemPart lastTabItem = null;
+					for (Object ep : targetEditPart.getChildren()) {
+						if (ep instanceof TabItemPart)
+							lastTabItem = (TabItemPart) ep;
+					}
+					if (lastTabItem != null) {
+						Rectangle rect = lastTabItem.getFigure().getBounds()
+								.getShrinked(-4, -2);
+						Polyline linefb = getLineFeedback();
+						linefb.setStart(rect.getTopRight());
+						linefb.setEnd(rect.getBottomRight());
+						getFeedbackLayer().add(linefb);
+						return;
+					}
+				}
+			}
+		}
 		super.showTargetFeedback(request);
 	}
 
@@ -68,8 +97,9 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 		if (request.getNewObject() instanceof AuroraComponent) {
 			Container parentModel = (Container) getHost().getModel();
 			AuroraComponent ac = (AuroraComponent) request.getNewObject();
-			if (!parentModel.isResponsibleChild(ac))
+			if (!parentModel.isResponsibleChild(ac)) {
 				return null;
+			}
 			EditPart reference = getInsertionReference(request);
 			CreateComponentCommand cmd = new CreateComponentCommand();
 			cmd.setDiagram(parentModel);
@@ -90,8 +120,13 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 			return null;
 		MoveRemoteChildCmpCmd cmd = new MoveRemoteChildCmpCmd();
 		cmd.setEditPartToMove(child);
-		if (targetEditPart.getModel() instanceof Container)
+		if (targetEditPart.getModel() instanceof Container) {
+			Container dest = (Container) targetEditPart.getModel();
+			AuroraComponent ac = (AuroraComponent) child.getModel();
+			if (!dest.isResponsibleChild(ac))
+				return null;
 			cmd.setTargetContainer(targetEditPart);
+		}
 		cmd.setReferenceEditPart(after);
 		return cmd;
 	}
@@ -111,7 +146,8 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 			if (modelClass.equals(HBox.class)
 					|| modelClass.equals(FieldSet.class)
 					|| modelClass.equals(Form.class)
-					|| modelClass.equals(Toolbar.class))
+					|| modelClass.equals(Toolbar.class)
+					|| modelClass.equals(TabFolder.class))
 				return true;
 		}
 		return false;
