@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -108,29 +109,40 @@ public class FirstLoadDataWizardPage extends WizardPage {
 	}
 
 	private void fillInfo(String projectName) {
-		ConnectionInfo cInfo = info.get(projectName);
+		final ConnectionInfo cInfo = info.get(projectName);
 		String s = "User：" + cInfo.getUserName() + "\nURL：" + cInfo.getURL() + "\nDriver：" + cInfo.getDriverName() + " " + cInfo.getDriverVersion();
 		txtConnectionInfo.setText(s);
 		setPageComplete(true);
-		SecondLoadDataWizardPage page=((SecondLoadDataWizardPage)getNextPage());
+		final SecondLoadDataWizardPage page = ((SecondLoadDataWizardPage) getNextPage());
 		page.clear();
-		page.init(cInfo.getProject());
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				page.init(cInfo.getProject());
+			}
+		});
 	}
 
 	private IProject[] getAuroraProjects() {
 		List<IProject> projects = new ArrayList<IProject>();
 		for (IProject p : AuroraPlugin.getWorkspace().getRoot().getProjects()) {
-			try {
-				for (String nature : p.getDescription().getNatureIds()) {
-					if (AuroraProjectNature.ID.equals(nature)) {
-						projects.add(p);
-					}
-				}
-			} catch (CoreException e) {
-				return null;
+			if (isAuroraProject(p)) {
+				projects.add(p);
 			}
 		}
 		return projects.toArray(new IProject[projects.size()]);
+	}
+
+	private boolean isAuroraProject(IProject project) {
+		try {
+			for (String nature : project.getDescription().getNatureIds()) {
+				if (AuroraProjectNature.ID.equals(nature)) {
+					return true;
+				}
+			}
+		} catch (CoreException e) {
+			return false;
+		}
+		return false;
 	}
 }
 

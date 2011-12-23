@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 import aurora.statistics.model.StatisticsProject;
 
@@ -14,7 +15,11 @@ public class LoadDataWizard extends Wizard {
 	public void createPageControls(Composite pageContainer) {
 		super.createPageControls(pageContainer);
 		setWindowTitle("载入向导");
-		firstpage.init();
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				firstpage.init();
+			}
+		});
 	}
 
 	public StatisticsProject getStatisticsProject() {
