@@ -6,6 +6,7 @@ import org.eclipse.gef.EditPart;
 
 import aurora.ide.meta.gef.editors.figures.ViewDiagramLayout;
 import aurora.ide.meta.gef.editors.models.TabBody;
+import aurora.ide.meta.gef.editors.policies.AutoCreateFormGridEditPolicy;
 
 public class TabBodyPart extends ContainerPart {
 
@@ -25,6 +26,7 @@ public class TabBodyPart extends ContainerPart {
 	@Override
 	protected void createEditPolicies() {
 		super.createEditPolicies();
+		installEditPolicy("Drop BM", new AutoCreateFormGridEditPolicy());
 	}
 
 	@Override

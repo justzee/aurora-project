@@ -2,19 +2,23 @@ package aurora.ide.meta.gef.editors.models.commands;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.HBox;
 
 public class AutoCreateFormGridCommand extends DropBMCommand {
+	
+	private Container container;
+	
 	public void execute() {
 		createDS();
 
-		this.getDiagram().addChild(createForm());
+		container.addChild(createForm());
 
-		this.getDiagram().addChild(createButtons());
+		container.addChild(createButtons());
 
-		getDiagram().addChild(createGrid());
+		container.addChild(createGrid());
 
 	}
 
@@ -42,6 +46,14 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 		fillForm(form);
 		return form;
 
+	}
+
+	public Container getContainer() {
+		return container;
+	}
+
+	public void setContainer(Container container) {
+		this.container = container;
 	}
 
 }
