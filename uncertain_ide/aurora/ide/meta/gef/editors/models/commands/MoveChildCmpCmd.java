@@ -7,6 +7,7 @@ import org.eclipse.gef.commands.Command;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.TabBody;
 
 public class MoveChildCmpCmd extends Command {
 	private Container container;
@@ -36,14 +37,21 @@ public class MoveChildCmpCmd extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return true;
+		return super.canExecute()
+				&& (!(acToMove.getClass().equals(TabBody.class)));
+	}
+
+	@Override
+	public boolean canUndo() {
+		return super.canUndo()
+				&& (!(acToMove.getClass().equals(TabBody.class)));
 	}
 
 	@Override
 	public void execute() {
 		List<AuroraComponent> children = container.getChildren();
 		oriIndex = children.indexOf(acToMove);
-		children.remove(oriIndex);
+		container.removeChild(acToMove);
 		if (acRel == null) {
 			container.addChild(acToMove);
 		} else {

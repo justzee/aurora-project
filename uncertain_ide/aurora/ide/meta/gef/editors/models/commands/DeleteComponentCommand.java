@@ -4,6 +4,7 @@ import org.eclipse.gef.commands.Command;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.TabBody;
 
 public class DeleteComponentCommand extends Command {
 	protected Container container;
@@ -16,6 +17,17 @@ public class DeleteComponentCommand extends Command {
 
 	public void setContainer(Container container) {
 		this.container = container;
+	}
+
+	@Override
+	public boolean canExecute() {
+		return super.canExecute()
+				&& (!(child.getClass().equals(TabBody.class)));
+	}
+
+	@Override
+	public boolean canUndo() {
+		return super.canUndo() && (!(child.getClass().equals(TabBody.class)));
 	}
 
 	public AuroraComponent getChild() {

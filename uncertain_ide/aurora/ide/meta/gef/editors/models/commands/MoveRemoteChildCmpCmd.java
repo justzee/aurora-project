@@ -7,6 +7,7 @@ import org.eclipse.gef.commands.Command;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.TabBody;
 
 public class MoveRemoteChildCmpCmd extends Command {
 	private Container srcContainer;
@@ -37,7 +38,14 @@ public class MoveRemoteChildCmpCmd extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return true;
+		return super.canExecute()
+				&& (!(acToMove.getClass().equals(TabBody.class)));
+	}
+
+	@Override
+	public boolean canUndo() {
+		return super.canUndo()
+				&& (!(acToMove.getClass().equals(TabBody.class)));
 	}
 
 	@Override

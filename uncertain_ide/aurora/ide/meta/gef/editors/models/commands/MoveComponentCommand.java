@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.TabBody;
 
 public class MoveComponentCommand extends Command {
 	private AuroraComponent node;
@@ -35,5 +36,15 @@ public class MoveComponentCommand extends Command {
 
 	public void undo() {
 		this.node.setLocation(oldPos);
+	}
+
+	@Override
+	public boolean canExecute() {
+		return super.canExecute() && (!(node.getClass().equals(TabBody.class)));
+	}
+
+	@Override
+	public boolean canUndo() {
+		return super.canUndo() && (!(node.getClass().equals(TabBody.class)));
 	}
 }
