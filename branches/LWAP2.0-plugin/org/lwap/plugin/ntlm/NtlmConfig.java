@@ -89,7 +89,7 @@ public class NtlmConfig {
 		DomainInstance intance = null;
 		for (int i = 0; i < l; i++) {
 			intance = domainInstance[i];
-			domainInstances.put(intance.getDomain(), intance);
+			domainInstances.put(intance.getDomain().toUpperCase(), intance);
 		}
 	}
 }
