@@ -51,18 +51,17 @@ public class InputField extends Figure {
 	 * @see org.eclipse.draw2d.Label#paintFigure(org.eclipse.draw2d.Graphics)
 	 */
 	protected void paintFigure(Graphics graphics) {
-
 		super.paintFigure(graphics);
-		String prompt = model.getPrompt();
+		String prompt = model.getPrompt() + " : ";
 		Dimension textExtents = FigureUtilities.getTextExtents(prompt,
 				getFont());
 		Rectangle textRectangle = new Rectangle();
 		int pWidth = this.getLabelWidth() - textExtents.width;
-		if (pWidth < 0) {
-			prompt = prompt.substring(0, 3) + "...";
-			textExtents = FigureUtilities.getTextExtents(prompt, getFont());
-			pWidth = this.getLabelWidth() - textExtents.width;
-		}
+		// if (pWidth < 0) {
+		// prompt = prompt.substring(0, 3) + "...";
+		// textExtents = FigureUtilities.getTextExtents(prompt, getFont());
+		// pWidth = this.getLabelWidth() - textExtents.width;
+		// }
 
 		textRectangle.x = pWidth + getBounds().x;
 		int i = getBounds().height - textExtents.height;

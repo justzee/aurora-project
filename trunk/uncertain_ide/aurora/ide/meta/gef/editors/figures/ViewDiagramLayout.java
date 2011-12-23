@@ -9,8 +9,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.layout.ScreenGraphLayout;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
+import aurora.ide.meta.gef.editors.parts.ContainerPart;
 import aurora.ide.meta.gef.editors.parts.GraphAnimation;
-import aurora.ide.meta.gef.editors.parts.ViewDiagramPart;
 
 public class ViewDiagramLayout extends AbstractLayout {
 
@@ -25,7 +25,7 @@ public class ViewDiagramLayout extends AbstractLayout {
 		GraphAnimation.recordInitialState(parent);
 		if (GraphAnimation.playbackState(parent))
 			return;
-		ScreenGraphLayout ly = new ScreenGraphLayout((ViewDiagramPart) diagram);
+		ScreenGraphLayout ly = new ScreenGraphLayout((ContainerPart) diagram);
 		ly.layout();
 		parent.repaint();
 	}
