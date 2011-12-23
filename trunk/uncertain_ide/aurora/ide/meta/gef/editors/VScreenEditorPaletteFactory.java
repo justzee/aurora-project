@@ -27,6 +27,8 @@ import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Navbar;
 import aurora.ide.meta.gef.editors.models.Radio;
+import aurora.ide.meta.gef.editors.models.TabFolder;
+import aurora.ide.meta.gef.editors.models.TabItem;
 import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.VBox;
 
@@ -185,6 +187,21 @@ public class VScreenEditorPaletteFactory {
 						Navbar.class),
 				ImagesUtils.getImageDescriptor("palette/navigation_04.png"),
 				ImagesUtils.getImageDescriptor("palette/navigation_04.png"));
+		entries.add(combined);
+
+		// tab folder
+		combined = new CombinedTemplateCreationEntry("Tab Folder",
+				"Create a  TabFolder", TabFolder.class, new SimpleFactory(
+						TabFolder.class),
+				ImagesUtils.getImageDescriptor("palette/xxx.png"),
+				ImagesUtils.getImageDescriptor("palette/xxx.png"));
+		entries.add(combined);
+		// tab item
+		combined = new CombinedTemplateCreationEntry("Tab Item",
+				"Create a  TabItem", TabItem.class, new SimpleFactory(
+						TabItem.class),
+				ImagesUtils.getImageDescriptor("palette/ccc.png"),
+				ImagesUtils.getImageDescriptor("palette/ccc.png"));
 		entries.add(combined);
 
 		drawer.addAll(entries);
