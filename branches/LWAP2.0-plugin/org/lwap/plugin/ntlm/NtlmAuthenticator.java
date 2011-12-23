@@ -49,7 +49,7 @@ public class NtlmAuthenticator {
 				domainInstance = (DomainInstance) this.ntlmConfig.getDomainInstance(defaultDomain);
 			}			
 			if (domainInstance == null)
-				throw new RuntimeException("DomainInstance is null;defaultDomain:"+defaultDomain+";Workstation:"+type1.getSuppliedWorkstation());
+				throw new RuntimeException("DomainInstance is null;defaultDomain:"+defaultDomain);
 		
 			domainController=domainInstance.getDomainController();
 			
