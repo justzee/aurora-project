@@ -1,4 +1,3 @@
-
 package aurora.ide.meta.gef.editors;
 
 import java.io.ByteArrayInputStream;
@@ -45,13 +44,14 @@ import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
 import aurora.ide.meta.gef.editors.dnd.BMTransferDropTargetListener;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.parts.AuroraPartFactory;
-//GraphicalEditorWithPalette
-//FlayoutBMGEFEditor
-public class VScreenEditor extends  FlayoutBMGEFEditor {
+import aurora.ide.meta.gef.editors.property.MetaPropertyViewer;
+
+public class VScreenEditor extends FlayoutBMGEFEditor {
 
 	ViewDiagram diagram;
 	private PaletteRoot root;
 	private KeyHandler sharedKeyHandler;
+	private MetaPropertyViewer propertyViewer;
 
 	public VScreenEditor() {
 		DefaultEditDomain defaultEditDomain = new DefaultEditDomain(this);
@@ -110,6 +110,7 @@ public class VScreenEditor extends  FlayoutBMGEFEditor {
 		getSite().registerContextMenu(
 				"org.eclipse.gef.examples.flow.editor.contextmenu", //$NON-NLS-1$
 				provider, getGraphicalViewer());
+		getGraphicalViewer().addSelectionChangedListener(propertyViewer);
 
 	}
 
@@ -118,21 +119,23 @@ public class VScreenEditor extends  FlayoutBMGEFEditor {
 	 */
 	protected void initializeGraphicalViewer() {
 		getGraphicalViewer().setContents(diagram);
-//		getGraphicalViewer().addDropTargetListener(
-//				new TemplateTransferDropTargetListener(getGraphicalViewer()));
-		
-		getGraphicalViewer().addDropTargetListener(new BMTransferDropTargetListener(getGraphicalViewer()));
-//		this.getGraphicalViewer()
+		// getGraphicalViewer().addDropTargetListener(
+		// new TemplateTransferDropTargetListener(getGraphicalViewer()));
+
+		getGraphicalViewer().addDropTargetListener(
+				new BMTransferDropTargetListener(getGraphicalViewer()));
+		// this.getGraphicalViewer()
 	}
 
-//	/**
-//	 * @see org.eclipse.gef.ui.parts.GraphicalEditorWithPalette#initializePaletteViewer()
-//	 */
-//	protected void initializePaletteViewer() {
-//		super.initializePaletteViewer();
-//		getPaletteViewer().addDragSourceListener(
-//				new TemplateTransferDragSourceListener(getPaletteViewer()));
-//	}
+	// /**
+	// * @see
+	// org.eclipse.gef.ui.parts.GraphicalEditorWithPalette#initializePaletteViewer()
+	// */
+	// protected void initializePaletteViewer() {
+	// super.initializePaletteViewer();
+	// getPaletteViewer().addDragSourceListener(
+	// new TemplateTransferDragSourceListener(getPaletteViewer()));
+	// }
 
 	@Override
 	public GraphicalViewer getGraphicalViewer() {
@@ -246,21 +249,18 @@ public class VScreenEditor extends  FlayoutBMGEFEditor {
 			ois.close();
 		} catch (Exception e) {
 			// This is just an example. All exceptions caught here.
-			e.printStackTrace();
+			// e.printStackTrace();
 			diagram = new ViewDiagram();
 		}
 	}
 
-	
 	protected void createPropertyViewer(Composite c) {
-		// TODO Auto-generated method stub
-		
+		propertyViewer = new MetaPropertyViewer(c, this);
 	}
 
-	
 	protected void createBMViewer(Composite c) {
-		BMViewer bmViewer = new BMViewer(c,this);
-		
+		BMViewer bmViewer = new BMViewer(c, this);
+
 	}
 
 }
