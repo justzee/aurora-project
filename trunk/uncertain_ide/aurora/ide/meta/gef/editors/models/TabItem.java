@@ -54,7 +54,6 @@ public class TabItem extends AuroraComponent {
 
 	@Override
 	public Object getEditableValue() {
-		// TODO Auto-generated method stub
 		return super.getEditableValue();
 	}
 
