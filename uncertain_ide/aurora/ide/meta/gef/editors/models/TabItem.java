@@ -3,8 +3,14 @@ package aurora.ide.meta.gef.editors.models;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
 public class TabItem extends AuroraComponent {
 	private static final long serialVersionUID = -6198220551287976461L;
+	private static IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
+			new StringPropertyDescriptor(PROMPT, "Prompt"),
+			new IntegerPropertyDescriptor("WIDTH", "Width") };
 	public static final String CURRENT = "current";
 	public static int HEIGHT = 25;
 	private TabBody body = new TabBody();
@@ -54,32 +60,34 @@ public class TabItem extends AuroraComponent {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		// TODO Auto-generated method stub
-		return super.getPropertyDescriptors();
+		return pds;
 	}
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		// TODO Auto-generated method stub
+		if (PROMPT.equals(propName))
+			return getPrompt();
+		else if ("WIDTH".equals(propName))
+			return Integer.toString(getWidth());
 		return super.getPropertyValue(propName);
 	}
 
 	@Override
 	public boolean isPropertySet(Object propName) {
-		// TODO Auto-generated method stub
-		return super.isPropertySet(propName);
+		return true;
 	}
 
 	@Override
 	public void resetPropertyValue(Object propName) {
-		// TODO Auto-generated method stub
 		super.resetPropertyValue(propName);
 	}
 
 	@Override
 	public void setPropertyValue(Object propName, Object val) {
-		// TODO Auto-generated method stub
+		if (PROMPT.equals(propName))
+			setPrompt((String) val);
+		else if ("WIDTH".equals(propName))
+			setWidth(Integer.parseInt((String) val));
 		super.setPropertyValue(propName, val);
 	}
-
 }

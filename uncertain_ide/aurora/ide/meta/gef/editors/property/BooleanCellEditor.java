@@ -50,6 +50,7 @@ public class BooleanCellEditor extends CellEditor implements SelectionListener {
 	protected void doSetValue(Object value) {
 		Assert.isTrue(value instanceof Boolean);
 		checkButton.setSelection(((Boolean) value).booleanValue());
+		checkButton.setText(checkButton.getSelection() ? "true" : "false");
 	}
 
 	public void activate(ColumnViewerEditorActivationEvent activationEvent) {
@@ -60,6 +61,7 @@ public class BooleanCellEditor extends CellEditor implements SelectionListener {
 
 	public void widgetSelected(SelectionEvent e) {
 		fireApplyEditorValue();
+		checkButton.setText(checkButton.getSelection() ? "true" : "false");
 	}
 
 	public void widgetDefaultSelected(SelectionEvent e) {
