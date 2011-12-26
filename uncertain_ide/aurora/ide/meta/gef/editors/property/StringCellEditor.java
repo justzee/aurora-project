@@ -9,6 +9,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 public class StringCellEditor extends CellEditor implements FocusListener,
@@ -37,6 +38,7 @@ public class StringCellEditor extends CellEditor implements FocusListener,
 		text = new Text(parent, SWT.SINGLE);
 		text.addFocusListener(this);
 		text.addKeyListener(this);
+		text.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_IBEAM));
 		return text;
 	}
 
