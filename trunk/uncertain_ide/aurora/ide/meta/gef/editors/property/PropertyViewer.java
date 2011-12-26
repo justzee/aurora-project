@@ -26,7 +26,7 @@ public class PropertyViewer extends Canvas implements PaintListener,
 
 	static final int LABELSTART = 5;//
 	static final int EDITORSATRT = 3;// relative to ditorStart
-	static final int ROWHEIGHT = 22;
+	static final int ROWHEIGHT = 20;
 	static final int MINWIDTHLEFT = 30;// 属性名列的最小宽度
 	static final int MINWIDTHRIGHT = 40;// 属性值列的最小宽度
 	static final String EMPTYTEXT = "<No Properties>";
@@ -94,11 +94,10 @@ public class PropertyViewer extends Canvas implements PaintListener,
 				ctrl.setVisible(true);
 		}
 		e.gc.setForeground(ColorConstants.FIELDSET_BORDER);
-		for (int i = 0; i < als.size() + 1; i++)
+		e.gc.drawRectangle(0, 0, size.x - 1, size.y - 1);
+		for (int i = 1; i < als.size() + 1; i++)
 			e.gc.drawLine(0, i * ROWHEIGHT, size.x, i * ROWHEIGHT);
-		e.gc.drawLine(0, 0, 0, size.y);
 		e.gc.drawLine(splitLineX, 0, splitLineX, size.y);
-		e.gc.drawLine(size.x - 1, 0, size.x - 1, size.y);
 	}
 
 	private void drawEmpty(GC gc) {
@@ -107,6 +106,8 @@ public class PropertyViewer extends Canvas implements PaintListener,
 		Point size = getSize();
 		gc.drawString(EMPTYTEXT, (size.x - dim.width) / 2,
 				(size.y - dim.height) / 2);
+		gc.setForeground(ColorConstants.FIELDSET_BORDER);
+		gc.drawRectangle(0, 0, size.x - 1, size.y - 1);
 	}
 
 	private void drawString(GC gc, String text, int x, int y, int height,
