@@ -16,6 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
@@ -44,6 +45,7 @@ import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
 import aurora.ide.meta.gef.editors.dnd.BMTransferDropTargetListener;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.parts.AuroraPartFactory;
+import aurora.ide.meta.gef.editors.parts.DatasetPartFactory;
 import aurora.ide.meta.gef.editors.property.MetaPropertyViewer;
 
 public class VScreenEditor extends FlayoutBMGEFEditor {
@@ -125,6 +127,17 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 		getGraphicalViewer().addDropTargetListener(
 				new BMTransferDropTargetListener(getGraphicalViewer()));
 		// this.getGraphicalViewer()
+	}
+
+	protected void initDatasetView() {
+		DatasetView datasetView = getDatasetView();
+//		datasetView.getControl().setBackground(ColorConstants.white);
+		getEditDomain().addViewer(datasetView);
+		getSelectionSynchronizer().addViewer(datasetView);
+		datasetView.setRootEditPart(new ScalableRootEditPart());
+		datasetView.setEditPartFactory(new DatasetPartFactory());
+		this.getDatasetView().setContents(diagram);
+
 	}
 
 	// /**
