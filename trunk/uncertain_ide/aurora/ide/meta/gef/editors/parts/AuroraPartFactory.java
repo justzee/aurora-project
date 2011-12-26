@@ -96,6 +96,8 @@ public class AuroraPartFactory implements EditPartFactory {
 		} else {
 			System.out.println(model.getClass());
 		}
+		if(part == null)
+			return part;
 		part.setParent(context);
 		part.setModel(model);
 		return part;

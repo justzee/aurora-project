@@ -59,6 +59,8 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	protected void addChild(EditPart child, int index) {
+		if(child == null)
+			return ;
 		super.addChild(child, index);
 	}
 
@@ -72,7 +74,7 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	public EditPart getTargetEditPart(Request request) {
-		// TODO Auto-generated method stub
+	
 		return super.getTargetEditPart(request);
 	}
 

@@ -38,9 +38,11 @@ public class ViewDiagram extends Container {
 
 	public void addDataset(Dataset ds) {
 		datasets.add(ds);
+		this.addChild(ds);
 	}
 	public void removeDataset(Dataset ds) {
 		datasets.remove(ds);
+		this.removeChild(ds);
 	}
 
 }
