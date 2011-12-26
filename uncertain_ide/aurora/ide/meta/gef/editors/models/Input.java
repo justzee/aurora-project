@@ -2,9 +2,9 @@ package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class Input extends AuroraComponent {
 
@@ -50,7 +50,7 @@ public class Input extends AuroraComponent {
 	}
 
 	private static final IPropertyDescriptor[] pds = {
-			new TextPropertyDescriptor(PROMPT, "Prompt"),
+			new StringPropertyDescriptor(PROMPT, "Prompt"),
 			new BooleanPropertyDescriptor(REQUIRED, "Required"),
 			new BooleanPropertyDescriptor(READONLY, "Readonly") };
 
