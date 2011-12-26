@@ -10,12 +10,12 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
 
+import aurora.ide.meta.gef.editors.property.IPropertySource2;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class AuroraComponent implements Cloneable, Serializable, IProperties,
-		IPropertySource {
+		IPropertySource2 {
 
 	transient protected PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);

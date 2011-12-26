@@ -1,12 +1,12 @@
 package aurora.ide.meta.gef.editors.models;
 
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
 public class TabBody extends Container {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9196440587781890208L;
 	public static final String VISIBLE = "visible";
+	private static IPropertyDescriptor[] NONEPROP = new IPropertyDescriptor[0];
 	@SuppressWarnings("rawtypes")
 	private static Class[] unsupported = { Toolbar.class, Navbar.class,
 			GridColumn.class, TabItem.class, TabBody.class };
@@ -33,6 +33,11 @@ public class TabBody extends Container {
 
 	public boolean getVisible() {
 		return visible;
+	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return NONEPROP;
 	}
 
 }
