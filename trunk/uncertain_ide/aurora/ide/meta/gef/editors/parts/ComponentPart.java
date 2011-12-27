@@ -7,7 +7,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.ui.views.properties.IPropertySource;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.IProperties;
@@ -61,10 +60,6 @@ public abstract class ComponentPart extends AbstractGraphicalEditPart implements
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new NodeDirectEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
-	}
-
-	public IPropertySource getPropertySource(Object object) {
-		return (IPropertySource) getModel();
 	}
 
 	@Override
