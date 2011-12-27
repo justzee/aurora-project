@@ -6,15 +6,15 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.LayoutEditPolicy;
-import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
+import aurora.ide.meta.gef.editors.parts.ComponentPart;
 
-public class FormLayoutEditPolicy extends LayoutEditPolicy  {
+public class FormLayoutEditPolicy extends LayoutEditPolicy {
 
 	protected Command createAddCommand(EditPart child, Object constraint) {
 		return null;
@@ -22,7 +22,7 @@ public class FormLayoutEditPolicy extends LayoutEditPolicy  {
 
 	protected Command createChangeConstraintCommand(EditPart child,
 			Object constraint) {
-	
+
 		if (!(constraint instanceof Rectangle))
 			return null;
 
@@ -40,9 +40,9 @@ public class FormLayoutEditPolicy extends LayoutEditPolicy  {
 			CreateComponentCommand cmd = new CreateComponentCommand();
 			cmd.setDiagram((Container) getHost().getModel());
 			cmd.setChild((AuroraComponent) request.getNewObject());
-		
-//			Rectangle constraint = (Rectangle) getConstraintFor(request);
-//			cmd.setLocation(	request.getLocation());
+
+			// Rectangle constraint = (Rectangle) getConstraintFor(request);
+			// cmd.setLocation( request.getLocation());
 			return cmd;
 		}
 		return null;
@@ -52,11 +52,11 @@ public class FormLayoutEditPolicy extends LayoutEditPolicy  {
 		return null;
 	}
 
-
 	@Override
 	protected EditPolicy createChildEditPolicy(EditPart child) {
-		
-		return new NonResizableEditPolicy();
+		ResizeComponentEditPolicy rep = new ResizeComponentEditPolicy();
+		rep.setResizeDirections(((ComponentPart) child).getResizeDirection());
+		return rep;
 	}
 
 	@Override

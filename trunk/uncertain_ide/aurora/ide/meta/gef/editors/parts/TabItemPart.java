@@ -38,4 +38,9 @@ public class TabItemPart extends ComponentPart {
 			getModel().setCurrent(true);
 		}
 	}
+
+	@Override
+	public int getResizeDirection() {
+		return EAST_WEST;
+	}
 }

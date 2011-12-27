@@ -54,7 +54,7 @@ public class TabFolderPart extends ContainerPart {
 				return;
 			TabItem ti = (TabItem) obj;
 			TabBody body = (TabBody) ti.getBody();
-			List<?> list = getModelChildren();
+			List<?> list = getModel().getChildren();
 			int idx = list.indexOf(ti);
 			getModel().disSelectAll();
 			if (idx == -1) {
@@ -93,5 +93,10 @@ public class TabFolderPart extends ContainerPart {
 			// .hashCode(), t.isCurrent() ? "*" : "");
 			// }
 		}
+	}
+
+	@Override
+	public int getResizeDirection() {
+		return NSEW;
 	}
 }

@@ -13,7 +13,7 @@ public class GridPart extends ContainerPart {
 	@Override
 	protected IFigure createFigure() {
 		GridFigure figure = new GridFigure();
-		figure.setModel((Container)this.getComponent());
+		figure.setModel((Container) this.getComponent());
 		return figure;
 	}
 
@@ -22,10 +22,18 @@ public class GridPart extends ContainerPart {
 		super.createEditPolicies();
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new FormLayoutEditPolicy());
 		installEditPolicy("bm_drop", new BindGridPartEditPolicy());
+		// ResizableEditPolicy rep = new ResizableEditPolicy();
+		// rep.setResizeDirections(getResizeDirection());
+		// installEditPolicy("RESIZE", rep);
 
 	}
 
 	protected void refreshVisuals() {
 		super.refreshVisuals();
+	}
+
+	@Override
+	public int getResizeDirection() {
+		return NSEW;
 	}
 }

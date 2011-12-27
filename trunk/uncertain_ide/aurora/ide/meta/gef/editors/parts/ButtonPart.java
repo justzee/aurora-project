@@ -26,7 +26,7 @@ public class ButtonPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
 	 */
 	protected void refreshVisuals() {
-		
+
 		super.refreshVisuals();
 	}
 
@@ -51,6 +51,11 @@ public class ButtonPart extends ComponentPart {
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new NodeDirectEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
+	}
+
+	@Override
+	public int getResizeDirection() {
+		return NSEW;
 	}
 
 }
