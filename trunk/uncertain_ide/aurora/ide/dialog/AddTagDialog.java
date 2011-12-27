@@ -3,35 +3,38 @@ package aurora.ide.dialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.DialogUtil;
 
-public class AddSxsdDialog extends Dialog {
-	private Text txtNamespace;
+public class AddTagDialog extends Dialog {
+	private Combo cboNamespace;
 	private Text txtTag;
 	private String namespace;
-	private String[] tags;
-	private Map<String, List<String>> map;
+	private Set<String> tags = new TreeSet<String>();
+	private String[] namespaces;
 	private Map<String, List<String>> customMap;
-	private IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
+	private Map<String, List<String>> baseMap;
+	private StringBuffer sb = new StringBuffer();
 
-	public AddSxsdDialog(Shell parentShell, Map<String, List<String>> map) {
+	public AddTagDialog(Shell parentShell, String[] namespaces, Map<String, List<String>> baseMap) {
 		super(parentShell);
-		this.map = map;
+		this.namespaces = namespaces;
+		this.baseMap = baseMap;
 	}
 
 	@Override
@@ -55,8 +58,11 @@ public class AddSxsdDialog extends Dialog {
 		lblNamespace.setText("Namespace:");
 
 		GridData gdNamespace = new GridData(GridData.FILL_HORIZONTAL);
-		txtNamespace = new Text(container, SWT.BORDER);
-		txtNamespace.setLayoutData(gdNamespace);
+		cboNamespace = new Combo(container, SWT.DROP_DOWN);
+		cboNamespace.setLayoutData(gdNamespace);
+		for (String s : namespaces) {
+			cboNamespace.add(s);
+		}
 
 		GridData gdlblTag = new GridData();
 		gdlblTag.verticalAlignment = SWT.TOP;
@@ -89,55 +95,41 @@ public class AddSxsdDialog extends Dialog {
 
 	@Override
 	protected void okPressed() {
-		namespace = txtNamespace.getText().trim();
-		tags = txtTag.getText().trim().split("\r\n");
+		namespace = cboNamespace.getText().trim();
+		for (String s : txtTag.getText().trim().split("\r\n")) {
+			tags.add(s);
+		}
 		if ("".equals(namespace.trim())) {
 			DialogUtil.showWarningMessageBox("请输入命名空间。");
 			return;
 		} else if ("".equals(txtTag.getText().trim())) {
 			DialogUtil.showWarningMessageBox("请输入标签，以换行符分割。");
 			return;
-		} else {
-			String pix = "";
-			for (String s : tags) {
-				if (s.indexOf(":") == -1) {
-					DialogUtil.showWarningMessageBox("存在没有前缀的标签，请检查输入或者添加到\"No namespace\"。");
-					return;
-				} else {
-					if (pix.equals("")) {
-						pix = s.substring(0, s.indexOf(":"));
-					} else if (!pix.equals(s.substring(0, s.indexOf(":")))) {
-						DialogUtil.showWarningMessageBox("前缀不一致，请检查输入。");
-						return;
-					}
-				}
-			}
 		}
-		if (map.containsKey(namespace)) {
-			if (DialogUtil.showConfirmDialogBox("命名空间已存在，是否在现有的命名空间里添加新标签？") == SWT.OK) {
-				fillMap();
-				super.okPressed();
-			}
-		} else {
-			fillMap();
-			super.okPressed();
-		}
+		fillMap();
+		super.okPressed();
 	}
 
 	private void fillMap() {
-		StringBuffer sb = new StringBuffer();
 		customMap = new TreeMap<String, List<String>>();
 		customMap.put(namespace, new ArrayList<String>());
 		sb.append("*" + namespace);
 		for (String s : tags) {
 			if (!"".equals(s)) {
+				if (baseMap.containsKey(namespace)) {
+					if (baseMap.get(namespace).contains(s)) {
+						continue;
+					}
+				}
 				customMap.get(namespace).add(s);
 				sb.append("!" + s);
 			}
 		}
 		sb.append("!");
-		sb.append(store.getString("statistician.custom"));
-		store.setValue("statistician.custom", sb.toString());
+	}
+
+	public String getStoreValue() {
+		return sb.toString();
 	}
 
 	public Map<String, List<String>> getCustomMap() {
