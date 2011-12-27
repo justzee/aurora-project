@@ -39,4 +39,9 @@ public class InputPart extends ComponentPart {
 		super.createEditPolicies();
 	}
 
+	@Override
+	public int getResizeDirection() {
+		return EAST_WEST;
+	}
+
 }

@@ -35,4 +35,9 @@ public class BoxPart extends ContainerPart {
 
 	}
 
+	@Override
+	public int getResizeDirection() {
+		return NSEW;
+	}
+
 }

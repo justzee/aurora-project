@@ -3,6 +3,7 @@ package aurora.ide.meta.gef.editors.policies;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
@@ -84,7 +85,7 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 						Polyline linefb = getLineFeedback();
 						linefb.setStart(rect.getTopRight());
 						linefb.setEnd(rect.getBottomRight());
-						getFeedbackLayer().add(linefb);
+						// getFeedbackLayer().add(linefb);
 						return;
 					}
 				}
@@ -152,4 +153,15 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 		}
 		return false;
 	}
+
+	@Override
+	protected EditPolicy createChildEditPolicy(EditPart child) {
+		ResizeComponentEditPolicy rep = new ResizeComponentEditPolicy();
+		rep.setResizeDirections(((ComponentPart) child).getResizeDirection());
+		if (child instanceof TabBodyPart) {
+			rep.setDragAllowed(false);
+		}
+		return rep;
+	}
+
 }
