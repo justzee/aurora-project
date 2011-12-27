@@ -52,27 +52,6 @@ public class PropertySheetViewer extends Viewer {
 	}
 
 	/**
-	 * Add columns to the tree and set up the layout manager accordingly.
-	 */
-	// private void addColumns() {
-	//
-	// // create the columns
-	// TreeColumn[] columns = tree.getColumns();
-	// for (int i = 0; i < columnLabels.length; i++) {
-	// String string = columnLabels[i];
-	// if (string != null) {
-	// TreeColumn column;
-	// if (i < columns.length) {
-	// column = columns[i];
-	// } else {
-	// column = new TreeColumn(tree, 0);
-	// }
-	// column.setText(string);
-	// }
-	// }
-	// }
-
-	/**
 	 * Creates a new property sheet entry listener.
 	 */
 	private void createEntryListener() {
@@ -394,28 +373,6 @@ public class PropertySheetViewer extends Viewer {
 			// ensure first level children are visible
 			updateChildrenOf(rootEntry, pv2);
 		}
-
-		// Clear any previous StatusLine messages
-		// updateStatusLine(null);
-		// for (TreeItem ti : tree.getItems()) {
-		// Object data = ti.getData();
-		// if (data instanceof PropertySheetEntry) {
-		// Control ctrl = ((PropertySheetEntry) data).getEditor(tree)
-		// .getControl();
-		// ctrl.addDisposeListener(new DisposeListener() {
-		//
-		// public void widgetDisposed(DisposeEvent e) {
-		// System.out.println();
-		// }
-		//
-		// });
-		// TreeEditor te = new TreeEditor(tree);
-		// te.minimumHeight = 20;
-		// te.minimumWidth = 1000;
-		// te.setEditor(ctrl, ti, columnToEdit);
-		// }
-		//
-		// }
 	}
 
 	/**
@@ -432,9 +389,6 @@ public class PropertySheetViewer extends Viewer {
 		}
 
 		rootEntry = root;
-
-		// Set the root as user data on the tree
-		// tree.setData(rootEntry);
 
 		// Add an IPropertySheetEntryListener to listen for entry change
 		// notifications
@@ -513,9 +467,6 @@ public class PropertySheetViewer extends Viewer {
 			}
 		}
 
-		// WORKAROUND
-		int oldCnt = pv2.getItemCount();
-
 		// add new items
 		int newSize = children.size();
 		for (int i = 0; i < newSize; i++) {
@@ -525,37 +476,12 @@ public class PropertySheetViewer extends Viewer {
 			}
 		}
 
-		// // WORKAROUND
-		// if (oldCnt == 0 && pv2.getItemCount() == 1) {
-		//
-		// }
 		pv2.setRedraw(false);
 		pv2.setRedraw(true);
 
 		// get the child tree items after our changes
 		childItems = pv2.getItems();
 
-		// update the child items
-		// This ensures that the children are in the correct order
-		// are showing the correct values.
-		// for (Control ctrl : pv2.getChildren())
-		// ctrl.dispose();
-		// for (int i = 0; i < newSize; i++) {
-		// Object el = children.get(i);
-		// if (el instanceof IPropertySheetEntry) {
-		// IPropertySheetEntry pse = (IPropertySheetEntry) el;
-		// updateEntry(pse, childItems[i]);
-		// try {
-		// Control ce = pse.getEditor(pv2).getControl();
-		// ce.setSize(60, 20);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		//
-		// }
-		// }
-		// The tree's original selection may no longer apply after the update,
-		// so fire the selection changed event.
 		entrySelectionChanged();
 	}
 
@@ -573,16 +499,5 @@ public class PropertySheetViewer extends Viewer {
 
 		// update the map accordingly
 		entryToItemMap.put(entry, item);
-
-		// update the name and value columns
-		// item.setText(0, entry.getDisplayName());
-		// // item.setText(1, entry.getValueAsString());
-		// Image image = entry.getImage();
-		// if (item.getImage(1) != image) {
-		// item.setImage(1, image);
-		// }
-
-		// update the "+" icon
-		// updatePlus(entry, item);
 	}
 }

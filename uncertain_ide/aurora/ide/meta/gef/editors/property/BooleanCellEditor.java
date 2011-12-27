@@ -49,6 +49,9 @@ public class BooleanCellEditor extends CellEditor implements SelectionListener {
 
 	protected void doSetValue(Object value) {
 		Assert.isTrue(value instanceof Boolean);
+		if (checkButton.getSelection() == (Boolean) value) {
+			return;
+		}
 		checkButton.setSelection(((Boolean) value).booleanValue());
 		checkButton.setText(checkButton.getSelection() ? "true" : "false");
 	}

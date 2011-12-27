@@ -27,7 +27,6 @@ import org.eclipse.ui.views.properties.IPropertySheetEntry;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
-import org.eclipse.ui.views.properties.PropertySheetEntry;
 
 /**
  * The standard implementation of property sheet page which presents a table of
@@ -59,11 +58,6 @@ import org.eclipse.ui.views.properties.PropertySheetEntry;
  */
 public class PropertySheetPage extends Page implements IPropertySheetPage,
 		IAdaptable {
-	/**
-	 * Help context id (value
-	 * <code>"org.eclipse.ui.property_sheet_page_help_context"</code>).
-	 */
-	public static final String HELP_CONTEXT_PROPERTY_SHEET_PAGE = "org.eclipse.ui.property_sheet_page_help_context"; //$NON-NLS-1$
 
 	private PropertySheetViewer viewer;
 
