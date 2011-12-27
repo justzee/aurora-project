@@ -1,11 +1,14 @@
 package aurora.ide.meta.gef.editors.property;
 
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertySheetEntry;
 
 public class PropertyItem {
 	private IPropertySheetEntry data;
+	private CellEditor editor = null;
+	private Control ctrl = null;
 
 	public PropertyItem(IPropertySheetEntry pse) {
 		data = pse;
@@ -28,6 +31,12 @@ public class PropertyItem {
 	}
 
 	public Control getControl(Composite par) {
+		// if (editor == null)
+		// editor = data.getEditor(par);
+		// Control control = editor.getControl();
+		// if (control == null) {
+		// return data.getEditor(par).getControl();
+		// }
 		return data.getEditor(par).getControl();
 	}
 }

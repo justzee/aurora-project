@@ -25,7 +25,7 @@ public class PropertyViewer extends Canvas implements PaintListener,
 		MouseListener, MouseMoveListener, MouseTrackListener {
 
 	static final int LABELSTART = 5;//
-	static final int EDITORSATRT = 3;// relative to ditorStart
+	static final int EDITORSTART = 3;// relative to ditorStart
 	static final int ROWHEIGHT = 20;
 	static final int MINWIDTHLEFT = 30;// 属性名列的最小宽度
 	static final int MINWIDTHRIGHT = 40;// 属性值列的最小宽度
@@ -56,7 +56,7 @@ public class PropertyViewer extends Canvas implements PaintListener,
 	}
 
 	public void removeItem(PropertyItem pi) {
-		pi.getControl(this).dispose();
+		// pi.getControl(this).dispose();
 		als.remove(pi);
 		redraw();
 	}
@@ -69,8 +69,8 @@ public class PropertyViewer extends Canvas implements PaintListener,
 	}
 
 	public void removeAll() {
-		for (PropertyItem pi : als)
-			pi.getControl(this).dispose();
+		// for (PropertyItem pi : als)
+		// pi.getControl(this).dispose();
 		als.clear();
 		redraw();
 	}
@@ -88,8 +88,8 @@ public class PropertyViewer extends Canvas implements PaintListener,
 			drawString(e.gc, pi.getLabel(), LABELSTART, y, ROWHEIGHT,
 					splitLineX - LABELSTART);
 			Control ctrl = pi.getControl(this);
-			ctrl.setBounds(splitLineX + EDITORSATRT, y + 2, size.x - splitLineX
-					- EDITORSATRT - 1, ROWHEIGHT - 3);
+			ctrl.setBounds(splitLineX + EDITORSTART, y + 2, size.x - splitLineX
+					- EDITORSTART - 1, ROWHEIGHT - 3);
 			if (!ctrl.isVisible())
 				ctrl.setVisible(true);
 		}
