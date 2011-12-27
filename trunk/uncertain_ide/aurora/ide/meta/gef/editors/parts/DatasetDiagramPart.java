@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
@@ -14,6 +13,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 
+import aurora.ide.meta.gef.editors.layout.DatasetLayout;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.Dataset;
@@ -56,7 +56,7 @@ public class DatasetDiagramPart extends ContainerPart {
 //			}
 //		};
 		Figure f = new FreeformLayer();
-		f.setLayoutManager(new FlowLayout());
+		f.setLayoutManager(new DatasetLayout(this));
 //		f.setSize(600, 80);
 		return f;
 	}
@@ -79,20 +79,17 @@ public class DatasetDiagramPart extends ContainerPart {
 
 			@Override
 			protected Command createAddCommand(EditPart child, EditPart after) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
 			protected Command createMoveChildCommand(EditPart child,
 					EditPart after) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
 			protected Command getCreateCommand(CreateRequest request) {
-
 				return null;
 			}
 

@@ -10,9 +10,9 @@ public class DatasetView extends ScrollingGraphicalViewer {
 	      FigureCanvas canvas = getFigureCanvas();
 	      Rectangle bounds = canvas.getBounds();
 	      System.out.println(bounds);
-	      canvas.getViewport().setContentsTracksWidth(true);
-	      canvas.getViewport().setContentsTracksHeight(false);
-	      canvas.setHorizontalScrollBarVisibility(FigureCanvas.AUTOMATIC);
+//	      canvas.getViewport().setContentsTracksWidth(true);
+//	      canvas.getViewport().setContentsTracksHeight(false);
+	      canvas.setHorizontalScrollBarVisibility(FigureCanvas.NEVER);
 	      canvas.setVerticalScrollBarVisibility(FigureCanvas.NEVER);
 	   }
 	
