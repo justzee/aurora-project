@@ -2,20 +2,26 @@ package aurora.ide.preferencepages;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
@@ -24,6 +30,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
@@ -34,97 +42,80 @@ import uncertain.schema.AbstractQualifiedNamed;
 import uncertain.schema.Extension;
 import uncertain.schema.ISchemaManager;
 import aurora.ide.AuroraPlugin;
-import aurora.ide.dialog.AddSxsdDialog;
-import aurora.ide.dialog.ModifySxsdDialog;
-import aurora.ide.helpers.DialogUtil;
+import aurora.ide.dialog.AddTagDialog;
 import aurora.ide.helpers.LoadSchemaManager;
 
 public class StatisticianPropertyPage extends PreferencePage implements IWorkbenchPreferencePage {
-	// private List<TagTree> baselist = new ArrayList<TagTree>();
-	// private List<TagTree> advancedlist = new ArrayList<TagTree>();
-
-	private Map<String, List<String>> baseMap = new TreeMap<String, List<String>>();
-	private Map<String, List<String>> advancedMap = new TreeMap<String, List<String>>();
+	private Map<String, List<String>> baseMap = new HashMap<String, List<String>>();
+	private TagTree baseMapTree = new TagTree(null, "root", "root");
 
 	private ContainerCheckedTreeViewer treeViewer = null;
 	private IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
 	private String[] noNamespace = { "query-fields", "columns", "center", "event", "features", "data-filter", "form", "table", "UL", "view", "IMG", "model-delete", "service-output", "model-update", "param", "A", "events", "mapping", "map", "model-load", "model-query", "a", "field", "H2", "tr", "img", "ref-field", "td", "br", "TABLE", "model-insert", "parameters", "font", "label", "script", "input", "iframe", "column", "query-field", "span", "model-execute", "model", "TD", "batch-apply", "div", "TR", "datas", "pk-field", "parameter", "style", "tbody", "DIV", "service", "LI" };
-	private String selectNamespace;
+	private String selectNamespace = "";
+	private String selectTag = "";
+	private boolean modify = false;
+	private boolean defaul = false;
+	private String custom = "";
+	private String checked = "";
 
 	public StatisticianPropertyPage() {
-		// initBaseList();
-		// advancedlist.addAll(baselist);
-		initBaseMap();
-		advancedMap.putAll(baseMap);
+		initBaseTree();
+		baseMap = baseMapTree.getMap();
 		String[] ss = store.getString("statistician.custom").split("!");
-		String key = "";
+		String namespace = "";
 		for (String s : ss) {
 			if ("".equals(s.trim())) {
 				continue;
 			} else if (s.indexOf("*") == 0) {
 				s = s.substring(1);
-				key = s;
-				advancedMap.put(s, new ArrayList<String>());
+				namespace = s;
 			} else {
-				advancedMap.get(key).add(s);
+				baseMapTree.Add(namespace, s);
 			}
 		}
-		for (String s : advancedMap.keySet()) {
-			sort(advancedMap.get(s));
-		}
+		baseMapTree.sort(false);
 	}
 
-	private void initBaseMap() {
+	private void initBaseTree() {
 		ISchemaManager schemaManager = LoadSchemaManager.getSchemaManager();
 		for (Object object : schemaManager.getAllTypes()) {
 			String nameSpace = "";
-			String name = "";
+			String tag = "";
 			AbstractQualifiedNamed absQualifiedNamed = (AbstractQualifiedNamed) object;
 			nameSpace = absQualifiedNamed.getQName().getNameSpace();
-			name = absQualifiedNamed.getQName().getFullName();
-			if (!baseMap.containsKey(nameSpace)) {
-				baseMap.put(nameSpace, new ArrayList<String>());
+			tag = absQualifiedNamed.getQName().getLocalName();
+			if (nameSpace.equals("http://www.uncertain-framework.org/schema/simple-schema")) {
+				continue;
 			}
-			if (!baseMap.get(nameSpace).contains(name)) {
-				baseMap.get(nameSpace).add(name);
+			baseMapTree.Add(nameSpace, tag);
+			if (absQualifiedNamed.getChilds() == null) {
+				continue;
 			}
-			if (absQualifiedNamed.getChilds() != null) {
-				for (Object ele : absQualifiedNamed.getChilds()) {
-					if (ele instanceof uncertain.schema.Extension) {
-						QualifiedName qn = ((Extension) ele).getBaseType();
+			for (Object ele : absQualifiedNamed.getChilds()) {
+				if (ele instanceof uncertain.schema.Extension) {
+					QualifiedName qn = ((Extension) ele).getBaseType();
+					nameSpace = qn.getNameSpace();
+					tag = qn.getLocalName();
+				} else if (!(ele instanceof uncertain.schema.Attribute)) {
+					AbstractQualifiedNamed aqn = (AbstractQualifiedNamed) ele;
+					if (null != aqn.getQName()) {
+						QualifiedName qn = aqn.getQName();
 						nameSpace = qn.getNameSpace();
-						name = qn.getFullName();
-						if (!baseMap.containsKey(nameSpace)) {
-							baseMap.put(nameSpace, new ArrayList<String>());
-						}
-						if (!baseMap.get(nameSpace).contains(name)) {
-							baseMap.get(nameSpace).add(name);
-						}
-					} else if (!(ele instanceof uncertain.schema.Attribute)) {
-						AbstractQualifiedNamed aqn = (AbstractQualifiedNamed) ele;
-						if (null != aqn.getQName()) {
-							QualifiedName qn = aqn.getQName();
-							nameSpace = qn.getNameSpace();
-							name = qn.getFullName();
-							if (nameSpace == null) {
-								nameSpace = "No namespace";
-							}
-							if (!baseMap.containsKey(nameSpace)) {
-								baseMap.put(nameSpace, new ArrayList<String>());
-							}
-							if (!baseMap.get(nameSpace).contains(name)) {
-								baseMap.get(nameSpace).add(name);
-							}
+						tag = qn.getLocalName();
+						if (nameSpace == null) {
+							nameSpace = "No namespace";
 						}
 					}
 				}
+				if (nameSpace.equals("http://www.uncertain-framework.org/schema/simple-schema")) {
+					continue;
+				}
+				baseMapTree.Add(nameSpace, tag);
 			}
 		}
-		if (!baseMap.containsKey("No namespace")) {
-			baseMap.put("No namespace", new ArrayList<String>());
-		}
-		for (String s : noNamespace) {
-			baseMap.get("No namespace").add(s);
+		for (String tag : noNamespace) {
+			baseMapTree.Add("No namespace", tag);
 		}
 	}
 
@@ -137,8 +128,12 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		container.setLayout(layout);
 
 		GridData gdTreeViewer = new GridData(GridData.FILL_BOTH);
-		gdTreeViewer.verticalSpan = 5;
+		gdTreeViewer.verticalSpan = 4;
 		treeViewer = new ContainerCheckedTreeViewer(container);
+		TextCellEditor cellEditor = new TextCellEditor(treeViewer.getTree());
+		treeViewer.setCellEditors(new CellEditor[] { cellEditor });
+		treeViewer.setCellModifier(new CellModifier(treeViewer));
+		treeViewer.setColumnProperties(new String[] { "item" });
 
 		GridData gdBtnAdd = new GridData();
 		gdBtnAdd.verticalAlignment = SWT.TOP;
@@ -148,48 +143,42 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		btnAdd.setLayoutData(gdBtnAdd);
 		btnAdd.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				AddSxsdDialog dialog = new AddSxsdDialog(getShell(), advancedMap);
-				if (Dialog.OK == dialog.open()) {
-					Map<String, List<String>> m = dialog.getCustomMap();
-					for (String s : m.keySet()) {
-						if (advancedMap.containsKey(s)) {
-							for (String t : m.get(s)) {
-								if (!advancedMap.get(s).contains(t)) {
-									advancedMap.get(s).add(t);
-								}
-							}
-						} else {
-							advancedMap.put(s, m.get(s));
-						}
-						sort(advancedMap.get(s));
-					}
-					save();
-					treeViewer.setInput(advancedMap);
-					load();
+				String[] namespaces = new String[baseMapTree.getChildren().size()];
+				for (int i = 0; i < baseMapTree.getChildren().size(); i++) {
+					namespaces[i] = baseMapTree.getChildren().get(i).getNamespace();
 				}
+				AddTagDialog dialog = new AddTagDialog(getShell(), namespaces, baseMapTree.getMap());
+				if (dialog.open() == Dialog.OK) {
+					StringBuffer sb = null;
+					Map<String, List<String>> customMap = dialog.getCustomMap();
+					for (String namespace : customMap.keySet()) {
+						for (String tag : customMap.get(namespace)) {
+							baseMapTree.Add(namespace, tag);
+						}
+						if ("".equals(custom)) {
+							custom = store.getString("statistician.custom");
+						}
+						int start = custom.indexOf("*" + namespace);
+						if (start == -1) {
+							custom += dialog.getStoreValue();
+							continue;
+						}
+						int end = start + namespace.length();
+						sb = new StringBuffer(custom);
+						sb.insert(end + 2, dialog.getStoreValue().substring(namespace.length() + 2));
+					}
+					if (sb != null) {
+						custom = sb.toString();
+					}
+				}
+				baseMapTree.sort(false);
+				modify = true;
+				treeViewer.refresh();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
-		GridData gdBtnModify = new GridData();
-		gdBtnModify.verticalAlignment = SWT.TOP;
-		gdBtnModify.widthHint = 100;
-		final Button btnModify = new Button(container, SWT.NULL);
-		btnModify.setText("Modify");
-		btnModify.setLayoutData(gdBtnModify);
-		btnModify.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				ModifySxsdDialog dialog = new ModifySxsdDialog(getShell());
-				dialog.open();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		btnModify.setEnabled(false);
 
 		GridData gdBtnRemove = new GridData();
 		gdBtnRemove.verticalAlignment = SWT.TOP;
@@ -199,21 +188,22 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		btnRemove.setLayoutData(gdBtnRemove);
 		btnRemove.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				advancedMap.remove(selectNamespace);
-				store.setValue("statistician.custom", "");
-				StringBuffer sb = new StringBuffer();
-				for (String s : advancedMap.keySet()) {
-					if (!baseMap.containsKey(s)) {
-						sb.append("*" + s + "!");
-						for (Object s1 : advancedMap.get(s)) {
-							sb.append((String) s1 + "!");
-						}
-					}
+				TagTree t = baseMapTree.remove(selectNamespace, selectTag);
+				treeViewer.refresh(t.getParent());
+				if (custom.equals("")) {
+					custom = store.getString("statistician.custom");
 				}
-				store.setValue("statistician.custom", sb.toString());
-				save();
-				treeViewer.setInput(advancedMap);
-				load();
+				StringBuffer sb = new StringBuffer(custom);
+				int start = custom.indexOf("*" + t.getNamespace());
+				int end = custom.indexOf(t.getTag(), start) + t.getTag().length();
+				if (t.getNamespace().equals(t.getTag())) {
+					end = custom.indexOf("*", start + 1) == -1 ? custom.length() : custom.indexOf("*", start + 1) - 1;
+				} else {
+					start = custom.indexOf(t.getTag(), start + 1);
+				}
+				sb.delete(start, end + 1);
+				modify = true;
+				custom = sb.toString();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -229,8 +219,8 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		btnSelectAll.setLayoutData(gdBtnSelectAll);
 		btnSelectAll.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				for (String s : advancedMap.keySet()) {
-					treeViewer.setChecked(s, true);
+				for (TagTree t : baseMapTree.getChildren()) {
+					treeViewer.setChecked(t, true);
 				}
 			}
 
@@ -246,8 +236,8 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		btnDeselectAll.setLayoutData(gdBtnDeselectAll);
 		btnDeselectAll.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				for (String s : advancedMap.keySet()) {
-					treeViewer.setChecked(s, false);
+				for (TagTree t : baseMapTree.getChildren()) {
+					treeViewer.setChecked(t, false);
 				}
 			}
 
@@ -264,28 +254,20 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 
-			@SuppressWarnings("rawtypes")
 			public Object[] getElements(Object inputElement) {
-				return ((Map) inputElement).keySet().toArray();
+				return ((TagTree) inputElement).getChildren().toArray();
 			}
 
 			public Object[] getChildren(Object parentElement) {
-				if (null == advancedMap.get((String) parentElement)) {
-					return null;
-				}
-				Object[] oo = advancedMap.get((String) parentElement).toArray();
-				return oo;
+				return ((TagTree) parentElement).getChildren().toArray();
 			}
 
 			public Object getParent(Object element) {
-				return null;
+				return ((TagTree) element).getParent();
 			}
 
 			public boolean hasChildren(Object element) {
-				if (null != advancedMap.get((String) element) && advancedMap.get((String) element).size() > 0) {
-					return true;
-				}
-				return false;
+				return ((TagTree) element).getChildren().size() > 0;
 			}
 		});
 		treeViewer.setLabelProvider(new LabelProvider() {
@@ -297,37 +279,31 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 				return null;
 			}
 		});
-		treeViewer.setInput(advancedMap);
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				TreeSelection ts = (TreeSelection) event.getSelection();
-				String s = (String) ts.getFirstElement();
-				if (null == s) {
-					btnModify.setEnabled(false);
+				TagTree tree = (TagTree) ts.getFirstElement();
+				if (null == tree) {
 					btnRemove.setEnabled(false);
 					return;
-				} else if (advancedMap.containsKey(s)) {
-					selectNamespace = s;
 				} else {
-					for (String s1 : advancedMap.keySet()) {
-						if (advancedMap.get(s1).contains(s)) {
-							selectNamespace = s1;
-							break;
-						}
-					}
+					selectNamespace = tree.getNamespace();
+					selectTag = tree.getTag();
 				}
 				if (baseMap.containsKey(selectNamespace)) {
-					btnModify.setEnabled(false);
-					btnRemove.setEnabled(false);
-					if (selectNamespace.equals("No namespace")) {
-						btnModify.setEnabled(true);
+					if (selectNamespace.equals(selectTag)) {
+						btnRemove.setEnabled(false);
+					} else if (baseMap.get(selectNamespace).contains(selectTag)) {
+						btnRemove.setEnabled(false);
+					} else {
+						btnRemove.setEnabled(true);
 					}
 				} else {
-					btnModify.setEnabled(true);
 					btnRemove.setEnabled(true);
 				}
 			}
 		});
+		treeViewer.setInput(baseMapTree);
 		load();
 		return container;
 	}
@@ -335,81 +311,281 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 	@Override
 	protected void performDefaults() {
 		updateApplyButton();
-		DialogUtil.showWarningMessageBox("Defaults");
+		baseMapTree.removeAll();
+		for (String namespace : baseMap.keySet()) {
+			for (String tag : baseMap.get(namespace)) {
+				baseMapTree.Add(namespace, tag);
+			}
+		}
+		baseMapTree.sort(false);
+		treeViewer.setInput(baseMapTree);
+		defaul = true;
 	}
 
 	@Override
 	public boolean performOk() {
-		if (save()) {
-			return super.performOk();
-		} else {
-			return false;
+		save();
+		if (defaul) {
+			store.setValue("statistician.custom", "");
+			store.setValue("statistician.checked", "");
 		}
-	}
-
-	private boolean save() {
-		StringBuffer sb = new StringBuffer();
-		for (Object o : treeViewer.getCheckedElements()) {
-			if ((o instanceof String) && advancedMap.containsKey(o)) {
-				sb.append("*");
-			}
-			sb.append(o.toString());
-			sb.append("!");
+		if (modify) {
+			store.setValue("statistician.custom", custom);
 		}
-		store.setValue("statistician.checked", sb.toString());
+		store.setValue("statistician.checked", checked);
 		try {
 			((ScopedPreferenceStore) store).save();
-			return true;
+			return super.performOk();
 		} catch (IOException e) {
 			return false;
 		}
 	}
 
-	public void init(IWorkbench workbench) {
-		// TODO ...
+	private void save() {
+		StringBuffer sb = new StringBuffer();
+		for (Object o : treeViewer.getCheckedElements()) {
+			if (baseMapTree.contains(o)) {
+				sb.append("*");
+			}
+			sb.append(o.toString());
+			sb.append("!");
+		}
+		checked = sb.toString();
 	}
 
-	private void sort(List<String> list) {
-		if (null != list) {
-			for (int i = 0; i < list.size(); i++) {
-				for (int j = i + 1; j < list.size(); j++) {
-					if ((list.get(i)).compareToIgnoreCase(list.get(j)) > 0) {
-						String temp = list.get(i);
+	public void init(IWorkbench workbench) {
+	}
+
+	private void load() {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				String[] storeTag = store.getString("statistician.checked").split("!");
+				String namespace = "";
+				for (String s : storeTag) {
+					if ("".equals(s.trim())) {
+						continue;
+					}
+					if (s.startsWith("*")) {
+						s = s.substring(1);
+						namespace = s;
+					} else {
+						treeViewer.setChecked(baseMapTree.find(namespace, s), true);
+					}
+				}
+			}
+		});
+	}
+
+	class CellModifier implements ICellModifier {
+		boolean isDoubleClick = false;
+		private Object element = null;
+		private TreeViewer treeViewer;
+
+		public CellModifier(TreeViewer treeViewer) {
+			this.treeViewer = treeViewer;
+			this.treeViewer.getTree().addMouseListener(new MouseAdapter() {
+				public void mouseDoubleClick(MouseEvent e) {
+					isDoubleClick = true;
+					if (element != null) {
+						CellModifier.this.treeViewer.editElement(element, 0);
+					}
+					isDoubleClick = false;
+				}
+			});
+		}
+
+		public boolean canModify(Object element, String property) {
+			this.element = element;
+			if (isDoubleClick && (modify(element))) {
+				isDoubleClick = false;
+				return true;
+			}
+			return false;
+		}
+
+		private boolean modify(Object element) {
+			if (!(element instanceof TagTree)) {
+				return false;
+			}
+			TagTree t = (TagTree) element;
+			if (baseMap.containsKey(t.getNamespace())) {
+				if (baseMap.get(t.getNamespace()).contains(t.getTag())) {
+					return false;
+				}
+				if (t.getNamespace().equals(t.getTag())) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public Object getValue(Object element, String property) {
+			return ((TagTree) element).getTag();
+		}
+
+		public void modify(Object element, String property, Object value) {
+			if (element instanceof Item) {
+				element = ((Item) element).getData();
+			}
+			for (TagTree t : ((TagTree) element).getParent().getChildren()) {
+				if (t.getTag().equals(value)) {
+					return;
+				}
+			}
+			if ("".equals(custom)) {
+				custom = store.getString("statistician.custom");
+			}
+			StringBuffer sb = new StringBuffer(custom);
+			if (((TagTree) element).getNamespace().equals(((TagTree) element).getTag())) {
+				int start = custom.indexOf("*" + ((TagTree) element).getNamespace());
+				int end = start + ((TagTree) element).getNamespace().length() + 1;
+				sb.replace(start, end, "*" + (String) value);
+				((TagTree) element).setNamespace((String) value);
+				((TagTree) element).setTag((String) value);
+				for (TagTree t : ((TagTree) element).getChildren()) {
+					t.setNamespace((String) value);
+				}
+			} else {
+				int start = custom.indexOf("*" + ((TagTree) element).getNamespace());
+				start = custom.indexOf(((TagTree) element).getTag(), start);
+				int end = start + ((TagTree) element).getTag().length();
+				sb.replace(start, end, (String) value);
+				((TagTree) element).setTag((String) value);
+			}
+			custom = sb.toString();
+			baseMapTree.sort(false);
+			treeViewer.refresh(((TagTree) element).getParent());
+			modify = true;
+		}
+	}
+}
+
+class TagTree {
+	private TagTree parent;
+	private String namespace;
+	private String tag;
+	private List<TagTree> children = new ArrayList<TagTree>();
+
+	public TagTree() {
+	}
+
+	public TagTree(TagTree parent, String namespace, String tag) {
+		this.parent = parent;
+		this.namespace = namespace;
+		this.tag = tag;
+	}
+
+	public void Add(String namespace, String tag) {
+		for (TagTree te : children) {
+			if (te.namespace.equals(namespace)) {
+				TagTree t = new TagTree(te, namespace, tag);
+				if (!te.children.contains(t)) {
+					te.children.add(t);
+				}
+				return;
+			}
+		}
+		TagTree te = new TagTree(this, namespace, namespace);
+		te.children.add(new TagTree(te, namespace, tag));
+		children.add(te);
+	}
+
+	public boolean equals(Object anObject) {
+		if (anObject instanceof TagTree) {
+			TagTree tt = (TagTree) anObject;
+			return tt.namespace.equals(namespace) && tt.tag.equals(tag);
+		}
+		return false;
+	}
+
+	public boolean contains(Object anObject) {
+		if (anObject instanceof TagTree) {
+			TagTree object = (TagTree) anObject;
+			for (TagTree te : children) {
+				if (te.namespace.equals(object.tag)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public TagTree find(String namespace, String tag) {
+		if (this.namespace.equals(namespace) && this.tag.equals(tag)) {
+			return this;
+		}
+		if (this.children.size() == 0) {
+			return null;
+		}
+		for (TagTree child : this.children) {
+			TagTree t = child.find(namespace, tag);
+			if (t != null) {
+				return t;
+			}
+		}
+		return null;
+	}
+
+	public TagTree remove(String namespace, String tag) {
+		TagTree t = this.find(namespace, tag);
+		if (t != null) {
+			t.getParent().getChildren().remove(t);
+			if (t.getParent().getChildren().size() == 0) {
+				return remove(t.getParent().getNamespace(), t.getParent().getTag());
+			}
+			return t;
+		}
+		return null;
+	}
+
+	public void sort(boolean ignoreCase) {
+		List<TagTree> list = this.children;
+		for (int i = 0; null != list && i < list.size(); i++) {
+			for (int j = i + 1; j < list.size(); j++) {
+				if (!ignoreCase) {
+					if ((list.get(i).getTag()).compareTo(list.get(j).getTag()) > 0) {
+						TagTree temp = list.get(i);
+						list.set(i, list.get(j));
+						list.set(j, temp);
+					}
+				} else {
+					if ((list.get(i).getTag()).compareToIgnoreCase(list.get(j).getTag()) > 0) {
+						TagTree temp = list.get(i);
 						list.set(i, list.get(j));
 						list.set(j, temp);
 					}
 				}
 			}
+			list.get(i).sort(true);
 		}
 	}
 
-	private void load() {
-		String[] storeTag = store.getString("statistician.checked").replaceAll("\\*", "").split("!");
-		treeViewer.getControl().setRedraw(false);
-
-		for (int i = 0; i < storeTag.length; i++) {
-			if (advancedMap.containsKey(storeTag[i])) {
-				int j;
-				treeViewer.expandToLevel(storeTag[i], 1);
-				for (j = i + 1; j < storeTag.length; j++) {
-					if (advancedMap.containsKey(storeTag[j])) {
-						break;
-					}
-					treeViewer.setChecked(storeTag[j], true);
-				}
-				i = j;
-				i--;
+	public Map<String, List<String>> getMap() {
+		Map<String, List<String>> map = new HashMap<String, List<String>>();
+		for (TagTree child : this.children) {
+			map.put(child.namespace, new ArrayList<String>());
+			for (TagTree t : child.children) {
+				map.get(child.namespace).add(t.tag);
 			}
 		}
-
-		treeViewer.collapseAll();
-		treeViewer.getControl().setRedraw(true);
+		return map;
 	}
-}
 
-class TagTree {
-	private String namespace;
-	private List<String> tags;
+	public void removeAll() {
+		this.children.clear();
+	}
+
+	public String toString() {
+		return tag;
+	}
+
+	public TagTree getParent() {
+		return parent;
+	}
+
+	public void setParent(TagTree parent) {
+		this.parent = parent;
+	}
 
 	public String getNamespace() {
 		return namespace;
@@ -419,11 +595,19 @@ class TagTree {
 		this.namespace = namespace;
 	}
 
-	public boolean equals(Object anObject) {
-		if (anObject instanceof TagTree) {
-			TagTree tt = (TagTree) anObject;
-			return tt.namespace.equals(namespace) && tags.equals(tt.tags);
-		}
-		return false;
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public List<TagTree> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<TagTree> children) {
+		this.children = children;
 	}
 }
