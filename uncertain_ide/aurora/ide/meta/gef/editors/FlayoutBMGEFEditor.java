@@ -1,6 +1,5 @@
 package aurora.ide.meta.gef.editors;
 
-import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.swt.SWT;
@@ -9,9 +8,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-
-import aurora.ide.meta.gef.editors.figures.ColorConstants;
-import aurora.ide.meta.gef.editors.parts.DatasetPartFactory;
 
 public abstract class FlayoutBMGEFEditor extends
 		GraphicalEditorWithFlyoutPalette {
@@ -35,8 +31,7 @@ public abstract class FlayoutBMGEFEditor extends
 		cpt.setLayout(new GridLayout());
 		Composite top = new Composite(cpt, SWT.BORDER);
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
-		layoutData.minimumHeight = 200;
-		layoutData.heightHint = 30;
+		layoutData.heightHint = 25;
 		top.setLayoutData(layoutData);
 		top.setLayout(new FillLayout());
 		Composite bottom = new Composite(cpt, SWT.NONE);

@@ -16,13 +16,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.eclipse.gef.editparts.SimpleRootEditPart;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.DirectEditAction;
@@ -134,7 +134,7 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 //		datasetView.getControl().setBackground(ColorConstants.white);
 		getEditDomain().addViewer(datasetView);
 		getSelectionSynchronizer().addViewer(datasetView);
-		datasetView.setRootEditPart(new ScalableRootEditPart());
+		datasetView.setRootEditPart(new SimpleRootEditPart());
 		datasetView.setEditPartFactory(new DatasetPartFactory());
 		this.getDatasetView().setContents(diagram);
 
