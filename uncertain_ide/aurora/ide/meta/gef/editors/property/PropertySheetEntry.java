@@ -59,11 +59,6 @@ public class PropertySheetEntry extends EventManager implements
 	private ICellEditorListener cellEditorListener = new ICellEditorListener() {
 		public void editorValueChanged(boolean oldValidState,
 				boolean newValidState) {
-			if (!newValidState) {
-				// currently not valid so show an error message
-			} else {
-				// currently valid
-			}
 		}
 
 		public void cancelEditor() {
@@ -496,13 +491,13 @@ public class PropertySheetEntry extends EventManager implements
 		List descriptors = computeMergedPropertyDescriptors();
 
 		// cache old entries by their descriptor id
-		Map entryCache = new HashMap(childEntries.length * 2 + 1);
-		for (int i = 0; i < childEntries.length; i++) {
-			PropertySheetEntry childEntry = childEntries[i];
-			if (childEntry != null) {
-				entryCache.put(childEntry.getDescriptor().getId(), childEntry);
-			}
-		}
+		// Map entryCache = new HashMap(childEntries.length * 2 + 1);
+		// for (int i = 0; i < childEntries.length; i++) {
+		// PropertySheetEntry childEntry = childEntries[i];
+		// if (childEntry != null) {
+		// entryCache.put(childEntry.getDescriptor().getId(), childEntry);
+		// }
+		// }
 
 		// create a list of entries to dispose
 		List entriesToDispose = new ArrayList(Arrays.asList(childEntries));
@@ -513,17 +508,20 @@ public class PropertySheetEntry extends EventManager implements
 		// rebuild child entries using old when possible
 		PropertySheetEntry[] newEntries = new PropertySheetEntry[descriptors
 				.size()];
-		boolean entriesChanged = descriptors.size() != entryCache.size();
+		boolean entriesChanged = true;// descriptors.size() !=
+										// entryCache.size();
 		for (int i = 0; i < descriptors.size(); i++) {
 			IPropertyDescriptor d = (IPropertyDescriptor) descriptors.get(i);
 			// see if we have an entry matching this descriptor
-			PropertySheetEntry entry = (PropertySheetEntry) entryCache.get(d
-					.getId());
-			if (entry != null) {
-				// reuse old entry
-				entry.setDescriptor(d);
-				entriesToDispose.remove(entry);
-			} else {
+			PropertySheetEntry entry = null;// (PropertySheetEntry)
+											// entryCache.get(d.getId());
+			// if (entry != null) {
+			// // reuse old entry
+			// entry.setDescriptor(d);
+			// entriesToDispose.remove(entry);
+			// } else
+
+			{
 				// create new entry
 				entry = createChildEntry();
 				entry.setDescriptor(d);
