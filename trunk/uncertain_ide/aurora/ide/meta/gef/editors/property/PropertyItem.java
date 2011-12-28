@@ -8,7 +8,6 @@ import org.eclipse.ui.views.properties.IPropertySheetEntry;
 public class PropertyItem {
 	private IPropertySheetEntry data;
 	private CellEditor editor = null;
-	private Control ctrl = null;
 
 	public PropertyItem(IPropertySheetEntry pse) {
 		data = pse;
@@ -31,12 +30,13 @@ public class PropertyItem {
 	}
 
 	public Control getControl(Composite par) {
-		// if (editor == null)
-		// editor = data.getEditor(par);
-		// Control control = editor.getControl();
-		// if (control == null) {
-		// return data.getEditor(par).getControl();
-		// }
+		if (editor == null)
+			editor = data.getEditor(par);
+		Control control = editor.getControl();
+		if (control == null) {
+			editor = data.getEditor(par);
+			return editor.getControl();
+		}
 		return data.getEditor(par).getControl();
 	}
 }
