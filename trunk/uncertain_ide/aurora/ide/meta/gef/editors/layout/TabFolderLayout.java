@@ -23,12 +23,14 @@ public class TabFolderLayout extends BackLayout {
 		Point maxSize = new Point(0, 0);
 		@SuppressWarnings("unchecked")
 		List<ComponentPart> list = part.getChildren();
+		int tabItemTotalWidth = 0;
 		for (ComponentPart cp : list) {
 			if (cp instanceof TabItemPart) {
 				TabItemPart tip = (TabItemPart) cp;
 				Rectangle bounds = tip.getModel().getBounds();
 				bounds.setLocation(pos);
 				pos.x += bounds.width + 2;
+				tabItemTotalWidth = pos.x;
 				tip.getFigure().setBounds(bounds);
 			} else if (cp instanceof TabBodyPart) {
 				Rectangle rect = part.getFigure().getBounds().getCopy();
@@ -56,7 +58,8 @@ public class TabFolderLayout extends BackLayout {
 		}
 		maxSize.y += TabItem.HEIGHT;
 		Rectangle rect = super.layout(ep);
-		rect.width = Math.max(maxSize.x, rect.width);
+		rect.width = Math.max(maxSize.x,
+				Math.max(rect.width, tabItemTotalWidth));
 		rect.height = Math.max(maxSize.y, rect.height);
 		return rect;
 	}
