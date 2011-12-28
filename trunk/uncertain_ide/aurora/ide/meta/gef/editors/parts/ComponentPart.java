@@ -23,11 +23,8 @@ public abstract class ComponentPart extends AbstractGraphicalEditPart implements
 		String prop = evt.getPropertyName();
 		if (!IProperties.CHILDREN.equals(prop))
 			this.refreshVisuals();
-		if (IProperties.SIZE.equals(prop)) {
-//			ViewDiagramPart part = getDiagramPart(this);
-//			part.getFigure().validate();
-			//TODO 重新布局！！！
-			this.getFigure().setSize(this.getComponent().getSize());
+		if (IProperties.SIZE.equals(prop)||IProperties.BOUNDS.equals(prop)) {
+			this.getFigure().revalidate();
 		}
 	}
 
