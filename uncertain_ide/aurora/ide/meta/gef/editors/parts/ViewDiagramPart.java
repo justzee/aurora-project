@@ -29,34 +29,49 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	protected IFigure createFigure() {
-		Figure figure = new FreeformLayer();
+		Figure figure = new FreeformLayer() {
+//			protected boolean isValid() {
+//				System.out.println("isValid");
+//				return super.isValid();
+//				// return false;
+//			}
+//
+//			public void invalidate() {
+//				System.out.println("invalidate");
+//				
+//				super.invalidate();
+//			}
+//
+//			public void revalidate() {
+//				
+//				System.out.println("revalidate");
+//				super.revalidate();
+//			}
+		};
 		ViewDiagramLayout manager = new ViewDiagramLayout(false, this);
 		figure.setLayoutManager(manager);
 		return figure;
 	}
 
-
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new DiagramLayoutEditPolicy());
 		installEditPolicy("Drop BM", new AutoCreateFormGridEditPolicy());
-	
+
 	}
 
 	@Override
 	public void showSourceFeedback(Request request) {
 		// TODO Auto-generated method stub
 		super.showSourceFeedback(request);
-//		this.getDiagramPart(null).ge
+		// this.getDiagramPart(null).ge
 	}
-
 
 	@Override
 	public void showTargetFeedback(Request request) {
 		// TODO Auto-generated method stub
 		super.showTargetFeedback(request);
 	}
-
 
 	@Override
 	public void activate() {
@@ -74,11 +89,10 @@ public class ViewDiagramPart extends ContainerPart {
 
 	@Override
 	protected void addChild(EditPart child, int index) {
-		if(child == null)
-			return ;
+		if (child == null)
+			return;
 		super.addChild(child, index);
 	}
-
 
 	@Override
 	public Command getCommand(Request request) {
@@ -86,10 +100,9 @@ public class ViewDiagramPart extends ContainerPart {
 		return super.getCommand(request);
 	}
 
-
 	@Override
 	public EditPart getTargetEditPart(Request request) {
-	
+
 		return super.getTargetEditPart(request);
 	}
 
