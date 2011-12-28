@@ -12,7 +12,6 @@ import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
-import aurora.ide.meta.gef.editors.parts.ComponentPart;
 
 public class FormLayoutEditPolicy extends LayoutEditPolicy {
 
@@ -37,9 +36,14 @@ public class FormLayoutEditPolicy extends LayoutEditPolicy {
 
 	protected Command getCreateCommand(CreateRequest request) {
 		if (request.getNewObject() instanceof AuroraComponent) {
+			Container parentModel = (Container) getHost().getModel();
+			AuroraComponent ac = (AuroraComponent) request.getNewObject();
+			if (!parentModel.isResponsibleChild(ac)) {
+				return null;
+			}
 			CreateComponentCommand cmd = new CreateComponentCommand();
-			cmd.setDiagram((Container) getHost().getModel());
-			cmd.setChild((AuroraComponent) request.getNewObject());
+			cmd.setDiagram(parentModel);
+			cmd.setChild(ac);
 
 			// Rectangle constraint = (Rectangle) getConstraintFor(request);
 			// cmd.setLocation( request.getLocation());
@@ -54,9 +58,7 @@ public class FormLayoutEditPolicy extends LayoutEditPolicy {
 
 	@Override
 	protected EditPolicy createChildEditPolicy(EditPart child) {
-		ResizeComponentEditPolicy rep = new ResizeComponentEditPolicy();
-		rep.setResizeDirections(((ComponentPart) child).getResizeDirection());
-		return rep;
+		return null;
 	}
 
 	@Override

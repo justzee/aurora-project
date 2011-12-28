@@ -48,6 +48,7 @@ public class ButtonPart extends ComponentPart {
 
 	@Override
 	protected void createEditPolicies() {
+		super.createEditPolicies();
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new NodeDirectEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
