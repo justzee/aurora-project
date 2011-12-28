@@ -44,8 +44,8 @@ public class BooleanCellEditor extends CellEditor implements SelectionListener {
 	}
 
 	public void widgetSelected(SelectionEvent e) {
-		fireApplyEditorValue();
 		checkButton.setText(Boolean.toString(checkButton.getSelection()));
+		fireApplyEditorValue();
 	}
 
 	public void widgetDefaultSelected(SelectionEvent e) {
