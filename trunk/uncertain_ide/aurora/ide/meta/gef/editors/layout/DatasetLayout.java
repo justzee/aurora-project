@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Composite;
 import aurora.ide.meta.gef.editors.parts.DatasetDiagramPart;
 
 public class DatasetLayout extends AbstractLayout {
-	private static final Insets PADDING = new Insets(2, 5, 2, 2);
-	private Point lastLocation;
+	private static final Insets PADDING = new Insets(5, 5, 0, 2);
+	private Point lastLocation = new Point();
 	private DatasetDiagramPart dsDiagram;
 
 	public DatasetLayout(DatasetDiagramPart datasetDiagramPart) {
@@ -24,43 +24,35 @@ public class DatasetLayout extends AbstractLayout {
 	}
 
 	public void layout(IFigure container) {
-		lastLocation = newLine(0);
-		boolean reLayout = false;
+		int line = 1;
+		lastLocation = newLine(0, line);
+		boolean reLayout = true;
 		List children = container.getChildren();
 		// Rectangle bounds = container.getBounds();
 		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
 			IFigure f = (IFigure) iterator.next();
 			lastLocation.translate(PADDING.left, 0);
-			Dimension size = f.getSize();
+
+			Dimension size = f.getPreferredSize();
 			if (lastLocation.x + size.width >= container.getSize().width) {
-				lastLocation = newLine(f.getSize().height);
+				lastLocation = newLine(f.getSize().height+lastLocation.y, line);
+				line++;
 				lastLocation.translate(PADDING.left, 0);
-				reLayout = true;
 			}
 			f.setLocation(lastLocation);
 			lastLocation.translate(size.width, 0);
 		}
 		if (reLayout) {
-//			IFigure fickRoot = container;
-//			IFigure root = null;
-//			while (fickRoot != null) {
-//				
-//				root = fickRoot;
-//				System.out.println(root.getClass());
-//				fickRoot = fickRoot.getParent();
-//			}
-//			System.out.println(root.getClass());
 			Composite parent = dsDiagram.getViewer().getControl().getParent();
 			GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
-			layoutData.heightHint = 90;
+			layoutData.heightHint = line * 25;
 			parent.setLayoutData(layoutData);
 			parent.getParent().layout();
 		}
-
 	}
 
-	private Point newLine(int y) {
-		return new Point().translate(0, y + PADDING.top);
+	private Point newLine(int y, int line) {
+		return new Point().translate(0, y + PADDING.top );
 	}
 
 	@Override

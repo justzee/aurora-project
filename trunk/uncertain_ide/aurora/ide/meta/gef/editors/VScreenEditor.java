@@ -134,7 +134,7 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 //		datasetView.getControl().setBackground(ColorConstants.white);
 		getEditDomain().addViewer(datasetView);
 		getSelectionSynchronizer().addViewer(datasetView);
-		datasetView.setRootEditPart(new SimpleRootEditPart());
+		datasetView.setRootEditPart(new ScalableRootEditPart());
 		datasetView.setEditPartFactory(new DatasetPartFactory());
 		this.getDatasetView().setContents(diagram);
 
