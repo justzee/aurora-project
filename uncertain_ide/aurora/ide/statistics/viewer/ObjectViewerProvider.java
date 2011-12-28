@@ -166,7 +166,7 @@ class ObjectViewLabelProvider implements ITableLabelProvider {
 
 	private String conversion(String value) {
 		if (value.matches("\\d+")) {
-			DecimalFormat df = new DecimalFormat("#.00");
+			DecimalFormat df = new DecimalFormat("0.00");
 			double v = Double.parseDouble(value);
 			if (value.length() > 3 && value.length() <= 6) {
 				v /= 1024.0;

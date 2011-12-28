@@ -1,9 +1,15 @@
 package aurora.ide.statistics.viewer;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -12,12 +18,12 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -28,14 +34,15 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.statistics.wizard.dialog.LoadDataWizard;
 import aurora.ide.statistics.wizard.dialog.SaveDataWizard;
 import aurora.statistics.Statistician;
 import aurora.statistics.map.StatisticsResult;
+import aurora.statistics.model.ProjectObject;
 import aurora.statistics.model.StatisticsProject;
 
 public class StatisticsView extends ViewPart {
@@ -56,7 +63,7 @@ public class StatisticsView extends ViewPart {
 
 	private Action fileSelectionAction;
 	private Action projectSelectionAction;
-	private Action doubleClickAction;
+	private Action saveToXLSAction;
 	private Action saveToDBAction;
 	private Action dbLoadAction;
 
@@ -84,9 +91,9 @@ public class StatisticsView extends ViewPart {
 
 		makeActions();
 		hookContextMenu();
-		hookDoubleClickAction();
 		contributeToActionBars();
 		saveToDBAction.setEnabled(false);
+		saveToXLSAction.setEnabled(false);
 	}
 
 	private void createObjectViewer(Composite parent) {
@@ -162,6 +169,8 @@ public class StatisticsView extends ViewPart {
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(fileSelectionAction);
 		manager.add(projectSelectionAction);
+		manager.add(new Separator());
+		manager.add(saveToXLSAction);
 		manager.add(dbLoadAction);
 		manager.add(saveToDBAction);
 		manager.add(new Separator());
@@ -193,9 +202,11 @@ public class StatisticsView extends ViewPart {
 				WizardDialog dialog = new WizardDialog(getSite().getShell(), wizard);
 				if (WizardDialog.OK == dialog.open()) {
 					statistician.setProject(wizard.getProject());
-					SaveToDBJob job = new SaveToDBJob(statistician);
+					SaveToDBJob job = new SaveToDBJob(statistician,StatisticsView.this);
 					job.setUser(true);
 					job.schedule();
+					setSaveToDBActionEnabled(false);
+					setSaveToXLSActionEnabled(false);
 				}
 			}
 		};
@@ -209,11 +220,11 @@ public class StatisticsView extends ViewPart {
 				WizardDialog dialog = new WizardDialog(getSite().getShell(), wizard);
 				int reslut = dialog.open();
 				if (WizardDialog.OK == reslut) {
-
-					LoadFromDBJob job = new LoadFromDBJob(wizard.getProject(), statistician, wizard.getStatisticsProject(), StatisticsView.this);
+					LoadFromDBJob job = new LoadFromDBJob(wizard.getProject(), wizard.getStatisticsProject(), StatisticsView.this);
 					job.setUser(true);
 					job.schedule();
-					saveToDBAction.setEnabled(false);
+					setSaveToDBActionEnabled(false);
+					setSaveToXLSActionEnabled(false);
 				}
 			}
 		};
@@ -230,7 +241,8 @@ public class StatisticsView extends ViewPart {
 					Object[] selected = dialog.getResult();
 					StatisticianRunner runner = new StatisticianRunner(StatisticsView.this);
 					runner.noProjectRun(selected);
-					saveToDBAction.setEnabled(false);
+					setSaveToDBActionEnabled(false);
+					setSaveToXLSActionEnabled(false);
 				}
 			}
 		};
@@ -240,7 +252,6 @@ public class StatisticsView extends ViewPart {
 
 		projectSelectionAction = new Action() {
 			public void run() {
-				saveToDBAction.setEnabled(false);
 				ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), IResource.PROJECT);
 				dialog.setHelpAvailable(false);
 				dialog.setTitle("工程选择");
@@ -249,6 +260,8 @@ public class StatisticsView extends ViewPart {
 					Object[] selected = dialog.getResult();
 					StatisticianRunner runner = new StatisticianRunner(StatisticsView.this);
 					runner.projectRun(selected);
+					setSaveToDBActionEnabled(false);
+					setSaveToXLSActionEnabled(false);
 				}
 			}
 		};
@@ -256,49 +269,100 @@ public class StatisticsView extends ViewPart {
 		projectSelectionAction.setToolTipText("选择需要统计的工程");
 		projectSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("project.png")));
 
-		doubleClickAction = new Action() {
+		saveToXLSAction = new Action() {
 			public void run() {
-				// ISelection selection = objectViewer.getSelection();
-				// Object obj = ((IStructuredSelection) selection)
-				// .getFirstElement();
-				// showMessage("Double-click detected on " + obj.toString());
-				// IWorkbenchWindow workbenchWindow =
-				// AuroraPlugin.getActivePage()
-				// .getWorkbenchWindow();
-				// try {
-				// IWorkbenchPage showPerspective = workbenchWindow
-				// .getWorkbench().showPerspective(
-				// "org.eclipse.jdt.ui.JavaPerspective",
-				// workbenchWindow);
-				//
-				// } catch (WorkbenchException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				IExtensionRegistry registry = Platform.getExtensionRegistry();
-				IConfigurationElement[] configEle = registry.getConfigurationElementsFor("org.eclipse.ui.perspectives");
-				IConfigurationElement ce = null;
-				for (IConfigurationElement c : configEle) {
-					if ("org.eclipse.jdt.ui.JavaPerspective".equals(c.getAttribute("id"))) {
-						// c
-						ce = c;
-						break;
+				FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
+				dialog.setFilterExtensions(new String[] { "*.xls", "*.*" });
+				final String path = dialog.open();
+				if (path == null) {
+					return;
+				}
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						try {
+							HSSFWorkbook workbook = new HSSFWorkbook();
+							HSSFSheet sheet = workbook.createSheet();
+							HSSFRow row = sheet.createRow(0);
+							for (int i = 0; i < oViewColTitles.length; i++) {
+								HSSFCell cell = row.createCell(i);
+								cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+								cell.setCellValue(oViewColTitles[i]);
+							}
+							fillExcelContent(sheet);
+							sheet.autoSizeColumn(1);
+							sheet.autoSizeColumn(2);
+							FileOutputStream fOut = new FileOutputStream(path);
+							workbook.write(fOut);
+							fOut.flush();
+							fOut.close();
+						} catch (IOException e) {
+							DialogUtil.showExceptionMessageBox(e);
+						}
+					}
+				});
+			}
+
+			@SuppressWarnings("unchecked")
+			private void fillExcelContent(HSSFSheet sheet) {
+				HSSFRow row;
+				StatisticsResult result = (StatisticsResult) objectViewer.getInput();
+				List<ProjectObject>[] listAll = new List[2];
+				listAll[0] = result.getScreens();
+				listAll[1] = result.getBms();
+				int count = 1;
+				for (List<ProjectObject> list : listAll) {
+					if (list == null) {
+						continue;
+					}
+					for (int i = 0; i < list.size(); i++) {
+						row = sheet.createRow(count);
+						HSSFCell cell = row.createCell(0);
+						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						cell.setCellValue(list.get(i).getType());
+
+						cell = row.createCell(1);
+						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						cell.setCellValue(list.get(i).getName());
+
+						cell = row.createCell(2);
+						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						cell.setCellValue(list.get(i).getPath());
+
+						cell = row.createCell(3);
+						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						cell.setCellValue(conversion(list.get(i).getFileSize()));
+
+						cell = row.createCell(4);
+						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+						cell.setCellValue(conversion(list.get(i).getScriptSize()));
+
+						cell = row.createCell(5);
+						cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+						cell.setCellValue(list.get(i).getTags().size());
+
+						count++;
 					}
 				}
-				if (ce != null) {
-					BasicNewProjectResourceWizard.updatePerspective(ce);
-					System.out.println(ce);
+			}
+
+			private String conversion(int num) {
+				String value = Integer.toString(num);
+				DecimalFormat df = new DecimalFormat("0.00");
+				double v = Double.parseDouble(value);
+				if (value.length() > 3 && value.length() <= 6) {
+					v /= 1024.0;
+					return df.format(v) + " KB";
+				} else if (value.length() > 6) {
+					v /= (1024.0 * 1024.0);
+					return df.format(v) + " MB";
+				} else {
+					return (int) v + " Byte";
 				}
 			}
 		};
-	}
-
-	private void hookDoubleClickAction() {
-		objectViewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
+		saveToXLSAction.setText("导出Excel");
+		saveToXLSAction.setToolTipText("导出为Excel");
+		saveToXLSAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("save.png")));
 	}
 
 	private void showMessage(String message) {
@@ -312,7 +376,11 @@ public class StatisticsView extends ViewPart {
 		objectViewer.getControl().setFocus();
 	}
 
-	public void setSaveEnabled(boolean bool) {
+	public void setSaveToDBActionEnabled(boolean bool) {
 		saveToDBAction.setEnabled(bool);
+	}
+
+	public void setSaveToXLSActionEnabled(boolean bool) {
+		saveToXLSAction.setEnabled(bool);
 	}
 }
