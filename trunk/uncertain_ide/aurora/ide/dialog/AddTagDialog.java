@@ -25,16 +25,18 @@ public class AddTagDialog extends Dialog {
 	private Combo cboNamespace;
 	private Text txtTag;
 	private String namespace;
+	private String selectNamespace;
 	private Set<String> tags = new TreeSet<String>();
 	private String[] namespaces;
 	private Map<String, List<String>> customMap;
 	private Map<String, List<String>> baseMap;
 	private StringBuffer sb = new StringBuffer();
 
-	public AddTagDialog(Shell parentShell, String[] namespaces, Map<String, List<String>> baseMap) {
+	public AddTagDialog(Shell parentShell, String[] namespaces, Map<String, List<String>> baseMap, String selectNamespace) {
 		super(parentShell);
 		this.namespaces = namespaces;
 		this.baseMap = baseMap;
+		this.selectNamespace = selectNamespace;
 	}
 
 	@Override
@@ -60,8 +62,11 @@ public class AddTagDialog extends Dialog {
 		GridData gdNamespace = new GridData(GridData.FILL_HORIZONTAL);
 		cboNamespace = new Combo(container, SWT.DROP_DOWN);
 		cboNamespace.setLayoutData(gdNamespace);
-		for (String s : namespaces) {
-			cboNamespace.add(s);
+		for (int i = 0; i < namespaces.length; i++) {
+			cboNamespace.add(namespaces[i]);
+			if(namespaces[i].equals(selectNamespace)){
+				cboNamespace.select(i);
+			}
 		}
 
 		GridData gdlblTag = new GridData();
@@ -96,8 +101,8 @@ public class AddTagDialog extends Dialog {
 	@Override
 	protected void okPressed() {
 		namespace = cboNamespace.getText().trim();
-		for (String s : txtTag.getText().trim().split("\r\n")) {
-			tags.add(s);
+		for (String s : txtTag.getText().split("\r\n")) {
+			tags.add(s.trim());
 		}
 		if ("".equals(namespace.trim())) {
 			DialogUtil.showWarningMessageBox("请输入命名空间。");
