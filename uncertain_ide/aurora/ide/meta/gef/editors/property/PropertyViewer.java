@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -37,6 +38,10 @@ public class PropertyViewer extends Canvas implements PaintListener,
 
 	public PropertyViewer(Composite parent, int style) {
 		super(parent, style);
+		if (parent instanceof ScrolledComposite) {
+			((ScrolledComposite) parent).getVerticalBar().setIncrement(
+					ROWHEIGHT);
+		}
 		addPaintListener(this);
 		addMouseListener(this);
 		addMouseMoveListener(this);
@@ -64,6 +69,11 @@ public class PropertyViewer extends Canvas implements PaintListener,
 	public PropertyItem createItem(IPropertySheetEntry pse, int index) {
 		PropertyItem pi = new PropertyItem(pse);
 		als.add(index, pi);
+		Composite par = getParent();
+		if (par instanceof ScrolledComposite) {
+			((ScrolledComposite) par).setMinSize(200, getItemCount()
+					* ROWHEIGHT);
+		}
 		redraw();
 		return pi;
 	}
@@ -98,6 +108,8 @@ public class PropertyViewer extends Canvas implements PaintListener,
 		for (int i = 1; i < als.size() + 1; i++)
 			e.gc.drawLine(0, i * ROWHEIGHT, size.x, i * ROWHEIGHT);
 		e.gc.drawLine(splitLineX, 0, splitLineX, size.y);
+		// setSize(size.x, ROWHEIGHT * als.size());
+		// getParent().layout();
 	}
 
 	private void drawEmpty(GC gc) {
@@ -141,7 +153,7 @@ public class PropertyViewer extends Canvas implements PaintListener,
 	public void mouseMove(MouseEvent e) {
 		int mx = e.x;
 		if (mx >= splitLineX - 1 && mx <= splitLineX + 1) {
-			setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZEE));
+			setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZEWE));
 			canResize = true;
 		} else {
 			setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_ARROW));
@@ -151,7 +163,7 @@ public class PropertyViewer extends Canvas implements PaintListener,
 			if (mx < MINWIDTHLEFT || mx > getSize().x - MINWIDTHRIGHT)
 				return;
 			splitLineX = mx;
-			setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZEE));
+			setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_SIZEWE));
 			redraw();
 		}
 	}

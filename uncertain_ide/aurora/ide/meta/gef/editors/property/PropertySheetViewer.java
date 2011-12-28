@@ -15,8 +15,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertySheetEntry;
@@ -38,14 +40,14 @@ public class PropertySheetViewer extends Viewer {
 	private PropertySheetSorter sorter = new PropertySheetSorter();
 
 	public PropertySheetViewer(Composite parent) {
-		pv2 = new PropertyViewer(parent, SWT.NONE);
-		// configure the widget
-		// tree.setLinesVisible(true);
-		// tree.setHeaderVisible(true);
 
-		// configure the columns
-		// addColumns();
-
+		ScrolledComposite scrolledComposite = new ScrolledComposite(parent,
+				SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		scrolledComposite.setExpandHorizontal(true);
+		scrolledComposite.setExpandVertical(true);
+		pv2 = new PropertyViewer(scrolledComposite, SWT.NONE);
+		scrolledComposite.setContent(pv2);
 		// create the entry and editor listener
 		createEntryListener();
 		// createEditorListener();
@@ -285,20 +287,7 @@ public class PropertySheetViewer extends Viewer {
 	 * </p>
 	 */
 	public ISelection getSelection() {
-		// if (tree.getSelectionCount() == 0) {
-		// return StructuredSelection.EMPTY;
-		// }
-		// TreeItem[] sel = tree.getSelection();
-		List<IPropertySheetEntry> entries = new ArrayList<IPropertySheetEntry>(
-				0);
-		// for (int i = 0; i < sel.length; i++) {
-		// TreeItem ti = sel[i];
-		// Object data = ti.getData();
-		// if (data instanceof IPropertySheetEntry) {
-		// entries.add((IPropertySheetEntry) data);
-		// }
-		// }
-		return new StructuredSelection(entries);
+		return new StructuredSelection(Collections.EMPTY_LIST);
 	}
 
 	/**
