@@ -3,7 +3,6 @@ package aurora.ide.meta.gef.editors.policies;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
@@ -71,7 +70,8 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	public void showTargetFeedback(Request request) {
 		if (targetEditPart != null
 				&& targetEditPart.getClass().equals(TabFolderPart.class)) {
-			if (request instanceof DropRequest) {
+			if (request instanceof DropRequest
+					&& (!REQ_RESIZE.equals(request.getType()))) {
 				ComponentPart ref = (ComponentPart) getInsertionReference(request);
 				if (ref == null || (ref instanceof TabBodyPart)) {
 					TabItemPart lastTabItem = null;
@@ -154,14 +154,9 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return false;
 	}
 
-	@Override
-	protected EditPolicy createChildEditPolicy(EditPart child) {
-		ResizeComponentEditPolicy rep = new ResizeComponentEditPolicy();
-		rep.setResizeDirections(((ComponentPart) child).getResizeDirection());
-		if (child instanceof TabBodyPart) {
-			rep.setDragAllowed(false);
-		}
-		return rep;
-	}
+	// @Override
+	// protected EditPolicy createChildEditPolicy(EditPart child) {
+	// return new ResizableEditPolicy();
+	// }
 
 }

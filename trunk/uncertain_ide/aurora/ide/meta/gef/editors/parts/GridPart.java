@@ -22,9 +22,6 @@ public class GridPart extends ContainerPart {
 		super.createEditPolicies();
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new FormLayoutEditPolicy());
 		installEditPolicy("bm_drop", new BindGridPartEditPolicy());
-		// ResizableEditPolicy rep = new ResizableEditPolicy();
-		// rep.setResizeDirections(getResizeDirection());
-		// installEditPolicy("RESIZE", rep);
 
 	}
 

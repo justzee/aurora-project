@@ -21,14 +21,18 @@ public class GridColumnPart extends ContainerPart {
 	protected void createEditPolicies() {
 		super.createEditPolicies();
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new FormLayoutEditPolicy());
-		//TODO resize Policys
-//		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, policy);
+
 	}
 
 	protected void refreshVisuals() {
 		((GridColumnFigure) getFigure()).setModel((GridColumn) this
 				.getComponent());
 		super.refreshVisuals();
+	}
+
+	@Override
+	public int getResizeDirection() {
+		return EAST_WEST;
 	}
 
 }
