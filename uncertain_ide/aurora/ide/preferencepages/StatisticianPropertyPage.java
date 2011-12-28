@@ -44,19 +44,21 @@ import uncertain.schema.ISchemaManager;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.dialog.AddTagDialog;
 import aurora.ide.helpers.LoadSchemaManager;
+import aurora.statistics.map.PreferencesTag;
 
 public class StatisticianPropertyPage extends PreferencePage implements IWorkbenchPreferencePage {
+	private Map<String, List<String>> customMap = new HashMap<String, List<String>>();
 	private Map<String, List<String>> baseMap = new HashMap<String, List<String>>();
 	private TagTree baseMapTree = new TagTree(null, "root", "root");
 
 	private ContainerCheckedTreeViewer treeViewer = null;
 	private IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
-	private String[] noNamespace = { "query-fields", "columns", "center", "event", "features", "data-filter", "form", "table", "UL", "view", "IMG", "model-delete", "service-output", "model-update", "param", "A", "events", "mapping", "map", "model-load", "model-query", "a", "field", "H2", "tr", "img", "ref-field", "td", "br", "TABLE", "model-insert", "parameters", "font", "label", "script", "input", "iframe", "column", "query-field", "span", "model-execute", "model", "TD", "batch-apply", "div", "TR", "datas", "pk-field", "parameter", "style", "tbody", "DIV", "service", "LI" };
+
+	private final String[] noNamespace = { "query-fields", "columns", "center", "event", "features", "data-filter", "form", "table", "UL", "view", "IMG", "model-delete", "service-output", "model-update", "param", "A", "events", "mapping", "map", "model-load", "model-query", "a", "field", "H2", "tr", "img", "ref-field", "td", "br", "TABLE", "model-insert", "parameters", "font", "label", "script", "input", "iframe", "column", "query-field", "span", "model-execute", "model", "TD", "batch-apply", "div", "TR", "datas", "pk-field", "parameter", "style", "tbody", "DIV", "service", "LI" };
+
 	private String selectNamespace = "";
 	private String selectTag = "";
 	private boolean modify = false;
-	private boolean defaul = false;
-	private String custom = "";
 	private String checked = "";
 
 	public StatisticianPropertyPage() {
@@ -70,7 +72,9 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			} else if (s.indexOf("*") == 0) {
 				s = s.substring(1);
 				namespace = s;
+				customMap.put(s, new ArrayList<String>());
 			} else {
+				customMap.get(namespace).add(s);
 				baseMapTree.Add(namespace, s);
 			}
 		}
@@ -147,28 +151,19 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 				for (int i = 0; i < baseMapTree.getChildren().size(); i++) {
 					namespaces[i] = baseMapTree.getChildren().get(i).getNamespace();
 				}
-				AddTagDialog dialog = new AddTagDialog(getShell(), namespaces, baseMapTree.getMap());
+				AddTagDialog dialog = new AddTagDialog(getShell(), namespaces, baseMapTree.getMap(), selectNamespace);
 				if (dialog.open() == Dialog.OK) {
-					StringBuffer sb = null;
-					Map<String, List<String>> customMap = dialog.getCustomMap();
-					for (String namespace : customMap.keySet()) {
-						for (String tag : customMap.get(namespace)) {
+					Map<String, List<String>> map = dialog.getCustomMap();
+					for (String namespace : map.keySet()) {
+						if (!customMap.containsKey(namespace)) {
+							customMap.put(namespace, new ArrayList<String>());
+						}
+						for (String tag : map.get(namespace)) {
 							baseMapTree.Add(namespace, tag);
+							if (!customMap.get(namespace).contains(tag)) {
+								customMap.get(namespace).add(tag);
+							}
 						}
-						if ("".equals(custom)) {
-							custom = store.getString("statistician.custom");
-						}
-						int start = custom.indexOf("*" + namespace);
-						if (start == -1) {
-							custom += dialog.getStoreValue();
-							continue;
-						}
-						int end = start + namespace.length();
-						sb = new StringBuffer(custom);
-						sb.insert(end + 2, dialog.getStoreValue().substring(namespace.length() + 2));
-					}
-					if (sb != null) {
-						custom = sb.toString();
 					}
 				}
 				baseMapTree.sort(false);
@@ -190,20 +185,12 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			public void widgetSelected(SelectionEvent e) {
 				TagTree t = baseMapTree.remove(selectNamespace, selectTag);
 				treeViewer.refresh(t.getParent());
-				if (custom.equals("")) {
-					custom = store.getString("statistician.custom");
-				}
-				StringBuffer sb = new StringBuffer(custom);
-				int start = custom.indexOf("*" + t.getNamespace());
-				int end = custom.indexOf(t.getTag(), start) + t.getTag().length();
-				if (t.getNamespace().equals(t.getTag())) {
-					end = custom.indexOf("*", start + 1) == -1 ? custom.length() : custom.indexOf("*", start + 1) - 1;
+				if (!customMap.containsKey(t.getTag())) {
+					customMap.get(t.getNamespace()).remove(t.getTag());
 				} else {
-					start = custom.indexOf(t.getTag(), start + 1);
+					customMap.remove(t.getTag());
 				}
-				sb.delete(start, end + 1);
 				modify = true;
-				custom = sb.toString();
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -304,33 +291,29 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			}
 		});
 		treeViewer.setInput(baseMapTree);
-		load();
+		load(false);
 		return container;
 	}
 
 	@Override
 	protected void performDefaults() {
 		updateApplyButton();
-		baseMapTree.removeAll();
-		for (String namespace : baseMap.keySet()) {
-			for (String tag : baseMap.get(namespace)) {
-				baseMapTree.Add(namespace, tag);
-			}
-		}
-		baseMapTree.sort(false);
-		treeViewer.setInput(baseMapTree);
-		defaul = true;
+		load(true);
 	}
 
 	@Override
 	public boolean performOk() {
 		save();
-		if (defaul) {
-			store.setValue("statistician.custom", "");
-			store.setValue("statistician.checked", "");
-		}
 		if (modify) {
-			store.setValue("statistician.custom", custom);
+			StringBuffer sb = new StringBuffer();
+			for (String n : customMap.keySet()) {
+				sb.append("*" + n);
+				for (String t : customMap.get(n)) {
+					sb.append("!" + t);
+				}
+				sb.append("!");
+			}
+			store.setValue("statistician.custom", sb.toString());
 		}
 		store.setValue("statistician.checked", checked);
 		try {
@@ -356,10 +339,26 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 	public void init(IWorkbench workbench) {
 	}
 
-	private void load() {
+	private void load(final boolean defaultValue) {
+		for (TagTree t : baseMapTree.getChildren()) {
+			treeViewer.setChecked(t, false);
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				String[] storeTag = store.getString("statistician.checked").split("!");
+				String[] storeTag = null;
+				if (defaultValue) {
+					Map<String, List<String>> defaultMap = PreferencesTag.INSTANCE().getDefaultMap();
+					List<String> defaultList = new ArrayList<String>();
+					for (String n : defaultMap.keySet()) {
+						defaultList.add("*" + n);
+						for (String t : defaultMap.get(n)) {
+							defaultList.add(t);
+						}
+					}
+					storeTag = defaultList.toArray(new String[defaultList.size()]);
+				} else {
+					storeTag = store.getString("statistician.checked").split("!");
+				}
 				String namespace = "";
 				for (String s : storeTag) {
 					if ("".equals(s.trim())) {
@@ -424,37 +423,33 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		}
 
 		public void modify(Object element, String property, Object value) {
+			TagTree tagTree = null;
 			if (element instanceof Item) {
-				element = ((Item) element).getData();
+				tagTree = (TagTree) ((Item) element).getData();
+			} else if (element instanceof TagTree) {
+				tagTree = (TagTree) element;
 			}
-			for (TagTree t : ((TagTree) element).getParent().getChildren()) {
+			for (TagTree t : tagTree.getParent().getChildren()) {
 				if (t.getTag().equals(value)) {
 					return;
 				}
 			}
-			if ("".equals(custom)) {
-				custom = store.getString("statistician.custom");
-			}
-			StringBuffer sb = new StringBuffer(custom);
-			if (((TagTree) element).getNamespace().equals(((TagTree) element).getTag())) {
-				int start = custom.indexOf("*" + ((TagTree) element).getNamespace());
-				int end = start + ((TagTree) element).getNamespace().length() + 1;
-				sb.replace(start, end, "*" + (String) value);
-				((TagTree) element).setNamespace((String) value);
-				((TagTree) element).setTag((String) value);
-				for (TagTree t : ((TagTree) element).getChildren()) {
+			if (tagTree.getNamespace().equals(tagTree.getTag())) {
+				customMap.remove(tagTree.getNamespace());
+				tagTree.setNamespace((String) value);
+				tagTree.setTag((String) value);
+				customMap.put(tagTree.getNamespace(), new ArrayList<String>());
+				for (TagTree t : tagTree.getChildren()) {
 					t.setNamespace((String) value);
+					customMap.get(tagTree.getNamespace()).add(t.getTag());
 				}
 			} else {
-				int start = custom.indexOf("*" + ((TagTree) element).getNamespace());
-				start = custom.indexOf(((TagTree) element).getTag(), start);
-				int end = start + ((TagTree) element).getTag().length();
-				sb.replace(start, end, (String) value);
-				((TagTree) element).setTag((String) value);
+				customMap.get(tagTree.getNamespace()).remove(tagTree.getTag());
+				tagTree.setTag((String) value);
+				customMap.get(tagTree.getNamespace()).add(tagTree.getTag());
 			}
-			custom = sb.toString();
 			baseMapTree.sort(false);
-			treeViewer.refresh(((TagTree) element).getParent());
+			treeViewer.refresh(tagTree.getParent());
 			modify = true;
 		}
 	}
