@@ -13,17 +13,19 @@ import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.IProperties;
 import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
+import aurora.ide.meta.gef.editors.policies.ResizeComponentEditPolicy;
 import aurora.ide.meta.gef.editors.property.IPropertySource2;
 
 public abstract class ComponentPart extends AbstractGraphicalEditPart implements
-		PropertyChangeListener, IProperties,PositionConstants {
+		PropertyChangeListener, IProperties, PositionConstants {
+	protected static final String RESIZE_KEY = "resize-key";
 
 	public void propertyChange(PropertyChangeEvent evt) {
 		this.getFigure().getBounds();
 		String prop = evt.getPropertyName();
 		if (!IProperties.CHILDREN.equals(prop))
 			this.refreshVisuals();
-		if (IProperties.SIZE.equals(prop)||IProperties.BOUNDS.equals(prop)) {
+		if (IProperties.SIZE.equals(prop) || IProperties.BOUNDS.equals(prop)) {
 			this.getFigure().revalidate();
 		}
 	}
@@ -60,11 +62,14 @@ public abstract class ComponentPart extends AbstractGraphicalEditPart implements
 		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
 				new NodeDirectEditPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
+		ResizeComponentEditPolicy rep = new ResizeComponentEditPolicy();
+		rep.setResizeDirections(getResizeDirection());
+		installEditPolicy(RESIZE_KEY, rep);
 	}
 
 	@Override
 	protected abstract IFigure createFigure();
-	
+
 	public int getResizeDirection() {
 		return NONE;
 	}
