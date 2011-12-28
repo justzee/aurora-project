@@ -16,7 +16,8 @@ Bundle-ClassPath: aurora.jar,
  uncertain.jar,
  xapool.jar,
  jco.jar,
- rhino-1.7R3.jar
+ rhino-1.7R3.jar,
+ poi-3.7-20101029.jar
 Bundle-Vendor: Aurora Framework
 Export-Package: aurora.application;
   uses:="uncertain.logging,
@@ -506,6 +507,7 @@ Export-Package: aurora.application;
    org.apache.log4j.spi,
    org.w3c.dom,
    org.xml.sax",
+ org.apache.poi.hssf.usermodel,
  org.enhydra.jdbc.core;uses:="javax.naming,org.enhydra.jdbc.util,javax.naming.spi",
  org.enhydra.jdbc.informix;uses:="org.enhydra.jdbc.standard,javax.sql",
  org.enhydra.jdbc.instantdb;
