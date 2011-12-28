@@ -40,8 +40,23 @@ public class ViewDiagramPart extends ContainerPart {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new DiagramLayoutEditPolicy());
 		installEditPolicy("Drop BM", new AutoCreateFormGridEditPolicy());
-		
+	
 	}
+
+	@Override
+	public void showSourceFeedback(Request request) {
+		// TODO Auto-generated method stub
+		super.showSourceFeedback(request);
+//		this.getDiagramPart(null).ge
+	}
+
+
+	@Override
+	public void showTargetFeedback(Request request) {
+		// TODO Auto-generated method stub
+		super.showTargetFeedback(request);
+	}
+
 
 	@Override
 	public void activate() {

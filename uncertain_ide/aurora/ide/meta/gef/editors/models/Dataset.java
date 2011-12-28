@@ -2,11 +2,10 @@ package aurora.ide.meta.gef.editors.models;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.draw2d.geometry.Dimension;
 
 public class Dataset extends AuroraComponent {
 	/**
@@ -15,12 +14,26 @@ public class Dataset extends AuroraComponent {
 	private static final long serialVersionUID = -4619018857153616914L;
 	// model
 	private String bmPath;
+	public static final int DEFAULT_PAGE_SIZE = 10;
 	private List<AuroraComponent> binds = new ArrayList<AuroraComponent>();
 	private QueryDataSet queryDataSet;
 	private boolean autoQuery;
 	private int pageSize;
 	private boolean selectable;
 	private String queryUrl;
+	private String id;
+
+	
+	public Dataset(){
+		this.setSize(new Dimension(50,20));
+	}
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public void addBind(AuroraComponent c) {
 		if (!binds.contains(c)) {
@@ -29,16 +42,13 @@ public class Dataset extends AuroraComponent {
 		}
 	}
 
-
 	public String getBmPath() {
 		return bmPath;
 	}
 
-
 	public void setBmPath(String bmPath) {
 		this.bmPath = bmPath;
 	}
-
 
 	public List<AuroraComponent> getBinds() {
 		return binds;

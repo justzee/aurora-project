@@ -93,6 +93,12 @@ public class DatasetDiagramPart extends ContainerPart {
 				return null;
 			}
 
+			@Override
+			protected boolean isLayoutHorizontal() {
+				return true;
+			}
+			
+
 		});
 		// installEditPolicy("Drop BM", new AutoCreateFormGridEditPolicy());
 

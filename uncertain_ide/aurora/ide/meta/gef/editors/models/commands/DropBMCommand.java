@@ -173,6 +173,9 @@ public class DropBMCommand extends Command {
 		qds = new QueryDataSet();
 		qds.setResultDataset(rds);
 		qds.setBmPath(bm.getProjectRelativePath().toString());
+		String lastSegment = bm.getProjectRelativePath().removeFileExtension()
+				.lastSegment();
+		qds.setId(lastSegment.toLowerCase() + "_query_ds");
 		if (rds != null)
 			rds.setQueryDataSet(qds);
 		diagram.addDataset(qds);
@@ -182,8 +185,11 @@ public class DropBMCommand extends Command {
 		rds = new Dataset();
 		rds.setAutoQuery(false);
 		rds.setBmPath(bm.getProjectRelativePath().toString());
-		rds.setPageSize(10);
+		rds.setPageSize(Dataset.DEFAULT_PAGE_SIZE);
 		rds.setSelectable(true);
+		String lastSegment = bm.getProjectRelativePath().removeFileExtension()
+				.lastSegment();
+		rds.setId(lastSegment.toLowerCase() + "_result_ds");
 		rds.setQueryDataSet(qds);
 		if (qds != null)
 			qds.setResultDataset(rds);
