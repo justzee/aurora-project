@@ -158,7 +158,7 @@ public class FirstSaveDataWizardPage extends WizardPage {
 
 	private String conversion(int num) {
 		String value = Integer.toString(num);
-		DecimalFormat df = new DecimalFormat("#.00");
+		DecimalFormat df = new DecimalFormat("0.00");
 		double v = Double.parseDouble(value);
 		if (value.length() > 3 && value.length() <= 6) {
 			v /= 1024.0;

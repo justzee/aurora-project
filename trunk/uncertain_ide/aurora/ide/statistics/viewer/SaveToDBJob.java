@@ -19,10 +19,12 @@ import aurora.statistics.Statistician;
 public class SaveToDBJob extends Job {
 
 	private Statistician statistician;
+	private StatisticsView statisticsView;
 
-	public SaveToDBJob(Statistician statistician) {
+	public SaveToDBJob(Statistician statistician,StatisticsView statisticsView) {
 		super("StatisticsViewSaveToDB");
 		this.statistician = statistician;
+		this.statisticsView = statisticsView;
 	}
 
 	@Override
@@ -61,6 +63,8 @@ public class SaveToDBJob extends Job {
 			}
 			monitor.worked(20);
 			monitor.setTaskName("数据保存成功");
+			statisticsView.setSaveToDBActionEnabled(true);
+			statisticsView.setSaveToXLSActionEnabled(true);
 			return Status.OK_STATUS;
 		} catch (ApplicationException e) {
 			showMessage(e.getMessage());
@@ -72,14 +76,9 @@ public class SaveToDBJob extends Job {
 
 	private void showMessage(final String message) {
 		Display.getDefault().asyncExec(new Runnable() {
-
 			public void run() {
 				MessageDialog.openInformation(Display.getDefault().getActiveShell(), "统计分析", message);
-
 			}
-
 		});
-
 	}
-
 }

@@ -63,6 +63,7 @@ public class StatisticianRunner implements IRunningListener {
 				StatisticianRunner.this.monitor = monitor;
 				Statistician st = noProjectStatistician();
 				privateRunning(st, objects, monitor);
+				statisticsView.setSaveToXLSActionEnabled(true);
 				return Status.OK_STATUS;
 			}
 
@@ -116,20 +117,12 @@ public class StatisticianRunner implements IRunningListener {
 		monitorUpdateJob.setSystem(true);
 		monitorUpdateJob.schedule();
 		try {
-			PreferencesTag.INSTANCE().set_1.clear();
-			PreferencesTag.INSTANCE().set_2.clear();
 			setPreferencesTag();
 			st.addRuningListener(this);
 			Statistician statistician = fillStatistician(st, objects, monitor);
 			isStatistician = true;
 			StatisticsResult doStatistic = statistician.doStatistic();
 			statisticsView.setInput(doStatistic, statistician);
-			for(String s:PreferencesTag.INSTANCE().set_1){
-				System.out.println(s);
-			}
-			for(String s:PreferencesTag.INSTANCE().set_2){
-				System.out.println(s);
-			}
 		} finally {
 			isStatistician = false;
 			monitorUpdateJob.cancel();
@@ -229,7 +222,8 @@ public class StatisticianRunner implements IRunningListener {
 						((IProject) objects[0]).accept(finder);
 						List<IResource> result = finder.getResult();
 						privateRunning(st, result.toArray(new IResource[result.size()]), monitor);
-						statisticsView.setSaveEnabled(true);
+						statisticsView.setSaveToDBActionEnabled(true);
+						statisticsView.setSaveToXLSActionEnabled(true);
 					} catch (CoreException e) {
 						e.printStackTrace();
 					}

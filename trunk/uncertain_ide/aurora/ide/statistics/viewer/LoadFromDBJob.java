@@ -19,15 +19,13 @@ import aurora.statistics.model.StatisticsProject;
 
 public class LoadFromDBJob extends Job {
 
-	private Statistician statistician;
 	private StatisticsProject statisticsProject;
 	private IProject project;
 	private StatisticsView statisticsView;
 
-	public LoadFromDBJob(IProject project, Statistician statistician, StatisticsProject statisticsProject, StatisticsView statisticsView) {
+	public LoadFromDBJob(IProject project, StatisticsProject statisticsProject, StatisticsView statisticsView) {
 		super("从数据库加载数据");
 		this.project = project;
-		this.statistician = statistician;
 		this.statisticsProject = statisticsProject;
 		this.statisticsView = statisticsView;
 	}
@@ -47,6 +45,7 @@ public class LoadFromDBJob extends Job {
 			StatisticsResult read = s.read(connection);
 			monitor.worked(40);
 			statisticsView.setInput(read, s);
+			statisticsView.setSaveToXLSActionEnabled(true);
 		} catch (ApplicationException e) {
 			showMessage(e.getMessage());
 		} catch (SQLException e) {
