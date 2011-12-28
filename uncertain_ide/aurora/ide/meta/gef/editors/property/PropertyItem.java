@@ -37,6 +37,6 @@ public class PropertyItem {
 			editor = data.getEditor(par);
 			return editor.getControl();
 		}
-		return data.getEditor(par).getControl();
+		return control;
 	}
 }
