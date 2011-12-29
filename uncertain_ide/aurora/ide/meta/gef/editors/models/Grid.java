@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class Grid extends GridColumn {
 
@@ -13,6 +14,8 @@ public class Grid extends GridColumn {
 	private static final long serialVersionUID = -3083738388276859573L;
 	private Toolbar toolbar;
 	private Navbar navBar;
+	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
+			PD_PROMPT, PD_WIDTH, PD_HEIGHT };
 
 	public Grid() {
 		super();
@@ -73,4 +76,10 @@ public class Grid extends GridColumn {
 			return this.getFirstChild(child.getClass()) == null;
 		return super.isResponsibleChild(child);
 	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return pds;
+	}
+
 }
