@@ -90,7 +90,7 @@ public class InputField extends Figure {
 			bgColor = ColorConstants.READONLY_BG;
 		graphics.setBackgroundColor(bgColor);
 		graphics.fillRectangle(r);
-
+		paintEmptyText(graphics, model.getEmptyText(), r);
 		Image image = getImage();
 
 		if (image != null) {
@@ -99,6 +99,15 @@ public class InputField extends Figure {
 					getImageLocation().y, 16, 16, imageR.getTopRight().x - 18,
 					imageR.getTopRight().y, 16, 16);
 		}
+	}
+
+	private void paintEmptyText(Graphics g, String emptyText, Rectangle r) {
+		g.pushState();
+		g.setForegroundColor(ColorConstants.EDITOR_BORDER);
+		Dimension dim = FigureUtilities.getTextExtents(emptyText, getFont());
+		g.setClip(r.getResized(-16, 0));
+		g.drawString(emptyText, r.x + 2, r.y + (r.height - dim.height) / 2);
+		g.popState();
 	}
 
 	private Image getImage() {

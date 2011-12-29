@@ -1,12 +1,16 @@
 package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class HBox extends BOX {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6675954637550725095L;
+
+	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
+			PD_PROMPT, PD_LABELWIDTH };
 
 	public HBox() {
 		setSize(new Dimension(600, 40));
@@ -37,4 +41,10 @@ public class HBox extends BOX {
 	final public void setCol(int col) {
 		// always Integer.MAX_VALUE
 	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return pds;
+	}
+
 }

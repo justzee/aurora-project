@@ -14,17 +14,25 @@ import org.eclipse.swt.widgets.Spinner;
 public class IntegerCellEditor extends CellEditor implements FocusListener,
 		KeyListener {
 	private Spinner spinner;
-
-	public IntegerCellEditor() {
-		setStyle(SWT.NONE);
-	}
+	private int min = 0, max = Integer.MAX_VALUE, step1 = 5, step2 = 30;
 
 	public IntegerCellEditor(Composite parent) {
-		this(parent, SWT.NONE);
+		min = 0;
+		max = Integer.MAX_VALUE;
+		step1 = 5;
+		step2 = 30;
+		setStyle(SWT.NONE);
+		create(parent);
 	}
 
-	public IntegerCellEditor(Composite parent, int style) {
-		super(parent, style);
+	public IntegerCellEditor(Composite parent, int min, int max, int step1,
+			int step2) {
+		this.min = min;
+		this.max = max;
+		this.step1 = step1;
+		this.step2 = step2;
+		setStyle(SWT.NONE);
+		create(parent);
 	}
 
 	public void activate() {
@@ -35,11 +43,11 @@ public class IntegerCellEditor extends CellEditor implements FocusListener,
 	@Override
 	protected Control createControl(Composite parent) {
 		spinner = new Spinner(parent, SWT.NONE);
-		spinner.setIncrement(5);
-		spinner.setPageIncrement(30);
+		spinner.setIncrement(step1);
+		spinner.setPageIncrement(step2);
 		spinner.setDigits(0);
-		spinner.setMinimum(0);
-		spinner.setMaximum(Integer.MAX_VALUE);
+		spinner.setMinimum(min);
+		spinner.setMaximum(max);
 		spinner.addFocusListener(this);
 		spinner.addKeyListener(this);
 		// spinner.setCursor(Display.getCurrent()
