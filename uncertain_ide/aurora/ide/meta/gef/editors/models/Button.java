@@ -1,6 +1,13 @@
 package aurora.ide.meta.gef.editors.models;
 
+import java.util.Arrays;
+
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class Button extends AuroraComponent {
 	/**
@@ -13,12 +20,25 @@ public class Button extends AuroraComponent {
 	public static final String CLEAR = "clear";
 	public static final String EXCEL = "excel";
 	public static final String DEFAULT = "default";
+	private static final String[] types = new String[] { DEFAULT, ADD, SAVE,
+			DELETE, CLEAR, EXCEL };
+	public static final String BUTTONTYPE = "buttontype";
+	public static final String BUTTONTEXT = "buttontext";
+	public static final String BUTTONFUNCTION = "buttonfunction";
+	public static final String TOOLTIP = "tooltip";
 
 	private String buttonType = DEFAULT;
 	private String text = "button";
 	private String icon = "";
-	private String function;
-	private String title;
+	private String function = "";
+	private String title = "";
+	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
+			new StringPropertyDescriptor(BUTTONTEXT, "Text"),
+			new IntegerPropertyDescriptor(WIDTH, "Width"),
+			new IntegerPropertyDescriptor(HEIGHT, "Height"),
+			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
+			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
+			new ComboPropertyDescriptor(BUTTONTYPE, "Type", types) };
 
 	public Button() {
 		setSize(new Dimension(80, 20));
@@ -71,7 +91,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.buttonType;
 		this.buttonType = buttonType;
-		firePropertyChange("BUTTONTYPE", oldV, buttonType);
+		firePropertyChange(BUTTONTYPE, oldV, buttonType);
 		if (isStdButton()) {
 			super.setSize(new Dimension(48, 20));
 		}
@@ -82,7 +102,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.function;
 		this.function = function;
-		firePropertyChange("FUNCTION", oldV, function);
+		firePropertyChange(BUTTONFUNCTION, oldV, function);
 	}
 
 	public void setIcon(String icon) {
@@ -98,7 +118,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.text;
 		this.text = text;
-		firePropertyChange("TEXT", oldV, text);
+		firePropertyChange(BUTTONTEXT, oldV, text);
 	}
 
 	public void setTitle(String title) {
@@ -106,7 +126,49 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.title;
 		this.title = title;
-		firePropertyChange("TITLE", oldV, title);
+		firePropertyChange(TOOLTIP, oldV, title);
+	}
+
+	@Override
+	public Object getEditableValue() {
+		return this;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
+	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return pds;
+	}
+
+	@Override
+	public Object getPropertyValue(Object propName) {
+		if (TOOLTIP.equals(propName))
+			return getTitle();
+		else if (BUTTONTEXT.equals(propName))
+			return getText();
+		else if (BUTTONFUNCTION.equals(propName))
+			return getFunction();
+		else if (BUTTONTYPE.equals(propName))
+			return Arrays.asList(types).indexOf(getButtonType());
+		return super.getPropertyValue(propName);
+	}
+
+	@Override
+	public void setPropertyValue(Object propName, Object val) {
+		if (TOOLTIP.equals(propName))
+			setTitle((String) val);
+		else if (BUTTONTEXT.equals(propName))
+			setText((String) val);
+		else if (BUTTONFUNCTION.equals(propName))
+			setFunction((String) val);
+		else if (BUTTONTYPE.equals(propName))
+			setButtonType(types[(Integer) val]);
+		super.setPropertyValue(propName, val);
 	}
 
 }

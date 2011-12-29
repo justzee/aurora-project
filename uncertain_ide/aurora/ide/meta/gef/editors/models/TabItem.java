@@ -10,7 +10,7 @@ public class TabItem extends AuroraComponent {
 	private static final long serialVersionUID = -6198220551287976461L;
 	private static IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(PROMPT, "Prompt"),
-			new IntegerPropertyDescriptor("WIDTH", "Width") };
+			new IntegerPropertyDescriptor(WIDTH, "Width") };
 	public static final String CURRENT = "current";
 	public static final int HEIGHT = 25;
 	private TabBody body = new TabBody();
@@ -64,10 +64,6 @@ public class TabItem extends AuroraComponent {
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		if (PROMPT.equals(propName))
-			return getPrompt();
-		else if ("WIDTH".equals(propName))
-			return getWidth();
 		return super.getPropertyValue(propName);
 	}
 
@@ -83,10 +79,6 @@ public class TabItem extends AuroraComponent {
 
 	@Override
 	public void setPropertyValue(Object propName, Object val) {
-		if (PROMPT.equals(propName))
-			setPrompt((String) val);
-		else if ("WIDTH".equals(propName))
-			setWidth((Integer) val);
 		super.setPropertyValue(propName, val);
 	}
 

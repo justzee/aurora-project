@@ -3,6 +3,8 @@ package aurora.ide.meta.gef.editors.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
 public class ViewDiagram extends Container {
 
 	/**
@@ -28,6 +30,7 @@ public class ViewDiagram extends Container {
 				return false;
 		return super.isResponsibleChild(component);
 	}
+
 	public List<Dataset> getDatasets() {
 		return datasets;
 	}
@@ -40,9 +43,15 @@ public class ViewDiagram extends Container {
 		datasets.add(ds);
 		this.addChild(ds);
 	}
+
 	public void removeDataset(Dataset ds) {
 		datasets.remove(ds);
 		this.removeChild(ds);
+	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return new IPropertyDescriptor[0];
 	}
 
 }

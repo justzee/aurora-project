@@ -1,6 +1,10 @@
 package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class CheckBox extends Input {
 
@@ -9,6 +13,11 @@ public class CheckBox extends Input {
 	public static final String TEXT = "checkbox_text";
 	private boolean selected = false;
 	private String text = "text";
+
+	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
+			new StringPropertyDescriptor(PROMPT, "Prompt"),
+			new BooleanPropertyDescriptor(SELECTION_STATE, "Selected"),
+			new StringPropertyDescriptor(TEXT, "Text") };
 
 	public CheckBox() {
 		setSize(new Dimension(120, 20));
@@ -36,6 +45,29 @@ public class CheckBox extends Input {
 		String oldV = this.text;
 		this.text = text;
 		firePropertyChange(TEXT, oldV, text);
+	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return pds;
+	}
+
+	@Override
+	public Object getPropertyValue(Object propName) {
+		if (SELECTION_STATE.equals(propName))
+			return isSelected();
+		else if (TEXT.equals(propName))
+			return getText();
+		return super.getPropertyValue(propName);
+	}
+
+	@Override
+	public void setPropertyValue(Object propName, Object val) {
+		if (SELECTION_STATE.equals(propName))
+			setSelected((Boolean) val);
+		else if (TEXT.equals(propName))
+			setText((String) val);
+		super.setPropertyValue(propName, val);
 	}
 
 }

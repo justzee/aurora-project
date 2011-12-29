@@ -12,6 +12,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import aurora.ide.meta.gef.editors.property.IPropertySource2;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class AuroraComponent implements Cloneable, Serializable, IProperties,
@@ -36,6 +37,14 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	// private String bindTarget = "";
 
 	private Dataset bindTarget;
+
+	protected static final IPropertyDescriptor PD_PROMPT = new StringPropertyDescriptor(
+			PROMPT, "Prompt");
+	protected static final IPropertyDescriptor PD_WIDTH = new IntegerPropertyDescriptor(
+			WIDTH, "Width");
+	protected static final IPropertyDescriptor PD_HEIGHT = new IntegerPropertyDescriptor(
+			HEIGHT, "Height");
+	private static final IPropertyDescriptor[] pds = { PD_PROMPT };
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		listeners.addPropertyChangeListener(l);
@@ -166,9 +175,6 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		return this;
 	}
 
-	private static final IPropertyDescriptor[] pds = { new StringPropertyDescriptor(
-			PROMPT, "Prompt") };
-
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		return pds;
 	}
@@ -176,6 +182,10 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	public Object getPropertyValue(Object propName) {
 		if (PROMPT.equals(propName))
 			return this.getPrompt();
+		else if (WIDTH.equals(propName))
+			return getSize().width;
+		else if (HEIGHT.equals(propName))
+			return getSize().height;
 		return null;
 	}
 
@@ -190,6 +200,10 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 
 		if (PROMPT.equals(propName))
 			this.setPrompt(val.toString());
+		else if (WIDTH.equals(propName))
+			setSize(new Dimension((Integer) val, getSize().height));
+		else if (HEIGHT.equals(propName))
+			setSize(new Dimension(getSize().width, (Integer) val));
 	}
 
 	// public void setIBounds(Rectangle layout) {
