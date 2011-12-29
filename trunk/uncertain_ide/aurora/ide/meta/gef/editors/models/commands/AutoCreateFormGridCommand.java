@@ -25,7 +25,6 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 	protected AuroraComponent createGrid() {
 		Grid grid = new Grid();
 		fillGrid(grid);
-
 		return grid;
 	}
 
@@ -45,7 +44,6 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 		Form form = new Form();
 		fillForm(form);
 		return form;
-
 	}
 
 	public Container getContainer() {

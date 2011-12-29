@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import aurora.ide.meta.gef.editors.models.BOX;
+import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.parts.BoxPart;
 import aurora.ide.meta.gef.editors.parts.ComponentPart;
 
@@ -131,6 +132,10 @@ public class BoxBackLayout extends BackLayout {
 	}
 
 	private Rectangle calculateRectangle(ComponentPart parent) {
+		if(parent.getComponent() instanceof Form){
+			return this.calculateFormRectangle(parent);
+		}
+			
 		Rectangle selfRectangle = zero.getCopy().setLocation(
 				parent.getFigure().getBounds().getLocation());
 		List children = parent.getChildren();
@@ -143,6 +148,21 @@ public class BoxBackLayout extends BackLayout {
 		}
 		selfRectangle = parent.getComponent().getBounds();
 		return selfRectangle;
+	}
+	private Rectangle calculateFormRectangle(ComponentPart parent) {
+		Rectangle selfRectangle = zero.getCopy().setLocation(
+				parent.getFigure().getBounds().getLocation());
+		List children =  parent.getChildren();
+		for (int i = 0; i < children.size(); i++) {
+			ComponentPart cp = (ComponentPart) children.get(i);
+			selfRectangle.union(cp.getFigure().getBounds().getCopy());
+		}
+		if (selfRectangle.width > this.selfRectangle.width) {
+			// return selfRectangle.expand(1, 1);
+			return this.selfRectangle.getCopy().setWidth(selfRectangle.width+50);
+		}
+		selfRectangle = parent.getComponent().getBounds();
+		return this.selfRectangle.setWidth(selfRectangle.width);
 	}
 
 	// 按顺序布局，列大小不相等算法。

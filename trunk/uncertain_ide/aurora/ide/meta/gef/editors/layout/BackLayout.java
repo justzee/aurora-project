@@ -14,7 +14,6 @@ public class BackLayout {
 
 	protected void applyToFigure(ComponentPart ep, Rectangle layout) {
 		ep.getFigure().setBounds(layout);
-//		ep.getComponent().setILocation(layout.getLocation());
-		
+//		ep.getComponent().resetSize(layout.getSize());
 	}
 }
