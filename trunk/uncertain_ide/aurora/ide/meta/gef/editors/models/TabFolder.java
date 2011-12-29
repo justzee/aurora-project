@@ -3,14 +3,11 @@ package aurora.ide.meta.gef.editors.models;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-
 public class TabFolder extends Container {
 
 	private static final long serialVersionUID = 628304066767323457L;
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			new IntegerPropertyDescriptor(WIDTH, "Width"),
-			new IntegerPropertyDescriptor(HEIGHT, "Height") };
+			PD_PROMPT, PD_WIDTH, PD_HEIGHT };
 
 	public TabFolder() {
 		setSize(new Dimension(700, 300));

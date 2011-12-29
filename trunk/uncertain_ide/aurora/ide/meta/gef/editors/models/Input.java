@@ -1,7 +1,5 @@
 package aurora.ide.meta.gef.editors.models;
 
-import java.util.Arrays;
-
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
@@ -25,11 +23,16 @@ public class Input extends AuroraComponent {
 	public static final String CASE_ANY = "";
 	private static final String[] CASE_TYPES = { CASE_ANY, CASE_UPPER,
 			CASE_LOWER };
+	private static final String[] CAL_ENABLES = { "pre", "next", "both", "none" };
 	public static final String ALLOWDECIMALS = "ALLOWDECIMALS";
 	public static final String ALLOWNEGATIVE = "ALLOWNEGATIVE";
 	public static final String ALLOWFORMAT = "ALLOWFORMAT";
 	public static final String EMPTYTEXT = "EMPTYTEXT";
 	public static final String TYPECASE = "TYPECASE";
+	public static final String ENABLEBESIDEDAYS = "ENABLEBESIDEDAYS";
+	public static final String ENABLEMONTHBTN = "ENABLEMONTHBTN";
+
+	// /
 	private boolean required = false;
 	private boolean readOnly = false;
 	private boolean allowDecimals = true;
@@ -37,6 +40,11 @@ public class Input extends AuroraComponent {
 	private boolean allowFormat = false;
 	private String emptyText = "";
 	private String typeCase = CASE_ANY;
+	private String enableBediseDays = CAL_ENABLES[3];
+	private String enableMonthBtn = CAL_ENABLES[3];
+
+	// /
+
 	private static final IPropertyDescriptor PD_REQUIRED = new BooleanPropertyDescriptor(
 			REQUIRED, "Required");
 	private static final IPropertyDescriptor PD_READONLY = new BooleanPropertyDescriptor(
@@ -52,6 +60,13 @@ public class Input extends AuroraComponent {
 			new BooleanPropertyDescriptor(ALLOWDECIMALS, "AllowDecimals"),
 			new BooleanPropertyDescriptor(ALLOWNEGATIVE, "AllowNegative"),
 			new BooleanPropertyDescriptor(ALLOWFORMAT, "AllowFormat") };
+	private static final IPropertyDescriptor[] pds_datapicker = new IPropertyDescriptor[] {
+			PD_PROMPT,
+			PD_WIDTH,
+			new ComboPropertyDescriptor(ENABLEBESIDEDAYS, "EnableBesideDays",
+					CAL_ENABLES),
+			new ComboPropertyDescriptor(ENABLEMONTHBTN, "EnableMonthBtn",
+					CAL_ENABLES) };
 
 	public Input() {
 		this.setSize(new Dimension(120, 20));
@@ -83,8 +98,11 @@ public class Input extends AuroraComponent {
 	}
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		if (NUMBER.equals(getType()))
+		String type = getType();
+		if (NUMBER.equals(type))
 			return pds_number;
+		else if (CAL.equals(type))
+			return pds_datapicker;
 		return pds_text;
 	}
 
@@ -102,7 +120,11 @@ public class Input extends AuroraComponent {
 		else if (EMPTYTEXT.equals(propName))
 			return getEmptyText();
 		else if (TYPECASE.equals(propName))
-			return Arrays.asList(CASE_TYPES).indexOf(getTypeCase());
+			return indexOf(CASE_TYPES, getTypeCase());
+		else if (ENABLEBESIDEDAYS.equals(propName))
+			return indexOf(CAL_ENABLES, getEnableBediseDays());
+		else if (ENABLEMONTHBTN.equals(propName))
+			return indexOf(CAL_ENABLES, getEnableMonthBtn());
 		return super.getPropertyValue(propName);
 	}
 
@@ -141,6 +163,10 @@ public class Input extends AuroraComponent {
 			setEmptyText((String) val);
 		else if (TYPECASE.equals(propName))
 			setTypeCase(CASE_TYPES[(Integer) val]);
+		else if (ENABLEBESIDEDAYS.equals(propName))
+			setEnableBediseDays(CAL_ENABLES[(Integer) val]);
+		else if (ENABLEMONTHBTN.equals(propName))
+			setEnableMonthBtn(CAL_ENABLES[(Integer) val]);
 		super.setPropertyValue(propName, val);
 	}
 
@@ -170,6 +196,29 @@ public class Input extends AuroraComponent {
 
 	public void setTypeCase(String typeCase) {
 		this.typeCase = typeCase;
+	}
+
+	public String getEnableBediseDays() {
+		return enableBediseDays;
+	}
+
+	public void setEnableBediseDays(String enableBediseDays) {
+		this.enableBediseDays = enableBediseDays;
+	}
+
+	public String getEnableMonthBtn() {
+		return enableMonthBtn;
+	}
+
+	public void setEnableMonthBtn(String enableMonthBtn) {
+		this.enableMonthBtn = enableMonthBtn;
+	}
+
+	private int indexOf(Object[] objs, Object o) {
+		for (int i = 0; i < objs.length; i++)
+			if (objs[i].equals(o))
+				return i;
+		return -1;
 	}
 
 }
