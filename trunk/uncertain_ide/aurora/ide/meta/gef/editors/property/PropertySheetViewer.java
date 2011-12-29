@@ -253,7 +253,7 @@ public class PropertySheetViewer extends Viewer {
 			List<IPropertySheetEntry> unsortedEntries) {
 		IPropertySheetEntry[] propertySheetEntries = (IPropertySheetEntry[]) unsortedEntries
 				.toArray(new IPropertySheetEntry[unsortedEntries.size()]);
-		sorter.sort(propertySheetEntries);
+		// sorter.sort(propertySheetEntries);
 		return Arrays.asList(propertySheetEntries);
 	}
 
