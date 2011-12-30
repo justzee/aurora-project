@@ -43,7 +43,7 @@ public class RowColBackLayout extends BackLayout {
 			row = rowCol.getRow();
 			Rectangle fBounds = parent.getFigure().getBounds();
 			selfRectangle = fBounds.isEmpty() ? rowCol.getBounds() : fBounds;
-//			selfRectangle = rowCol.getBounds() ;
+			// selfRectangle = rowCol.getBounds() ;
 			titleHight = rowCol.getHeadHight();
 			location.x = location.x + getPadding().left;
 			location.y = location.y + titleHight + getPadding().top;
@@ -143,7 +143,7 @@ public class RowColBackLayout extends BackLayout {
 	}
 
 	protected Rectangle calculateRectangle(ComponentPart parent) {
-		if(parent.getComponent() instanceof Form){
+		if (parent.getComponent() instanceof Form) {
 			return this.calculateFormRectangle(parent);
 		}
 		Rectangle selfRectangle = zero.getCopy().setLocation(
@@ -159,21 +159,28 @@ public class RowColBackLayout extends BackLayout {
 		selfRectangle = parent.getComponent().getBounds();
 		return selfRectangle;
 	}
+
 	private Rectangle calculateFormRectangle(ComponentPart parent) {
 		Rectangle selfRectangle = zero.getCopy().setLocation(
 				parent.getFigure().getBounds().getLocation());
-		List children =  parent.getChildren();
+		List children = parent.getChildren();
 		for (int i = 0; i < children.size(); i++) {
 			ComponentPart cp = (ComponentPart) children.get(i);
 			selfRectangle.union(cp.getFigure().getBounds().getCopy());
 		}
+
 		if (selfRectangle.width > rowCol.getBounds().width) {
 			// return selfRectangle.expand(1, 1);
 			return selfRectangle.expand(5, 5);
 		}
-		return this.selfRectangle.getCopy().setSize(this.rowCol.getSize().width,selfRectangle.height).expand(0, 5);
-	}
+		// return
+		// this.selfRectangle.getCopy().setSize(this.rowCol.getSize().width,selfRectangle.height).expand(0,
+		// 5);
+		int nw = Math.max(selfRectangle.width, rowCol.getBounds().width);
+		int nh = Math.max(selfRectangle.height, rowCol.getBounds().height);
+		return this.selfRectangle.getCopy().setSize(nw, nh).expand(0, 5);
 
+	}
 
 	public Insets getPadding() {
 		return padding;
