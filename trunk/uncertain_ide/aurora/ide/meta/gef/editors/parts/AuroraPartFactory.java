@@ -12,6 +12,7 @@ import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
+import aurora.ide.meta.gef.editors.models.GridSelectionCol;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Navbar;
@@ -46,6 +47,7 @@ public class AuroraPartFactory implements EditPartFactory {
 		map.put(TabItem.class, TabItemPart.class);
 		map.put(TabFolder.class, TabFolderPart.class);
 		map.put(TabBody.class, TabBodyPart.class);
+		map.put(GridSelectionCol.class, GridSelectionColPart.class);
 	}
 
 	public EditPart createEditPart(EditPart context, Object model) {
@@ -96,7 +98,7 @@ public class AuroraPartFactory implements EditPartFactory {
 		} else {
 			System.out.println(model.getClass());
 		}
-		if(part == null)
+		if (part == null)
 			return part;
 		part.setParent(context);
 		part.setModel(model);

@@ -45,6 +45,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	protected static final IPropertyDescriptor PD_HEIGHT = new IntegerPropertyDescriptor(
 			HEIGHT, "Height");
 	private static final IPropertyDescriptor[] pds = { PD_PROMPT };
+	protected static final IPropertyDescriptor[] NONE_PROPS = new IPropertyDescriptor[0];
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		listeners.addPropertyChangeListener(l);
