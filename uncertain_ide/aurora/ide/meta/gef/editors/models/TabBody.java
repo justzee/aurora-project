@@ -6,7 +6,6 @@ public class TabBody extends Container {
 
 	private static final long serialVersionUID = -9196440587781890208L;
 	public static final String VISIBLE = "visible";
-	private static IPropertyDescriptor[] NONEPROP = new IPropertyDescriptor[0];
 	@SuppressWarnings("rawtypes")
 	private static Class[] unsupported = { Toolbar.class, Navbar.class,
 			GridColumn.class, TabItem.class, TabBody.class };
@@ -37,7 +36,7 @@ public class TabBody extends Container {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return NONEPROP;
+		return NONE_PROPS;
 	}
 
 }

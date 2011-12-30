@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class Toolbar extends RowCol {
 
@@ -38,6 +39,11 @@ public class Toolbar extends RowCol {
 	 * */
 	public boolean isResponsibleChild(AuroraComponent child) {
 		return child instanceof Button;
+	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return NONE_PROPS;
 	}
 
 }
