@@ -3,6 +3,7 @@ package aurora.ide.meta.gef.editors.models;
 import java.util.Arrays;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
@@ -20,31 +21,14 @@ public class Button extends AuroraComponent {
 	public static final String CLEAR = "clear";
 	public static final String EXCEL = "excel";
 	public static final String DEFAULT = "default";
-	private static final String[] types = new String[] { DEFAULT, ADD, SAVE,
-			DELETE, CLEAR, EXCEL };
+	private static final String[] std_types = { DEFAULT, ADD, SAVE, DELETE,
+			CLEAR, EXCEL };
+	private static final String[] std_type_names = { "", "新增", "保存", "删除",
+			"清除", "导出" };
 	public static final String BUTTONTYPE = "buttontype";
 	public static final String BUTTONTEXT = "buttontext";
 	public static final String BUTTONFUNCTION = "buttonfunction";
 	public static final String TOOLTIP = "tooltip";
-
-	private String buttonType = DEFAULT;
-	private String text = "button";
-	private String icon = "";
-	private String function = "";
-	private String title = "";
-	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(BUTTONTEXT, "Text"),
-			new IntegerPropertyDescriptor(WIDTH, "Width"),
-			new IntegerPropertyDescriptor(HEIGHT, "Height"),
-			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
-			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
-			new ComboPropertyDescriptor(BUTTONTYPE, "Type", types) };
-
-	private AuroraComponent targetComponent;
-
-	public Button() {
-		setSize(new Dimension(80, 20));
-	}
 
 	static final public String B_SEARCH = "b_search";
 	static final public String B_RESET = "b_reset";
@@ -53,16 +37,61 @@ public class Button extends AuroraComponent {
 	static final public String B_RUN = "b_run";
 	static final public String B_OPEN = "b_open";
 
+	private static final String[] inner_types = { DEFAULT, B_SEARCH, B_RESET,
+			B_SAVE, B_OPEN, B_CLOSE, B_RUN };
+
+	private static final String[] inner_types_names = { "自定义", "查询", "重置",
+			"保存", "打开", "关闭", "运行" };
+	private static final IPropertyDescriptor[] std_pds = new IPropertyDescriptor[] {
+			new StringPropertyDescriptor(BUTTONTEXT, "Text"),
+			new IntegerPropertyDescriptor(WIDTH, "Width"),
+			new IntegerPropertyDescriptor(HEIGHT, "Height"),
+			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
+			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
+			new ComboPropertyDescriptor(BUTTONTYPE, "Type", std_type_names) };
+	private static final IPropertyDescriptor[] inner_pds = new IPropertyDescriptor[] {
+			new StringPropertyDescriptor(BUTTONTEXT, "Text"),
+			new IntegerPropertyDescriptor(WIDTH, "Width"),
+			new IntegerPropertyDescriptor(HEIGHT, "Height"),
+			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
+			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
+			new ComboPropertyDescriptor(BUTTONTYPE, "Type", inner_types_names) };
+
+	private String buttonType = DEFAULT;
+	private String text = "button";
+	private String icon = "";
+	private String function = "";
+	private String title = "";
+	private AuroraComponent targetComponent;
+
+	private boolean isOnToolBar = false;
+
+	public Button() {
+		setSize(new Dimension(80, 20));
+	}
+
+	@Override
 	public void setSize(Dimension dim) {
-		if (isStdButton()) {
+		if (isOnToolBar) {
 			dim.height = 20;
-			dim.width = 48;
+			if (isStdButton())
+				dim.width = 48;
 		}
 		super.setSize(dim);
 	}
 
+	@Override
+	public void setBounds(Rectangle bounds) {
+		if (isOnToolBar) {
+			bounds.height = 20;
+			if (isStdButton())
+				bounds.width = 48;
+		}
+		super.setBounds(bounds);
+	}
+
 	public boolean isStdButton() {
-		return !buttonType.equals(DEFAULT);
+		return Arrays.asList(std_types).indexOf(buttonType) > 0;
 	}
 
 	public String getButtonType() {
@@ -101,6 +130,7 @@ public class Button extends AuroraComponent {
 
 	public void setTargetComponent(AuroraComponent targetComponent) {
 		this.targetComponent = targetComponent;
+		isOnToolBar = Toolbar.class.equals(targetComponent.getClass());
 	}
 
 	public void setButtonType(String buttonType) {
@@ -152,14 +182,11 @@ public class Button extends AuroraComponent {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return super.clone();
-	}
-
-	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		if (isOnToolBar) {
+			return std_pds;
+		}
+		return inner_pds;
 	}
 
 	@Override
@@ -171,7 +198,8 @@ public class Button extends AuroraComponent {
 		else if (BUTTONFUNCTION.equals(propName))
 			return getFunction();
 		else if (BUTTONTYPE.equals(propName))
-			return Arrays.asList(types).indexOf(getButtonType());
+			return Arrays.asList(isOnToolBar ? std_types : inner_types)
+					.indexOf(getButtonType());
 		return super.getPropertyValue(propName);
 	}
 
@@ -184,7 +212,7 @@ public class Button extends AuroraComponent {
 		else if (BUTTONFUNCTION.equals(propName))
 			setFunction((String) val);
 		else if (BUTTONTYPE.equals(propName))
-			setButtonType(types[(Integer) val]);
+			setButtonType((isOnToolBar ? std_types : inner_types)[(Integer) val]);
 		super.setPropertyValue(propName, val);
 	}
 
