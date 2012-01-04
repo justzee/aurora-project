@@ -34,6 +34,9 @@ public class Grid extends GridColumn {
 	public Grid() {
 		super();
 		this.setSize(new Dimension(800, 380));
+		ResultDataSet dataset = new ResultDataSet();
+		dataset.setUseParentBM(false);
+		this.setDataset(dataset);
 	}
 
 	public String getSelectionMode() {

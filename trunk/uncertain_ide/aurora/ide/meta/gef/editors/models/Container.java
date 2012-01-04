@@ -12,6 +12,10 @@ public class Container extends AuroraComponent {
 
 	private static int count;
 
+
+	
+	private Dataset  dataset;
+	
 	protected List<AuroraComponent> children = new ArrayList<AuroraComponent>();
 
 	public Container() {
@@ -52,6 +56,14 @@ public class Container extends AuroraComponent {
 
 	public boolean isResponsibleChild(AuroraComponent component) {
 		return true;
+	}
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(Dataset dataset) {
+		this.dataset = dataset;
 	}
 
 	public AuroraComponent getFirstChild(Class clazz) {

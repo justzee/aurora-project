@@ -14,7 +14,6 @@ public class BindGridCommand extends DropBMCommand {
 	}
 
 	public void execute() {
-		this.createResultDataset();
 		this.fillGrid(grid);
 	}
 }

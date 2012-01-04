@@ -8,6 +8,7 @@ public class Form extends BOX {
 
 	public Form() {
 		setTitle("Form");
+		this.getDataset().setUseParentBM(false);
 	}
 
 	public int getHeadHight() {

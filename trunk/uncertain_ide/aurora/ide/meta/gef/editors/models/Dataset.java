@@ -2,68 +2,35 @@ package aurora.ide.meta.gef.editors.models;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.draw2d.geometry.Dimension;
 
 public class Dataset extends AuroraComponent {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4619018857153616914L;
-	// model
-	private String bmPath;
-	public static final int DEFAULT_PAGE_SIZE = 10;
-	private List<AuroraComponent> binds = new ArrayList<AuroraComponent>();
-	private QueryDataSet queryDataSet;
-	private boolean autoQuery;
-	private int pageSize;
-	private boolean selectable;
-	private String queryUrl;
-	private String id;
+	// model a.b.c形式
+	private String model;
 
-	
-	public Dataset(){
-		this.setSize(new Dimension(50,20));
+	private boolean autoQuery;
+	// private String queryUrl;
+	// 自动生成
+	private String id;
+	// 是否只是QueryDS,如果true，生成的代码将不设置model
+	private boolean isUse4Query;
+	// 是否使用父的BM
+	private boolean isUseParentBM = true;
+
+	public Dataset() {
+		// 暂时不显示
+		// this.setSize(new Dimension(50, 20));
 	}
+
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public void addBind(AuroraComponent c) {
-		if (!binds.contains(c)) {
-			binds.add(c);
-			c.setBindTarget(this);
-		}
-	}
-
-	public String getBmPath() {
-		return bmPath;
-	}
-
-	public void setBmPath(String bmPath) {
-		this.bmPath = bmPath;
-	}
-
-	public List<AuroraComponent> getBinds() {
-		return binds;
-	}
-
-	public void setBinds(List<AuroraComponent> binds) {
-		this.binds = binds;
-	}
-
-	public QueryDataSet getQueryDataSet() {
-		return queryDataSet;
-	}
-
-	public void setQueryDataSet(QueryDataSet queryDataSet) {
-		this.queryDataSet = queryDataSet;
 	}
 
 	public boolean isAutoQuery() {
@@ -74,38 +41,34 @@ public class Dataset extends AuroraComponent {
 		this.autoQuery = autoQuery;
 	}
 
-	public int getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	public boolean isSelectable() {
-		return selectable;
-	}
-
-	public void setSelectable(boolean selectable) {
-		this.selectable = selectable;
-	}
-
-	public String getQueryUrl() {
-		return queryUrl;
-	}
-
-	public void setQueryUrl(String queryUrl) {
-		this.queryUrl = queryUrl;
-	}
-
 	private void readObject(ObjectInputStream in) throws IOException,
 			ClassNotFoundException {
 		in.defaultReadObject();
 
 	}
 
-	public void removeBind(AuroraComponent auroraComponent) {
-		binds.remove(auroraComponent);
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public boolean isUse4Query() {
+		return isUse4Query;
+	}
+
+	public void setUse4Query(boolean isUse4Query) {
+		this.isUse4Query = isUse4Query;
+	}
+
+	public boolean isUseParentBM() {
+		return isUseParentBM;
+	}
+
+	public void setUseParentBM(boolean isUseParentBM) {
+		this.isUseParentBM = isUseParentBM;
 	}
 
 }

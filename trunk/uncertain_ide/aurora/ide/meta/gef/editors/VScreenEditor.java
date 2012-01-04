@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.EventObject;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
@@ -16,13 +17,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
-import org.eclipse.gef.editparts.SimpleRootEditPart;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.DirectEditAction;
@@ -36,11 +37,16 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.ide.undo.CreateFileOperation;
+import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 import org.eclipse.ui.part.FileEditorInput;
 
+import uncertain.composite.CompositeMap;
+import aurora.ide.AuroraPlugin;
 import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
 import aurora.ide.meta.gef.editors.dnd.BMTransferDropTargetListener;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
@@ -131,7 +137,7 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 
 	protected void initDatasetView() {
 		DatasetView datasetView = getDatasetView();
-//		datasetView.getControl().setBackground(ColorConstants.white);
+		// datasetView.getControl().setBackground(ColorConstants.white);
 		getEditDomain().addViewer(datasetView);
 		getSelectionSynchronizer().addViewer(datasetView);
 		datasetView.setRootEditPart(new ScalableRootEditPart());
@@ -171,6 +177,34 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		createScreen();
+	}
+
+	private void createScreen() {
+
+		IFile newFileHandle = AuroraPlugin.getWorkspace().getRoot()
+				.getFile(new Path("/hr_aurora/web/a0.screen"));
+		CompositeMap cm = new CompositeMap("xx");
+		cm.put("x", "bb");
+		InputStream is = new ByteArrayInputStream(cm.toXML().getBytes());
+		CreateFileOperation op = new CreateFileOperation(newFileHandle, null,
+				is, "Create New File");
+		try {
+			PlatformUI
+					.getWorkbench()
+					.getOperationSupport()
+					.getOperationHistory()
+					.execute(
+							op,
+							null,
+							WorkspaceUndoUtil.getUIInfoAdapter(this.getSite()
+									.getShell()));
+		} catch (final ExecutionException e) {
+			// handle exceptions
+			e.printStackTrace();
+		}
+
 	}
 
 	/**

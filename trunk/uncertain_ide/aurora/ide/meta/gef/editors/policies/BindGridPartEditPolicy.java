@@ -28,7 +28,7 @@ public class BindGridPartEditPolicy extends AbstractEditPolicy {
 		// cmd.setChild(new Input());
 		cmd.setBm(request.getBm());
 		Grid model = (Grid)this.getHost().getModel();
-		if(model.getBindTarget()!=null){
+		if(model.getDataset().getModel()!=null){
 			//TODO
 			MessageDialog.openConfirm(new Shell(),"Dataset绑定", "Dataset已经绑定，是否重置？");
 		}
