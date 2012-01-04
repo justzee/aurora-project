@@ -18,36 +18,33 @@ public class InputMap extends AbstractComponentMap {
 		AuroraComponent2CompositMap a2c = new AuroraComponent2CompositMap();
 		String type = input.getType();
 		CompositeMap map = a2c.createChild(type);
-		IPropertyDescriptor[] propertyDescriptors = input.getPropertyDescriptors();
+		IPropertyDescriptor[] propertyDescriptors = input
+				.getPropertyDescriptors();
 		for (IPropertyDescriptor iPropertyDescriptor : propertyDescriptors) {
-			iPropertyDescriptor.getId();
-			iPropertyDescriptor.getDisplayName();
-			iPropertyDescriptor.getCategory();
-//			input.
-//			map.put(key, value)
-//			if
+			Object id = iPropertyDescriptor.getId();
+
+			boolean isKey = this.isCompositMapKey(id.toString());
+			if (isKey) {
+				Object value = "";
+				if (Input.TYPECASE.equals(id))
+					value = input.getTypeCase();
+				else if (Input.ENABLEBESIDEDAYS.equals(id))
+					value = input.getEnableBesideDays();
+				else if (Input.ENABLEMONTHBTN.equals(id))
+					value = input.getEnableMonthBtn();
+				else {
+					value = input.getPropertyValue(id).toString();
+				}
+				if (value != null && !("".equals(value)))
+					map.putString(id, value.toString());
+			}
 		}
-		
-		input.getEmptyText();
-		input.getName();
-		input.getPrompt();
-		input.getSize();
-		input.isReadOnly();
-		input.isRequired();
-		
-		//number
-		input.isAllowDecimals();
-		input.isAllowFormat();
-		input.isAllowNegative();
-		
-		//cal
-		input.getEnableBesideDays();
-		input.getEnableMonthBtn();
-		//lov,textField,combo
-		input.getTypeCase();
-		
-		
-		return null;
+		return map;
+	}
+
+	@Override
+	public boolean isCompositMapKey(String key) {
+		return true;
 	}
 
 }
