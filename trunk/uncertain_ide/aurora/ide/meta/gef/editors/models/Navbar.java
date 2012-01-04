@@ -1,17 +1,16 @@
 package aurora.ide.meta.gef.editors.models;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class Navbar extends RowCol {
 
 	static final long serialVersionUID = 1;
-	
+
 	public static final String COMPLEX = "complex";
-	
 
 	public static final String SIMPLE = "simple";
-	
-	
+
 	public Navbar() {
 		this.row = 1;
 		this.col = 999;
@@ -21,14 +20,18 @@ public class Navbar extends RowCol {
 
 	@Override
 	public String getType() {
-		
 		return super.getType();
 	}
 
 	@Override
-	//  navBarType = "complex" 或者 "simple";
+	// navBarType = "complex" 或者 "simple";
 	public void setType(String type) {
 		super.setType(type);
+	}
+
+	@Override
+	public IPropertyDescriptor[] getPropertyDescriptors() {
+		return NONE_PROPS;
 	}
 
 	/**
