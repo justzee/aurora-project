@@ -18,18 +18,26 @@ public class Grid extends GridColumn {
 	public static final String SELECT_NONE = "";
 	public static final String SELECT_MULTI = "multiple";
 	public static final String SELECT_SINGLE = "single";
-	public static final String SELECTIONMODE = "SELECTIONMMODE";
+	public static final String SELECTION_MODE = "SelectionMode";
 	private static final String[] selectionMode = { SELECT_NONE, SELECT_MULTI,
 			SELECT_SINGLE };
-	private Toolbar toolbar;
-	private Navbar navBar;
-
-	private static final IPropertyDescriptor PD_SELECTIONMODE = new ComboPropertyDescriptor(
-			SELECTIONMODE, "SelectionMode", selectionMode);
-
 	private GridSelectionCol gsc = new GridSelectionCol();
+
+	public static final String NAVBAR_NONE = "";
+	public static final String NAVBAR_SIMPLE = "simple";
+	public static final String NAVBAR_COMPLEX = "complex";
+	private static final String[] navBarTypes = { NAVBAR_NONE, NAVBAR_SIMPLE,
+			NAVBAR_COMPLEX };
+	private Navbar navBar = new Navbar();
+
+	private static final IPropertyDescriptor PD_SELECTION_MODE = new ComboPropertyDescriptor(
+			SELECTION_MODE, "SelectionMode", selectionMode);
+	private static final IPropertyDescriptor PD_NAVBAR_TYPE = new ComboPropertyDescriptor(
+			NAVBAR_TYPE, "NavBarType", navBarTypes);
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			PD_PROMPT, PD_WIDTH, PD_HEIGHT, PD_SELECTIONMODE };
+			PD_PROMPT, PD_WIDTH, PD_HEIGHT, PD_SELECTION_MODE, PD_NAVBAR_TYPE };
+
+	private Toolbar toolbar;
 
 	public Grid() {
 		super();
@@ -44,16 +52,36 @@ public class Grid extends GridColumn {
 		return gsc.getSelectionMode();
 	}
 
+	public ResultDataSet getDataset() {
+		return (ResultDataSet) super.getDataset();
+	}
+
 	public void setSelectionMode(String sm) {
 		if (gsc.getSelectionMode().equals(sm))
 			return;
 		gsc.setSelectionMode(sm);
+		getDataset().setSelectionModel(sm);
+		getDataset().setSelectable(!sm.equals(SELECT_NONE));
 		if (gsc.getSelectionMode().equals(SELECT_NONE)) {
 			removeChild(gsc);
 		} else {
 			int idx = getChildren().indexOf(gsc);
 			if (idx == -1)
 				addChild(gsc, 0);
+		}
+	}
+
+	public void setNavbarType(String type) {
+		if (eq(navBar.getType(), type))
+			return;
+		navBar.setType(type);
+		if (eq(navBar.getType(), NAVBAR_NONE)) {
+			removeChild(navBar);
+		} else {
+			int idx = getChildren().indexOf(navBar);
+			if (idx == -1) {
+				addChild(navBar, getChildren().size());
+			}
 		}
 	}
 
@@ -79,32 +107,6 @@ public class Grid extends GridColumn {
 				: Collections.EMPTY_LIST;
 	}
 
-	public boolean hasNavBar() {
-		return getNavbar() != null;
-	}
-
-	public Navbar getNavbar() {
-		if (navBar != null)
-			return navBar;
-		else
-			return (Navbar) getFirstChild(Navbar.class);
-	}
-
-	public void setNavBar(Navbar nb) {
-		this.navBar = nb;
-		this.addChild(nb);
-	}
-
-	public String getNavBarType() {
-		return getNavbar() == null ? "" : getNavbar().getType();
-	}
-
-	public void setNavBarType(String navBarType) {
-		if (getNavbar() != null) {
-			getNavbar().setType(navBarType);
-		}
-	}
-
 	@Override
 	public boolean isResponsibleChild(AuroraComponent child) {
 		if (child instanceof Toolbar || child instanceof Navbar)
@@ -121,15 +123,19 @@ public class Grid extends GridColumn {
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		if (SELECTIONMODE.equals(propName))
+		if (SELECTION_MODE.equals(propName))
 			return Arrays.asList(selectionMode).indexOf(getSelectionMode());
+		else if (NAVBAR_TYPE.equals(propName))
+			return Arrays.asList(navBarTypes).indexOf(navBar.getType());
 		return super.getPropertyValue(propName);
 	}
 
 	@Override
 	public void setPropertyValue(Object propName, Object val) {
-		if (SELECTIONMODE.equals(propName))
+		if (SELECTION_MODE.equals(propName))
 			setSelectionMode(selectionMode[(Integer) val]);
+		else if (NAVBAR_TYPE.equals(propName))
+			setNavbarType(navBarTypes[(Integer) val]);
 		super.setPropertyValue(propName, val);
 	}
 }
