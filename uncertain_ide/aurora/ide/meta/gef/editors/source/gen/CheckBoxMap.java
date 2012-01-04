@@ -1,20 +1,40 @@
 package aurora.ide.meta.gef.editors.source.gen;
 
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
 import uncertain.composite.CompositeMap;
-import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.CheckBox;
+import aurora.ide.meta.gef.editors.models.Input;
 
 public class CheckBoxMap extends AbstractComponentMap {
 
-	private AuroraComponent c;
+	private CheckBox checkBox;
 
-	public CheckBoxMap(AuroraComponent c) {
-		this.c = c;
+	public CheckBoxMap(CheckBox c) {
+		this.checkBox = c;
 	}
 
 	@Override
 	public CompositeMap toCompositMap() {
-		// TODO Auto-generated method stub
-		return null;
+		AuroraComponent2CompositMap a2c = new AuroraComponent2CompositMap();
+		String type = checkBox.getType();
+		CompositeMap map = a2c.createChild(type);
+		IPropertyDescriptor[] propertyDescriptors = checkBox
+				.getPropertyDescriptors();
+		for (IPropertyDescriptor iPropertyDescriptor : propertyDescriptors) {
+			Object id = iPropertyDescriptor.getId();
+
+			boolean isKey = this.isCompositMapKey(id.toString());
+			if (isKey) {
+				Object value = checkBox.getPropertyValue(id).toString();
+				if (value != null && !("".equals(value)))
+					map.putString(id, value.toString());
+			}
+		}
+		return map;
 	}
 
+	public boolean isCompositMapKey(String key) {
+		return true;
+	}
 }
