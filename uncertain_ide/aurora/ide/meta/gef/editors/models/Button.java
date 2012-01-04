@@ -68,6 +68,7 @@ public class Button extends AuroraComponent {
 
 	public Button() {
 		setSize(new Dimension(80, 20));
+		this.setType("button");
 	}
 
 	@Override

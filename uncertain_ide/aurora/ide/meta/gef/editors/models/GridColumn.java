@@ -37,6 +37,7 @@ public class GridColumn extends RowCol {
 		this.col = 999;
 		this.headHight = 25;
 		this.setSize(new Dimension(100, rowHight * 2 + 10));
+		this.setType("column");
 	}
 
 	public void addCol(GridColumn col) {

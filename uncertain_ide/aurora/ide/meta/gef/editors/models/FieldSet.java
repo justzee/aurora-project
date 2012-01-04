@@ -8,6 +8,8 @@ public class FieldSet extends BOX {
 
 	public FieldSet() {
 		setTitle("Fieldset");
+		this.setType("fieldSet");
+		this.getDataset().setUseParentBM(false);
 	}
 
 	public int getHeadHight() {
