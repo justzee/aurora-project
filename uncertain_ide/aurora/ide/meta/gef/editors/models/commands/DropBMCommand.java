@@ -12,12 +12,10 @@ import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Button;
-import aurora.ide.meta.gef.editors.models.Dataset;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Navbar;
-import aurora.ide.meta.gef.editors.models.QueryDataSet;
 import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.search.cache.CacheManager;
@@ -25,8 +23,9 @@ import aurora.ide.search.cache.CacheManager;
 public class DropBMCommand extends Command {
 	private ViewDiagram diagram;
 	private IFile bm;
-	private Dataset rds;
-	private QueryDataSet qds;
+
+	// private Dataset rds;
+	// private QueryDataSet qds;
 
 	public ViewDiagram getDiagram() {
 		return diagram;
@@ -55,8 +54,17 @@ public class DropBMCommand extends Command {
 		b = new Button();
 		b.setButtonType(Button.DELETE);
 		tb.addButton(b);
-		grid.setBindTarget(this.rds);
+
+		b = new Button();
+		b.setButtonType(Button.CLEAR);
+		tb.addButton(b);
+
+		b = new Button();
+		b.setButtonType(Button.EXCEL);
+		tb.addButton(b);
+
 		grid.addChild(tb);
+
 		grid.addChild(new Navbar());
 		try {
 			List<CompositeMap> fields = this.getFields();
@@ -93,7 +101,6 @@ public class DropBMCommand extends Command {
 	}
 
 	protected void fillForm(BOX form) {
-		form.setBindTarget(qds);
 		try {
 			CompositeMap model = CacheManager.getCompositeMap(bm);
 			List<CompositeMap> qfs = new ArrayList<CompositeMap>();
@@ -123,10 +130,7 @@ public class DropBMCommand extends Command {
 				}
 				input.setPrompt(getPrompt(field));
 				input.setType(getType(field));
-				input.setBindTarget(qds);
 				form.addChild(input);
-				// input.setReadOnly(readOnly)
-				// input.setRequired(required)
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -164,53 +168,12 @@ public class DropBMCommand extends Command {
 		return null;
 	}
 
-	protected void createDS() {
-		this.createQueryDataset();
-		this.createResultDataset();
-	}
-
-	protected void createQueryDataset() {
-		qds = new QueryDataSet();
-		qds.setResultDataset(rds);
-		qds.setBmPath(bm.getProjectRelativePath().toString());
-		String lastSegment = bm.getProjectRelativePath().removeFileExtension()
-				.lastSegment();
-		qds.setId(lastSegment.toLowerCase() + "_query_ds");
-		if (rds != null)
-			rds.setQueryDataSet(qds);
-		diagram.addDataset(qds);
-	}
-
-	protected void createResultDataset() {
-		rds = new Dataset();
-		rds.setAutoQuery(false);
-		rds.setBmPath(bm.getProjectRelativePath().toString());
-		rds.setPageSize(Dataset.DEFAULT_PAGE_SIZE);
-		rds.setSelectable(true);
-		String lastSegment = bm.getProjectRelativePath().removeFileExtension()
-				.lastSegment();
-		rds.setId(lastSegment.toLowerCase() + "_result_ds");
-		rds.setQueryDataSet(qds);
-		if (qds != null)
-			qds.setResultDataset(rds);
-		diagram.addDataset(rds);
-
-	}
-
 	public void redo() {
 		this.execute();
 	}
 
 	public void undo() {
 		// TODO
-		removeDS();
-	}
-
-	protected void removeDS() {
-		if (rds != null)
-			diagram.removeDataset(rds);
-		if (qds != null)
-			diagram.removeDataset(qds);
 	}
 
 }

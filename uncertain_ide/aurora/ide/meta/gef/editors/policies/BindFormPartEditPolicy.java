@@ -26,7 +26,7 @@ public class BindFormPartEditPolicy extends AbstractEditPolicy {
 		BindFormCommand cmd = new BindFormCommand();
 		cmd.setBm(request.getBm());
 		BOX model = (BOX) this.getHost().getModel();
-		if (model.getBindTarget() != null) {
+		if (model.getDataset().getModel() != null) {
 			// TODO
 			MessageDialog.openConfirm(new Shell(), "Dataset绑定",
 					"Dataset已经绑定，是否重置？");

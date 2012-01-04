@@ -27,6 +27,10 @@ public class BOX extends RowCol {
 	 */
 	private static final long serialVersionUID = -8776030333465182289L;
 
+	public BOX() {
+		this.setDataset(new QueryDataSet());
+	}
+
 	public String getTitle() {
 		return title;
 	}

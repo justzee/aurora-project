@@ -20,7 +20,6 @@ public class BindFormCommand extends DropBMCommand {
 
 
 	public void execute() {
-		this.createQueryDataset();
 		this.fillForm(box);
 	}
 }

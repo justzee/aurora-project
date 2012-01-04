@@ -40,9 +40,18 @@ public class Button extends AuroraComponent {
 			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
 			new ComboPropertyDescriptor(BUTTONTYPE, "Type", types) };
 
+	private AuroraComponent targetComponent;
+
 	public Button() {
 		setSize(new Dimension(80, 20));
 	}
+
+	static final public String B_SEARCH = "b_search";
+	static final public String B_RESET = "b_reset";
+	static final public String B_SAVE = "b_save";
+	static final public String B_CLOSE = "b_close";
+	static final public String B_RUN = "b_run";
+	static final public String B_OPEN = "b_open";
 
 	public void setSize(Dimension dim) {
 		if (isStdButton()) {
@@ -84,6 +93,14 @@ public class Button extends AuroraComponent {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public AuroraComponent getTargetComponent() {
+		return targetComponent;
+	}
+
+	public void setTargetComponent(AuroraComponent targetComponent) {
+		this.targetComponent = targetComponent;
 	}
 
 	public void setButtonType(String buttonType) {
