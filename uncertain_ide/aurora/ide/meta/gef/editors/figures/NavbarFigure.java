@@ -1,21 +1,32 @@
 package aurora.ide.meta.gef.editors.figures;
 
 import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.meta.gef.editors.ImagesUtils;
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.Navbar;
 
 /**
  */
 public class NavbarFigure extends Figure {
 
 	private String[] texts = { "页数:", "共 页", "每页显示", "条", "显示 - 共 条" };
+	private static String simpleText = "共10页 首页 上一页 1 2 3···8 9 10下一页 尾页";
+	private Navbar model;
+	private static Image bgImg = ImagesUtils.getImage("toolbar_bg.gif");
+	private static Image navImg = ImagesUtils.getImage("navigation.gif");
+	private static Image sepImg = ImagesUtils.getImage("toolbar_sep.gif");
+	private static Image combImg = ImagesUtils
+			.getImage("palette/itembar_01.png");
 
 	public NavbarFigure() {
+		setBorder(null);
 	}
 
 	@Override
@@ -27,136 +38,120 @@ public class NavbarFigure extends Figure {
 	/**
 	 * @see org.eclipse.draw2d.Label#paintFigure(org.eclipse.draw2d.Graphics)
 	 */
-	protected void paintFigure(Graphics graphics) {
-		super.paintFigure(graphics);
+	protected void paintFigure(Graphics g) {
+		String type = model.getType();
+		if (type.equals(Grid.NAVBAR_NONE))
+			return;
+		super.paintFigure(g);
+		if (type.equals(Grid.NAVBAR_COMPLEX)) {
+			paintComplex(g);
+		} else {
+			paintSimple(g);
+		}
+	}
 
-		Rectangle bounds = this.getBounds().getCopy();
-		graphics.clipRect(bounds);
+	private void paintSimple(Graphics g) {
+		Rectangle bounds = getBounds().getCopy();
+		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
+		g.drawLine(bounds.getTopLeft(), bounds.getTopRight());
+		Dimension dim = FigureUtilities.getTextExtents(simpleText, getFont());
+		g.setForegroundColor(ColorConstants.BLACK);
+		g.drawString(simpleText, bounds.x + bounds.width - dim.width - 3,
+				bounds.y + (bounds.height - dim.height) / 2);
+	}
 
-		Image image1 = getImage("nav1");
-		Rectangle copy = bounds.getCopy();
-		org.eclipse.swt.graphics.Rectangle imageBounds = image1.getBounds();
+	private void paintComplex(Graphics g) {
+		Rectangle bounds = getBounds().getCopy();
+		g.drawImage(bgImg, new Rectangle(bgImg.getBounds()), bounds);
+		// |<
+		Rectangle r1 = new Rectangle(0, 0, 16, 16);
+		Rectangle r2 = new Rectangle(bounds.x + 4, bounds.y + 4, 16, 16);
+		g.drawImage(navImg, r1, r2);
+		// <
+		r1.y = 32;
+		r2.x += bounds.height;
+		g.drawImage(navImg, r1, r2);
+		// sep
+		Rectangle r3 = new Rectangle(r2.x + bounds.height, bounds.y, 2,
+				bounds.height);
+		g.drawImage(sepImg, new Rectangle(sepImg.getBounds()), r3);
+		// 页数:
+		g.setForegroundColor(ColorConstants.BLACK);
+		Dimension dim = FigureUtilities.getTextExtents(texts[0], getFont());
+		int nextX = r3.x + r3.width + 2;
+		g.drawString(texts[0], nextX, bounds.y + (bounds.height - dim.height)
+				/ 2);
+		// rect
+		nextX += dim.width + 2;
+		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
+		g.setBackgroundColor(ColorConstants.WHITE);
+		Rectangle r4 = new Rectangle(nextX, bounds.y + 3, 30, bounds.height - 6);
+		g.fillRectangle(r4);
+		g.drawRectangle(r4);
+		// 共 页
+		nextX += r4.width + 5;
+		g.setForegroundColor(ColorConstants.BLACK);
+		dim = FigureUtilities.getTextExtents(texts[1], getFont());
+		g.drawString(texts[1], nextX, bounds.y + (bounds.height - dim.height)
+				/ 2);
+		// sep
+		nextX += dim.width + 2;
+		r3 = new Rectangle(nextX, bounds.y, 2, bounds.height);
+		g.drawImage(sepImg, new Rectangle(sepImg.getBounds()), r3);
+		// >
+		r1.y = 48;
+		r2.x = nextX + 4;
+		g.drawImage(navImg, r1, r2);
+		// >|
+		r1.y = 16;
+		r2.x += bounds.height;
+		g.drawImage(navImg, r1, r2);
+		// refresh
+		r1.y = 64;
+		r2.x += bounds.height;
+		g.drawImage(navImg, r1, r2);
+		// sep
+		nextX = r2.x + bounds.height + 2;
+		r3 = new Rectangle(nextX, bounds.y, 2, bounds.height);
+		g.drawImage(sepImg, new Rectangle(sepImg.getBounds()), r3);
+		// 每页显示
+		nextX += 5;
+		g.setForegroundColor(ColorConstants.BLACK);
+		dim = FigureUtilities.getTextExtents(texts[2], getFont());
+		g.drawString(texts[2], nextX, bounds.y + (bounds.height - dim.height)
+				/ 2);
+		// rect
+		nextX += dim.width + 2;
+		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
+		g.setBackgroundColor(ColorConstants.WHITE);
+		r4 = new Rectangle(nextX, bounds.y + 3, 46, bounds.height - 6);
+		g.fillRectangle(r4);
+		g.drawImage(combImg, new Rectangle(combImg.getBounds()), new Rectangle(
+				r4.x + 29, r4.y + 1, 16, 16));
+		g.drawRectangle(r4);
+		// 条
+		nextX = r4.x + r4.width + 5;
+		g.setForegroundColor(ColorConstants.BLACK);
+		dim = FigureUtilities.getTextExtents(texts[3], getFont());
+		g.drawString(texts[3], nextX, bounds.y + (bounds.height - dim.height)
+				/ 2);
+		// sep
+		nextX += dim.width + 5;
+		r3 = new Rectangle(nextX, bounds.y, 2, bounds.height);
+		g.drawImage(sepImg, new Rectangle(sepImg.getBounds()), r3);
+		// last..
+		nextX += 3;
+		dim = FigureUtilities.getTextExtents(texts[4], getFont());
+		if (bounds.width - nextX < dim.width)
+			return;
+		g.drawString(texts[4], bounds.x + bounds.width - dim.width - 3,
+				bounds.y + (bounds.height - dim.height) / 2);
+		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
+		g.drawLine(bounds.getTopLeft(), bounds.getTopRight());
+	}
 
-		Rectangle src = new Rectangle(imageBounds.x, imageBounds.y, 2, 25);
-		graphics.drawImage(image1, src, copy);
-		graphics.drawImage(image1, imageBounds.x, imageBounds.y,
-				imageBounds.width, imageBounds.height, copy.x, copy.y,
-				imageBounds.width, 25);
-
-		Image image2 = getImage("nav2");
-
-		Point topRight = copy.getTopRight();
-		org.eclipse.swt.graphics.Rectangle imageBounds2 = image2.getBounds();
-		int nav2X = topRight.x - imageBounds2.width;
-
-		graphics.drawImage(image2, imageBounds2.x, imageBounds2.y,
-				imageBounds2.width, imageBounds2.height, nav2X, topRight.y + 1,
-				imageBounds2.width, 24);
-
-		// int textIndex = 0;
-		// Rectangle bounds = this.getBounds().getCopy();
-		// graphics.clipRect(bounds);
-		// Image image = getImage("navigation");
-		// Rectangle copy = bounds.getCopy();
-		// Rectangle imageR = copy.translate(2, 5);
-		// // 首页
-		// graphics.drawImage(image, getImageLocation(0).x,
-		// getImageLocation(0).y,
-		// 16, 16, imageR.x, imageR.y, 16, 16);
-		// imageR.translate(2 + 16, 0);
-		// // 前一页
-		// graphics.drawImage(image, getImageLocation(0).x,
-		// getImageLocation(2).y,
-		// 16, 16, imageR.x, imageR.y, 16, 16);
-		// imageR.translate(2 + 16, 0);
-		// // 分割
-		// Image sep = this.getImage("toolbar_sep");
-		// org.eclipse.swt.graphics.Rectangle sepBounds = sep.getBounds();
-		// graphics.drawImage(image, sepBounds.x, sepBounds.y, sepBounds.width,
-		// sepBounds.height, imageR.x, imageR.y, sepBounds.width,
-		// sepBounds.height);
-		// imageR.translate(2 + sepBounds.width, 0);
-		// // 页数
-		// Dimension textExtents = FigureUtilities.getTextExtents(
-		// texts[textIndex], getFont());
-		// graphics.drawText(texts[textIndex], imageR.getLocation());
-		// textIndex++;
-		// imageR.translate(2 + textExtents.width, -1);
-		//
-		// // input
-		// Rectangle inputR = imageR.getCopy().setSize(30, 20);
-		// graphics.setForegroundColor(ColorConstants.BORDER);
-		// graphics.setBackgroundColor(ColorConstants.WHITE);
-		// graphics.fillRectangle(inputR.getResized(-2, -2));
-		// graphics.drawRectangle(inputR.getResized(-2, -2));
-		// imageR.translate(2 + 30, 1);
-		// // "共 页",
-		//
-		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
-		// getFont());
-		// graphics.drawText(texts[textIndex], imageR.getLocation());
-		// textIndex++;
-		// imageR.translate(2 + textExtents.width, 0);
-		//
-		// // 分割
-		//
-		// graphics.drawImage(image, sepBounds.x, sepBounds.y, sepBounds.width,
-		// sepBounds.height, imageR.x, imageR.y, sepBounds.width,
-		// sepBounds.height);
-		// imageR.translate(2 + sepBounds.width, 0);
-		//
-		// // 后一页
-		// graphics.drawImage(image, getImageLocation(0).x,
-		// getImageLocation(3).y,
-		// 16, 16, imageR.x, imageR.y, 16, 16);
-		// imageR.translate(2 + 16, 0);
-		// // 最后一页
-		// graphics.drawImage(image, getImageLocation(0).x,
-		// getImageLocation(1).y,
-		// 16, 16, imageR.x, imageR.y, 16, 16);
-		// imageR.translate(2 + 16, 0);
-		// // 刷新
-		// graphics.drawImage(image, getImageLocation(0).x,
-		// getImageLocation(4).y,
-		// 16, 16, imageR.x, imageR.y, 16, 16);
-		// imageR.translate(2 + 16, 0);
-		// // "每页显示",,
-		//
-		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
-		// getFont());
-		// graphics.drawText(texts[textIndex], imageR.getLocation());
-		// textIndex++;
-		// imageR.translate(2 + textExtents.width, -1);
-		//
-		// // input
-		// inputR = imageR.getCopy().setSize(50, 20);
-		// graphics.setForegroundColor(ColorConstants.BORDER);
-		// graphics.setBackgroundColor(ColorConstants.WHITE);
-		// graphics.fillRectangle(inputR.getResized(-2, -2));
-		// graphics.drawRectangle(inputR.getResized(-2, -2));
-		// imageR.translate(2 + 50, 1);
-		// // combo
-		// image = getImage("itembar");
-		//
-		// if (image != null) {
-		// graphics.drawImage(image, 0, 0, 16, 16,
-		// inputR.getTopRight().x - 18, inputR.getTopRight().y, 16, 16);
-		// }
-		//
-		// // "条"
-		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
-		// getFont());
-		// graphics.drawText(texts[textIndex], imageR.getLocation());
-		// textIndex++;
-		// // imageR.translate(2 + textExtents.width, -1);
-		// // "显示 - 共 条"
-		// textExtents = FigureUtilities.getTextExtents(texts[textIndex],
-		// getFont());
-		// graphics.drawText(texts[textIndex], new Point(bounds.getTopRight().x
-		// - textExtents.width, bounds.getTopRight().y - 1));
-		// textIndex++;
-		// // TODO 比较长度
-
+	public void setModel(Navbar model) {
+		this.model = model;
 	}
 
 	private Image getImage(String key) {

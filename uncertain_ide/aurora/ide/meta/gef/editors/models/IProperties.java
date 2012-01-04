@@ -7,7 +7,7 @@ public interface IProperties {
 	public static final String ADD_COl = "add_col";
 	public static final String ADD_TOOLBAR_BUTTON = "add_toolbar_button";
 	public static final String REMOVE_TOOLBAR_BUTTON = "remove_toolbar_button";
-	public static final String NAVBAR_TYPE = "navbar_type";
+	public static final String NAVBAR_TYPE = "navBarType";
 	public static final String HAS_NAVBAR = "has_navbar";
 	String LOCATION = "location";
 	String SIZE = "size";
