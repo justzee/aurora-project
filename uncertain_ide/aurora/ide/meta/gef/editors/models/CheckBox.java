@@ -13,6 +13,7 @@ public class CheckBox extends Input {
 	public static final String TEXT = "checkbox_text";
 	private boolean selected = false;
 	private String text = "text";
+	public static final String CHECKBOX = "checkBox";
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(PROMPT, "Prompt"),
@@ -21,7 +22,7 @@ public class CheckBox extends Input {
 
 	public CheckBox() {
 		setSize(new Dimension(120, 20));
-		this.setType("checkBox");
+		this.setType(CHECKBOX);
 	}
 
 	public boolean isSelected() {
