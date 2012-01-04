@@ -23,6 +23,7 @@ public class Dataset extends AuroraComponent {
 	public Dataset() {
 		// 暂时不显示
 		// this.setSize(new Dimension(50, 20));
+		this.setType("dataSet");
 	}
 
 	public String getId() {

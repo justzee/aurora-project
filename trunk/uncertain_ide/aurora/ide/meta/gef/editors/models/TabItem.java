@@ -19,6 +19,7 @@ public class TabItem extends AuroraComponent {
 
 	public TabItem() {
 		setWidth(65);
+		this.setType("tab");
 		setPrompt("tabItem" + idx++);
 	}
 

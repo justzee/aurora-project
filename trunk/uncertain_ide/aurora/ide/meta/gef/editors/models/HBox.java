@@ -14,6 +14,7 @@ public class HBox extends BOX {
 
 	public HBox() {
 		setSize(new Dimension(600, 40));
+		this.setType("hBox");
 	}
 
 	public int getHeadHight() {

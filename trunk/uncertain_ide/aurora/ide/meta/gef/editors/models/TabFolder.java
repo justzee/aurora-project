@@ -11,6 +11,7 @@ public class TabFolder extends Container {
 
 	public TabFolder() {
 		setSize(new Dimension(700, 300));
+		this.setType("tabPanel");
 	}
 
 	public void disSelectAll() {

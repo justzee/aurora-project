@@ -21,6 +21,7 @@ public class CheckBox extends Input {
 
 	public CheckBox() {
 		setSize(new Dimension(120, 20));
+		this.setType("checkBox");
 	}
 
 	public boolean isSelected() {

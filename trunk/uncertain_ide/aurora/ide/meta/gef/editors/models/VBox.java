@@ -13,6 +13,7 @@ public class VBox extends BOX {
 
 	public VBox() {
 		setSize(new Dimension(300, 80));
+		this.setType("vBox");
 	}
 
 	public int getHeadHight() {
