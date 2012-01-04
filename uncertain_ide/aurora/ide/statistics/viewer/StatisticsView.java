@@ -37,7 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LocaleMessage;
+import aurora.ide.i18n.Messages;
 import aurora.ide.statistics.wizard.dialog.LoadDataWizard;
 import aurora.ide.statistics.wizard.dialog.SaveDataWizard;
 import aurora.statistics.Statistician;
@@ -50,13 +50,13 @@ public class StatisticsView extends ViewPart {
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "aurora.ide.viewer.statistics.StatisticsView";
+	public static final String ID = "aurora.ide.viewer.statistics.StatisticsView"; //$NON-NLS-1$
 
-	static final private String[] pViewColTitles = { "项目名称", " 值 ", "最大值", "最小值", "平均值" };
-	static final private String[] pViewColTooltips = { "项目名称", "值或数量", "最大值", "最小值", "平均值" };
+	static final private String[] pViewColTitles = { Messages.StatisticsView_Project_Name, Messages.StatisticsView_Value, Messages.StatisticsView_MAX_Value, Messages.StatisticsView_MIN_Value, Messages.StatisticsView_AVG_Value }; //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	static final private String[] pViewColTooltips = { Messages.StatisticsView_Project_Name, Messages.StatisticsView_Value_Of_Num, Messages.StatisticsView_MAX_Value, Messages.StatisticsView_MIN_Value, Messages.StatisticsView_AVG_Value }; //$NON-NLS-1$  //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
-	static final private String[] oViewColTitles = { "类别", "文件名", "路径", "文件大小", "脚本大小", "标签数量", "引用次数", "被引用次数" };
-	static final private String[] oViewColTooltips = { "类别", "文件名", "路径", "文件大小", "脚本大小", "标签数量", "引用次数", "被引用次数" };
+	static final private String[] oViewColTitles = { Messages.StatisticsView_Type, Messages.StatisticsView_File_Name, Messages.StatisticsView_Path, Messages.StatisticsView_File_Size, Messages.StatisticsView_Script_Size, Messages.StatisticsView_Tag_Num, Messages.StatisticsView_Reference, Messages.StatisticsView_Referenced }; //$NON-NLS-2$  //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+	static final private String[] oViewColTooltips = { Messages.StatisticsView_Type, Messages.StatisticsView_File_Name, Messages.StatisticsView_Path, Messages.StatisticsView_File_Size, Messages.StatisticsView_Script_Size, Messages.StatisticsView_Tag_Num, Messages.StatisticsView_Reference, Messages.StatisticsView_Referenced }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 
 	private TreeViewer projectViewer;
 	private TreeViewer objectViewer;
@@ -78,14 +78,14 @@ public class StatisticsView extends ViewPart {
 		TabFolder tabFolder = new TabFolder(parent, SWT.TOP);
 
 		TabItem item = new TabItem(tabFolder, SWT.NONE);
-		item.setText("Objects");
-		item.setToolTipText("Project Objects:bm,screen,svc...");
+		item.setText("Objects"); //$NON-NLS-1$
+		item.setToolTipText("Project Objects:bm,screen,svc..."); //$NON-NLS-1$
 		createObjectViewer(tabFolder);
 		item.setControl(objectViewer.getControl());
 
 		item = new TabItem(tabFolder, SWT.NONE);
-		item.setText("Project");
-		item.setToolTipText("Project Descripttion.");
+		item.setText("Project"); //$NON-NLS-1$
+		item.setToolTipText("Project Descripttion."); //$NON-NLS-1$
 		createProjectViewer(tabFolder);
 		item.setControl(projectViewer.getControl());
 
@@ -134,7 +134,7 @@ public class StatisticsView extends ViewPart {
 	}
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
@@ -171,6 +171,7 @@ public class StatisticsView extends ViewPart {
 		manager.add(projectSelectionAction);
 		manager.add(new Separator());
 		manager.add(saveToXLSAction);
+		manager.add(new Separator());
 		manager.add(dbLoadAction);
 		manager.add(saveToDBAction);
 		manager.add(new Separator());
@@ -195,14 +196,14 @@ public class StatisticsView extends ViewPart {
 		saveToDBAction = new Action() {
 			public void run() {
 				if (statistician == null || StatisticsProject.NONE_PROJECT.equals(statistician.getProject()) || null == statistician.getProject().getEclipseProjectName()) {
-					showMessage("工程不存在，无法保存");
+					showMessage(Messages.StatisticsView_Can_Not_Save); 
 					return;
 				}
 				SaveDataWizard wizard = new SaveDataWizard(statistician);
 				WizardDialog dialog = new WizardDialog(getSite().getShell(), wizard);
 				if (WizardDialog.OK == dialog.open()) {
 					statistician.setProject(wizard.getProject());
-					SaveToDBJob job = new SaveToDBJob(statistician,StatisticsView.this);
+					SaveToDBJob job = new SaveToDBJob(statistician, StatisticsView.this);
 					job.setUser(true);
 					job.schedule();
 					setSaveToDBActionEnabled(false);
@@ -210,8 +211,8 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		saveToDBAction.setToolTipText("保存到数据库");
-		saveToDBAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("export.png")));
+		saveToDBAction.setToolTipText(Messages.StatisticsView_Save_To_DB); 
+		saveToDBAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/export.png")); //$NON-NLS-1$
 
 		dbLoadAction = new Action() {
 			public void run() {
@@ -228,14 +229,14 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		dbLoadAction.setToolTipText("从数据库读入");
-		dbLoadAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("import.png")));
+		dbLoadAction.setToolTipText(Messages.StatisticsView_Load_From_DB); 
+		dbLoadAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/import.png")); //$NON-NLS-1$
 
 		fileSelectionAction = new Action() {
 			public void run() {
-				ResourceSelectionDialog dialog = new ResourceSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), "选择需要统计的文件：");
+				ResourceSelectionDialog dialog = new ResourceSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), Messages.StatisticsView_Select_Need_Statistics_File); 
 				dialog.setHelpAvailable(false);
-				dialog.setTitle("文件选择");
+				dialog.setTitle(Messages.StatisticsView_Select_File); 
 				int open = dialog.open();
 				if (open == Dialog.OK) {
 					Object[] selected = dialog.getResult();
@@ -246,15 +247,15 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		fileSelectionAction.setText("文件选择");
-		fileSelectionAction.setToolTipText("选择需要统计的文件");
-		fileSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("file.png")));
+		fileSelectionAction.setText(Messages.StatisticsView_Select_File); 
+		fileSelectionAction.setToolTipText(Messages.StatisticsView_Select_Need_Statistics_File); //$NON-NLS-1$
+		fileSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/file.png")); //$NON-NLS-1$
 
 		projectSelectionAction = new Action() {
 			public void run() {
 				ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), IResource.PROJECT);
 				dialog.setHelpAvailable(false);
-				dialog.setTitle("工程选择");
+				dialog.setTitle(Messages.StatisticsView_Select_Project); 
 				int open = dialog.open();
 				if (open == Dialog.OK) {
 					Object[] selected = dialog.getResult();
@@ -265,14 +266,14 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		projectSelectionAction.setText("工程选择");
-		projectSelectionAction.setToolTipText("选择需要统计的工程");
-		projectSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("project.png")));
+		projectSelectionAction.setText(Messages.StatisticsView_Select_Project); //$NON-NLS-1$
+		projectSelectionAction.setToolTipText(Messages.StatisticsView_Select_Need_Statistics_Project); 
+		projectSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/project.png")); //$NON-NLS-1$
 
 		saveToXLSAction = new Action() {
 			public void run() {
 				FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
-				dialog.setFilterExtensions(new String[] { "*.xls", "*.*" });
+				dialog.setFilterExtensions(new String[] { "*.xls", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
 				final String path = dialog.open();
 				if (path == null) {
 					return;
@@ -347,26 +348,26 @@ public class StatisticsView extends ViewPart {
 
 			private String conversion(int num) {
 				String value = Integer.toString(num);
-				DecimalFormat df = new DecimalFormat("0.00");
+				DecimalFormat df = new DecimalFormat("0.00"); //$NON-NLS-1$
 				double v = Double.parseDouble(value);
 				if (value.length() > 3 && value.length() <= 6) {
 					v /= 1024.0;
-					return df.format(v) + " KB";
+					return df.format(v) + " KB"; //$NON-NLS-1$
 				} else if (value.length() > 6) {
 					v /= (1024.0 * 1024.0);
-					return df.format(v) + " MB";
+					return df.format(v) + " MB"; //$NON-NLS-1$
 				} else {
-					return (int) v + " Byte";
+					return (int) v + " Byte"; //$NON-NLS-1$
 				}
 			}
 		};
-		saveToXLSAction.setText("导出Excel");
-		saveToXLSAction.setToolTipText("导出为Excel");
-		saveToXLSAction.setImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("save.png")));
+		saveToXLSAction.setText(Messages.StatisticsView_Export_Excel); 
+		saveToXLSAction.setToolTipText(Messages.StatisticsView_Export_Excel); //$NON-NLS-1$
+		saveToXLSAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/palette/toolbar_btn_05.png")); //$NON-NLS-1$
 	}
 
 	private void showMessage(String message) {
-		MessageDialog.openInformation(objectViewer.getControl().getShell(), "Sample View", message);
+		MessageDialog.openInformation(objectViewer.getControl().getShell(), "Sample View", message); //$NON-NLS-1$
 	}
 
 	/**
