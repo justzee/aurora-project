@@ -2,8 +2,10 @@ package aurora.ide.meta.gef.editors.source.gen;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.BOX;
 import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.CheckBox;
+import aurora.ide.meta.gef.editors.models.Dataset;
 import aurora.ide.meta.gef.editors.models.FieldSet;
 import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
@@ -36,127 +38,40 @@ public class AuroraComponent2CompositMap {
 
 	public CompositeMap toCompositMap(AuroraComponent c) {
 		if (c instanceof Input) {
-			return toInputMap((Input) c);
+			return new InputMap((Input)c).toCompositMap();
 		}
 		if (c instanceof Button) {
-			return toButtonMap((Button) c);
+			return new ButtonMap(c).toCompositMap();
 		}
-		if (c instanceof Form) {
-			return toFormMap((Form) c);
-		}
-		if (c instanceof HBox) {
-			return toHBoxMap((HBox) c);
-		}
-		if (c instanceof VBox) {
-			return toVBoxMap((VBox) c);
-		}
-		if (c instanceof FieldSet) {
-			return toFieldSetMap((FieldSet) c);
+		if (c instanceof BOX) {
+			return new BoxMap(c).toCompositMap();
 		}
 		if (c instanceof CheckBox) {
-			return toCheckBoxMap((CheckBox) c);
+			return new CheckBoxMap(c).toCompositMap();
 		}
 		if (c instanceof Grid) {
-			return toGridMap((Grid) c);
+			return new GridMap(c).toCompositMap();
 		}
 		if (c instanceof GridColumn) {
-			return toGridColumnMap((GridColumn) c);
+			return new GridColumnMap(c).toCompositMap();
 		}
-		if (c instanceof QueryDataSet) {
-			return toQueryDataSetMap((QueryDataSet) c);
+		if (c instanceof Dataset) {
+			return new DatasetMap(c).toCompositMap();
 		}
-		if (c instanceof ResultDataSet) {
-			return toResultDataSetMap((ResultDataSet) c);
-		}
+
 		if (c instanceof Toolbar) {
-			return toToolbarMap((Toolbar) c);
+			return this.createChild("toolBar");
 		}
 		if (c instanceof TabItem) {
-			return toTabItemMap((TabItem) c);
+			return new TabItemMap(c).toCompositMap();
 		}
 		if (c instanceof TabFolder) {
-			return toTabFolderMap((TabFolder) c);
+			return new TabFolderMap(c).toCompositMap();
 		}
 		if (c instanceof ViewDiagram) {
-			return toViewMap((ViewDiagram) c);
+			return this.createChild("view");
 		}
 
 		return null;
 	}
-
-	private CompositeMap toButtonMap(Button c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toFormMap(Form c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toHBoxMap(HBox c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toVBoxMap(VBox c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toFieldSetMap(FieldSet c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toCheckBoxMap(CheckBox c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toGridMap(Grid c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toGridColumnMap(GridColumn c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toQueryDataSetMap(QueryDataSet c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toResultDataSetMap(ResultDataSet c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toToolbarMap(Toolbar c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toTabItemMap(TabItem c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toTabFolderMap(TabFolder c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toViewMap(ViewDiagram c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private CompositeMap toInputMap(Input c) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
