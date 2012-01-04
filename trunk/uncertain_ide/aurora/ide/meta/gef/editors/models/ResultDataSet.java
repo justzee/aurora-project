@@ -11,10 +11,10 @@ public class ResultDataSet extends Dataset {
 
 	public static final int DEFAULT_PAGE_SIZE = 10;
 	private int pageSize;
-	private boolean selectable;
+	private boolean selectable = false;
 
 	// private String selectionModel="multiple"/"single" ;
-	private String selectionModel;
+	private String selectionModel = Grid.SELECT_NONE;
 
 	public ResultDataSet() {
 		this.setUse4Query(false);

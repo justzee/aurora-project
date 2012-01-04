@@ -25,9 +25,9 @@ public class Button extends AuroraComponent {
 			CLEAR, EXCEL };
 	private static final String[] std_type_names = { "", "新增", "保存", "删除",
 			"清除", "导出" };
-	public static final String BUTTONTYPE = "buttontype";
-	public static final String BUTTONTEXT = "buttontext";
-	public static final String BUTTONFUNCTION = "buttonfunction";
+	public static final String BUTTON_TYPE = "buttontype";
+	public static final String BUTTON_TEXT = "buttontext";
+	public static final String BUTTON_FUNCTION = "buttonfunction";
 	public static final String TOOLTIP = "tooltip";
 
 	static final public String B_SEARCH = "b_search";
@@ -43,19 +43,19 @@ public class Button extends AuroraComponent {
 	private static final String[] inner_types_names = { "自定义", "查询", "重置",
 			"保存", "打开", "关闭", "运行" };
 	private static final IPropertyDescriptor[] std_pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(BUTTONTEXT, "Text"),
+			new StringPropertyDescriptor(BUTTON_TEXT, "Text"),
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
-			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
-			new ComboPropertyDescriptor(BUTTONTYPE, "Type", std_type_names) };
+			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
+			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", std_type_names) };
 	private static final IPropertyDescriptor[] inner_pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(BUTTONTEXT, "Text"),
+			new StringPropertyDescriptor(BUTTON_TEXT, "Text"),
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
-			new StringPropertyDescriptor(BUTTONFUNCTION, "Click"),
-			new ComboPropertyDescriptor(BUTTONTYPE, "Type", inner_types_names) };
+			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
+			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", inner_types_names) };
 
 	private String buttonType = DEFAULT;
 	private String text = "button";
@@ -139,7 +139,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.buttonType;
 		this.buttonType = buttonType;
-		firePropertyChange(BUTTONTYPE, oldV, buttonType);
+		firePropertyChange(BUTTON_TYPE, oldV, buttonType);
 		if (isStdButton()) {
 			super.setSize(new Dimension(48, 20));
 		}
@@ -150,7 +150,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.function;
 		this.function = function;
-		firePropertyChange(BUTTONFUNCTION, oldV, function);
+		firePropertyChange(BUTTON_FUNCTION, oldV, function);
 	}
 
 	public void setIcon(String icon) {
@@ -166,7 +166,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.text;
 		this.text = text;
-		firePropertyChange(BUTTONTEXT, oldV, text);
+		firePropertyChange(BUTTON_TEXT, oldV, text);
 	}
 
 	public void setTitle(String title) {
@@ -194,11 +194,11 @@ public class Button extends AuroraComponent {
 	public Object getPropertyValue(Object propName) {
 		if (TOOLTIP.equals(propName))
 			return getTitle();
-		else if (BUTTONTEXT.equals(propName))
+		else if (BUTTON_TEXT.equals(propName))
 			return getText();
-		else if (BUTTONFUNCTION.equals(propName))
+		else if (BUTTON_FUNCTION.equals(propName))
 			return getFunction();
-		else if (BUTTONTYPE.equals(propName))
+		else if (BUTTON_TYPE.equals(propName))
 			return Arrays.asList(isOnToolBar ? std_types : inner_types)
 					.indexOf(getButtonType());
 		return super.getPropertyValue(propName);
@@ -208,11 +208,11 @@ public class Button extends AuroraComponent {
 	public void setPropertyValue(Object propName, Object val) {
 		if (TOOLTIP.equals(propName))
 			setTitle((String) val);
-		else if (BUTTONTEXT.equals(propName))
+		else if (BUTTON_TEXT.equals(propName))
 			setText((String) val);
-		else if (BUTTONFUNCTION.equals(propName))
+		else if (BUTTON_FUNCTION.equals(propName))
 			setFunction((String) val);
-		else if (BUTTONTYPE.equals(propName))
+		else if (BUTTON_TYPE.equals(propName))
 			setButtonType((isOnToolBar ? std_types : inner_types)[(Integer) val]);
 		super.setPropertyValue(propName, val);
 	}

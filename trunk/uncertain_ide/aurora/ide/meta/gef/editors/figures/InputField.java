@@ -5,6 +5,7 @@ import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -26,6 +27,7 @@ public class InputField extends Figure {
 
 	public void setModel(Input model) {
 		this.model = model;
+		setToolTip(new Label(model.getType()));
 	}
 
 	public int getLabelWidth() {
@@ -45,6 +47,7 @@ public class InputField extends Figure {
 	@Override
 	public void handleFocusGained(FocusEvent event) {
 		super.handleFocusGained(event);
+
 	}
 
 	/**
@@ -114,7 +117,7 @@ public class InputField extends Figure {
 		String type = model.getType();
 		if (Input.Combo.equals(type))
 			return ImagesUtils.getImage("palette/itembar_01.png");
-		if (Input.CAL.equals(type))
+		if (Input.CAL.equals(type) || Input.DATETIMEPICKER.equals(type))
 			return ImagesUtils.getImage("palette/itembar_02.png");
 		if (Input.LOV.equals(type))
 			return ImagesUtils.getImage("palette/itembar_03.png");

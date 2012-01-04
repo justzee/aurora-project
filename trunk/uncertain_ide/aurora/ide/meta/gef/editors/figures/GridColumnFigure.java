@@ -4,10 +4,16 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Image;
 
+import aurora.ide.meta.gef.editors.ImagesUtils;
+import aurora.ide.meta.gef.editors.models.CheckBox;
 import aurora.ide.meta.gef.editors.models.GridColumn;
+import aurora.ide.meta.gef.editors.models.Input;
 
 public class GridColumnFigure extends Figure {
+	private static Image checkImg = ImagesUtils
+			.getImage("palette/checkbox_01.png");
 
 	private int labelWidth;
 
@@ -53,6 +59,32 @@ public class GridColumnFigure extends Figure {
 			graphics.drawLine(copy.x, i, copy.x + copy.width, i);
 			k++;
 		}
+		String editor = gridColumn.getEditor();
+		if (editor == null || editor.length() == 0)
+			return;
+		if (CheckBox.CHECKBOX.equals(editor)) {
+			Rectangle r1 = new Rectangle(checkImg.getBounds());
+			graphics.drawImage(checkImg, copy.x + (copy.width - r1.width) / 2,
+					copy.y + 5 + columnHight);
+			return;
+		}
+		graphics.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
+		graphics.drawRectangle(copy.x + 2, copy.y + columnHight + 2,
+				copy.width - 5, gridColumn.getRowHight() - 4);
+		Image img = null;
+		if (Input.Combo.equals(editor))
+			img = ImagesUtils.getImage("palette/itembar_01.png");
+		else if (Input.CAL.equals(editor)
+				|| Input.DATETIMEPICKER.equals(editor))
+			img = ImagesUtils.getImage("palette/itembar_02.png");
+		else if (Input.LOV.equals(editor))
+			img = ImagesUtils.getImage("palette/itembar_03.png");
+		else if (Input.TEXT.equals(editor))
+			img = ImagesUtils.getImage("palette/itembar_04.png");
+		else if (Input.NUMBER.equals(editor))
+			img = ImagesUtils.getImage("palette/itembar_05.png");
+		graphics.drawImage(img, copy.x + copy.width - 20, copy.y + 5
+				+ columnHight);
 		// super.paintFigure(graphics);
 	}
 
@@ -66,7 +98,6 @@ public class GridColumnFigure extends Figure {
 	}
 
 	public int getColumnHight() {
-
 		return columnHight;
 	}
 

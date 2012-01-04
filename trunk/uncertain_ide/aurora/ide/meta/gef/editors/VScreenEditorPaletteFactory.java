@@ -25,7 +25,6 @@ import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
-import aurora.ide.meta.gef.editors.models.Navbar;
 import aurora.ide.meta.gef.editors.models.TabFolder;
 import aurora.ide.meta.gef.editors.models.TabItem;
 import aurora.ide.meta.gef.editors.models.Toolbar;
@@ -44,7 +43,7 @@ public class VScreenEditorPaletteFactory {
 
 		PaletteDrawer drawer = new PaletteDrawer("Components", null);
 
-		List entries = new ArrayList();
+		List<CombinedTemplateCreationEntry> entries = new ArrayList<CombinedTemplateCreationEntry>();
 
 		CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
 				"TextField", "Create a new TextField", Input.class,
@@ -82,8 +81,9 @@ public class VScreenEditorPaletteFactory {
 				ImagesUtils.getImageDescriptor("palette/itembar_01.png"));
 		entries.add(combined);
 
-		combined = new CombinedTemplateCreationEntry("Cal", "Create a new Cal",
-				Input.class, new SimpleFactory(Input.class) {
+		combined = new CombinedTemplateCreationEntry("DatePicker",
+				"Create a new DatePicker", Input.class, new SimpleFactory(
+						Input.class) {
 					public Object getNewObject() {
 						Input newObject = (Input) super.getNewObject();
 						newObject.setType(Input.CAL);
@@ -92,8 +92,9 @@ public class VScreenEditorPaletteFactory {
 				}, ImagesUtils.getImageDescriptor("palette/itembar_02.png"),
 				ImagesUtils.getImageDescriptor("palette/itembar_02.png"));
 		entries.add(combined);
-		combined = new CombinedTemplateCreationEntry("Cal", "Create a new Cal",
-				Input.class, new SimpleFactory(Input.class) {
+		combined = new CombinedTemplateCreationEntry("DateTimePicker",
+				"Create a new DateTimePicker", Input.class, new SimpleFactory(
+						Input.class) {
 					public Object getNewObject() {
 						Input newObject = (Input) super.getNewObject();
 						newObject.setType(Input.DATETIMEPICKER);
@@ -192,12 +193,12 @@ public class VScreenEditorPaletteFactory {
 						"images/parallel16.gif"));
 		entries.add(combined);
 
-		combined = new CombinedTemplateCreationEntry("Navbar",
-				"Create a  Navbar", Navbar.class, new SimpleFactory(
-						Navbar.class),
-				ImagesUtils.getImageDescriptor("palette/navigation_04.png"),
-				ImagesUtils.getImageDescriptor("palette/navigation_04.png"));
-		entries.add(combined);
+		// combined = new CombinedTemplateCreationEntry("Navbar",
+		// "Create a  Navbar", Navbar.class, new SimpleFactory(
+		// Navbar.class),
+		// ImagesUtils.getImageDescriptor("palette/navigation_04.png"),
+		// ImagesUtils.getImageDescriptor("palette/navigation_04.png"));
+		// entries.add(combined);
 
 		// tab folder
 		combined = new CombinedTemplateCreationEntry("Tab Folder",
@@ -221,7 +222,7 @@ public class VScreenEditorPaletteFactory {
 	private static PaletteContainer createControlGroup(PaletteRoot root) {
 		PaletteGroup controlGroup = new PaletteGroup("Control Group");
 
-		List entries = new ArrayList();
+		List<PaletteEntry> entries = new ArrayList<PaletteEntry>();
 
 		ToolEntry tool = new SelectionToolEntry();
 		entries.add(tool);

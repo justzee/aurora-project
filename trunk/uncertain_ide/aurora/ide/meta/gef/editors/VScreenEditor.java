@@ -303,6 +303,7 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 
 	protected void createPropertyViewer(Composite c) {
 		propertyViewer = new MetaPropertyViewer(c, this);
+		propertyViewer.setCommandStack(getEditDomain().getCommandStack());
 	}
 
 	protected void createBMViewer(Composite c) {

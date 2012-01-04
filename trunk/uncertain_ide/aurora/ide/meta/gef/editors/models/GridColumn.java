@@ -18,6 +18,7 @@ public class GridColumn extends RowCol {
 	private List<GridColumn> cols = new ArrayList<GridColumn>();
 	// 界面默认的行高 25
 	private int rowHight = 25;
+	private String editor = "";
 
 	public int getRowHight() {
 		return rowHight;
@@ -56,6 +57,18 @@ public class GridColumn extends RowCol {
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		return pds;
+	}
+
+	public String getEditor() {
+		return editor;
+	}
+
+	public void setEditor(String editor) {
+		if (eq(this.editor, editor))
+			return;
+		String oldV = this.editor;
+		this.editor = editor;
+		firePropertyChange("EDITOR", oldV, editor);
 	}
 
 }
