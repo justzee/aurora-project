@@ -41,7 +41,7 @@ public class InputMap extends AbstractComponentMap {
 		input.isAllowNegative();
 		
 		//cal
-		input.getEnableBediseDays();
+		input.getEnableBesideDays();
 		input.getEnableMonthBtn();
 		//lov,textField,combo
 		input.getTypeCase();

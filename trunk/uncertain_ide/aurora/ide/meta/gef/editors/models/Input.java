@@ -13,25 +13,33 @@ public class Input extends AuroraComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = -1913613647491922330L;
+	// TYPE
 	public static final String TEXT = "textField";
 	public static final String NUMBER = "numberField";
 	public static final String Combo = "comboBox";
 	public static final String LOV = "lov";
 	public static final String CAL = "datePicker";
 	public static final String DATETIMEPICKER = "dateTimePicker";
+
 	public static final String CASE_LOWER = "lower";
 	public static final String CASE_UPPER = "upper";
 	public static final String CASE_ANY = "";
 	private static final String[] CASE_TYPES = { CASE_ANY, CASE_UPPER,
 			CASE_LOWER };
 	private static final String[] CAL_ENABLES = { "pre", "next", "both", "none" };
-	public static final String ALLOWDECIMALS = "ALLOWDECIMALS";
-	public static final String ALLOWNEGATIVE = "ALLOWNEGATIVE";
-	public static final String ALLOWFORMAT = "ALLOWFORMAT";
-	public static final String EMPTYTEXT = "EMPTYTEXT";
-	public static final String TYPECASE = "TYPECASE";
-	public static final String ENABLEBESIDEDAYS = "ENABLEBESIDEDAYS";
-	public static final String ENABLEMONTHBTN = "ENABLEMONTHBTN";
+
+	// property key
+	// number
+	public static final String ALLOWDECIMALS = "allowDecimals";
+	public static final String ALLOWNEGATIVE = "allowNegative";
+	public static final String ALLOWFORMAT = "allowFormat";
+	// all
+	public static final String EMPTYTEXT = "emptyText";
+	// combo lov text
+	public static final String TYPECASE = "typeCase";
+	// cal 
+	public static final String ENABLEBESIDEDAYS = "enableBesideDays";
+	public static final String ENABLEMONTHBTN = "enableMonthBtn";
 
 	// /
 	private boolean required = false;

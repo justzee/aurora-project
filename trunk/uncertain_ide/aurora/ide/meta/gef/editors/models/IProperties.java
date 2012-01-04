@@ -21,6 +21,6 @@ public interface IProperties {
 	String LABELWIDTH = "labelWidth";
 	String REQUIRED = "required";
 	String READONLY = "readOnly";
-	String WIDTH = "_width_";
-	String HEIGHT = "_height_";
+	String WIDTH = "width";
+	String HEIGHT = "height";
 }
