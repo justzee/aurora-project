@@ -26,7 +26,6 @@ import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.Navbar;
-import aurora.ide.meta.gef.editors.models.Radio;
 import aurora.ide.meta.gef.editors.models.TabFolder;
 import aurora.ide.meta.gef.editors.models.TabItem;
 import aurora.ide.meta.gef.editors.models.Toolbar;
@@ -93,6 +92,16 @@ public class VScreenEditorPaletteFactory {
 				}, ImagesUtils.getImageDescriptor("palette/itembar_02.png"),
 				ImagesUtils.getImageDescriptor("palette/itembar_02.png"));
 		entries.add(combined);
+		combined = new CombinedTemplateCreationEntry("Cal", "Create a new Cal",
+				Input.class, new SimpleFactory(Input.class) {
+					public Object getNewObject() {
+						Input newObject = (Input) super.getNewObject();
+						newObject.setType(Input.DATETIMEPICKER);
+						return newObject;
+					}
+				}, ImagesUtils.getImageDescriptor("palette/itembar_02.png"),
+				ImagesUtils.getImageDescriptor("palette/itembar_02.png"));
+		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("LOV", "Create a new Lov",
 				Input.class, new SimpleFactory(Input.class) {
@@ -112,11 +121,12 @@ public class VScreenEditorPaletteFactory {
 				ImagesUtils.getImageDescriptor("palette/checkbox_01.png"));
 		entries.add(combined);
 		// radio
-		combined = new CombinedTemplateCreationEntry("Radio", "Create a Radio",
-				Radio.class, new SimpleFactory(Radio.class),
-				ImagesUtils.getImageDescriptor("palette/radio_01.png"),
-				ImagesUtils.getImageDescriptor("palette/radio_01.png"));
-		entries.add(combined);
+		// combined = new CombinedTemplateCreationEntry("Radio",
+		// "Create a Radio",
+		// Radio.class, new SimpleFactory(Radio.class),
+		// ImagesUtils.getImageDescriptor("palette/radio_01.png"),
+		// ImagesUtils.getImageDescriptor("palette/radio_01.png"));
+		// entries.add(combined);
 		// /button
 		combined = new CombinedTemplateCreationEntry("Button",
 				"Create a Button", Button.class,

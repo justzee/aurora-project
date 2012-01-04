@@ -13,11 +13,12 @@ public class Input extends AuroraComponent {
 	 * 
 	 */
 	private static final long serialVersionUID = -1913613647491922330L;
-	public static final String TEXT = "text";
-	public static final String NUMBER = "number";
-	public static final String Combo = "combo";
+	public static final String TEXT = "textField";
+	public static final String NUMBER = "numberField";
+	public static final String Combo = "comboBox";
 	public static final String LOV = "lov";
-	public static final String CAL = "cal";
+	public static final String CAL = "datePicker";
+	public static final String DATETIMEPICKER = "dateTimePicker";
 	public static final String CASE_LOWER = "lower";
 	public static final String CASE_UPPER = "upper";
 	public static final String CASE_ANY = "";
@@ -40,7 +41,7 @@ public class Input extends AuroraComponent {
 	private boolean allowFormat = false;
 	private String emptyText = "";
 	private String typeCase = CASE_ANY;
-	private String enableBediseDays = CAL_ENABLES[3];
+	private String enableBesideDays = CAL_ENABLES[3];
 	private String enableMonthBtn = CAL_ENABLES[3];
 
 	// /
@@ -60,7 +61,7 @@ public class Input extends AuroraComponent {
 			new BooleanPropertyDescriptor(ALLOWDECIMALS, "AllowDecimals"),
 			new BooleanPropertyDescriptor(ALLOWNEGATIVE, "AllowNegative"),
 			new BooleanPropertyDescriptor(ALLOWFORMAT, "AllowFormat") };
-	private static final IPropertyDescriptor[] pds_datapicker = new IPropertyDescriptor[] {
+	private static final IPropertyDescriptor[] pds_datepicker = new IPropertyDescriptor[] {
 			PD_PROMPT,
 			PD_WIDTH,
 			new ComboPropertyDescriptor(ENABLEBESIDEDAYS, "EnableBesideDays",
@@ -101,8 +102,8 @@ public class Input extends AuroraComponent {
 		String type = getType();
 		if (NUMBER.equals(type))
 			return pds_number;
-		else if (CAL.equals(type))
-			return pds_datapicker;
+		else if (CAL.equals(type) || DATETIMEPICKER.equals(type))
+			return pds_datepicker;
 		return pds_text;
 	}
 
@@ -122,28 +123,44 @@ public class Input extends AuroraComponent {
 		else if (TYPECASE.equals(propName))
 			return indexOf(CASE_TYPES, getTypeCase());
 		else if (ENABLEBESIDEDAYS.equals(propName))
-			return indexOf(CAL_ENABLES, getEnableBediseDays());
+			return indexOf(CAL_ENABLES, getEnableBesideDays());
 		else if (ENABLEMONTHBTN.equals(propName))
 			return indexOf(CAL_ENABLES, getEnableMonthBtn());
 		return super.getPropertyValue(propName);
 	}
 
-	// private int indexOF(String s){
-	// if(bbs[0].equals(s))
-	// }
-
+	/**
+	 * NumberField ,是否允许小数
+	 * 
+	 * @return
+	 */
 	public boolean isAllowDecimals() {
 		return allowDecimals;
 	}
 
+	/**
+	 * NumberField ,是否允许小数
+	 * 
+	 * @return
+	 */
 	public void setAllowDecimals(boolean allowDecimals) {
 		this.allowDecimals = allowDecimals;
 	}
 
+	/**
+	 * NumberField ,是否允许负数
+	 * 
+	 * @return
+	 */
 	public boolean isAllowNegative() {
 		return allowNegative;
 	}
 
+	/**
+	 * NumberField ,是否允许负数
+	 * 
+	 * @return
+	 */
 	public void setAllowNegative(boolean allowNegative) {
 		this.allowNegative = allowNegative;
 	}
@@ -164,16 +181,26 @@ public class Input extends AuroraComponent {
 		else if (TYPECASE.equals(propName))
 			setTypeCase(CASE_TYPES[(Integer) val]);
 		else if (ENABLEBESIDEDAYS.equals(propName))
-			setEnableBediseDays(CAL_ENABLES[(Integer) val]);
+			setEnableBesideDays(CAL_ENABLES[(Integer) val]);
 		else if (ENABLEMONTHBTN.equals(propName))
 			setEnableMonthBtn(CAL_ENABLES[(Integer) val]);
 		super.setPropertyValue(propName, val);
 	}
 
+	/**
+	 * NumberField ,是否允许千分位分隔
+	 * 
+	 * @return
+	 */
 	public boolean isAllowFormat() {
 		return allowFormat;
 	}
 
+	/**
+	 * NumberField ,是否允许千分位分隔
+	 * 
+	 * @return
+	 */
 	public void setAllowFormat(boolean allowFormat) {
 		this.allowFormat = allowFormat;
 	}
@@ -190,26 +217,58 @@ public class Input extends AuroraComponent {
 		firePropertyChange(EMPTYTEXT, oldV, emptyText);
 	}
 
+	/**
+	 * TextField ,大小写限制
+	 * 
+	 * @return
+	 */
 	public String getTypeCase() {
 		return typeCase;
 	}
 
+	/**
+	 * TextField ,大小写限制
+	 * 
+	 * @return
+	 */
 	public void setTypeCase(String typeCase) {
 		this.typeCase = typeCase;
 	}
 
-	public String getEnableBediseDays() {
-		return enableBediseDays;
+	/**
+	 * DatePicker ,本月前后月份补齐<br/>
+	 * 
+	 * @return
+	 */
+	public String getEnableBesideDays() {
+		return enableBesideDays;
 	}
 
-	public void setEnableBediseDays(String enableBediseDays) {
-		this.enableBediseDays = enableBediseDays;
+	/**
+	 * DatePicker ,本月前后月份补齐<br/>
+	 * none|both|pre|next
+	 * 
+	 * @return
+	 */
+	public void setEnableBesideDays(String enableBesideDays) {
+		this.enableBesideDays = enableBesideDays;
 	}
 
+	/**
+	 * DatePicker ,月份按钮显示方式
+	 * 
+	 * @return
+	 */
 	public String getEnableMonthBtn() {
 		return enableMonthBtn;
 	}
 
+	/**
+	 * DatePicker ,月份按钮显示方式<br/>
+	 * none|both|pre|next
+	 * 
+	 * @return
+	 */
 	public void setEnableMonthBtn(String enableMonthBtn) {
 		this.enableMonthBtn = enableMonthBtn;
 	}
