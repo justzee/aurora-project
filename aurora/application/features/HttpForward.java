@@ -88,7 +88,12 @@ public class HttpForward extends HttpServlet {
 			HttpEntity entity = response.getEntity();
 
 			if (entity != null) {
-//				httpResponse.setContentLength((int) entity.getContentLength());
+            	Header header=entity.getContentType();
+            	httpResponse.reset();
+            	httpResponse.addHeader(header.getName(), header.getValue());		
+            	httpResponse.addHeader("Transfer-Encoding", "Identity");
+            	httpResponse.addHeader(response.getFirstHeader("Content-Disposition").getName(),response.getFirstHeader("Content-Disposition").getValue());
+                httpResponse.setContentLength((int) entity.getContentLength());
 //				Header[] headers=response.getAllHeaders();
 //                Header header;
 //                for(int i=0;i<headers.length;i++){
