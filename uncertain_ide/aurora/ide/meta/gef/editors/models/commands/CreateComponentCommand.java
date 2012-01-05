@@ -1,12 +1,11 @@
 package aurora.ide.meta.gef.editors.models.commands;
 
-import java.util.List;
-
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.commands.Command;
-
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
+
+import java.util.List;
+
+import org.eclipse.gef.commands.Command;
 
 /**
  */
@@ -14,9 +13,9 @@ public class CreateComponentCommand extends Command {
 	protected Container container;
 
 	protected AuroraComponent child;
-	private EditPart reference = null;
+	private AuroraComponent reference = null;
 
-	public void setDiagram(Container container) {
+	public void setTargetContainer(Container container) {
 		this.container = container;
 	}
 
@@ -28,9 +27,8 @@ public class CreateComponentCommand extends Command {
 		if (reference == null)
 			container.addChild(child);
 		else {
-			AuroraComponent ac = (AuroraComponent) reference.getModel();
 			List<AuroraComponent> list = container.getChildren();
-			int idx = list.indexOf(ac);
+			int idx = list.indexOf(reference);
 			container.addChild(child, idx);
 		}
 	}
@@ -47,7 +45,7 @@ public class CreateComponentCommand extends Command {
 		container.removeChild(child);
 	}
 
-	public void setReferenceEditPart(EditPart reference) {
+	public void setReferenceModel(AuroraComponent reference) {
 		this.reference = reference;
 	}
 }

@@ -8,8 +8,16 @@ import aurora.ide.meta.gef.editors.models.commands.CreateComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveChildCmpCmd;
 import aurora.ide.meta.gef.editors.models.commands.MoveComponentCommand;
 import aurora.ide.meta.gef.editors.models.commands.MoveRemoteChildCmpCmd;
+import aurora.ide.meta.gef.editors.parts.ComponentPart;
 import aurora.ide.meta.gef.editors.parts.GridColumnPart;
+import aurora.ide.meta.gef.editors.parts.GridPart;
+import aurora.ide.meta.gef.editors.parts.GridSelectionColPart;
+import aurora.ide.meta.gef.editors.parts.NavbarPart;
+import aurora.ide.meta.gef.editors.parts.ToolbarPart;
 
+import java.util.List;
+
+import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
@@ -19,7 +27,7 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.DropRequest;
 
-public class FormLayoutEditPolicy extends FlowLayoutEditPolicy {
+public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	private EditPart targetEditPart;
 
@@ -29,17 +37,12 @@ public class FormLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	protected Command createChangeConstraintCommand(EditPart child,
 			Object constraint) {
-
 		if (!(constraint instanceof Rectangle))
 			return null;
-
 		MoveComponentCommand cmd = new MoveComponentCommand();
 		cmd.setNode((AuroraComponent) child.getModel());
-
-		// cmd.setNode((Node) child.getModel());
 		cmd.setLocation(((Rectangle) constraint).getLocation());
 		return cmd;
-
 	}
 
 	protected Command getCreateCommand(CreateRequest request) {
@@ -49,12 +52,12 @@ public class FormLayoutEditPolicy extends FlowLayoutEditPolicy {
 			if (!parentModel.isResponsibleChild(ac)) {
 				return null;
 			}
+			EditPart reference = getInsertionReference(request);
 			CreateComponentCommand cmd = new CreateComponentCommand();
-			cmd.setDiagram(parentModel);
+			cmd.setTargetContainer(parentModel);
 			cmd.setChild(ac);
-
-			// Rectangle constraint = (Rectangle) getConstraintFor(request);
-			// cmd.setLocation( request.getLocation());
+			cmd.setReferenceModel((AuroraComponent) (reference == null ? null
+					: reference.getModel()));
 			return cmd;
 		}
 		return null;
@@ -113,48 +116,34 @@ public class FormLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return getHost().getModel() instanceof GridColumn;
 	}
 
-	@Override
 	public void showTargetFeedback(Request request) {
-		// if (targetEditPart != null
-		// && targetEditPart.getClass().equals(GridPart.class)) {
-		// if (request instanceof DropRequest
-		// && (!REQ_RESIZE.equals(request.getType()))) {
-		// ComponentPart ref = (ComponentPart) getInsertionReference(request);
-		// if ((ref instanceof NavbarPart)) {
-		// // GridColumnPart firstColumn = null;
-		// // GridColumnPart lastColumn = null;
-		// // boolean findFirst = false;
-		// // for (Object ep : targetEditPart.getChildren()) {
-		// // if (ep instanceof GridColumnPart) {
-		// // if (!findFirst) {
-		// // firstColumn = (GridColumnPart) ep;
-		// // findFirst = true;
-		// // }
-		// // lastColumn = (GridColumnPart) ep;
-		// // }
-		// // }
-		// // if (lastColumn != null) {
-		// // Rectangle rect = lastColumn.getFigure().getBounds()
-		// // .getShrinked(-4, -2);
-		// // Polyline linefb = getLineFeedback();
-		// // linefb.setStart(rect.getTopRight());
-		// // linefb.setEnd(rect.getBottomRight());
-		// // // getFeedbackLayer().add(linefb);
-		// // return;
-		// // }
-		// }
-		// }
-		// }
+		if (targetEditPart instanceof GridPart) {
+			if ((request instanceof DropRequest)
+					&& !(REQ_RESIZE.equals(request.getType()))) {
+				ComponentPart ref = (ComponentPart) getInsertionReference(request);
+				if (ref == null || (ref instanceof ToolbarPart)
+						|| (ref instanceof NavbarPart)
+						|| (ref instanceof GridSelectionColPart)) {
+					List children = targetEditPart.getChildren();
+					ComponentPart last = null;
+					for (Object o : children) {
+						if ((o instanceof ToolbarPart)
+								|| (o instanceof NavbarPart)) {
+							break;
+						}
+						last = (ComponentPart) o;
+					}
+					if (last != null) {
+						Rectangle rect = last.getFigure().getBounds()
+								.getShrinked(-4, -2);
+						Polyline linefb = getLineFeedback();
+						linefb.setStart(rect.getTopRight());
+						linefb.setEnd(rect.getBottomRight());
+						return;
+					}
+				}
+			}
+		}
 		super.showTargetFeedback(request);
 	}
-
-	// protected EditPart getInsertionReference(Request request) {
-	// EditPart ep = super.getInsertionReference(request);
-	// List children = getHost().getChildren();
-	// if (ep.getClass().equals(ToolbarPart.class)) {
-	// int idx = children.indexOf(ep);
-	// // if(idx==)
-	// }
-	// return null;
-	// }
 }
