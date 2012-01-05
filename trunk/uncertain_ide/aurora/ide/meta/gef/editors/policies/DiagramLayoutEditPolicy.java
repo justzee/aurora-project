@@ -1,14 +1,5 @@
 package aurora.ide.meta.gef.editors.policies;
 
-import org.eclipse.draw2d.Polyline;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
-import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.gef.requests.DropRequest;
-
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.FieldSet;
@@ -25,6 +16,15 @@ import aurora.ide.meta.gef.editors.parts.ContainerPart;
 import aurora.ide.meta.gef.editors.parts.TabBodyPart;
 import aurora.ide.meta.gef.editors.parts.TabFolderPart;
 import aurora.ide.meta.gef.editors.parts.TabItemPart;
+
+import org.eclipse.draw2d.Polyline;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
+import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.DropRequest;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private EditPart targetEditPart = null;
@@ -103,9 +103,10 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 			}
 			EditPart reference = getInsertionReference(request);
 			CreateComponentCommand cmd = new CreateComponentCommand();
-			cmd.setDiagram(parentModel);
+			cmd.setTargetContainer(parentModel);
 			cmd.setChild(ac);
-			cmd.setReferenceEditPart(reference);
+			cmd.setReferenceModel((AuroraComponent) (reference == null ? null
+					: reference.getModel()));
 			return cmd;
 		}
 		return null;

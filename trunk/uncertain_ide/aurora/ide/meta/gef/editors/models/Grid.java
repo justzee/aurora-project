@@ -1,13 +1,13 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
 
 public class Grid extends GridColumn {
 
@@ -66,8 +66,9 @@ public class Grid extends GridColumn {
 			removeChild(gsc);
 		} else {
 			int idx = getChildren().indexOf(gsc);
-			if (idx == -1)
+			if (idx == -1) {
 				addChild(gsc, 0);
+			}
 		}
 	}
 
@@ -85,6 +86,26 @@ public class Grid extends GridColumn {
 		}
 	}
 
+	public void addChild(AuroraComponent ac, int idx) {
+		List children = getChildren();
+		int index1 = children.indexOf(navBar);
+		if (index1 == -1)
+			index1 = children.size();
+		int index2 = children.indexOf(getToolbar());
+		if (index2 == -1)
+			index2 = index1;
+		int index = Math.min(index1, index2);
+		if (index > 0 && idx > index)
+			idx--;
+		if (ac instanceof Toolbar)
+			idx = children.size();
+		super.addChild(ac, idx);
+	}
+
+	public boolean hasNavBar() {
+		return getChildren().indexOf(navBar) != -1;
+	}
+
 	public boolean hasToolbar() {
 		return getToolbar() != null;
 	}
@@ -96,9 +117,13 @@ public class Grid extends GridColumn {
 			return (Toolbar) getFirstChild(Toolbar.class);
 	}
 
-	public void setToolbar(Toolbar tl) {
-		this.toolbar = tl;
-		this.addChild(tl);
+	// public void setToolbar(Toolbar tl) {
+	// this.toolbar = tl;
+	// this.addChild(tl, 0);
+	// }
+
+	public boolean hasSelectionCol() {
+		return getChildren().indexOf(gsc) != -1;
 	}
 
 	@SuppressWarnings("unchecked")

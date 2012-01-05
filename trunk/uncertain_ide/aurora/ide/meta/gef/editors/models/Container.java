@@ -12,10 +12,8 @@ public class Container extends AuroraComponent {
 
 	private static int count;
 
+	private Dataset dataset;
 
-	
-	private Dataset  dataset;
-	
 	protected List<AuroraComponent> children = new ArrayList<AuroraComponent>();
 
 	public Container() {
@@ -23,16 +21,13 @@ public class Container extends AuroraComponent {
 	}
 
 	public void addChild(AuroraComponent child) {
-		addChild(child, -1);
+		addChild(child, children.size());
 	}
 
 	public void addChild(AuroraComponent child, int index) {
 		if (!isResponsibleChild(child))
 			return;
-		if (index >= 0)
-			children.add(index, child);
-		else
-			children.add(child);
+		children.add(index, child);
 		fireStructureChange(CHILDREN, child);
 	}
 
