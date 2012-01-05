@@ -46,14 +46,14 @@ public class Button extends AuroraComponent {
 			new StringPropertyDescriptor(BUTTON_TEXT, "Text"), PD_NAME,
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
-			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
+			new StringPropertyDescriptor(TOOLTIP, "Title"),
 			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
 			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", std_type_names) };
 	private static final IPropertyDescriptor[] inner_pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(BUTTON_TEXT, "Text"), PD_NAME,
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
-			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
+			new StringPropertyDescriptor(TOOLTIP, "Title"),
 			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
 			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", inner_types_names) };
 
