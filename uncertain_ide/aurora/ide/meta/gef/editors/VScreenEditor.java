@@ -53,6 +53,7 @@ import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.meta.gef.editors.parts.AuroraPartFactory;
 import aurora.ide.meta.gef.editors.parts.DatasetPartFactory;
 import aurora.ide.meta.gef.editors.property.MetaPropertyViewer;
+import aurora.ide.meta.gef.editors.source.gen.ScreenGenerator;
 
 public class VScreenEditor extends FlayoutBMGEFEditor {
 
@@ -182,28 +183,9 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 	}
 
 	private void createScreen() {
+		ScreenGenerator.genFile(this.diagram);
 
-		IFile newFileHandle = AuroraPlugin.getWorkspace().getRoot()
-				.getFile(new Path("/hr_aurora/web/a0.screen"));
-		CompositeMap cm = new CompositeMap("xx");
-		cm.put("x", "bb");
-		InputStream is = new ByteArrayInputStream(cm.toXML().getBytes());
-		CreateFileOperation op = new CreateFileOperation(newFileHandle, null,
-				is, "Create New File");
-		try {
-			PlatformUI
-					.getWorkbench()
-					.getOperationSupport()
-					.getOperationHistory()
-					.execute(
-							op,
-							null,
-							WorkspaceUndoUtil.getUIInfoAdapter(this.getSite()
-									.getShell()));
-		} catch (final ExecutionException e) {
-			// handle exceptions
-			e.printStackTrace();
-		}
+		
 
 	}
 

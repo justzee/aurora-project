@@ -42,12 +42,13 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 		// TODO js 查询
 		HBox hbox = new HBox();
 		search = new Button();
-		search.setType(Button.B_SEARCH);
+		search.setButtonType(Button.B_SEARCH);
+		
 		search.setText("查询");
 
 		reset = new Button();
 		reset.setText("重置");
-		reset.setType(Button.B_RESET);
+		reset.setButtonType(Button.B_RESET);
 		reset.setTargetComponent(form);
 		hbox.addChild(search);
 		hbox.addChild(reset);
