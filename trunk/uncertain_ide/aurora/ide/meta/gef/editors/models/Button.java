@@ -1,14 +1,14 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
 import java.util.Arrays;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class Button extends AuroraComponent {
 	/**
@@ -20,15 +20,15 @@ public class Button extends AuroraComponent {
 	public static final String DELETE = "delete";
 	public static final String CLEAR = "clear";
 	public static final String EXCEL = "excel";
-	public static final String DEFAULT = "default";
+	public static final String DEFAULT = "";
 	private static final String[] std_types = { DEFAULT, ADD, SAVE, DELETE,
 			CLEAR, EXCEL };
 	private static final String[] std_type_names = { "", "新增", "保存", "删除",
 			"清除", "导出" };
-	public static final String BUTTON_TYPE = "buttontype";
-	public static final String BUTTON_TEXT = "buttontext";
-	public static final String BUTTON_FUNCTION = "buttonfunction";
-	public static final String TOOLTIP = "tooltip";
+	public static final String BUTTON_TYPE = "type";
+	public static final String BUTTON_TEXT = "text";
+	public static final String BUTTON_FUNCTION = "click";
+	public static final String TOOLTIP = "title";
 
 	static final public String B_SEARCH = "b_search";
 	static final public String B_RESET = "b_reset";
@@ -43,14 +43,14 @@ public class Button extends AuroraComponent {
 	private static final String[] inner_types_names = { "自定义", "查询", "重置",
 			"保存", "打开", "关闭", "运行" };
 	private static final IPropertyDescriptor[] std_pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(BUTTON_TEXT, "Text"),
+			new StringPropertyDescriptor(BUTTON_TEXT, "Text"), PD_NAME,
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
 			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
 			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", std_type_names) };
 	private static final IPropertyDescriptor[] inner_pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(BUTTON_TEXT, "Text"),
+			new StringPropertyDescriptor(BUTTON_TEXT, "Text"), PD_NAME,
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Tooltip"),
@@ -215,6 +215,10 @@ public class Button extends AuroraComponent {
 		else if (BUTTON_TYPE.equals(propName))
 			setButtonType((isOnToolBar ? std_types : inner_types)[(Integer) val]);
 		super.setPropertyValue(propName, val);
+	}
+
+	public boolean isOnToolBar() {
+		return isOnToolBar;
 	}
 
 }

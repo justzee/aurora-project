@@ -37,7 +37,7 @@ public class Input extends AuroraComponent {
 	public static final String EMPTYTEXT = "emptyText";
 	// combo lov text
 	public static final String TYPECASE = "typeCase";
-	// cal 
+	// cal
 	public static final String ENABLEBESIDEDAYS = "enableBesideDays";
 	public static final String ENABLEMONTHBTN = "enableMonthBtn";
 
@@ -62,16 +62,17 @@ public class Input extends AuroraComponent {
 			EMPTYTEXT, "EmptyText");
 	private static final IPropertyDescriptor PD_TYPECASE = new ComboPropertyDescriptor(
 			TYPECASE, "TypeCase", new String[] { "任意", "大写", "小写" });
-	private static final IPropertyDescriptor[] pds_text = { PD_PROMPT,
+	private static final IPropertyDescriptor[] pds_text = { PD_PROMPT, PD_NAME,
 			PD_REQUIRED, PD_READONLY, PD_WIDTH, PD_EMPYTEXT, PD_TYPECASE };
 	private static final IPropertyDescriptor[] pds_number = { PD_PROMPT,
-			PD_REQUIRED, PD_READONLY, PD_WIDTH, PD_EMPYTEXT,
+			PD_NAME, PD_REQUIRED, PD_READONLY, PD_WIDTH, PD_EMPYTEXT,
 			new BooleanPropertyDescriptor(ALLOWDECIMALS, "AllowDecimals"),
 			new BooleanPropertyDescriptor(ALLOWNEGATIVE, "AllowNegative"),
 			new BooleanPropertyDescriptor(ALLOWFORMAT, "AllowFormat") };
 	private static final IPropertyDescriptor[] pds_datepicker = new IPropertyDescriptor[] {
 			PD_PROMPT,
 			PD_WIDTH,
+			PD_NAME,
 			new ComboPropertyDescriptor(ENABLEBESIDEDAYS, "EnableBesideDays",
 					CAL_ENABLES),
 			new ComboPropertyDescriptor(ENABLEMONTHBTN, "EnableMonthBtn",
