@@ -66,6 +66,8 @@ public class Button extends AuroraComponent {
 
 	private boolean isOnToolBar = false;
 
+	private ButtonClicker buttonClicker;
+
 	public Button() {
 		setSize(new Dimension(80, 20));
 		this.setType("button");
@@ -219,6 +221,14 @@ public class Button extends AuroraComponent {
 
 	public boolean isOnToolBar() {
 		return isOnToolBar;
+	}
+
+	public ButtonClicker getButtonClicker() {
+		return buttonClicker;
+	}
+
+	public void setButtonClicker(ButtonClicker buttonClicker) {
+		this.buttonClicker = buttonClicker;
 	}
 
 }
