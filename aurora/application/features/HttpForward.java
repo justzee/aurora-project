@@ -73,6 +73,7 @@ public class HttpForward extends HttpServlet {
 
 	public void writeResponse(HttpServletResponse httpResponse, String url)
 		throws Exception{
+		//httpClient4.1.2
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		OutputStream os = null;
 		InputStream is = null;
