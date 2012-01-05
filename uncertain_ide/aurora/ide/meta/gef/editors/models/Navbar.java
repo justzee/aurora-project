@@ -7,10 +7,6 @@ public class Navbar extends RowCol {
 
 	static final long serialVersionUID = 1;
 
-	public static final String COMPLEX = "complex";
-
-	public static final String SIMPLE = "simple";
-
 	public Navbar() {
 		this.row = 1;
 		this.col = 999;

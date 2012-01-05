@@ -13,7 +13,7 @@ public class GridColumn extends RowCol {
 	 */
 	private static final long serialVersionUID = 3032139528088861361L;
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			PD_PROMPT, PD_WIDTH };
+			PD_PROMPT, PD_WIDTH, PD_NAME };
 
 	private List<GridColumn> cols = new ArrayList<GridColumn>();
 	// 界面默认的行高 25

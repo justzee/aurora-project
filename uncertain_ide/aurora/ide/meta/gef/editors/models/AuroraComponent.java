@@ -36,7 +36,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 
 	// private String bindTarget = "";
 
-//	private Dataset bindTarget;
+	// private Dataset bindTarget;
 
 	protected static final IPropertyDescriptor PD_PROMPT = new StringPropertyDescriptor(
 			PROMPT, "Prompt");
@@ -44,6 +44,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 			WIDTH, "Width");
 	protected static final IPropertyDescriptor PD_HEIGHT = new IntegerPropertyDescriptor(
 			HEIGHT, "Height");
+	protected static final IPropertyDescriptor PD_NAME = new StringPropertyDescriptor(
+			NAME, "Name");
 	private static final IPropertyDescriptor[] pds = { PD_PROMPT };
 	protected static final IPropertyDescriptor[] NONE_PROPS = new IPropertyDescriptor[0];
 
@@ -152,19 +154,19 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		firePropertyChange(PROMPT, old, prompt);
 	}
 
-//	public Dataset getBindTarget() {
-//		return bindTarget;
-//	}
-//
-//	public void setBindTarget(Dataset bindTarget) {
-//		this.bindTarget = bindTarget;
-//		bindTarget.addBind(this);
-//	}
-//
-//	public void removeBindTarget() {
-//		bindTarget.removeBind(this);
-//		this.bindTarget = null;
-//	}
+	// public Dataset getBindTarget() {
+	// return bindTarget;
+	// }
+	//
+	// public void setBindTarget(Dataset bindTarget) {
+	// this.bindTarget = bindTarget;
+	// bindTarget.addBind(this);
+	// }
+	//
+	// public void removeBindTarget() {
+	// bindTarget.removeBind(this);
+	// this.bindTarget = null;
+	// }
 
 	protected boolean eq(Object o1, Object o2) {
 		if (o1 == null)
@@ -187,6 +189,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 			return getSize().width;
 		else if (HEIGHT.equals(propName))
 			return getSize().height;
+		else if (NAME.equals(propName))
+			return getName();
 		return null;
 	}
 
@@ -205,6 +209,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 			setSize(new Dimension((Integer) val, getSize().height));
 		else if (HEIGHT.equals(propName))
 			setSize(new Dimension(getSize().width, (Integer) val));
+		else if (NAME.equals(propName))
+			setName((String) val);
 	}
 
 	// public void setIBounds(Rectangle layout) {

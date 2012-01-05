@@ -18,7 +18,7 @@ public class CheckBox extends Input {
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(PROMPT, "Prompt"),
 			new BooleanPropertyDescriptor(SELECTION_STATE, "Selected"),
-			new StringPropertyDescriptor(TEXT, "Text") };
+			new StringPropertyDescriptor(TEXT, "Text"), PD_NAME };
 
 	public CheckBox() {
 		setSize(new Dimension(120, 20));
