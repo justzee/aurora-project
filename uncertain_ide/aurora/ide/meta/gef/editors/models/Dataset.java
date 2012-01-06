@@ -14,12 +14,12 @@ public class Dataset extends AuroraComponent {
 	 */
 	private static final long serialVersionUID = -4619018857153616914L;
 	// model a.b.c形式
-	private String model;
+	private String model="";
 
 	private boolean autoQuery;
 	// private String queryUrl;
 	// 自动生成
-	private String id;
+	private String id="";
 	// 是否只是QueryDS,如果true，生成的代码将不设置model
 	private boolean isUse4Query;
 	// 是否使用父的BM
