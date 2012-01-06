@@ -1,6 +1,8 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.ButtonClickEditDialog;
 import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.DialogPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
@@ -27,7 +29,7 @@ public class Button extends AuroraComponent {
 			"清除", "导出" };
 	public static final String BUTTON_TYPE = "type";
 	public static final String BUTTON_TEXT = "text";
-	public static final String BUTTON_FUNCTION = "click";
+	public static final String BUTTON_CLICKER = "click";
 	public static final String TOOLTIP = "title";
 
 	// static final public String B_SEARCH = "b_search";
@@ -47,17 +49,16 @@ public class Button extends AuroraComponent {
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Title"),
-			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
+			new StringPropertyDescriptor(BUTTON_CLICKER, "Click"),
 			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", std_type_names) };
 	private static final IPropertyDescriptor[] inner_pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(BUTTON_TEXT, "Text"), PD_NAME,
+			new StringPropertyDescriptor(BUTTON_TEXT, "Text"),
+			PD_NAME,
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Title"),
-			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click")
-	// ,
-	// new ComboPropertyDescriptor(BUTTON_TYPE, "Type", inner_types_names)
-	};
+			new DialogPropertyDescriptor(BUTTON_CLICKER, "Click",
+					ButtonClickEditDialog.class) };
 
 	private String buttonType = DEFAULT;
 	private String text = "button";
@@ -66,12 +67,13 @@ public class Button extends AuroraComponent {
 	private String title = "";
 	private AuroraComponent targetComponent;
 
-	private ButtonClicker buttonClicker;
+	private ButtonClicker buttonClicker = new ButtonClicker();
 	private AuroraComponent parent = null;
 
 	public Button() {
 		setSize(new Dimension(80, 20));
 		this.setType("button");
+		buttonClicker.setButton(this);
 	}
 
 	@Override
@@ -148,7 +150,7 @@ public class Button extends AuroraComponent {
 			return;
 		String oldV = this.click;
 		this.click = function;
-		firePropertyChange(BUTTON_FUNCTION, oldV, function);
+		firePropertyChange(BUTTON_CLICKER, oldV, function);
 	}
 
 	public void setIcon(String icon) {
@@ -194,8 +196,8 @@ public class Button extends AuroraComponent {
 			return getTitle();
 		else if (BUTTON_TEXT.equals(propName))
 			return getText();
-		else if (BUTTON_FUNCTION.equals(propName))
-			return getFunction();
+		else if (BUTTON_CLICKER.equals(propName))
+			return buttonClicker;
 		else if (BUTTON_TYPE.equals(propName))
 			return Arrays.asList(std_types).indexOf(getButtonType());
 		return super.getPropertyValue(propName);
@@ -207,8 +209,8 @@ public class Button extends AuroraComponent {
 			setTitle((String) val);
 		else if (BUTTON_TEXT.equals(propName))
 			setText((String) val);
-		else if (BUTTON_FUNCTION.equals(propName))
-			setFunction((String) val);
+		else if (BUTTON_CLICKER.equals(propName))
+			buttonClicker = (ButtonClicker) val;
 		else if (BUTTON_TYPE.equals(propName))
 			setButtonType(std_types[(Integer) val]);
 		super.setPropertyValue(propName, val);
