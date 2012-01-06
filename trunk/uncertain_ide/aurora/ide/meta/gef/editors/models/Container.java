@@ -41,13 +41,13 @@ public class Container extends AuroraComponent {
 	}
 
 	public void removeChild(AuroraComponent child) {
-		child.setParent(null);
+//		child.setParent(null);
 		children.remove(child);
 		fireStructureChange(CHILDREN, child);
 	}
 
 	public void removeChild(int idx) {
-		children.get(idx).setParent(null);
+//		children.get(idx).setParent(null);
 		AuroraComponent ac = children.remove(idx);
 		fireStructureChange(CHILDREN, ac);
 	}
