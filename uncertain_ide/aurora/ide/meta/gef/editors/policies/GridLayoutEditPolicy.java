@@ -75,7 +75,7 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 					+ model.getHeadHight())
 				targetEditPart = targetEditPart.getParent();
 		}
-		System.out.println("getTargetEditPart:" + targetEditPart);
+		// System.out.println("getTargetEditPart:" + targetEditPart);
 		return targetEditPart;
 	}
 
@@ -99,7 +99,7 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 			AuroraComponent ac = (AuroraComponent) child.getModel();
 			if (!dest.isResponsibleChild(ac))
 				return null;
-			System.out.println("createAddCommand:" + targetEditPart);
+			// System.out.println("createAddCommand:" + targetEditPart);
 			cmd.setTargetContainer(targetEditPart);
 		}
 		cmd.setReferenceEditPart(after);
