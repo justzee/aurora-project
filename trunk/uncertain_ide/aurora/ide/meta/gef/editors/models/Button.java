@@ -30,18 +30,18 @@ public class Button extends AuroraComponent {
 	public static final String BUTTON_FUNCTION = "click";
 	public static final String TOOLTIP = "title";
 
-	static final public String B_SEARCH = "b_search";
-	static final public String B_RESET = "b_reset";
-	static final public String B_SAVE = "b_save";
-	static final public String B_CLOSE = "b_close";
-	static final public String B_RUN = "b_run";
-	static final public String B_OPEN = "b_open";
+	// static final public String B_SEARCH = "b_search";
+	// static final public String B_RESET = "b_reset";
+	// static final public String B_SAVE = "b_save";
+	// static final public String B_CLOSE = "b_close";
+	// static final public String B_RUN = "b_run";
+	// static final public String B_OPEN = "b_open";
 
-	private static final String[] inner_types = { DEFAULT, B_SEARCH, B_RESET,
-			B_SAVE, B_OPEN, B_CLOSE, B_RUN };
+	// private static final String[] inner_types = { DEFAULT, B_SEARCH, B_RESET,
+	// B_SAVE, B_OPEN, B_CLOSE, B_RUN };
 
-	private static final String[] inner_types_names = { "自定义", "查询", "重置",
-			"保存", "打开", "关闭", "运行" };
+	// private static final String[] inner_types_names = { "自定义", "查询", "重置",
+	// "保存", "打开", "关闭", "运行" };
 	private static final IPropertyDescriptor[] std_pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(BUTTON_TEXT, "Text"), PD_NAME,
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
@@ -54,19 +54,20 @@ public class Button extends AuroraComponent {
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Title"),
-			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click"),
-			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", inner_types_names) };
+			new StringPropertyDescriptor(BUTTON_FUNCTION, "Click")
+	// ,
+	// new ComboPropertyDescriptor(BUTTON_TYPE, "Type", inner_types_names)
+	};
 
 	private String buttonType = DEFAULT;
 	private String text = "button";
 	private String icon = "";
-	private String function = "";
+	private String click = "";
 	private String title = "";
 	private AuroraComponent targetComponent;
 
-	private boolean isOnToolBar = false;
-
 	private ButtonClicker buttonClicker;
+	private AuroraComponent parent = null;
 
 	public Button() {
 		setSize(new Dimension(80, 20));
@@ -75,7 +76,7 @@ public class Button extends AuroraComponent {
 
 	@Override
 	public void setSize(Dimension dim) {
-		if (isOnToolBar) {
+		if (isOnToolBar()) {
 			dim.height = 20;
 			if (isStdButton())
 				dim.width = 48;
@@ -85,7 +86,7 @@ public class Button extends AuroraComponent {
 
 	@Override
 	public void setBounds(Rectangle bounds) {
-		if (isOnToolBar) {
+		if (isOnToolBar()) {
 			bounds.height = 20;
 			if (isStdButton())
 				bounds.width = 48;
@@ -102,7 +103,7 @@ public class Button extends AuroraComponent {
 	}
 
 	public String getFunction() {
-		return function;
+		return click;
 	}
 
 	public String getIcon() {
@@ -131,11 +132,6 @@ public class Button extends AuroraComponent {
 		return targetComponent;
 	}
 
-	public void setTargetComponent(AuroraComponent targetComponent) {
-		this.targetComponent = targetComponent;
-		isOnToolBar = Toolbar.class.equals(targetComponent.getClass());
-	}
-
 	public void setButtonType(String buttonType) {
 		if (eq(this.buttonType, buttonType))
 			return;
@@ -148,10 +144,10 @@ public class Button extends AuroraComponent {
 	}
 
 	public void setFunction(String function) {
-		if (eq(this.function, function))
+		if (eq(this.click, function))
 			return;
-		String oldV = this.function;
-		this.function = function;
+		String oldV = this.click;
+		this.click = function;
 		firePropertyChange(BUTTON_FUNCTION, oldV, function);
 	}
 
@@ -186,7 +182,7 @@ public class Button extends AuroraComponent {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		if (isOnToolBar) {
+		if (isOnToolBar()) {
 			return std_pds;
 		}
 		return inner_pds;
@@ -201,8 +197,7 @@ public class Button extends AuroraComponent {
 		else if (BUTTON_FUNCTION.equals(propName))
 			return getFunction();
 		else if (BUTTON_TYPE.equals(propName))
-			return Arrays.asList(isOnToolBar ? std_types : inner_types)
-					.indexOf(getButtonType());
+			return Arrays.asList(std_types).indexOf(getButtonType());
 		return super.getPropertyValue(propName);
 	}
 
@@ -215,12 +210,16 @@ public class Button extends AuroraComponent {
 		else if (BUTTON_FUNCTION.equals(propName))
 			setFunction((String) val);
 		else if (BUTTON_TYPE.equals(propName))
-			setButtonType((isOnToolBar ? std_types : inner_types)[(Integer) val]);
+			setButtonType(std_types[(Integer) val]);
 		super.setPropertyValue(propName, val);
 	}
 
 	public boolean isOnToolBar() {
-		return isOnToolBar;
+		return parent instanceof Toolbar;
+	}
+
+	public void setParent(AuroraComponent auroraComponent) {
+		this.parent = auroraComponent;
 	}
 
 	public ButtonClicker getButtonClicker() {
