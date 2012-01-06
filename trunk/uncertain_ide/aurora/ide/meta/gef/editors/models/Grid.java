@@ -96,10 +96,12 @@ public class Grid extends GridColumn {
 		if (index2 == -1)
 			index2 = index1;
 		int index = Math.min(index1, index2);
-		if (index > 0 && idx > index)
-			idx--;
+		if (idx > index || (idx == 0 && children.indexOf(gsc) != -1))
+			idx = index;
 		if (ac instanceof Toolbar)
 			idx = children.size();
+		if (idx == -1)
+			System.out.println();
 		super.addChild(ac, idx);
 	}
 

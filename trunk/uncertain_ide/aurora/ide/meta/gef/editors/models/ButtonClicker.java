@@ -1,10 +1,13 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.DialogEdiableObject;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-public class ButtonClicker extends AuroraComponent {
+public class ButtonClicker extends AuroraComponent implements
+		DialogEdiableObject {
 	/**
 	 * 
 	 */
@@ -26,7 +29,7 @@ public class ButtonClicker extends AuroraComponent {
 			"打开", "关闭", "运行" };
 
 	private String actionID;
-	private String actionText;
+	private String actionText = "查询";
 
 	// b_open
 	private String openPath;
@@ -34,6 +37,8 @@ public class ButtonClicker extends AuroraComponent {
 	private String closeWindowID;
 	// b_run
 	private String runMessage;
+
+	private Button button;
 
 	// b_save,b_search,b_reset
 	private AuroraComponent targetComponent;
@@ -116,6 +121,22 @@ public class ButtonClicker extends AuroraComponent {
 
 	public void setRunMessage(String runMessage) {
 		this.runMessage = runMessage;
+	}
+
+	public String getDescripition() {
+		return getActionText();
+	}
+
+	public Object getContextInfo() {
+		return button;
+	}
+
+	public Button getButton() {
+		return button;
+	}
+
+	public void setButton(Button button) {
+		this.button = button;
 	}
 
 }
