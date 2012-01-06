@@ -61,7 +61,7 @@ public class Grid extends GridColumn {
 		if (gsc.getSelectionMode().equals(sm))
 			return;
 		gsc.setSelectionMode(sm);
-		getDataset().setSelectionModel(sm);
+		getDataset().setSelectionMode(sm);
 		getDataset().setSelectable(!sm.equals(SELECT_NONE));
 		if (gsc.getSelectionMode().equals(SELECT_NONE)) {
 			removeChild(gsc);

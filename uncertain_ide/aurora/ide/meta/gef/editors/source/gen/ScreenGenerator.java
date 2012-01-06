@@ -9,7 +9,6 @@ import aurora.ide.meta.gef.editors.models.Dataset;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.Input;
-import aurora.ide.meta.gef.editors.models.ResultDataSet;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 
 public class ScreenGenerator {
@@ -71,22 +70,29 @@ public class ScreenGenerator {
 	// columns
 	private static void bindDataset(Container root, AuroraComponent ac,
 			CompositeMap child, CompositeMap datasets) {
-		if (ac instanceof Grid) {
-			ResultDataSet datasetC = ((Grid) ac).getDataset();
-			CompositeMap rds = AuroraComponent2CompositMap
-					.toCompositMap(datasetC);
-			datasets.addChild(rds);
-			child.put("bindTarget", "dataset_id"/* datasetC.getid */);
-		}
-		if(ac instanceof Input){
-			Dataset dataset = root.getDataset();
+		if (ac instanceof Grid || ac instanceof Input) {
+			Dataset dataset = findDataset(root);
 			if (dataset == null)
 				return;
-			dataset.isUseParentBM();
-			
+			else {
+				CompositeMap rds = AuroraComponent2CompositMap
+						.toCompositMap(dataset);
+				datasets.addChild(rds);
+				//lov,combox 特殊处理
+				child.put("bindTarget", "dataset_id"/* datasetC.getid */);
+			}
 		}
-		
+	}
 
+	static private Dataset findDataset(Container container) {
+		Dataset dataset = container.getDataset();
+		if (dataset == null)
+			return null;
+		boolean useParentBM = dataset.isUseParentBM();
+		if (useParentBM) {
+			return findDataset(container.getParent());
+		}
+		return dataset;
 	}
 
 	// IFile newFileHandle = AuroraPlugin.getWorkspace().getRoot()
