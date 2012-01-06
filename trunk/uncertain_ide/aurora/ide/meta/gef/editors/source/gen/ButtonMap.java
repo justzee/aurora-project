@@ -13,22 +13,33 @@ public class ButtonMap extends AbstractComponentMap {
 		this.c = c;
 	}
 
-	
 	public CompositeMap toCompositMap() {
-		AuroraComponent2CompositMap a2c = new AuroraComponent2CompositMap();
 		String type = c.getType();
-		CompositeMap map = a2c.createChild(type);
-		IPropertyDescriptor[] propertyDescriptors = c.getPropertyDescriptors();
-		for (IPropertyDescriptor iPropertyDescriptor : propertyDescriptors) {
-			Object id = iPropertyDescriptor.getId();
+		CompositeMap map = AuroraComponent2CompositMap.createChild(type);
+		if (c.isOnToolBar()) {
+			String buttonType = c.getButtonType();
+			if (Button.DEFAULT.equals(buttonType)) {
+				map.put(Button.BUTTON_TEXT,
+						c.getPropertyValue(Button.BUTTON_TEXT));
+			} else {
+				map.put(Button.BUTTON_TYPE, buttonType);
+			}
 
-			boolean isKey = this.isCompositMapKey(id.toString());
-			if (isKey) {
-				Object value = c.getPropertyValue(id).toString();
-				if (value != null && !("".equals(value)))
-					map.putString(id, value.toString());
+		} else {
+			IPropertyDescriptor[] propertyDescriptors = c
+					.getPropertyDescriptors();
+			for (IPropertyDescriptor iPropertyDescriptor : propertyDescriptors) {
+				Object id = iPropertyDescriptor.getId();
+				boolean isKey = this.isCompositMapKey(id.toString());
+				if (isKey) {
+					Object value = c.getPropertyValue(id).toString();
+					
+					if (value != null && !("".equals(value)))
+						map.putString(id, value.toString());
+				}
 			}
 		}
+
 		return map;
 	}
 

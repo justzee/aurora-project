@@ -13,9 +13,8 @@ public class DatasetMap extends AbstractComponentMap {
 		this.c = c;
 	}
 	public CompositeMap toCompositMap() {
-		AuroraComponent2CompositMap a2c = new AuroraComponent2CompositMap();
 		String type = c.getType();
-		CompositeMap map = a2c.createChild(type);
+		CompositeMap map = AuroraComponent2CompositMap.createChild(type);
 		IPropertyDescriptor[] propertyDescriptors = c.getPropertyDescriptors();
 		for (IPropertyDescriptor iPropertyDescriptor : propertyDescriptors) {
 			Object id = iPropertyDescriptor.getId();
