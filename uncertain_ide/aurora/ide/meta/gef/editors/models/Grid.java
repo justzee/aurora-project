@@ -26,6 +26,7 @@ public class Grid extends GridColumn {
 	public static final String NAVBAR_NONE = "";
 	public static final String NAVBAR_SIMPLE = "simple";
 	public static final String NAVBAR_COMPLEX = "complex";
+	public static final String NAVBAR = "navBar";
 	private static final String[] navBarTypes = { NAVBAR_NONE, NAVBAR_SIMPLE,
 			NAVBAR_COMPLEX };
 	private Navbar navBar = new Navbar();
@@ -73,10 +74,10 @@ public class Grid extends GridColumn {
 	}
 
 	public void setNavbarType(String type) {
-		if (eq(navBar.getType(), type))
+		if (eq(getNavBarType(), type))
 			return;
 		navBar.setType(type);
-		if (eq(navBar.getType(), NAVBAR_NONE)) {
+		if (eq(getNavBarType(), NAVBAR_NONE)) {
 			removeChild(navBar);
 		} else {
 			int idx = getChildren().indexOf(navBar);
@@ -151,8 +152,12 @@ public class Grid extends GridColumn {
 		if (SELECTION_MODE.equals(propName))
 			return Arrays.asList(selectionMode).indexOf(getSelectionMode());
 		else if (NAVBAR_TYPE.equals(propName))
-			return Arrays.asList(navBarTypes).indexOf(navBar.getType());
+			return Arrays.asList(navBarTypes).indexOf(getNavBarType());
 		return super.getPropertyValue(propName);
+	}
+
+	public String getNavBarType() {
+		return navBar.getType();
 	}
 
 	@Override
