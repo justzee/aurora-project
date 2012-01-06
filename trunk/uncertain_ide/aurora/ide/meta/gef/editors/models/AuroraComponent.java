@@ -38,6 +38,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 
 	// private Dataset bindTarget;
 
+	private Container parent;
+	
 	protected static final IPropertyDescriptor PD_PROMPT = new StringPropertyDescriptor(
 			PROMPT, "Prompt");
 	protected static final IPropertyDescriptor PD_WIDTH = new IntegerPropertyDescriptor(
@@ -211,6 +213,14 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 			setSize(new Dimension(getSize().width, (Integer) val));
 		else if (NAME.equals(propName))
 			setName((String) val);
+	}
+
+	public Container getParent() {
+		return parent;
+	}
+
+	public void setParent(Container parent) {
+		this.parent = parent;
 	}
 
 	// public void setIBounds(Rectangle layout) {
