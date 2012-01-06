@@ -58,7 +58,7 @@ public class ScreenGenerator {
 			}
 			if (ac instanceof Container) {
 				fill((Container) ac, child, datasets);
-				// ((Container) ac).getDataset()
+				fillDatasets((Container) ac, datasets);
 			}
 			if (ac instanceof Input || ac instanceof Grid) {
 
@@ -67,19 +67,30 @@ public class ScreenGenerator {
 		}
 	}
 
+	private static void fillDatasets(Container ac, CompositeMap datasets) {
+		Dataset dataset = ac.getDataset();
+		if (dataset == null || dataset.isUseParentBM())
+			return;
+		CompositeMap rds = AuroraComponent2CompositMap.toCompositMap(dataset);
+		datasets.addChild(rds);
+	}
+
 	// columns
 	private static void bindDataset(Container root, AuroraComponent ac,
 			CompositeMap child, CompositeMap datasets) {
 		if (ac instanceof Grid || ac instanceof Input) {
-			Dataset dataset = findDataset(root);
+			Dataset dataset = null;
+			if (ac instanceof Grid) {
+				dataset = findDataset((Grid) ac);
+			} else {
+				dataset = findDataset(root);
+			}
 			if (dataset == null)
 				return;
 			else {
-				CompositeMap rds = AuroraComponent2CompositMap
-						.toCompositMap(dataset);
-				datasets.addChild(rds);
-				//lov,combox 特殊处理
-				child.put("bindTarget", "dataset_id"/* datasetC.getid */);
+				// lov,combox 特殊处理
+				// required,readonly
+				child.put("bindTarget", dataset.getId());
 			}
 		}
 	}

@@ -31,11 +31,15 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 		grid = new Grid();
 		fillGrid(grid);
 		Dataset dataset = grid.getDataset();
-//		search.setTargetComponent(grid);
+		// search.setTargetComponent(grid);
 		if (dataset instanceof ResultDataSet) {
 			((ResultDataSet) dataset).setQueryContainer(form);
+			dataset.setModel(this.getBm().getProjectRelativePath().toString());
+			dataset.setId(this.getBm().getFullPath().removeFileExtension()
+					.lastSegment()
+					+"_result_ds");
 		}
-		
+
 		return grid;
 	}
 
@@ -43,14 +47,14 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 		// TODO js 查询
 		HBox hbox = new HBox();
 		search = new Button();
-//		search.setButtonType(Button.B_SEARCH);
-		
+		// search.setButtonType(Button.B_SEARCH);
+
 		search.setText("查询");
 
 		reset = new Button();
 		reset.setText("重置");
-//		reset.setButtonType(Button.B_RESET);
-//		reset.setTargetComponent(form);
+		// reset.setButtonType(Button.B_RESET);
+		// reset.setTargetComponent(form);
 		hbox.addChild(search);
 		hbox.addChild(reset);
 		return hbox;
@@ -58,6 +62,14 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 
 	protected Form createForm() {
 		form = new Form();
+		Dataset dataset = form.getDataset();
+		// search.setTargetComponent(grid);
+
+		dataset.setModel(this.getBm().getProjectRelativePath().toString());
+		dataset.setId(this.getBm().getFullPath().removeFileExtension()
+				.lastSegment()
+				+ "_query_ds");
+
 		fillForm(form);
 		return form;
 	}

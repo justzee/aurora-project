@@ -40,7 +40,6 @@ public class ResultDataSet extends Dataset {
 	}
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-
 		return pds;
 	}
 

@@ -71,6 +71,9 @@ public class DropBMCommand extends Command {
 				String string = this.getPrompt(f);
 				GridColumn gc = new GridColumn();
 				gc.setPrompt(string);
+				String name = f.getString("name");
+				name = name == null ? "" : name;
+				gc.setName(name);
 				grid.addChild(gc);
 			}
 		} catch (CoreException e) {
