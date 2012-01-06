@@ -35,6 +35,7 @@ public class AutoCreateFormGridCommand extends DropBMCommand {
 		if (dataset instanceof ResultDataSet) {
 			((ResultDataSet) dataset).setQueryContainer(form);
 		}
+		
 		return grid;
 	}
 

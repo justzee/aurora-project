@@ -64,8 +64,7 @@ public class DropBMCommand extends Command {
 		tb.addButton(b);
 
 		grid.addChild(tb);
-
-		grid.addChild(new Navbar());
+		grid.setNavbarType(Grid.NAVBAR_COMPLEX);
 		try {
 			List<CompositeMap> fields = this.getFields();
 			for (CompositeMap f : fields) {

@@ -8,6 +8,7 @@ import aurora.ide.meta.gef.editors.models.CheckBox;
 import aurora.ide.meta.gef.editors.models.Dataset;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
+import aurora.ide.meta.gef.editors.models.GridSelectionCol;
 import aurora.ide.meta.gef.editors.models.Input;
 import aurora.ide.meta.gef.editors.models.TabFolder;
 import aurora.ide.meta.gef.editors.models.TabItem;
@@ -17,20 +18,23 @@ import aurora.ide.meta.gef.editors.models.ViewDiagram;
 public class AuroraComponent2CompositMap {
 	public static final String SCREEN_PREFIX = "a";
 
-	public CompositeMap createScreenCompositeMap() {
+	static public CompositeMap createScreenCompositeMap() {
 		CompositeMap screen = new CompositeMap("screen");
 		screen.setNameSpace(SCREEN_PREFIX,
 				"http://www.aurora-framework.org/application");
 		return screen;
 	}
+	private AuroraComponent2CompositMap(){
+		
+	}
 
-	public CompositeMap createChild(String name) {
+	static public CompositeMap createChild(String name) {
 		CompositeMap node = new CompositeMap(name);
 		node.setPrefix(SCREEN_PREFIX);
 		return node;
 	}
 
-	public CompositeMap toCompositMap(AuroraComponent c) {
+	static public CompositeMap toCompositMap(AuroraComponent c) {
 		if (c instanceof Input) {
 			return new InputMap((Input)c).toCompositMap();
 		}
@@ -46,6 +50,9 @@ public class AuroraComponent2CompositMap {
 		if (c instanceof Grid) {
 			return new GridMap((Grid) c).toCompositMap();
 		}
+		if(c instanceof GridSelectionCol){
+			return null;
+		}
 		if (c instanceof GridColumn) {
 			return new GridColumnMap((GridColumn) c).toCompositMap();
 		}
@@ -54,7 +61,7 @@ public class AuroraComponent2CompositMap {
 		}
 
 		if (c instanceof Toolbar) {
-			return this.createChild("toolBar");
+			return createChild("toolBar");
 		}
 		if (c instanceof TabItem) {
 			return new TabItemMap((TabItem) c).toCompositMap();
@@ -63,7 +70,7 @@ public class AuroraComponent2CompositMap {
 			return new TabFolderMap((TabFolder) c).toCompositMap();
 		}
 		if (c instanceof ViewDiagram) {
-			return this.createChild("view");
+			return createChild("view"); 
 		}
 
 		return null;

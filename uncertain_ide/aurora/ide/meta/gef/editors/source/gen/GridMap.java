@@ -1,5 +1,9 @@
 package aurora.ide.meta.gef.editors.source.gen;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import uncertain.composite.CompositeMap;
@@ -14,16 +18,20 @@ public class GridMap extends AbstractComponentMap {
 	}
 
 	public CompositeMap toCompositMap() {
-		AuroraComponent2CompositMap a2c = new AuroraComponent2CompositMap();
 		String type = c.getType();
-		CompositeMap map = a2c.createChild(type);
+		CompositeMap map = AuroraComponent2CompositMap.createChild(type);
 		IPropertyDescriptor[] propertyDescriptors = c.getPropertyDescriptors();
 		for (IPropertyDescriptor iPropertyDescriptor : propertyDescriptors) {
 			Object id = iPropertyDescriptor.getId();
 
 			boolean isKey = this.isCompositMapKey(id.toString());
 			if (isKey) {
-				Object value = c.getPropertyValue(id).toString();
+				Object value = null;
+				if (Grid.NAVBAR_TYPE.equals(id)) {
+					value = c.getNavBarType();
+					map.put(Grid.NAVBAR, !Grid.NAVBAR_NONE.equals(value));
+				} else
+					value = c.getPropertyValue(id).toString();
 				if (value != null && !("".equals(value)))
 					map.putString(id, value.toString());
 			}
@@ -31,7 +39,18 @@ public class GridMap extends AbstractComponentMap {
 		return map;
 	}
 
+	static private List<String> keys = new ArrayList<String>() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		{
+			this.add(Grid.SELECTION_MODE);
+		}
+	};
+
 	public boolean isCompositMapKey(String key) {
-		return true;
+		return !keys.contains(key);
 	}
 }
