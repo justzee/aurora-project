@@ -39,7 +39,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	// private Dataset bindTarget;
 
 	private Container parent;
-	
+
 	protected static final IPropertyDescriptor PD_PROMPT = new StringPropertyDescriptor(
 			PROMPT, "Prompt");
 	protected static final IPropertyDescriptor PD_WIDTH = new IntegerPropertyDescriptor(
@@ -231,5 +231,20 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	// public void setILocation(Point location) {
 	// this.location = location;
 	// }
+	public IPropertyDescriptor[] mergePropertyDescriptor(
+			IPropertyDescriptor[] pd1, IPropertyDescriptor[] pd2) {
+		IPropertyDescriptor[] descs = new IPropertyDescriptor[pd1.length
+				+ pd2.length];
+		int i = 0;
+		for (IPropertyDescriptor pd : pd1) {
+			descs[i] = pd;
+			i++;
+		}
+		for (IPropertyDescriptor pd : pd2) {
+			descs[i] = pd;
+			i++;
+		}
+		return descs;
+	}
 
 }

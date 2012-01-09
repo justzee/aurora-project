@@ -43,9 +43,9 @@ public class InputMap extends AbstractComponentMap {
 
 	@Override
 	public boolean isCompositMapKey(String key) {
-		if (Input.READONLY.equals(key) || Input.REQUIRED.equals(key)) {
-			return false;
-		}
+//		if (Input.READONLY.equals(key) || Input.REQUIRED.equals(key)) {
+//			return false;
+//		}
 		return true;
 	}
 

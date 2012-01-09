@@ -1,7 +1,7 @@
 package aurora.ide.meta.gef.editors.models;
 
 public interface IDatasetFieldDelegate {
-	DatasetField getDataset();
+	DatasetField getDatasetField();
 
 	void setDatasetField(DatasetField field);
 }

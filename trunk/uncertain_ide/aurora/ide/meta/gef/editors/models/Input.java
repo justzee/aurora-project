@@ -42,8 +42,7 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 	public static final String ENABLEMONTHBTN = "enableMonthBtn";
 
 	// /
-	private boolean required = false;
-	private boolean readOnly = false;
+
 	private boolean allowDecimals = true;
 	private boolean allowNegative = true;
 	private boolean allowFormat = false;
@@ -52,7 +51,9 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 	private String enableBesideDays = CAL_ENABLES[3];
 	private String enableMonthBtn = CAL_ENABLES[3];
 
-	private DatasetField dsField;
+	private DatasetField dfField = new DatasetField();
+	private DatasetField lovField = new LovDatasetField();
+	private DatasetField comboField = new ComboDatasetField();
 
 	// /
 
@@ -86,29 +87,26 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 	}
 
 	public boolean isRequired() {
-		return required;
+		return this.getDatasetField().isRequired();
 	}
 
 	public void setRequired(boolean required) {
-		if (this.required == required)
+		if (this.getDatasetField().isRequired() == required)
 			return;
-		boolean oldV = this.required;
-		this.required = required;
-		this.dsField.setRequired(required);
+		boolean oldV = this.getDatasetField().isRequired();
+		this.getDatasetField().setRequired(required);
 		firePropertyChange(REQUIRED, oldV, required);
-		
 	}
 
 	public boolean isReadOnly() {
-		return readOnly;
+		return this.getDatasetField().isReadOnly();
 	}
 
 	public void setReadOnly(boolean readOnly) {
-		if (this.readOnly == readOnly)
+		if (this.getDatasetField().isReadOnly() == readOnly)
 			return;
-		boolean oldV = this.readOnly;
-		this.readOnly = readOnly;
-		this.dsField.setReadOnly(readOnly);
+		boolean oldV = this.getDatasetField().isReadOnly();
+		this.getDatasetField().setReadOnly(readOnly);
 		firePropertyChange(READONLY, oldV, readOnly);
 	}
 
@@ -294,13 +292,19 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 		return -1;
 	}
 
-	public DatasetField getDataset() {
-
-		return this.dsField;
+	public DatasetField getDatasetField() {
+		String type = this.getType();
+		if (LOV.equals(type)) {
+			return this.lovField;
+		}
+		if (Combo.equals(type)) {
+			return this.comboField;
+		}
+		return this.dfField;
 	}
 
 	public void setDatasetField(DatasetField field) {
-		this.dsField = field;
+//		this.dsField = field;
 	}
 
 }
