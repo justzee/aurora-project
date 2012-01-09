@@ -15,6 +15,8 @@ public class CheckBox extends Input {
 	private String text = "text";
 	public static final String CHECKBOX = "checkBox";
 
+	private DatasetField dsField = new CheckboxDatasetField();
+
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(PROMPT, "Prompt"),
 			new BooleanPropertyDescriptor(SELECTION_STATE, "Selected"),
@@ -70,6 +72,17 @@ public class CheckBox extends Input {
 		else if (TEXT.equals(propName))
 			setText((String) val);
 		super.setPropertyValue(propName, val);
+	}
+
+	@Override
+	public DatasetField getDatasetField() {
+
+		return dsField;
+	}
+
+	@Override
+	public void setDatasetField(DatasetField field) {
+		dsField = field;
 	}
 
 }
