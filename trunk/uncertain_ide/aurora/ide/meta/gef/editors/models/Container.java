@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 
-public class Container extends AuroraComponent {
+public class Container extends AuroraComponent implements IDatasetDelegate{
 
 	static final long serialVersionUID = 1;
 

@@ -7,7 +7,7 @@ import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
-public class Input extends AuroraComponent {
+public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 
 	/**
 	 * 
@@ -52,6 +52,8 @@ public class Input extends AuroraComponent {
 	private String enableBesideDays = CAL_ENABLES[3];
 	private String enableMonthBtn = CAL_ENABLES[3];
 
+	private DatasetField dsField;
+
 	// /
 
 	private static final IPropertyDescriptor PD_REQUIRED = new BooleanPropertyDescriptor(
@@ -92,7 +94,9 @@ public class Input extends AuroraComponent {
 			return;
 		boolean oldV = this.required;
 		this.required = required;
+		this.dsField.setRequired(required);
 		firePropertyChange(REQUIRED, oldV, required);
+		
 	}
 
 	public boolean isReadOnly() {
@@ -104,6 +108,7 @@ public class Input extends AuroraComponent {
 			return;
 		boolean oldV = this.readOnly;
 		this.readOnly = readOnly;
+		this.dsField.setReadOnly(readOnly);
 		firePropertyChange(READONLY, oldV, readOnly);
 	}
 
@@ -287,6 +292,15 @@ public class Input extends AuroraComponent {
 			if (objs[i].equals(o))
 				return i;
 		return -1;
+	}
+
+	public DatasetField getDataset() {
+
+		return this.dsField;
+	}
+
+	public void setDatasetField(DatasetField field) {
+		this.dsField = field;
 	}
 
 }

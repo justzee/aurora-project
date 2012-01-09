@@ -69,10 +69,20 @@ public class ScreenGenerator {
 
 	private static void fillDatasets(Container ac, CompositeMap datasets) {
 		Dataset dataset = ac.getDataset();
+		fillDatasets(datasets, dataset);
+	}
+
+	public static CompositeMap fillDatasets(CompositeMap datasets, Dataset dataset) {
 		if (dataset == null || dataset.isUseParentBM())
-			return;
-		CompositeMap rds = AuroraComponent2CompositMap.toCompositMap(dataset);
-		datasets.addChild(rds);
+			return null;
+		CompositeMap dsMap = datasets.getChildByAttrib("id", dataset.getId());
+		if (dsMap == null) {
+			CompositeMap rds = AuroraComponent2CompositMap.toCompositMap(dataset);
+			datasets.addChild(rds);
+			return rds;
+		}
+		return dsMap;
+		
 	}
 
 	// columns
@@ -90,9 +100,41 @@ public class ScreenGenerator {
 			else {
 				// lov,combox 特殊处理
 				// required,readonly
+				fillDataset(dataset, datasets, ac);
 				child.put("bindTarget", dataset.getId());
 			}
 		}
+	}
+
+	private static void fillDataset(Dataset dataset, CompositeMap datasets,
+			AuroraComponent ac) {
+		CompositeMap dsMap = fillDatasets(datasets,dataset);
+		if (dsMap == null) {
+			return;
+		}
+		CompositeMap fields = dsMap.getChild("fields");
+		if (fields == null) {
+			fields = dsMap.createChild("fields");
+		}
+		CompositeMap field = fields.getChildByAttrib(AuroraComponent.NAME,
+				ac.getPropertyValue(AuroraComponent.NAME));
+		if (field == null) {
+			field = fields.createChild("field");
+			field.put(AuroraComponent.NAME,
+					ac.getPropertyValue(AuroraComponent.NAME));
+		}
+		if (ac instanceof Input) {
+			field.put(AuroraComponent.READONLY, ((Input) ac).isReadOnly());
+			field.put(AuroraComponent.REQUIRED, ((Input) ac).isRequired());
+		}
+
+		// AuroraComponent.REQUIRED
+		// <a:fields>
+		// <a:field name="policy_code" required="true"/>
+		// <a:field name="policy_name"/>
+		// <a:field name="description"/>
+		// </a:fields>
+
 	}
 
 	static private Dataset findDataset(Container container) {
