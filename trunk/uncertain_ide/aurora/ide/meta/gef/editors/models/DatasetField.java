@@ -9,10 +9,7 @@ public class DatasetField extends AuroraComponent {
 	/**
 	 * 
 	 */
-	// check box
-	// checkedValue="Y" defaultValue="Y"
-	// lov
-	// mapping = lov service:=
+
 	private static final long serialVersionUID = -4619018857153616914L;
 
 	// 默认值
