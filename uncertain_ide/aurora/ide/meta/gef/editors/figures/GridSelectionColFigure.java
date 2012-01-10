@@ -41,11 +41,10 @@ public class GridSelectionColFigure extends GridColumnFigure {
 		Rectangle rect = getBounds().getCopy();
 		g.setBackgroundColor(ColorConstants.GRID_ROW);
 		g.fillRectangle(rect);
-		Rectangle columnHeaderRect = new Rectangle(rect.x, rect.y, 25,
-				getColumnHight());
+		int ch = getColumnHight();
+		Rectangle columnHeaderRect = new Rectangle(rect.x, rect.y, 25, ch);
 		Rectangle imgRect = new Rectangle(img_border.getBounds());
-		g.drawImage(img_border, imgRect.setHeight(getColumnHight()),
-				columnHeaderRect);
+		g.drawImage(img_border, imgRect.setHeight(ch), columnHeaderRect);
 
 		Image img = img_radio;
 		imgRect = new Rectangle(img.getBounds());
@@ -53,11 +52,13 @@ public class GridSelectionColFigure extends GridColumnFigure {
 			img = img_check;
 			imgRect = new Rectangle(img.getBounds());
 			g.drawImage(img, rect.x + (rect.width - imgRect.width) / 2, rect.y
-					+ (getColumnHight() - imgRect.height) / 2);
+					+ (ch - imgRect.height) / 2);
 		}
 
 		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
-		for (int i = rect.y + getColumnHight(); i < rect.y + rect.height; i += 25) {
+		g.drawLine(rect.x, rect.y + ch - 1, rect.x + rect.width, rect.y + ch
+				- 1);
+		for (int i = rect.y + ch + 25; i < rect.y + rect.height; i += 25) {
 			Rectangle rc = new Rectangle(rect.x, i, rect.width, 25);
 			g.drawLine(rc.getTopLeft(), rc.getTopRight());
 			g.drawImage(img, imgRect, rc.getShrinked(
