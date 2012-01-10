@@ -1,13 +1,13 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.DialogEdiableObject;
+import aurora.ide.meta.gef.editors.property.DialogEditableObject;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class ButtonClicker extends AuroraComponent implements
-		DialogEdiableObject {
+		DialogEditableObject {
 	/**
 	 * 
 	 */
@@ -22,14 +22,14 @@ public class ButtonClicker extends AuroraComponent implements
 	static final public String B_RUN = "b_run";
 	static final public String B_OPEN = "b_open";
 
-	public static final String[] action_ids = { DEFAULT, B_SEARCH, B_RESET,
-			B_SAVE, B_OPEN, B_CLOSE, B_RUN };
+	public static final String[] action_ids = { B_SEARCH, B_RESET, B_SAVE,
+			B_OPEN, B_CLOSE, B_RUN, DEFAULT };
 
-	public static final String[] action_texts = { "自定义", "查询", "重置", "保存",
-			"打开", "关闭", "运行" };
+	public static final String[] action_texts = { "查询", "重置", "保存", "打开", "关闭",
+			"运行", "自定义" };
 
-	private String actionID;
-	private String actionText = "查询";
+	private String actionID = action_ids[0];
+	private String actionText = action_texts[0];
 
 	// b_open
 	private String openPath;
@@ -124,7 +124,10 @@ public class ButtonClicker extends AuroraComponent implements
 	}
 
 	public String getDescripition() {
-		return getActionText();
+		if (targetComponent == null)
+			return getActionText();
+		return getActionText() + " "
+				+ targetComponent.getClass().getSimpleName();
 	}
 
 	public Object getContextInfo() {
@@ -139,4 +142,16 @@ public class ButtonClicker extends AuroraComponent implements
 		this.button = button;
 	}
 
+	@Override
+	public ButtonClicker clone() {
+		ButtonClicker bc = new ButtonClicker();
+		bc.actionID = actionID;
+		bc.actionText = actionText;
+		bc.button = button;
+		bc.closeWindowID = closeWindowID;
+		bc.openPath = openPath;
+		bc.runMessage = runMessage;
+		bc.targetComponent = targetComponent;
+		return bc;
+	}
 }
