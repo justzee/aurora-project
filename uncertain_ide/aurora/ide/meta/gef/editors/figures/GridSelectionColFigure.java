@@ -1,13 +1,13 @@
 package aurora.ide.meta.gef.editors.figures;
 
+import aurora.ide.meta.gef.editors.ImagesUtils;
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.GridSelectionCol;
+
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
-
-import aurora.ide.meta.gef.editors.ImagesUtils;
-import aurora.ide.meta.gef.editors.models.Grid;
-import aurora.ide.meta.gef.editors.models.GridSelectionCol;
 
 /**
  * 
@@ -64,6 +64,8 @@ public class GridSelectionColFigure extends GridColumnFigure {
 					(rc.width - imgRect.width) / 2,
 					(rc.height - imgRect.height) / 2));
 		}
+		g.drawLine(rect.getTopRight().getTranslated(-1, 0), rect
+				.getBottomRight().getTranslated(-1, 0));
 	}
 
 	public void setModel(GridSelectionCol component) {
