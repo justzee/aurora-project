@@ -1,12 +1,12 @@
 package aurora.ide.meta.gef.editors.parts;
 
-import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPolicy;
-
 import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.policies.GridLayoutEditPolicy;
+
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPolicy;
 
 public class GridColumnPart extends ContainerPart {
 
@@ -15,6 +15,10 @@ public class GridColumnPart extends ContainerPart {
 		Figure figure = new GridColumnFigure();
 
 		return figure;
+	}
+
+	public GridColumn getModel() {
+		return (GridColumn) super.getModel();
 	}
 
 	@Override
