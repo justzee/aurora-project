@@ -71,4 +71,8 @@ public class GridColumn extends RowCol {
 		firePropertyChange("EDITOR", oldV, editor);
 	}
 
+	public void setHeadHight(int h) {
+		this.headHight = h;
+	}
+
 }

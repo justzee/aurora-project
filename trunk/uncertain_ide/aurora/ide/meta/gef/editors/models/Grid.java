@@ -88,7 +88,7 @@ public class Grid extends GridColumn {
 	}
 
 	public void addChild(AuroraComponent ac, int idx) {
-		List children = getChildren();
+		List<AuroraComponent> children = getChildren();
 		int index1 = children.indexOf(navBar);
 		if (index1 == -1)
 			index1 = children.size();
@@ -100,9 +100,22 @@ public class Grid extends GridColumn {
 			idx = index;
 		if (ac instanceof Toolbar)
 			idx = children.size();
-		if (idx == -1)
-			System.out.println();
 		super.addChild(ac, idx);
+		// System.out.println("------------------");
+		// print(this, "");
+	}
+
+	protected void print(GridColumn gc, String prefix) {
+		List<AuroraComponent> cs = gc.getChildren();
+		for (AuroraComponent ac : cs) {
+			if (ac.getClass().equals(GridColumn.class)) {
+				GridColumn gc1 = (GridColumn) ac;
+				System.out.println(prefix + ac.getClass().getSimpleName()
+						+ "    " + gc1.getPrompt());
+				print(gc1, prefix + "    ");
+			} else
+				System.out.println(prefix + ac.getClass().getSimpleName());
+		}
 	}
 
 	public boolean hasNavBar() {
