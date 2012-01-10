@@ -2,6 +2,7 @@ package aurora.ide.meta.gef.editors.property;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -19,11 +20,11 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 		MouseListener {
 	private Button button;
 	private Label label;
-	private DialogEdiableObject value;
-	private Shell shell;
-	private Class<EditDialog> clazz;
+	private DialogEditableObject value;
+	private Class<EditWizard> clazz;
+	Shell shell;
 
-	public DialogCellEditor(Composite parent, Class<EditDialog> clazz) {
+	public DialogCellEditor(Composite parent, Class<EditWizard> clazz) {
 		super(parent, SWT.NONE);
 		this.clazz = clazz;
 	}
@@ -54,7 +55,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 
 	@Override
 	protected void doSetValue(Object value) {
-		this.value = (DialogEdiableObject) value;
+		this.value = (DialogEditableObject) value;
 		label.setText(this.value.getDescripition());
 	}
 
@@ -83,13 +84,15 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 
 	private void showDialog() {
 		try {
-			EditDialog dialog = clazz
-					.getConstructor(Shell.class, Integer.class).newInstance(
-							shell,
-							SWT.TITLE | SWT.CLOSE | SWT.APPLICATION_MODAL);
-			dialog.setDialogEdiableObject(value);
-			dialog.open();
-			label.setText(value.getDescripition());
+			EditWizard wizard = clazz.newInstance();
+			DialogEditableObject objClone = value.clone();
+			wizard.setDialogEdiableObject(objClone);
+			WizardDialog wd = new WizardDialog(shell, wizard);
+			if (wd.open() == WizardDialog.OK) {
+				value = objClone;
+				label.setText(value.getDescripition());
+				fireApplyEditorValue();
+			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
