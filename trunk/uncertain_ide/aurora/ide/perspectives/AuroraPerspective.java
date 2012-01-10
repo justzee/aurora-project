@@ -91,6 +91,7 @@ public class AuroraPerspective implements IPerspectiveFactory {
 		factory.addShowViewShortcut("org.eclipse.jdt.ui.PackageExplorer");
 		factory.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
 		factory.addShowViewShortcut(IPageLayout.ID_OUTLINE);
+		factory.addShowViewShortcut("aurora.ide.viewer.statistics.StatisticsView");
 	}
 
 	private void addFastViews(IPageLayout layout) {
