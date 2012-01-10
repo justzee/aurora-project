@@ -44,9 +44,9 @@ public class CheckBox extends Input {
 	public Object getPropertyValue(Object propName) {
 		if (TEXT.equals(propName))
 			return getText();
-		if (DatasetField.UNCHECKED_VALUE.equals(propName)) {
-			return dsField.getPropertyValue(propName);
-		} else if (DatasetField.CHECKED_VALUE.equals(propName)) {
+		if (DatasetField.UNCHECKED_VALUE.equals(propName)
+				|| DatasetField.CHECKED_VALUE.equals(propName)
+				|| DatasetField.DEFAULT_VALUE.equals(propName)) {
 			return dsField.getPropertyValue(propName);
 		}
 		return super.getPropertyValue(propName);
@@ -56,6 +56,11 @@ public class CheckBox extends Input {
 	public void setPropertyValue(Object propName, Object val) {
 		if (TEXT.equals(propName))
 			setText((String) val);
+		else if (DatasetField.UNCHECKED_VALUE.equals(propName)
+				|| DatasetField.CHECKED_VALUE.equals(propName)
+				|| DatasetField.DEFAULT_VALUE.equals(propName)) {
+			dsField.setPropertyValue(propName, val);
+		}
 		super.setPropertyValue(propName, val);
 	}
 
