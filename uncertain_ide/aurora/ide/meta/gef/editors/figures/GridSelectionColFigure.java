@@ -58,9 +58,12 @@ public class GridSelectionColFigure extends GridColumnFigure {
 		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
 		g.drawLine(rect.x, rect.y + ch - 1, rect.x + rect.width, rect.y + ch
 				- 1);
-		for (int i = rect.y + ch + 25; i < rect.y + rect.height; i += 25) {
+		for (int i = rect.y + ch; i < rect.y + rect.height; i += 25) {
 			Rectangle rc = new Rectangle(rect.x, i, rect.width, 25);
-			g.drawLine(rc.getTopLeft(), rc.getTopRight());
+			if (i > (rect.y + ch)) {
+				// 第一条线不画
+				g.drawLine(rc.getTopLeft(), rc.getTopRight());
+			}
 			g.drawImage(img, imgRect, rc.getShrinked(
 					(rc.width - imgRect.width) / 2,
 					(rc.height - imgRect.height) / 2));
