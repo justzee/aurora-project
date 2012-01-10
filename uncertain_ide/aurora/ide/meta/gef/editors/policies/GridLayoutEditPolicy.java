@@ -47,7 +47,13 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	protected Command getCreateCommand(CreateRequest request) {
 		if (request.getNewObject() instanceof AuroraComponent) {
-			Container parentModel = (Container) getHost().getModel();
+			EditPart host = getHost();
+			// if (host instanceof GridColumnPart)
+			// System.out.println("Host : GridColumnPart "
+			// + ((GridColumnPart) host).getModel().getPrompt());
+			// else
+			// System.out.println("Host : " + host.getClass().getSimpleName());
+			Container parentModel = (Container) host.getModel();
 			AuroraComponent ac = (AuroraComponent) request.getNewObject();
 			if (!parentModel.isResponsibleChild(ac)) {
 				return null;
@@ -71,11 +77,19 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 			GridColumnPart gcp = (GridColumnPart) targetEditPart;
 			GridColumnFigure figure = (GridColumnFigure) gcp.getFigure();
 			GridColumn model = (GridColumn) gcp.getModel();
+			System.out.println(model.getHeadHight());
 			if (((DropRequest) request).getLocation().y > figure.getBounds().y
 					+ model.getHeadHight())
 				targetEditPart = targetEditPart.getParent();
 		}
-		// System.out.println("getTargetEditPart:" + targetEditPart);
+		// if (targetEditPart == null)
+		// System.out.println("getTargetEditPart:" + null);
+		// if (targetEditPart instanceof GridColumnPart)
+		// System.out.println("getTargetEditPart:GridColumnPart  "
+		// + ((GridColumnPart) targetEditPart).getModel().getPrompt());
+		// else
+		// System.out.println("getTargetEditPart:"
+		// + targetEditPart.getClass().getSimpleName());
 		return targetEditPart;
 	}
 
@@ -90,17 +104,23 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	@Override
 	protected Command createAddCommand(EditPart child, EditPart after) {
-		if (targetEditPart == null)
+		if (getHost() == null)
 			return null;
 		MoveRemoteChildCmpCmd cmd = new MoveRemoteChildCmpCmd();
 		cmd.setEditPartToMove(child);
-		if (targetEditPart.getModel() instanceof Container) {
-			Container dest = (Container) targetEditPart.getModel();
+		if (getHost().getModel() instanceof Container) {
+			Container dest = (Container) getHost().getModel();
 			AuroraComponent ac = (AuroraComponent) child.getModel();
 			if (!dest.isResponsibleChild(ac))
 				return null;
-			// System.out.println("createAddCommand:" + targetEditPart);
-			cmd.setTargetContainer(targetEditPart);
+			EditPart host = getHost();
+			// if (host instanceof GridColumnPart)
+			// System.out.println("createAddCommand:GridColumnPart  "
+			// + ((GridColumnPart) host).getModel().getPrompt());
+			// else
+			// System.out.println("createAddCommand:"
+			// + host.getClass().getSimpleName());
+			cmd.setTargetContainer(host);
 		}
 		cmd.setReferenceEditPart(after);
 		return cmd;
@@ -119,18 +139,14 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 	}
 
 	public void showTargetFeedback(Request request) {
-		if (targetEditPart instanceof GridPart) {
+		if (getHost() instanceof GridPart) {
 			if ((request instanceof DropRequest)
 					&& !(REQ_RESIZE.equals(request.getType()))) {
 				ComponentPart ref = (ComponentPart) getInsertionReference(request);
-				// if (ref instanceof GridColumnPart) {
-				// System.out.println(((GridColumn) ((GridColumnPart) ref)
-				// .getModel()).getPrompt());
-				// }
 				if (ref == null || (ref instanceof ToolbarPart)
 						|| (ref instanceof NavbarPart)
 						|| (ref instanceof GridSelectionColPart)) {
-					List children = targetEditPart.getChildren();
+					List<?> children = getHost().getChildren();
 					ComponentPart last = null;
 					for (Object o : children) {
 						if ((o instanceof ToolbarPart)
