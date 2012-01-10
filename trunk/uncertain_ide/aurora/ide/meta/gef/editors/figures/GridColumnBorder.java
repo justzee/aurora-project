@@ -48,16 +48,10 @@ public class GridColumnBorder extends AbstractLabeledBorder {
 		Image i = getBGImage();
 		Rectangle imageR = rect.getCopy().setHeight(getColumnHight());
 		IFigure gf = figure;
-		while (!(gf instanceof GridFigure))
+		while (gf.getParent() instanceof GridColumnFigure)
 			gf = gf.getParent();
-		int fstColStartY = 0;
-		for (Object o : gf.getChildren()) {
-			if (o instanceof GridColumnFigure) {
-				fstColStartY = ((GridColumnFigure) o).getBounds().y;
-				break;
-			}
-		}
-		Rectangle src = new Rectangle(0, rect.y - fstColStartY, 1, getColumnHight());
+		Rectangle src = new Rectangle(0, rect.y - gf.getBounds().y, 1,
+				getColumnHight());
 
 		g.drawImage(i, src, imageR);
 
