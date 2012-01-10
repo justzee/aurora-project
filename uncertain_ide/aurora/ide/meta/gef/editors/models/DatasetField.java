@@ -1,9 +1,9 @@
 package aurora.ide.meta.gef.editors.models;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
 import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class DatasetField extends AuroraComponent {
 	/**
@@ -49,7 +49,7 @@ public class DatasetField extends AuroraComponent {
 	// (1)校验成功返回true
 	// (2)校验失败返回错误的描述信息(文本格式)
 
-	private String defaultValue;
+	private String defaultValue = "";
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(DEFAULT_VALUE, "defaultValue"),
@@ -89,6 +89,26 @@ public class DatasetField extends AuroraComponent {
 			return this.getDefaultValue();
 		}
 		return null;
+	}
+
+	@Override
+	public void setPropertyValue(Object propName, Object val) {
+		if (NAME.equals(propName)) {
+			this.setName((String) val);
+		}
+		if (READONLY.equals(propName)) {
+			this.setReadOnly((Boolean) val);
+		}
+		if (REQUIRED.equals(propName)) {
+			this.setRequired((Boolean) val);
+		}
+		if (PROMPT.equals(propName)) {
+			this.setPrompt((String) val);
+		}
+		if (DEFAULT_VALUE.equals(propName)) {
+			this.setDefaultValue((String) val);
+		}
+		// super.setPropertyValue(propName, val);
 	}
 
 	public boolean isRequired() {

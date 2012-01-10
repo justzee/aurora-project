@@ -1,7 +1,12 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.IPropertySource2;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -10,10 +15,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import aurora.ide.meta.gef.editors.property.IPropertySource2;
-import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		IPropertySource2 {
@@ -235,15 +236,8 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 			IPropertyDescriptor[] pd1, IPropertyDescriptor[] pd2) {
 		IPropertyDescriptor[] descs = new IPropertyDescriptor[pd1.length
 				+ pd2.length];
-		int i = 0;
-		for (IPropertyDescriptor pd : pd1) {
-			descs[i] = pd;
-			i++;
-		}
-		for (IPropertyDescriptor pd : pd2) {
-			descs[i] = pd;
-			i++;
-		}
+		System.arraycopy(pd1, 0, descs, 0, pd1.length);
+		System.arraycopy(pd2, 0, descs, pd1.length, pd2.length);
 		return descs;
 	}
 
