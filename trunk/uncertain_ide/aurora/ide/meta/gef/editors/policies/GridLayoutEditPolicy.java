@@ -77,7 +77,6 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 			GridColumnPart gcp = (GridColumnPart) targetEditPart;
 			GridColumnFigure figure = (GridColumnFigure) gcp.getFigure();
 			GridColumn model = (GridColumn) gcp.getModel();
-			System.out.println(model.getHeadHight());
 			if (((DropRequest) request).getLocation().y > figure.getBounds().y
 					+ model.getHeadHight())
 				targetEditPart = targetEditPart.getParent();
