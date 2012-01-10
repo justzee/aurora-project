@@ -1,5 +1,7 @@
 package aurora.ide.meta.gef.editors.figures;
 
+import aurora.ide.meta.gef.editors.ImagesUtils;
+
 import org.eclipse.draw2d.AbstractLabeledBorder;
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.Graphics;
@@ -9,8 +11,6 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-
-import aurora.ide.meta.gef.editors.ImagesUtils;
 
 public class GridColumnBorder extends AbstractLabeledBorder {
 
@@ -41,16 +41,23 @@ public class GridColumnBorder extends AbstractLabeledBorder {
 		g.pushState();
 		Rectangle rect = figure.getBounds();
 		g.clipRect(rect);
-		Rectangle r = rect.getResized(-1, -1);
-
+		Rectangle r = rect.getTranslated(-1, -1);
 		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
-
 		g.drawRectangle(r);
 
 		Image i = getBGImage();
 		Rectangle imageR = rect.getCopy().setHeight(getColumnHight());
-		Rectangle src = new Rectangle(i.getBounds().x, i.getBounds().y,
-				i.getBounds().width, 25);
+		IFigure gf = figure;
+		while (!(gf instanceof GridFigure))
+			gf = gf.getParent();
+		int fstColStartY = 0;
+		for (Object o : gf.getChildren()) {
+			if (o instanceof GridColumnFigure) {
+				fstColStartY = ((GridColumnFigure) o).getBounds().y;
+				break;
+			}
+		}
+		Rectangle src = new Rectangle(0, rect.y - fstColStartY, 1, getColumnHight());
 
 		g.drawImage(i, src, imageR);
 
@@ -61,10 +68,10 @@ public class GridColumnBorder extends AbstractLabeledBorder {
 		g.drawString(getPrompt(), imageR.getCenter().x - textExtents.width / 2,
 				imageR.getCenter().y - textExtents.height / 2);
 
+		g.setForegroundColor(ColorConstants.WHITE);
+		g.drawRectangle(imageR);
 		g.setForegroundColor(ColorConstants.GRID_COLUMN_GRAY);
-
-		g.drawRectangle(imageR.getResized(-1, -1));
-
+		g.drawRectangle(imageR.getTranslated(-1, -1));
 		g.popState();
 	}
 

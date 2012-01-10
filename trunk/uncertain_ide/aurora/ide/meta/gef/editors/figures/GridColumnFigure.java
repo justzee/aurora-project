@@ -1,15 +1,15 @@
 package aurora.ide.meta.gef.editors.figures;
 
+import aurora.ide.meta.gef.editors.ImagesUtils;
+import aurora.ide.meta.gef.editors.models.CheckBox;
+import aurora.ide.meta.gef.editors.models.GridColumn;
+import aurora.ide.meta.gef.editors.models.Input;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
-
-import aurora.ide.meta.gef.editors.ImagesUtils;
-import aurora.ide.meta.gef.editors.models.CheckBox;
-import aurora.ide.meta.gef.editors.models.GridColumn;
-import aurora.ide.meta.gef.editors.models.Input;
 
 public class GridColumnFigure extends Figure {
 	private static Image checkImg = ImagesUtils
@@ -103,7 +103,9 @@ public class GridColumnFigure extends Figure {
 
 	public void setColumnHight(int columnHight) {
 		this.columnHight = columnHight;
-		this.repaint();
+		if (gridColumn != null)
+			gridColumn.setHeadHight(columnHight);
+		// this.repaint();
 	}
 
 }

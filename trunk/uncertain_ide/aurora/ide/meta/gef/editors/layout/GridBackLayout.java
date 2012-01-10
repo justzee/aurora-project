@@ -1,5 +1,12 @@
 package aurora.ide.meta.gef.editors.layout;
 
+import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
+import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.parts.ComponentPart;
+import aurora.ide.meta.gef.editors.parts.GridPart;
+import aurora.ide.meta.gef.editors.parts.NavbarPart;
+import aurora.ide.meta.gef.editors.parts.ToolbarPart;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,13 +15,6 @@ import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-
-import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
-import aurora.ide.meta.gef.editors.models.Container;
-import aurora.ide.meta.gef.editors.parts.ComponentPart;
-import aurora.ide.meta.gef.editors.parts.GridPart;
-import aurora.ide.meta.gef.editors.parts.NavbarPart;
-import aurora.ide.meta.gef.editors.parts.ToolbarPart;
 
 public class GridBackLayout extends BackLayout {
 
@@ -56,7 +56,7 @@ public class GridBackLayout extends BackLayout {
 			selfRectangle = fBounds.isEmpty() ? box.getBounds() : fBounds;
 			titleHight = this.hasToolbar() ? 25 : 0;
 			location.x = 0;
-			location.y = titleHight + 0 - 1;
+			location.y = titleHight;
 			location.translate(selfRectangle.getTopLeft());
 			t_col = 0;
 			t_row = 0;
@@ -71,7 +71,7 @@ public class GridBackLayout extends BackLayout {
 		}
 
 		List children = getColumns(parent);
-		
+
 		realRow = children.size() / col
 				+ ((children.size() % col) == 0 ? 0 : 1);
 		Rectangle calculateRectangle = calculateRectangle(parent);
@@ -107,7 +107,7 @@ public class GridBackLayout extends BackLayout {
 			applyToFigure(ep, layout);
 		}
 		calculateChildDepth(parent, 1);
-		applyToALlChildCH(parent);
+		applyToAllChildCH(parent);
 
 		calculateRectangle = calculateRectangle(parent);
 		layoutToolbar(calculateRectangle);
@@ -172,7 +172,7 @@ public class GridBackLayout extends BackLayout {
 		return columns;
 	}
 
-	private void applyToALlChildCH(ComponentPart parent) {
+	private void applyToAllChildCH(ComponentPart parent) {
 		List children = getColumns(parent);
 		int columnHight = 25;
 		for (int i = 0; i < children.size(); i++) {
@@ -185,7 +185,7 @@ public class GridBackLayout extends BackLayout {
 				((GridColumnFigure) cp.getFigure())
 						.setColumnHight((columnHight * l));
 			}
-			applyToALlChildCH(cp);
+			applyToAllChildCH(cp);
 		}
 	}
 
@@ -238,7 +238,7 @@ public class GridBackLayout extends BackLayout {
 				Rectangle rr = this.partMap.get(rp);
 				rr.setLocation(location);
 				rr.setHeight(selfRectangle.height - titleHight - navbarHight);
-				location.x += maxColWidths[j] + 0 - 1;
+				location.x += maxColWidths[j];
 			}
 			location.x = 0 + selfRectangle.getTopLeft().x;
 			location.y = location.y + maxRowHights[i] + 0;
@@ -255,7 +255,8 @@ public class GridBackLayout extends BackLayout {
 		}
 		if (selfRectangle.width > this.selfRectangle.width) {
 			// return selfRectangle.expand(1, 1);
-			return this.selfRectangle.getCopy().setWidth(selfRectangle.width+50);
+			return this.selfRectangle.getCopy().setWidth(
+					selfRectangle.width + 50);
 		}
 		// ScrollBar horizontalScrollBar = ((ScrollPane)
 		// parent.getFigure()).getHorizontalScrollBar();

@@ -1,20 +1,21 @@
 package aurora.ide.meta.gef.editors.layout;
 
+import aurora.ide.meta.gef.editors.parts.ComponentPart;
+
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-import aurora.ide.meta.gef.editors.parts.ComponentPart;
-
 public class GridColumnBackLayout2 extends RowColBackLayout {
-	final static private Insets padding = new Insets(-1, 0, 0, 0);
+	final static private Insets padding = new Insets(0, 0, 0, 0);
 
 	public GridColumnBackLayout2() {
-		location.x = 1;
-//		location.y = -1;
+		location.x = 0;
+		// location.y = -1;
 		this.setPadding(padding);
 	}
+
 	protected void calculateChildLocation() {
 		for (int i = 0; i < realRow; i++) {
 			for (int j = 0; j < col; j++) {
@@ -24,13 +25,14 @@ public class GridColumnBackLayout2 extends RowColBackLayout {
 				Rectangle rr = this.partMap.get(rp);
 				rr.setLocation(location);
 				rr.setHeight(selfRectangle.height - 25);
-				location.x += maxColWidths[j] + 0 - 1;
+				location.x += maxColWidths[j];
 
 			}
 			location.x = 0 + selfRectangle.getTopLeft().x;
 			location.y = location.y + maxRowHights[i] + 0;
 		}
 	}
+
 	protected Rectangle calculateRectangle(ComponentPart parent) {
 		Rectangle selfRectangle = zero.getCopy().setLocation(
 				parent.getFigure().getBounds().getLocation());
