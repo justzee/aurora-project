@@ -1,8 +1,8 @@
 package aurora.ide.meta.gef.editors.models;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class ComboDatasetField extends DatasetField {
 	/**
@@ -17,10 +17,10 @@ public class ComboDatasetField extends DatasetField {
 			new StringPropertyDescriptor(VALUE_FIELD, "valueField"),
 			new StringPropertyDescriptor(RETURN_FIELD, "returnField") };
 
-	private String displayField;
-	private String options;
-	private String valueField;
-	private String returnField;
+	private String displayField = "";
+	private String options = "";
+	private String valueField = "";
+	private String returnField = "";
 
 	public ComboDatasetField() {
 		this.setType("field");
@@ -28,9 +28,10 @@ public class ComboDatasetField extends DatasetField {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		IPropertyDescriptor[] propertyDescriptors = super
-				.getPropertyDescriptors();
-		return this.mergePropertyDescriptor(propertyDescriptors, pds);
+		// IPropertyDescriptor[] propertyDescriptors = super
+		// .getPropertyDescriptors();
+		// return this.mergePropertyDescriptor(propertyDescriptors, pds);
+		return pds;
 	}
 
 	@Override
@@ -38,7 +39,6 @@ public class ComboDatasetField extends DatasetField {
 		if (DISPLAY_FIELD.equals(propName)) {
 			return this.getDisplayField();
 		}
-
 		if (OPTIONS.equals(propName)) {
 			return this.getOptions();
 		}
@@ -49,6 +49,22 @@ public class ComboDatasetField extends DatasetField {
 			return this.getReturnField();
 		}
 		return super.getPropertyValue(propName);
+	}
+
+	@Override
+	public void setPropertyValue(Object propName, Object val) {
+		if (DISPLAY_FIELD.equals(propName)) {
+			setDisplayField((String) val);
+		}
+		if (OPTIONS.equals(propName)) {
+			setOptions((String) val);
+		}
+		if (VALUE_FIELD.equals(propName)) {
+			setValueField((String) val);
+		}
+		if (RETURN_FIELD.equals(propName)) {
+			setReturnField((String) val);
+		}
 	}
 
 	public String getDisplayField() {

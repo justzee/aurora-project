@@ -1,11 +1,11 @@
 package aurora.ide.meta.gef.editors.models;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
 import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 
@@ -38,8 +38,8 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 	// combo lov text
 	public static final String TYPECASE = "typeCase";
 	// cal
-	public static final String ENABLEBESIDEDAYS = "enableBesideDays";
-	public static final String ENABLEMONTHBTN = "enableMonthBtn";
+	public static final String ENABLE_BESIDE_DAYS = "enableBesideDays";
+	public static final String ENABLE_MONTH_BTN = "enableMonthBtn";
 
 	// /
 
@@ -76,9 +76,9 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 			PD_PROMPT,
 			PD_WIDTH,
 			PD_NAME,
-			new ComboPropertyDescriptor(ENABLEBESIDEDAYS, "EnableBesideDays",
+			new ComboPropertyDescriptor(ENABLE_BESIDE_DAYS, "EnableBesideDays",
 					CAL_ENABLES),
-			new ComboPropertyDescriptor(ENABLEMONTHBTN, "EnableMonthBtn",
+			new ComboPropertyDescriptor(ENABLE_MONTH_BTN, "EnableMonthBtn",
 					CAL_ENABLES) };
 
 	public Input() {
@@ -116,6 +116,9 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 			return pds_number;
 		else if (CAL.equals(type) || DATETIMEPICKER.equals(type))
 			return pds_datepicker;
+		else if (Combo.equals(type) || LOV.equals(type))
+			return mergePropertyDescriptor(pds_text, getDatasetField()
+					.getPropertyDescriptors());
 		return pds_text;
 	}
 
@@ -134,10 +137,21 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 			return getEmptyText();
 		else if (TYPECASE.equals(propName))
 			return indexOf(CASE_TYPES, getTypeCase());
-		else if (ENABLEBESIDEDAYS.equals(propName))
+		else if (ENABLE_BESIDE_DAYS.equals(propName))
 			return indexOf(CAL_ENABLES, getEnableBesideDays());
-		else if (ENABLEMONTHBTN.equals(propName))
+		else if (ENABLE_MONTH_BTN.equals(propName))
 			return indexOf(CAL_ENABLES, getEnableMonthBtn());
+		else if (DatasetField.DISPLAY_FIELD.equals(propName)
+				|| DatasetField.VALUE_FIELD.equals(propName)
+				|| DatasetField.RETURN_FIELD.equals(propName)
+				|| DatasetField.OPTIONS.equals(propName)
+				|| DatasetField.LOV_GRID_HEIGHT.equals(propName)
+				|| DatasetField.LOV_HEIGHT.equals(propName)
+				|| DatasetField.LOV_SERVICE.equals(propName)
+				|| DatasetField.LOV_URL.equals(propName)
+				|| DatasetField.LOV_WIDTH.equals(propName)
+				|| DatasetField.TITLE.equals(propName))
+			return getDatasetField().getPropertyValue(propName);
 		return super.getPropertyValue(propName);
 	}
 
@@ -192,10 +206,21 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 			setEmptyText((String) val);
 		else if (TYPECASE.equals(propName))
 			setTypeCase(CASE_TYPES[(Integer) val]);
-		else if (ENABLEBESIDEDAYS.equals(propName))
+		else if (ENABLE_BESIDE_DAYS.equals(propName))
 			setEnableBesideDays(CAL_ENABLES[(Integer) val]);
-		else if (ENABLEMONTHBTN.equals(propName))
+		else if (ENABLE_MONTH_BTN.equals(propName))
 			setEnableMonthBtn(CAL_ENABLES[(Integer) val]);
+		else if (DatasetField.DISPLAY_FIELD.equals(propName)
+				|| DatasetField.VALUE_FIELD.equals(propName)
+				|| DatasetField.RETURN_FIELD.equals(propName)
+				|| DatasetField.OPTIONS.equals(propName)
+				|| DatasetField.LOV_GRID_HEIGHT.equals(propName)
+				|| DatasetField.LOV_HEIGHT.equals(propName)
+				|| DatasetField.LOV_SERVICE.equals(propName)
+				|| DatasetField.LOV_URL.equals(propName)
+				|| DatasetField.LOV_WIDTH.equals(propName)
+				|| DatasetField.TITLE.equals(propName))
+			getDatasetField().setPropertyValue(propName, val);
 		super.setPropertyValue(propName, val);
 	}
 
@@ -304,7 +329,7 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 	}
 
 	public void setDatasetField(DatasetField field) {
-//		this.dsField = field;
+		// this.dsField = field;
 	}
 
 }

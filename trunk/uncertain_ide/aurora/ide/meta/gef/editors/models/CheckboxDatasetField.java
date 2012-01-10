@@ -1,8 +1,8 @@
 package aurora.ide.meta.gef.editors.models;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class CheckboxDatasetField extends DatasetField {
 	/**
@@ -16,10 +16,11 @@ public class CheckboxDatasetField extends DatasetField {
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(UNCHECKED_VALUE, "uncheckedValue"),
-			new StringPropertyDescriptor(CHECKED_VALUE, "checkedValue") };
+			new StringPropertyDescriptor(CHECKED_VALUE, "checkedValue"),
+			new StringPropertyDescriptor(DEFAULT_VALUE, "defaultValue") };
 
-	private String checkedValue;
-	private String uncheckedValue;
+	private String checkedValue = "Y";
+	private String uncheckedValue = "N";
 
 	public CheckboxDatasetField() {
 		this.setType("field");
@@ -27,20 +28,30 @@ public class CheckboxDatasetField extends DatasetField {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		IPropertyDescriptor[] propertyDescriptors = super
-				.getPropertyDescriptors();
-		return this.mergePropertyDescriptor(propertyDescriptors, pds);
+		// IPropertyDescriptor[] propertyDescriptors = super
+		// .getPropertyDescriptors();
+		// return this.mergePropertyDescriptor(propertyDescriptors, pds);
+		return pds;
 	}
 
 	@Override
 	public Object getPropertyValue(Object propName) {
 		if (UNCHECKED_VALUE.equals(propName)) {
 			return this.getUncheckedValue();
-		}
-		if (CHECKED_VALUE.equals(propName)) {
+		} else if (CHECKED_VALUE.equals(propName)) {
 			return this.getCheckedValue();
 		}
 		return super.getPropertyValue(propName);
+	}
+
+	@Override
+	public void setPropertyValue(Object propName, Object val) {
+		if (UNCHECKED_VALUE.equals(propName)) {
+			setUncheckedValue((String) val);
+		} else if (CHECKED_VALUE.equals(propName)) {
+			setCheckedValue((String) val);
+		}
+		super.setPropertyValue(propName, val);
 	}
 
 	public String getCheckedValue() {

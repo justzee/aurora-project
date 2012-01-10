@@ -1,42 +1,25 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class CheckBox extends Input {
 
 	private static final long serialVersionUID = 319077599101372088L;
-	public static final String SELECTION_STATE = "selection_state";
-	public static final String TEXT = "checkbox_text";
-	private boolean selected = false;
+	public static final String TEXT = "text";
 	private String text = "text";
 	public static final String CHECKBOX = "checkBox";
 
 	private DatasetField dsField = new CheckboxDatasetField();
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(PROMPT, "Prompt"),
-			new BooleanPropertyDescriptor(SELECTION_STATE, "Selected"),
-			new StringPropertyDescriptor(TEXT, "Text"), PD_NAME };
+			PD_PROMPT, new StringPropertyDescriptor(TEXT, "Text"), PD_NAME };
 
 	public CheckBox() {
 		setSize(new Dimension(120, 20));
 		this.setType(CHECKBOX);
-	}
-
-	public boolean isSelected() {
-		return selected;
-	}
-
-	public void setSelected(boolean selected) {
-		if (this.selected == selected)
-			return;
-		boolean oldV = this.selected;
-		this.selected = selected;
-		firePropertyChange(SELECTION_STATE, oldV, selected);
 	}
 
 	public String getText() {
@@ -53,23 +36,25 @@ public class CheckBox extends Input {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		IPropertyDescriptor[] pds_dsf = dsField.getPropertyDescriptors();
+		return mergePropertyDescriptor(pds, pds_dsf);
 	}
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		if (SELECTION_STATE.equals(propName))
-			return isSelected();
-		else if (TEXT.equals(propName))
+		if (TEXT.equals(propName))
 			return getText();
+		if (DatasetField.UNCHECKED_VALUE.equals(propName)) {
+			return dsField.getPropertyValue(propName);
+		} else if (DatasetField.CHECKED_VALUE.equals(propName)) {
+			return dsField.getPropertyValue(propName);
+		}
 		return super.getPropertyValue(propName);
 	}
 
 	@Override
 	public void setPropertyValue(Object propName, Object val) {
-		if (SELECTION_STATE.equals(propName))
-			setSelected((Boolean) val);
-		else if (TEXT.equals(propName))
+		if (TEXT.equals(propName))
 			setText((String) val);
 		super.setPropertyValue(propName, val);
 	}
