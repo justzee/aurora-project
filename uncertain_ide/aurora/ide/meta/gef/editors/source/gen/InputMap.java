@@ -27,9 +27,9 @@ public class InputMap extends AbstractComponentMap {
 				Object value = "";
 				if (Input.TYPECASE.equals(id))
 					value = input.getTypeCase();
-				else if (Input.ENABLEBESIDEDAYS.equals(id))
+				else if (Input.ENABLE_BESIDE_DAYS.equals(id))
 					value = input.getEnableBesideDays();
-				else if (Input.ENABLEMONTHBTN.equals(id))
+				else if (Input.ENABLE_MONTH_BTN.equals(id))
 					value = input.getEnableMonthBtn();
 				else {
 					value = input.getPropertyValue(id).toString();

@@ -1,32 +1,45 @@
 package aurora.ide.meta.gef.editors.property;
 
+import aurora.ide.AuroraPlugin;
 import aurora.ide.meta.gef.editors.figures.ColorConstants;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.ButtonClicker;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
+import aurora.ide.search.core.Util;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.internal.ide.dialogs.OpenResourceDialog;
 
 public class ButtonClickEditDialog extends EditWizard {
 
 	protected Object result;
 	protected Shell shell;
 	private static final String[] descriptions = { "查询,选择一个带有查询功能的组件",
-			"重置,选择一个带有重置功能的组件", "保存", "打开", "关闭", "运行", "自定义" };
+			"重置,选择一个带有重置功能的组件", "保存,选择一个带有保存功能的组件", "选择一个要打开的页面", "关闭", "运行",
+			"自定义" };
 	private Button[] radios = new Button[ButtonClicker.action_texts.length];
 	private Composite[] stackComposites = new Composite[radios.length];
 
@@ -34,6 +47,8 @@ public class ButtonClickEditDialog extends EditWizard {
 	private ButtonClicker clicker = null;
 	private Color SELECTION_BG = new Color(null, 109, 187, 242);
 	private WizardPage page;
+	private String tmpPath;
+	private String windowID;
 
 	public ButtonClickEditDialog() {
 		setWindowTitle("Click");
@@ -53,8 +68,8 @@ public class ButtonClickEditDialog extends EditWizard {
 	public boolean performFinish() {
 		if (result instanceof AuroraComponent)
 			clicker.setTargetComponent((AuroraComponent) result);
-		else
-			page.setErrorMessage("请选择一个");
+		clicker.setOpenPath(tmpPath);
+		clicker.setCloseWindowID(windowID);
 		return true;
 	}
 
@@ -95,6 +110,9 @@ public class ButtonClickEditDialog extends EditWizard {
 
 			create_query(0);// 0
 			create_reset(1);// 1
+			create_save(2);// 2
+			create_open(3);// 3
+			create_close(4);// 4
 			composite_right.layout();
 			if (slLayout.topControl != null) {
 				slLayout.topControl.forceFocus();
@@ -148,6 +166,72 @@ public class ButtonClickEditDialog extends EditWizard {
 
 		private void create_reset(int index) {
 			create_query(1);
+		}
+
+		private void create_save(int index) {
+			create_query(2);
+		}
+
+		private void create_open(final int index) {
+			stackComposites[index].setLayout(new GridLayout(3, false));
+			Label label = new Label(stackComposites[index], SWT.NONE);
+			label.setText("screen : ");
+			final Text text = new Text(stackComposites[index], SWT.SINGLE
+					| SWT.BORDER);
+			text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+					1, 1));
+			tmpPath = clicker.getOpenPath();
+			if (tmpPath == null)
+				tmpPath = "";
+			text.setText(tmpPath);
+			Button btn = new Button(stackComposites[index], SWT.FLAT);
+			btn.setText("选择(&O)");
+			btn.addSelectionListener(new SelectionListener() {
+
+				public void widgetSelected(SelectionEvent e) {
+					@SuppressWarnings("restriction")
+					OpenResourceDialog ord = new OpenResourceDialog(
+							stackComposites[index].getShell(), AuroraPlugin
+									.getActiveIFile().getProject(),
+							OpenResourceDialog.CARET_BEGINNING);
+					ord.setInitialPattern("*.screen");
+					ord.open();
+					Object obj = ord.getFirstResult();
+					if (!(obj instanceof IFile))
+						return;
+					IFile file = (IFile) obj;
+					IPath path = file.getFullPath();
+					IContainer web = Util.findWebInf(file).getParent();
+					path = path.makeRelativeTo(web.getFullPath());
+					tmpPath = path.toString();
+					text.setText(tmpPath);
+				}
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+
+				}
+
+			});
+		}
+
+		private void create_close(int index) {
+			stackComposites[index].setLayout(new GridLayout(2, false));
+			Label label = new Label(stackComposites[index], SWT.NONE);
+			label.setText("windowID : ");
+			windowID = clicker.getCloseWindowID();
+			if (windowID == null)
+				windowID = "";
+			final Text text = new Text(stackComposites[index], SWT.SINGLE
+					| SWT.BORDER);
+			text.setText(windowID);
+			text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+					1, 1));
+			text.addModifyListener(new ModifyListener() {
+
+				public void modifyText(ModifyEvent e) {
+					windowID = text.getText();
+				}
+			});
 		}
 
 		private void createSubTree(Tree tree, TreeItem ti, Container container) {

@@ -1,5 +1,8 @@
 package aurora.ide.meta.gef.editors.figures;
 
+import aurora.ide.meta.gef.editors.ImagesUtils;
+import aurora.ide.meta.gef.editors.models.CheckBox;
+
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -7,14 +10,9 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
 
-import aurora.ide.meta.gef.editors.ImagesUtils;
-import aurora.ide.meta.gef.editors.models.CheckBox;
-
 public class CheckBoxFigure extends InputField {
 	private static final Image img_unchecked = ImagesUtils
 			.getImage("palette/checkbox_01.png");
-	private static final Image img_checked = ImagesUtils
-			.getImage("palette/checkbox_02.png");
 	private CheckBox model;
 
 	public void setModel(CheckBox model) {
@@ -36,7 +34,8 @@ public class CheckBoxFigure extends InputField {
 		textRectangle.setSize(textExtents);
 
 		g.drawText(prompt, textRectangle.getLocation());
-		Image img = model.isSelected() ? img_checked : img_unchecked;
+		// Image img = model.isSelected() ? img_checked : img_unchecked;
+		Image img = img_unchecked;
 		if (img != null) {
 			Point imgPos = new Point();
 			imgPos.x = textRectangle.getTopRight().x + 1;
