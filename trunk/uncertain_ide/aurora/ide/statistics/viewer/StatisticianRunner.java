@@ -182,6 +182,7 @@ public class StatisticianRunner implements IRunningListener {
 		try {
 			CompositeMap compositeMap = CacheManager.getCompositeMap(file);
 			po.setRootMap(compositeMap);
+			po.setFile(file);
 			return po;
 		} catch (CoreException e) {
 		} catch (ApplicationException e) {

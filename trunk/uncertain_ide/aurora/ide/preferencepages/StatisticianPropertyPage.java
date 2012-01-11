@@ -259,7 +259,16 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		});
 		treeViewer.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
-				return element.toString();
+				TagTree tt = (TagTree) element;
+				if (baseMap.containsKey(tt.getNamespace())) {
+					if(tt.getNamespace().equals(tt.getTag())){
+						return element.toString();
+					}
+					if (baseMap.get(tt.getNamespace()).contains(tt.getTag())) {
+						return element.toString();
+					}
+				}
+				return element.toString() + "*";
 			}
 
 			public Image getImage(Object element) {

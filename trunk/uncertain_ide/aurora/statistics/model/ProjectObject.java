@@ -3,6 +3,8 @@ package aurora.statistics.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+
 import uncertain.composite.CompositeMap;
 
 public class ProjectObject {
@@ -30,6 +32,8 @@ public class ProjectObject {
 	private String name="";
 	private String path="";
 	private CompositeMap rootMap;
+	
+	private IFile file;
 
 	public CompositeMap getRootMap() {
 		return rootMap;
@@ -163,5 +167,13 @@ public class ProjectObject {
 
 	public void setProjectId(String projectId) {
 		this.projectId = projectId;
+	}
+
+	public IFile getFile() {
+		return file;
+	}
+
+	public void setFile(IFile file) {
+		this.file = file;
 	}
 }
