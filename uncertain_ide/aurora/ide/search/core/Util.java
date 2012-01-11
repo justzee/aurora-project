@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,7 +46,6 @@ import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
 
 public class Util {
@@ -63,7 +63,8 @@ public class Util {
 	}
 
 	static public List getMapAttributes(CompositeMap map) {
-//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		// Element element =
+		// LoadSchemaManager.getSchemaManager().getElement(map);
 		Element element = CompositeMapUtil.getElement(map);
 		if (element != null)
 			return element.getAllAttributes();
@@ -258,7 +259,8 @@ public class Util {
 	public static Object getReferenceModelPKG(CompositeMap map) {
 		if (map == null)
 			return null;
-//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		// Element element =
+		// LoadSchemaManager.getSchemaManager().getElement(map);
 		Element element = CompositeMapUtil.getElement(map);
 		if (element != null) {
 			List attrib_list = element.getAllAttributes();
@@ -418,18 +420,28 @@ public class Util {
 				path = path.makeRelativeTo(requestPath);
 			}
 			String[] split = path.toString().split("\\?");
-			if (split == null||split.length==0)
+			if (split == null || split.length == 0)
 				return null;
 			path = new Path(split[0]);
+			// path.segmentCount() < ICoreConstants.MINIMUM_FILE_SEGMENT_LENGTH
+			if (path.segmentCount() == 0) {
+				return null;
+			}
 			IPath relativePath = parentPath.makeRelativeTo(rootPath);
 			boolean prefixOf = relativePath.isPrefixOf(path);
 			if (prefixOf || prefixOfRequest) {
 				// fullpath
 				IPath sourceFilePath = rootPath.append(path);
+
+				if (sourceFilePath.segmentCount() < 2) {
+					return null;
+				}
+
 				IFile sourceFile = file.getProject().getParent()
 						.getFile(sourceFilePath);
 				if (sourceFile.exists())
 					return sourceFile;
+
 			} else {
 				// relativepath
 				IFile sourceFile = parent.getFile(path);
@@ -519,6 +531,8 @@ public class Util {
 		String[] segments = path.segments();
 		for (String s : segments) {
 			String[] split = s.split("\\?");
+			if (split == null || split.length == 0)
+				return false;
 			s = split[0];
 			// TODO bug?
 			if (s.equals(bmPattern)) {
@@ -526,5 +540,20 @@ public class Util {
 			}
 		}
 		return false;
+	}
+
+	static public String convertJS(String source) {
+		if (source == null)
+			return null;
+		// ///add by jessen
+		// 在语法检测前将动态参数串替换为等长的0串
+		Pattern ptn = Pattern.compile("\\$\\{[^}]+\\}");
+		Matcher m = ptn.matcher(source);
+		char[] charArray = source.toCharArray();
+		while (m.find()) {
+			Arrays.fill(charArray, m.start(), m.end(), '0');
+		}
+		return new String(charArray);
+
 	}
 }
