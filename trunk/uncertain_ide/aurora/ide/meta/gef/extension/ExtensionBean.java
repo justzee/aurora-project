@@ -1,13 +1,13 @@
 package aurora.ide.meta.gef.extension;
 
-import aurora.ide.meta.gef.editors.wizard.INewTemplateWizard;
+import aurora.ide.meta.gef.editors.wizard.ITemplateWizard;
 
 public class ExtensionBean {
 	private String id;
 	private String name;
 	private String description;
 	private String thumbnail;
-	private INewTemplateWizard wizard;
+	private ITemplateWizard wizard;
 
 	public String getId() {
 		return id;
@@ -41,11 +41,11 @@ public class ExtensionBean {
 		this.thumbnail = thumbnail;
 	}
 
-	public INewTemplateWizard getWizard() {
+	public ITemplateWizard getWizard() {
 		return wizard;
 	}
 
-	public void setWizard(INewTemplateWizard wizard) {
+	public void setWizard(ITemplateWizard wizard) {
 		this.wizard = wizard;
 	}
 

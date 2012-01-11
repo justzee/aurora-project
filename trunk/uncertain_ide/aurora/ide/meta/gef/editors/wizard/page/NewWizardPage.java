@@ -1,4 +1,4 @@
-package aurora.ide.meta.gef.editors.wizard;
+package aurora.ide.meta.gef.editors.wizard.page;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -28,18 +28,18 @@ public class NewWizardPage extends WizardPage {
 	private Text txtFile;
 	private boolean isComplete;
 
-	protected NewWizardPage() {
+	public NewWizardPage() {
 		super("aurora.wizard.new.Page");
 		setTitle("新建");
 		setDescription("新建文件");
 		setPageComplete(false);
 	}
 
-	public String getTxtPath() {
+	public String getPath() {
 		return txtPath.getText().trim();
 	}
 
-	public String getTxtFile() {
+	public String getFile() {
 		String fileName = txtFile.getText().trim();
 		if (fileName.length() > 0 && fileName.indexOf(".") == -1) {
 			fileName = fileName + ".meta";
@@ -51,8 +51,8 @@ public class NewWizardPage extends WizardPage {
 		final Composite composite = new Composite(parent, SWT.NULL);
 		setControl(composite);
 		composite.setLayout(new GridLayout(3, false));
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		Label lblPath = new Label(composite, SWT.NONE);
 		lblPath.setText("目录");
 		txtPath = new Text(composite, SWT.BORDER);
@@ -117,10 +117,10 @@ public class NewWizardPage extends WizardPage {
 	}
 
 	private void dialogChanged() {
-		IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getTxtPath()));
-		String fileName = getTxtFile();
+		IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getPath()));
+		String fileName = getFile();
 
-		if (getTxtPath().length() == 0) {
+		if (getPath().length() == 0) {
 			updateStatus(LocaleMessage.getString("file.container.must.be.specified"));
 			return;
 		}

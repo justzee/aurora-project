@@ -1,4 +1,4 @@
-package aurora.ide.meta.gef.editors.wizard;
+package aurora.ide.meta.gef.editors.wizard.page;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -12,8 +12,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.List;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.widgets.core.IUpdateMessageDialog;
@@ -33,13 +33,13 @@ public class TemplateWizardPage extends WizardPage implements IUpdateMessageDial
 	public void createControl(Composite parent) {
 		final Composite composite = new Composite(parent, SWT.NULL);
 		setControl(composite);
-		composite.setLayout(new GridLayout(1, false));
+		composite.setLayout(new GridLayout(2, false));
 		String loc = AuroraPlugin.getDefault().getBundle().getLocation();
 		final String path = loc.substring(loc.indexOf("/") + 1);
 
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		Combo combo = new Combo(composite, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
-		combo.setLayoutData(gd);
+		GridData gd = new GridData(GridData.FILL_VERTICAL);
+		List list = new List(composite, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
+		list.setLayoutData(gd);
 
 		gd = new GridData(GridData.FILL_BOTH);
 		final Canvas canvas = new Canvas(composite, SWT.BORDER);
@@ -47,8 +47,8 @@ public class TemplateWizardPage extends WizardPage implements IUpdateMessageDial
 
 		java.util.List<ExtensionBean> beans = ExtensionManager.getInstance().getBeans();
 		for (int i = 0; i < beans.size(); i++) {
-			combo.add(beans.get(i).getName());
-			combo.setData(Integer.toString(i), beans.get(i));
+			list.add((i+1)+"："+beans.get(i).getName()+"  ");
+			list.setData(Integer.toString(i), beans.get(i));
 		}
 
 		canvas.addPaintListener(new PaintListener() {
@@ -65,13 +65,13 @@ public class TemplateWizardPage extends WizardPage implements IUpdateMessageDial
 			}
 		});
 
-		combo.addSelectionListener(new SelectionListener() {
+		list.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				Combo list = (Combo) e.getSource();
+				List list = (List) e.getSource();
 				selected = (ExtensionBean) list.getData(Integer.toString(list.getSelectionIndex()));
-				canvas.redraw();
 				setPageComplete(selected == null ? false : (selected.getWizard().getPageCount() > 0));
 				setDescription(selected == null ? "" : selected.getDescription());
+				canvas.redraw();
 				getWizard().canFinish();
 			}
 
@@ -79,17 +79,17 @@ public class TemplateWizardPage extends WizardPage implements IUpdateMessageDial
 			}
 		});
 
-		combo.select(0);
-		selected = (ExtensionBean) combo.getData("0");
+		list.select(0);
+		selected = (ExtensionBean) list.getData("0");
 		try {
 			emptyImage = new Image(composite.getDisplay(), path + "templates/image/empty.png");
 		} catch (SWTException e) {
 			emptyImage = null;
 		}
-		canvas.redraw();
-		getWizard().canFinish();
 		setPageComplete(selected == null ? false : (selected.getWizard().getPageCount() > 0));
 		setDescription(selected == null ? "" : selected.getDescription());
+		canvas.redraw();
+		getWizard().canFinish();
 	}
 
 	public void updateStatus(String message) {

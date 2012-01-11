@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
-import aurora.ide.meta.gef.editors.wizard.INewTemplateWizard;
+import aurora.ide.meta.gef.editors.wizard.ITemplateWizard;
 
 public class ExtensionManager {
 
@@ -47,11 +47,11 @@ public class ExtensionManager {
 			bean.setThumbnail(element.getAttribute("thumbnail"));
 			try {
 				Object object = element.createExecutableExtension("class");
-				if (!(object instanceof INewTemplateWizard)) {
+				if (!(object instanceof ITemplateWizard)) {
 					continue;
 				}
-				((INewTemplateWizard) object).addPages();
-				bean.setWizard((INewTemplateWizard) object);
+				((ITemplateWizard) object).addPages();
+				bean.setWizard((ITemplateWizard) object);
 			} catch (CoreException e) {
 				e.printStackTrace();
 				continue;
