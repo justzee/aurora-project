@@ -55,14 +55,11 @@ public class ComboDatasetField extends DatasetField {
 	public void setPropertyValue(Object propName, Object val) {
 		if (DISPLAY_FIELD.equals(propName)) {
 			setDisplayField((String) val);
-		}
-		if (OPTIONS.equals(propName)) {
+		} else if (OPTIONS.equals(propName)) {
 			setOptions((String) val);
-		}
-		if (VALUE_FIELD.equals(propName)) {
+		} else if (VALUE_FIELD.equals(propName)) {
 			setValueField((String) val);
-		}
-		if (RETURN_FIELD.equals(propName)) {
+		} else if (RETURN_FIELD.equals(propName)) {
 			setReturnField((String) val);
 		}
 	}

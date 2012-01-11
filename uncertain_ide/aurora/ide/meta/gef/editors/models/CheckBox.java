@@ -60,8 +60,8 @@ public class CheckBox extends Input {
 				|| DatasetField.CHECKED_VALUE.equals(propName)
 				|| DatasetField.DEFAULT_VALUE.equals(propName)) {
 			dsField.setPropertyValue(propName, val);
-		}
-		super.setPropertyValue(propName, val);
+		} else
+			super.setPropertyValue(propName, val);
 	}
 
 	@Override
