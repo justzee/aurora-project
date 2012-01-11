@@ -20,14 +20,14 @@ public class PreferencesTag {
 		return noStatisticsTag;
 	}
 
-	private final String[] auroraApplicationAction = { "create-config", "process-config" };
-	private final String[] auroraDatabaseLocalOracle = { "sequence-pk", "sequence-use" };
-	private final String[] application = { "service-output", "map", "layout", "model-query", "AbstractModelAction", "button", "Component", "Axi", "labels", "title", "DataSetReference", "JavaScript", "yAxi", "dataLabels", "CaseType", "menuBar", "Field", "tree", "model-execute", "toolBar", "lov", "radio", "items", "model-insert", "model-delete", "autoForm", "column", "tooltip", "numberField", "HasName", "textArea", "tabPanel", "tabs", "label", "record", "URLReference", "event", "events", "BindTarget", "HasClassName", "RectangleComponent", "HasStyle", "HasPrompt", "HasID", "template", "hBox", "RawSql", "tab", "table", "editors", "columns", "datePicker", "upload", "vBox", "caseType", "box", "selectType", "checkBox", "placeHolder", "screen-include", "xAxi", "grid", "autoGrid", "comboBox",
-			"passWord", "fieldSet", "view", "screenBody", "dataSets", "dataSet", "fields", "datas", "chart", "yAxis", "plotOptions", "xAxis", "init-procedure", "model-batch-update", "textField", "treeGrid", "field", "mapping", "chartType", "service", "BaseService", "item", "screen", "view-config", "alignType", "navBarType", "dateTimePicker", "model-update", "vAlignType" };
-	private final String[] noNamespace = { "fields", "query-fields", "columns", "center", "event", "features", "data-filter", "view", "model-delete", "service-output", "model-update", "param", "events", "mapping", "map", "model-load", "model-query", "field", "ref-field", "model-insert", "parameters", "script", "input", "column", "query-field", "model-execute", "model", "batch-apply", "datas", "pk-field", "parameter", "service" };
-	private final String[] bm = { "ref-field", "ModelReference", "reference", "model", "features", "description", "ref-fields", "fields", "query-fields", "data-filters", "operations", "order-by", "cascade-operations", "primary-key", "relations", "feature", "query-sql", "JoinType", "ExtendModeType", "update-sql", "pk-field", "parameter", "operation", "parameters", "field", "query-field", "order-field", "relation", "data-filter" };
-	private final String[] uncertainProc = { "assert", "UncertainBuiltinAction", "dump-map", "procedure", "UncertainBuiltinCompositeAction", "exception-handles", "fields", "AbstractAction", "switch", "case", "loop", "field", "action", "catch", "set", "echo" };
-	private final String[] auroraDatabaseFeatures = { "multi-language-storage", "tag-delete-field", "standard-who", "tag-delete" };
+	private String[] auroraApplicationAction = { "create-config", "process-config" };
+	private String[] auroraDatabaseLocalOracle = { "sequence-pk", "sequence-use" };
+	private String[] application = { "service-output", "map", "layout", "model-query", "AbstractModelAction", "button", "Component", "Axi", "title", "DataSetReference", "JavaScript", "yAxi", "CaseType", "menuBar", "Field", "tree", "model-execute", "toolBar", "lov", "radio", "model-insert", "model-delete", "autoForm", "column", "tooltip", "numberField", "HasName", "textArea", "tabPanel", "label", "record", "URLReference", "event", "BindTarget", "HasClassName", "RectangleComponent", "HasStyle", "HasPrompt", "HasID", "template", "hBox", "RawSql", "tab", "table", "datePicker", "upload", "vBox", "caseType", "box", "selectType", "checkBox", "placeHolder", "screen-include", "xAxi", "grid", "autoGrid", "comboBox", "passWord", "fieldSet", "view", "screenBody", "dataSet", "chart", "init-procedure",
+			"model-batch-update", "textField", "treeGrid", "field", "mapping", "chartType", "service", "BaseService", "item", "screen", "view-config", "alignType", "navBarType", "dateTimePicker", "model-update", "vAlignType" };
+	private String[] noNamespace = { "center", "event", "data-filter", "view", "model-delete", "service-output", "model-update", "param", "mapping", "map", "model-load", "model-query", "field", "ref-field", "model-insert", "script", "input", "column", "query-field", "model-execute", "model", "batch-apply", "pk-field", "parameter", "service" };
+	private String[] bm = { "ref-field", "ModelReference", "reference", "model", "description", "ref-fields", "query-fields", "data-filters", "order-by", "cascade-operations", "primary-key", "feature", "query-sql", "JoinType", "ExtendModeType", "update-sql", "pk-field", "parameter", "operation", "field", "query-field", "order-field", "relation", "data-filter" };
+	private String[] uncertainProc = { "assert", "UncertainBuiltinAction", "dump-map", "procedure", "UncertainBuiltinCompositeAction", "exception-handles", "AbstractAction", "switch", "case", "loop", "field", "action", "catch", "set", "echo" };
+	private String[] auroraDatabaseFeatures = { "multi-language-storage", "tag-delete-field", "standard-who", "tag-delete" };
 
 	public static PreferencesTag INSTANCE() {
 		if (tag == null) {
@@ -46,31 +46,31 @@ public class PreferencesTag {
 		private static final long serialVersionUID = -2136894063010579177L;
 		{
 			this.put("aurora.application.action", new ArrayList<String>());
-			for(String s:auroraApplicationAction){
+			for (String s : auroraApplicationAction) {
 				this.get("aurora.application.action").add(s);
 			}
 			this.put("aurora.database.local.oracle", new ArrayList<String>());
-			for(String s:auroraDatabaseLocalOracle){
+			for (String s : auroraDatabaseLocalOracle) {
 				this.get("aurora.database.local.oracle").add(s);
 			}
 			this.put("http://www.aurora-framework.org/application", new ArrayList<String>());
-			for(String s:application){
+			for (String s : application) {
 				this.get("http://www.aurora-framework.org/application").add(s);
 			}
 			this.put("No namespace", new ArrayList<String>());
-			for(String s:noNamespace){
+			for (String s : noNamespace) {
 				this.get("No namespace").add(s);
 			}
 			this.put("http://www.aurora-framework.org/schema/bm", new ArrayList<String>());
-			for(String s:bm){
+			for (String s : bm) {
 				this.get("http://www.aurora-framework.org/schema/bm").add(s);
 			}
 			this.put("uncertain.proc", new ArrayList<String>());
-			for(String s:uncertainProc){
+			for (String s : uncertainProc) {
 				this.get("uncertain.proc").add(s);
 			}
 			this.put("aurora.database.features", new ArrayList<String>());
-			for(String s:auroraDatabaseFeatures){
+			for (String s : auroraDatabaseFeatures) {
 				this.get("aurora.database.features").add(s);
 			}
 		}

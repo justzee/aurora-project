@@ -50,8 +50,7 @@ public class StatisticsMap {
 	}
 
 	public String getType() {
-		return PreferencesTag.INSTANCE().getType(map.getNamespaceURI(),
-				map.getName());
+		return PreferencesTag.INSTANCE().getType(map.getNamespaceURI(), map.getName());
 
 	}
 
