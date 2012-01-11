@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <extension-point id="template.wizard" name="Template Wizard" schema="schema/aurora.ide.meta.gef.template.exsd"/>
     <extension point="org.eclipse.ui.newWizards">
         <wizard category="aurora.ide.wizard" 
             class="aurora.ide.project.wizard.ProjectWizard" 
@@ -32,6 +33,11 @@
             class="aurora.ide.bm.wizard.procedure.BMFromProcedure" 
             icon="icons/sql.gif" id="aurora.ide.wizard.BMFromProcedure" 
             name="从数据库过程创建BM文件">
+        </wizard>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.meta.gef.editors.wizard.CreateFormGridWizard" 
+            id="aurora.ide.wizard.CreateFormGridWizard" 
+            name="Meta文件">
         </wizard>
     </extension>
       <extension
@@ -893,5 +899,20 @@
              name="Aurora Source File"
              priority="normal">
        </content-type>
+    </extension>
+   	<extension
+          point="aurora.ide.template.wizard">
+       <template
+             class="aurora.ide.meta.gef.editors.wizard.template.Template_1"
+             description="Test Temlpte"
+             id="aurora.ide.template_1"
+             name="Template_1"
+             thumbnail="templates/image/1.png">
+       </template>
+       <template
+             class="aurora.ide.meta.gef.editors.wizard.template.Template_2"
+             id="aurora.ide.template_2"
+             name="Template_2">
+       </template>
     </extension>
 </plugin>
