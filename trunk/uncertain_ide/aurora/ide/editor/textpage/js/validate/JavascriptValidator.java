@@ -13,6 +13,8 @@ import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 
+import aurora.ide.search.core.Util;
+
 public class JavascriptValidator {
 
 	private ErrorReporter errorReporter;
@@ -38,13 +40,14 @@ public class JavascriptValidator {
 		try {
 			// ///add by jessen
 			// 在语法检测前将动态参数串替换为等长的0串
-			Pattern ptn = Pattern.compile("\\$\\{[^}]+\\}");
-			Matcher m = ptn.matcher(source);
-			char[] charArray = source.toCharArray();
-			while (m.find()) {
-				Arrays.fill(charArray, m.start(), m.end(), '0');
-			}
-			source = new String(charArray);
+			// Pattern ptn = Pattern.compile("\\$\\{[^}]+\\}");
+			// Matcher m = ptn.matcher(source);
+			// char[] charArray = source.toCharArray();
+			// while (m.find()) {
+			// Arrays.fill(charArray, m.start(), m.end(), '0');
+			// }
+			// source = new String(charArray);
+			source = Util.convertJS(source);
 			// ////
 			cx.compileString(source, name, 0, null);
 			WarningReporter warningReporter = new WarningReporter();

@@ -58,7 +58,7 @@ public class Javascript4RhinoSearchService extends JavascriptSearchService {
 		for (MapFinderResult result : r) {
 			CompositeMap map = result.getMap();
 			if (SCRIPT.equalsIgnoreCase(map.getName()) && map.getText() != null) {
-				js.add(new Javascript4Rhino(map));
+				js.add(new Javascript4Rhino(file,map));
 			}
 		}
 		return buildMatchLines(file,

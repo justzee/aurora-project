@@ -19,7 +19,7 @@ public abstract class FlayoutBMGEFEditor extends
 		// super.createPartControl(parent);
 
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
-		sashForm.SASH_WIDTH = 0;
+		sashForm.SASH_WIDTH = 1;
 
 		Composite c = new Composite(sashForm, SWT.BORDER);
 		// c.setBackground(ColorConstants.WHITE);
