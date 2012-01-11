@@ -35,7 +35,7 @@
             name="从数据库过程创建BM文件">
         </wizard>
         <wizard category="aurora.ide.wizard" 
-            class="aurora.ide.meta.gef.editors.wizard.CreateFormGridWizard" 
+            class="aurora.ide.meta.gef.editors.wizard.CreateMetaWizard" 
             id="aurora.ide.wizard.CreateFormGridWizard" 
             name="Meta文件">
         </wizard>

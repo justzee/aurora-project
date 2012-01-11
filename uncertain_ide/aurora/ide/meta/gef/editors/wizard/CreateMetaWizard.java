@@ -16,9 +16,11 @@ import org.eclipse.ui.IWorkbench;
 
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
+import aurora.ide.meta.gef.editors.wizard.page.NewWizardPage;
+import aurora.ide.meta.gef.editors.wizard.page.TemplateWizardPage;
 import aurora.ide.search.ui.EditorOpener;
 
-public class CreateFormGridWizard extends Wizard implements INewWizard {
+public class CreateMetaWizard extends Wizard implements INewWizard {
 	private TemplateWizardPage templatePage = new TemplateWizardPage();
 	private NewWizardPage newPage = new NewWizardPage();
 
@@ -34,15 +36,16 @@ public class CreateFormGridWizard extends Wizard implements INewWizard {
 	public boolean performFinish() {
 		EditorOpener editorOpener = new EditorOpener();
 		try {
-			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(newPage.getTxtPath() + "/" + newPage.getTxtFile()));
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(newPage.getPath() + "/" + newPage.getFile()));
 			InputStream inputStream = new ByteArrayInputStream(ObjectToByte(viewDiagram));
 			file.create(inputStream, true, null);
 			editorOpener.open(workbench.getActiveWorkbenchWindow().getActivePage(), file, true);
 			inputStream.close();
+			return true;
 		} catch (Exception e) {
 			DialogUtil.showExceptionMessageBox(e);
+			return false;
 		}
-		return true;
 	}
 
 	public boolean canFinish() {
@@ -51,13 +54,13 @@ public class CreateFormGridWizard extends Wizard implements INewWizard {
 			viewDiagram = ((TemplateWizardPage) page).getSelected().getWizard().getViewDiagram();
 			return true;
 		} else if (page instanceof NewWizardPage) {
-			NewWizardPage p=(NewWizardPage)page;
-			if(p.hasNextPage()){
+			NewWizardPage p = (NewWizardPage) page;
+			if (p.hasNextPage()) {
 				return p.isPageComplete();
 			}
 			return p.isComplete();
-		} else if (page.getWizard() instanceof INewTemplateWizard) {
-			viewDiagram = ((INewTemplateWizard) page.getWizard()).getViewDiagram();
+		} else if (page.getWizard() instanceof ITemplateWizard) {
+			viewDiagram = ((ITemplateWizard) page.getWizard()).getViewDiagram();
 			return page.getWizard().canFinish();
 		}
 		return false;
@@ -71,7 +74,7 @@ public class CreateFormGridWizard extends Wizard implements INewWizard {
 		this.workbench = workbench;
 	}
 
-	public byte[] ObjectToByte(Object obj) {
+	private byte[] ObjectToByte(Object obj) {
 		if (obj != null) {
 			byte[] bytes = null;
 			try {
