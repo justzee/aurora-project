@@ -73,52 +73,24 @@ public class HttpForward extends HttpServlet {
 
 	public void writeResponse(HttpServletResponse httpResponse, String url)
 		throws Exception{
-		//httpClient4.1.2
+
+		// httpClient4.1.2
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		OutputStream os = null;
 		InputStream is = null;
 		try {
 			HttpGet httpget = new HttpGet(url);
-
 			HttpResponse response = httpclient.execute(httpget);
-
-			System.out.println("----------------------------------------");
-			System.out.println(response.getStatusLine());
-			System.out.println("----------------------------------------");
-
 			HttpEntity entity = response.getEntity();
-
 			if (entity != null) {
-            	Header header=entity.getContentType();
-            	httpResponse.reset();
-            	httpResponse.addHeader(header.getName(), header.getValue());		
-            	httpResponse.addHeader("Transfer-Encoding", "Identity");
-            	httpResponse.addHeader(response.getFirstHeader("Content-Disposition").getName(),response.getFirstHeader("Content-Disposition").getValue());
-                httpResponse.setContentLength((int) entity.getContentLength());
-//				Header[] headers=response.getAllHeaders();
-//                Header header;
-//                for(int i=0;i<headers.length;i++){
-//                	header=headers[i];
-//                	httpResponse.addHeader(header.getName(), header.getValue());
-//                }
-//                httpResponse.setLocale(response.getLocale());
-                
-				os = httpResponse.getOutputStream();			
-				
+				os = httpResponse.getOutputStream();
 				is = entity.getContent();
-				try{
-					is.read();
-				}catch (RuntimeException ex) {
-					 httpget.abort();
-	                    throw ex;
-				}
 				int Buffer_size = 50 * 1024;
 				byte buf[] = new byte[Buffer_size];
 				int len;
 				while ((len = is.read(buf)) > 0)
 					os.write(buf, 0, len);
 			}
-
 		} finally {
 			if (is != null) {
 				try {
@@ -136,6 +108,7 @@ public class HttpForward extends HttpServlet {
 			httpclient.getConnectionManager().shutdown();
 		}
 	}
+	
 
 	// public void writeResponse(HttpServletResponse response,String url) throws
 	// Exception{
