@@ -19,29 +19,29 @@ public abstract class FlayoutBMGEFEditor extends
 		// super.createPartControl(parent);
 
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
-		sashForm.SASH_WIDTH = 1;
+		// sashForm.SASH_WIDTH = 1;
 
-		Composite c = new Composite(sashForm, SWT.BORDER);
+		SashForm c = new SashForm(sashForm, SWT.VERTICAL | SWT.BORDER);
 		// c.setBackground(ColorConstants.WHITE);
-		c.setLayout(new GridLayout());
+		// c.setLayout(new GridLayout());
 		createBMViewer(c);
 		createPropertyViewer(c);
 
 		Composite cpt = new Composite(sashForm, SWT.NONE);
 		cpt.setLayout(new GridLayout());
-//		Composite top = new Composite(cpt, SWT.BORDER);
-//		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
-//		layoutData.heightHint = 25;
-//		top.setLayoutData(layoutData);
-//		top.setLayout(new FillLayout());
+		// Composite top = new Composite(cpt, SWT.BORDER);
+		// GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
+		// layoutData.heightHint = 25;
+		// top.setLayoutData(layoutData);
+		// top.setLayout(new FillLayout());
 		Composite bottom = new Composite(cpt, SWT.NONE);
 		bottom.setLayoutData(new GridData(GridData.FILL_BOTH));
 		bottom.setLayout(new FillLayout());
 
-//		datasetView = new DatasetView();
-//		datasetView.createControl(top);
-//
-//		initDatasetView();
+		// datasetView = new DatasetView();
+		// datasetView.createControl(top);
+		//
+		// initDatasetView();
 
 		super.createPartControl(bottom);
 		sashForm.setWeights(new int[] { 1, 4 });
