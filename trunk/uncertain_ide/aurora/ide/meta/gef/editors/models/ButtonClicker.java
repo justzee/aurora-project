@@ -1,9 +1,11 @@
 package aurora.ide.meta.gef.editors.models;
 
 import aurora.ide.meta.gef.editors.property.DialogEditableObject;
+import aurora.ide.meta.gef.editors.property.PropertySourceUtil;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class ButtonClicker extends AuroraComponent implements
@@ -124,10 +126,7 @@ public class ButtonClicker extends AuroraComponent implements
 	}
 
 	public String getDescripition() {
-		if (targetComponent == null || B_RUN.equals(actionID)
-				|| DEFAULT.equals(actionID))
-			return getActionText();
-		return getActionText() + " " + targetComponent.getType();
+		return getActionText();
 	}
 
 	public Object getContextInfo() {
@@ -153,5 +152,12 @@ public class ButtonClicker extends AuroraComponent implements
 		bc.runMessage = runMessage;
 		bc.targetComponent = targetComponent;
 		return bc;
+	}
+
+	public Image getDisplayImage() {
+		if (targetComponent == null || B_RUN.equals(actionID)
+				|| DEFAULT.equals(actionID))
+			return null;
+		return PropertySourceUtil.getImageOf(targetComponent);
 	}
 }

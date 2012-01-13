@@ -1,8 +1,9 @@
 package aurora.ide.meta.gef.editors.models;
 
 import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.DialogPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.QueryContainerEditDialog;
 
 import java.util.Arrays;
 
@@ -23,7 +24,8 @@ public class ResultDataSet extends Dataset {
 	private static final IPropertyDescriptor PD_SELECTION_MODE = new ComboPropertyDescriptor(
 			SELECTION_MODE, "SelectionMode", selectionModes);
 
-	private AuroraComponent queryContainer;
+	private QueryContainer queryContainer = new QueryContainer();
+	public static final String QUERY_CONTAINER = "queryContainer";
 
 	public static final int DEFAULT_PAGE_SIZE = 10;
 	private int pageSize;
@@ -36,11 +38,14 @@ public class ResultDataSet extends Dataset {
 	public static final String SELECTABLE = "selectable";
 	public static final String QUERY_DATASET = "queryDataSet";
 
+	private AuroraComponent owner = null;
+
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			PD_SELECTION_MODE,
 			new IntegerPropertyDescriptor(PAGE_SIZE, "pageSize"),
 			// new BooleanPropertyDescriptor(SELECTABLE, "selectable"),
-			new StringPropertyDescriptor(QUERY_DATASET, "queryDataSet") };
+			new DialogPropertyDescriptor(QUERY_CONTAINER, "queryDataSet",
+					QueryContainerEditDialog.class) };
 
 	public ResultDataSet() {
 		this.setUse4Query(false);
@@ -60,8 +65,9 @@ public class ResultDataSet extends Dataset {
 		} else if (SELECTABLE.equals(propName)) {
 			return this.isSelectable();
 		} else if (QUERY_DATASET.equals(propName)) {
-			return this.getQueryContainer();
-		}
+			return this.getQueryDataset();
+		} else if (QUERY_CONTAINER.equals(propName))
+			return getQueryContainer();
 		return super.getPropertyValue(propName);
 	}
 
@@ -73,14 +79,18 @@ public class ResultDataSet extends Dataset {
 		} else if (SELECTABLE.equals(propName)) {
 			setSelectable((Boolean) val);
 		} else if (QUERY_DATASET.equals(propName)) {
-			setQueryContainer((AuroraComponent) val);
-		} else
+			// setQueryContainer((AuroraComponent) val);
+			System.out.println("ResultDataset.setPropertyValue(" + propName
+					+ "," + val + ")");
+		} else if (QUERY_CONTAINER.equals(propName))
+			setQueryContainer((QueryContainer) val);
+		else
 			super.setPropertyValue(propName, val);
 	}
 
 	private String getQueryDataset() {
-		if (this.getQueryContainer() instanceof Container)
-			return ((Container) this.getQueryContainer()).getDataset().getId();
+		if (queryContainer != null)
+			return queryContainer.getQueryDateset();
 		return "";
 	}
 
@@ -88,8 +98,12 @@ public class ResultDataSet extends Dataset {
 		return queryContainer;
 	}
 
-	public void setQueryContainer(AuroraComponent queryContainer) {
+	public void setQueryContainer(QueryContainer queryContainer) {
 		this.queryContainer = queryContainer;
+	}
+
+	public void setQueryContainer(BOX box) {
+		queryContainer.setTarget(box);
 	}
 
 	public int getPageSize() {
@@ -115,6 +129,15 @@ public class ResultDataSet extends Dataset {
 	public void setSelectionMode(String selectionMode) {
 		this.selectionMode = selectionMode;
 		setSelectable(!selectionMode.equals(SELECT_NONE));
+	}
+
+	public AuroraComponent getOwner() {
+		return owner;
+	}
+
+	public void setOwner(AuroraComponent owner) {
+		this.owner = owner;
+		queryContainer.setOwner(owner);
 	}
 
 }
