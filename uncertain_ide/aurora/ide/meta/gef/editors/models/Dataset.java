@@ -1,12 +1,12 @@
 package aurora.ide.meta.gef.editors.models;
 
+import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
-import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class Dataset extends AuroraComponent {
 	/**
@@ -14,28 +14,25 @@ public class Dataset extends AuroraComponent {
 	 */
 	private static final long serialVersionUID = -4619018857153616914L;
 	// model a.b.c形式
-	private String model="";
+	private String model = "";
 
-	private boolean autoQuery;
+	private boolean autoQuery = false;
 	// private String queryUrl;
 	// 自动生成
-	private String id="";
+	private String id = "";
 	// 是否只是QueryDS,如果true，生成的代码将不设置model
 	private boolean isUse4Query;
 	// 是否使用父的BM
 	private boolean isUseParentBM = true;
-	
-	
-	public static final String AUTO_QUERY ="autoQuery";
-	public static final String MODEL ="model";
-	public static final String ID ="id";
-	
-	
+
+	public static final String AUTO_QUERY = "autoQuery";
+	public static final String MODEL = "model";
+	public static final String ID = "id";
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(AUTO_QUERY, "autoQuery"),
+			new BooleanPropertyDescriptor(AUTO_QUERY, "autoQuery"),
 			new StringPropertyDescriptor(MODEL, "model"),
-			new StringPropertyDescriptor(ID, "id")};
+			new StringPropertyDescriptor(ID, "id") };
 
 	public Dataset() {
 		// 暂时不显示
@@ -45,22 +42,30 @@ public class Dataset extends AuroraComponent {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		
+
 		return pds;
 	}
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		if(AUTO_QUERY.equals(propName)){
+		if (AUTO_QUERY.equals(propName)) {
 			return this.isAutoQuery();
-		}
-		if(MODEL.equals(propName)){
-			return this.getModelPKG();
-		}
-		if(ID.equals(propName)){
+		} else if (MODEL.equals(propName)) {
+			return this.getModel();
+		} else if (ID.equals(propName)) {
 			return this.getId();
 		}
 		return null;
+	}
+
+	public void setPropertyValue(Object propName, Object val) {
+		if (AUTO_QUERY.equals(propName)) {
+			setAutoQuery((Boolean) val);
+		} else if (MODEL.equals(propName)) {
+			setModel((String) val);
+		} else if (ID.equals(propName)) {
+			setId((String) val);
+		}
 	}
 
 	private Object getModelPKG() {

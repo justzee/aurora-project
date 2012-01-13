@@ -1,8 +1,12 @@
 package aurora.ide.meta.gef.editors.models;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
+import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
+import java.util.Arrays;
+
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class ResultDataSet extends Dataset {
 
@@ -10,6 +14,14 @@ public class ResultDataSet extends Dataset {
 	 * 
 	 */
 	private static final long serialVersionUID = -4436804459187661221L;
+	public static final String SELECT_NONE = "";
+	public static final String SELECT_MULTI = "multiple";
+	public static final String SELECT_SINGLE = "single";
+	public static final String SELECTION_MODE = "selectionMode";
+	private static final String[] selectionModes = { SELECT_NONE, SELECT_MULTI,
+			SELECT_SINGLE };
+	private static final IPropertyDescriptor PD_SELECTION_MODE = new ComboPropertyDescriptor(
+			SELECTION_MODE, "SelectionMode", selectionModes);
 
 	private AuroraComponent queryContainer;
 
@@ -18,21 +30,17 @@ public class ResultDataSet extends Dataset {
 	private boolean selectable = false;
 
 	// private String selectionModel="multiple"/"single" ;
-	private String selectionMode = Grid.SELECT_NONE;
+	private String selectionMode = SELECT_NONE;
 
-	public static final String SELECTION_MODE = "selectionMode";
 	public static final String PAGE_SIZE = "pageSize";
 	public static final String SELECTABLE = "selectable";
-	public static final String QUER_DATASET = "queryDataSet";
+	public static final String QUERY_DATASET = "queryDataSet";
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(AUTO_QUERY, "autoQuery"),
-			new StringPropertyDescriptor(MODEL, "model"),
-			new StringPropertyDescriptor(ID, "id"),
-			new StringPropertyDescriptor(SELECTION_MODE, "selectionMode"),
-			new StringPropertyDescriptor(PAGE_SIZE, "pageSize"),
-			new StringPropertyDescriptor(SELECTABLE, "selectable"),
-			new StringPropertyDescriptor(QUER_DATASET, "queryDataSet") };
+			PD_SELECTION_MODE,
+			new IntegerPropertyDescriptor(PAGE_SIZE, "pageSize"),
+			// new BooleanPropertyDescriptor(SELECTABLE, "selectable"),
+			new StringPropertyDescriptor(QUERY_DATASET, "queryDataSet") };
 
 	public ResultDataSet() {
 		this.setUse4Query(false);
@@ -40,31 +48,40 @@ public class ResultDataSet extends Dataset {
 	}
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		return mergePropertyDescriptor(super.getPropertyDescriptors(), pds);
 	}
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		if (SELECTION_MODE.equals(propName)) {
-			return this.getSelectionMode();
-		}
-
-		if (PAGE_SIZE.equals(propName)) {
+		if (SELECTION_MODE.equals(propName))
+			return Arrays.asList(selectionModes).indexOf(getSelectionMode());
+		else if (PAGE_SIZE.equals(propName)) {
 			return this.getPageSize();
-		}
-
-		if (SELECTABLE.equals(propName)) {
+		} else if (SELECTABLE.equals(propName)) {
 			return this.isSelectable();
-		}
-
-		if (QUER_DATASET.equals(propName)) {
-			return this.getQueryDataset();
+		} else if (QUERY_DATASET.equals(propName)) {
+			return this.getQueryContainer();
 		}
 		return super.getPropertyValue(propName);
 	}
 
+	public void setPropertyValue(Object propName, Object val) {
+		if (SELECTION_MODE.equals(propName))
+			setSelectionMode(selectionModes[(Integer) val]);
+		else if (PAGE_SIZE.equals(propName)) {
+			setPageSize((Integer) val);
+		} else if (SELECTABLE.equals(propName)) {
+			setSelectable((Boolean) val);
+		} else if (QUERY_DATASET.equals(propName)) {
+			setQueryContainer((AuroraComponent) val);
+		} else
+			super.setPropertyValue(propName, val);
+	}
+
 	private String getQueryDataset() {
-		return ((Container) this.getQueryContainer()).getDataset().getId();
+		if (this.getQueryContainer() instanceof Container)
+			return ((Container) this.getQueryContainer()).getDataset().getId();
+		return "";
 	}
 
 	public AuroraComponent getQueryContainer() {
@@ -97,6 +114,7 @@ public class ResultDataSet extends Dataset {
 
 	public void setSelectionMode(String selectionMode) {
 		this.selectionMode = selectionMode;
+		setSelectable(!selectionMode.equals(SELECT_NONE));
 	}
 
 }

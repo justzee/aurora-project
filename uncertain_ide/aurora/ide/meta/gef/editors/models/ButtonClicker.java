@@ -124,10 +124,10 @@ public class ButtonClicker extends AuroraComponent implements
 	}
 
 	public String getDescripition() {
-		if (targetComponent == null)
+		if (targetComponent == null || B_RUN.equals(actionID)
+				|| DEFAULT.equals(actionID))
 			return getActionText();
-		return getActionText() + " "
-				+ targetComponent.getClass().getSimpleName();
+		return getActionText() + " " + targetComponent.getType();
 	}
 
 	public Object getContextInfo() {

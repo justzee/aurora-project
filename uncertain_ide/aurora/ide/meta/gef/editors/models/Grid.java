@@ -15,12 +15,7 @@ public class Grid extends GridColumn {
 	 * 
 	 */
 	private static final long serialVersionUID = -3083738388276859573L;
-	public static final String SELECT_NONE = "";
-	public static final String SELECT_MULTI = "multiple";
-	public static final String SELECT_SINGLE = "single";
-	public static final String SELECTION_MODE = "SelectionMode";
-	private static final String[] selectionMode = { SELECT_NONE, SELECT_MULTI,
-			SELECT_SINGLE };
+
 	private GridSelectionCol gsc = new GridSelectionCol();
 
 	public static final String NAVBAR_NONE = "";
@@ -31,12 +26,10 @@ public class Grid extends GridColumn {
 			NAVBAR_COMPLEX };
 	private Navbar navBar = new Navbar();
 
-	private static final IPropertyDescriptor PD_SELECTION_MODE = new ComboPropertyDescriptor(
-			SELECTION_MODE, "SelectionMode", selectionMode);
 	private static final IPropertyDescriptor PD_NAVBAR_TYPE = new ComboPropertyDescriptor(
 			NAVBAR_TYPE, "NavBarType", navBarTypes);
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			PD_PROMPT, PD_WIDTH, PD_HEIGHT, PD_SELECTION_MODE, PD_NAVBAR_TYPE };
+			PD_PROMPT, PD_WIDTH, PD_HEIGHT, PD_NAVBAR_TYPE };
 
 	private Toolbar toolbar;
 
@@ -62,8 +55,8 @@ public class Grid extends GridColumn {
 			return;
 		gsc.setSelectionMode(sm);
 		getDataset().setSelectionMode(sm);
-		getDataset().setSelectable(!sm.equals(SELECT_NONE));
-		if (gsc.getSelectionMode().equals(SELECT_NONE)) {
+		getDataset().setSelectable(!sm.equals(ResultDataSet.SELECT_NONE));
+		if (gsc.getSelectionMode().equals(ResultDataSet.SELECT_NONE)) {
 			removeChild(gsc);
 		} else {
 			int idx = getChildren().indexOf(gsc);
@@ -159,15 +152,17 @@ public class Grid extends GridColumn {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		return mergePropertyDescriptor(pds, getDataset()
+				.getPropertyDescriptors());
 	}
 
 	@Override
 	public Object getPropertyValue(Object propName) {
-		if (SELECTION_MODE.equals(propName))
-			return Arrays.asList(selectionMode).indexOf(getSelectionMode());
-		else if (NAVBAR_TYPE.equals(propName))
+		if (NAVBAR_TYPE.equals(propName))
 			return Arrays.asList(navBarTypes).indexOf(getNavBarType());
+		Object val = getDataset().getPropertyValue(propName);
+		if (val != null)
+			return val;
 		return super.getPropertyValue(propName);
 	}
 
@@ -177,10 +172,12 @@ public class Grid extends GridColumn {
 
 	@Override
 	public void setPropertyValue(Object propName, Object val) {
-		if (SELECTION_MODE.equals(propName))
-			setSelectionMode(selectionMode[(Integer) val]);
-		else if (NAVBAR_TYPE.equals(propName))
+		if (NAVBAR_TYPE.equals(propName))
 			setNavbarType(navBarTypes[(Integer) val]);
+		getDataset().setPropertyValue(propName, val);
 		super.setPropertyValue(propName, val);
+		if (ResultDataSet.SELECTION_MODE.equals(propName)) {
+			setSelectionMode(getDataset().getSelectionMode());
+		}
 	}
 }
