@@ -196,7 +196,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 				|| !project.getParent()
 						.getFolder(new Path(webdir + "/WEB-INF")).exists()) {
 			IMarker marker = project.createMarker(CONFIG_PROBLEM);
-			marker.setAttribute(IMarker.MESSAGE, "未指定Web主目录,请打开属性页设置!");
+			marker.setAttribute(IMarker.MESSAGE, "[Web主目录]不存在或[WEB-INF]不存在!");
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 			LogUtil.getInstance().logError(
 					"webdir:" + webdir + ";project:" + project.getName(),
@@ -205,7 +205,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 				public void run() {
 					MessageBox mb = new MessageBox(new Shell(), SWT.ERROR);
 					mb.setText("builder error");
-					mb.setMessage("请先设置Web主目录,请打开属性页设置");
+					mb.setMessage("[Web主目录]不存在或[WEB-INF]不存在!");
 					mb.open();
 				}
 			});

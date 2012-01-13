@@ -2,6 +2,9 @@ package aurora.ide.meta.gef.editors.source.gen;
 
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.ResultDataSet;
+import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,12 @@ public class GridMap extends AbstractComponentMap {
 
 		{
 			this.add(ResultDataSet.SELECTION_MODE);
+			this.add(ResultDataSet.PAGE_SIZE);
+			this.add(ResultDataSet.SELECTABLE);
+			this.add(ResultDataSet.QUERY_DATASET);
+			this.add(ResultDataSet.AUTO_QUERY);
+			this.add(ResultDataSet.MODEL);
+			this.add(ResultDataSet.ID);
 		}
 	};
 

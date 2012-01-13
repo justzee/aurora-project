@@ -1,12 +1,14 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+import aurora.ide.search.core.Util;
 
 public class Dataset extends AuroraComponent {
 	/**
@@ -51,7 +53,7 @@ public class Dataset extends AuroraComponent {
 		if (AUTO_QUERY.equals(propName)) {
 			return this.isAutoQuery();
 		} else if (MODEL.equals(propName)) {
-			return this.getModel();
+			return this.getModelPKG();
 		} else if (ID.equals(propName)) {
 			return this.getId();
 		}
@@ -69,7 +71,7 @@ public class Dataset extends AuroraComponent {
 	}
 
 	private Object getModelPKG() {
-		return "a.b.c";
+		return Util.toPKG(new Path(this.getModel()));
 	}
 
 	public String getId() {
