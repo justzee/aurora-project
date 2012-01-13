@@ -72,17 +72,19 @@ public class ScreenGenerator {
 		fillDatasets(datasets, dataset);
 	}
 
-	public static CompositeMap fillDatasets(CompositeMap datasets, Dataset dataset) {
+	public static CompositeMap fillDatasets(CompositeMap datasets,
+			Dataset dataset) {
 		if (dataset == null || dataset.isUseParentBM())
 			return null;
 		CompositeMap dsMap = datasets.getChildByAttrib("id", dataset.getId());
 		if (dsMap == null) {
-			CompositeMap rds = AuroraComponent2CompositMap.toCompositMap(dataset);
+			CompositeMap rds = AuroraComponent2CompositMap
+					.toCompositMap(dataset);
 			datasets.addChild(rds);
 			return rds;
 		}
 		return dsMap;
-		
+
 	}
 
 	// columns
@@ -95,20 +97,20 @@ public class ScreenGenerator {
 			} else {
 				dataset = findDataset(root);
 			}
-			if (dataset == null)
-				return;
-			else {
+			if (dataset != null) {
+				child.put("bindTarget", dataset.getId());
+			}
+			if (ac instanceof Input) {
 				// lov,combox 特殊处理
 				// required,readonly
 				fillDataset(dataset, datasets, ac);
-				child.put("bindTarget", dataset.getId());
 			}
 		}
 	}
 
 	private static void fillDataset(Dataset dataset, CompositeMap datasets,
 			AuroraComponent ac) {
-		CompositeMap dsMap = fillDatasets(datasets,dataset);
+		CompositeMap dsMap = fillDatasets(datasets, dataset);
 		if (dsMap == null) {
 			return;
 		}
