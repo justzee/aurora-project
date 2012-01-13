@@ -66,6 +66,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 	}
 
 	private class SimpleLayout extends Layout {
+		private int width=16;
 
 		@Override
 		protected Point computeSize(Composite composite, int wHint, int hHint,
@@ -76,8 +77,8 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 		@Override
 		protected void layout(Composite composite, boolean flushCache) {
 			Point size = composite.getSize();
-			label.setBounds(0, 0, size.x - 20, size.y);
-			button.setBounds(size.x - 20, 0, 20, size.y);
+			label.setBounds(0, 0, size.x - width, size.y);
+			button.setBounds(size.x - width, 0, width, size.y);
 		}
 
 	}
