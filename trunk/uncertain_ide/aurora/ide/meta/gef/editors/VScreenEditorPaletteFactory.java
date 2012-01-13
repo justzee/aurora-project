@@ -1,5 +1,18 @@
 package aurora.ide.meta.gef.editors;
 
+import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.CheckBox;
+import aurora.ide.meta.gef.editors.models.FieldSet;
+import aurora.ide.meta.gef.editors.models.Form;
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.GridColumn;
+import aurora.ide.meta.gef.editors.models.HBox;
+import aurora.ide.meta.gef.editors.models.Input;
+import aurora.ide.meta.gef.editors.models.TabFolder;
+import aurora.ide.meta.gef.editors.models.TabItem;
+import aurora.ide.meta.gef.editors.models.Toolbar;
+import aurora.ide.meta.gef.editors.models.VBox;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,21 +27,6 @@ import org.eclipse.gef.palette.PaletteSeparator;
 import org.eclipse.gef.palette.SelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.SimpleFactory;
-import org.eclipse.jface.resource.ImageDescriptor;
-
-import aurora.ide.AuroraPlugin;
-import aurora.ide.meta.gef.editors.models.Button;
-import aurora.ide.meta.gef.editors.models.CheckBox;
-import aurora.ide.meta.gef.editors.models.FieldSet;
-import aurora.ide.meta.gef.editors.models.Form;
-import aurora.ide.meta.gef.editors.models.Grid;
-import aurora.ide.meta.gef.editors.models.GridColumn;
-import aurora.ide.meta.gef.editors.models.HBox;
-import aurora.ide.meta.gef.editors.models.Input;
-import aurora.ide.meta.gef.editors.models.TabFolder;
-import aurora.ide.meta.gef.editors.models.TabItem;
-import aurora.ide.meta.gef.editors.models.Toolbar;
-import aurora.ide.meta.gef.editors.models.VBox;
 
 public class VScreenEditorPaletteFactory {
 
@@ -131,66 +129,50 @@ public class VScreenEditorPaletteFactory {
 		// /button
 		combined = new CombinedTemplateCreationEntry("Button",
 				"Create a Button", Button.class,
-				new SimpleFactory(Button.class) {
-					public Object getNewObject() {
-						Button newObject = (Button) super.getNewObject();
-						return newObject;
-					}
-				},
+				new SimpleFactory(Button.class),
 				ImagesUtils.getImageDescriptor("palette/toolbar_btn_01.png"),
 				ImagesUtils.getImageDescriptor("palette/toolbar_btn_01.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Form", "Create a  Form",
 				Form.class, new SimpleFactory(Form.class),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+				ImagesUtils.getImageDescriptor("palette/form.png"),
+				ImagesUtils.getImageDescriptor("palette/form.png"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("FieldSet",
 				"Create a  FieldSet", FieldSet.class, new SimpleFactory(
-						FieldSet.class), ImageDescriptor.createFromFile(
-						AuroraPlugin.class, "images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+						FieldSet.class),
+				ImagesUtils.getImageDescriptor("palette/fieldset.png"),
+				ImagesUtils.getImageDescriptor("palette/fieldset.png"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("HBox", "Create a  HBox",
 				Grid.class, new SimpleFactory(HBox.class),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+				ImagesUtils.getImageDescriptor("palette/hbox.png"),
+				ImagesUtils.getImageDescriptor("palette/hbox.png"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("VBox", "Create a  VBox",
 				Grid.class, new SimpleFactory(VBox.class),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+				ImagesUtils.getImageDescriptor("palette/vbox.png"),
+				ImagesUtils.getImageDescriptor("palette/vbox.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Grid", "Create a  Grid",
 				Grid.class, new SimpleFactory(Grid.class),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+				ImagesUtils.getImageDescriptor("palette/grid.png"),
+				ImagesUtils.getImageDescriptor("palette/grid.png"));
 		entries.add(combined);
 
 		combined = new CombinedTemplateCreationEntry("Grid Column",
 				"Create a  Grid Column", GridColumn.class, new SimpleFactory(
-						GridColumn.class), ImageDescriptor.createFromFile(
-						AuroraPlugin.class, "images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+						GridColumn.class),
+				ImagesUtils.getImageDescriptor("palette/column.png"),
+				ImagesUtils.getImageDescriptor("palette/column.png"));
 		entries.add(combined);
 		combined = new CombinedTemplateCreationEntry("Toolbar",
 				"Create a  Toolbar ", Toolbar.class, new SimpleFactory(
-						Toolbar.class), ImageDescriptor.createFromFile(
-						AuroraPlugin.class, "images/parallel16.gif"),
-				ImageDescriptor.createFromFile(AuroraPlugin.class,
-						"images/parallel16.gif"));
+						Toolbar.class),
+				ImagesUtils.getImageDescriptor("palette/toolbar.png"),
+				ImagesUtils.getImageDescriptor("palette/toolbar.png"));
 		entries.add(combined);
 
 		// combined = new CombinedTemplateCreationEntry("Navbar",
@@ -204,15 +186,15 @@ public class VScreenEditorPaletteFactory {
 		combined = new CombinedTemplateCreationEntry("Tab Folder",
 				"Create a  TabFolder", TabFolder.class, new SimpleFactory(
 						TabFolder.class),
-				ImagesUtils.getImageDescriptor("palette/xxx.png"),
-				ImagesUtils.getImageDescriptor("palette/xxx.png"));
+				ImagesUtils.getImageDescriptor("palette/tabfolder.png"),
+				ImagesUtils.getImageDescriptor("palette/tabfolder.png"));
 		entries.add(combined);
 		// tab item
 		combined = new CombinedTemplateCreationEntry("Tab Item",
 				"Create a  TabItem", TabItem.class, new SimpleFactory(
 						TabItem.class),
-				ImagesUtils.getImageDescriptor("palette/ccc.png"),
-				ImagesUtils.getImageDescriptor("palette/ccc.png"));
+				ImagesUtils.getImageDescriptor("palette/tabitem.png"),
+				ImagesUtils.getImageDescriptor("palette/tabitem.png"));
 		entries.add(combined);
 
 		drawer.addAll(entries);
