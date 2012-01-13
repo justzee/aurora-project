@@ -405,6 +405,9 @@ public class Util {
 	}
 
 	public static IFile findScreenFile(IFile file, Object pkg) {
+		if(".screen".equals(pkg)){
+			System.out.println();
+		}
 		if (pkg instanceof String) {
 			IContainer webInf = findWebInf(file);
 			if (webInf == null)
@@ -432,11 +435,8 @@ public class Util {
 			if (prefixOf || prefixOfRequest) {
 				// fullpath
 				IPath sourceFilePath = rootPath.append(path);
-
-				if (sourceFilePath.segmentCount() < 2) {
+				if(sourceFilePath.segmentCount()<2)
 					return null;
-				}
-
 				IFile sourceFile = file.getProject().getParent()
 						.getFile(sourceFilePath);
 				if (sourceFile.exists())
@@ -450,6 +450,28 @@ public class Util {
 			}
 		}
 		return null;
+	}
+
+	public static String findScreenUrl(IFile file, Object pkg) {
+		if (pkg instanceof String) {
+
+			IPath path = new Path((String) pkg);
+			IPath requestPath = new Path("${/request/@context_path}");
+			boolean prefixOfRequest = requestPath.isPrefixOf(path);
+			if (prefixOfRequest) {
+				path = path.makeRelativeTo(requestPath);
+			}
+			String[] split = path.toString().split("\\?");
+			if (split == null || split.length == 0)
+				return "";
+			path = new Path(split[0]);
+			// path.segmentCount() < ICoreConstants.MINIMUM_FILE_SEGMENT_LENGTH
+			if (path.segmentCount() == 0) {
+				return "";
+			}
+			return path.toString();
+		}
+		return "";
 	}
 
 	public static boolean stringMatch(String pattern, String text,
@@ -540,6 +562,43 @@ public class Util {
 			}
 		}
 		return false;
+	}
+
+	public static String getBmAction(Object bmPattern, String url) {
+
+		boolean findModel = false;
+		Path path = new Path(url);
+		String[] segments = path.segments();
+		for (String s : segments) {
+			String[] split = s.split("\\?");
+			if (split == null || split.length == 0)
+				return "";
+			s = split[0];
+			if (findModel) {
+				return s;
+			}
+			if (s.equals(bmPattern)) {
+				findModel = true;
+			}
+		}
+		return "";
+	}
+
+	public static String getUrlLeftString(Object bmPattern, String url) {
+		int indexOf = url.indexOf("?");
+		if (indexOf != -1) {
+			return "'"+url.substring(indexOf)+"'";
+		}
+		return "";
+	}
+
+	public static String getUrlComment(Object bmPattern, String url) {
+		int indexOf = url.indexOf("?");
+		if (indexOf != -1) {
+			return "/*" + url.substring(0, indexOf) + "*/";
+		}
+		return "/*" + url+ "*/";
+//		return "/*" + url.substring(0, indexOf==-1?url:indexOf) + "*/";
 	}
 
 	static public String convertJS(String source) {
