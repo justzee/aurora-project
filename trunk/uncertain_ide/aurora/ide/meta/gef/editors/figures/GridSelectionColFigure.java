@@ -1,8 +1,8 @@
 package aurora.ide.meta.gef.editors.figures;
 
 import aurora.ide.meta.gef.editors.ImagesUtils;
-import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridSelectionCol;
+import aurora.ide.meta.gef.editors.models.ResultDataSet;
 
 import org.eclipse.draw2d.FocusEvent;
 import org.eclipse.draw2d.Graphics;
@@ -36,7 +36,7 @@ public class GridSelectionColFigure extends GridColumnFigure {
 	 * @see org.eclipse.draw2d.Label#paintFigure(org.eclipse.draw2d.Graphics)
 	 */
 	protected void paintFigure(Graphics g) {
-		if (Grid.SELECT_NONE.equals(model.getSelectionMode()))
+		if (ResultDataSet.SELECT_NONE.equals(model.getSelectionMode()))
 			return;
 		Rectangle rect = getBounds().getCopy();
 		g.setBackgroundColor(ColorConstants.GRID_ROW);
@@ -48,7 +48,7 @@ public class GridSelectionColFigure extends GridColumnFigure {
 
 		Image img = img_radio;
 		imgRect = new Rectangle(img.getBounds());
-		if (Grid.SELECT_MULTI.equals(model.getSelectionMode())) {
+		if (ResultDataSet.SELECT_MULTI.equals(model.getSelectionMode())) {
 			img = img_check;
 			imgRect = new Rectangle(img.getBounds());
 			g.drawImage(img, rect.x + (rect.width - imgRect.width) / 2, rect.y

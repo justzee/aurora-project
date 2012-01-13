@@ -49,7 +49,6 @@ public class Button extends AuroraComponent {
 			new IntegerPropertyDescriptor(WIDTH, "Width"),
 			new IntegerPropertyDescriptor(HEIGHT, "Height"),
 			new StringPropertyDescriptor(TOOLTIP, "Title"),
-			new StringPropertyDescriptor(BUTTON_CLICKER, "Click"),
 			new ComboPropertyDescriptor(BUTTON_TYPE, "Type", std_type_names) };
 	private static final IPropertyDescriptor[] inner_pds = new IPropertyDescriptor[] {
 			new StringPropertyDescriptor(BUTTON_TEXT, "Text"),
@@ -63,7 +62,6 @@ public class Button extends AuroraComponent {
 	private String buttonType = DEFAULT;
 	private String text = "button";
 	private String icon = "";
-	private String click = "";
 	private String title = "";
 	private AuroraComponent targetComponent;
 
@@ -104,10 +102,6 @@ public class Button extends AuroraComponent {
 		return buttonType;
 	}
 
-	public String getFunction() {
-		return click;
-	}
-
 	public String getIcon() {
 		return icon;
 	}
@@ -143,14 +137,6 @@ public class Button extends AuroraComponent {
 		if (isStdButton()) {
 			super.setSize(new Dimension(48, 20));
 		}
-	}
-
-	public void setFunction(String function) {
-		if (eq(this.click, function))
-			return;
-		String oldV = this.click;
-		this.click = function;
-		firePropertyChange(BUTTON_CLICKER, oldV, function);
 	}
 
 	public void setIcon(String icon) {

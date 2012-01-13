@@ -7,6 +7,7 @@ import aurora.ide.meta.gef.editors.policies.NodeDirectEditPolicy;
 import aurora.ide.meta.gef.editors.policies.NodeEditPolicy;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.gef.EditPolicy;
 
 public class ButtonPart extends ComponentPart {
@@ -28,7 +29,11 @@ public class ButtonPart extends ComponentPart {
 	 * @see org.eclipse.gef.editparts.AbstractEditPart#refreshVisuals()
 	 */
 	protected void refreshVisuals() {
-
+		String title = getModel().getTitle();
+		getFigure()
+				.setToolTip(
+						(title != null && title.length() > 0) ? new Label(title)
+								: null);
 		super.refreshVisuals();
 	}
 

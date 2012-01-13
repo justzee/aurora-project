@@ -1,5 +1,7 @@
 package aurora.ide.meta.gef.editors.property;
 
+import aurora.ide.meta.gef.editors.figures.ColorConstants;
+
 import java.util.ArrayList;
 
 import org.eclipse.draw2d.FigureUtilities;
@@ -19,8 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySheetEntry;
-
-import aurora.ide.meta.gef.editors.figures.ColorConstants;
 
 public class PropertyViewer extends Canvas implements PaintListener,
 		MouseListener, MouseMoveListener, MouseTrackListener {
@@ -71,7 +71,7 @@ public class PropertyViewer extends Canvas implements PaintListener,
 		als.add(index, pi);
 		Composite par = getParent();
 		if (par instanceof ScrolledComposite) {
-			((ScrolledComposite) par).setMinSize(200, getItemCount()
+			((ScrolledComposite) par).setMinSize(160, getItemCount()
 					* ROWHEIGHT);
 		}
 		redraw();
@@ -137,7 +137,6 @@ public class PropertyViewer extends Canvas implements PaintListener,
 	}
 
 	public void mouseDoubleClick(MouseEvent e) {
-
 	}
 
 	public void mouseDown(MouseEvent e) {
