@@ -33,6 +33,10 @@ public class ExtensionManager {
 		return instance;
 	}
 
+	public void dispose() {
+		instance = null;
+	}
+	
 	private void init() {
 		IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
 		IConfigurationElement[] elements = extensionRegistry.getConfigurationElementsFor(EXTENSION_ID);
