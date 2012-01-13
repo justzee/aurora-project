@@ -31,7 +31,7 @@ public class Dataset extends AuroraComponent {
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new BooleanPropertyDescriptor(AUTO_QUERY, "autoQuery"),
-			new StringPropertyDescriptor(MODEL, "model"),
+			// new StringPropertyDescriptor(MODEL, "model"),
 			new StringPropertyDescriptor(ID, "id") };
 
 	public Dataset() {

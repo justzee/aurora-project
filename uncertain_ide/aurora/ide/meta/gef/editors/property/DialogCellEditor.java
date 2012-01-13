@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -12,14 +13,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 
 public class DialogCellEditor extends CellEditor implements SelectionListener,
 		MouseListener {
 	private Button button;
-	private Label label;
+	private CLabel label;
 	private DialogEditableObject value;
 	private Class<EditWizard> clazz;
 	Shell shell;
@@ -35,7 +35,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 		Composite com = new Composite(parent, SWT.NONE);
 		com.setBackground(parent.getBackground());
 		com.setLayout(new SimpleLayout());
-		label = new Label(com, SWT.NONE);
+		label = new CLabel(com, SWT.NONE);
 		label.addMouseListener(this);
 		button = new Button(com, SWT.FLAT);
 		button.setText("...");
@@ -57,6 +57,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 	protected void doSetValue(Object value) {
 		this.value = (DialogEditableObject) value;
 		label.setText(this.value.getDescripition());
+		label.setImage(this.value.getDisplayImage());
 	}
 
 	public void activate(ColumnViewerEditorActivationEvent activationEvent) {
@@ -66,7 +67,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 	}
 
 	private class SimpleLayout extends Layout {
-		private int width=16;
+		private int width = 16;
 
 		@Override
 		protected Point computeSize(Composite composite, int wHint, int hHint,
@@ -92,6 +93,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 			if (wd.open() == WizardDialog.OK) {
 				value = objClone;
 				label.setText(value.getDescripition());
+				label.setImage(value.getDisplayImage());
 				fireApplyEditorValue();
 			}
 		} catch (Exception e1) {

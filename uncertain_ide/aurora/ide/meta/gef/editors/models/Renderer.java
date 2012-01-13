@@ -2,6 +2,8 @@ package aurora.ide.meta.gef.editors.models;
 
 import aurora.ide.meta.gef.editors.property.DialogEditableObject;
 
+import org.eclipse.swt.graphics.Image;
+
 public class Renderer extends AuroraComponent implements DialogEditableObject {
 
 	private static final long serialVersionUID = -3218999047690358423L;
@@ -51,6 +53,10 @@ public class Renderer extends AuroraComponent implements DialogEditableObject {
 
 	public void setLabelText(String tmpLabelText) {
 		this.labelText = tmpLabelText;
+	}
+
+	public Image getDisplayImage() {
+		return null;
 	}
 
 }

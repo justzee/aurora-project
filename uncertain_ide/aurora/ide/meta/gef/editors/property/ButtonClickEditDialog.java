@@ -1,19 +1,13 @@
 package aurora.ide.meta.gef.editors.property;
 
 import aurora.ide.AuroraPlugin;
-import aurora.ide.meta.gef.editors.ImagesUtils;
 import aurora.ide.meta.gef.editors.figures.ColorConstants;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.ButtonClicker;
 import aurora.ide.meta.gef.editors.models.Container;
-import aurora.ide.meta.gef.editors.models.FieldSet;
-import aurora.ide.meta.gef.editors.models.Form;
 import aurora.ide.meta.gef.editors.models.Grid;
-import aurora.ide.meta.gef.editors.models.HBox;
 import aurora.ide.meta.gef.editors.models.TabBody;
-import aurora.ide.meta.gef.editors.models.TabFolder;
 import aurora.ide.meta.gef.editors.models.TabItem;
-import aurora.ide.meta.gef.editors.models.VBox;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.search.core.Util;
 
@@ -29,7 +23,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -173,13 +166,13 @@ public class ButtonClickEditDialog extends EditWizard {
 					t.setData(ac);
 					if (ac == clicker.getTargetComponent())
 						tree.setSelection(t);
-					t.setImage(getImageOf(ac));
+					t.setImage(PropertySourceUtil.getImageOf(ac));
 					t.setText(getTextOf(ac));
 					if (!(ac instanceof Grid))
 						createSubTree(tree, t, (Container) ac);
 				} else if (ac instanceof TabItem) {
 					TreeItem t = new TreeItem(ti, SWT.NONE);
-					t.setImage(getImageOf(ac));
+					t.setImage(PropertySourceUtil.getImageOf(ac));
 					t.setText(getTextOf(ac));
 					t.setForeground(new Color(null, 200, 200, 200));
 					createSubTree(tree, t, ((TabItem) ac).getBody());
@@ -279,24 +272,6 @@ public class ButtonClickEditDialog extends EditWizard {
 		public void widgetDefaultSelected(SelectionEvent e) {
 
 		}
-	}
-
-	private Image getImageOf(AuroraComponent ac) {
-		if (ac instanceof Form)
-			return ImagesUtils.getImage("palette/form.png");
-		else if (ac instanceof VBox)
-			return ImagesUtils.getImage("palette/vbox.png");
-		else if (ac instanceof HBox)
-			return ImagesUtils.getImage("palette/hbox.png");
-		else if (ac instanceof FieldSet)
-			return ImagesUtils.getImage("palette/fieldset.png");
-		else if (ac instanceof Grid)
-			return ImagesUtils.getImage("palette/grid.png");
-		else if (ac instanceof TabFolder)
-			return ImagesUtils.getImage("palette/tabfolder.png");
-		else if (ac instanceof TabItem)
-			return ImagesUtils.getImage("palette/tabitem.png");
-		return null;
 	}
 
 	private String getTextOf(AuroraComponent ac) {

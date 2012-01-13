@@ -37,6 +37,7 @@ public class Grid extends GridColumn {
 		super();
 		this.setSize(new Dimension(800, 380));
 		ResultDataSet dataset = new ResultDataSet();
+		dataset.setOwner(this);
 		dataset.setUseParentBM(false);
 		this.setDataset(dataset);
 		this.setType("grid");
