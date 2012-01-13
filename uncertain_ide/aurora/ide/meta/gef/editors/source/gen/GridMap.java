@@ -1,13 +1,14 @@
 package aurora.ide.meta.gef.editors.source.gen;
 
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.ResultDataSet;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import uncertain.composite.CompositeMap;
-import aurora.ide.meta.gef.editors.models.Grid;
 
 public class GridMap extends AbstractComponentMap {
 
@@ -46,7 +47,7 @@ public class GridMap extends AbstractComponentMap {
 		private static final long serialVersionUID = 1L;
 
 		{
-			this.add(Grid.SELECTION_MODE);
+			this.add(ResultDataSet.SELECTION_MODE);
 		}
 	};
 
