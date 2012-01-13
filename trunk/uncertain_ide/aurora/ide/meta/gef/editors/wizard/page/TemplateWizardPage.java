@@ -47,7 +47,7 @@ public class TemplateWizardPage extends WizardPage implements IUpdateMessageDial
 
 		java.util.List<ExtensionBean> beans = ExtensionManager.getInstance().getBeans();
 		for (int i = 0; i < beans.size(); i++) {
-			list.add((i+1)+"："+beans.get(i).getName()+"  ");
+			list.add((i + 1) + "：" + beans.get(i).getName() + "  ");
 			list.setData(Integer.toString(i), beans.get(i));
 		}
 
@@ -106,6 +106,7 @@ public class TemplateWizardPage extends WizardPage implements IUpdateMessageDial
 		if (!(emptyImage == null || emptyImage.isDisposed())) {
 			emptyImage.dispose();
 		}
+		ExtensionManager.getInstance().dispose();
 	}
 
 	public ExtensionBean getSelected() {

@@ -17,13 +17,4 @@ public abstract class TemplateWizard extends Wizard implements ITemplateWizard {
 	public boolean performFinish() {
 		return true;
 	}
-
-	/**
-	 * @deprecated 在自定义模板向导中，此方法已失效
-	 * */
-	@Override
-	public boolean canFinish() {
-		return true;
-	}
-
 }

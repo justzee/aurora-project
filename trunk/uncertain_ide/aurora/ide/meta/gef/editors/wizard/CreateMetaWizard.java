@@ -59,9 +59,6 @@ public class CreateMetaWizard extends Wizard implements INewWizard {
 				return p.isPageComplete();
 			}
 			return p.isComplete();
-		} else if (page.getWizard() instanceof ITemplateWizard) {
-			viewDiagram = ((ITemplateWizard) page.getWizard()).getViewDiagram();
-			return page.getWizard().canFinish();
 		}
 		return false;
 	}

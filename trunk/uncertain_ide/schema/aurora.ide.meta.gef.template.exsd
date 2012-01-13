@@ -86,7 +86,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":aurora.ide.meta.gef.editors.wizard.INewTemplateWizard"/>
+                  <meta.attribute kind="java" basedOn="aurora.ide.meta.gef.editors.wizard.TemplateWizard:aurora.ide.meta.gef.editors.wizard.ITemplateWizard"/>
                </appInfo>
             </annotation>
          </attribute>

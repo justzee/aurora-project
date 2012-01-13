@@ -912,7 +912,8 @@
        <template
              class="aurora.ide.meta.gef.editors.wizard.template.Template_2"
              id="aurora.ide.template_2"
-             name="Template_2">
+             name="Template_2"
+             description="新建一个空白文件">
        </template>
     </extension>
 </plugin>
