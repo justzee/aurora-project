@@ -5,7 +5,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class GridSelectionCol extends GridColumn {
 	private static final long serialVersionUID = 767365033992120193L;
-	private String selectionModel = Grid.SELECT_NONE;
+	private String selectionModel = ResultDataSet.SELECT_NONE;
 
 	public GridSelectionCol() {
 		super();

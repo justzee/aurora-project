@@ -1,10 +1,19 @@
 package aurora.ide.meta.gef.editors.property;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.meta.gef.editors.ImagesUtils;
 import aurora.ide.meta.gef.editors.figures.ColorConstants;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.ButtonClicker;
 import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.FieldSet;
+import aurora.ide.meta.gef.editors.models.Form;
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.HBox;
+import aurora.ide.meta.gef.editors.models.TabBody;
+import aurora.ide.meta.gef.editors.models.TabFolder;
+import aurora.ide.meta.gef.editors.models.TabItem;
+import aurora.ide.meta.gef.editors.models.VBox;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 import aurora.ide.search.core.Util;
 
@@ -20,6 +29,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -35,7 +45,6 @@ import org.eclipse.ui.internal.ide.dialogs.OpenResourceDialog;
 
 public class ButtonClickEditDialog extends EditWizard {
 
-	protected Object result;
 	protected Shell shell;
 	private static final String[] descriptions = { "查询,选择一个带有查询功能的组件",
 			"重置,选择一个带有重置功能的组件", "保存,选择一个带有保存功能的组件", "选择一个要打开的页面", "关闭", "运行",
@@ -47,8 +56,9 @@ public class ButtonClickEditDialog extends EditWizard {
 	private ButtonClicker clicker = null;
 	private Color SELECTION_BG = new Color(null, 109, 187, 242);
 	private WizardPage page;
+	protected Object tmpTargetCmp;
 	private String tmpPath;
-	private String windowID;
+	private String tmpWindowID;
 
 	public ButtonClickEditDialog() {
 		setWindowTitle("Click");
@@ -66,10 +76,10 @@ public class ButtonClickEditDialog extends EditWizard {
 
 	@Override
 	public boolean performFinish() {
-		if (result instanceof AuroraComponent)
-			clicker.setTargetComponent((AuroraComponent) result);
+		if (tmpTargetCmp instanceof AuroraComponent)
+			clicker.setTargetComponent((AuroraComponent) tmpTargetCmp);
 		clicker.setOpenPath(tmpPath);
-		clicker.setCloseWindowID(windowID);
+		clicker.setCloseWindowID(tmpWindowID);
 		return true;
 	}
 
@@ -123,8 +133,7 @@ public class ButtonClickEditDialog extends EditWizard {
 		}
 
 		private void create_query(int index) {
-			aurora.ide.meta.gef.editors.models.AuroraComponent comp = (aurora.ide.meta.gef.editors.models.AuroraComponent) clicker
-					.getContextInfo();
+			AuroraComponent comp = (AuroraComponent) clicker.getContextInfo();
 			ViewDiagram root = null;
 			while (comp != null) {
 				if (comp instanceof ViewDiagram) {
@@ -136,32 +145,48 @@ public class ButtonClickEditDialog extends EditWizard {
 			if (root == null)
 				throw new RuntimeException("Null root");
 			stackComposites[index].setLayout(new FillLayout());
-			final Tree tree = new Tree(stackComposites[index], 0);
-			tree.setData(root);
-			for (AuroraComponent ac : root.getChildren()) {
-				if (ac instanceof Container) {
-					TreeItem ti = new TreeItem(tree, SWT.NONE);
-					ti.setData(ac);
-					ti.setText(ac.getClass().getSimpleName());
-					if (ac == clicker.getTargetComponent())
-						tree.setSelection(ti);
-					ti.setExpanded(true);
-					createSubTree(tree, ti, (Container) ac);
-				}
-			}
+			final Tree tree = new Tree(stackComposites[index], SWT.BORDER);
+			TreeItem rootItem = new TreeItem(tree, SWT.NONE);
+			rootItem.setText("screenBody");
+			rootItem.setForeground(new Color(null, 200, 200, 200));
+			createSubTree(tree, rootItem, root);
+
 			for (TreeItem ti : tree.getItems())
 				ti.setExpanded(true);
 			tree.addSelectionListener(new SelectionListener() {
 
 				public void widgetSelected(SelectionEvent e) {
 					TreeItem ti = tree.getSelection()[0];
-					result = ti.getData();
+					tmpTargetCmp = ti.getData();
 				}
 
 				public void widgetDefaultSelected(SelectionEvent e) {
 
 				}
 			});
+		}
+
+		private void createSubTree(Tree tree, TreeItem ti, Container container) {
+			for (AuroraComponent ac : container.getChildren()) {
+				if ((ac instanceof Container) && !(ac instanceof TabBody)) {
+					TreeItem t = new TreeItem(ti, SWT.NONE);
+					t.setData(ac);
+					if (ac == clicker.getTargetComponent())
+						tree.setSelection(t);
+					t.setImage(getImageOf(ac));
+					t.setText(getTextOf(ac));
+					if (!(ac instanceof Grid))
+						createSubTree(tree, t, (Container) ac);
+				} else if (ac instanceof TabItem) {
+					TreeItem t = new TreeItem(ti, SWT.NONE);
+					t.setImage(getImageOf(ac));
+					t.setText(getTextOf(ac));
+					t.setForeground(new Color(null, 200, 200, 200));
+					createSubTree(tree, t, ((TabItem) ac).getBody());
+				}
+			}
+			for (TreeItem t : ti.getItems())
+				t.setExpanded(true);
 		}
 
 		private void create_reset(int index) {
@@ -218,35 +243,20 @@ public class ButtonClickEditDialog extends EditWizard {
 			stackComposites[index].setLayout(new GridLayout(2, false));
 			Label label = new Label(stackComposites[index], SWT.NONE);
 			label.setText("windowID : ");
-			windowID = clicker.getCloseWindowID();
-			if (windowID == null)
-				windowID = "";
+			tmpWindowID = clicker.getCloseWindowID();
+			if (tmpWindowID == null)
+				tmpWindowID = "";
 			final Text text = new Text(stackComposites[index], SWT.SINGLE
 					| SWT.BORDER);
-			text.setText(windowID);
+			text.setText(tmpWindowID);
 			text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 					1, 1));
 			text.addModifyListener(new ModifyListener() {
 
 				public void modifyText(ModifyEvent e) {
-					windowID = text.getText();
+					tmpWindowID = text.getText();
 				}
 			});
-		}
-
-		private void createSubTree(Tree tree, TreeItem ti, Container container) {
-			for (AuroraComponent ac : container.getChildren()) {
-				if (ac instanceof Container) {
-					TreeItem t = new TreeItem(ti, SWT.NONE);
-					t.setData(ac);
-					if (ac == clicker.getTargetComponent())
-						tree.setSelection(t);
-					t.setText(ac.getClass().getSimpleName());
-					createSubTree(tree, t, (Container) ac);
-				}
-			}
-			for (TreeItem t : ti.getItems())
-				t.setExpanded(true);
 		}
 
 		public void widgetSelected(SelectionEvent e) {
@@ -269,5 +279,30 @@ public class ButtonClickEditDialog extends EditWizard {
 		public void widgetDefaultSelected(SelectionEvent e) {
 
 		}
+	}
+
+	private Image getImageOf(AuroraComponent ac) {
+		if (ac instanceof Form)
+			return ImagesUtils.getImage("palette/form.png");
+		else if (ac instanceof VBox)
+			return ImagesUtils.getImage("palette/vbox.png");
+		else if (ac instanceof HBox)
+			return ImagesUtils.getImage("palette/hbox.png");
+		else if (ac instanceof FieldSet)
+			return ImagesUtils.getImage("palette/fieldset.png");
+		else if (ac instanceof Grid)
+			return ImagesUtils.getImage("palette/grid.png");
+		else if (ac instanceof TabFolder)
+			return ImagesUtils.getImage("palette/tabfolder.png");
+		else if (ac instanceof TabItem)
+			return ImagesUtils.getImage("palette/tabitem.png");
+		return null;
+	}
+
+	private String getTextOf(AuroraComponent ac) {
+		String prop = ac.getPrompt();
+		String aType = ac.getType();
+		return aType + " [" + prop + "]";
+		// return ac.getClass().getSimpleName();
 	}
 }

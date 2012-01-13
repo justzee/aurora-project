@@ -1,5 +1,7 @@
 package aurora.ide.meta.gef.editors.figures;
 
+import aurora.ide.meta.gef.editors.ImagesUtils;
+
 import org.eclipse.draw2d.AbstractLabeledBorder;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
@@ -7,11 +9,9 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
 
-import aurora.ide.meta.gef.editors.ImagesUtils;
-
 public class VirtualBoxBorder extends AbstractLabeledBorder {
-	static Image vImg = ImagesUtils.getImage("palette/vertical.gif");
-	static Image hImg = ImagesUtils.getImage("palette/horizontal.gif");
+	static Image vImg = ImagesUtils.getImage("palette/vbox.png");
+	static Image hImg = ImagesUtils.getImage("palette/hbox.png");
 	String type = null;
 
 	public VirtualBoxBorder(String type) {

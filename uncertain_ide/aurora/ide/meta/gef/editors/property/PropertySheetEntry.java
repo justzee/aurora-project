@@ -92,21 +92,22 @@ public class PropertySheetEntry extends EventManager implements
 
 		// See if the value changed and if so update
 		Object newValue = editor.getValue();
-		boolean changed = false;
-		if (values.length > 1) {
-			changed = true;
-		} else if (editValue == null) {
-			if (newValue != null) {
-				changed = true;
-			}
-		} else if (!editValue.equals(newValue)) {
-			changed = true;
-		}
-
-		// Set the editor value
-		if (changed) {
-			setValue(newValue);
-		}
+		// boolean changed = false;
+		// if (values.length > 1) {
+		// changed = true;
+		// } else if (editValue == null) {
+		// if (newValue != null) {
+		// changed = true;
+		// }
+		// } else if (!editValue.equals(newValue)) {
+		// changed = true;
+		// }
+		//
+		// // Set the editor value
+		// if (changed) {
+		// setValue(newValue);
+		// }
+		setValue(newValue);
 	}
 
 	/**
@@ -552,11 +553,11 @@ public class PropertySheetEntry extends EventManager implements
 	 * @since 3.1 (was previously private)
 	 */
 	protected void refreshFromRoot() {
-		if (parent == null) {
-			refreshChildEntries();
-		} else {
-			parent.refreshFromRoot();
-		}
+		// if (parent == null) {
+		refreshChildEntries();
+		// } else {
+		// parent.refreshFromRoot();
+		// }
 	}
 
 	/**
