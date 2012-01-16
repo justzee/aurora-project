@@ -74,7 +74,7 @@ public class ProjectPropertyPage extends PropertyPage {
 		// web url
 		Label localWebLabel = new Label(content, SWT.NONE);
 		localWebLabel.setText("预览主页面");
-		localWebUrlText = new Text(content, SWT.NONE);
+		localWebUrlText = new Text(content, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
 		localWebUrlText.setLayoutData(gridData);
@@ -96,7 +96,7 @@ public class ProjectPropertyPage extends PropertyPage {
 		// webDir
 		Label webDirGroup = new Label(content, SWT.NONE);
 		webDirGroup.setText("Web主目录");
-		webHomeText = new Text(content, SWT.NONE);
+		webHomeText = new Text(content, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		webHomeText.setLayoutData(gridData);
 		String webDir = null;
@@ -146,7 +146,7 @@ public class ProjectPropertyPage extends PropertyPage {
 		// BMDir
 		Label bmDirLabel = new Label(content, SWT.NONE);
 		bmDirLabel.setText("BM主目录");
-		bmHomeText = new Text(content, SWT.NONE);
+		bmHomeText = new Text(content, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		bmHomeText.setLayoutData(gridData);
 		String bmDir = null;
