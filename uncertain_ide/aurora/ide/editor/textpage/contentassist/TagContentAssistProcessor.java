@@ -1,6 +1,5 @@
 package aurora.ide.editor.textpage.contentassist;
 
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -14,8 +13,6 @@ import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 import aurora.ide.helpers.DialogUtil;
 
-
-
 public class TagContentAssistProcessor implements IContentAssistProcessor {
 
 	private XMLTagScanner scanner;
@@ -26,7 +23,8 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 
 	}
 
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
+			int offset) {
 
 		IDocument document = viewer.getDocument();
 		IContentAssistStrategy strategy = null;
@@ -41,27 +39,29 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
-	private IContentAssistStrategy getAssistStrategy(IDocument document, int documentOffset)
-			throws BadLocationException {
+	private IContentAssistStrategy getAssistStrategy(IDocument document,
+			int documentOffset) throws BadLocationException {
 		ITypedRegion region = document.getPartition(documentOffset);
 		if (!XMLPartitionScanner.XML_START_TAG.equals(region.getType()))
 			return null;
 		scanner.setRange(document, region.getOffset(), region.getLength());
 		scanner.nextToken();
 		scanner.nextToken();
-		int tokenEndOffset = scanner.getTokenOffset() + scanner.getTokenLength();
+		int tokenEndOffset = scanner.getTokenOffset()
+				+ scanner.getTokenLength();
 		if (tokenEndOffset >= documentOffset) {
 			return new ChildStrategy(scanner);
 		}
 		return new AttributeStrategy(scanner);
 	}
 
-	public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
+	public IContextInformation[] computeContextInformation(ITextViewer viewer,
+			int offset) {
 		return null;
 	}
 
 	public char[] getCompletionProposalAutoActivationCharacters() {
-		return new String("< ").toCharArray();
+		return new char[] { '<', ' ' };
 	}
 
 	public char[] getContextInformationAutoActivationCharacters() {
