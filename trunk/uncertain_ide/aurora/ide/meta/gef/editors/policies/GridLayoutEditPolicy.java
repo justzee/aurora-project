@@ -1,5 +1,18 @@
 package aurora.ide.meta.gef.editors.policies;
 
+import java.util.List;
+
+import org.eclipse.draw2d.Polyline;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.DropRequest;
+
 import aurora.ide.meta.gef.editors.figures.GridColumnFigure;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
@@ -14,18 +27,6 @@ import aurora.ide.meta.gef.editors.parts.GridPart;
 import aurora.ide.meta.gef.editors.parts.GridSelectionColPart;
 import aurora.ide.meta.gef.editors.parts.NavbarPart;
 import aurora.ide.meta.gef.editors.parts.ToolbarPart;
-
-import java.util.List;
-
-import org.eclipse.draw2d.Polyline;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
-import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.gef.requests.DropRequest;
 
 public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 
@@ -139,7 +140,7 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	public void showTargetFeedback(Request request) {
 		if (getHost() instanceof GridPart) {
-			if ((request instanceof DropRequest)
+			if ((request instanceof CreateRequest || request instanceof ChangeBoundsRequest)
 					&& !(REQ_RESIZE.equals(request.getType()))) {
 				ComponentPart ref = (ComponentPart) getInsertionReference(request);
 				if (ref == null || (ref instanceof ToolbarPart)

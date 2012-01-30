@@ -23,6 +23,8 @@ public class BindFormPartEditPolicy extends AbstractEditPolicy {
 	}
 
 	protected Command getBindFormCommand(DropBMRequest request) {
+		if (request.getBm() == null)
+			return null;
 		BindFormCommand cmd = new BindFormCommand();
 		cmd.setBm(request.getBm());
 		BOX model = (BOX) this.getHost().getModel();

@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.util.DelegatingDragAdapter;
 import org.eclipse.jface.util.TransferDragSourceListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -72,14 +71,20 @@ public class BMViewer {
 
 			public void dragStart(DragSourceEvent event) {
 				// enable drag listener if there is a viewer selection
+				IFile bm = getBM();
+				if (bm == null)
+					return;
 				event.detail = DND.DROP_COPY;
 				event.doit = true;
-				BMTransfer.getInstance().setBM(getBM());
+				BMTransfer.getInstance().setBM(bm);
 			}
 
 			private IFile getBM() {
 				TreeSelection selection = (TreeSelection) tv.getSelection();
-				return (IFile) selection.getFirstElement();
+				Object obj = selection.getFirstElement();
+				if (obj instanceof IFile)
+					return (IFile) obj;
+				return null;
 			}
 
 			public void dragSetData(DragSourceEvent event) {
