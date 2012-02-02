@@ -70,9 +70,10 @@ public class ReferenceSearchService extends AbstractSearchService implements
 
 	protected IFile findScreenFile(CompositeMap map, Attribute attrib) {
 		IFile file = this.getFile(map.getRoot());
-
 		Object pkg = map.get(attrib.getName());
-
+		if (pkg == null) {
+			return null;
+		}
 		boolean isScreenRef = false;
 		if (attrib.getAttributeType() instanceof SimpleType) {
 			isScreenRef = screenReference.equals(((SimpleType) attrib
@@ -84,7 +85,9 @@ public class ReferenceSearchService extends AbstractSearchService implements
 			if (webInf != null) {
 				IPath find = webInf.getParent().getProjectRelativePath()
 						.append(pkg.toString());
-				findScreenFile = file.getProject().getFile(find);
+//				Util.findScreenFile(file, pkg);
+//				findScreenFile = file.getProject().getFile(find);
+				findScreenFile = Util.findScreenFile(file, pkg);
 			}
 		} else {
 			findScreenFile = Util.findScreenFile(file, pkg);

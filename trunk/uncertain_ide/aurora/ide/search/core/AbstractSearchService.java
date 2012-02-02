@@ -103,7 +103,7 @@ abstract public class AbstractSearchService implements ISearchService {
 			ISearchQuery query) {
 		this(roots, source);
 		this.query = query;
-	} 
+	}
 
 	abstract protected CompositeMapIteator createIterationHandle(IFile resource);
 
@@ -286,6 +286,9 @@ abstract public class AbstractSearchService implements ISearchService {
 					if (monitor.isCanceled())
 						return result;
 					fCurrentFile = (IFile) files.get(i);
+//					if ("check_uploadFile.screen".equals(fCurrentFile.getName())) {
+//						System.out.println();
+//					}
 					try {
 						result.addAll(processFile(fCurrentFile));
 					} catch (CoreException e) {

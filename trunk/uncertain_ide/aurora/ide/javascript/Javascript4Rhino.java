@@ -38,7 +38,8 @@ public class Javascript4Rhino {
 	}
 
 	public void setSource(String source) {
-		this.source = convertJS(source);
+//		this.source = convertJS(source);
+		this.source = Util.convertJS(source);
 	}
 
 	public String convertJS(String source) {
@@ -86,11 +87,16 @@ public class Javascript4Rhino {
 
 	public AstRoot createAST(IProgressMonitor monitor) {
 		Parser p = new Parser();
-		// try {
+		 try {
 		AstRoot parse = p.parse(source == null ? "" : source, "Aurora", 1);
 		return parse;
 
-		// } catch (Exception e) {
+		 } catch (Exception e) {
+//			 file.getProjectRelativePath();
+//			 System.out.println(file.getProjectRelativePath());
+//			 System.out.println(e.getClass());
+//			 e.printStackTrace();
+		 }
 		// // modules/wfl/pad/wfl_deliver_for_pad.screen,
 		// // L/web/modules/wfl/pad/wfl_notification_window_for_pad.screen
 		// // /web/modules/sys/sys_customization_arrays.screen
@@ -108,7 +114,7 @@ public class Javascript4Rhino {
 		// System.out.println(source);
 		// System.out.println();
 		// }
-		// return null;
+		 return null;
 	}
 
 	public List<StringLiteral> getStringLiteralNodes(IProgressMonitor monitor) {
