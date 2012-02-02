@@ -372,30 +372,23 @@ Ext.onReady(function(){
     if(page){
         var ps = Ext.urlDecode(page);
         var cls = ps['class'];
+        var findChild = function(node){
+			var result = node.findChild('id',cls);
+			if(result)return result;
+			for(var i = 0,nodes = node.childNodes,len = nodes.length; i<len ;i++){
+				result = findChild(nodes[i]);
+				if(result)return result;
+			}
+		}
+		var node = findChild(api.root);
+		node.parentNode.expand();
+		node.select();
         mainPanel.loadClass('output/' + cls + '.html', cls, ps.member);
     }
     
     viewport.doLayout();
 	
 	setTimeout(function(){
-		var hash = location.hash;
-		if(hash){
-			var findChild = function(node){
-				var result = node.findChild('href',hash.replace(/#!\//,''));
-				if(result)return result;
-				for(var i = 0,nodes = node.childNodes,len = nodes.length; i<len ;i++){
-					result = findChild(nodes[i]);
-					if(result)return result;
-				}
-			}
-			var node = findChild(api.root);
-			if(node){
-				node.parentNode.expand();
-				if(node.isLeaf()){
-	            	mainPanel.loadClass(node.attributes.href, node.id);
-				}
-			}
-		}
         Ext.get('loading').remove();
         Ext.get('loading-mask').fadeOut({remove:true});
     }, 250);
