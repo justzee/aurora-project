@@ -405,9 +405,6 @@ public class Util {
 	}
 
 	public static IFile findScreenFile(IFile file, Object pkg) {
-		if(".screen".equals(pkg)){
-			System.out.println();
-		}
 		if (pkg instanceof String) {
 			IContainer webInf = findWebInf(file);
 			if (webInf == null)
@@ -435,7 +432,7 @@ public class Util {
 			if (prefixOf || prefixOfRequest) {
 				// fullpath
 				IPath sourceFilePath = rootPath.append(path);
-				if(sourceFilePath.segmentCount()<2)
+				if (sourceFilePath.segmentCount() < 2)
 					return null;
 				IFile sourceFile = file.getProject().getParent()
 						.getFile(sourceFilePath);
@@ -448,6 +445,16 @@ public class Util {
 				if (sourceFile.exists())
 					return sourceFile;
 			}
+
+			// fullpath
+			IPath sourceFilePath = rootPath.append(path);
+			if (sourceFilePath.segmentCount() < 2)
+				return null;
+			IFile sourceFile = file.getProject().getParent()
+					.getFile(sourceFilePath);
+			if (sourceFile.exists())
+				return sourceFile;
+
 		}
 		return null;
 	}
@@ -587,7 +594,7 @@ public class Util {
 	public static String getUrlLeftString(Object bmPattern, String url) {
 		int indexOf = url.indexOf("?");
 		if (indexOf != -1) {
-			return "'"+url.substring(indexOf)+"'";
+			return "'" + url.substring(indexOf) + "'";
 		}
 		return "";
 	}
@@ -597,8 +604,8 @@ public class Util {
 		if (indexOf != -1) {
 			return "/*" + url.substring(0, indexOf) + "*/";
 		}
-		return "/*" + url+ "*/";
-//		return "/*" + url.substring(0, indexOf==-1?url:indexOf) + "*/";
+		return "/*" + url + "*/";
+		// return "/*" + url.substring(0, indexOf==-1?url:indexOf) + "*/";
 	}
 
 	static public String convertJS(String source) {
@@ -610,7 +617,7 @@ public class Util {
 		Matcher m = ptn.matcher(source);
 		char[] charArray = source.toCharArray();
 		while (m.find()) {
-			Arrays.fill(charArray, m.start(), m.end(), '0');
+			Arrays.fill(charArray, m.start(), m.end(), '1');
 		}
 		return new String(charArray);
 

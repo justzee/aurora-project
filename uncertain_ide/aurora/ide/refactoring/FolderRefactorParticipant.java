@@ -23,7 +23,7 @@ public class FolderRefactorParticipant {
 	public FolderRefactorParticipant() {
 	}
 
-	protected boolean initialize(Object element) {
+	public boolean initialize(Object element) {
 		// if nature in
 		if (element instanceof IFolder) {
 			currentFolder = (IFolder) element;

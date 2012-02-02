@@ -1,6 +1,7 @@
 package aurora.ide.search.reference;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import uncertain.composite.IterationHandle;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
+import uncertain.schema.ISchemaManager;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
 import aurora.ide.helpers.ApplicationException;
@@ -31,12 +33,24 @@ public class ReferenceTypeFinder extends CompositeMapIteator {
 		return IterationHandle.IT_CONTINUE;
 	}
 
-	protected List<Attribute> getMatch(CompositeMap map) throws ApplicationException {
+	protected List<Attribute> getMatch(CompositeMap map)
+			throws ApplicationException {
 
 		List<Attribute> matchs = new ArrayList<Attribute>();
 		boolean isMacth = false;
-//		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
 		Element element = CompositeMapUtil.getElement(map);
+		if (element == null) {
+			//fix： 没有namespace的map
+			ISchemaManager schemaManager = LoadSchemaManager.getSchemaManager();
+			Collection allTypes = schemaManager.getAllTypes();
+			for (Object type : allTypes) {
+				if (type instanceof Element
+						&& ((Element) type).getLocalName()
+								.equals(map.getName())) {
+					element = (Element) type;
+				}
+			}
+		}
 		if (element != null) {
 			List attrib_list = element.getAllAttributes();
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {
