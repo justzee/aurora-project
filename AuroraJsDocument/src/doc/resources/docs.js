@@ -411,6 +411,24 @@ Ext.onReady(function(){
     viewport.doLayout();
 	
 	setTimeout(function(){
+		var hash = location.hash;
+		if(hash){
+			var findChild = function(node){
+				var result = node.findChild('href',hash.replace(/#!\//,''));
+				if(result)return result;
+				for(var i = 0,nodes = node.childNodes,len = nodes.length; i<len ;i++){
+					result = findChild(nodes[i]);
+					if(result)return result;
+				}
+			}
+			var node = findChild(api.root);
+			if(node){
+				node.parentNode.expand();
+				if(node.isLeaf()){
+	            	mainPanel.loadClass(node.attributes.href, node.id);
+				}
+			}
+		}
         Ext.get('loading').remove();
         Ext.get('loading-mask').fadeOut({remove:true});
     }, 250);
