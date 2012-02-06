@@ -148,6 +148,8 @@ public class Grid extends GridColumn {
 			return this.getFirstChild(child.getClass()) == null;
 		else if (child instanceof GridSelectionCol)
 			return true;
+		else if(child instanceof Grid)
+			return false;
 		return super.isResponsibleChild(child);
 	}
 
