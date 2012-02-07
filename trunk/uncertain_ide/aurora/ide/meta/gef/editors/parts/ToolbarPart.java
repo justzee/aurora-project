@@ -6,7 +6,6 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 
 import aurora.ide.meta.gef.editors.figures.ToolbarFigure;
-import aurora.ide.meta.gef.editors.models.Button;
 import aurora.ide.meta.gef.editors.models.IProperties;
 
 public class ToolbarPart extends ContainerPart {
@@ -25,11 +24,11 @@ public class ToolbarPart extends ContainerPart {
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (IProperties.CHILDREN.equals(prop)) {
-			//TODO only test
-			Object newValue = evt.getNewValue();
-			if (newValue instanceof Button) {
-				((Button) newValue).setButtonType(Button.ADD);
-			}
+			// TODO only test
+			// Object newValue = evt.getNewValue();
+			// if (newValue instanceof Button) {
+			// ((Button) newValue).setButtonType(Button.ADD);
+			// }
 		}
 		super.propertyChange(evt);
 	}
