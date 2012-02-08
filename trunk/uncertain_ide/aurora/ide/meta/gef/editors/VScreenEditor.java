@@ -183,7 +183,8 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 	}
 
 	private void createScreen() {
-		ScreenGenerator.genFile(this.diagram);
+		ScreenGenerator sg = new ScreenGenerator();
+		sg.genFile(this.diagram);
 
 		
 

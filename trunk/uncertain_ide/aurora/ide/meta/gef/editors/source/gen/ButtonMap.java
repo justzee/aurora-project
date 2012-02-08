@@ -44,7 +44,8 @@ public class ButtonMap extends AbstractComponentMap {
 	}
 
 	public boolean isCompositMapKey(String key) {
-		return true;
+		boolean equals = Button.BUTTON_CLICKER.equals(key);
+		return equals == false;
 	}
 
 }
