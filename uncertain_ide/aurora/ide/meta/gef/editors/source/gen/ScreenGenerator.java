@@ -1,9 +1,16 @@
 package aurora.ide.meta.gef.editors.source.gen;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.ButtonClicker;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.Dataset;
 import aurora.ide.meta.gef.editors.models.Grid;
@@ -13,73 +20,142 @@ import aurora.ide.meta.gef.editors.models.ViewDiagram;
 
 public class ScreenGenerator {
 
-	public static void genFile(ViewDiagram root) {
+	private IDGenerator idGenerator;
+	private AuroraComponent2CompositMap a2Map;
+	private ScriptGenerator scriptGenerator;
+
+	public void genFile(ViewDiagram root) {
+		idGenerator = new IDGenerator(root);
+		a2Map = new AuroraComponent2CompositMap(this);
 		CompositeMap screen = AuroraComponent2CompositMap
 				.createScreenCompositeMap();
-		CompositeMap view = AuroraComponent2CompositMap.toCompositMap(root);
-		CompositeMap script = createCompositeMap("script");
+		CompositeMap view = a2Map.toCompositMap(root);
+		CompositeMap script = view.createChild("script");
 		CompositeMap datasets = createCompositeMap("datasets");
 		CompositeMap screenBody = createCompositeMap("screenBody");
 		screen.addChild(view);
-		view.addChild(script);
+//		view.addChild(script);
 		view.addChild(datasets);
 		view.addChild(screenBody);
 
+		scriptGenerator = new ScriptGenerator(this, script);
 		fill(root, screenBody, datasets);
 
+		fillLinks(view);
+		script.setText(	scriptGenerator.getScript());
 		System.out.println(screen.toXML());
 
 	}
 
-	static public CompositeMap createCompositeMap(String name) {
+	private void fillLinks(CompositeMap view) {
+		Map<ButtonClicker, String> linkIDs = scriptGenerator.getLinkIDs();
+		Set<ButtonClicker> keySet = linkIDs.keySet();
+		for (ButtonClicker bc : keySet) {
+			String openPath = bc.getOpenPath();
+			IPath requestPath = new Path("${/request/@context_path}");
+			IPath path = requestPath.append(openPath);
+			CompositeMap link = createCompositeMap("link");
+			link.put("url", path.toString());
+			link.put("id", linkIDs.get(bc));
+			view.addChild(0, link);
+		}
+	}
+
+	public CompositeMap createCompositeMap(String name) {
 		return AuroraComponent2CompositMap.createChild(name);
 	}
 
-	protected static void fill(Container root, CompositeMap parent,
+	public String genEditorID(String editorType) {
+		return idGenerator.genEditorID(editorType);
+	}
+
+	protected void fill(Container root, CompositeMap parent,
 			CompositeMap datasets) {
 
 		List<AuroraComponent> children = root.getChildren();
 		for (AuroraComponent ac : children) {
-			CompositeMap child = AuroraComponent2CompositMap.toCompositMap(ac);
+			CompositeMap child = a2Map.toCompositMap(ac);
 			if (child == null) {
 				System.out.println(ac.getType());
 				continue;
 			}
-
 			if (ac instanceof GridColumn && root instanceof Grid) {
-				CompositeMap columns = parent.getChild("columns");
-				if (columns == null) {
-					columns = createCompositeMap("columns");
-					parent.addChild(columns);
-				}
+				CompositeMap columns = getColumns(parent);
+				genColumnEditor((GridColumn) ac, child, parent);
 				columns.addChild(child);
 			} else {
 				parent.addChild(child);
+			}
+			if (ac instanceof Button) {
+				fillButton((Button) ac, child);
 			}
 			if (ac instanceof Container) {
 				fill((Container) ac, child, datasets);
 				fillDatasets((Container) ac, datasets);
 			}
 			if (ac instanceof Input || ac instanceof Grid) {
-
 				bindDataset(root, ac, child, datasets);
 			}
 		}
 	}
 
-	private static void fillDatasets(Container ac, CompositeMap datasets) {
+	public void fillButton(Button ac, CompositeMap buttonMap) {
+		ButtonClicker bc = ((Button) ac).getButtonClicker();
+		String functionName = this.scriptGenerator.genButtonClicker(bc);
+		buttonMap.put("click", functionName);
+	}
+
+	private void genColumnEditor(GridColumn ac, CompositeMap colmunMap,
+			CompositeMap gridMap) {
+		CompositeMap editors = getEditors(gridMap);
+		String editorType = ac.getEditor();
+		if (editorType != null && !("".equals(editorType))) {
+			CompositeMap editorMap = editors.getChild(editorType);
+			if (editorMap == null) {
+				editorMap = createCompositeMap(editorType);
+				String id = genEditorID(editorType);
+				editorMap.put("id", id);
+				editors.addChild(editorMap);
+			}
+			colmunMap.put("editor", editorMap.get("id"));
+		}
+	}
+
+	// <a:editors>
+	// <a:textField id="editor_tf_2"/>
+	// <a:datePicker id="editor_dp_2"/>
+	// <a:comboBox id="editor_cb_2"/>
+	// <a:lov id="editor_lov_2"/>
+	// </a:editors>
+	public CompositeMap getEditors(CompositeMap gridMap) {
+		CompositeMap editors = gridMap.getChild("editors");
+		if (editors == null) {
+			editors = createCompositeMap("editors");
+			gridMap.addChild(editors);
+		}
+		return editors;
+	}
+
+	public CompositeMap getColumns(CompositeMap gridMap) {
+		CompositeMap columns = gridMap.getChild("columns");
+		if (columns == null) {
+			columns = createCompositeMap("columns");
+			gridMap.addChild(columns);
+		}
+		return columns;
+	}
+
+	private void fillDatasets(Container ac, CompositeMap datasets) {
 		Dataset dataset = ac.getDataset();
 		fillDatasets(datasets, dataset);
 	}
 
-	public static CompositeMap fillDatasets(CompositeMap datasets,
-			Dataset dataset) {
+	public CompositeMap fillDatasets(CompositeMap datasets, Dataset dataset) {
 		if (dataset == null || dataset.isUseParentBM())
 			return null;
 		CompositeMap dsMap = datasets.getChildByAttrib("id", dataset.getId());
 		if (dsMap == null) {
-			CompositeMap rds = AuroraComponent2CompositMap
-					.toCompositMap(dataset);
+			CompositeMap rds = a2Map.toCompositMap(dataset);
 			datasets.addChild(rds);
 			return rds;
 		}
@@ -88,7 +164,7 @@ public class ScreenGenerator {
 	}
 
 	// columns
-	private static void bindDataset(Container root, AuroraComponent ac,
+	private void bindDataset(Container root, AuroraComponent ac,
 			CompositeMap child, CompositeMap datasets) {
 		if (ac instanceof Grid || ac instanceof Input) {
 			Dataset dataset = null;
@@ -108,7 +184,7 @@ public class ScreenGenerator {
 		}
 	}
 
-	private static void fillDataset(Dataset dataset, CompositeMap datasets,
+	private void fillDataset(Dataset dataset, CompositeMap datasets,
 			AuroraComponent ac) {
 		CompositeMap dsMap = fillDatasets(datasets, dataset);
 		if (dsMap == null) {
@@ -139,7 +215,7 @@ public class ScreenGenerator {
 
 	}
 
-	static private Dataset findDataset(Container container) {
+	private Dataset findDataset(Container container) {
 		Dataset dataset = container.getDataset();
 		if (dataset == null)
 			return null;
@@ -148,6 +224,10 @@ public class ScreenGenerator {
 			return findDataset(container.getParent());
 		}
 		return dataset;
+	}
+
+	public IDGenerator getIdGenerator() {
+		return idGenerator;
 	}
 
 	// IFile newFileHandle = AuroraPlugin.getWorkspace().getRoot()

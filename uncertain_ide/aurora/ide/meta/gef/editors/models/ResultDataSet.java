@@ -18,11 +18,11 @@ public class ResultDataSet extends Dataset {
 	public static final String SELECT_NONE = "";
 	public static final String SELECT_MULTI = "multiple";
 	public static final String SELECT_SINGLE = "single";
-	public static final String SELECTION_MODE = "selectionMode";
+	public static final String SELECTION_MODE = "selectionModel";
 	private static final String[] selectionModes = { SELECT_NONE, SELECT_MULTI,
 			SELECT_SINGLE };
 	private static final IPropertyDescriptor PD_SELECTION_MODE = new ComboPropertyDescriptor(
-			SELECTION_MODE, "SelectionMode", selectionModes);
+			SELECTION_MODE, "SelectionModel", selectionModes);
 
 	private QueryContainer queryContainer = new QueryContainer();
 	public static final String QUERY_CONTAINER = "queryContainer";

@@ -916,4 +916,12 @@
              description="新建一个空白文件">
        </template>
     </extension>
+    <extension point="org.eclipse.ui.ide.projectNatureImages">
+  		<image 
+  		 id="aurora.project.natureimage"
+    	 natureId="aurora.ide.auroranature"
+    	 icon="icons/aurora8x8.png">
+  		</image>
+ 	</extension>
+    
 </plugin>

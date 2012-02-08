@@ -1,16 +1,16 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.ButtonClickEditDialog;
-import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.DialogPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
-
 import java.util.Arrays;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.ButtonClickEditDialog;
+import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.DialogPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class Button extends AuroraComponent {
 	/**
@@ -124,6 +124,12 @@ public class Button extends AuroraComponent {
 		return title;
 	}
 
+	
+	/**
+	 * 
+	 * @deprecated
+	 * @return
+	 */
 	public AuroraComponent getTargetComponent() {
 		return targetComponent;
 	}

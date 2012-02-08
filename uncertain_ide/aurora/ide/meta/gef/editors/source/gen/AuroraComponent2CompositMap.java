@@ -24,8 +24,15 @@ public class AuroraComponent2CompositMap {
 				"http://www.aurora-framework.org/application");
 		return screen;
 	}
-	private AuroraComponent2CompositMap(){
-		
+
+	private ScreenGenerator screenGenerator;
+
+	private AuroraComponent2CompositMap() {
+
+	}
+
+	public AuroraComponent2CompositMap(ScreenGenerator screenGenerator) {
+		this.screenGenerator = screenGenerator;
 	}
 
 	static public CompositeMap createChild(String name) {
@@ -34,27 +41,27 @@ public class AuroraComponent2CompositMap {
 		return node;
 	}
 
-	static public CompositeMap toCompositMap(AuroraComponent c) {
+	public CompositeMap toCompositMap(AuroraComponent c) {
 		if (c instanceof Input) {
-			return new InputMap((Input)c).toCompositMap();
+			return new InputMap((Input) c).toCompositMap();
 		}
 		if (c instanceof Button) {
 			return new ButtonMap((Button) c).toCompositMap();
 		}
 		if (c instanceof BOX) {
-			return new BoxMap((BOX)c).toCompositMap();
+			return new BoxMap((BOX) c).toCompositMap();
 		}
 		if (c instanceof CheckBox) {
-			return new CheckBoxMap((CheckBox)c).toCompositMap();
+			return new CheckBoxMap((CheckBox) c).toCompositMap();
 		}
 		if (c instanceof Grid) {
 			return new GridMap((Grid) c).toCompositMap();
 		}
-		if(c instanceof GridSelectionCol){
+		if (c instanceof GridSelectionCol) {
 			return null;
 		}
 		if (c instanceof GridColumn) {
-			return new GridColumnMap((GridColumn) c).toCompositMap();
+			return new GridColumnMap((GridColumn) c,screenGenerator).toCompositMap();
 		}
 		if (c instanceof Dataset) {
 			return new DatasetMap((Dataset) c).toCompositMap();
@@ -70,7 +77,7 @@ public class AuroraComponent2CompositMap {
 			return new TabFolderMap((TabFolder) c).toCompositMap();
 		}
 		if (c instanceof ViewDiagram) {
-			return createChild("view"); 
+			return createChild("view");
 		}
 
 		return null;

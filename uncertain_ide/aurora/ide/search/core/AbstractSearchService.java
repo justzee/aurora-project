@@ -286,8 +286,9 @@ abstract public class AbstractSearchService implements ISearchService {
 					if (monitor.isCanceled())
 						return result;
 					fCurrentFile = (IFile) files.get(i);
-//					if ("check_uploadFile.screen".equals(fCurrentFile.getName())) {
+//					if ("ebs_gl_account_rule_doc_types.screen".equals(fCurrentFile.getName())) {
 //						System.out.println();
+////						ebs_gl_account_rule_doc_types.screen  bgt_journal_query_headers.bm
 //					}
 					try {
 						result.addAll(processFile(fCurrentFile));

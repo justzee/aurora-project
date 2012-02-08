@@ -69,7 +69,7 @@ public class GridColumn extends RowCol {
 	 * 仅允许增加 GridColumn
 	 * */
 	public boolean isResponsibleChild(AuroraComponent child) {
-		return child instanceof GridColumn;
+		return child.getClass().equals(GridColumn.class);
 	}
 
 	@Override
