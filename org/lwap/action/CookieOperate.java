@@ -42,8 +42,11 @@ public class CookieOperate extends AbstractEntry implements IConfigurable {
             throw new ConfigurationError("Must set 'value' property");
         name = TextParser.parse(name, context);
         value = TextParser.parse(value, context);
-        HttpServletResponse response = svc.getResponse();
+        HttpServletResponse response = svc.getResponse();       
         Cookie cookie = new Cookie(name, value);
+        String path = svc.getRequest().getContextPath();
+		path = (path == null || path.length()==0) ? "/" : path;
+		cookie.setPath(path);
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);        
     }
