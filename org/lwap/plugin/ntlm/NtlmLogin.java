@@ -38,7 +38,7 @@ public class NtlmLogin extends AbstractServiceHandle {
 		boolean is_access=true;
 		is_access=checkSession(service);
 		if (is_access) {
-			if(context.getObject("/cookie/@JSID/@value")!=null&&!"Y".equals(context.getObject("/cookie/@IS_NTLM/@value"))){
+			if((context.getObject("/cookie/@JSID/@value")!=null&&!"0".equals(context.getObject("/cookie/@JSID/@value")))&&!"Y".equals(context.getObject("/cookie/@IS_NTLM/@value"))){
 				//如果超时，且没有域登陆过，跳过验证
 				return EventModel.HANDLE_NORMAL;
 			}
