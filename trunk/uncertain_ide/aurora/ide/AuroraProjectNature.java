@@ -1,5 +1,7 @@
 package aurora.ide;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -7,7 +9,11 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import aurora.ide.builder.AuroraBuilder;
@@ -61,7 +67,7 @@ public class AuroraProjectNature implements IProjectNature {
 		this.project = project;
 	}
 
-	public static void addAuroraNature(IProject project) throws CoreException {
+	public static void addAuroraNature(final IProject project) throws CoreException {
 		if (project.hasNature(ID))
 			return;
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -74,13 +80,32 @@ public class AuroraProjectNature implements IProjectNature {
 				break;
 			}
 		}
-		IProjectDescription description = project.getDescription();
-		String[] ids = description.getNatureIds();
-		String[] newIds = new String[ids.length + 1];
-		System.arraycopy(ids, 0, newIds, 0, ids.length);
-		newIds[ids.length] = ID;
-		description.setNatureIds(newIds);
-		project.setDescription(description, null);
+		
+		 IRunnableWithProgress runnable = new IRunnableWithProgress() {
+	            public void run(IProgressMonitor monitor)
+	                    throws InvocationTargetException {
+	                try {
+	                	IProjectDescription description = project.getDescription();
+	            		String[] ids = description.getNatureIds();
+	            		String[] newIds = new String[ids.length + 1];
+	            		System.arraycopy(ids, 0, newIds, 0, ids.length);
+	            		newIds[ids.length] = ID;
+	            		description.setNatureIds(newIds);
+	            		project.setDescription(description, null);
+	                   
+	                } catch (CoreException e) {
+	                    throw new InvocationTargetException(e);
+	                }
+	            }
+	        };
+	        IProgressService service = PlatformUI.getWorkbench().getProgressService();
+	        try {
+	            service.run(false, false, runnable);
+	        } catch (InterruptedException e) {
+	            //Ignore interrupted exceptions
+	        } catch (InvocationTargetException e) {
+	            return;
+	        }
 	}
 
 	public static void removeAuroraNature(IProject project)
