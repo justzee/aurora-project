@@ -5,6 +5,7 @@ import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
+import aurora.ide.AuroraMetaProjectNature;
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.DialogUtil;
 
@@ -16,14 +17,20 @@ public class ProjectNatureTester extends PropertyTester {
 		
 		if (!(receiver instanceof IProject))
 			return false;
-		IProject proejct = (IProject)receiver;
-		if(!proejct.isOpen())
+		IProject project = (IProject)receiver;
+		if(!project.isOpen())
 			return false;
 		if(args == null ||args.length<1)
 			return false;
 		Object arg = args[0];
 		try {
-			return arg.equals(new Boolean(AuroraProjectNature.hasAuroraNature(proejct)));
+			boolean hasAuroraNature = AuroraProjectNature.hasAuroraNature(project);
+			if(hasAuroraNature)
+				return true;
+			if(AuroraMetaProjectNature.hasAuroraNature(project)){
+				return false;
+			}
+			return arg.equals(new Boolean(hasAuroraNature));
 		} catch (CoreException e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return false;
