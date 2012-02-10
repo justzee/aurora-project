@@ -165,7 +165,7 @@ public class BusinessModelPage extends CompositeMapPage {
 		bmDescGroup.setLayout(new FillLayout());
 		bmDescGroup.setText("本BM功能描述");
 		final StyledText bmDescSt = new StyledText(bmDescGroup, SWT.MULTI | SWT.WRAP | SWT.BORDER);
-		final String bmDesc = "descripiton";
+		final String bmDesc = "description";
 		CompositeMap bmCm = data.getChild(bmDesc);
 		if (bmCm != null) {
 			String desc = bmCm.getText();
