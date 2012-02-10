@@ -1,6 +1,0 @@
-<?xml version="1.0" ?>
-<procedure xmlns="uncertain.proc">
-	<action Name="PrepareSession" />
-	<action Name="CheckSession" />
-	<action Name="CheckAccess" />
-</procedure>
