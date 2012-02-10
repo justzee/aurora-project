@@ -8,11 +8,13 @@ import aurora.ide.builder.processor.DataSetProcessor;
 import aurora.ide.builder.processor.ForeignFieldProcessor;
 import aurora.ide.builder.processor.ScreenProcessor;
 import aurora.ide.builder.processor.SxsdProcessor;
+import aurora.ide.builder.processor.UncertainNsProcessor;
 
 public class ScreenValidator extends AbstractValidator {
 	private AbstractProcessor[] aps = new AbstractProcessor[] {
 			new BmProcessor(), new DataSetProcessor(), new ScreenProcessor(),
-			new ForeignFieldProcessor(), new SxsdProcessor() };
+			new ForeignFieldProcessor(), new SxsdProcessor(),
+			new UncertainNsProcessor() };
 
 	public ScreenValidator(IFile file) {
 		super(file);

@@ -121,13 +121,10 @@ public class QuickFixInformationControl extends AbstractInformationControl
 	}
 
 	private int guessWidth(Control ctr, String msg) {
-		double w = 10;
 		GC gc = new GC(ctr);
-		for (char c : msg.toCharArray()) {
-			w += gc.getCharWidth(c) * 1.1;
-		}
+		Point pt = gc.stringExtent(msg);
 		gc.dispose();
-		return (int) w;
+		return pt.x;
 	}
 
 	public boolean hasContents() {

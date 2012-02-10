@@ -1,7 +1,9 @@
 package aurora.ide.editor.textpage.hover;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -66,8 +68,10 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 		CompositeMapInfo info = new CompositeMapInfo(cursorMap, doc);
 		if (hoverRegion.equals(info.getMapNameRegion())
 				|| hoverRegion.equals(info.getMapEntTagNameRegion())) {
+			// 如果悬浮位置为Tag name...
 			return html(SxsdUtil.getHtmlDocument(cursorMap));
 		} else {
+			// ////如果悬浮位置为属性.....
 			@SuppressWarnings("unchecked")
 			Set<String> keySet = cursorMap.keySet();
 			for (String key : keySet) {
@@ -77,7 +81,28 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 				}
 				region = info.getAttrValueRegion2(key);
 				if (RegionUtil.isSubRegion(region, hoverRegion)) {
-					return html(cursorMap.getString(key));
+					// return html(cursorMap.getString(key));
+					return html("<pre>" + cursorMap.getString(key) + "</pre>");
+				}
+			}
+			// ////如果悬浮位置为namespace申明.....
+			@SuppressWarnings("unchecked")
+			Map<String, String> nsMap = cursorMap.getNamespaceMapping();
+			Map<String, String> reverseNsMap = new HashMap<String, String>();
+			if (nsMap != null)
+				for (String key : nsMap.keySet()) {
+					reverseNsMap.put(nsMap.get(key), key);
+				}
+			for (String key : reverseNsMap.keySet()) {
+				String realKey = "xmlns:" + key;
+				IRegion region = info.getAttrNameRegion(realKey);
+				if (RegionUtil.isSubRegion(region, hoverRegion)) {
+					return html("XML Namespace : " + key + "   ");
+				}
+				region = info.getAttrValueRegion2(realKey);
+				if (RegionUtil.isSubRegion(region, hoverRegion)) {
+					return html("<pre>" + info.getAttrRealValue(realKey)
+							+ "</pre>");
 				}
 			}
 		}
