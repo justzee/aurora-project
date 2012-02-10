@@ -78,14 +78,14 @@ public class CreateMetaProjectWizard extends BasicNewProjectResourceWizard {
 				initializeDialogUnits(parent);
 				composite.setLayout(new GridLayout());
 				composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-				
+
 				Composite projectGroup = new Composite(composite, SWT.NONE);
 				GridLayout layout = new GridLayout();
 				layout.numColumns = 2;
 				projectGroup.setLayout(layout);
 				projectGroup.setLayoutData(new GridData(
 						GridData.FILL_HORIZONTAL));
-				
+
 				createProjectNameGroup(projectGroup);
 				createAruoraProjectNameGroup(projectGroup);
 
@@ -105,7 +105,6 @@ public class CreateMetaProjectWizard extends BasicNewProjectResourceWizard {
 			 */
 			private final void createProjectNameGroup(Composite projectGroup) {
 				// project specification group
-				
 
 				// new project label
 				Label projectLabel = new Label(projectGroup, SWT.NONE);
@@ -127,9 +126,9 @@ public class CreateMetaProjectWizard extends BasicNewProjectResourceWizard {
 				projectNameField.addListener(SWT.Modify, nameModifyListener);
 			}
 
-			private final void createAruoraProjectNameGroup(Composite projectGroup) {
+			private final void createAruoraProjectNameGroup(
+					Composite projectGroup) {
 				// project specification group
-				
 
 				// new project label
 				Label projectLabel = new Label(projectGroup, SWT.NONE);
@@ -262,14 +261,16 @@ public class CreateMetaProjectWizard extends BasicNewProjectResourceWizard {
 				setMessage(null);
 				return true;
 			}
-			   public boolean useDefaults() {
-			        return true;
-			    }
+
+			public boolean useDefaults() {
+				return true;
+			}
+
 			/*
 			 * see @DialogPage.setVisible(boolean)
 			 */
 			public void setVisible(boolean visible) {
-//				super.setVisible(visible);
+				// super.setVisible(visible);
 				this.getControl().setVisible(visible);
 				if (visible) {
 					projectNameField.setFocus();
@@ -285,8 +286,11 @@ public class CreateMetaProjectWizard extends BasicNewProjectResourceWizard {
 	public IProject getAuroraProjectHandle() {
 		if (auroraProjectNameField == null)
 			return null;
-		return ResourcesPlugin.getWorkspace().getRoot()
-				.getProject(auroraProjectNameField.getText().trim());
+		String trim = auroraProjectNameField.getText().trim();
+		if ("".equals(trim)) {
+			return null;
+		}
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(trim);
 	}
 
 	public boolean performFinish() {
@@ -297,8 +301,12 @@ public class CreateMetaProjectWizard extends BasicNewProjectResourceWizard {
 		}
 		createFolders();
 		copyTemplateFile();
+
+		IProject auroraProjectHandle = this.getAuroraProjectHandle();
+		String name = auroraProjectHandle == null ? "" : auroraProjectHandle
+				.getName();
+		MetaProjectPropertyPage.savePersistentProperty(newProject, name);
 		
-		MetaProjectPropertyPage.savePersistentProperty(newProject, this.getAuroraProjectHandle().getName());
 		updatePerspective();
 		selectAndReveal(newProject);
 
