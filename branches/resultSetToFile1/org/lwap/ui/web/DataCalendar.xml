@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by guest (guest) -->
+<?xml-stylesheet type="text/xsl" href="C:\Documents and Settings\zhoufan\My Documents\component.xslt"?>
+<object name="DataCalendar">
+<!--
+	<attrib name="CellWidth" datatype="String"/>
+	<attrib name="CellHeight" datatype="String"/>
+	<attrib name="CellClass" datatype="String"/>
+	<attrib name="HeadClass" datatype="String"/>
+	<attrib name="BodyClass" datatype="String"/>
+	<attrib name="Month" datatype="Integer"/>
+	<attrib name="Year" datatype="Integer"/>
+	<attrib name="Date" datatype="Date"/>
+-->
+	<attrib name="DisplayOtherMonth" datatype="Boolean" />	
+	<attrib name="StartingDateField" datatype="String" />	
+
+</object>
