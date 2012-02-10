@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<p:procedure xmlns:p="uncertain.proc" participants="aurora.service.exception.ExceptionHandler">
+	<p:action Name="BeginService" />
+	<p:action Name="ParseParameter" />
+	<p:action Name="PrepareService" />
+	<p:action Name="CheckPrivilege" />
+	<p:action Name="DoAction" />	
+	<p:action name="CreateSuccessResponse" />
+	<exception-handles>
+		<p:catch Exception="*">
+			<p:action name="HandleException" />
+			<p:action name="CreateFailResponse" />
+		</p:catch>
+	</exception-handles>	
+</p:procedure>
