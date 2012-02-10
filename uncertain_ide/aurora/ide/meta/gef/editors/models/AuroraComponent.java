@@ -1,33 +1,34 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.IPropertySource2;
-import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.UUID;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
+import aurora.ide.meta.gef.editors.property.IPropertySource2;
+import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
+
 public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		IPropertySource2 {
 
+	/**
+	 * 此id仅用于存储xml时标记引用关系,以便读取时根据引用关系重新建立引用关系
+	 */
+	public transient String markid = Integer.toHexString(UUID.randomUUID()
+			.toString().hashCode());
 	transient protected PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
 	static final long serialVersionUID = 1;
 
-	private Point location = new Point();
-
-	private Dimension size = new Dimension();
-
-	private Rectangle bounds = new Rectangle(location, size);
+	private Rectangle bounds = new Rectangle();
 
 	private String name = "";
 
@@ -75,31 +76,29 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	}
 
 	public void setLocation(Point p) {
-		if (eq(this.location, p)) {
+		Point oldLoc = getLocation();
+		if (eq(oldLoc, p)) {
 			return;
 		}
-		Point old = this.location;
-		this.location = p;
-		this.bounds.setLocation(p);
-		firePropertyChange(LOCATION, old, p);
+		bounds.setLocation(p);
+		firePropertyChange(LOCATION, oldLoc, p);
 	}
 
 	public Point getLocation() {
-		return location;
+		return bounds.getLocation();
 	}
 
 	public Dimension getSize() {
-		return size;
+		return bounds.getSize();
 	}
 
 	public void setSize(Dimension size) {
-		if (eq(this.size, size)) {
+		Dimension oldSize = getSize();
+		if (eq(oldSize, size)) {
 			return;
 		}
-		Dimension old = this.size;
-		this.size = size;
 		this.bounds.setSize(size);
-		firePropertyChange(SIZE, old, size);
+		firePropertyChange(SIZE, oldSize, size);
 	}
 
 	public Rectangle getBounds() {
@@ -112,10 +111,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 		}
 		Rectangle old = this.bounds;
 		this.bounds = bounds;
-		this.location = bounds.getLocation();
-		this.size = bounds.getSize();
 		firePropertyChange(BOUNDS, old, bounds);
-
 	}
 
 	public String getName() {
@@ -207,7 +203,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	public void setPropertyValue(Object propName, Object val) {
 
 		if (PROMPT.equals(propName))
-			this.setPrompt(val.toString());
+			this.setPrompt((String) val);
 		else if (WIDTH.equals(propName))
 			setSize(new Dimension((Integer) val, getSize().height));
 		else if (HEIGHT.equals(propName))
