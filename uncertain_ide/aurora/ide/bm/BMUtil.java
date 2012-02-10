@@ -53,7 +53,7 @@ public class BMUtil {
 		if(file == null)
 			return null;
 		CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
-		final String bmDescNodeName = "descripiton";
+		final String bmDescNodeName = "description";
 		if(bm == null)
 			return null;
 		if (!bm.getQName().getLocalName().equals(AuroraConstant.ModelQN.getLocalName())){
