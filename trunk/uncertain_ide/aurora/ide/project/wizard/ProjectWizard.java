@@ -1,6 +1,9 @@
 package aurora.ide.project.wizard;
 
 
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
@@ -29,6 +32,6 @@ public class ProjectWizard extends BasicNewProjectResourceWizard {
 	}
 
 	public void createPageControls(Composite pageContainer) {
-		// super.createPageControls(pageContainer);
+		 super.createPageControls(pageContainer);
 	}
 }

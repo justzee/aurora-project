@@ -1,9 +1,15 @@
 package aurora.ide;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -170,5 +176,8 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 			section = dialogSettings.addNewSection(name);
 		}
 		return section;
+	}
+	public static InputStream openFileStream(String path) throws IOException {
+		return FileLocator.openStream(Platform.getBundle(PLUGIN_ID), new Path(path), false);
 	}
 }

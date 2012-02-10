@@ -16,6 +16,7 @@ import aurora.ide.meta.gef.editors.models.Dataset;
 import aurora.ide.meta.gef.editors.models.Grid;
 import aurora.ide.meta.gef.editors.models.GridColumn;
 import aurora.ide.meta.gef.editors.models.Input;
+import aurora.ide.meta.gef.editors.models.Toolbar;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
 
 public class ScreenGenerator {
@@ -100,6 +101,9 @@ public class ScreenGenerator {
 	}
 
 	public void fillButton(Button ac, CompositeMap buttonMap) {
+		if(ac.getParent() instanceof Toolbar){
+			return;
+		}
 		ButtonClicker bc = ((Button) ac).getButtonClicker();
 		String functionName = this.scriptGenerator.genButtonClicker(bc);
 		buttonMap.put("click", functionName);

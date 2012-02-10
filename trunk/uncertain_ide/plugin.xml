@@ -3,13 +3,18 @@
 <plugin>
    <extension-point id="template.wizard" name="Template Wizard" schema="schema/aurora.ide.meta.gef.template.exsd"/>
     <extension point="org.eclipse.ui.newWizards">
+        <category id="aurora.ide.wizard" name="%category.name">
+        </category>
         <wizard category="aurora.ide.wizard" 
             class="aurora.ide.project.wizard.ProjectWizard" 
             finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
             icon="icons/aurora.gif" id="aurora.ide.wizard.ProjectWizard" 
             name="%aurora.project" project="true"/>
-        <category id="aurora.ide.wizard" name="%category.name">
-        </category>
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.project.wizard.CreateMetaProjectWizard" 
+            finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
+            icon="icons/aurora.gif" id="aurora.ide.wizard.meta.ProjectWizard" 
+            name="Aurora 原型工程" project="true"/>
         <wizard category="aurora.ide.wizard" 
             class="aurora.ide.screen.wizard.ServiceNewWizard" 
             icon="icons/service.gif" id="aurora.ide.wizard.ServiceNewWizard" 
@@ -472,6 +477,15 @@
          objectClass="org.eclipse.core.resources.IProject">
       	<filter name="nature" value="aurora.ide.auroranature"/>
 	  </page>
+	  <page
+         adaptable="true"
+         class="aurora.ide.project.propertypage.MetaProjectPropertyPage"
+         icon="icons/aurora.gif"
+         id="aurora.ide.meta.project.property"
+         name="Meta Aurora工程设置"
+         objectClass="org.eclipse.core.resources.IProject">
+         <filter name="nature" value="aurora.ide.meta.nature"/>
+	  </page>
 	</extension>
 	<extension  
       point="org.eclipse.ui.editors.annotationTypes">  
@@ -576,6 +590,15 @@
        <builder
              id="aurora.ide.auroraBuilder">
        </builder>
+    </extension>
+    <extension  
+      id="meta.nature"  
+      point="org.eclipse.core.resources.natures">  
+       <runtime>  
+          <run  
+                class="aurora.ide.AuroraMetaProjectNature">  
+          </run>  
+       </runtime>
     </extension>
 
     <extension id="auroraBuilder" name="Aurora Project Builder" 
@@ -832,6 +855,9 @@
           targetID="aurora.ide.perspectives.AuroraPerspective">
        <newWizardShortcut
              id="aurora.ide.wizard.ProjectWizard">
+       </newWizardShortcut>
+       <newWizardShortcut
+             id="aurora.ide.wizard.meta.ProjectWizard">
        </newWizardShortcut>
        <newWizardShortcut
              id="aurora.ide.wizard.ServiceNewWizard">

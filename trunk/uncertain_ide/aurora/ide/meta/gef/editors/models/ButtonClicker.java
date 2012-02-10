@@ -30,8 +30,8 @@ public class ButtonClicker extends AuroraComponent implements
 	public static final String[] action_texts = { "查询", "重置", "保存", "打开", "关闭",
 			"运行", "自定义" };
 
-	private String actionID = action_ids[0];
-	private String actionText = action_texts[0];
+	private String actionID = action_ids[5];
+	private String actionText = action_texts[5];
 
 	// b_open
 	private String openPath;
