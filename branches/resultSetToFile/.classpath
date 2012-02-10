@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="G:/Java/JfreeChart/jfreechart-0.9.19.jar"/>
+	<classpathentry kind="lib" path="G:/Java/JfreeChart/jcommon-0.9.4.jar"/>
+	<classpathentry kind="lib" path="G:/Java/lib/servlet.jar"/>
+	<classpathentry kind="lib" path="G:/Java/lib/classes12.jar"/>
+	<classpathentry kind="lib" path="G:/Java/lib/freemarker.jar"/>
+	<classpathentry kind="lib" path="G:/Java/commons-fileupload/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="G:/Java/junit/junit.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
