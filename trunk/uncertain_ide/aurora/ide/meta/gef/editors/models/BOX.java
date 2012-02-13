@@ -61,7 +61,9 @@ public class BOX extends RowCol {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		// return pds;
+		return mergePropertyDescriptor(pds, getDataset()
+				.getPropertyDescriptors());
 	}
 
 	@Override
@@ -74,6 +76,11 @@ public class BOX extends RowCol {
 			return getTitle();
 		else if (LABELWIDTH.equals(propName))
 			return getLabelWidth();
+		else {
+			Object obj = getDataset().getPropertyValue(propName);
+			if (obj != null)
+				return obj;
+		}
 		return super.getPropertyValue(propName);
 	}
 
@@ -87,6 +94,11 @@ public class BOX extends RowCol {
 			setTitle((String) val);
 		else if (LABELWIDTH.equals(propName))
 			setLabelWidth((Integer) val);
+		else {
+			Object obj = getDataset().getPropertyValue(propName);
+			if (obj != null)
+				getDataset().setPropertyValue(propName, val);
+		}
 		super.setPropertyValue(propName, val);
 	}
 

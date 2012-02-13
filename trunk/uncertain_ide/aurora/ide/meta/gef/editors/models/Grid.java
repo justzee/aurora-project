@@ -1,13 +1,13 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
 
 public class Grid extends GridColumn {
 
@@ -183,4 +183,5 @@ public class Grid extends GridColumn {
 			setSelectionMode(getDataset().getSelectionMode());
 		}
 	}
+
 }

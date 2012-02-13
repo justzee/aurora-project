@@ -1,11 +1,14 @@
 package aurora.ide.meta.gef.editors.models.commands;
 
-import aurora.ide.meta.gef.editors.models.AuroraComponent;
-import aurora.ide.meta.gef.editors.models.Container;
-
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
+
+import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.Button;
+import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.Input;
+import aurora.ide.meta.gef.editors.models.TabBody;
 
 /**
  */
@@ -21,6 +24,20 @@ public class CreateComponentCommand extends Command {
 
 	public void setChild(AuroraComponent child) {
 		this.child = child;
+	}
+
+	public boolean canExecute() {
+		if (child instanceof TabBody)
+			return false;
+		String sType = container.getSectionType();
+		if (Container.SECTION_TYPE_QUERY.equals(sType)) {
+			if (!(child instanceof Input))
+				return false;
+		} else if (Container.SECTION_TYPE_BUTTON.equals(sType)) {
+			if (!(child instanceof Button))
+				return false;
+		}
+		return true;
 	}
 
 	public void execute() {

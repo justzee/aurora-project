@@ -107,22 +107,23 @@ public class GridLayoutEditPolicy extends FlowLayoutEditPolicy {
 		if (getHost() == null)
 			return null;
 		MoveRemoteChildCmpCmd cmd = new MoveRemoteChildCmpCmd();
-		cmd.setEditPartToMove(child);
+		cmd.setComponentToMove((AuroraComponent) child.getModel());
 		if (getHost().getModel() instanceof Container) {
 			Container dest = (Container) getHost().getModel();
 			AuroraComponent ac = (AuroraComponent) child.getModel();
 			if (!dest.isResponsibleChild(ac))
 				return null;
-			EditPart host = getHost();
+			// EditPart host = getHost();
 			// if (host instanceof GridColumnPart)
 			// System.out.println("createAddCommand:GridColumnPart  "
 			// + ((GridColumnPart) host).getModel().getPrompt());
 			// else
 			// System.out.println("createAddCommand:"
 			// + host.getClass().getSimpleName());
-			cmd.setTargetContainer(host);
+			cmd.setTargetContainer(dest);
 		}
-		cmd.setReferenceEditPart(after);
+		cmd.setReferenceComponent(after == null ? null
+				: (AuroraComponent) after.getModel());
 		return cmd;
 	}
 

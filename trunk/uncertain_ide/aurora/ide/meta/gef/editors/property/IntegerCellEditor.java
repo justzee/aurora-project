@@ -40,6 +40,10 @@ public class IntegerCellEditor extends CellEditor implements FocusListener,
 		fireApplyEditorValue();
 	}
 
+	public void setReadOnly(boolean readOnly) {
+		spinner.setEnabled(!readOnly);
+	}
+
 	@Override
 	protected Control createControl(Composite parent) {
 		spinner = new Spinner(parent, SWT.NONE);
@@ -50,10 +54,6 @@ public class IntegerCellEditor extends CellEditor implements FocusListener,
 		spinner.setMaximum(max);
 		spinner.addFocusListener(this);
 		spinner.addKeyListener(this);
-		// spinner.setCursor(Display.getCurrent()
-		// .getSystemCursor(SWT.CURSOR_IBEAM));
-		for (Control c : spinner.getChildren())
-			System.out.println(c.getClass().getSimpleName());
 		return spinner;
 	}
 
@@ -69,7 +69,7 @@ public class IntegerCellEditor extends CellEditor implements FocusListener,
 
 	@Override
 	protected void doSetValue(Object value) {
-		spinner.setSelection((Integer) value);
+		spinner.setSelection(value == null ? 0 : (Integer) value);
 	}
 
 	public void activate(ColumnViewerEditorActivationEvent activationEvent) {

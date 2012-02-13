@@ -1,6 +1,5 @@
 package aurora.ide.meta.gef.editors.property;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -37,9 +36,12 @@ public class BooleanCellEditor extends CellEditor implements SelectionListener {
 		// Ignore
 	}
 
+	public void setReadOnly(boolean readOnly) {
+		checkButton.setEnabled(!readOnly);
+	}
+
 	protected void doSetValue(Object value) {
-		Assert.isTrue(value instanceof Boolean);
-		checkButton.setSelection(((Boolean) value).booleanValue());
+		checkButton.setSelection(value == null ? false : ((Boolean) value));
 		checkButton.setText(Boolean.toString(checkButton.getSelection()));
 	}
 

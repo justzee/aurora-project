@@ -45,7 +45,9 @@ public class HBox extends BOX {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		return mergePropertyDescriptor(pds, getDataset()
+				.getPropertyDescriptors());
+		// return pds;
 	}
 
 }

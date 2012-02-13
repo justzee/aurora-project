@@ -2,7 +2,6 @@ package aurora.ide.meta.gef.editors.models.commands;
 
 import java.util.List;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
@@ -12,7 +11,6 @@ import aurora.ide.meta.gef.editors.models.TabBody;
 public class MoveRemoteChildCmpCmd extends Command {
 	private Container srcContainer;
 	private Container destContainer;
-	private EditPart epToMove;
 	private AuroraComponent acToMove;
 	private AuroraComponent acReference = null;
 	private int oriIndex = -1;
@@ -20,32 +18,29 @@ public class MoveRemoteChildCmpCmd extends Command {
 	public MoveRemoteChildCmpCmd() {
 	}
 
-	public void setEditPartToMove(EditPart child) {
-		epToMove = child;
-		acToMove = (AuroraComponent) child.getModel();
-		srcContainer = (Container) epToMove.getParent().getModel();
+	public void setComponentToMove(AuroraComponent child) {
+		acToMove = child;
+		srcContainer = child.getParent();
 	}
 
-	public void setReferenceEditPart(EditPart after) {
-		if (after != null) {
-			acReference = (AuroraComponent) after.getModel();
-		}
+	public void setReferenceComponent(AuroraComponent after) {
+		acReference = after;
 	}
 
-	public void setTargetContainer(EditPart targetEditPart) {
-		destContainer = (Container) targetEditPart.getModel();
+	public void setTargetContainer(Container tgtContainer) {
+		destContainer = tgtContainer;
 	}
 
 	@Override
 	public boolean canExecute() {
-		return super.canExecute()
-				&& (!(acToMove.getClass().equals(TabBody.class)));
+		if (acToMove instanceof TabBody)
+			return false;
+		return super.canExecute();
 	}
 
 	@Override
 	public boolean canUndo() {
-		return super.canUndo()
-				&& (!(acToMove.getClass().equals(TabBody.class)));
+		return super.canUndo();
 	}
 
 	@Override

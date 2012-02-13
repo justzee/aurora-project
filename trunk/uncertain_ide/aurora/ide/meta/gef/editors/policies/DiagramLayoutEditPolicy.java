@@ -1,5 +1,14 @@
 package aurora.ide.meta.gef.editors.policies;
 
+import org.eclipse.draw2d.Polyline;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
+import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.requests.DropRequest;
+
 import aurora.ide.meta.gef.editors.models.AuroraComponent;
 import aurora.ide.meta.gef.editors.models.Container;
 import aurora.ide.meta.gef.editors.models.FieldSet;
@@ -16,15 +25,6 @@ import aurora.ide.meta.gef.editors.parts.ContainerPart;
 import aurora.ide.meta.gef.editors.parts.TabBodyPart;
 import aurora.ide.meta.gef.editors.parts.TabFolderPart;
 import aurora.ide.meta.gef.editors.parts.TabItemPart;
-
-import org.eclipse.draw2d.Polyline;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
-import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.gef.requests.DropRequest;
 
 public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 	private EditPart targetEditPart = null;
@@ -121,15 +121,16 @@ public class DiagramLayoutEditPolicy extends FlowLayoutEditPolicy {
 		if (targetEditPart == null)
 			return null;
 		MoveRemoteChildCmpCmd cmd = new MoveRemoteChildCmpCmd();
-		cmd.setEditPartToMove(child);
+		cmd.setComponentToMove((AuroraComponent) child.getModel());
 		if (targetEditPart.getModel() instanceof Container) {
 			Container dest = (Container) targetEditPart.getModel();
 			AuroraComponent ac = (AuroraComponent) child.getModel();
 			if (!dest.isResponsibleChild(ac))
 				return null;
-			cmd.setTargetContainer(targetEditPart);
+			cmd.setTargetContainer(dest);
 		}
-		cmd.setReferenceEditPart(after);
+		cmd.setReferenceComponent(after == null ? null
+				: (AuroraComponent) after.getModel());
 		return cmd;
 	}
 

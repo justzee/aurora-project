@@ -12,7 +12,7 @@ import aurora.ide.search.core.Util;
 
 public class Dataset extends AuroraComponent {
 	/**
-	 * 
+	 *  
 	 */
 	private static final long serialVersionUID = -4619018857153616914L;
 	// model a.b.c形式
@@ -33,8 +33,10 @@ public class Dataset extends AuroraComponent {
 
 	private static final IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
 			new BooleanPropertyDescriptor(AUTO_QUERY, "autoQuery"),
-			// new StringPropertyDescriptor(MODEL, "model"),
-			new StringPropertyDescriptor(ID, "id") };
+			new StringPropertyDescriptor(MODEL, "Model", true) };
+
+	// new BooleanPropertyDescriptor("USE4QUERY", "isUse4Query"),
+	// new BooleanPropertyDescriptor("USEPARENTBM", "isUseParentBM")
 
 	public Dataset() {
 		// 暂时不显示
@@ -53,9 +55,13 @@ public class Dataset extends AuroraComponent {
 		if (AUTO_QUERY.equals(propName)) {
 			return this.isAutoQuery();
 		} else if (MODEL.equals(propName)) {
-			return this.getModelPKG();
+			return this.getModel();
 		} else if (ID.equals(propName)) {
 			return this.getId();
+		} else if ("USE4QUERY".equals(propName)) {
+			return isUse4Query;
+		} else if ("USEPARENTBM".equals(propName)) {
+			return isUseParentBM;
 		}
 		return null;
 	}
@@ -67,6 +73,10 @@ public class Dataset extends AuroraComponent {
 			setModel((String) val);
 		} else if (ID.equals(propName)) {
 			setId((String) val);
+		} else if ("USE4QUERY".equals(propName)) {
+			setUse4Query((Boolean) val);
+		} else if ("USEPARENTBM".equals(propName)) {
+			setUseParentBM((Boolean) val);
 		}
 	}
 

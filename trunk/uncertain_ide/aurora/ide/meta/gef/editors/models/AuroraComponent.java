@@ -22,8 +22,7 @@ public class AuroraComponent implements Cloneable, Serializable, IProperties,
 	/**
 	 * 此id仅用于存储xml时标记引用关系,以便读取时根据引用关系重新建立引用关系
 	 */
-	public transient String markid = Integer.toHexString(UUID.randomUUID()
-			.toString().hashCode());
+	public transient String markid = Integer.toHexString(hashCode());
 	transient protected PropertyChangeSupport listeners = new PropertyChangeSupport(
 			this);
 	static final long serialVersionUID = 1;

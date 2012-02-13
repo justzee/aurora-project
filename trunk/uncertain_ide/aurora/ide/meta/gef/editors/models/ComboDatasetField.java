@@ -1,8 +1,8 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
-
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
 
 public class ComboDatasetField extends DatasetField {
 	/**
@@ -61,7 +61,8 @@ public class ComboDatasetField extends DatasetField {
 			setValueField((String) val);
 		} else if (RETURN_FIELD.equals(propName)) {
 			setReturnField((String) val);
-		}
+		} else
+			super.setPropertyValue(propName, val);
 	}
 
 	public String getDisplayField() {

@@ -871,6 +871,9 @@
        <newWizardShortcut
              id="aurora.ide.wizard.BMFromProcedure">
        </newWizardShortcut>
+       <newWizardShortcut
+             id="aurora.ide.wizard.CreateFormGridWizard">
+       </newWizardShortcut>
 
        <actionSet
              id="aurora.ide.actionset.quickopenfile">
@@ -887,6 +890,9 @@
              relationship="stack"
              relative="org.eclipse.ui.views.ProblemView">
        </view>
+       <viewShortcut
+             id="aurora.ide.viewer.statistics.StatisticsView">
+       </viewShortcut>
        <viewShortcut
              id="org.eclipse.team.ccvs.ui.RepositoriesView">
        </viewShortcut>

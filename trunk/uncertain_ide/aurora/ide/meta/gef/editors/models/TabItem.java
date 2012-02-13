@@ -3,14 +3,10 @@ package aurora.ide.meta.gef.editors.models;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
-import aurora.ide.meta.gef.editors.property.IntegerPropertyDescriptor;
-import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
-
 public class TabItem extends AuroraComponent {
 	private static final long serialVersionUID = -6198220551287976461L;
 	private static IPropertyDescriptor[] pds = new IPropertyDescriptor[] {
-			new StringPropertyDescriptor(PROMPT, "Prompt"),
-			new IntegerPropertyDescriptor(WIDTH, "Width") };
+			PD_PROMPT, PD_WIDTH };
 	public static final String CURRENT = "current";
 	public static final int HEIGHT = 25;
 	private TabBody body = new TabBody();
