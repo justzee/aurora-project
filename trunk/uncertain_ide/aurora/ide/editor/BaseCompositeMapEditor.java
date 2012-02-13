@@ -129,6 +129,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	}
 
 	protected void pageChange(int newPageIndex) {
+		super.pageChange(newPageIndex);
 		if(newPageIndex == mainViewerIndex ){
 			try {
 				sycMainViewerPageWithTextPage();
@@ -147,7 +148,6 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			}
 			sycTextPageWithMainViewerPage();
 		}
-		super.pageChange(newPageIndex);
 	}
 
 	private boolean sycMainViewerPageWithTextPage() throws ApplicationException{
