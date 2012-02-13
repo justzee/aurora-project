@@ -1,12 +1,12 @@
 package aurora.ide.meta.gef.editors.models;
 
-import aurora.ide.meta.gef.editors.property.DialogEditableObject;
-import aurora.ide.meta.gef.editors.property.PropertySourceUtil;
-
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
+import aurora.ide.meta.gef.editors.property.DialogEditableObject;
+import aurora.ide.meta.gef.editors.property.PropertySourceUtil;
 
 public class ButtonClicker extends AuroraComponent implements
 		DialogEditableObject {
@@ -21,14 +21,13 @@ public class ButtonClicker extends AuroraComponent implements
 	static final public String B_RESET = "b_reset";
 	static final public String B_SAVE = "b_save";
 	static final public String B_CLOSE = "b_close";
-	static final public String B_RUN = "b_run";
 	static final public String B_OPEN = "b_open";
 
 	public static final String[] action_ids = { B_SEARCH, B_RESET, B_SAVE,
-			B_OPEN, B_CLOSE, B_RUN, DEFAULT };
+			B_OPEN, B_CLOSE, DEFAULT };
 
 	public static final String[] action_texts = { "查询", "重置", "保存", "打开", "关闭",
-			"运行", "自定义" };
+			"自定义" };
 
 	private String actionID = action_ids[5];
 	private String actionText = action_texts[5];
@@ -38,7 +37,7 @@ public class ButtonClicker extends AuroraComponent implements
 	// b_close
 	private String closeWindowID;
 	// b_run
-	private String runMessage;
+	private String function;
 
 	private Button button;
 
@@ -117,12 +116,12 @@ public class ButtonClicker extends AuroraComponent implements
 		this.closeWindowID = closeWindowID;
 	}
 
-	public String getRunMessage() {
-		return runMessage;
+	public String getFunction() {
+		return function;
 	}
 
-	public void setRunMessage(String runMessage) {
-		this.runMessage = runMessage;
+	public void setFunction(String func) {
+		this.function = func;
 	}
 
 	public String getDescripition() {
@@ -149,14 +148,13 @@ public class ButtonClicker extends AuroraComponent implements
 		bc.button = button;
 		bc.closeWindowID = closeWindowID;
 		bc.openPath = openPath;
-		bc.runMessage = runMessage;
+		bc.function = function;
 		bc.targetComponent = targetComponent;
 		return bc;
 	}
 
 	public Image getDisplayImage() {
-		if (targetComponent == null || B_RUN.equals(actionID)
-				|| DEFAULT.equals(actionID))
+		if (targetComponent == null || DEFAULT.equals(actionID))
 			return null;
 		return PropertySourceUtil.getImageOf(targetComponent);
 	}
