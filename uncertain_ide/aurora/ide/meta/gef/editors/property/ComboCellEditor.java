@@ -227,8 +227,8 @@ public class ComboCellEditor extends AbstractComboBoxCellEditor {
 	 *            <code>Integer</code>
 	 */
 	protected void doSetValue(Object value) {
-		Assert.isTrue(comboBox != null && (value instanceof Integer));
-		selection = ((Integer) value).intValue();
+		Assert.isTrue(comboBox != null);
+		selection = value == null ? 0 : ((Integer) value).intValue();
 		comboBox.select(selection);
 	}
 

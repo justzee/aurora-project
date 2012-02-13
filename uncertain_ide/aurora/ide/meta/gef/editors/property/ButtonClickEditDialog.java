@@ -1,19 +1,10 @@
 package aurora.ide.meta.gef.editors.property;
 
-import aurora.ide.AuroraPlugin;
-import aurora.ide.meta.gef.editors.figures.ColorConstants;
-import aurora.ide.meta.gef.editors.models.AuroraComponent;
-import aurora.ide.meta.gef.editors.models.ButtonClicker;
-import aurora.ide.meta.gef.editors.models.Container;
-import aurora.ide.meta.gef.editors.models.Grid;
-import aurora.ide.meta.gef.editors.models.TabBody;
-import aurora.ide.meta.gef.editors.models.TabItem;
-import aurora.ide.meta.gef.editors.models.ViewDiagram;
-import aurora.ide.search.core.Util;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -23,6 +14,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -36,22 +28,35 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.internal.ide.dialogs.OpenResourceDialog;
 
+import aurora.ide.AuroraPlugin;
+import aurora.ide.editor.textpage.ColorManager;
+import aurora.ide.editor.textpage.JavaScriptConfiguration;
+import aurora.ide.meta.gef.editors.figures.ColorConstants;
+import aurora.ide.meta.gef.editors.models.AuroraComponent;
+import aurora.ide.meta.gef.editors.models.ButtonClicker;
+import aurora.ide.meta.gef.editors.models.Container;
+import aurora.ide.meta.gef.editors.models.Grid;
+import aurora.ide.meta.gef.editors.models.TabBody;
+import aurora.ide.meta.gef.editors.models.TabItem;
+import aurora.ide.meta.gef.editors.models.ViewDiagram;
+import aurora.ide.search.core.Util;
+
 public class ButtonClickEditDialog extends EditWizard {
 
 	protected Shell shell;
+	private static final Color SELECTION_BG = new Color(null, 109, 187, 242);
 	private static final String[] descriptions = { "查询,选择一个带有查询功能的组件",
-			"重置,选择一个带有重置功能的组件", "保存,选择一个带有保存功能的组件", "选择一个要打开的页面", "关闭", "运行",
-			"自定义" };
+			"重置,选择一个带有重置功能的组件", "保存,选择一个带有保存功能的组件", "选择一个要打开的页面", "关闭", "自定义" };
 	private Button[] radios = new Button[ButtonClicker.action_texts.length];
 	private Composite[] stackComposites = new Composite[radios.length];
-
+	private String section_type_filter = Container.SECTION_TYPE_QUERY;
 	private Composite composite_right;
 	private ButtonClicker clicker = null;
-	private Color SELECTION_BG = new Color(null, 109, 187, 242);
 	private WizardPage page;
 	protected Object tmpTargetCmp;
 	private String tmpPath;
 	private String tmpWindowID;
+	private String tmpFunction;
 
 	public ButtonClickEditDialog() {
 		setWindowTitle("Click");
@@ -73,6 +78,7 @@ public class ButtonClickEditDialog extends EditWizard {
 			clicker.setTargetComponent((AuroraComponent) tmpTargetCmp);
 		clicker.setOpenPath(tmpPath);
 		clicker.setCloseWindowID(tmpWindowID);
+		clicker.setFunction(tmpFunction);
 		return true;
 	}
 
@@ -116,6 +122,7 @@ public class ButtonClickEditDialog extends EditWizard {
 			create_save(2);// 2
 			create_open(3);// 3
 			create_close(4);// 4
+			create_userDefine(5);// 5
 			composite_right.layout();
 			if (slLayout.topControl != null) {
 				slLayout.topControl.forceFocus();
@@ -162,6 +169,9 @@ public class ButtonClickEditDialog extends EditWizard {
 		private void createSubTree(Tree tree, TreeItem ti, Container container) {
 			for (AuroraComponent ac : container.getChildren()) {
 				if ((ac instanceof Container) && !(ac instanceof TabBody)) {
+					Container cont = (Container) ac;
+					if (!section_type_filter.equals(cont.getSectionType()))
+						continue;
 					TreeItem t = new TreeItem(ti, SWT.NONE);
 					t.setData(ac);
 					if (ac == clicker.getTargetComponent())
@@ -183,10 +193,12 @@ public class ButtonClickEditDialog extends EditWizard {
 		}
 
 		private void create_reset(int index) {
+			section_type_filter = Container.SECTION_TYPE_QUERY;
 			create_query(1);
 		}
 
 		private void create_save(int index) {
+			section_type_filter = Container.SECTION_TYPE_RESULT;
 			create_query(2);
 		}
 
@@ -272,6 +284,32 @@ public class ButtonClickEditDialog extends EditWizard {
 		public void widgetDefaultSelected(SelectionEvent e) {
 
 		}
+	}
+
+	private void create_userDefine(int index) {
+		stackComposites[index].setLayout(new GridLayout(1, false));
+		Label l = new Label(stackComposites[index], SWT.NONE);
+		l.setText("在下面写一个函数");
+
+		final SourceViewer jsEditor = new SourceViewer(stackComposites[index],
+				null, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		jsEditor.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		jsEditor.configure(new JavaScriptConfiguration(new ColorManager()));
+		jsEditor.getTextWidget().setFont(new Font(null, "Courier New", 10, 0));
+		Document document = new Document();
+		jsEditor.setDocument(document);
+		tmpFunction = clicker.getFunction();
+		if (tmpFunction == null) {
+			tmpFunction = "function fun_alert(){\n\talert(\"hello\");\n}";
+		}
+		jsEditor.getTextWidget().setText(tmpFunction);
+		jsEditor.getTextWidget().addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent e) {
+				tmpFunction = jsEditor.getTextWidget().getText();
+			}
+		});
 	}
 
 	private String getTextOf(AuroraComponent ac) {

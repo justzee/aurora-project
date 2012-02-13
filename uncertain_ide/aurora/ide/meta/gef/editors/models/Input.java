@@ -1,11 +1,11 @@
 package aurora.ide.meta.gef.editors.models;
 
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+
 import aurora.ide.meta.gef.editors.property.BooleanPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.ComboPropertyDescriptor;
 import aurora.ide.meta.gef.editors.property.StringPropertyDescriptor;
-
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 
@@ -330,6 +330,12 @@ public class Input extends AuroraComponent implements IDatasetFieldDelegate {
 
 	public void setDatasetField(DatasetField field) {
 		// this.dsField = field;
+		String type = this.getType();
+		if (LOV.equals(type)) {
+			lovField = (LovDatasetField) field;
+		} else if (Combo.equals(type)) {
+			comboField = (ComboDatasetField) field;
+		} else
+			dfField = field;
 	}
-
 }

@@ -43,6 +43,8 @@ public class VBox extends BOX {
 
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return pds;
+		// return pds;
+		return mergePropertyDescriptor(pds, getDataset()
+				.getPropertyDescriptors());
 	}
 }

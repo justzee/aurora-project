@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Text;
 public class StringCellEditor extends CellEditor implements FocusListener,
 		KeyListener {
 	private Text text;
+	private boolean readOnly = false;
 
 	public StringCellEditor() {
 		setStyle(SWT.NONE);
@@ -33,12 +34,18 @@ public class StringCellEditor extends CellEditor implements FocusListener,
 		fireApplyEditorValue();
 	}
 
+	public void setReadOnly(boolean readOnly) {
+		text.setEnabled(!readOnly);
+		this.readOnly = readOnly;
+	}
+
 	@Override
 	protected Control createControl(Composite parent) {
 		text = new Text(parent, SWT.SINGLE);
 		text.addFocusListener(this);
 		text.addKeyListener(this);
 		text.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_IBEAM));
+		text.setEnabled(!readOnly);
 		return text;
 	}
 
@@ -54,7 +61,7 @@ public class StringCellEditor extends CellEditor implements FocusListener,
 
 	@Override
 	protected void doSetValue(Object value) {
-		text.setText((String) value);
+		text.setText(value == null ? "" : (String) value);
 	}
 
 	public void activate(ColumnViewerEditorActivationEvent activationEvent) {

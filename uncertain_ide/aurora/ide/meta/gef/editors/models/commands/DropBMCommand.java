@@ -46,21 +46,21 @@ public class DropBMCommand extends Command {
 		Toolbar tb = new Toolbar();
 		Button b = new Button();
 		b.setButtonType(Button.ADD);
-		tb.addButton(b);
+		tb.addChild(b);
 		b = new Button();
 		b.setButtonType(Button.SAVE);
-		tb.addButton(b);
+		tb.addChild(b);
 		b = new Button();
 		b.setButtonType(Button.DELETE);
-		tb.addButton(b);
+		tb.addChild(b);
 
 		b = new Button();
 		b.setButtonType(Button.CLEAR);
-		tb.addButton(b);
+		tb.addChild(b);
 
 		b = new Button();
 		b.setButtonType(Button.EXCEL);
-		tb.addButton(b);
+		tb.addChild(b);
 
 		grid.addChild(tb);
 		grid.setNavbarType(Grid.NAVBAR_COMPLEX);

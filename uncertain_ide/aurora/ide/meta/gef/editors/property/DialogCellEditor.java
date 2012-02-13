@@ -21,10 +21,10 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 	private Button button;
 	private CLabel label;
 	private DialogEditableObject value;
-	private Class<EditWizard> clazz;
+	private Class<? extends EditWizard> clazz;
 	Shell shell;
 
-	public DialogCellEditor(Composite parent, Class<EditWizard> clazz) {
+	public DialogCellEditor(Composite parent, Class<? extends EditWizard> clazz) {
 		super(parent, SWT.NONE);
 		this.clazz = clazz;
 	}
@@ -67,7 +67,7 @@ public class DialogCellEditor extends CellEditor implements SelectionListener,
 	}
 
 	private class SimpleLayout extends Layout {
-		private int width = 16;
+		private int width = 17;
 
 		@Override
 		protected Point computeSize(Composite composite, int wHint, int hHint,

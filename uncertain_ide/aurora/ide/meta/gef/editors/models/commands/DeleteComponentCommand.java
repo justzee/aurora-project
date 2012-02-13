@@ -21,13 +21,18 @@ public class DeleteComponentCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return super.canExecute()
-				&& (!(child.getClass().equals(TabBody.class)));
+		if (child instanceof TabBody)
+			return false;
+		if (child instanceof Container) {
+			if (((Container) child).getSectionType() != null)
+				return false;
+		}
+		return super.canExecute();
 	}
 
 	@Override
 	public boolean canUndo() {
-		return super.canUndo() && (!(child.getClass().equals(TabBody.class)));
+		return super.canUndo();
 	}
 
 	public AuroraComponent getChild() {

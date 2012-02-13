@@ -345,7 +345,8 @@ public class PropertySheetEntry extends EventManager implements
 				editor.addListener(cellEditorListener);
 			}
 		}
-		if (editor != null && !eq(editor.getValue(), editValue)) {
+		// && !eq(editor.getValue(), editValue)
+		if (editor != null) {
 			editor.setValue(editValue);
 		}
 		return editor;
