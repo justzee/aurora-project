@@ -70,7 +70,8 @@ public class ReferenceSearchService extends AbstractSearchService implements
 
 	protected IFile findScreenFile(CompositeMap map, Attribute attrib) {
 		IFile file = this.getFile(map.getRoot());
-		Object pkg = map.get(attrib.getName());
+//		Object pkg = map.get(attrib.getName());
+		Object pkg = Util.getValueIgnoreCase(attrib, map);
 		if (pkg == null) {
 			return null;
 		}
@@ -102,7 +103,8 @@ public class ReferenceSearchService extends AbstractSearchService implements
 
 	protected boolean bmRefMatch(CompositeMap map, Attribute attrib,
 			Object pattern) {
-		Object data = map.get(attrib.getName());
+//		Object data = map.get(attrib.getName());
+		Object data = Util.getValueIgnoreCase(attrib, map);
 		if (data instanceof String && Util.bmRefMatch(pattern, (String) data)) {
 			return true;
 		}

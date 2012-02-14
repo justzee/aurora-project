@@ -88,7 +88,8 @@ public class AttributeCondition extends SearchCondition {
 					document);
 			for (Iterator it = mapAttributes.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
-				String _value = map.getString(attrib.getName());
+//				String _value = map.getString(attrib.getName());
+				String _value = Util.getValueIgnoreCase(attrib, map);
 				if (null == _value) {
 					continue;
 				}
@@ -143,7 +144,8 @@ public class AttributeCondition extends SearchCondition {
 					document);
 			for (Iterator it = mapAttributes.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
-				String _value = map.getString(attrib.getName());
+//				String _value = map.getString(attrib.getName());
+				String _value = Util.getValueIgnoreCase(attrib, map);
 				if (null == _value) {
 					continue;
 				}
@@ -179,7 +181,8 @@ public class AttributeCondition extends SearchCondition {
 					document);
 			for (Iterator it = mapAttributes.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
-				String _value = map.getString(attrib.getName());
+//				String _value = map.getString(attrib.getName());
+				String _value = Util.getValueIgnoreCase(attrib, map);
 				if (null == _value) {
 					continue;
 				}

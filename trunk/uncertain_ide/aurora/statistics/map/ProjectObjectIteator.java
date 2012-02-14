@@ -11,6 +11,7 @@ import uncertain.schema.Element;
 import uncertain.schema.ISchemaManager;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.search.core.Util;
 import aurora.statistics.IStatisticsReporter;
 import aurora.statistics.Statistician;
 import aurora.statistics.model.ProjectObject;
@@ -96,7 +97,9 @@ public class ProjectObjectIteator implements IterationHandle {
 				IType attributeType = attrib.getAttributeType();
 				if (attributeType != null
 						&& qName.equals(attributeType.getQName())
-						&& sm.getMap().getBoolean(attrib.getName()) != null) {
+
+						// && sm.getMap().getBoolean(attrib.getName()) != null
+						&& Util.getValueIgnoreCase(attrib, sm.getMap()) != null) {
 					return true;
 				}
 			}

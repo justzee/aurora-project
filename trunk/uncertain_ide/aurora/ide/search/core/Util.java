@@ -141,7 +141,7 @@ public class Util {
 				int tokenOffset = scanner.getTokenOffset();
 				int tokenLength = scanner.getTokenLength();
 				if (text.getForeground().getRGB().equals(reginRGB)
-						&& name.equals(document.get(tokenOffset, tokenLength))) {
+						&& name.equalsIgnoreCase(document.get(tokenOffset, tokenLength))) {
 					return new Region(tokenOffset, tokenLength);
 				}
 			}
@@ -224,6 +224,7 @@ public class Util {
 				if (text.getForeground().getRGB().equals(reginRGB)) {
 					if (name.length() == 0)
 						return new Region(tokenOffset, tokenLength);
+					//TODO String _value = Util.getValueIgnoreCase(attrib, map);?
 					int index = document.get(tokenOffset, tokenLength).indexOf(
 							name);
 					if (index != -1) {
@@ -271,8 +272,9 @@ public class Util {
 				IType attributeType = attrib.getAttributeType();
 				boolean referenceOf = isBMReference(attributeType);
 				if (referenceOf) {
-					Object data = map.get(attrib.getName());
-					return data;
+//					Object data = map.get(attrib.getName());
+//					return data;
+					return Util.getValueIgnoreCase(attrib, map);
 				}
 			}
 		}

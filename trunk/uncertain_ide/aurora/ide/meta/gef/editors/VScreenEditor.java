@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.EventObject;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
@@ -17,7 +16,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
@@ -37,16 +35,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
-import org.eclipse.ui.ide.undo.CreateFileOperation;
-import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
 import org.eclipse.ui.part.FileEditorInput;
 
-import uncertain.composite.CompositeMap;
-import aurora.ide.AuroraPlugin;
 import aurora.ide.meta.gef.editors.actions.ViewContextMenuProvider;
 import aurora.ide.meta.gef.editors.dnd.BMTransferDropTargetListener;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
@@ -73,6 +66,7 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 	public void commandStackChanged(EventObject event) {
 		firePropertyChange(IEditorPart.PROP_DIRTY);
 		super.commandStackChanged(event);
+//		this.getSite().registerContextMenu(menuId, menuManager, selectionProvider)
 	}
 
 	/**
@@ -82,6 +76,7 @@ public class VScreenEditor extends FlayoutBMGEFEditor {
 		super.createActions();
 		ActionRegistry registry = getActionRegistry();
 		IAction action;
+		
 
 		action = new DirectEditAction((IWorkbenchPart) this);
 		registry.registerAction(action);
