@@ -97,14 +97,12 @@ public class ProjectObjectIteator implements IterationHandle {
 				IType attributeType = attrib.getAttributeType();
 				if (attributeType != null
 						&& qName.equals(attributeType.getQName())
-
 						// && sm.getMap().getBoolean(attrib.getName()) != null
 						&& Util.getValueIgnoreCase(attrib, sm.getMap()) != null) {
 					return true;
 				}
 			}
 		}
-
 		return false;
 	}
 
