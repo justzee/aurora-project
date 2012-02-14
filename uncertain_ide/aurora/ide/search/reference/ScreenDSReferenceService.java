@@ -8,6 +8,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import aurora.ide.search.core.AbstractSearchService;
 import aurora.ide.search.core.CompositeMapIteator;
+import aurora.ide.search.core.Util;
 
 public class ScreenDSReferenceService extends AbstractSearchService {
 
@@ -33,7 +34,8 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 					return false;
 				}
 				Object pattern = getSearchPattern(roots, source);
-				Object data = map.get(attrib.getName());
+//				Object data = map.get(attrib.getName());
+				Object data = Util.getValueIgnoreCase(attrib, map);
 				return pattern == null ? false : pattern.equals(data);
 			}
 		};

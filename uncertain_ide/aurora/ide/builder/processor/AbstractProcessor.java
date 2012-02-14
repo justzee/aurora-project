@@ -8,6 +8,7 @@ import org.eclipse.jface.text.IDocument;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import aurora.ide.builder.BuildContext;
+import aurora.ide.search.core.Util;
 
 public abstract class AbstractProcessor {
 	public abstract void processMap(BuildContext bc);

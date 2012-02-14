@@ -92,7 +92,8 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 			private boolean isMatch(final IResource scope, final Object source,
 					CompositeMap map, Attribute attrib) {
 				Object pattern = getSearchPattern(new IResource[] { scope }, source);
-				Object data = map.get(attrib.getName());
+//				Object data = map.get(attrib.getName());
+				Object data = Util.getValueIgnoreCase(attrib, map);
 				return pattern == null ? false : pattern.equals(data);
 			}
 

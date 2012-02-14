@@ -114,7 +114,7 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 					for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 						uncertain.schema.Attribute attrib = (uncertain.schema.Attribute) it
 								.next();
-						if (att.name.equals(attrib.getName())) {
+						if (att.name.equalsIgnoreCase(attrib.getName())) {
 							IType attributeType = attrib.getAttributeType();
 							IFile sourceFile = getSourceFile(map, attrib);
 							IResource scope = Util.getScope(sourceFile);
@@ -158,12 +158,16 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 			}
 			if (AbstractSearchService.screenReference
 					.equals(referenceTypeQName)) {
-				return sourceFile = Util.findScreenFile(getFile(),
-						map.get(attrib.getName()));
+//				return sourceFile = Util.findScreenFile(getFile(),
+//						map.get(attrib.getName()));
+				String valueIgnoreCase = Util.getValueIgnoreCase(attrib, map);
+				return sourceFile = Util.findScreenFile(getFile(),valueIgnoreCase);
 			}
 			if (AbstractSearchService.bmReference.equals(referenceTypeQName)) {
-				return sourceFile = Util.findBMFileByPKG(map.get(attrib
-						.getName()));
+//				return sourceFile = Util.findBMFileByPKG(map.get(attrib
+//						.getName()));
+				String valueIgnoreCase = Util.getValueIgnoreCase(attrib, map);
+				return sourceFile = Util.findBMFileByPKG(valueIgnoreCase);
 			}
 		}
 		return null;

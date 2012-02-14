@@ -37,7 +37,7 @@ public class ScreenCustomService extends AbstractSearchService {
 		IDataFilter filter = new IDataFilter() {
 			public boolean found(CompositeMap map, Attribute attrib) {
 				Object object = map.get("name");
-				return "bindTarget".equals(attrib.getName()) && object != null
+				return "bindTarget".equalsIgnoreCase(attrib.getName()) && object != null
 						&& !"".equals(object) && map.get("id") == null;
 			}
 

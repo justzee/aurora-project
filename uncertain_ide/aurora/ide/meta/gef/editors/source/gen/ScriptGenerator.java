@@ -171,9 +171,6 @@ public class ScriptGenerator {
 		if (ButtonClicker.B_CLOSE.equals(actionID)) {
 			return "close";
 		}
-		if (ButtonClicker.B_RUN.equals(actionID)) {
-			return "execute";
-		}
 		if (ButtonClicker.DEFAULT.equals(actionID)) {
 			return "";
 		}

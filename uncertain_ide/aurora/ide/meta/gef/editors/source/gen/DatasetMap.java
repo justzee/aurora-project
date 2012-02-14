@@ -26,6 +26,7 @@ public class DatasetMap extends AbstractComponentMap {
 			if (isKey) {
 				if (ResultDataSet.QUERY_CONTAINER.equals(id)) {
 					id = ResultDataSet.QUERY_DATASET;
+					//TODO autocreate = true;
 				}
 				Object value = c.getPropertyValue(id);
 				if (ResultDataSet.SELECTION_MODE.equals(id)
