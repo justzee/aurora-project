@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="template.wizard" name="Template Wizard" schema="schema/aurora.ide.meta.gef.template.exsd"/>
     <extension point="org.eclipse.ui.newWizards">
         <category id="aurora.ide.wizard" name="%category.name">
         </category>
@@ -931,22 +930,6 @@
              name="Aurora Source File"
              priority="normal">
        </content-type>
-    </extension>
-   	<extension
-          point="aurora.ide.template.wizard">
-       <template
-             class="aurora.ide.meta.gef.editors.wizard.template.Template_1"
-             description="Test Temlpte"
-             id="aurora.ide.template_1"
-             name="Template_1"
-             thumbnail="templates/image/1.png">
-       </template>
-       <template
-             class="aurora.ide.meta.gef.editors.wizard.template.Template_2"
-             id="aurora.ide.template_2"
-             name="Template_2"
-             description="新建一个空白文件">
-       </template>
     </extension>
     <extension point="org.eclipse.ui.ide.projectNatureImages">
   		<image 

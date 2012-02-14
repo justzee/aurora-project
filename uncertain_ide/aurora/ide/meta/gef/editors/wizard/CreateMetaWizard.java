@@ -16,27 +16,25 @@ import org.eclipse.ui.IWorkbench;
 
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.meta.gef.editors.models.ViewDiagram;
-import aurora.ide.meta.gef.editors.wizard.page.NewWizardPage;
-import aurora.ide.meta.gef.editors.wizard.page.TemplateWizardPage;
 import aurora.ide.search.ui.EditorOpener;
 
 public class CreateMetaWizard extends Wizard implements INewWizard {
-	private TemplateWizardPage templatePage = new TemplateWizardPage();
 	private NewWizardPage newPage = new NewWizardPage();
-
+	private SettingWizardPage settingPage = new SettingWizardPage();
+	
 	private IWorkbench workbench;
 	private ViewDiagram viewDiagram;
 
 	public void addPages() {
 		addPage(newPage);
-		addPage(templatePage);
+		addPage(settingPage);
 	}
 
 	@Override
 	public boolean performFinish() {
 		EditorOpener editorOpener = new EditorOpener();
 		try {
-			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(newPage.getPath() + "/" + newPage.getFile()));
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(newPage.getPath() + "/" + newPage.getFileName()));
 			InputStream inputStream = new ByteArrayInputStream(ObjectToByte(viewDiagram));
 			file.create(inputStream, true, null);
 			editorOpener.open(workbench.getActiveWorkbenchWindow().getActivePage(), file, true);
@@ -50,15 +48,9 @@ public class CreateMetaWizard extends Wizard implements INewWizard {
 
 	public boolean canFinish() {
 		IWizardPage page = getContainer().getCurrentPage();
-		if (page instanceof TemplateWizardPage) {
-			viewDiagram = ((TemplateWizardPage) page).getSelected().getWizard().getViewDiagram();
+		if (page instanceof NewWizardPage) {
+			viewDiagram=((NewWizardPage)page).getViewDiagram();
 			return true;
-		} else if (page instanceof NewWizardPage) {
-			NewWizardPage p = (NewWizardPage) page;
-			if (p.hasNextPage()) {
-				return p.isPageComplete();
-			}
-			return p.isComplete();
 		}
 		return false;
 	}
