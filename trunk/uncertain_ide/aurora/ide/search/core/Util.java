@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,7 @@ import uncertain.schema.Element;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
 import aurora.ide.bm.BMUtil;
+import aurora.ide.builder.BuildContext;
 import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
@@ -620,6 +622,21 @@ public class Util {
 			Arrays.fill(charArray, m.start(), m.end(), '1');
 		}
 		return new String(charArray);
+	}
 
+	public static String getValueIgnoreCase(Attribute a, BuildContext bc) {
+		return getValueIgnoreCase(a, bc.map);
+	}
+
+	public static String getValueIgnoreCase(Attribute a, CompositeMap cMap) {
+		String name = a.getName();
+		Set keySet = cMap.keySet();
+		for (Object object : keySet) {
+			if (object instanceof String
+					&& ((String) object).equalsIgnoreCase(name)) {
+				return cMap.get(object).toString();
+			}
+		}
+		return null;
 	}
 }
