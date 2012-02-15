@@ -210,4 +210,11 @@ Library.
          version="1.2.7.qualifier"
          unpack="false"/>
 
+   <plugin
+         id="aurora.ide.meta"
+         download-size="0"
+         install-size="0"
+         version="1.2.0.qualifier"
+         unpack="false"/>
+
 </feature>
