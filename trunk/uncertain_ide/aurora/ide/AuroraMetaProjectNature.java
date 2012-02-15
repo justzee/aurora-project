@@ -4,22 +4,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
-public class AuroraMetaProjectNature implements IProjectNature {
+public class AuroraMetaProjectNature  {
 
-	private IProject project;
 	public static final String ID = AuroraPlugin.PLUGIN_ID + ".meta.nature";
 
-	public void configure() throws CoreException {}
-
-	public void deconfigure() throws CoreException {}
-
-	public IProject getProject() {
-		return project;
-	}
-
-	public void setProject(IProject project) {
-		this.project = project;
-	}
 	public static boolean hasAuroraNature(IProject project)
 			throws CoreException {
 		return project.hasNature(ID);

@@ -9,11 +9,7 @@
             finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
             icon="icons/aurora.gif" id="aurora.ide.wizard.ProjectWizard" 
             name="%aurora.project" project="true"/>
-        <wizard category="aurora.ide.wizard" 
-            class="aurora.ide.project.wizard.CreateMetaProjectWizard" 
-            finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
-            icon="icons/aurora.gif" id="aurora.ide.wizard.meta.ProjectWizard" 
-            name="Aurora 原型工程" project="true"/>
+        
         <wizard category="aurora.ide.wizard" 
             class="aurora.ide.screen.wizard.ServiceNewWizard" 
             icon="icons/service.gif" id="aurora.ide.wizard.ServiceNewWizard" 
@@ -38,11 +34,7 @@
             icon="icons/sql.gif" id="aurora.ide.wizard.BMFromProcedure" 
             name="从数据库过程创建BM文件">
         </wizard>
-        <wizard category="aurora.ide.wizard" 
-            class="aurora.ide.meta.gef.editors.wizard.CreateMetaWizard" 
-            id="aurora.ide.wizard.CreateFormGridWizard" 
-            name="Meta文件">
-        </wizard>
+        
     </extension>
       <extension
           point="org.eclipse.ui.contexts">
@@ -79,13 +71,7 @@
             id="aurora.ide.BusinessModelEditor"
             name="%editor.bm">
       </editor>
-      <editor
-            default="true"
-            name="Aurora Meta Example"
-            extensions="meta"
-            class="aurora.ide.meta.gef.editors.VScreenEditor"
-            id="aurora.ide.meta.gef.editors.VScreenEditor">
-      </editor>
+      
       <!--
       <editor
             class="aurora.ide.editor.CollaborateEditor"
@@ -476,15 +462,7 @@
          objectClass="org.eclipse.core.resources.IProject">
       	<filter name="nature" value="aurora.ide.auroranature"/>
 	  </page>
-	  <page
-         adaptable="true"
-         class="aurora.ide.project.propertypage.MetaProjectPropertyPage"
-         icon="icons/aurora.gif"
-         id="aurora.ide.meta.project.property"
-         name="Meta Aurora工程设置"
-         objectClass="org.eclipse.core.resources.IProject">
-         <filter name="nature" value="aurora.ide.meta.nature"/>
-	  </page>
+	  
 	</extension>
 	<extension  
       point="org.eclipse.ui.editors.annotationTypes">  
@@ -590,15 +568,7 @@
              id="aurora.ide.auroraBuilder">
        </builder>
     </extension>
-    <extension  
-      id="meta.nature"  
-      point="org.eclipse.core.resources.natures">  
-       <runtime>  
-          <run  
-                class="aurora.ide.AuroraMetaProjectNature">  
-          </run>  
-       </runtime>
-    </extension>
+    
 
     <extension id="auroraBuilder" name="Aurora Project Builder" 
         point="org.eclipse.core.resources.builders">
