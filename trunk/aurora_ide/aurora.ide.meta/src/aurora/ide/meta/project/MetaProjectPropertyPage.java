@@ -1,4 +1,4 @@
-package aurora.ide.project.propertypage;
+package aurora.ide.meta.project;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
