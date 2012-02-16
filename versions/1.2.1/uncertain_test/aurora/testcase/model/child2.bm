@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ns1:model xmlns:ns1="http://www.aurora-framework.org/schema/bm" alias="c" extend="aurora.testcase.model.child1" extendMode="override">
-    <ns1:fields>
-        <ns1:field forDisplay="true" forUpdate="false" name="ename"/>
-        <ns1:field dataType="java.lang.Long" name="level"/>
-        <ns1:field name="hiredate"/>
-    </ns1:fields>
-    <ns1:ref-fields/>
-</ns1:model>
