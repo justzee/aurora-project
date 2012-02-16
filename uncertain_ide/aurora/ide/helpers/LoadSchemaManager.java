@@ -11,7 +11,7 @@ public class LoadSchemaManager {
 
 	public static boolean refeshSchemaManager(String[] sxsdPaths) {
 		try {
-			uncertainEngine = UncertainEngineUtil.getUncertainEngine();
+			UncertainEngine uncertainEngine = getUncertainEngine();
 			PackageManager pkgManager = uncertainEngine.getPackageManager();
 			if (sxsdPaths != null) {
 				for (int i = 0; i < sxsdPaths.length; i++) {
@@ -19,7 +19,8 @@ public class LoadSchemaManager {
 				}
 			}
 		} catch (Exception e) {
-			DialogUtil.showErrorMessageBox(ExceptionUtil.getExceptionTraceMessage(e));
+			DialogUtil.showErrorMessageBox(ExceptionUtil
+					.getExceptionTraceMessage(e));
 			return false;
 		}
 		return true;
@@ -30,20 +31,22 @@ public class LoadSchemaManager {
 			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
 			refeshSchemaManager(sxsdPaths);
 		} catch (Exception e) {
-			DialogUtil.showErrorMessageBox(ExceptionUtil.getExceptionTraceMessage(e));
+			DialogUtil.showErrorMessageBox(ExceptionUtil
+					.getExceptionTraceMessage(e));
 		}
-		return uncertainEngine.getSchemaManager();
+		return getUncertainEngine().getSchemaManager();
 	}
 
 	static void showSxsdDirHint() {
-		DialogUtil.showWarningMessageBox(LocaleMessage.getString("undefined.sxsd.dir"));
+		DialogUtil.showWarningMessageBox(LocaleMessage
+				.getString("undefined.sxsd.dir"));
 	}
 
 	public static ISchemaManager getSchemaManager() {
 		if (uncertainEngine != null)
 			return uncertainEngine.getSchemaManager();
 		try {
-			uncertainEngine = UncertainEngineUtil.getUncertainEngine();
+			UncertainEngine uncertainEngine = getUncertainEngine();
 			PackageManager pkgManager = uncertainEngine.getPackageManager();
 			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
 			if (sxsdPaths != null) {
@@ -52,9 +55,15 @@ public class LoadSchemaManager {
 				}
 			}
 		} catch (Throwable e) {
-			DialogUtil.showErrorMessageBox(ExceptionUtil.getExceptionTraceMessage(e));
+			DialogUtil.showErrorMessageBox(ExceptionUtil
+					.getExceptionTraceMessage(e));
 			throw new RuntimeException(e);
 		}
 		return uncertainEngine.getSchemaManager();
+	}
+
+	private static UncertainEngine getUncertainEngine() {
+		return uncertainEngine == null ? uncertainEngine = UncertainEngineUtil
+				.getUncertainEngine() : uncertainEngine;
 	}
 }

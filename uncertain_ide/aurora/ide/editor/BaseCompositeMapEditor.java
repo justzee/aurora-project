@@ -60,7 +60,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		String fileName = file.getName();
 		setPartName(fileName);
 		// todo delete
-		autoAddAuroraNatue(ifile);
+//		autoAddAuroraNatue(ifile);
 
 	}
 
