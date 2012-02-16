@@ -104,7 +104,6 @@ public class NtlmAuthenticator {
 					SmbSession.logon(dc, ntlm);
 					return ntlm;
 				}catch(SmbAuthException e){	
-					e.printStackTrace();
 					continue;
 				}				
 		    }				
