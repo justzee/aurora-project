@@ -15,6 +15,7 @@ public class NtlmConfig {
 	String checksession_result;
 	CompositeMap domainInstances;
 	IObjectRegistry mObjectRegistry;
+	boolean enableBasic=false;
 	
 	public NtlmConfig(IObjectRegistry registry) {
 		mObjectRegistry=registry;
@@ -91,5 +92,17 @@ public class NtlmConfig {
 			intance = domainInstance[i];
 			domainInstances.put(intance.getDomain().toUpperCase(), intance);
 		}
+	}
+	
+	public boolean getEnableBasic() {
+		return enableBasic;
+	}
+
+	public void setEnableBasic(boolean enableBasic) {
+		this.enableBasic = enableBasic;
+	}	
+	
+	public CompositeMap getDomainInstances(){
+		return domainInstances;
 	}
 }

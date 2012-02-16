@@ -1,5 +1,6 @@
 package org.lwap.plugin.ntlm;
 
+import java.io.IOException;
 import java.util.logging.Level;
 
 import javax.servlet.ServletException;
@@ -90,12 +91,13 @@ public class NtlmLogin extends AbstractServiceHandle {
 		return "N".equals(model.getObject(ntlmConfig.getChecksession_result())) ? true : false;
 	}
 	
-	NtlmPasswordAuthentication authenticate(CompositeMap context){
+	NtlmPasswordAuthentication authenticate(CompositeMap context) throws IOException{
 		NtlmPasswordAuthentication ntlm = null;
 		mLogger = LoggingContext.getLogger("org.lwap.plugin.ntlm",mObjectRegistry);
 		MainService service = MainService.getServiceInstance(context);
 		HttpServletRequest httpRequest = service.getRequest();
 		HttpServletResponse httpResponse = service.getResponse();
+		String realm;
 		try {
 			if ((ntlm = new NtlmAuthenticator(ntlmConfig).authenticate(httpRequest,
 					httpResponse)) == null) {
@@ -104,10 +106,29 @@ public class NtlmLogin extends AbstractServiceHandle {
 				state.setContinueFlag(false);
 				return null;
 			}
-		} catch (Exception e) {
-			mLogger.log(Level.SEVERE,"NTLM authenticate fail",e);
-			//域验证不通过，跳入普通处理方式
+		} catch(NtlmException ntlmException){
+			mLogger.log(Level.WARNING,"NTLM authenticate fail;ServiceName:"+service.getServiceName(),ntlmException);			
+			if(ntlmConfig.getEnableBasic()){
+				realm="Ntlm Auth failure,Please use the basic authentication";
+				httpResponse.addHeader( "WWW-Authenticate", "Basic realm=\"" +
+	                    realm + "\"");
+				httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				httpResponse.setContentLength(0);
+				httpResponse.flushBuffer();
+			}
 			return null;
+		}catch (Exception e) {
+			// 域验证不通过，跳入普通处理方式
+			mLogger.log(Level.WARNING,"NTLM authenticate fail;ServiceName:"+service.getServiceName(),e);
+			if(ntlmConfig.getEnableBasic()){
+				realm=e.getMessage();
+				httpResponse.addHeader( "WWW-Authenticate", "Basic realm=\"" +
+	                    realm + "\"");
+				httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				httpResponse.setContentLength(0);
+				httpResponse.flushBuffer();
+			}
+		    return null;
 		}
 		mLogger.log(Level.INFO, "NTLM authenticate domain:"+ntlm.getDomain()+";Username:"+ntlm.getUsername()+";name:"+ntlm.getName());
 		return ntlm;
