@@ -115,6 +115,9 @@ public class NtlmLogin extends AbstractServiceHandle {
 				httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				httpResponse.setContentLength(0);
 				httpResponse.flushBuffer();
+				SessionController state = SessionController
+					.createSessionController(context);
+				state.setContinueFlag(false);
 			}
 			return null;
 		}catch (Exception e) {
@@ -127,6 +130,9 @@ public class NtlmLogin extends AbstractServiceHandle {
 				httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				httpResponse.setContentLength(0);
 				httpResponse.flushBuffer();
+				SessionController state = SessionController
+					.createSessionController(context);
+				state.setContinueFlag(false);
 			}
 		    return null;
 		}
