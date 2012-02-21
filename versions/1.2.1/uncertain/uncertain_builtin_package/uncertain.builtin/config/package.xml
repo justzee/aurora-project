@@ -1,0 +1,5 @@
+<package name="uncertain.builtin">
+	<schema-files>
+		<schema-file path="uncertain_proc.sxsd"/>
+	</schema-files>
+</package>
