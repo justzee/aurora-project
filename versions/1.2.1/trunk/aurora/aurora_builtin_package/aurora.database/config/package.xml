@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<package name="aurora.database">
-<!--
-	<schema-files>
-		<schema-file path="aurora_database.sxsd"/>
-	</schema-files>
--->	
-</package>
