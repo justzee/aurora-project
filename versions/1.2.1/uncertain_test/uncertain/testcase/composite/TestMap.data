@@ -1,5 +1,0 @@
-<t:composite-map xmlns:t="http://www.foobar.com">	
-	<t:test>
-		<a:my-element xmlns:a="http://another.foobar.com" />
-	</t:test>
-</t:composite-map>
