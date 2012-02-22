@@ -1,8 +1,0 @@
-<model>
-	<fields>
-		<field name="id" required="true"/>
-		<field name="name" datatype="string" required="true"  />
-		<field name="borndate" datatype="date" required="true" forInsert="false"/>
-		<field name="address" datatype="string" required="false" forInsert="true" />
-	</fields>
-</model>
