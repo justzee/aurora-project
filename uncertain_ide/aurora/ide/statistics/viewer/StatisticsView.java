@@ -9,7 +9,10 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -18,9 +21,16 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -31,6 +41,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 import org.eclipse.ui.part.ViewPart;
@@ -38,9 +50,11 @@ import org.eclipse.ui.part.ViewPart;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.i18n.Messages;
+import aurora.ide.search.ui.EditorOpener;
 import aurora.ide.statistics.wizard.dialog.LoadDataWizard;
 import aurora.ide.statistics.wizard.dialog.SaveDataWizard;
 import aurora.statistics.Statistician;
+import aurora.statistics.map.ObjectStatisticsResult;
 import aurora.statistics.map.StatisticsResult;
 import aurora.statistics.model.ProjectObject;
 import aurora.statistics.model.StatisticsProject;
@@ -68,6 +82,8 @@ public class StatisticsView extends ViewPart {
 	private Action dbLoadAction;
 
 	private Statistician statistician;
+	private ObjectNode selectNode;
+	private IProject selectPro;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -97,7 +113,7 @@ public class StatisticsView extends ViewPart {
 	}
 
 	private void createObjectViewer(Composite parent) {
-		objectViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		objectViewer = new TreeViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		objectViewer.setContentProvider(new ObjectViewContentProvider());
 		objectViewer.setLabelProvider(new ObjectViewLabelProvider());
 		objectViewer.addTreeListener(new TreeViewerAutoFitListener());
@@ -109,10 +125,79 @@ public class StatisticsView extends ViewPart {
 			treeColumn.setText(oViewColTitles[i]);
 			treeColumn.setToolTipText(oViewColTooltips[i]);
 			treeColumn.pack();
+			treeColumn.addSelectionListener(new SelectionAdapter() {
+				boolean asc = true;
+
+				public void widgetSelected(SelectionEvent e) {
+					TreeColumn tc = (TreeColumn) e.getSource();
+					setSorter(tc.getText(), asc);
+					asc = !asc;
+					objectViewer.expandAll();
+				}
+			});
 		}
 		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);
 		objectViewer.expandAll();
+		objectViewer.getTree().addMouseListener(new MouseListener() {
+			public void mouseUp(MouseEvent e) {
+			}
+
+			public void mouseDown(MouseEvent e) {
+			}
+
+			public void mouseDoubleClick(MouseEvent e) {
+				if (e.button == 1 && selectNode != null) {
+					ObjectStatisticsResult osr = (ObjectStatisticsResult) selectNode.parent;
+					IProject pro = null;
+					if (osr.getProject().getEclipseProjectName() != null) {
+						pro = ResourcesPlugin.getWorkspace().getRoot().getProject(osr.getProject().getEclipseProjectName());
+					} else {
+						pro = selectPro;
+					}
+					if (pro == null) {
+						return;
+					}
+					IFile file = pro.getFile(selectNode.path);
+					EditorOpener editorOpener = new EditorOpener();
+					try {
+						editorOpener.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file, true);
+					} catch (PartInitException e1) {
+						DialogUtil.showExceptionMessageBox(e1);
+					}
+				}
+			}
+		});
+
+		objectViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				// TODO ...
+				TreeSelection ts = (TreeSelection) event.getSelection();
+				if (ts.getFirstElement() instanceof ObjectNode) {
+					selectNode = (ObjectNode) ts.getFirstElement();
+				}
+			}
+		});
+	}
+
+	private void setSorter(String text, boolean asc) {
+		if (text.equals(Messages.StatisticsView_File_Name)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.FILENAME_ASC : ObjectViewerSorter.FILENAME_DESC);
+		} else if (text.equals(Messages.StatisticsView_Path)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.PATH_ASC : ObjectViewerSorter.PATH_DESC);
+		} else if (text.equals(Messages.StatisticsView_File_Size)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.FILESIZE_ASC : ObjectViewerSorter.FILESIZE_DESC);
+		} else if (text.equals(Messages.StatisticsView_Script_Size)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.SCRIPTSIZE_ASC : ObjectViewerSorter.SCRIPTSIZE_DESC);
+		} else if (text.equals(Messages.StatisticsView_Tag_Num)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.TAGCOUNT_ASC : ObjectViewerSorter.TAGCOUNT_DESC);
+		} else if (text.equals(Messages.StatisticsView_Reference)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.REFINCOUNT_ASC : ObjectViewerSorter.REFINCOUNT_DESC);
+		} else if (text.equals(Messages.StatisticsView_Referenced)) {
+			objectViewer.setSorter(asc ? ObjectViewerSorter.REFOUTCOUNT_ASC : ObjectViewerSorter.REFOUTCOUNT_DESC);
+		} else {
+			return;
+		}
 	}
 
 	private void createProjectViewer(Composite parent) {
@@ -196,7 +281,7 @@ public class StatisticsView extends ViewPart {
 		saveToDBAction = new Action() {
 			public void run() {
 				if (statistician == null || StatisticsProject.NONE_PROJECT.equals(statistician.getProject()) || null == statistician.getProject().getEclipseProjectName()) {
-					showMessage(Messages.StatisticsView_Can_Not_Save); 
+					showMessage(Messages.StatisticsView_Can_Not_Save);
 					return;
 				}
 				SaveDataWizard wizard = new SaveDataWizard(statistician);
@@ -211,7 +296,7 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		saveToDBAction.setToolTipText(Messages.StatisticsView_Save_To_DB); 
+		saveToDBAction.setToolTipText(Messages.StatisticsView_Save_To_DB);
 		saveToDBAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/export.png")); //$NON-NLS-1$
 
 		dbLoadAction = new Action() {
@@ -229,17 +314,20 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		dbLoadAction.setToolTipText(Messages.StatisticsView_Load_From_DB); 
+		dbLoadAction.setToolTipText(Messages.StatisticsView_Load_From_DB);
 		dbLoadAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/import.png")); //$NON-NLS-1$
 
 		fileSelectionAction = new Action() {
 			public void run() {
-				ResourceSelectionDialog dialog = new ResourceSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), Messages.StatisticsView_Select_Need_Statistics_File); 
+				ResourceSelectionDialog dialog = new ResourceSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), Messages.StatisticsView_Select_Need_Statistics_File);
 				dialog.setHelpAvailable(false);
-				dialog.setTitle(Messages.StatisticsView_Select_File); 
+				dialog.setTitle(Messages.StatisticsView_Select_File);
 				int open = dialog.open();
 				if (open == Dialog.OK) {
 					Object[] selected = dialog.getResult();
+					if (selected.length > 0 && (selected[0] instanceof IResource)) {
+						selectPro = ((IResource) selected[0]).getProject();
+					}
 					StatisticianRunner runner = new StatisticianRunner(StatisticsView.this);
 					runner.noProjectRun(selected);
 					setSaveToDBActionEnabled(false);
@@ -247,7 +335,7 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		fileSelectionAction.setText(Messages.StatisticsView_Select_File); 
+		fileSelectionAction.setText(Messages.StatisticsView_Select_File);
 		fileSelectionAction.setToolTipText(Messages.StatisticsView_Select_Need_Statistics_File); //$NON-NLS-1$
 		fileSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/file.png")); //$NON-NLS-1$
 
@@ -255,7 +343,7 @@ public class StatisticsView extends ViewPart {
 			public void run() {
 				ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(getSite().getShell(), AuroraPlugin.getWorkspace().getRoot(), IResource.PROJECT);
 				dialog.setHelpAvailable(false);
-				dialog.setTitle(Messages.StatisticsView_Select_Project); 
+				dialog.setTitle(Messages.StatisticsView_Select_Project);
 				int open = dialog.open();
 				if (open == Dialog.OK) {
 					Object[] selected = dialog.getResult();
@@ -267,7 +355,7 @@ public class StatisticsView extends ViewPart {
 			}
 		};
 		projectSelectionAction.setText(Messages.StatisticsView_Select_Project); //$NON-NLS-1$
-		projectSelectionAction.setToolTipText(Messages.StatisticsView_Select_Need_Statistics_Project); 
+		projectSelectionAction.setToolTipText(Messages.StatisticsView_Select_Need_Statistics_Project);
 		projectSelectionAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/project.png")); //$NON-NLS-1$
 
 		saveToXLSAction = new Action() {
@@ -361,7 +449,7 @@ public class StatisticsView extends ViewPart {
 				}
 			}
 		};
-		saveToXLSAction.setText(Messages.StatisticsView_Export_Excel); 
+		saveToXLSAction.setText(Messages.StatisticsView_Export_Excel);
 		saveToXLSAction.setToolTipText(Messages.StatisticsView_Export_Excel); //$NON-NLS-1$
 		saveToXLSAction.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/palette/toolbar_btn_05.png")); //$NON-NLS-1$
 	}
