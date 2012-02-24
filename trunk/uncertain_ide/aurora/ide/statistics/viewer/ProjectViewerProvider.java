@@ -54,11 +54,11 @@ class ProjectViewContentProvider implements IStructuredContentProvider, ITreeCon
 		}
 		if (parentElement instanceof ObjectStatisticsResult) {
 			ObjectStatisticsResult osr = (ObjectStatisticsResult) parentElement;
+			ProjectNode fileCount = createProjectNode("files", osr, osr.getFileCount(), osr.getFileCount(), osr.getFileCount(), osr.getFileCount());
 			ProjectNode fileSize = createProjectNode("file size", osr, osr.getMaxFileSize(), osr.getMinFileSize(), osr.getTotalFileSize(), osr.getAverageFileSize());
 			ProjectNode scriptSize = createProjectNode("script size", osr, osr.getMaxScriptSize(), osr.getMinScriptSize(), osr.getTotalScriptSize(), osr.getAverageScriptSize());
-
 			ProjectNode tagCount = createProjectNode("tags", osr, osr.getMaxTagCount(), osr.getMinTagCount(), osr.getTotalTagCount(), osr.getAverageTagCount());
-			return new ProjectNode[] { fileSize, scriptSize, tagCount };
+			return new ProjectNode[] { fileSize, scriptSize, fileCount, tagCount };
 		}
 		return null;
 	}
@@ -151,6 +151,8 @@ class ProjectViewLabelProvider implements ITableLabelProvider {
 			case 0:
 				if ("file size".equals(node.name)) {
 					return "文件大小";
+				} else if ("files".equals(node.name)) {
+					return "文件数量";
 				} else if ("script size".equals(node.name)) {
 					return "脚本大小";
 				} else if ("tags".equals(node.name)) {

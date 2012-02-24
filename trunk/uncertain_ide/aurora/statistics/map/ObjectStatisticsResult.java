@@ -13,12 +13,8 @@ public class ObjectStatisticsResult {
 	private List<ProjectObject> objects;
 
 	private StatisticsProject project;
-	
-	
-	
-	
-	public ObjectStatisticsResult(StatisticsProject project,
-			List<ProjectObject> objects, String type) {
+
+	public ObjectStatisticsResult(StatisticsProject project, List<ProjectObject> objects, String type) {
 		this.type = type;
 		this.objects = objects;
 		this.project = project;
@@ -69,8 +65,7 @@ public class ObjectStatisticsResult {
 	}
 
 	public int getAverageFileSize() {
-		return this.getCount() != 0 ? this.getTotalFileSize() / this.getCount()
-				: 0;
+		return this.getCount() != 0 ? this.getTotalFileSize() / this.getCount() : 0;
 	}
 
 	public int getTotalScriptSize() {
@@ -100,8 +95,7 @@ public class ObjectStatisticsResult {
 	}
 
 	public int getAverageScriptSize() {
-		return this.getCount() != 0 ? this.getTotalScriptSize()
-				/ this.getCount() : 0;
+		return this.getCount() != 0 ? this.getTotalScriptSize() / this.getCount() : 0;
 	}
 
 	public int getTotalTagCount() {
@@ -129,8 +123,11 @@ public class ObjectStatisticsResult {
 	}
 
 	public int getAverageTagCount() {
-		return this.getCount() != 0 ? this.getTotalTagCount() / this.getCount()
-				: 0;
+		return this.getCount() != 0 ? this.getTotalTagCount() / this.getCount() : 0;
+	}
+
+	public int getFileCount() {
+		return objects.size();
 	}
 
 	@Override

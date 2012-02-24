@@ -79,42 +79,78 @@ public class ObjectViewerSorter extends ViewerSorter {
 			String s1 = o1.fileSize;
 			String s2 = o2.fileSize;
 			if (s1 != null && s2 != null) {
-				return s1.compareTo(s2);
+				if (Integer.parseInt(s1) > Integer.parseInt(s2)) {
+					return 1;
+				} else if (Integer.parseInt(s1) < Integer.parseInt(s2)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case -FILESIZE: {
 			String s1 = o1.fileSize;
 			String s2 = o2.fileSize;
 			if (s1 != null && s2 != null) {
-				return s2.compareTo(s1);
+				if (Integer.parseInt(s2) > Integer.parseInt(s1)) {
+					return 1;
+				} else if (Integer.parseInt(s2) < Integer.parseInt(s1)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case SCRIPTSIZE: {
 			String s1 = o1.scriptSize;
 			String s2 = o2.scriptSize;
 			if (s1 != null && s2 != null) {
-				return s1.compareTo(s2);
+				if (Integer.parseInt(s1) > Integer.parseInt(s2)) {
+					return 1;
+				} else if (Integer.parseInt(s1) < Integer.parseInt(s2)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case -SCRIPTSIZE: {
 			String s1 = o1.scriptSize;
 			String s2 = o2.scriptSize;
 			if (s1 != null && s2 != null) {
-				return s2.compareTo(s1);
+				if (Integer.parseInt(s2) > Integer.parseInt(s1)) {
+					return 1;
+				} else if (Integer.parseInt(s2) < Integer.parseInt(s1)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case TAGCOUNT: {
 			String s1 = o1.tagCount;
 			String s2 = o2.tagCount;
 			if (s1 != null && s2 != null) {
-				return s1.compareTo(s2);
+				if (Integer.parseInt(s1) > Integer.parseInt(s2)) {
+					return 1;
+				} else if (Integer.parseInt(s1) < Integer.parseInt(s2)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case -TAGCOUNT: {
 			String s1 = o1.tagCount;
 			String s2 = o2.tagCount;
 			if (s1 != null && s2 != null) {
-				return s2.compareTo(s1);
+				if (Integer.parseInt(s2) > Integer.parseInt(s1)) {
+					return 1;
+				} else if (Integer.parseInt(s2) < Integer.parseInt(s1)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case REFINCOUNT: {
@@ -148,5 +184,4 @@ public class ObjectViewerSorter extends ViewerSorter {
 		}
 		return 0;
 	}
-
 }
