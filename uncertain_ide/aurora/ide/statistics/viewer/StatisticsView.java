@@ -27,16 +27,22 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IActionBars;
@@ -74,6 +80,7 @@ public class StatisticsView extends ViewPart {
 
 	private TreeViewer projectViewer;
 	private TreeViewer objectViewer;
+	private ObjectViewerFilter filter;
 
 	private Action fileSelectionAction;
 	private Action projectSelectionAction;
@@ -96,8 +103,25 @@ public class StatisticsView extends ViewPart {
 		TabItem item = new TabItem(tabFolder, SWT.NONE);
 		item.setText("Objects"); //$NON-NLS-1$
 		item.setToolTipText("Project Objects:bm,screen,svc..."); //$NON-NLS-1$
-		createObjectViewer(tabFolder);
-		item.setControl(objectViewer.getControl());
+		Composite objectComp = new Composite(tabFolder, SWT.None);
+		objectComp.setLayout(new GridLayout(2, false));
+		Label lbl = new Label(objectComp, SWT.NONE);
+		lbl.setText("文件名：");
+		Text txt = new Text(objectComp, SWT.BORDER);
+		txt.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		txt.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				objectViewer.removeFilter(filter);
+				filter = new ObjectViewerFilter(((Text) e.getSource()).getText());
+				objectViewer.addFilter(filter);
+				objectViewer.getControl().setRedraw(false);
+				objectViewer.expandAll();
+				objectViewer.getControl().setRedraw(true);
+			}
+		});
+		createObjectViewer(objectComp);
+		item.setControl(objectComp);
+		// item.setControl(objectViewer.getControl());
 
 		item = new TabItem(tabFolder, SWT.NONE);
 		item.setText("Project"); //$NON-NLS-1$
@@ -113,10 +137,15 @@ public class StatisticsView extends ViewPart {
 	}
 
 	private void createObjectViewer(Composite parent) {
-		objectViewer = new TreeViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		objectViewer = new TreeViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+		GridData gd = new GridData(GridData.FILL_BOTH);
+		gd.horizontalSpan = 2;
+		objectViewer.getTree().setLayoutData(gd);
 		objectViewer.setContentProvider(new ObjectViewContentProvider());
 		objectViewer.setLabelProvider(new ObjectViewLabelProvider());
 		objectViewer.addTreeListener(new TreeViewerAutoFitListener());
+		filter = new ObjectViewerFilter("");
+		objectViewer.addFilter(filter);
 		Tree tree = objectViewer.getTree();
 		for (int i = 0; i < oViewColTitles.length; i++) {
 			TreeColumn treeColumn = new TreeColumn(tree, SWT.NONE);
@@ -201,7 +230,7 @@ public class StatisticsView extends ViewPart {
 	}
 
 	private void createProjectViewer(Composite parent) {
-		projectViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		projectViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		projectViewer.setContentProvider(new ProjectViewContentProvider());
 		projectViewer.setLabelProvider(new ProjectViewLabelProvider());
 		projectViewer.addTreeListener(new TreeViewerAutoFitListener());
