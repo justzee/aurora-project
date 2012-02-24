@@ -134,6 +134,9 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		if (workbenchPage == null)
 			return null;
 		IEditorPart editorPart = workbenchPage.getActiveEditor();
+		if(editorPart == null){
+			return null;
+		}
 		IEditorInput input = editorPart.getEditorInput();
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		return ifile;
