@@ -10,6 +10,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Display;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.AuroraProjectNature;
 import aurora.ide.builder.validator.IntimeValidator;
 import aurora.ide.editor.textpage.IReconcileListener;
 import aurora.ide.preferencepages.CustomSettingPreferencePage;
@@ -45,6 +46,8 @@ public class IntimeBuilder implements IReconcileListener {
 				try {
 					file = AuroraPlugin.getActiveIFile();
 					if (file == null)
+						return;
+					if (!AuroraProjectNature.hasAuroraNature(file.getProject()))
 						return;
 					IDocument doc = sourceViewer.getDocument();
 					new IntimeValidator(file, doc).validate();
