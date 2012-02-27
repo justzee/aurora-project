@@ -42,10 +42,11 @@ public class FileDeleteParticipant extends DeleteParticipant {
 			CheckConditionsContext context) throws OperationCanceledException {
 
 		RefactoringStatus result = new RefactoringStatus();
-		List findRelations = this.findRelations(pm);
-		if (findRelations.size() > 0) {
-			result.merge(RefactoringStatus.createInfoStatus("删除的文件会影响其他文件。"));
-		}
+		//TODO 
+//		List findRelations = this.findRelations(pm);
+//		if (findRelations.size() > 0) {
+//			result.merge(RefactoringStatus.createInfoStatus("删除的文件会影响其他文件。"));
+//		}
 		return result;
 	}
 
