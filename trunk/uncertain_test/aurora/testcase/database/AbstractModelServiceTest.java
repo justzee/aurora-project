@@ -6,6 +6,8 @@ package aurora.testcase.database;
 import java.sql.Connection;
 import java.util.logging.Level;
 
+import javax.sql.DataSource;
+
 import junit.framework.TestCase;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
@@ -14,9 +16,9 @@ import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
 import uncertain.ocm.IObjectRegistry;
-import aurora.database.actions.ServiceInitiator;
 import aurora.database.profile.DatabaseFactory;
 import aurora.database.profile.DatabaseProfile;
+import aurora.database.profile.IDatabaseFactory;
 import aurora.database.profile.ISqlBuilderRegistry;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
@@ -51,19 +53,26 @@ public abstract class AbstractModelServiceTest extends TestCase {
         uncertainEngine = new UncertainEngine();
         uncertainEngine.initialize(new CompositeMap());
         IObjectRegistry reg = uncertainEngine.getObjectRegistry();
-        ServiceInitiator sinit = new ServiceInitiator(uncertainEngine);
-        svcFactory = (DatabaseServiceFactory) reg
-                .getInstanceOfType(DatabaseServiceFactory.class);
-        assertNotNull(svcFactory);
+        reg.registerInstance(DataSource.class, cp);
 
-        databaseFactory = new DatabaseFactory(uncertainEngine);
+        databaseFactory = new DatabaseFactory();
         DatabaseProfile prof = new DatabaseProfile("SQL92");
         databaseFactory.addDatabaseProfile(prof);
         databaseFactory.setDefaultDatabase("SQL92");
-        databaseFactory.onInitialize();
         assertNotNull(databaseFactory.getDefaultDatabaseProfile());
         ISqlBuilderRegistry sqlreg2 = databaseFactory.getDefaultSqlBuilderRegistry();
         assertNotNull(sqlreg2);
+        reg.registerInstance(IDatabaseFactory.class, databaseFactory);
+       
+        //ServiceInitiator sinit = new ServiceInitiator(uncertainEngine);
+        svcFactory = new DatabaseServiceFactory(uncertainEngine);
+        reg.registerInstance(svcFactory);
+        /*
+        svcFactory = (DatabaseServiceFactory) reg
+                .getInstanceOfType(DatabaseServiceFactory.class);
+        */
+        assertNotNull(svcFactory);
+
     }
 
     protected void tearDown() throws Exception {
