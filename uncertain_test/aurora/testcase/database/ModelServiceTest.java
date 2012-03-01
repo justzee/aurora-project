@@ -99,13 +99,25 @@ public class ModelServiceTest extends AbstractModelServiceTest {
         //System.out.println(data.toXML());
     }
 
-    public void testCreateSql() throws Exception {
+    public void testCreateInsertSql() throws Exception {
         BusinessModelServiceContext bc = createContext();
         CompositeMap context = bc.getObjectContext();
         BusinessModelService service = svcFactory.getModelService(
                 "testcase.HR.EMP", context);
         StringBuffer sql = service.getSql("Insert");
         assertNotNull(sql);
+    }
+    
+    public void testCreateQuerySql() throws Exception {
+        BusinessModelServiceContext bc = createContext();
+        bc.getParameter().put("ename", "S");
+        CompositeMap context = bc.getObjectContext();
+        BusinessModelService service = svcFactory.getModelService(
+                "testcase.HR.EMP", context);
+        StringBuffer sql = service.getSql("Query");
+        System.out.println(" ======== sql =============");
+        System.out.println(sql.toString());
+        
     }
 
     public void onExecuteUpdate(BusinessModelServiceContext context) {

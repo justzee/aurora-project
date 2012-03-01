@@ -4,18 +4,23 @@
 package aurora.testcase.database;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class ConnectionProvider {
+import javax.sql.DataSource;
+
+public class ConnectionProvider implements DataSource {
     
     String driver;
     String url;
     String user;
     String password;
+    
+    PrintWriter writer;
     
     public ConnectionProvider()
         throws Exception
@@ -39,6 +44,36 @@ public class ConnectionProvider {
     {
         Connection conn = DriverManager.getConnection(url,user,password);
         return conn;
+    }
+
+    public PrintWriter getLogWriter() throws SQLException {
+        return writer;
+    }
+
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        this.writer = out;
+        
+    }
+
+    public void setLoginTimeout(int seconds) throws SQLException {
+        
+    }
+
+    public int getLoginTimeout() throws SQLException {
+        return 0;
+    }
+
+    public boolean isWrapperFor(Class arg0) throws SQLException {
+        return false;
+    }
+
+    public Object unwrap(Class arg0) throws SQLException {
+        return this;
+    }
+
+    public Connection getConnection(String username, String password)
+            throws SQLException {
+        return getConnection();
     }
 
 }
