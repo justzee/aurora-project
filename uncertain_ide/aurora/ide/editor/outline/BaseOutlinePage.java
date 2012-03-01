@@ -2,7 +2,9 @@ package aurora.ide.editor.outline;
 
 import java.util.Iterator;
 
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -38,22 +40,55 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	private Selected selected = new Selected();
 	private boolean error = false;
 
+	private class DocumentListener implements IDocumentListener {
+
+		public void documentAboutToBeChanged(DocumentEvent event) {
+
+		}
+
+		public void documentChanged(DocumentEvent event) {
+//			event.
+			if (null == selectTree) {
+				return;
+			}
+			loadInput();
+			if (error) {
+				return;
+			}
+			OutlineTree<CompositeMap> rootNode = null;
+			if (null == selectTree.getParent()) {
+				rootNode = selectTree;
+			} else {
+				rootNode = selectTree.getParent();
+			}
+			correct(rootNode, labelRoot.findChild(rootNode.getId()));
+			getTreeViewer().refresh(rootNode);
+		}
+
+	}
+
 	public BaseOutlinePage(TextPage editor) {
 		this.editor = editor;
+		IDocument inputDocument = editor.getInputDocument();
+		inputDocument.addDocumentListener(new DocumentListener());
 		loadInput();
 	}
 
 	public void selectNode(int offset) {
 		if (!error) {
 			try {
-				CompositeMap temp = QuickAssistUtil.findMap(input, document, offset);
-				if (null != selectMap && equalsRange(temp.getLocationNotNull().getRange(), selectMap.getLocationNotNull().getRange())) {
+				CompositeMap temp = QuickAssistUtil.findMap(input, document,
+						offset);
+				if (null != selectMap
+						&& equalsRange(temp.getLocationNotNull().getRange(),
+								selectMap.getLocationNotNull().getRange())) {
 					return;
 				} else {
 					selectMap = temp;
 					findOutlineTree(labelRoot);
 					getTreeViewer().removeSelectionChangedListener(selected);
-					getTreeViewer().setSelection(new StructuredSelection(selectTree));
+					getTreeViewer().setSelection(
+							new StructuredSelection(selectTree));
 					getTreeViewer().addSelectionChangedListener(selected);
 				}
 			} catch (Exception e) {
@@ -64,7 +99,8 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 	private void loadInput() {
 		try {
-			input = CompositeMapUtil.loaderFromString(editor.getInputDocument().get());
+			input = CompositeMapUtil.loaderFromString(editor.getInputDocument()
+					.get());
 			document = editor.getInputDocument();
 			error = false;
 		} catch (ApplicationException e) {
@@ -79,7 +115,8 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 	private void findOutlineTree(OutlineTree<CompositeMap> label) {
 		CompositeMap map = label.getData();
-		if (equalsRange(map.getLocationNotNull().getRange(), selectMap.getLocationNotNull().getRange())) {
+		if (equalsRange(map.getLocationNotNull().getRange(), selectMap
+				.getLocationNotNull().getRange())) {
 			selectTree = label;
 			return;
 		}
@@ -118,24 +155,25 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	}
 
 	public void refresh() {
-		if (null == selectTree) {
-			return;
-		}
-		loadInput();
-		if (error) {
-			return;
-		}
-		OutlineTree<CompositeMap> rootNode = null;
-		if (null == selectTree.getParent()) {
-			rootNode = selectTree;
-		} else {
-			rootNode = selectTree.getParent();
-		}
-		correct(rootNode, labelRoot.findChild(rootNode.getId()));
-		getTreeViewer().refresh(rootNode);
+		// if (null == selectTree) {
+		// return;
+		// }
+		// loadInput();
+		// if (error) {
+		// return;
+		// }
+		// OutlineTree<CompositeMap> rootNode = null;
+		// if (null == selectTree.getParent()) {
+		// rootNode = selectTree;
+		// } else {
+		// rootNode = selectTree.getParent();
+		// }
+		// correct(rootNode, labelRoot.findChild(rootNode.getId()));
+		// getTreeViewer().refresh(rootNode);
 	}
 
-	private void correct(OutlineTree<CompositeMap> ing, OutlineTree<CompositeMap> ed) {
+	private void correct(OutlineTree<CompositeMap> ing,
+			OutlineTree<CompositeMap> ed) {
 		if (!ing.getData().equals(ed.getData())) {
 			ing.setData(ed.getData());
 		}
@@ -155,14 +193,21 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		@SuppressWarnings("unchecked")
 		public void selectionChanged(SelectionChangedEvent event) {
 			TreeSelection selection = (TreeSelection) event.getSelection();
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) selection.getFirstElement();
+			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) selection
+					.getFirstElement();
 			if (null == lt || null == lt.getData()) {
 				return;
 			}
 			CompositeMap data = lt.getData();
 			CompositeMapInfo info = new CompositeMapInfo(data, document);
 			IRegion region = info.getMapNameRegion();
-			TextSelection tt = new TextSelection(region.getOffset(), region.getLength());
+			if (region == null) {
+				System.out.println();
+				return;
+			}
+
+			TextSelection tt = new TextSelection(region.getOffset(),
+					region.getLength());
 			editor.getEditorSite().getSelectionProvider().setSelection(tt);
 		}
 	}
@@ -202,7 +247,8 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 	}
 
-	class OutlineLabelProvider extends BaseLabelProvider implements ILabelProvider {
+	class OutlineLabelProvider extends BaseLabelProvider implements
+			ILabelProvider {
 		@SuppressWarnings("unchecked")
 		public String getText(Object obj) {
 			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) obj;
@@ -222,12 +268,13 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		public Image getImage(Object element) {
 			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
 			CompositeMap elemenntCm = lt.getData();
-//			
+			//
 			Element ele = CompositeMapUtil.getElement(elemenntCm);
 			if (ele != null) {
 				if (ele.isArray()) {
 					return AuroraPlugin.getImageDescriptor(
-							LocaleMessage.getString("array.icon")).createImage();
+							LocaleMessage.getString("array.icon"))
+							.createImage();
 				}
 			}
 			String defaultPath = LocaleMessage.getString("element.icon");
