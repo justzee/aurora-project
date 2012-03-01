@@ -105,18 +105,28 @@ public class ModelServiceTest extends AbstractModelServiceTest {
         BusinessModelService service = svcFactory.getModelService(
                 "testcase.HR.EMP", context);
         StringBuffer sql = service.getSql("Insert");
+        System.out.println("###");
+        System.out.println(sql);
         assertNotNull(sql);
+        assertTrue(sql.indexOf("EMP_S.nextval")>0);
+        assertTrue(sql.indexOf("sysdate")>0);
+        assertTrue(sql.indexOf("join_time")<0);
     }
     
     public void testCreateQuerySql() throws Exception {
         BusinessModelServiceContext bc = createContext();
+        /*
+        bc.getParameter().put("eno", "2");
+        bc.getParameter().put("mgrno", new Long(1));
+        */
         bc.getParameter().put("ename", "S");
+        bc.getParameter().put("deptno", new Long(1));
         CompositeMap context = bc.getObjectContext();
         BusinessModelService service = svcFactory.getModelService(
                 "testcase.HR.EMP", context);
         StringBuffer sql = service.getSql("Query");
-        System.out.println(" ======== sql =============");
-        System.out.println(sql.toString());
+        assertTrue(sql.indexOf("e.ename LIKE ${@ename}")>0);
+        assertTrue(sql.indexOf("e.deptno = ${@deptno}")>0);
         
     }
 
