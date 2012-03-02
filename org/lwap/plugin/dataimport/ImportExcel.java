@@ -239,8 +239,10 @@ public class ImportExcel implements IController {
 						while(itemIt.hasNext()){
 							itemIt.next();
 							if(cellnum<hsize) {
-								if(temp.getString("cell"+cellnum)!=null||!"".equals(temp.getString("cell"+cellnum)))
-									is_null=false;
+								if(is_null){
+									if(temp.getString("cell"+cellnum)!=null||!"".equals(temp.getString("cell"+cellnum)))
+										is_null=false;
+								}
 								item.put(headers.get(cellnum), temp.getString("cell"+cellnum));					
 								cellnum++;
 							}
