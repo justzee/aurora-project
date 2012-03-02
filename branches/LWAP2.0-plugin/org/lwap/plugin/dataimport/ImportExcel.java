@@ -229,19 +229,24 @@ public class ImportExcel implements IController {
 					data.put(FILE_NAME, file.getName());
 					int rs=dataList.size();		
 					CompositeMap temp;
+					boolean is_null=true;
 					for (int j = 1; j < rs; j++) {		
 						temp=(CompositeMap)dataList.get(j);				
 						item = new CompositeMap(MAP_CHILD_NAME);
 						itemIt = temp.entrySet().iterator();
 						cellnum=0;
+						is_null=true;
 						while(itemIt.hasNext()){
 							itemIt.next();
 							if(cellnum<hsize) {
+								if(temp.getString("cell"+cellnum)!=null||!"".equals(temp.getString("cell"+cellnum)))
+									is_null=false;
 								item.put(headers.get(cellnum), temp.getString("cell"+cellnum));					
 								cellnum++;
 							}
-						}										
-						data.addChild(item);
+						}						
+						if(!is_null)
+							data.addChild(item);
 					}
 					params.putObject(getTarget(), data, true);	
 				}
