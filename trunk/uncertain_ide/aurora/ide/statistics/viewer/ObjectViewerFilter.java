@@ -10,9 +10,11 @@ public class ObjectViewerFilter extends ViewerFilter {
 	private String fileName;
 
 	public ObjectViewerFilter(String fileName) {
+		fileName = fileName.replaceAll("\\\\", "\\\\\\\\");
 		fileName = fileName.replaceAll("\\.", "\\\\.");
 		fileName = fileName.replaceAll("\\?", ".");
 		fileName = fileName.replaceAll("\\*", ".*");
+		fileName += ".*";
 		this.fileName = fileName;
 	}
 
