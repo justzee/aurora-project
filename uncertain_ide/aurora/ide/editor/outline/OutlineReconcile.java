@@ -20,6 +20,8 @@ public class OutlineReconcile implements IReconcileListener {
 	}
 
 	public void reconcile() {
+		if(true)
+			return;
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				IWorkbench workbench = PlatformUI.getWorkbench();
