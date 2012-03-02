@@ -240,7 +240,7 @@ public class ImportExcel implements IController {
 							itemIt.next();
 							if(cellnum<hsize) {
 								if(is_null){
-									if(temp.getString("cell"+cellnum)!=null||!"".equals(temp.getString("cell"+cellnum)))
+									if(!"".equals(temp.getString("cell"+cellnum)))
 										is_null=false;
 								}
 								item.put(headers.get(cellnum), temp.getString("cell"+cellnum));					
