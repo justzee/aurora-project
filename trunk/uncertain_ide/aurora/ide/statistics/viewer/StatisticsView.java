@@ -10,9 +10,9 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -60,7 +60,6 @@ import aurora.ide.search.ui.EditorOpener;
 import aurora.ide.statistics.wizard.dialog.LoadDataWizard;
 import aurora.ide.statistics.wizard.dialog.SaveDataWizard;
 import aurora.statistics.Statistician;
-import aurora.statistics.map.ObjectStatisticsResult;
 import aurora.statistics.map.StatisticsResult;
 import aurora.statistics.model.ProjectObject;
 import aurora.statistics.model.StatisticsProject;
@@ -90,7 +89,6 @@ public class StatisticsView extends ViewPart {
 
 	private Statistician statistician;
 	private ObjectNode selectNode;
-	private IProject selectPro;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -177,19 +175,10 @@ public class StatisticsView extends ViewPart {
 
 			public void mouseDoubleClick(MouseEvent e) {
 				if (e.button == 1 && selectNode != null) {
-					ObjectStatisticsResult osr = (ObjectStatisticsResult) selectNode.parent;
-					IProject pro = null;
-					if (osr.getProject().getEclipseProjectName() != null) {
-						pro = ResourcesPlugin.getWorkspace().getRoot().getProject(osr.getProject().getEclipseProjectName());
-					} else {
-						pro = selectPro;
-					}
-					if (pro == null) {
-						return;
-					}
-					IFile file = pro.getFile(selectNode.path);
-					EditorOpener editorOpener = new EditorOpener();
+					ObjectNode osr = (ObjectNode) selectNode;
 					try {
+						IFile file =ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(osr.path));
+						EditorOpener editorOpener = new EditorOpener();
 						editorOpener.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file, true);
 					} catch (PartInitException e1) {
 						DialogUtil.showExceptionMessageBox(e1);
@@ -200,7 +189,6 @@ public class StatisticsView extends ViewPart {
 
 		objectViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				// TODO ...
 				TreeSelection ts = (TreeSelection) event.getSelection();
 				if (ts.getFirstElement() instanceof ObjectNode) {
 					selectNode = (ObjectNode) ts.getFirstElement();
@@ -354,9 +342,6 @@ public class StatisticsView extends ViewPart {
 				int open = dialog.open();
 				if (open == Dialog.OK) {
 					Object[] selected = dialog.getResult();
-					if (selected.length > 0 && (selected[0] instanceof IResource)) {
-						selectPro = ((IResource) selected[0]).getProject();
-					}
 					StatisticianRunner runner = new StatisticianRunner(StatisticsView.this);
 					runner.noProjectRun(selected);
 					setSaveToDBActionEnabled(false);
