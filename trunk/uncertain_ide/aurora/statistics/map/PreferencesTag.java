@@ -122,7 +122,7 @@ public class PreferencesTag {
 	}
 
 	private Map<String, List<String>> getNSMap() {
-		return this.namespaceMap.size() == 0 ? this.defaultMap : this.namespaceMap;
+		return this.namespaceMap;
 	}
 
 	public String getType(String namespace, String tagName) {

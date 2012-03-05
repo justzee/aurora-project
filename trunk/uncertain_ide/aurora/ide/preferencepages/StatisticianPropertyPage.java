@@ -352,20 +352,27 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		for (TagTree t : baseMapTree.getChildren()) {
 			treeViewer.setChecked(t, false);
 		}
+		if(store.getDefaultString("statistician.checked").trim().equals("")){
+			StringBuffer defaultStore=new StringBuffer();
+			Map<String, List<String>> defaultMap = PreferencesTag.INSTANCE().getDefaultMap();
+			for (String n : defaultMap.keySet()) {
+				defaultStore.append("*");
+				defaultStore.append(n);
+				defaultStore.append("!");
+				for (String t : defaultMap.get(n)) {
+					defaultStore.append(t);
+					defaultStore.append("!");
+				}
+			}
+			store.setDefault("statistician.checked", defaultStore.toString());
+			store.setValue("statistician.checked", defaultStore.toString());
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				String[] storeTag = null;
 				if (defaultValue) {
-					Map<String, List<String>> defaultMap = PreferencesTag.INSTANCE().getDefaultMap();
-					List<String> defaultList = new ArrayList<String>();
-					for (String n : defaultMap.keySet()) {
-						defaultList.add("*" + n);
-						for (String t : defaultMap.get(n)) {
-							defaultList.add(t);
-						}
-					}
-					storeTag = defaultList.toArray(new String[defaultList.size()]);
-				} else {
+					storeTag = store.getDefaultString("statistician.checked").split("!");
+				}else{
 					storeTag = store.getString("statistician.checked").split("!");
 				}
 				String namespace = "";
