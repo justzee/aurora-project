@@ -193,7 +193,7 @@ public class StatisticianRunner implements IRunningListener {
 		ProjectObject po = new ProjectObject();
 		po.setType(type);
 		po.setName(file.getName());
-		po.setPath(file.getProjectRelativePath().toString());
+		po.setPath(file.getProject().getName()+"/"+file.getProjectRelativePath().toString());
 		try {
 			CompositeMap compositeMap = CacheManager.getCompositeMap(file);
 			po.setRootMap(compositeMap);
