@@ -150,6 +150,21 @@ public class StatisticianRunner implements IRunningListener {
 
 	private void setPreferencesTag() {
 		IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
+		if(store.getDefaultString("statistician.checked").trim().equals("")){
+			StringBuffer defaultStore=new StringBuffer();
+			Map<String, List<String>> defaultMap = PreferencesTag.INSTANCE().getDefaultMap();
+			for (String n : defaultMap.keySet()) {
+				defaultStore.append("*");
+				defaultStore.append(n);
+				defaultStore.append("!");
+				for (String t : defaultMap.get(n)) {
+					defaultStore.append(t);
+					defaultStore.append("!");
+				}
+			}
+			store.setDefault("statistician.checked", defaultStore.toString());
+			store.setValue("statistician.checked", defaultStore.toString());
+		}
 		String[] ss = store.getString("statistician.checked").split("!");
 		Map<String, List<String>> map = new HashMap<String, List<String>>();
 		String nameSpace = "";
