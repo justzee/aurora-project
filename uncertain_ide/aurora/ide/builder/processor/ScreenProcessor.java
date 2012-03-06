@@ -2,10 +2,7 @@ package aurora.ide.builder.processor;
 
 import java.util.regex.Pattern;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
@@ -14,8 +11,8 @@ import uncertain.schema.Attribute;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.BuildMessages;
+import aurora.ide.builder.ResourceUtil;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.search.core.Util;
 
 public class ScreenProcessor extends AbstractProcessor {
 	private static final Pattern siPattern = Pattern
@@ -51,11 +48,9 @@ public class ScreenProcessor extends AbstractProcessor {
 				return;
 			}
 			value = value.split("\\?")[0];
-			IContainer webDir = Util.findWebInf(bc.file).getParent();
-			IPath path = new Path(value).makeRelativeTo(webDir.getFullPath())
-					.makeAbsolute();
-			IFile findScreenFile = webDir.getFile(path);
-			if (findScreenFile != null && findScreenFile.exists())
+			IFile findScreenFile = ResourceUtil.getFileUnderWebHome(
+					bc.file.getProject(), value);
+			if (findScreenFile != null)
 				return;
 			String msg = String.format(BuildMessages.get("build.notexists"),
 					name, value);

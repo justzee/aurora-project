@@ -3,17 +3,16 @@ package aurora.ide.builder.processor;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
-import aurora.ide.bm.BMUtil;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.BuildMessages;
+import aurora.ide.builder.ResourceUtil;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.preferencepages.BuildLevelPage;
@@ -54,18 +53,12 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 			// IMarker.SEVERITY_WARNING, AuroraBuilder.UNDEFINED_FOREIGNFIELD);
 			return;
 		}
-		IResource bmfile = null;
-		try {
-			bmfile = BMUtil.getBMResourceFromClassPath(bc.file.getProject(),
-					refModel);
-		} catch (ApplicationException e) {
-			e.printStackTrace();
-		}
-		if (bmfile instanceof IFile) {
+		IFile bmfile = ResourceUtil.getBMFile(bc.file.getProject(), refModel);
+		if (bmfile != null) {
 			CompositeMap bmmap = null;
 			try {
 				bmmap = CacheManager.getCompositeMapCacher().getCompositeMap(
-						(IFile) bmfile);
+						bmfile);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			} catch (ApplicationException e) {
