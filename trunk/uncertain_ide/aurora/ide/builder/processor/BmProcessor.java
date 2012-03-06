@@ -3,19 +3,17 @@ package aurora.ide.builder.processor;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import uncertain.schema.IType;
-import aurora.ide.bm.BMUtil;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.BuildMessages;
+import aurora.ide.builder.ResourceUtil;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.helpers.ApplicationException;
 
 public class BmProcessor extends AbstractProcessor {
 	private static final Pattern dynamicPattern = Pattern
@@ -39,14 +37,8 @@ public class BmProcessor extends AbstractProcessor {
 				// System.out.println(bm);
 				return;
 			}
-			IResource resource = null;
-			try {
-				resource = BMUtil.getBMResourceFromClassPath(
-						bc.file.getProject(), bm);
-			} catch (ApplicationException e) {
-				e.printStackTrace();
-			}
-			if (!(resource instanceof IFile)) {
+			IFile bmf = ResourceUtil.getBMFile(bc.file.getProject(), bm);
+			if (bmf == null) {
 				IRegion region = bc.info.getAttrValueRegion2(name);
 				int line = bc.info.getLineOfRegion(region);
 				String msg = null;
