@@ -128,7 +128,7 @@ public class StatisticsView extends ViewPart {
 		item.setControl(projectViewer.getControl());
 
 		makeActions();
-		hookContextMenu();
+		//hookContextMenu();
 		contributeToActionBars();
 		saveToDBAction.setEnabled(false);
 		saveToXLSAction.setEnabled(false);
