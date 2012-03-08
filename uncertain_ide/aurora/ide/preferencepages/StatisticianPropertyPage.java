@@ -89,7 +89,7 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			AbstractQualifiedNamed absQualifiedNamed = (AbstractQualifiedNamed) object;
 			nameSpace = absQualifiedNamed.getQName().getNameSpace();
 			tag = absQualifiedNamed.getQName().getLocalName();
-			if (nameSpace.equals("http://www.uncertain-framework.org/schema/simple-schema")) {
+			if ("http://www.uncertain-framework.org/schema/simple-schema".equals(nameSpace)) {
 				continue;
 			}
 			baseMapTree.Add(nameSpace, tag);
