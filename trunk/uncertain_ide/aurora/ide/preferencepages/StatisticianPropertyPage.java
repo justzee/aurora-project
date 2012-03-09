@@ -112,7 +112,7 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 						}
 					}
 				}
-				if (nameSpace.equals("http://www.uncertain-framework.org/schema/simple-schema")) {
+				if ("http://www.uncertain-framework.org/schema/simple-schema".equals(nameSpace)) {
 					continue;
 				}
 				baseMapTree.Add(nameSpace, tag);
