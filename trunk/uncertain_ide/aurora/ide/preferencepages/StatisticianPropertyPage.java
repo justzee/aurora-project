@@ -92,6 +92,12 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			if ("http://www.uncertain-framework.org/schema/simple-schema".equals(nameSpace)) {
 				continue;
 			}
+			if (nameSpace == null) {
+				nameSpace = "No namespace";
+			}
+			if (tag == null) {
+				tag = "";
+			}
 			baseMapTree.Add(nameSpace, tag);
 			if (absQualifiedNamed.getChilds() == null) {
 				continue;
@@ -114,6 +120,12 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 				}
 				if ("http://www.uncertain-framework.org/schema/simple-schema".equals(nameSpace)) {
 					continue;
+				}
+				if (nameSpace == null) {
+					nameSpace = "No namespace";
+				}
+				if (tag == null) {
+					tag = "";
 				}
 				baseMapTree.Add(nameSpace, tag);
 			}
@@ -261,7 +273,7 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 			public String getText(Object element) {
 				TagTree tt = (TagTree) element;
 				if (baseMap.containsKey(tt.getNamespace())) {
-					if(tt.getNamespace().equals(tt.getTag())){
+					if (tt.getNamespace().equals(tt.getTag())) {
 						return element.toString();
 					}
 					if (baseMap.get(tt.getNamespace()).contains(tt.getTag())) {
@@ -352,8 +364,8 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		for (TagTree t : baseMapTree.getChildren()) {
 			treeViewer.setChecked(t, false);
 		}
-		if(store.getDefaultString("statistician.checked").trim().equals("")){
-			StringBuffer defaultStore=new StringBuffer();
+		if (store.getDefaultString("statistician.checked").trim().equals("")) {
+			StringBuffer defaultStore = new StringBuffer();
 			Map<String, List<String>> defaultMap = PreferencesTag.INSTANCE().getDefaultMap();
 			for (String n : defaultMap.keySet()) {
 				defaultStore.append("*");
@@ -372,7 +384,7 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 				String[] storeTag = null;
 				if (defaultValue) {
 					storeTag = store.getDefaultString("statistician.checked").split("!");
-				}else{
+				} else {
 					storeTag = store.getString("statistician.checked").split("!");
 				}
 				String namespace = "";
