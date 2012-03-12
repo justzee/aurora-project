@@ -71,89 +71,89 @@ public class HttpForward extends HttpServlet {
 		return address + params;
 	}
 
-	public void writeResponse(HttpServletResponse httpResponse, String url)
-		throws Exception{
+	// public void writeResponse(HttpServletResponse httpResponse, String url)
+	// throws Exception{
+	//
+	// // httpClient4.1.2
+	// DefaultHttpClient httpclient = new DefaultHttpClient();
+	// OutputStream os = null;
+	// InputStream is = null;
+	// try {
+	// HttpGet httpget = new HttpGet(url);
+	// HttpResponse response = httpclient.execute(httpget);
+	// HttpEntity entity = response.getEntity();
+	// if (entity != null) {
+	// os = httpResponse.getOutputStream();
+	// is = entity.getContent();
+	// int Buffer_size = 50 * 1024;
+	// byte buf[] = new byte[Buffer_size];
+	// int len;
+	// while ((len = is.read(buf)) > 0)
+	// os.write(buf, 0, len);
+	// }
+	// } finally {
+	// if (is != null) {
+	// try {
+	// is.close();
+	// } catch (Exception ignore) {
+	// }
+	// }
+	//
+	// if (os != null) {
+	// try {
+	// os.close();
+	// } catch (Exception ignore) {
+	// }
+	// }
+	// httpclient.getConnectionManager().shutdown();
+	// }
+	// }
 
-		// httpClient4.1.2
-		DefaultHttpClient httpclient = new DefaultHttpClient();
+	public void writeResponse(HttpServletResponse response, String url)
+			throws Exception {
 		OutputStream os = null;
 		InputStream is = null;
+		HttpURLConnection connection = null;
+		int Buffer_size = 50 * 1024;
 		try {
-			HttpGet httpget = new HttpGet(url);
-			HttpResponse response = httpclient.execute(httpget);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				os = httpResponse.getOutputStream();
-				is = entity.getContent();
-				int Buffer_size = 50 * 1024;
-				byte buf[] = new byte[Buffer_size];
-				int len;
-				while ((len = is.read(buf)) > 0)
-					os.write(buf, 0, len);
+			URL postUrl = new URL(url);
+			connection = (HttpURLConnection) postUrl.openConnection();
+			connection.setReadTimeout(0);
+			connection.connect();
+			response.setContentType(connection.getContentType());
+			response.setContentLength(connection.getContentLength());
+			response.addHeader("Content-Disposition",
+					connection.getHeaderField("Content-Disposition"));
+			os = response.getOutputStream();
+			try {
+				is = connection.getInputStream();
+			} catch (Exception e) {
+				is = connection.getErrorStream();
 			}
+			byte buf[] = new byte[Buffer_size];
+			int len;
+			while ((len = is.read(buf)) > 0)
+				os.write(buf, 0, len);
 		} finally {
 			if (is != null) {
 				try {
 					is.close();
-				} catch (Exception ignore) {
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 
 			if (os != null) {
 				try {
 					os.close();
-				} catch (Exception ignore) {
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-			httpclient.getConnectionManager().shutdown();
+
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 	}
-	
-
-	// public void writeResponse(HttpServletResponse response,String url) throws
-	// Exception{
-	// OutputStream os = null;
-	// InputStream is = null;
-	// HttpURLConnection connection=null;
-	// int Buffer_size = 50 * 1024;
-	// try{
-	// URL postUrl = new URL(url);
-	// connection = (HttpURLConnection)postUrl.openConnection();
-	// connection.setReadTimeout(0);
-	// connection.connect();
-	// response.setContentType(connection.getContentType());
-	// response.setContentLength(connection.getContentLength());
-	// response.addHeader("Content-Disposition",connection.getHeaderField("Content-Disposition"));
-	// os = response.getOutputStream();
-	// try{
-	// is = connection.getInputStream();
-	// }catch(Exception e){
-	// is= connection.getErrorStream();
-	// }
-	// byte buf[]=new byte[Buffer_size];
-	// int len;
-	// while((len=is.read(buf))>0)
-	// os.write(buf,0,len);
-	// }finally{
-	// if (is != null){
-	// try {
-	// is.close();
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// if (os != null){
-	// try {
-	// os.close();
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// if(connection!=null){
-	// connection.disconnect();
-	// }
-	// }
-	// }
 }
