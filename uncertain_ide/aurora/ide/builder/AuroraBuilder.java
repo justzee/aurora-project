@@ -198,9 +198,6 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			IMarker marker = project.createMarker(CONFIG_PROBLEM);
 			marker.setAttribute(IMarker.MESSAGE, "[Web主目录]不存在或[WEB-INF]不存在!");
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-			LogUtil.getInstance().logError(
-					"webdir:" + webdir + ";project:" + project.getName(),
-					new Exception("no webdir"));
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					MessageBox mb = new MessageBox(new Shell(), SWT.ERROR);
