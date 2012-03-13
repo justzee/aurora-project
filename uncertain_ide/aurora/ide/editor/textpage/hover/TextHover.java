@@ -96,10 +96,14 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 			for (String key : reverseNsMap.keySet()) {
 				String realKey = "xmlns:" + key;
 				IRegion region = info.getAttrNameRegion(realKey);
+				if (region == null)
+					continue;
 				if (RegionUtil.isSubRegion(region, hoverRegion)) {
 					return html("XML Namespace : " + key + "   ");
 				}
 				region = info.getAttrValueRegion2(realKey);
+				if (region == null)
+					continue;
 				if (RegionUtil.isSubRegion(region, hoverRegion)) {
 					return html("<pre>" + info.getAttrRealValue(realKey)
 							+ "</pre>");
