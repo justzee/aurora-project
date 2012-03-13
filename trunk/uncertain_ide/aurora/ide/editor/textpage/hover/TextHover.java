@@ -68,24 +68,28 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 		CompositeMapInfo info = new CompositeMapInfo(cursorMap, doc);
 		if (hoverRegion.equals(info.getMapNameRegion())
 				|| hoverRegion.equals(info.getMapEntTagNameRegion())) {
-			// 如果悬浮位置为Tag name...
+			// if hover region is Tag name...
 			return html(SxsdUtil.getHtmlDocument(cursorMap));
 		} else {
-			// ////如果悬浮位置为属性.....
+			// ////if hover region is attribute.....
 			@SuppressWarnings("unchecked")
 			Set<String> keySet = cursorMap.keySet();
 			for (String key : keySet) {
 				IRegion region = info.getAttrNameRegion(key);
+				if (region == null)
+					continue;
 				if (hoverRegion.equals(region)) {
 					return html(getAttrDocument(cursorMap, key));
 				}
 				region = info.getAttrValueRegion2(key);
+				if (region == null)
+					continue;
 				if (RegionUtil.isSubRegion(region, hoverRegion)) {
 					// return html(cursorMap.getString(key));
 					return html("<pre>" + cursorMap.getString(key) + "</pre>");
 				}
 			}
-			// ////如果悬浮位置为namespace申明.....
+			// ////if the hover region is namespace declare.....
 			@SuppressWarnings("unchecked")
 			Map<String, String> nsMap = cursorMap.getNamespaceMapping();
 			Map<String, String> reverseNsMap = new HashMap<String, String>();
@@ -93,6 +97,7 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 				for (String key : nsMap.keySet()) {
 					reverseNsMap.put(nsMap.get(key), key);
 				}
+			info.print();
 			for (String key : reverseNsMap.keySet()) {
 				String realKey = "xmlns:" + key;
 				IRegion region = info.getAttrNameRegion(realKey);
