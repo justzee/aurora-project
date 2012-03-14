@@ -97,7 +97,6 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 				for (String key : nsMap.keySet()) {
 					reverseNsMap.put(nsMap.get(key), key);
 				}
-			info.print();
 			for (String key : reverseNsMap.keySet()) {
 				String realKey = "xmlns:" + key;
 				IRegion region = info.getAttrNameRegion(realKey);
