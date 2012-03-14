@@ -61,7 +61,6 @@ public class UrlProcessor extends AbstractProcessor {
 				doForScreenOrSvc(uk, name, value, line, vregion, bc);
 				return;
 			}
-
 			idx = uk.indexOf(AUTOCRUD);
 			if (idx != -1)
 				uk = uk.substring(idx + AUTOCRUD.length());
@@ -107,6 +106,8 @@ public class UrlProcessor extends AbstractProcessor {
 
 	private void doForBm(String uk, String name, String value, int line,
 			IRegion vregion, BuildContext bc) {
+		if (BuildContext.LEVEL_UNDEFINED_BM == 0)
+			return;
 		IFile bmf = ResourceUtil.getBMFile(bc.file.getProject(), uk);
 		if (bmf == null) {
 			String msg = null;
