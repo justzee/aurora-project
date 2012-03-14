@@ -265,6 +265,15 @@ public final class SxsdUtil {
 		return false;
 	}
 
+	public static boolean isURLReference(IType attributeType) {
+		if (attributeType instanceof SimpleType) {
+			return AbstractSearchService.urlReference
+					.equals(((SimpleType) attributeType)
+							.getReferenceTypeQName());
+		}
+		return false;
+	}
+
 	public static boolean isExtOfAnyElement(Element elem) {
 		return elem.isExtensionOf(LoadSchemaManager.getSchemaManager()
 				.getComplexType(ANY_ELEMENT));

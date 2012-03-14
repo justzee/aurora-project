@@ -20,6 +20,7 @@ import aurora.ide.builder.SxsdUtil;
 public class UrlProcessor extends AbstractProcessor {
 	static final String CONTEXT_PATH = "${/request/@context_path}/";
 	static final String AUTOCRUD = "autocrud/";
+	static final String MODULES = "modules/";
 	static final Pattern dyPattern = Pattern.compile(".*\\$\\{[^}]+\\}.*");
 	static final Pattern dynamicPattern = Pattern.compile("\\$\\{[^}]+\\}");
 
@@ -57,53 +58,85 @@ public class UrlProcessor extends AbstractProcessor {
 				return;
 			}
 			if (uk.endsWith(".screen") || uk.endsWith(".svc")) {
-				if (BuildContext.LEVEL_UNDEFINED_SCREEN == 0)
-					return;
-				if (uk.startsWith("/"))
-					uk = uk.substring(1);
-				// System.out.println(name + "  svc or screen:" + uk);
-				IFile findScreenFile = ResourceUtil.getFileUnderWebHome(
-						bc.file.getProject(), uk);
-				if (findScreenFile != null)
-					return;
-				IResource res = bc.file.getParent().findMember(value);
-				if (res instanceof IFile)
-					return;
-				String msg = String.format(
-						BuildMessages.get("build.notexists"), name, uk);
-				idx = value.indexOf(uk);
-				if (idx != -1) {
-					vregion = new Region(vregion.getOffset() + idx, uk.length());
-				}
-				AuroraBuilder.addMarker(bc.file, msg, line, vregion,
-						BuildContext.LEVEL_UNDEFINED_SCREEN,
-						AuroraBuilder.UNDEFINED_SCREEN);
+				doForScreenOrSvc(uk, name, value, line, vregion, bc);
 				return;
 			}
-			// assume uk is a bm ref
+
 			idx = uk.indexOf(AUTOCRUD);
 			if (idx != -1)
 				uk = uk.substring(idx + AUTOCRUD.length());
-			uk = uk.split("/")[0];// remove bm operation,like /query...
-			// System.out.println(name + "  bm :" + uk);
-			IFile bmf = ResourceUtil.getBMFile(bc.file.getProject(), uk);
-			if (bmf == null) {
-				String msg = null;
-				if (uk.length() == 0)
-					msg = String.format(BuildMessages.get("build.notbeempty"),
-							name);
-				else
-					msg = String.format(BuildMessages.get("build.notexists"),
-							name, uk);
-				idx = value.indexOf(uk);
+			else {
+				idx = uk.indexOf(MODULES);
 				if (idx != -1) {
-					vregion = new Region(vregion.getOffset() + idx, uk.length());
+					// System.out.println("i don`t know what it is : " + name +
+					// " = " + value);
+					doForUnknown(uk, name, value, line, vregion, bc);
+					return;
 				}
-				AuroraBuilder.addMarker(bc.file, msg, line, vregion,
-						BuildContext.LEVEL_UNDEFINED_BM,
-						AuroraBuilder.UNDEFINED_BM);
 			}
+			// assume uk is a bm ref
+			uk = uk.split("/")[0];// remove bm operation,like /query...
+			doForBm(uk, name, value, line, vregion, bc);
 		}
+	}
+
+	private void doForScreenOrSvc(String uk, String name, String value,
+			int line, IRegion vregion, BuildContext bc) {
+		if (BuildContext.LEVEL_UNDEFINED_SCREEN == 0)
+			return;
+		if (uk.startsWith("/"))
+			uk = uk.substring(1);
+		// System.out.println(name + "  svc or screen:" + uk);
+		IFile findScreenFile = ResourceUtil.getFileUnderWebHome(
+				bc.file.getProject(), uk);
+		if (findScreenFile != null)
+			return;
+		IResource res = bc.file.getParent().findMember(value);
+		if (res instanceof IFile)
+			return;
+		String msg = String.format(BuildMessages.get("build.notexists"), name,
+				uk);
+		int idx = value.indexOf(uk);
+		if (idx != -1) {
+			vregion = new Region(vregion.getOffset() + idx, uk.length());
+		}
+		AuroraBuilder.addMarker(bc.file, msg, line, vregion,
+				BuildContext.LEVEL_UNDEFINED_SCREEN,
+				AuroraBuilder.UNDEFINED_SCREEN);
+	}
+
+	private void doForBm(String uk, String name, String value, int line,
+			IRegion vregion, BuildContext bc) {
+		IFile bmf = ResourceUtil.getBMFile(bc.file.getProject(), uk);
+		if (bmf == null) {
+			String msg = null;
+			if (uk.length() == 0)
+				msg = String
+						.format(BuildMessages.get("build.notbeempty"), name);
+			else
+				msg = String.format(BuildMessages.get("build.notexists"), name,
+						uk);
+			int idx = value.indexOf(uk);
+			if (idx != -1) {
+				vregion = new Region(vregion.getOffset() + idx, uk.length());
+			}
+			AuroraBuilder
+					.addMarker(bc.file, msg, line, vregion,
+							BuildContext.LEVEL_UNDEFINED_BM,
+							AuroraBuilder.UNDEFINED_BM);
+		}
+	}
+
+	private void doForUnknown(String uk, String name, String value, int line,
+			IRegion vregion, BuildContext bc) {
+		String msg = "we currently don`t know what it is , maybe a screen or svc with a wrong file name extension.";
+		int idx = value.indexOf(uk);
+		if (idx != -1) {
+			vregion = new Region(vregion.getOffset() + idx, uk.length());
+		}
+		AuroraBuilder.addMarker(bc.file, msg, line, vregion,
+				BuildContext.LEVEL_UNDEFINED_SCREEN,
+				AuroraBuilder.UNDEFINED_SCREEN);
 	}
 
 	@Override

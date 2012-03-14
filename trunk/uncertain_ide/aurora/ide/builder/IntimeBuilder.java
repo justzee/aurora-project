@@ -36,10 +36,13 @@ public class IntimeBuilder implements IReconcileListener {
 		Iterator<Annotation> itr = am.getAnnotationIterator();
 		while (itr.hasNext()) {
 			Annotation anno = itr.next();
-			// 如果有XML解析错误,则不检查其他的问题
+			if (anno.getText() == null)
+				continue;
+			// if any xml error exists , do nothing
 			if (anno.getClass().equals(
-					org.eclipse.jface.text.source.Annotation.class))
+					org.eclipse.jface.text.source.Annotation.class)) {
 				return;
+			}
 		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
