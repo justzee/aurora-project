@@ -122,7 +122,7 @@ public class QuickFixInformationControl extends AbstractInformationControl
 
 	private int guessWidth(Control ctr, String msg) {
 		GC gc = new GC(ctr);
-		Point pt = gc.stringExtent(msg);
+		Point pt = gc.textExtent(msg);
 		gc.dispose();
 		return pt.x;
 	}
@@ -198,7 +198,7 @@ public class QuickFixInformationControl extends AbstractInformationControl
 			l.setImage(cps[i].getImage());
 			final Hyperlink hl = new Hyperlink(com, SWT.NONE);
 			hl.setBounds(20, displayHeight,
-					guessWidth(hl, cps[i].getDisplayString()), 20);
+					guessWidth(hl, cps[i].getDisplayString()) + 10, 20);
 			hl.setText(cps[i].getDisplayString());
 			hl.setBackground(com.getBackground());
 			hl.setForeground(new Color(com.getDisplay(), 0, 102, 204));
