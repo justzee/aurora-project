@@ -181,12 +181,13 @@
              id="aurora.ide.editor.textpage.togglecomment"
              label="%source.togglecomment"
              menubarPath="aurora.ide.sourcemenu/context">
-       </action>
+       </action> 
        <action
              class="aurora.ide.editor.textpage.action.GetFileNameAction"
+             definitionId="aurora.ide.text.editor.copy.fileName"
              id="aurora.ide.editor.textpage.GetFileNameAction"
              label="%source.copyfilename"
-             menubarPath="aurora.ide.sourcemenu/context">
+             menubarPath="additions">
        </action>
 	   </viewerContribution>
     <objectContribution
@@ -680,6 +681,12 @@
           id="aurora.ide.togglecomment"
           name="Aurora Toggle Line Comment">
     </command>
+     <command
+          categoryId="aurora.ide.commands"
+          description="Copy File Name"
+          id="aurora.ide.text.editor.copy.fileName"
+          name="Aurora Text Copy File Name">
+    </command>
     <command
           categoryId="aurora.ide.commands"
           description="Toggle Block Comment"
@@ -707,6 +714,12 @@
              contextId="org.eclipse.ui.textEditorScope"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="M1+/">
+       </key>
+       <key
+             commandId="aurora.ide.text.editor.copy.fileName"
+             contextId="org.eclipse.ui.textEditorScope"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M1+M2+C">
        </key>
        <key
              commandId="aurora.ide.toggleblockcomment"
