@@ -36,6 +36,7 @@ import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.editor.textpage.action.CFormatAction;
+import aurora.ide.editor.textpage.action.GetFileNameAction;
 import aurora.ide.editor.textpage.action.ToggleBlockCommentAction;
 import aurora.ide.editor.textpage.action.ToggleCommentAction;
 import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
@@ -305,6 +306,9 @@ public class TextPage extends TextEditor implements IViewer {
 		setAction("format", new CFormatAction());
 		setAction("linecomment", new ToggleCommentAction());
 		setAction("blockcomment", new ToggleBlockCommentAction());
+		GetFileNameAction action2 = new GetFileNameAction();
+		action2.setActiveEditor(null, this);
+		setAction("copyFileName", action2);
 	}
 
 	public void doSave(IProgressMonitor monitor) {

@@ -2,6 +2,7 @@ package aurora.ide.editor.textpage.action;
 
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.dnd.Clipboard;
@@ -19,14 +20,18 @@ import aurora.ide.helpers.DialogUtil;
 
 
 
-public class GetFileNameAction implements IEditorActionDelegate {
+public class GetFileNameAction  extends Action  implements IEditorActionDelegate {
 
 	IEditorPart activeEditor;
 	public GetFileNameAction() {
+		this.setActionDefinitionId("aurora.ide.text.editor.copy.fileName");
 	}
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		activeEditor = targetEditor;
+	}
+	public void run() {
+		run(null);
 	}
 
 	public void run(IAction action) {
