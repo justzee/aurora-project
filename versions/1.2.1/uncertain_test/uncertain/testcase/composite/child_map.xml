@@ -1,0 +1,8 @@
+<model>
+	<fields>
+		<field name="id"  />
+		<field name="deptno" required="false" />
+		<field name="name" />
+		<field name="borndate" datatype="java.util.date" required="false" />
+	</fields>
+</model>
