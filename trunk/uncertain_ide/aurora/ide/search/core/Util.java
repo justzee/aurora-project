@@ -641,4 +641,15 @@ public class Util {
 		}
 		return null;
 	}
+	public static String getPKG(IPath path){
+		String fileExtension = path.getFileExtension();
+		if("bm".equalsIgnoreCase(fileExtension)){
+			return toPKG(path.removeFileExtension());
+		}
+		if("screen".equalsIgnoreCase(fileExtension)){
+			return path.toString();
+		}
+		return "";
+		
+	}
 }
