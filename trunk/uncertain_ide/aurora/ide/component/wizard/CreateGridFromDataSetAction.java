@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -31,7 +30,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
+import uncertain.schema.ComplexType;
+import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.bm.editor.GridDialog;
@@ -50,11 +53,6 @@ import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.AddElementAction;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
-import uncertain.schema.ComplexType;
-import uncertain.schema.Element;
 
 public class CreateGridFromDataSetAction extends AddElementAction {
 	
@@ -128,8 +126,8 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			String prefix = dataSet.getPrefix();
 			String uri = dataSet.getNamespaceURI();
 			CompositeMap grid = mainConfigPage.getGrid();
-			CompositeMap columns = new CompositeMap(prefix, uri, "columns");
-			CompositeMap editors = new CompositeMap(prefix, uri, "editors");
+			CompositeMap columns = new CommentCompositeMap(prefix, uri, "columns");
+			CompositeMap editors = new CommentCompositeMap(prefix, uri, "editors");
 			grid.addChild(columns);
 			grid.addChild(editors);
 			Iterator selection = fieldPage.getSelection().getChildsNotNull()
@@ -142,7 +140,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 				String name = column.getString("name");
 				CompositeMap record = null;
 				if (hash.get(name) == null) {
-					record = new CompositeMap(prefix,uri,"column");
+					record = new CommentCompositeMap(prefix,uri,"column");
 					record.put("name", name);
 				} else {
 					record = (CompositeMap) hash.get(name);
@@ -157,7 +155,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			if (it != null) {
 				for (; it.hasNext();) {
 					String type = (String) it.next();
-					CompositeMap newRecord = new CompositeMap(prefix,uri,type);
+					CompositeMap newRecord = new CommentCompositeMap(prefix,uri,type);
 					newRecord.put("id", useEditor.get(type));
 					editors.addChild(newRecord);
 				}
@@ -170,7 +168,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			CompositeMap view = currentNode.getParent().getParent();
 			CompositeMap screenBody = view.getChild(screenBodyColumn);
 			if(screenBody == null){
-				screenBody = new CompositeMap(currentNode.getPrefix(),currentNode.getNamespaceURI(),screenBodyColumn);
+				screenBody = new CommentCompositeMap(currentNode.getPrefix(),currentNode.getNamespaceURI(),screenBodyColumn);
 				view.addChild(screenBody);
 			}
 			screenBody.addChild(grid);
@@ -421,14 +419,14 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		public CompositeMap getGrid() {
 			String prefix = dataSet.getPrefix();
 			String uri = dataSet.getNamespaceURI();
-			CompositeMap grid = new CompositeMap(prefix, uri, "grid");
+			CompositeMap grid = new CommentCompositeMap(prefix, uri, "grid");
 			grid.put("id", id);
 			grid.put("bindTarget", bindTarget);
 			grid.put("width", width);
 			grid.put("height", height);
 			grid.put("navBar", String.valueOf(navBar));
 			if (addButton || deleteButton || saveButton) {
-				CompositeMap toolBar = new CompositeMap(prefix, uri, "toolBar");
+				CompositeMap toolBar = new CommentCompositeMap(prefix, uri, "toolBar");
 				grid.addChild(toolBar);
 				createButton(toolBar, addButton, "add");
 				createButton(toolBar, deleteButton, "delete");
@@ -440,7 +438,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 		private void createButton(CompositeMap toobar, boolean create,
 				String type) {
 			if (create) {
-				CompositeMap button = new CompositeMap(childQN.getPrefix(), childQN.getNameSpace(), "button");
+				CompositeMap button = new CommentCompositeMap(childQN.getPrefix(), childQN.getNameSpace(), "button");
 				button.put("type", type);
 				toobar.addChild(button);
 			}
@@ -500,7 +498,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			CompositeMap dataSets = parentCM.getChild("dataSets");
 			if (dataSets == null || dataSets.getChildsNotNull().size() == 0)
 				return null;
-			CompositeMap qualifyDataSetList = new CompositeMap(dataSets
+			CompositeMap qualifyDataSetList = new CommentCompositeMap(dataSets
 					.getPrefix(), dataSets.getNamespaceURI(), "dataSets");
 			Iterator childs = dataSets.getChildsNotNull().iterator();
 			for (; childs.hasNext();) {
@@ -532,14 +530,14 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 			Composite content = new Composite(parent, SWT.NONE);
 			content.setLayout(new GridLayout());
 			CompositeMap fields = wizard.getFields();
-			CompositeMap filedNames = new CompositeMap();
+			CompositeMap filedNames = new CommentCompositeMap();
 			Iterator it = fields.getChildsNotNull().iterator();
 			for (; it.hasNext();) {
 				CompositeMap child = (CompositeMap) it.next();
 				String targetNode = child.getString("name");
 				if (targetNode == null)
 					continue;
-				CompositeMap newChild = new CompositeMap();
+				CompositeMap newChild = new CommentCompositeMap();
 				newChild.put("name", targetNode);
 				newChild.put("prompt", child.getString("prompt"));
 				filedNames.addChild(newChild);
@@ -610,14 +608,14 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 				return;
 
 			CompositeMap fields = wizard.getFields();
-			CompositeMap filedNames = new CompositeMap();
+			CompositeMap filedNames = new CommentCompositeMap();
 			for (Iterator it = fields.getChildsNotNull().iterator(); it
 					.hasNext();) {
 				CompositeMap child = (CompositeMap) it.next();
 				String targetNode = child.getString("name");
 				if (targetNode == null)
 					continue;
-				CompositeMap newChild = new CompositeMap();
+				CompositeMap newChild = new CommentCompositeMap();
 				newChild.put("name", targetNode);
 				newChild.put("prompt", child.getString("prompt"));
 				filedNames.addChild(newChild);
@@ -635,7 +633,7 @@ public class CreateGridFromDataSetAction extends AddElementAction {
 				String name = record.getString("name");
 				CompositeMap newRecord = null;
 				if (records.get(name) == null) {
-					newRecord = new CompositeMap(record.getPrefix(),record.getNamespaceURI(),"column");
+					newRecord = new CommentCompositeMap(record.getPrefix(),record.getNamespaceURI(),"column");
 					newRecord.put("name", name);
 					records.put(name, newRecord);
 				} else {

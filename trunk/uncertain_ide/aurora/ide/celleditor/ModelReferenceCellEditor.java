@@ -16,15 +16,14 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
 import aurora.ide.bm.editor.GridDialog;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ProjectUtil;
-
-import uncertain.composite.CompositeMap;
 
 public class ModelReferenceCellEditor extends StringTextCellEditor {
 
@@ -99,7 +98,7 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 
 
 	private CompositeMap getAllBMFiles(File rootFile,String fullPath) {
-		CompositeMap bmFiles = new CompositeMap();
+		CompositeMap bmFiles = new CommentCompositeMap();
 		getChilds(rootFile,bmFiles,fullPath);
 		return bmFiles;
 		
@@ -112,7 +111,7 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 			}
 		}
 		else if(file.getName().toLowerCase().endsWith(".bm")){
-			CompositeMap child = new CompositeMap();
+			CompositeMap child = new CommentCompositeMap();
 			String fullpath = getClassName(file,fullPath);
 			child.put("name",file.getName());
 			child.put("fullpath",fullpath);

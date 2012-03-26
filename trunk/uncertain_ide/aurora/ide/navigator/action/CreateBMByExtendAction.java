@@ -46,6 +46,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import aurora.ide.bm.BMUtil;
@@ -214,7 +215,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 		private InputStream createFileStream() throws SystemException {
 			CompositeMap fields = selectFieldPage.getSelection();
 			String prefix = fields.getPrefix();
-			CompositeMap model = new CompositeMap(prefix, AuroraConstant.BMUri, "model");
+			CompositeMap model = new CommentCompositeMap(prefix, AuroraConstant.BMUri, "model");
 			model.put("alias", "t1");
 			model.put("extendMode", "reference");
 			model.put("extend", parentBMPage.getParentBMName());
@@ -232,7 +233,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 					String type = filterfield.getString("type");
 					filterfield.remove("type");
 					if ((fields.getChildByAttrib("name", filterfield.getString("name")) == null)) {
-						CompositeMap field = new CompositeMap(prefix, AuroraConstant.BMUri, "field");
+						CompositeMap field = new CommentCompositeMap(prefix, AuroraConstant.BMUri, "field");
 						field.put("name", filterfield.getString("name"));
 						fields.addChild(field);
 					}
@@ -252,8 +253,8 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 
 			CompositeMap descIdField = fields.getChildByAttrib("name", "description_id");
 			if (descIdField != null) {
-				CompositeMap features = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "features");
-				CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri,
+				CompositeMap features = new CommentCompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "features");
+				CompositeMap multiLanguage = new CommentCompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri,
 						"multi-language-storage");
 				features.addChild(multiLanguage);
 				model.addChild(features);
@@ -347,11 +348,11 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 				private void pickParentBM() throws ApplicationException {
 					IProject project = ProjectUtil.getIProjectFromSelection();
 					List bmList = ProjectUtil.getBMSFromProject(project);
-					CompositeMap bms = new CompositeMap("bms");
+					CompositeMap bms = new CommentCompositeMap("bms");
 					String[] columnProperties = {"name", "fullpath"};
 					for (Iterator it = bmList.iterator(); it.hasNext();) {
 						IResource bmFile = (IResource) it.next();
-						CompositeMap child = new CompositeMap("record");
+						CompositeMap child = new CommentCompositeMap("record");
 						child.put("name", bmFile.getName());
 						child.put("fullpath", AuroraResourceUtil.getRegisterPath((IFile) bmFile));
 						bms.addChild(child);
@@ -616,10 +617,10 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 	}
 	public CompositeMap getSimpleFields(CompositeMap bm) {
 		CompositeMap fields = bm.getChild("fields");
-		CompositeMap simplefiels = new CompositeMap(fields.getPrefix(), fields.getNamespaceURI(), "fields");
+		CompositeMap simplefiels = new CommentCompositeMap(fields.getPrefix(), fields.getNamespaceURI(), "fields");
 		for (Iterator it = fields.getChildIterator(); it.hasNext();) {
 			CompositeMap field = (CompositeMap) it.next();
-			CompositeMap simplefiel = new CompositeMap(field.getPrefix(), field.getNamespaceURI(), "field");
+			CompositeMap simplefiel = new CommentCompositeMap(field.getPrefix(), field.getNamespaceURI(), "field");
 			simplefiel.put("name", field.getString("name"));
 			simplefiels.addChild(simplefiel);
 		}

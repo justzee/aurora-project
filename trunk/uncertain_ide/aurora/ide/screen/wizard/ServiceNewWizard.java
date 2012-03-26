@@ -27,6 +27,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
@@ -176,7 +177,7 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 	private CompositeMap createRootElement() {
 		
 		QualifiedName screenQN = AuroraConstant.ScreenQN;
-		CompositeMap rootElement = new CompositeMap("a",screenQN.getNameSpace(),screenQN.getLocalName());
+		CompositeMap rootElement = new CommentCompositeMap("a",screenQN.getNameSpace(),screenQN.getLocalName());
 		return rootElement;
 	}
 

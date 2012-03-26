@@ -4,7 +4,6 @@ package aurora.ide.component.wizard;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.window.Window;
@@ -24,7 +23,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.bm.editor.GridDialog;
@@ -42,9 +43,6 @@ import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.AddElementAction;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
 
 public class CreateComboBoxFromBMAction extends AddElementAction {
 	final static String title = "创建ComboBox";
@@ -90,7 +88,7 @@ public class CreateComboBoxFromBMAction extends AddElementAction {
 		public boolean performFinish() {
 			String prefix = CompositeMapUtil.getContextPrefix(fieldsNode, childQN);
 			childQN.setPrefix(prefix);
-			CompositeMap fieldNode = new CompositeMap(childQN.getPrefix(), childQN.getNameSpace(), childQN
+			CompositeMap fieldNode = new CommentCompositeMap(childQN.getPrefix(), childQN.getNameSpace(), childQN
 					.getLocalName());
 			fieldNode.put("name", mainConfigPage.getFieldNameText().getText());
 			fieldNode.put("options", mainConfigPage.getDataSetText().getText());
@@ -98,12 +96,12 @@ public class CreateComboBoxFromBMAction extends AddElementAction {
 			fieldNode.put("displayField", fields[mainConfigPage.getDisplayFieldCombo().getSelectionIndex()]);
 			fieldNode.put("valueField", fields[mainConfigPage.getValueFieldCombo().getSelectionIndex()]);
 			fieldNode.put("returnField", fields[mainConfigPage.getReturnFieldCombo().getSelectionIndex()]);
-			CompositeMap mappingNode = new CompositeMap(childQN.getPrefix(), childQN.getNameSpace(), "mapping");
+			CompositeMap mappingNode = new CommentCompositeMap(childQN.getPrefix(), childQN.getNameSpace(), "mapping");
 			CompositeMap fieldsSelection = fieldPage.getSelection();
 			if (fieldsSelection != null && fieldsSelection.getChildIterator() != null) {
 				for (Iterator it = fieldsSelection.getChildIterator(); it.hasNext();) {
 					CompositeMap field = (CompositeMap) it.next();
-					CompositeMap mapNode = new CompositeMap(childQN.getPrefix(), childQN.getNameSpace(), "map");
+					CompositeMap mapNode = new CommentCompositeMap(childQN.getPrefix(), childQN.getNameSpace(), "map");
 					String fieldName = field.getString("name");
 					mapNode.put("from", fieldName);
 					mapNode.put("to", fieldName);

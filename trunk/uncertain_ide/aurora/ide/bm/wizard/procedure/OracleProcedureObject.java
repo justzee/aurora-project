@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.ApplicationException;
@@ -140,22 +141,22 @@ public class OracleProcedureObject {
 		if (parameters == null)
 			initParameters();
 		String pre = "bm";
-		CompositeMap model = new CompositeMap(pre, AuroraConstant.BMUri,
+		CompositeMap model = new CommentCompositeMap(pre, AuroraConstant.BMUri,
 				"model");
-		CompositeMap operations = new CompositeMap(pre, AuroraConstant.BMUri,
+		CompositeMap operations = new CommentCompositeMap(pre, AuroraConstant.BMUri,
 				"operations");
 		model.addChild(operations);
-		CompositeMap operation = new CompositeMap(pre, AuroraConstant.BMUri,
+		CompositeMap operation = new CommentCompositeMap(pre, AuroraConstant.BMUri,
 				"operation");
 		operations.addChild(operation);
 		operation.put("name", "execute");
 		if (parameters.size() > 0) {
-			CompositeMap bm_parameters = new CompositeMap(pre,
+			CompositeMap bm_parameters = new CommentCompositeMap(pre,
 					AuroraConstant.BMUri, "parameters");
 			operation.addChild(bm_parameters);
 			for (Iterator it = parameters.iterator(); it.hasNext();) {
 				OracleParameter op = (OracleParameter) it.next();
-				CompositeMap bm_parameter = new CompositeMap(pre,
+				CompositeMap bm_parameter = new CommentCompositeMap(pre,
 						AuroraConstant.BMUri, "parameter");
 				bm_parameter.put("name", convertParameter(op.getName()));
 				bm_parameter.put("dataType", typeMap.get(op.getPls_type()));
@@ -167,7 +168,7 @@ public class OracleProcedureObject {
 				bm_parameters.addChild(bm_parameter);
 			}
 		}
-		CompositeMap update_sql = new CompositeMap(pre, AuroraConstant.BMUri,
+		CompositeMap update_sql = new CommentCompositeMap(pre, AuroraConstant.BMUri,
 				"update-sql");
 		StringBuffer sb = new StringBuffer("");
 		String return_string = "";

@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.editor.widgets.GridViewer;
@@ -23,9 +24,6 @@ import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.ActionListener;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
 
 
 public class AddRefFieldAction extends ActionListener {
@@ -51,7 +49,7 @@ public class AddRefFieldAction extends ActionListener {
 			DialogUtil.showErrorMessageBox("This model is null !");
 			return;
 		}
-		gridInput = new CompositeMap("gridInput");
+		gridInput = new CommentCompositeMap("gridInput");
 		QualifiedName modelQN = new QualifiedName(model.getNamespaceURI(),model.getName());
 		Assert.isTrue(AuroraConstant.ModelQN.getLocalName().equals(modelQN.getLocalName()), "This CompositeMap is not a model element!");
 		CompositeMap relationsCM = model.getChild(relations);
@@ -102,7 +100,7 @@ public class AddRefFieldAction extends ActionListener {
 	}
 	private CompositeMap makeInput(CompositeMap relation,List existRefFields){
 		final String fieldName = "name";
-		CompositeMap input = new CompositeMap("input"); 
+		CompositeMap input = new CommentCompositeMap("input"); 
 		String ref_model = relation.getString(refModel);
 		
 		if(ref_model == null)
@@ -132,7 +130,7 @@ public class AddRefFieldAction extends ActionListener {
 			String fieldKey = field_name+specialSeparator+relationName;
 			if(existRefFields.contains(fieldKey))
 				continue;
-			CompositeMap record = new CompositeMap(model.getPrefix(),model.getNamespaceURI(),refFieldElement);
+			CompositeMap record = new CommentCompositeMap(model.getPrefix(),model.getNamespaceURI(),refFieldElement);
 			record.put(gridProperties[0], field_name);
 			record.put(gridProperties[1], relationName);
 			record.put(gridProperties[2], ref_model);
@@ -152,7 +150,7 @@ public class AddRefFieldAction extends ActionListener {
 		return selectResult;
 	}
 	private CompositeMap createRefFields(CompositeMap selectResult){
-		CompositeMap refFields = new CompositeMap("refFileds");
+		CompositeMap refFields = new CommentCompositeMap("refFileds");
 		if(selectResult == null){
 			return null;
 		}

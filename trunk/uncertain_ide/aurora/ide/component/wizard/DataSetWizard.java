@@ -32,6 +32,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import aurora.ide.bm.editor.GridDialog;
@@ -498,7 +499,7 @@ class BMSelectionPage extends WizardPage {
 	}
 
 	private CompositeMap getAllBMFiles(File rootFile, String fullPath) {
-		CompositeMap bmFiles = new CompositeMap();
+		CompositeMap bmFiles = new CommentCompositeMap();
 		getChilds(rootFile, bmFiles, fullPath);
 		return bmFiles;
 
@@ -511,7 +512,7 @@ class BMSelectionPage extends WizardPage {
 				getChilds(nextLevel[i], parent, fullPath);
 			}
 		} else if (file.getName().toLowerCase().endsWith(".bm")) {
-			CompositeMap child = new CompositeMap();
+			CompositeMap child = new CommentCompositeMap();
 			String fullpath = getClassName(file, fullPath);
 			child.put("name", file.getName());
 			child.put("fullpath", fullpath);

@@ -6,15 +6,13 @@ package aurora.ide.editor;
 
 import org.eclipse.swt.SWT;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.schema.Element;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
-
-
-import uncertain.composite.CompositeMap;
-import uncertain.schema.Element;
 
 public abstract class AbstractCMViewer implements IViewer{
 	
@@ -22,7 +20,7 @@ public abstract class AbstractCMViewer implements IViewer{
 	protected CompositeMap focusData;
 	
 	public void copyElement() {
-		CompositeMap child = new CompositeMap(getFocus());
+		CompositeMap child = new CommentCompositeMap(getFocus());
 		child.setParent(getFocus().getParent());
 		setSelection(child);
 	}
@@ -36,7 +34,7 @@ public abstract class AbstractCMViewer implements IViewer{
 		if (!CompositeMapUtil.validNextNodeLegalWithAction(parentComp, selectedCm)) {
 			return;
 		}
-		CompositeMap child = new CompositeMap(selectedCm);
+		CompositeMap child = new CommentCompositeMap(selectedCm);
 		if (child != null) {
 			parentComp.addChild(child);
 			selectedCm.getParent().removeChild(selectedCm);

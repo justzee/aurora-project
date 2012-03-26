@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.util.TagParseHandle;
 import uncertain.util.TagProcessor;
@@ -76,10 +77,10 @@ public class CompositeMapTagParser {
 	public class ParameterHandle implements TagParseHandle {
 		String bm_uri = "http://www.aurora-framework.org/schema/bm";
 		String bm_pre = "bm";
-		CompositeMap parameters = new CompositeMap(bm_pre, bm_uri, "parameters");
+		CompositeMap parameters = new CommentCompositeMap(bm_pre, bm_uri, "parameters");
 
 		public String ProcessTag(int index, String tag) {
-			CompositeMap child = new CompositeMap(bm_pre, bm_uri, "parameter");
+			CompositeMap child = new CommentCompositeMap(bm_pre, bm_uri, "parameter");
 			if (tag.startsWith("@")) {
 				child.put("name", tag.substring(1));
 			} else {

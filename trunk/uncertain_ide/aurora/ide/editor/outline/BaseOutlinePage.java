@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.schema.Element;
@@ -107,7 +108,7 @@ public class BaseOutlinePage extends ContentOutlinePage {
 			error = true;
 			return;
 		}
-		CompositeMap virtualNode = new CompositeMap("VirtualNode");
+		CompositeMap virtualNode = new CommentCompositeMap("VirtualNode");
 		labelRoot = new OutlineTree<CompositeMap>(virtualNode);
 		labelRoot.add(input);
 		fillLabel(input, labelRoot.getChild(0));

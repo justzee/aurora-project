@@ -33,6 +33,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import aurora.ide.bm.BMUtil;
@@ -210,7 +211,7 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 
 	private CompositeMap createInitContent() throws ApplicationException {
 
-		CompositeMap model = new CompositeMap(BMUtil.BMPrefix,
+		CompositeMap model = new CommentCompositeMap(BMUtil.BMPrefix,
 				AuroraConstant.BMUri, "model");
 		model.put("baseTable", getTableName());
 		model.put("alias", "t1");
@@ -260,9 +261,9 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 			throws ApplicationException {
 		if (model == null)
 			return null;
-		CompositeMap features = new CompositeMap(BMUtil.BMPrefix,
+		CompositeMap features = new CommentCompositeMap(BMUtil.BMPrefix,
 				AuroraConstant.BMUri, "features");
-		CompositeMap standardWho = new CompositeMap(BMUtil.FeaturesPrefix,
+		CompositeMap standardWho = new CommentCompositeMap(BMUtil.FeaturesPrefix,
 				BMUtil.FeaturesUri, "standard-who");
 		features.addChild(standardWho);
 		CompositeMap fields = fieldsPage.getSelectedFields();
@@ -278,7 +279,7 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 			return model;
 		descIdField.put("multiLanguage", "true");
 		descIdField.put("multiLanguageDescField", "description");
-		CompositeMap descField = new CompositeMap(fields.getPrefix(),
+		CompositeMap descField = new CommentCompositeMap(fields.getPrefix(),
 				fields.getNamespaceURI(), "field");
 		descField.put("name", "description");
 		descField.put("databaseType", "VARCHAR");
@@ -296,7 +297,7 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		}
 
 		fields.addChild(descField);
-		CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefix,
+		CompositeMap multiLanguage = new CommentCompositeMap(BMUtil.FeaturesPrefix,
 				BMUtil.FeaturesUri, "multi-language-storage");
 		features.addChild(multiLanguage);
 		return model;

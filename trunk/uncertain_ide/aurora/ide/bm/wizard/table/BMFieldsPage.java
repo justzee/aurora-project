@@ -14,7 +14,10 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.datatype.DataType;
+import uncertain.datatype.DataTypeRegistry;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.celleditor.CellInfo;
 import aurora.ide.celleditor.ICellEditor;
@@ -25,10 +28,6 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
-
-import uncertain.composite.CompositeMap;
-import uncertain.datatype.DataType;
-import uncertain.datatype.DataTypeRegistry;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -90,11 +89,11 @@ public class BMFieldsPage extends WizardPage {
 	}
 
 	public CompositeMap getSelectedFields() throws ApplicationException {
-		CompositeMap fieldsArray = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "fields");
+		CompositeMap fieldsArray = new CommentCompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "fields");
 		Object[] elements = gridViewer.getCheckedElements();
 		for (int j = 0; j < elements.length; j++) {
 			CompositeMap record = (CompositeMap) elements[j];
-			CompositeMap field = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "field");
+			CompositeMap field = new CommentCompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "field");
 			String fieldName = record.getString("COLUMN_NAME").toLowerCase();
 			field.put("name", fieldName);
 			field.put("physicalName", record.getString("COLUMN_NAME"));
@@ -138,7 +137,7 @@ public class BMFieldsPage extends WizardPage {
 				excluedColumnList.add(column);
 			}
 		}
-		CompositeMap input = new CompositeMap();
+		CompositeMap input = new CommentCompositeMap();
 		String tableName = wizard.getTableName();
 		if (tableName == null) {
 			setPageComplete(false);
@@ -147,7 +146,7 @@ public class BMFieldsPage extends WizardPage {
 		setPageComplete(true);
 		ResultSet tableRet = DBMetaData.getColumns(null, DBMetaData.getUserName(), tableName, "%");
 		while (tableRet.next()) {
-			CompositeMap element = new CompositeMap();
+			CompositeMap element = new CommentCompositeMap();
 			String columnName = tableRet.getString(columnNames[0]);
 			if (excluedColumnList.contains(columnName)) {
 				continue;

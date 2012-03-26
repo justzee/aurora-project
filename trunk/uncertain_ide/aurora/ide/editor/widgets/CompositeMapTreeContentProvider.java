@@ -8,14 +8,13 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LoadSchemaManager;
-
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
+import aurora.ide.helpers.CompositeMapUtil;
 
 public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 
@@ -43,7 +42,7 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 				while (ite.hasNext()) {
 					Array array = (Array) ite.next();
 					String name = array.getLocalName();
-					CompositeMap newCM = new CompositeMap(map.getPrefix(),
+					CompositeMap newCM = new CommentCompositeMap(map.getPrefix(),
 							map.getNamespaceURI(), name);
 					QualifiedName nm = newCM.getQName();
 					//如果发现不存在此数组节点，则在显示元素上增加此节点，但在核心数据结构中并不添加
@@ -109,7 +108,7 @@ public class CompositeMapTreeContentProvider implements ITreeContentProvider {
 					Array array = (Array) ite.next();
 					String name = array.getLocalName();
 					QualifiedName qn = array.getQName();
-					CompositeMap newCM = new CompositeMap(qn.getPrefix(),
+					CompositeMap newCM = new CommentCompositeMap(qn.getPrefix(),
 							qn.getNameSpace(), name);
 					QualifiedName nm = newCM.getQName();
 					if(CompositeUtil.findChild(map, nm)==null){

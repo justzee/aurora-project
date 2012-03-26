@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import aurora.bm.BusinessModel;
@@ -70,7 +71,7 @@ public class BMUtil {
 			return null;
 		BusinessModel model = BusinessModel.getInstance(modelNode);
 		String prefix = CompositeMapUtil.getContextFullName(modelNode, AuroraConstant.FieldsQN);
-		CompositeMap fieldsNode = new CompositeMap(prefix,AuroraConstant.FieldsQN.getNameSpace(),AuroraConstant.FieldsQN.getLocalName());
+		CompositeMap fieldsNode = new CommentCompositeMap(prefix,AuroraConstant.FieldsQN.getNameSpace(),AuroraConstant.FieldsQN.getLocalName());
 		Field[] fields = model.getFields();
 		if (fields == null || fields.length ==0) {
 			return null;
@@ -100,7 +101,7 @@ public class BMUtil {
 		return getFieldsFromBMPath(classPath);
 	}
 	public static CompositeMap createBMTopNode(){
-		CompositeMap model = new CompositeMap("bm",AuroraConstant.ModelQN.getNameSpace(),AuroraConstant.ModelQN.getLocalName());
+		CompositeMap model = new CommentCompositeMap("bm",AuroraConstant.ModelQN.getNameSpace(),AuroraConstant.ModelQN.getLocalName());
 		return model;
 	}
 	public static String getExtendValue(IResource bmFile) throws ApplicationException {
