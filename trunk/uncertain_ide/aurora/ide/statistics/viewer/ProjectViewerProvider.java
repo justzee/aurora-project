@@ -11,9 +11,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 
-import aurora.statistics.map.ObjectStatisticsResult;
-import aurora.statistics.map.StatisticsResult;
-import aurora.statistics.model.StatisticsProject;
+import aurora.ide.api.statistics.map.ObjectStatisticsResult;
+import aurora.ide.api.statistics.map.StatisticsResult;
+import aurora.ide.api.statistics.model.StatisticsProject;
 
 class ProjectNode {
 	// 0

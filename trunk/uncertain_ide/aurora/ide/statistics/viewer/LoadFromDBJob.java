@@ -11,11 +11,11 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import aurora.ide.api.statistics.Statistician;
+import aurora.ide.api.statistics.map.StatisticsResult;
+import aurora.ide.api.statistics.model.StatisticsProject;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.statistics.DBManager;
-import aurora.statistics.Statistician;
-import aurora.statistics.map.StatisticsResult;
-import aurora.statistics.model.StatisticsProject;
 
 public class LoadFromDBJob extends Job {
 
@@ -39,7 +39,7 @@ public class LoadFromDBJob extends Job {
 			monitor.worked(10);
 			monitor.setTaskName("获取数据库连接");
 			connection = dm.getConnection();
-			Statistician s = new Statistician(statisticsProject, null);
+			Statistician s = new Statistician(statisticsProject, null, ObjectDependency.getInstance());
 			monitor.worked(20);
 			monitor.setTaskName("读取统计数据");
 			StatisticsResult read = s.read(connection);

@@ -10,16 +10,16 @@ public class ObjectViewerFilter extends ViewerFilter {
 	private String fileName;
 
 	public ObjectViewerFilter(String fileName) {
-		this.fileName = fileName+"*";
+		this.fileName = fileName + "*";
 	}
 
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		if (element instanceof ObjectNode) {
 			ObjectNode o = (ObjectNode) element;
-			if (fileName.length() == 0) {
+			if ("*".equals(fileName)) {
 				return true;
-			}else{
+			} else {
 				return Util.stringMatch(fileName, o.fileName, false, false);
 			}
 		}

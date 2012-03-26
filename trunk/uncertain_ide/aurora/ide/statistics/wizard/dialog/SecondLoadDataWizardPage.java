@@ -15,11 +15,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import aurora.ide.api.statistics.DatabaseAction;
+import aurora.ide.api.statistics.model.StatisticsProject;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.statistics.DBManager;
-import aurora.statistics.DatabaseAction;
-import aurora.statistics.model.StatisticsProject;
 
 public class SecondLoadDataWizardPage extends WizardPage {
 

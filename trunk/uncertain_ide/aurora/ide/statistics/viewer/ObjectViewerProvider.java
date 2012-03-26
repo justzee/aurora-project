@@ -11,9 +11,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 
-import aurora.statistics.map.ObjectStatisticsResult;
-import aurora.statistics.map.StatisticsResult;
-import aurora.statistics.model.ProjectObject;
+import aurora.ide.api.statistics.map.ObjectStatisticsResult;
+import aurora.ide.api.statistics.map.StatisticsResult;
+import aurora.ide.api.statistics.model.ProjectObject;
 
 class ObjectNode {
 	// 0
@@ -72,8 +72,8 @@ class ObjectViewContentProvider implements IStructuredContentProvider, ITreeCont
 		on.parent = osr;
 		on.path = o.getPath();
 		// TODO
-		// on.refInCount = o.??
-		// on.refOutCount = o.??
+		on.refInCount = Integer.toString(o.getDependencies().size());
+		on.refOutCount = Integer.toString(o.getReferenced());
 		on.scriptSize = toString(o.getScriptSize());
 		on.tagCount = toString(o.getTags().size());
 		return on;

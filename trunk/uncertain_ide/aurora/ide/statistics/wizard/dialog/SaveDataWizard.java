@@ -3,8 +3,8 @@ package aurora.ide.statistics.wizard.dialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Composite;
 
-import aurora.statistics.Statistician;
-import aurora.statistics.model.StatisticsProject;
+import aurora.ide.api.statistics.Statistician;
+import aurora.ide.api.statistics.model.StatisticsProject;
 
 public class SaveDataWizard extends Wizard {
 

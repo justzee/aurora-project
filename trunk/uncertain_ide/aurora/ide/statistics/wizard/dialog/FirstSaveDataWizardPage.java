@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import aurora.statistics.Statistician;
-import aurora.statistics.map.ObjectStatisticsResult;
-import aurora.statistics.map.StatisticsResult;
+import aurora.ide.api.statistics.Statistician;
+import aurora.ide.api.statistics.map.ObjectStatisticsResult;
+import aurora.ide.api.statistics.map.StatisticsResult;
 
 public class FirstSaveDataWizardPage extends WizardPage {
 

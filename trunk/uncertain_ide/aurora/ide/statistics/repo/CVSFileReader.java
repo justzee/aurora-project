@@ -22,10 +22,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 
-import aurora.statistics.cvs.CVSEntryLineTag;
-import aurora.statistics.cvs.CVSTag;
-import aurora.statistics.cvs.FolderSyncInfo;
-
+import aurora.ide.api.statistics.cvs.CVSEntryLineTag;
+import aurora.ide.api.statistics.cvs.CVSTag;
+import aurora.ide.api.statistics.cvs.FolderSyncInfo;
 
 public class CVSFileReader {
 

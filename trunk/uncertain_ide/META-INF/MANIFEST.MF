@@ -88,9 +88,5 @@ Export-Package: aurora.ide,
  aurora.ide.statistics.viewer,
  aurora.ide.statistics.wizard.dialog,
  aurora.ide.sxsd.editor,
- aurora.ide.toolbar.action,
- aurora.statistics,
- aurora.statistics.cvs,
- aurora.statistics.map,
- aurora.statistics.model
+ aurora.ide.toolbar.action
 

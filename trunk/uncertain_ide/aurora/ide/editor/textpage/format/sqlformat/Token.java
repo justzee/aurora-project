@@ -71,6 +71,7 @@ public class Token {
 	}
 
 	public void setUpper(String upper) {
+		//if()
 		this.upper = upper.toUpperCase();
 	}
 
