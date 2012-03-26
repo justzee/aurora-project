@@ -31,8 +31,8 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.editor.textpage.action.CFormatAction;
@@ -315,9 +315,11 @@ public class TextPage extends TextEditor implements IViewer {
 		try {
 			IFile ifile = ((IFileEditorInput) getEditorInput()).getFile();
 			File file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
-			XMLOutputter.saveToFile(file,
-					CompositeMapUtil.loaderFromString(getContent()));// parseString(getContent())
-																		// );//
+//			XMLOutputter.saveToFile(file,
+//					CompositeMapUtil.loaderFromString(getContent()));// parseString(getContent())
+			CommentXMLOutputter.saveToFile(file,
+					CompositeMapUtil.loaderFromString(getContent()));
+															// );//
 			ifile.refreshLocal(IResource.DEPTH_ZERO, null);
 			// super.doSave(monitor);
 		} catch (Exception e) {

@@ -27,15 +27,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentXMLOutputter;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
-import uncertain.composite.XMLOutputter;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -165,7 +164,7 @@ public class ServiceNewWizard extends Wizard implements INewWizard {
 			contents = templatesWizardPage.getTemplateContent();
 		}else{
 			String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-			contents = xmlHint+AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+XMLOutputter.defaultInstance().toXML(rootElement, true);
+			contents = xmlHint+AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+CommentXMLOutputter.defaultInstance().toXML(rootElement, true);
 		}
 		try {
 			return new ByteArrayInputStream(contents.getBytes(AuroraConstant.ENCODING));

@@ -1,6 +1,5 @@
 package aurora.ide.bm.wizard.table;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -34,8 +33,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
@@ -102,10 +101,11 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		}
 		final boolean registerPrompt = isAutoRegisterPrompt();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) throws InvocationTargetException {
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException {
 				try {
 					doFinish(containerName, fileName, monitor);
-					if(registerPrompt){
+					if (registerPrompt) {
 						autoRegisterPrompt();
 					}
 				} catch (CoreException e) {
@@ -121,7 +121,8 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 			return false;
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
-			MessageDialog.openError(getShell(), "Error", realException.getMessage());
+			MessageDialog.openError(getShell(), "Error",
+					realException.getMessage());
 			return false;
 		}
 		return true;
@@ -133,7 +134,8 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	 * file.
 	 */
 
-	private void doFinish(String containerName, String fileName, IProgressMonitor monitor) throws CoreException {
+	private void doFinish(String containerName, String fileName,
+			IProgressMonitor monitor) throws CoreException {
 
 		if (fileName.indexOf(".") == -1) {
 			fileName = fileName + ".bm";
@@ -143,7 +145,8 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			DialogUtil.showErrorMessageBox(LocaleMessage.getString("container") + " \"" + containerName + "\""
+			DialogUtil.showErrorMessageBox(LocaleMessage.getString("container")
+					+ " \"" + containerName + "\""
 					+ LocaleMessage.getString("not.exist"));
 			return;
 		}
@@ -163,7 +166,8 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		monitor.setTaskName("Opening file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
@@ -172,7 +176,8 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 		});
 		monitor.worked(1);
 	}
-	public void autoRegisterPrompt(){
+
+	public void autoRegisterPrompt() {
 		try {
 			RegisterDescription rd = new RegisterDescription(getConnection());
 			rd.setPromptList(promptList);
@@ -181,25 +186,32 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 			DialogUtil.showExceptionMessageBox(e);
 		}
 	}
-	
 
 	/**
 	 * We will initialize file contents with a sample text.
-	 * @throws SystemException 
+	 * 
+	 * @throws SystemException
 	 */
 
 	private InputStream openContentStream() throws SystemException {
 		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		String contents = xmlHint +AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+XMLOutputter.defaultInstance().toXML(initContent);
+		String contents = xmlHint + AuroraResourceUtil.LineSeparator
+				+ AuroraResourceUtil.getSign()
+				// + XMLOutputter.defaultInstance().toXML(initContent);
+				+ CommentXMLOutputter.defaultInstance().toXML(initContent);
+
 		try {
-			return new ByteArrayInputStream(contents.getBytes(AuroraConstant.ENCODING));
+			return new ByteArrayInputStream(
+					contents.getBytes(AuroraConstant.ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new SystemException(e);
 		}
 	}
+
 	private CompositeMap createInitContent() throws ApplicationException {
 
-		CompositeMap model = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "model");
+		CompositeMap model = new CompositeMap(BMUtil.BMPrefix,
+				AuroraConstant.BMUri, "model");
 		model.put("baseTable", getTableName());
 		model.put("alias", "t1");
 		addFieldsAndFeatures(model);
@@ -223,26 +235,35 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 	}
+
 	public String getTableName() {
 		return tablePage.getTableName();
 	}
+
 	public String getTableRemarks() {
 		return tablePage.getTableRemarks();
 	}
+
 	public DatabaseMetaData getDBMetaData() {
 		return tablePage.getDBMetaData();
 	}
+
 	public CompositeMap getPrimaryKeys() throws SQLException {
 		return tablePage.getPrimaryKeys();
 	}
+
 	public void createPageControls(Composite pageContainer) {
 		// super.createPageControls(pageContainer);
 	}
-	private CompositeMap addFieldsAndFeatures(CompositeMap model) throws ApplicationException {
+
+	private CompositeMap addFieldsAndFeatures(CompositeMap model)
+			throws ApplicationException {
 		if (model == null)
 			return null;
-		CompositeMap features = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "features");
-		CompositeMap standardWho = new CompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri, "standard-who");
+		CompositeMap features = new CompositeMap(BMUtil.BMPrefix,
+				AuroraConstant.BMUri, "features");
+		CompositeMap standardWho = new CompositeMap(BMUtil.FeaturesPrefix,
+				BMUtil.FeaturesUri, "standard-who");
 		features.addChild(standardWho);
 		CompositeMap fields = fieldsPage.getSelectedFields();
 		// handle multi language
@@ -251,12 +272,14 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 			return model;
 		model.addChild(fields);
 		model.addChild(features);
-		CompositeMap descIdField = fields.getChildByAttrib("name", descIdFieldName);
+		CompositeMap descIdField = fields.getChildByAttrib("name",
+				descIdFieldName);
 		if (descIdField == null)
 			return model;
 		descIdField.put("multiLanguage", "true");
 		descIdField.put("multiLanguageDescField", "description");
-		CompositeMap descField = new CompositeMap(fields.getPrefix(), fields.getNamespaceURI(), "field");
+		CompositeMap descField = new CompositeMap(fields.getPrefix(),
+				fields.getNamespaceURI(), "field");
 		descField.put("name", "description");
 		descField.put("databaseType", "VARCHAR");
 		descField.put("datatype", "java.lang.String");
@@ -267,36 +290,42 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 			int endIndex = tableRemarks.indexOf("表");
 			if (endIndex == -1)
 				endIndex = tableRemarks.length();
-			String descFieldPrompt = tableRemarks.substring(0, endIndex)+"描述";
+			String descFieldPrompt = tableRemarks.substring(0, endIndex) + "描述";
 			promptList.put(prompt_code, descFieldPrompt);
-			
+
 		}
 
 		fields.addChild(descField);
-		CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefix, BMUtil.FeaturesUri,
-				"multi-language-storage");
+		CompositeMap multiLanguage = new CompositeMap(BMUtil.FeaturesPrefix,
+				BMUtil.FeaturesUri, "multi-language-storage");
 		features.addChild(multiLanguage);
 		return model;
 	}
+
 	public Connection getConnection() throws ApplicationException {
 		if (connnect == null) {
-			connnect = DBConnectionUtil.getDBConnection(ProjectUtil.getIProjectFromSelection());
+			connnect = DBConnectionUtil.getDBConnection(ProjectUtil
+					.getIProjectFromSelection());
 			if (connnect instanceof OracleConnection) {
 				((OracleConnection) connnect).setRemarksReporting(true);
 			}
 		}
 		return connnect;
 	}
+
 	public void refresh() throws ApplicationException {
 		if (fieldsPage.getControl() != null)
 			fieldsPage.refresh();
 	}
+
 	public boolean isAutoRegisterPrompt() {
 		return mainConfigPage.getAutoRegisterPromptButton().getSelection();
 	}
+
 	public void addPrompt(String prompt_code, String description) {
 		promptList.put(prompt_code, description);
 	}
+
 	public String getContainerName() {
 		return mainConfigPage.getContainerName();
 	}

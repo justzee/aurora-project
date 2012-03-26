@@ -46,8 +46,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.bm.editor.GridDialog;
 import aurora.ide.celleditor.CellInfo;
@@ -258,7 +258,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 				features.addChild(multiLanguage);
 				model.addChild(features);
 			}
-			String contents = AuroraResourceUtil.xml_decl +AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+ XMLOutputter.defaultInstance().toXML(model, true);
+			String contents = AuroraResourceUtil.xml_decl +AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+ CommentXMLOutputter.defaultInstance().toXML(model, true);
 			try {
 				return new ByteArrayInputStream(contents.getBytes(AuroraConstant.ENCODING));
 			} catch (UnsupportedEncodingException e) {

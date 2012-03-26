@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import uncertain.composite.XMLOutputter;
+import uncertain.composite.CommentXMLOutputter;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.format.JSBeautifier;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
@@ -59,11 +59,11 @@ public class FormatJS implements IEditorActionDelegate {
 			if (jsCode == null || jsCode.trim().length() == 0)
 				return;
 			JSBeautifier bf = new JSBeautifier();
-			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
-			String jsCodeNew = (XMLOutputter.LINE_SEPARATOR + bf.beautify(
+			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
+			String jsCodeNew = (CommentXMLOutputter.LINE_SEPARATOR + bf.beautify(
 					jsCode, bf.opts)).replaceAll("\n",
-					XMLOutputter.LINE_SEPARATOR + indent)
-					+ XMLOutputter.LINE_SEPARATOR + prefix;
+							CommentXMLOutputter.LINE_SEPARATOR + indent)
+					+ CommentXMLOutputter.LINE_SEPARATOR + prefix;
 			if (jsCodeNew.equals(jsCode))
 				return;
 			document.replace(begin, length, jsCodeNew);

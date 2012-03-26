@@ -1,6 +1,5 @@
 package aurora.ide.bm.wizard.procedure;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -29,6 +28,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentXMLOutputter;
+import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
@@ -36,9 +37,6 @@ import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the
@@ -54,6 +52,7 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	private BMFromProcedurePage mainPage;
 	private IProject project;
 	private boolean isOverwrite;
+
 	/**
 	 * Constructor for BmNewWizard.
 	 */
@@ -78,12 +77,14 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	public boolean performFinish() {
 		CompositeMap selection = mainPage.getSelection();
 		isOverwrite = mainPage.isOverwrite();
-		if (selection == null || selection.getChilds() == null && selection.getChilds().size() < 1)
+		if (selection == null || selection.getChilds() == null
+				&& selection.getChilds().size() < 1)
 			return true;
 		for (Iterator it = selection.getChildIterator(); it.hasNext();) {
 			final CompositeMap record = (CompositeMap) it.next();
 			IRunnableWithProgress op = new IRunnableWithProgress() {
-				public void run(IProgressMonitor monitor) throws InvocationTargetException {
+				public void run(IProgressMonitor monitor)
+						throws InvocationTargetException {
 					try {
 						doFinish(record, monitor);
 					} catch (CoreException e) {
@@ -108,7 +109,8 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	 * file.
 	 */
 
-	private void doFinish(CompositeMap record, IProgressMonitor monitor) throws CoreException {
+	private void doFinish(CompositeMap record, IProgressMonitor monitor)
+			throws CoreException {
 		String fileName = getFullFilePath(record);
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
@@ -119,8 +121,8 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
 		}
-		final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(
-				new Path(bmHome + File.separator + fileName));
+		final IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(bmHome + File.separator + fileName));
 		try {
 			InputStream stream = openContentStream(record);
 			if (file.exists()) {
@@ -142,7 +144,8 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 		monitor.setTaskName("Opening file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
@@ -151,6 +154,7 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 		});
 		monitor.worked(1);
 	}
+
 	private String getFullFilePath(CompositeMap record) {
 		String fullPath = "db" + File.separator;
 		String object_name = record.getString("object_name");
@@ -166,6 +170,7 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 		fullPath = fullPath + ".bm";
 		return fullPath.toLowerCase();
 	}
+
 	private void createParentFolder(IContainer foler) throws CoreException {
 		IContainer parent = foler.getParent();
 		if (parent != null && !parent.exists()) {
@@ -174,21 +179,32 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 		if (!foler.exists())
 			((IFolder) foler).create(IResource.NONE, true, null);
 	}
+
 	/**
 	 * We will initialize file contents with a sample text.
 	 * 
 	 * @throws ApplicationException
 	 */
 
-	private InputStream openContentStream(CompositeMap record) throws ApplicationException {
+	private InputStream openContentStream(CompositeMap record)
+			throws ApplicationException {
 		String xmlHint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		OracleProcedureObject Object = new OracleProcedureObject(record.getString("object_name"), record
-				.getString("procedure_name"), record.getInt("subprogram_id").intValue(), record
-				.getString("object_type"));
-		String contents = xmlHint + AuroraResourceUtil.LineSeparator + AuroraResourceUtil.getSign()
-				+ XMLOutputter.defaultInstance().toXML(Object.toCompositeMap(), true);
+		OracleProcedureObject Object = new OracleProcedureObject(
+				record.getString("object_name"),
+				record.getString("procedure_name"), record.getInt(
+						"subprogram_id").intValue(),
+				record.getString("object_type"));
+		String contents = xmlHint
+				+ AuroraResourceUtil.LineSeparator
+				+ AuroraResourceUtil.getSign()
+				// +
+				// XMLOutputter.defaultInstance().toXML(Object.toCompositeMap(),
+				// true);
+				+ CommentXMLOutputter.defaultInstance().toXML(
+						Object.toCompositeMap(), true);
 		try {
-			return new ByteArrayInputStream(contents.getBytes(AuroraConstant.ENCODING));
+			return new ByteArrayInputStream(
+					contents.getBytes(AuroraConstant.ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new SystemException(e);
 		}
@@ -203,12 +219,14 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		project = ProjectUtil.getIProjectFromSelection();
 		if (project == null) {
-			ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace()
-					.getRoot(), false, LocaleMessage.getString("select.new.file.container"));
+			ContainerSelectionDialog dialog = new ContainerSelectionDialog(
+					getShell(), ResourcesPlugin.getWorkspace().getRoot(),
+					false, LocaleMessage.getString("select.new.file.container"));
 			if (dialog.open() == ContainerSelectionDialog.OK) {
 				Object[] result = dialog.getResult();
 				if (result.length == 1) {
-					project = ResourcesPlugin.getWorkspace().getRoot().findMember(((Path) result[0]).toString())
+					project = ResourcesPlugin.getWorkspace().getRoot()
+							.findMember(((Path) result[0]).toString())
 							.getProject();
 				}
 			}

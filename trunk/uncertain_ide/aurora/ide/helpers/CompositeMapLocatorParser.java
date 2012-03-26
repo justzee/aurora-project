@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.NameProcessor;
 
@@ -32,7 +33,8 @@ import uncertain.composite.NameProcessor;
  * @author jinxiao.lin
  * @version
  */
-public class CompositeMapLocatorParser extends DefaultHandler implements LexicalHandler {
+public class CompositeMapLocatorParser extends DefaultHandler implements
+		LexicalHandler {
 
 	private final int lineToCompositeMap = 0;
 	private final int compositeMapToLine = 1;
@@ -116,13 +118,14 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		uri_mapping.clear();
 	}
 
-	public void startElement(String namespaceURI, String localName, String rawName, Attributes atts)
-			throws SAXException {
+	public void startElement(String namespaceURI, String localName,
+			String rawName, Attributes atts) throws SAXException {
 
 		int lineNumber = locator.getLineNumber() - 1;
 		if (name_processor != null)
 			localName = name_processor.getElementName(localName);
-		CompositeMap node = new CompositeMap((String) uri_mapping.get(namespaceURI), namespaceURI, localName);
+		CommentCompositeMap node = new CommentCompositeMap(
+				(String) uri_mapping.get(namespaceURI), namespaceURI, localName);
 		node.setStartPoint(locator.getLineNumber(), locator.getColumnNumber());
 		addAttribs(node, atts);
 		if (comment != null) {
@@ -148,12 +151,14 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 			compositeMapPositions.put(current_node, new Integer(lineNumber));
 	}
 
-	public void endElement(String uri, String localName, String qName) throws SAXException {
+	public void endElement(String uri, String localName, String qName)
+			throws SAXException {
 		if (comment != null) {
-			current_node.setEndElementComment(comment);
+			((CommentCompositeMap) current_node).setEndElementComment(comment);
 			comment = null;
 		}
-		current_node.setEndPoint(locator.getLineNumber(), locator.getColumnNumber());
+		((CommentCompositeMap) current_node).setEndPoint(
+				locator.getLineNumber(), locator.getColumnNumber());
 		int lineNumber = locator.getLineNumber() - 1;
 		if (!serchfinished && function == lineToCompositeMap) {
 			if (lineNumber >= line) {
@@ -166,7 +171,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		}
 	}
 
-	public void startPrefixMapping(String prefix, String uri) throws SAXException {
+	public void startPrefixMapping(String prefix, String uri)
+			throws SAXException {
 		// do not save empty prefix mapping
 		if (prefix == null)
 			return;
@@ -185,7 +191,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		uri_mapping.remove(prefix);
 	}
 
-	public void characters(char ch[], int start, int length) throws SAXException {
+	public void characters(char ch[], int start, int length)
+			throws SAXException {
 		if (ch == null)
 			return;
 		if (0 == length)
@@ -206,7 +213,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		return current_node;
 	}
 
-	public CompositeMap parseStream(InputStream stream) throws SAXException, IOException {
+	public CompositeMap parseStream(InputStream stream) throws SAXException,
+			IOException {
 
 		// using SAX parser shipped with JDK
 		SAXParser parser = null;
@@ -215,25 +223,28 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		} catch (ParserConfigurationException ex) {
 			throw new SAXException("error when creating SAXParser", ex);
 		}
-		parser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
+		parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+				this);
 		parser.parse(stream, this);
 		CompositeMap root = getRoot();
 		root.setNamespaceMapping(saved_uri_mapping);
 		return root;
 	}
 
-	public int LocateCompositeMapLine(InputStream stream, CompositeMap targetCompositeMap) throws SAXException,
-			IOException {
+	public int LocateCompositeMapLine(InputStream stream,
+			CompositeMap targetCompositeMap) throws SAXException, IOException {
 		function = compositeMapToLine;
 		this.targetCompositeMap = targetCompositeMap;
 		compositeMapPositions = new HashMap();
 		parseStream(stream);
-		Object lineOBject = getLineObject(compositeMapPositions, targetCompositeMap);
+		Object lineOBject = getLineObject(compositeMapPositions,
+				targetCompositeMap);
 		if (lineOBject != null) {
 			line = ((Integer) lineOBject).intValue();
 		}
 		return line;
 	}
+
 	private Object getLineObject(HashMap map, CompositeMap object) {
 		// return compositeMapPositions.get(targetCompositeMap);
 		if (map == null || object == null)
@@ -252,16 +263,18 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		return null;
 	}
 
-	public CompositeMap getCompositeMapFromLine(InputStream stream, int line) throws SAXException, IOException {
+	public CompositeMap getCompositeMapFromLine(InputStream stream, int line)
+			throws SAXException, IOException {
 		function = lineToCompositeMap;
 		this.line = line;
 		parseStream(stream);
 
-		CompositeMap root = new CompositeMap("root");
+		CompositeMap root = new CommentCompositeMap("root");
 		root.addChild(getRoot());
 
 		return targetCompositeMap;
 	}
+
 	public void clear() {
 		current_node = null;
 		if (parentNode_stack != null)
@@ -286,6 +299,7 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 		else
 			comment = now;
 	}
+
 	private String handleNewLine(String src) {
 		if (src == null)
 			return null;
@@ -306,7 +320,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements Lexical
 	public void startCDATA() throws SAXException {
 	}
 
-	public void startDTD(String arg0, String arg1, String arg2) throws SAXException {
+	public void startDTD(String arg0, String arg1, String arg2)
+			throws SAXException {
 	}
 
 	public void startEntity(String arg0) throws SAXException {

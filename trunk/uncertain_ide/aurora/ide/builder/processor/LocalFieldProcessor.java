@@ -9,9 +9,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
-import uncertain.composite.XMLOutputter;
 import uncertain.ocm.OCManager;
 import uncertain.schema.Attribute;
 import aurora.bm.BusinessModel;
@@ -43,7 +43,9 @@ public class LocalFieldProcessor extends AbstractProcessor {
 				} else {
 					bm = AuroraResourceUtil.loadFromResource(file);
 					BusinessModel r = createResult(bm, file);
-					String str = XMLOutputter.defaultInstance().toXML(
+					// String str = XMLOutputter.defaultInstance().toXML(
+					// r.getObjectContext(), true);
+					String str = CommentXMLOutputter.defaultInstance().toXML(
 							r.getObjectContext(), true);
 					map = CompositeMapUtil.loaderFromString(str);
 				}

@@ -33,9 +33,10 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
@@ -108,7 +109,7 @@ public class BusinessModelPage extends CompositeMapPage {
 				String emptyExcption = "Premature end of file";
 				if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
 					data = BMUtil.createBMTopNode();
-					data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+					((CommentCompositeMap)data).setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
 				} else {
 					DialogUtil.showExceptionMessageBox(e);
 					return;
@@ -333,7 +334,8 @@ public class BusinessModelPage extends CompositeMapPage {
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			File file = getFile();
-			XMLOutputter.saveToFile(file, data);
+//			XMLOutputter.saveToFile(file, data);
+			CommentXMLOutputter.saveToFile(file, data);
 			super.doSave(monitor);
 		} catch (IOException e) {
 			DialogUtil.showExceptionMessageBox(e);

@@ -18,10 +18,10 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
-import uncertain.composite.XMLOutputter;
 import uncertain.schema.Array;
 import uncertain.schema.Attribute;
 import uncertain.schema.ComplexType;
@@ -487,7 +487,7 @@ public class CompositeMapUtil {
 		if (data == null)
 			return null;
 		return AuroraResourceUtil.xml_decl
-				+ XMLOutputter.defaultInstance().toXML(data, true);
+				+ CommentXMLOutputter.defaultInstance().toXML(data, true);
 	}
 
 	/**

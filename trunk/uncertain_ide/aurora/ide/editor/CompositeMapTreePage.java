@@ -14,13 +14,13 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CommentXMLOutputter;
+import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
-
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 
 public class CompositeMapTreePage extends CompositeMapPage {
 
@@ -50,7 +50,7 @@ public class CompositeMapTreePage extends CompositeMapPage {
 				String emptyExcption = "Premature end of file";
 				if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
 					data = ScreenUtil.createScreenTopNode();
-					data.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+					((CommentCompositeMap)data).setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
 				} else {
 					DialogUtil.showExceptionMessageBox(e);
 					return;
@@ -78,7 +78,9 @@ public class CompositeMapTreePage extends CompositeMapPage {
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			File file = getFile();
-			XMLOutputter.saveToFile(file, data);
+//			XMLOutputter.saveToFile(file, data);
+			CommentXMLOutputter.saveToFile(file, data);
+			
 			super.doSave(monitor);
 		} catch (Exception e) {
 			DialogUtil.showExceptionMessageBox(e);

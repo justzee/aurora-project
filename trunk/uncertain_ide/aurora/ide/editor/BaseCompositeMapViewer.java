@@ -23,8 +23,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
 import aurora.ide.editor.core.IViewer;
@@ -37,7 +37,6 @@ import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 
 public class BaseCompositeMapViewer implements IViewer {
@@ -115,7 +114,9 @@ public class BaseCompositeMapViewer implements IViewer {
 		String encoding = "UTF-8";
 		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding
 				+ "\"?>\n";
-		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
+//		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
+		return xml_decl + CommentXMLOutputter.defaultInstance().toXML(data, true);
+		
 	}
 
 	public void setContent(CompositeMap content) {

@@ -6,6 +6,7 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.XMLOutputter;
 
 /**
@@ -272,10 +273,13 @@ public class JavaScriptAutoIndentStrategy extends
 				try {
 					if (document.getChar(command.offset - 1) == '{') {
 						buf.append(String.format("%s%n%s",
-								XMLOutputter.DEFAULT_INDENT, indent));
+						// XMLOutputter.DEFAULT_INDENT, indent));
+								CommentXMLOutputter.DEFAULT_INDENT, indent));
+
 						document.replace(command.offset, 0, buf.toString());
 						command.offset += (indent.length()
-								+ XMLOutputter.DEFAULT_INDENT.length() + command.text
+						// + XMLOutputter.DEFAULT_INDENT.length()
+								+ CommentXMLOutputter.DEFAULT_INDENT.length() + command.text
 								.length());
 						command.text = "";
 						return;
@@ -288,7 +292,9 @@ public class JavaScriptAutoIndentStrategy extends
 						command.offset);
 				buf.append(document.get(start, whiteend - start));
 				if (getBracketCount(document, start, command.offset, true) > 0) {
-					buf.append(XMLOutputter.DEFAULT_INDENT);
+//					buf.append(XMLOutputter.DEFAULT_INDENT);
+					buf.append(CommentXMLOutputter.DEFAULT_INDENT);
+					
 				}
 			}
 			command.text = buf.toString();

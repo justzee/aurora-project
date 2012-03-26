@@ -1,6 +1,5 @@
 package aurora.ide.bm.wizard.sql;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -32,8 +31,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
 import aurora.ide.bm.AuroraDataBase;
@@ -88,7 +87,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		final String fileName = mainPage.getFileName();
 		initContent = createInitContent();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) throws InvocationTargetException {
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException {
 				try {
 					doFinish(containerName, fileName, monitor);
 				} catch (CoreException e) {
@@ -104,7 +104,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 			return false;
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
-			MessageDialog.openError(getShell(), "Error", realException.getMessage());
+			MessageDialog.openError(getShell(), "Error",
+					realException.getMessage());
 			return false;
 		}
 		return true;
@@ -116,7 +117,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 	 * file.
 	 */
 
-	private void doFinish(String containerName, String fileName, IProgressMonitor monitor) throws CoreException {
+	private void doFinish(String containerName, String fileName,
+			IProgressMonitor monitor) throws CoreException {
 
 		if (fileName.indexOf(".") == -1) {
 			fileName = fileName + ".bm";
@@ -126,7 +128,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			DialogUtil.showErrorMessageBox("Container \"" + containerName + "\" does not exist.");
+			DialogUtil.showErrorMessageBox("Container \"" + containerName
+					+ "\" does not exist.");
 		}
 		IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
@@ -145,7 +148,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		monitor.setTaskName("Opening file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
@@ -157,23 +161,33 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 
 	/**
 	 * We will initialize file contents with a sample text.
-	 * @throws SystemException 
+	 * 
+	 * @throws SystemException
 	 */
 
 	private InputStream openContentStream() throws SystemException {
-		String contents = AuroraResourceUtil.xml_decl + AuroraResourceUtil.LineSeparator + AuroraResourceUtil.getSign()
-				+ XMLOutputter.defaultInstance().toXML(initContent, true);
+		String contents = AuroraResourceUtil.xml_decl
+				+ AuroraResourceUtil.LineSeparator
+				+ AuroraResourceUtil.getSign()
+				// + XMLOutputter.defaultInstance().toXML(initContent, true);
+				+ CommentXMLOutputter.defaultInstance()
+						.toXML(initContent, true);
+
 		try {
-			return new ByteArrayInputStream(contents.getBytes(AuroraConstant.ENCODING));
+			return new ByteArrayInputStream(
+					contents.getBytes(AuroraConstant.ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new SystemException(e);
 		}
 	}
 
 	private CompositeMap createInitContent() {
-		CompositeMap model = new CompositeMap(BMFromSQLWizard.bm_pre, AuroraConstant.BMUri, "model");
-		CompositeMap operations = new CompositeMap(bm_pre, AuroraConstant.BMUri, "operations");
-		CompositeMap operation = new CompositeMap(bm_pre, AuroraConstant.BMUri, "operation");
+		CompositeMap model = new CompositeMap(BMFromSQLWizard.bm_pre,
+				AuroraConstant.BMUri, "model");
+		CompositeMap operations = new CompositeMap(bm_pre,
+				AuroraConstant.BMUri, "operations");
+		CompositeMap operation = new CompositeMap(bm_pre, AuroraConstant.BMUri,
+				"operation");
 		operations.addChild(operation);
 		model.addChild(operations);
 		String sql = mainPage.getSQL();
@@ -183,11 +197,13 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		}
 		operation.put("name", operationName);
 		if (operationName.equals("query")) {
-			CompositeMap query = new CompositeMap(bm_pre, AuroraConstant.BMUri, "query-sql");
+			CompositeMap query = new CompositeMap(bm_pre, AuroraConstant.BMUri,
+					"query-sql");
 			query.setText(sql);
 			operation.addChild(query);
 		} else {
-			CompositeMap update = new CompositeMap(bm_pre, AuroraConstant.BMUri, "update-sql");
+			CompositeMap update = new CompositeMap(bm_pre,
+					AuroraConstant.BMUri, "update-sql");
 			update.setText(sql);
 			operation.addChild(update);
 		}
@@ -218,7 +234,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		} catch (SQLException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
-		if (selectedFields != null && selectedFields.getChildsNotNull().size() > 0) {
+		if (selectedFields != null
+				&& selectedFields.getChildsNotNull().size() > 0) {
 			model.addChild(selectedFields);
 		}
 		return model;
@@ -229,7 +246,8 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throw new ApplicationException(LocaleMessage.getString("container") + " \"" + containerName + "\""
+			throw new ApplicationException(LocaleMessage.getString("container")
+					+ " \"" + containerName + "\""
 					+ LocaleMessage.getString("not.exist"));
 		}
 		AuroraDataBase ad = new AuroraDataBase(resource.getProject());
@@ -252,6 +270,7 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		}
 		return sql.substring(0, whereIndex);
 	}
+
 	public static void main(String[] args) {
 		String sql = "select empno, ename, deptno, hiredate from emp  e #WHERE_CLAUSE#";
 		sql = getSelectClause(sql);
@@ -269,10 +288,13 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		this.selection = selection;
 	}
 
-	public CompositeMap getSelectedFields(ResultSetMetaData resultSetMetaData) throws SQLException {
-		CompositeMap fieldsArray = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "fields");
+	public CompositeMap getSelectedFields(ResultSetMetaData resultSetMetaData)
+			throws SQLException {
+		CompositeMap fieldsArray = new CompositeMap(BMUtil.BMPrefix,
+				AuroraConstant.BMUri, "fields");
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-			CompositeMap field = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "field");
+			CompositeMap field = new CompositeMap(BMUtil.BMPrefix,
+					AuroraConstant.BMUri, "field");
 			String columnName = resultSetMetaData.getColumnName(i);
 			field.put("name", columnName.toLowerCase());
 			field.put("physicalName", columnName);
@@ -280,12 +302,14 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 				field.put("required", "true");
 			String dataType = resultSetMetaData.getColumnTypeName(i);
 			field.put("databaseType", dataType);
-			Integer db_data_type = new Integer(resultSetMetaData.getColumnType(i));
+			Integer db_data_type = new Integer(
+					resultSetMetaData.getColumnType(i));
 			DataTypeRegistry dtr = DataTypeRegistry.getInstance();
 			DataType dt = dtr.getType(db_data_type.intValue());
 			if (dt == null) {
-				DialogUtil.showErrorMessageBox("field:" + columnName + " have a " + dataType
-						+ " which dataBase Type is " + db_data_type + " is not registried!");
+				DialogUtil.showErrorMessageBox("field:" + columnName
+						+ " have a " + dataType + " which dataBase Type is "
+						+ db_data_type + " is not registried!");
 			} else
 				field.put("datatype", dt.getJavaType().getName());
 
