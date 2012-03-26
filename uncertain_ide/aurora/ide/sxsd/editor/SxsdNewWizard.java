@@ -29,15 +29,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentXMLOutputter;
+import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -159,7 +158,7 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() throws SystemException {
-		String contents =AuroraResourceUtil.xml_decl+AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+XMLOutputter.defaultInstance().toXML(rootElement,true);
+		String contents =AuroraResourceUtil.xml_decl+AuroraResourceUtil.LineSeparator+AuroraResourceUtil.getSign()+CommentXMLOutputter.defaultInstance().toXML(rootElement,true);
 		try {
 			return new ByteArrayInputStream(contents.getBytes(AuroraConstant.ENCODING));
 		} catch (UnsupportedEncodingException e) {

@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import uncertain.composite.XMLOutputter;
+import uncertain.composite.CommentXMLOutputter;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.builder.RegionUtil;
 import aurora.ide.editor.BaseCompositeMapEditor;
@@ -316,12 +316,12 @@ public class ToggleCommentAction extends Action implements
 		int lengthDelt = delt[1];
 		sb.append(textNew);
 		if (ss.length > 1) {
-			sb.append(XMLOutputter.LINE_SEPARATOR);
+			sb.append(CommentXMLOutputter.LINE_SEPARATOR);
 			for (int i = 1; i < ss.length - 1; i++) {
 				textNew = ct ? uncommentSingleLine(ss[i], prefix)
 						: commentSingleLine(ss[i], prefix);
 				sb.append(textNew);
-				sb.append(XMLOutputter.LINE_SEPARATOR);
+				sb.append(CommentXMLOutputter.LINE_SEPARATOR);
 				lengthDelt += (textNew.length() - ss[i].length());
 			}
 			text = ss[ss.length - 1];

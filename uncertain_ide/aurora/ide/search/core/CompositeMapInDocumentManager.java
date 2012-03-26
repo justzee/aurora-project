@@ -12,6 +12,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 import aurora.ide.helpers.ApplicationException;
@@ -24,9 +25,9 @@ public class CompositeMapInDocumentManager {
 
 	/**
 	 * 
-	 *查找CompositeMap 在 document中的准确位置
+	 * 查找CompositeMap 在 document中的准确位置
 	 * 
-	*/
+	 */
 	public static CompositeMapInDocument getCompositeMapInDocument(
 			CompositeMap map, IDocument document) {
 		int startLine = map.getLocation().getStartLine() - 1;
@@ -46,16 +47,17 @@ public class CompositeMapInDocumentManager {
 					CompositeMapInDocument _info = lookupCompositeMap(
 							namspaceMapping, p, ePartitions, document);
 					if (_info != null) {
-						_info.getMap().setComment(map.getComment());
-						if (map.getName().equals(_info.getMap().getName())
+						CompositeMap map2 = _info.getMap();
+						((CommentCompositeMap) map2)
+								.setComment(((CommentCompositeMap) map)
+										.getComment());
+						if (map.getName().equals(map2.getName())
 								&& map.getName().equals(map.getRawName())
-								&& map.getRawName().equals(
-										_info.getMap().getRawName())
-								&& _info.getMap().getNamespaceURI() == null) {
-							_info.getMap().setNameSpaceURI(
-									map.getNamespaceURI());
+								&& map.getRawName().equals(map2.getRawName())
+								&& map2.getNamespaceURI() == null) {
+							map2.setNameSpaceURI(map.getNamespaceURI());
 						}
-						if (map.equals(_info.getMap())) {
+						if (map.equals(map2)) {
 							return _info;
 						}
 					}
@@ -108,7 +110,7 @@ public class CompositeMapInDocumentManager {
 
 	/**
 	 * 将一段没有namespace的xml字符串，转化为CompositeMap
-	 *
+	 * 
 	 * 
 	 */
 	public static CompositeMap loaderFromString(Map namespaceMapping,
@@ -119,7 +121,8 @@ public class CompositeMapInDocumentManager {
 		if (content == null)
 			return null;
 		CompositeMap root = null;
-		CompositeMapLocatorParser parser = new NoNamespaceMapParser(namespaceMapping);
+		CompositeMapLocatorParser parser = new NoNamespaceMapParser(
+				namespaceMapping);
 		InputStream is = null;
 		try {
 			is = new ByteArrayInputStream(content.getBytes("UTF-8"));

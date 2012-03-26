@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
 import aurora.ide.AuroraPlugin;
@@ -90,7 +91,7 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 		try {
 			CompositeMap data = page.toCompoisteMap();
 			String formatContent = AuroraResourceUtil.xml_decl
-					+ XMLOutputter.defaultInstance().toXML(data, true);
+					+ CommentXMLOutputter.defaultInstance().toXML(data, true);
 			if (content.equals(formatContent))
 				return;
 			page.refresh(formatContent);
@@ -117,11 +118,11 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 				return;
 			String prefix = info.getLeadPrefix();
 			JSBeautifier bf = new JSBeautifier();
-			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
-			String jsCodeNew = (XMLOutputter.LINE_SEPARATOR + bf.beautify(
+			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
+			String jsCodeNew = (CommentXMLOutputter.LINE_SEPARATOR + bf.beautify(
 					jsCode, bf.opts)).replaceAll("\n",
-					XMLOutputter.LINE_SEPARATOR + indent)
-					+ XMLOutputter.LINE_SEPARATOR + prefix;
+							CommentXMLOutputter.LINE_SEPARATOR + indent)
+					+ CommentXMLOutputter.LINE_SEPARATOR + prefix;
 			if (jsCodeNew.equals(jsCode)) {
 				return;
 			}
@@ -147,13 +148,13 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 			if (sqlCode == null || sqlCode.trim().length() == 0)
 				return;
 			String prefix = info.getLeadPrefix();
-			String indent = XMLOutputter.DEFAULT_INDENT + prefix;
+			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
 			PLSQLFormat sqlformat = new PLSQLFormat(sqlCode);
 			String sqlCodeNew = sqlformat.format();
 			StringBuilder sb = new StringBuilder(5000);
-			sb.append(XMLOutputter.LINE_SEPARATOR);
+			sb.append(CommentXMLOutputter.LINE_SEPARATOR);
 			for (String line : sqlCodeNew.split("\n|\r\n")) {
-				sb.append(indent + line + XMLOutputter.LINE_SEPARATOR);
+				sb.append(indent + line + CommentXMLOutputter.LINE_SEPARATOR);
 			}
 			sb.append(prefix);
 			sqlCodeNew = sb.toString();

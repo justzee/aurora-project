@@ -14,14 +14,12 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentXMLOutputter;
+import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
-
-
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 
 public class FormatAction implements IEditorActionDelegate {
 
@@ -51,7 +49,7 @@ public class FormatAction implements IEditorActionDelegate {
 		try {
 			is = new ByteArrayInputStream(content.getBytes("UTF-8"));
 			CompositeMap data = cl.loadFromStream(is);
-			String formatContent = AuroraResourceUtil.xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
+			String formatContent = AuroraResourceUtil.xml_decl + CommentXMLOutputter.defaultInstance().toXML(data, true);
 			tp.refresh(formatContent);
 		} catch (IOException e) {
 			DialogUtil.showExceptionMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);

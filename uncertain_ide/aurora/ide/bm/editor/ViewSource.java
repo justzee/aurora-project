@@ -6,8 +6,8 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.ide.bm.ExtendModelFactory;
@@ -65,8 +65,10 @@ public class ViewSource extends TextPage {
 			
 			CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
 			BusinessModel r = createResult(bm, file);
-			return XMLOutputter.defaultInstance().toXML(r.getObjectContext(),
+			return CommentXMLOutputter.defaultInstance().toXML(r.getObjectContext(),
 					true);
+//			return XMLOutputter.defaultInstance().toXML(r.getObjectContext(),
+//					true);
 			// return r.getObjectContext().toXML();
 		} catch (Exception e) {
 			return e.getMessage();

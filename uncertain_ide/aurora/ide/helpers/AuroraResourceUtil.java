@@ -37,6 +37,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeLoader;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
@@ -149,7 +150,7 @@ public class AuroraResourceUtil {
 			return null;
 		}
 		String fullLocationPath = file.getLocation().toOSString();
-		CompositeLoader cl = CompositeLoader.createInstanceForOCM();
+		CompositeLoader cl = CommentCompositeLoader.createInstanceForOCM();
 
 		cl.setSaveNamespaceMapping(true);
 		CompositeMap bmData;
@@ -181,11 +182,11 @@ public class AuroraResourceUtil {
 	}
 
 	public static CompositeLoader getCompsiteLoader() {
-		CompositeLoader cl = new CompositeLoader();
+		CompositeLoader cl = new CommentCompositeLoader();
 		cl.setSaveNamespaceMapping(true);
 		cl.setSupportXInclude(false);
 
-		CompositeLoader projectCl = new CompositeLoader();
+		CompositeLoader projectCl = new CommentCompositeLoader();
 		projectCl.setSaveNamespaceMapping(true);
 		projectCl.setSupportXInclude(false);
 		IProject project = ProjectUtil.getIProjectFromSelection();
@@ -193,7 +194,7 @@ public class AuroraResourceUtil {
 			projectCl.setBaseDir(project.getLocation().toFile().getParent().toString() + File.separator);
 			cl.addExtraLoader(projectCl);
 		}
-		CompositeLoader curentDircl = new CompositeLoader();
+		CompositeLoader curentDircl = new CommentCompositeLoader();
 		curentDircl.setSaveNamespaceMapping(true);
 		curentDircl.setSupportXInclude(false);
 		IFile currentFile = getFileFromSelection();

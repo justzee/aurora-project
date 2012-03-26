@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
 import uncertain.composite.XMLOutputter;
@@ -197,29 +198,29 @@ public class CompletionProposalCreator {
 			if (pathMap[1] == null) {// script不存在,直接作为view的子接点,插在最前面
 				info = new CompositeMapInfo(pathMap[0], doc);
 				prefix = info.getLeadPrefix();
-				prefix += XMLOutputter.DEFAULT_INDENT;
+				prefix += CommentXMLOutputter.DEFAULT_INDENT;
 				IRegion region = info.getStartTagRegion();
 				insertOffset = region.getOffset() + region.getLength();
-				insertTag = XMLOutputter.LINE_SEPARATOR
+				insertTag = CommentXMLOutputter.LINE_SEPARATOR
 						+ prefix
 						+ dataSetsMap
 								.toXML()
 								.trim()
-								.replace(XMLOutputter.LINE_SEPARATOR,
-										XMLOutputter.LINE_SEPARATOR + prefix);
+								.replace(CommentXMLOutputter.LINE_SEPARATOR,
+										CommentXMLOutputter.LINE_SEPARATOR + prefix);
 
 			} else {// 插在script段下面
 				info = new CompositeMapInfo(pathMap[1], doc);
 				prefix = info.getLeadPrefix();
 				IRegion endRegion = info.getEndTagRegion();
 				insertOffset = endRegion.getOffset() + endRegion.getLength();
-				insertTag = XMLOutputter.LINE_SEPARATOR
+				insertTag = CommentXMLOutputter.LINE_SEPARATOR
 						+ prefix
 						+ dataSetsMap
 								.toXML()
 								.trim()
-								.replace(XMLOutputter.LINE_SEPARATOR,
-										XMLOutputter.LINE_SEPARATOR + prefix);
+								.replace(CommentXMLOutputter.LINE_SEPARATOR,
+										CommentXMLOutputter.LINE_SEPARATOR + prefix);
 			}
 		} else {
 			CompositeMap outerDsMap = getOuterDataSetMap(map);
@@ -232,7 +233,7 @@ public class CompletionProposalCreator {
 				String prefix = info.getLeadPrefix();
 				insertOffset = region.getOffset();
 				insertTag = dataSetMap.toXML().trim()
-						+ XMLOutputter.LINE_SEPARATOR + prefix;
+						+ CommentXMLOutputter.LINE_SEPARATOR + prefix;
 			}
 			/*
 			 * 插在dataSets段的尾部
@@ -248,8 +249,8 @@ public class CompletionProposalCreator {
 				insertTag = pathMap[2]
 						.toXML()
 						.trim()
-						.replace(XMLOutputter.LINE_SEPARATOR,
-								XMLOutputter.LINE_SEPARATOR + prefix);
+						.replace(CommentXMLOutputter.LINE_SEPARATOR,
+								CommentXMLOutputter.LINE_SEPARATOR + prefix);
 			}
 		}
 

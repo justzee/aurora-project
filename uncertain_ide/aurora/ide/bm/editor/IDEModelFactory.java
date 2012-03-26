@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeLoader;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
@@ -35,7 +36,7 @@ public class IDEModelFactory extends ModelFactory {
 		    throw new IllegalArgumentException("model name is null");
 		try {
 			String filePath = convertResourcePath(name,ext);
-			CompositeLoader loader = CompositeLoader.createInstanceForOCM();
+			CompositeLoader loader = CommentCompositeLoader.createInstanceForOCM();
 		    String fullPath = ProjectUtil.getBMHomeLocalPath(ProjectUtil.getIProjectFromSelection()) + File.separator + filePath;
 		    CompositeMap config = loader.loadByFullFilePath(fullPath);
 		    if (config == null)

@@ -14,9 +14,6 @@ import javax.xml.parsers.SAXParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMapParser;
-
 public class CommentCompositeMapParser extends CompositeMapParser {
 
 	public static final String SAX_NEWlINE = "&#xA;";
@@ -58,13 +55,13 @@ public class CommentCompositeMapParser extends CompositeMapParser {
 				}
 		if (name_processor != null)
 			localName = name_processor.getElementName(localName);
-		CompositeMap node = null;
+		CommentCompositeMap node = null;
 		if (getCompositeLoader() != null)
-			node = getCompositeLoader().createCompositeMap(
+			node = (CommentCompositeMap)getCompositeLoader().createCompositeMap(
 					(String) uri_mapping.get(namespaceURI), namespaceURI,
 					localName);
 		else
-			node = new CompositeMap((String) uri_mapping.get(namespaceURI),
+			node = new CommentCompositeMap((String) uri_mapping.get(namespaceURI),
 					namespaceURI, localName);
 		addAttribs(node, atts);
 		if (comment != null) {
@@ -86,8 +83,8 @@ public class CommentCompositeMapParser extends CompositeMapParser {
 	}
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		// last_locator = null;
-		if (comment != null) {
-			current_node.setEndElementComment(comment);
+		if (comment != null&& current_node instanceof CommentCompositeMap ) {
+			((CommentCompositeMap)current_node).setEndElementComment(comment);
 			comment = null;
 		}
 		// test if this is an xinclude instruction

@@ -14,6 +14,17 @@ import uncertain.util.XMLWritter;
 
 public class CommentXMLOutputter extends XMLOutputter {
 
+	private static CommentXMLOutputter default_inst = new CommentXMLOutputter(
+			DEFAULT_INDENT, true);
+
+	public static XMLOutputter defaultInstance() {
+		return default_inst;
+	}
+
+	public static String XML(CompositeMap map, boolean namespace_in_root) {
+		return defaultInstance().toXML(map, namespace_in_root);
+	}
+
 	public CommentXMLOutputter() {
 		super();
 	}
@@ -74,6 +85,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 		return list.toArray();
 
 	}
+
 	/**
 	 * internal method
 	 * 
@@ -83,7 +95,8 @@ public class CommentXMLOutputter extends XMLOutputter {
 	 *            a Map of namespace -> prefix mapping
 	 * @return string of XML
 	 */
-	String toXMLWithPrefixMapping(int level, CompositeMap map, Map namespaces, Map prefix_mapping) {
+	String toXMLWithPrefixMapping(int level, CompositeMap map, Map namespaces,
+			Map prefix_mapping) {
 
 		StringBuffer attribs = new StringBuffer();
 		StringBuffer childs = new StringBuffer();
@@ -104,7 +117,8 @@ public class CommentXMLOutputter extends XMLOutputter {
 					String xmlns = "xmlns";
 					if (map.getPrefix() != null)
 						xmlns = "xmlns:" + map.getPrefix();
-					attribs.append(" ").append(XMLWritter.getAttrib(xmlns, namespace_uri));
+					attribs.append(" ").append(
+							XMLWritter.getAttrib(xmlns, namespace_uri));
 				}
 				namespaces = addRef(namespaces, namespace_uri, map);
 			}
@@ -123,12 +137,14 @@ public class CommentXMLOutputter extends XMLOutputter {
 			if (map.getText() != null) {
 				need_new_line_local = false;
 				if (mGenerateCdata)
-					childs.append(CDATA_BEGIN).append(map.getText()).append(CDATA_END);
+					childs.append(CDATA_BEGIN).append(map.getText())
+							.append(CDATA_END);
 				else
 					childs.append(XMLWritter.escape(map.getText()));
 			}
 		} else {
-			getChildXML(level + 1, map.getChilds(), childs, namespaces, prefix_mapping);
+			getChildXML(level + 1, map.getChilds(), childs, namespaces,
+					prefix_mapping);
 			if (endElementComment != null) {
 				childs.append(endElementComment).append(LINE_SEPARATOR);
 			}
@@ -170,39 +186,50 @@ public class CommentXMLOutputter extends XMLOutputter {
 			xml.append(LINE_SEPARATOR);
 		return xml.toString();
 	}
+
 	private String getComment(int level, CompositeMap map) {
-		StringBuffer xml = new StringBuffer();
-		String indent_str = getIndentString(level);
-		if (map.getComment() != null) {
-			String[] comms = map.getComment().split("-->");
-			for (int i = 0; i < comms.length; i++) {
-				String comm = comms[i];
-				String fullComm = "<!--" + comm + "-->";
-				xml.append(indent_str).append(fullComm).append(LINE_SEPARATOR);
-			}
-		} else {
-			return null;
-		}
-		return xml.toString();
-	}
-	private String getEndElementComment(int level, CompositeMap map) {
-		StringBuffer xml = new StringBuffer();
-		String indent_str = getIndentString(level);
-		if (map.getEndElementComment() != null) {
-			String[] comms = map.getEndElementComment().split("-->");
-			for (int i = 0; i < comms.length; i++) {
-				String comm = comms[i];
-				String fullComm = "<!--" + comm + "-->";
-				if(i>0){
-					xml.append(LINE_SEPARATOR);
+		if (map instanceof CommentCompositeMap) {
+			StringBuffer xml = new StringBuffer();
+			String indent_str = getIndentString(level);
+			if (((CommentCompositeMap) map).getComment() != null) {
+				String[] comms = ((CommentCompositeMap) map).getComment()
+						.split("-->");
+				for (int i = 0; i < comms.length; i++) {
+					String comm = comms[i];
+					String fullComm = "<!--" + comm + "-->";
+					xml.append(indent_str).append(fullComm)
+							.append(LINE_SEPARATOR);
 				}
-				xml.append(indent_str).append(fullComm);
-				
+			} else {
+				return null;
 			}
-		} else {
-			return null;
+			return xml.toString();
 		}
-		return xml.toString();
+		return "";
+	}
+
+	private String getEndElementComment(int level, CompositeMap map) {
+		if (map instanceof CommentCompositeMap) {
+			StringBuffer xml = new StringBuffer();
+			String indent_str = getIndentString(level);
+			if (((CommentCompositeMap) map).getEndElementComment() != null) {
+				String[] comms = ((CommentCompositeMap) map)
+						.getEndElementComment().split("-->");
+				for (int i = 0; i < comms.length; i++) {
+					String comm = comms[i];
+					String fullComm = "<!--" + comm + "-->";
+					if (i > 0) {
+						xml.append(LINE_SEPARATOR);
+					}
+					xml.append(indent_str).append(fullComm);
+
+				}
+			} else {
+				return null;
+			}
+			return xml.toString();
+		}
+		return "";
 	}
 
 }

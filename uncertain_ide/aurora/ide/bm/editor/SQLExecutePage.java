@@ -39,9 +39,9 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
+import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
-import uncertain.composite.XMLOutputter;
 import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
@@ -233,7 +233,10 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		}
 		String content;
 		try {
-			content = XMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
+			
+//			content = XMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
+			content = CommentXMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
+			
 		} catch (Throwable e) {
 			throw new SystemException(e);
 		}
