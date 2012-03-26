@@ -12,14 +12,13 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
 import aurora.ide.bm.editor.GridDialog;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
-
-import uncertain.composite.CompositeMap;
 
 public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 
@@ -60,14 +59,14 @@ public class LocalFieldReferenceCellEditor extends StringTextCellEditor {
 		if(root == null)
 			return ;
 		CompositeMap fields = isTableItemEditor()?root.getChild("fields"):root.getParent().getChild("fields");
-		CompositeMap filedNames = new CompositeMap();
+		CompositeMap filedNames = new CommentCompositeMap();
 		if(fields != null)
 			for(Iterator it = fields.getChildsNotNull().iterator();it.hasNext();){
 				CompositeMap child = (CompositeMap)it.next();
 				String targetNode = child.getString("name");
 				if(targetNode == null)
 					continue;
-				CompositeMap newChild = new CompositeMap();
+				CompositeMap newChild = new CommentCompositeMap();
 				newChild.put("name", targetNode);
 				filedNames.addChild(newChild);
 	

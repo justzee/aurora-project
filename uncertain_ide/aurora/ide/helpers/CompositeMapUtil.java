@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
@@ -92,7 +93,7 @@ public class CompositeMapUtil {
 		if (parent == null || childQN == null)
 			return null;
 		String prefix = getContextPrefix(parent, childQN);
-		CompositeMap child = new CompositeMap(prefix, childQN.getNameSpace(),
+		CompositeMap child = new CommentCompositeMap(prefix, childQN.getNameSpace(),
 				childQN.getLocalName());
 		parent.addChild(child);
 		addArrayNode(parent);
@@ -130,7 +131,7 @@ public class CompositeMapUtil {
 				while (ite.hasNext()) {
 					Array array = (Array) ite.next();
 					String name = array.getLocalName();
-					CompositeMap newCM = new CompositeMap(parentCM.getPrefix(),
+					CompositeMap newCM = new CommentCompositeMap(parentCM.getPrefix(),
 							parentCM.getNamespaceURI(), name);
 					parentCM.addChild(newCM);
 				}

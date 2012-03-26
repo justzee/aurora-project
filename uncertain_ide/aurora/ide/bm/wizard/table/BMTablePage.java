@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.celleditor.CellInfo;
@@ -147,13 +148,13 @@ public class BMTablePage extends WizardPageRefreshable {
 	}
 
 	public CompositeMap getPrimaryKeys() throws SQLException {
-		CompositeMap primaryKeyArray = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "primary-key");
+		CompositeMap primaryKeyArray = new CommentCompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "primary-key");
 		String tableName = getTableName();
 		if (tableName == null)
 			return primaryKeyArray;
 		ResultSet tableRet = dbMetaData.getPrimaryKeys(null, dbMetaData.getUserName(), tableName);
 		while (tableRet.next()) {
-			CompositeMap field = new CompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "pk-field");
+			CompositeMap field = new CommentCompositeMap(BMUtil.BMPrefix, AuroraConstant.BMUri, "pk-field");
 			field.put("name", tableRet.getString("COLUMN_NAME").toLowerCase());
 			primaryKeyArray.addChild(field);
 		}
@@ -178,12 +179,12 @@ public class BMTablePage extends WizardPageRefreshable {
 	}
 
 	private CompositeMap getInput(DatabaseMetaData DBMetaData, String tableNamePattern) throws SQLException {
-		CompositeMap input = new CompositeMap();
+		CompositeMap input = new CommentCompositeMap();
 		ResultSet tableRet = DBMetaData.getTables(null, DBMetaData.getUserName(), tableNamePattern, new String[]{
 				"TABLE", "VIEW"});
 		while (tableRet.next()) {
 			int seq = 0;
-			CompositeMap element = new CompositeMap();
+			CompositeMap element = new CommentCompositeMap();
 			element.put(columnNames[seq], tableRet.getString(columnNames[seq++]));
 			element.put(columnNames[seq], tableRet.getString(columnNames[seq++]));
 			element.put(columnNames[seq], tableRet.getString(columnNames[seq++]));

@@ -12,7 +12,9 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Shell;
 import org.xml.sax.SAXException;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeLoader;
+import uncertain.composite.CompositeMap;
 import aurora.ide.bm.editor.GridDialog;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
@@ -21,9 +23,6 @@ import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
-
-import uncertain.composite.CompositeLoader;
-import uncertain.composite.CompositeMap;
 
 public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 
@@ -82,13 +81,13 @@ public class ForeignFieldReferenceCellEditor extends StringTextCellEditor {
 			throw new ApplicationException("文件解析不正确", e);
 		}
 		CompositeMap fields = root.getChild("fields");
-		CompositeMap filedNames = new CompositeMap();
+		CompositeMap filedNames = new CommentCompositeMap();
 		for(Iterator it = fields.getChildsNotNull().iterator();it.hasNext();){
 			CompositeMap child = (CompositeMap)it.next();
 			String targetNode = child.getString("name");
 			if(targetNode == null)
 				continue;
-			CompositeMap newChild = new CompositeMap();
+			CompositeMap newChild = new CommentCompositeMap();
 			newChild.put("name", targetNode);
 			filedNames.addChild(newChild);
 

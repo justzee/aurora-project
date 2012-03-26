@@ -39,6 +39,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
@@ -268,7 +269,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private BusinessModelServiceContext createContext(UncertainEngine uncertainEngine, Connection connection) {
 		Configuration rootConfig = uncertainEngine.createConfig();
 		rootConfig.addParticipant(this);
-		CompositeMap context = new CompositeMap("root");
+		CompositeMap context = new CommentCompositeMap("root");
 		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject.cast(context,
 				BusinessModelServiceContext.class);
 		bc.setConfig(rootConfig);
@@ -386,10 +387,10 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	}
 
 	private CompositeMap getInput(ResultSet tableRet, String[] ColumnProperties) throws SystemException {
-		CompositeMap input = new CompositeMap();
+		CompositeMap input = new CommentCompositeMap();
 		try {
 			while (tableRet.next()) {
-				CompositeMap element = new CompositeMap();
+				CompositeMap element = new CommentCompositeMap();
 				for (int i = 0; i < ColumnProperties.length; i++) {
 					element.put(ColumnProperties[i], tableRet.getObject(ColumnProperties[i]));
 				}

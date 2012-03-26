@@ -31,6 +31,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
@@ -182,11 +183,11 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 	}
 
 	private CompositeMap createInitContent() {
-		CompositeMap model = new CompositeMap(BMFromSQLWizard.bm_pre,
+		CompositeMap model = new CommentCompositeMap(BMFromSQLWizard.bm_pre,
 				AuroraConstant.BMUri, "model");
-		CompositeMap operations = new CompositeMap(bm_pre,
+		CompositeMap operations = new CommentCompositeMap(bm_pre,
 				AuroraConstant.BMUri, "operations");
-		CompositeMap operation = new CompositeMap(bm_pre, AuroraConstant.BMUri,
+		CompositeMap operation = new CommentCompositeMap(bm_pre, AuroraConstant.BMUri,
 				"operation");
 		operations.addChild(operation);
 		model.addChild(operations);
@@ -197,12 +198,12 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 		}
 		operation.put("name", operationName);
 		if (operationName.equals("query")) {
-			CompositeMap query = new CompositeMap(bm_pre, AuroraConstant.BMUri,
+			CompositeMap query = new CommentCompositeMap(bm_pre, AuroraConstant.BMUri,
 					"query-sql");
 			query.setText(sql);
 			operation.addChild(query);
 		} else {
-			CompositeMap update = new CompositeMap(bm_pre,
+			CompositeMap update = new CommentCompositeMap(bm_pre,
 					AuroraConstant.BMUri, "update-sql");
 			update.setText(sql);
 			operation.addChild(update);
@@ -290,10 +291,10 @@ public class BMFromSQLWizard extends Wizard implements INewWizard {
 
 	public CompositeMap getSelectedFields(ResultSetMetaData resultSetMetaData)
 			throws SQLException {
-		CompositeMap fieldsArray = new CompositeMap(BMUtil.BMPrefix,
+		CompositeMap fieldsArray = new CommentCompositeMap(BMUtil.BMPrefix,
 				AuroraConstant.BMUri, "fields");
 		for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-			CompositeMap field = new CompositeMap(BMUtil.BMPrefix,
+			CompositeMap field = new CommentCompositeMap(BMUtil.BMPrefix,
 					AuroraConstant.BMUri, "field");
 			String columnName = resultSetMetaData.getColumnName(i);
 			field.put("name", columnName.toLowerCase());

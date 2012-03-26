@@ -13,37 +13,30 @@ public class CommentCompositeMap extends CompositeMap {
 
 	public CommentCompositeMap() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public CommentCompositeMap(CompositeMap another) {
 		super(another);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CommentCompositeMap(int size, float load_factor) {
 		super(size, load_factor);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CommentCompositeMap(int size) {
 		super(size);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CommentCompositeMap(String name, Map map) {
 		super(name, map);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CommentCompositeMap(String _prefix, String _uri, String _name) {
 		super(_prefix, _uri, _name);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CommentCompositeMap(String _name) {
 		super(_name);
-		// TODO Auto-generated constructor stub
 	}
 
 	/** gets comment in XML document */

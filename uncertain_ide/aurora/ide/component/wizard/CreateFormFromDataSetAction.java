@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
@@ -149,7 +150,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 		public boolean performFinish() {
 			String prefix = dataSet.getPrefix();
 			String uri = dataSet.getNamespaceURI();
-			CompositeMap form = new CompositeMap(prefix, uri, "form");
+			CompositeMap form = new CommentCompositeMap(prefix, uri, "form");
 
 			int columnCount = mainConfigPage.getColumnCount();
 			form.put("column", new Integer(columnCount));
@@ -166,7 +167,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			CompositeMap view = dataSet.getParent().getParent();
 			addToScreenBody(form);
 			for (int i = 0; i < columnCount; i++) {
-				CompositeMap vBox = new CompositeMap(prefix, uri, "vBox");
+				CompositeMap vBox = new CommentCompositeMap(prefix, uri, "vBox");
 				ArrayList fields = (ArrayList) columnFields.get(new Integer(
 						i + 1));
 				Iterator iterator = fields.iterator();
@@ -176,7 +177,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 						CompositeMap record = (CompositeMap) allfields
 								.get(field);
 						String editorString = record.getString("editor");
-						CompositeMap editorMap = new CompositeMap(prefix, uri,
+						CompositeMap editorMap = new CommentCompositeMap(prefix, uri,
 								editorString);
 						if (changeData.get(field) != null) {
 							record = (CompositeMap) changeData.get(field);
@@ -208,7 +209,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				String type = mainConfigPage.getType();
 				CompositeMap js = view.getChild("script");
 				if (js == null) {
-					js = new CompositeMap("script");
+					js = new CommentCompositeMap("script");
 					view.addChild(0, js);
 				}
 				String jsString = js.getText();
@@ -249,8 +250,8 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				if (jsString != null) {
 					jsString = jsString + functionIndent + "}";
 					js.setText(jsString);
-					CompositeMap buttons = new CompositeMap(prefix, uri, "hBox");
-					CompositeMap button = new CompositeMap(prefix, uri,
+					CompositeMap buttons = new CommentCompositeMap(prefix, uri, "hBox");
+					CompositeMap button = new CommentCompositeMap(prefix, uri,
 							"button");
 					button.put("click", functionName);
 					buttons.addChild(button);
@@ -266,7 +267,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			CompositeMap view = currentNode.getParent().getParent();
 			CompositeMap screenBody = view.getChild(screenBodyColumn);
 			if (screenBody == null) {
-				screenBody = new CompositeMap(currentNode.getPrefix(), currentNode.getNamespaceURI(), screenBodyColumn);
+				screenBody = new CommentCompositeMap(currentNode.getPrefix(), currentNode.getNamespaceURI(), screenBodyColumn);
 				view.addChild(screenBody);
 			}
 			screenBody.addChild(grid);
@@ -562,7 +563,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			CompositeMap dataSets = parentCM.getChild("dataSets");
 			if (dataSets == null || dataSets.getChildsNotNull().size() == 0)
 				return null;
-			CompositeMap qualifyDataSetList = new CompositeMap(dataSets
+			CompositeMap qualifyDataSetList = new CommentCompositeMap(dataSets
 					.getPrefix(), dataSets.getNamespaceURI(), "dataSets");
 			Iterator childs = dataSets.getChildsNotNull().iterator();
 			for (; childs.hasNext();) {
@@ -667,14 +668,14 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 			content.setLayout(gridLayout);
 
 			CompositeMap fields = wizard.getFields();
-			CompositeMap filedNames = new CompositeMap();
+			CompositeMap filedNames = new CommentCompositeMap();
 			Iterator it = fields.getChildsNotNull().iterator();
 			for (; it.hasNext();) {
 				CompositeMap child = (CompositeMap) it.next();
 				String targetNode = child.getString("name");
 				if (targetNode == null)
 					continue;
-				CompositeMap newChild = new CompositeMap();
+				CompositeMap newChild = new CommentCompositeMap();
 				newChild.put("name", targetNode);
 				newChild.put("prompt", child.getString("prompt"));
 				newChild.put("editor", AuroraCellEditor.getInstance()
@@ -772,14 +773,14 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				return;
 
 			CompositeMap fields = wizard.getFields();
-			CompositeMap filedNames = new CompositeMap();
+			CompositeMap filedNames = new CommentCompositeMap();
 			for (Iterator it = fields.getChildsNotNull().iterator(); it
 					.hasNext();) {
 				CompositeMap child = (CompositeMap) it.next();
 				String targetNode = child.getString("name");
 				if (targetNode == null)
 					continue;
-				CompositeMap newChild = new CompositeMap();
+				CompositeMap newChild = new CommentCompositeMap();
 				newChild.put("name", targetNode);
 				newChild.put("prompt", child.getString("prompt"));
 				newChild.put("editor", AuroraCellEditor.getInstance()
@@ -810,7 +811,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 				String name = record.getString("name");
 				CompositeMap newRecord = null;
 				if (records.get(name) == null) {
-					newRecord = new CompositeMap("column");
+					newRecord = new CommentCompositeMap("column");
 					newRecord.put("name", name);
 					records.put(name, newRecord);
 				} else {
@@ -864,7 +865,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 						AuroraCellEditor.aurorUri, editorName);
 				String prefix = CompositeMapUtil.getContextPrefix(data,
 						editorQualified);
-				CompositeMap editor = new CompositeMap(prefix, editorQualified
+				CompositeMap editor = new CommentCompositeMap(prefix, editorQualified
 						.getNameSpace(), editorQualified.getLocalName());
 				field_properties.put(field, editor);
 				return editor;
@@ -1030,7 +1031,7 @@ public class CreateFormFromDataSetAction extends AddElementAction {
 						AuroraCellEditor.aurorUri, data.getString("editor"));
 				String prefix = CompositeMapUtil.getContextPrefix(data,
 						editorQualified);
-				CompositeMap editor = new CompositeMap(prefix, editorQualified
+				CompositeMap editor = new CommentCompositeMap(prefix, editorQualified
 						.getNameSpace(), editorQualified.getLocalName());
 				field_properties.put(field, editor);
 				return editor;

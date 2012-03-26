@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -27,7 +26,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.bm.editor.GridDialog;
@@ -47,9 +48,6 @@ import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.node.action.AddElementAction;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
 
 public class CreateLovFromBMAction extends AddElementAction {
 	final static String title = "创建Lov";
@@ -95,13 +93,13 @@ public class CreateLovFromBMAction extends AddElementAction {
 		public boolean performFinish() {
 			String prefix = CompositeMapUtil.getContextPrefix(fieldsNode, childQN);
 			childQN.setPrefix(prefix);
-			CompositeMap fieldNode = new CompositeMap(childQN.getPrefix(),childQN.getNameSpace(),childQN.getLocalName());
+			CompositeMap fieldNode = new CommentCompositeMap(childQN.getPrefix(),childQN.getNameSpace(),childQN.getLocalName());
 			fieldNode.put("name", mainConfigPage.getFieldNameText().getText());
 			fieldNode.put("lovservice", mainConfigPage.getBMText().getText());
 			fieldNode.put("lovHeight", mainConfigPage.getLovHeightText().getText());
 			fieldNode.put("lovWidth", mainConfigPage.getLovWidthText().getText());
 			fieldNode.put("lovGridHeigh", mainConfigPage.getLovGridHeightText().getText());
-			CompositeMap mappingNode = new CompositeMap(childQN.getPrefix(),childQN.getNameSpace(),"mapping");
+			CompositeMap mappingNode = new CommentCompositeMap(childQN.getPrefix(),childQN.getNameSpace(),"mapping");
 			CompositeMap fields = fieldPage.getSelection();
 			if(fields ==  null||fields.getChilds()==null){
 				fieldPage.updatePageStatus("请至少选择一个字段.");
@@ -110,7 +108,7 @@ public class CreateLovFromBMAction extends AddElementAction {
 			}
 			for(Iterator it = fields.getChildIterator();it.hasNext();){
 				CompositeMap field = (CompositeMap)it.next();
-				CompositeMap mapNode = new CompositeMap(childQN.getPrefix(),childQN.getNameSpace(),"map");
+				CompositeMap mapNode = new CommentCompositeMap(childQN.getPrefix(),childQN.getNameSpace(),"map");
 				String fieldName= field.getString("name");
 				mapNode.put("from", fieldName);
 				mapNode.put("to", fieldName);
@@ -255,11 +253,11 @@ public class CreateLovFromBMAction extends AddElementAction {
 				private void pickBM() throws ApplicationException {
 					IProject project = ProjectUtil.getIProjectFromSelection();
 					List bmList = ProjectUtil.getBMSFromProject(project);
-					CompositeMap bms = new CompositeMap("bms");
+					CompositeMap bms = new CommentCompositeMap("bms");
 					String[] columnNames = {"name", "fullpath"};
 					for (Iterator it = bmList.iterator(); it.hasNext();) {
 						IResource bmFile = (IResource) it.next();
-						CompositeMap child = new CompositeMap("record");
+						CompositeMap child = new CommentCompositeMap("record");
 						child.put("name", bmFile.getName());
 						child.put("fullpath", AuroraResourceUtil.getRegisterPath((IFile) bmFile));
 						bms.addChild(child);

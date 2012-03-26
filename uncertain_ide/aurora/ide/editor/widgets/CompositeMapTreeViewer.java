@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.component.wizard.ActionsFactory;
 import aurora.ide.editor.AbstractCMViewer;
@@ -39,8 +41,6 @@ import aurora.ide.node.action.ElementDoubleClickListener;
 import aurora.ide.node.action.PasteAction;
 import aurora.ide.node.action.RefreshAction;
 import aurora.ide.node.action.RemoveElementAction;
-
-import uncertain.composite.CompositeMap;
 
 
 
@@ -264,7 +264,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		CompositeMap parentNode = node.getParent();
 		if (parentNode != null)
 			return parentNode;
-		CompositeMap virtualNode = new CompositeMap(VirtualNode);
+		CompositeMap virtualNode = new CommentCompositeMap(VirtualNode);
 		virtualNode.addChild(node);
 		return virtualNode;
 	}

@@ -178,7 +178,7 @@ public class BusinessModelPage extends CompositeMapPage {
 			public void modifyText(ModifyEvent e) {
 				CompositeMap bmCm = data.getChild(bmDesc);
 				if (bmCm == null) {
-					bmCm = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), bmDesc);
+					bmCm = new CommentCompositeMap(data.getPrefix(), data.getNamespaceURI(), bmDesc);
 					data.addChild(bmCm);
 				}
 				bmCm.setText(bmDescSt.getText());
@@ -202,7 +202,7 @@ public class BusinessModelPage extends CompositeMapPage {
 
 			if (array_data == null) {
 				String name = array.getLocalName();
-				array_data = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), name);
+				array_data = new CommentCompositeMap(data.getPrefix(), data.getNamespaceURI(), name);
 				array_data.setParent(data);
 			}
 
@@ -368,7 +368,7 @@ public class BusinessModelPage extends CompositeMapPage {
 			String tabFolderName = (String) tabIt.next();
 			CompositeMap array_data = data.getChild(tabFolderName);
 			if (array_data == null) {
-				array_data = new CompositeMap(data.getPrefix(), data.getNamespaceURI(), tabFolderName);
+				array_data = new CommentCompositeMap(data.getPrefix(), data.getNamespaceURI(), tabFolderName);
 				array_data.setParent(data);
 				Object childViewer = childViews.get(index + 1);
 				if (childViewer == null)

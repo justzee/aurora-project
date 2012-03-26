@@ -37,6 +37,11 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
+import uncertain.schema.Attribute;
+import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.celleditor.CellEditorFactory;
 import aurora.ide.celleditor.ICellEditor;
@@ -48,17 +53,11 @@ import aurora.ide.editor.widgets.core.IGridLabelProvider;
 import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.ActionListener;
 import aurora.ide.node.action.AddElementAction;
 import aurora.ide.node.action.RefreshAction;
 import aurora.ide.node.action.RemoveElementAction;
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
-import uncertain.schema.Attribute;
-import uncertain.schema.Element;
 
 public class GridViewer extends AbstractCMViewer implements ITableViewer {
 
@@ -142,7 +141,7 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 				return null;
 		} else {
 			Object[] elements = getCheckedElements();
-			records = new CompositeMap("records");
+			records = new CommentCompositeMap("records");
 			for (int j = 0; j < elements.length; j++) {
 				CompositeMap record = (CompositeMap) elements[j];
 				records.addChild(record);

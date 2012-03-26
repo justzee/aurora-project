@@ -26,6 +26,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
@@ -33,8 +35,6 @@ import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
-
-import uncertain.composite.CompositeMap;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -196,9 +196,9 @@ public class BMFromProcedurePage extends WizardPage {
 					+ " from user_procedures t " + " where t.subprogram_id <> 0 "
 					+ " order by t.object_name, t.subprogram_id ";
 			rs = st.executeQuery(select_sql);
-			CompositeMap records = new CompositeMap("records");
+			CompositeMap records = new CommentCompositeMap("records");
 			while (rs.next()) {
-				CompositeMap record = new CompositeMap("record");
+				CompositeMap record = new CommentCompositeMap("record");
 				record.put("object_name", rs.getString(1));
 				record.put("procedure_name", rs.getString(2));
 				record.put("subprogram_id", new Integer(rs.getInt(3)));

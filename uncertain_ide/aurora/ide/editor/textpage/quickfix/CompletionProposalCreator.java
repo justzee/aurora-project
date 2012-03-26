@@ -26,10 +26,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
-import uncertain.composite.XMLOutputter;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
@@ -180,14 +180,14 @@ public class CompletionProposalCreator {
 			return null;
 		int insertOffset = 0;
 		String insertTag = "";
-		CompositeMap dataSetMap = new CompositeMap();// 将要插入的DataSet结点
+		CompositeMap dataSetMap = new CommentCompositeMap();// 将要插入的DataSet结点
 		dataSetMap.setNamespaceMapping(nsMapping);
 		dataSetMap.setName("dataSet");
 		dataSetMap.setPrefix(aPrefix);
 		dataSetMap.put("id", word);
 		int replaceLength = 0;
 		if (pathMap[2] == null) {// 如果不存在dataSets结点
-			CompositeMap dataSetsMap = new CompositeMap();
+			CompositeMap dataSetsMap = new CommentCompositeMap();
 			dataSetsMap.setNamespaceMapping(nsMapping);
 			dataSetsMap.setName("dataSets");
 			dataSetsMap.setPrefix(aPrefix);

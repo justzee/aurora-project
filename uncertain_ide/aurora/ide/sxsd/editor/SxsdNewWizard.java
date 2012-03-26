@@ -29,6 +29,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import aurora.ide.helpers.AuroraConstant;
@@ -170,7 +171,7 @@ public class SxsdNewWizard extends Wizard implements INewWizard {
 		String namespacePrefix = page.getNamespacePrefix();
 		String namespaceUrl = page.getNamespaceUrl();
 		String rootElementName = "schema";
-		CompositeMap rootElement = new CompositeMap(namespacePrefix,namespaceUrl,rootElementName);
+		CompositeMap rootElement = new CommentCompositeMap(namespacePrefix,namespaceUrl,rootElementName);
 		CompositeMapUtil.addElementArray(rootElement);
 		return rootElement;
 	}

@@ -26,18 +26,17 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.part.ResourceTransfer;
 
+import uncertain.composite.CommentCompositeMap;
+import uncertain.composite.CompositeMap;
+import uncertain.schema.Element;
 import aurora.ide.component.wizard.DataSetWizard;
 import aurora.ide.editor.CompositeMapTreePage;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
-
-import uncertain.composite.CompositeMap;
-import uncertain.schema.Element;
 
 
 public class ServiceTreePage extends CompositeMapTreePage {
@@ -113,7 +112,7 @@ public class ServiceTreePage extends CompositeMapTreePage {
 						CompositeMap view = input.getChild(AuroraConstant.ViewQN.getLocalName());
 						if (view == null) {
 							String prefix = CompositeMapUtil.getContextPrefix(input, AuroraConstant.ViewQN);
-							view = new CompositeMap(prefix, AuroraConstant.ViewQN.getNameSpace(), AuroraConstant.ViewQN
+							view = new CommentCompositeMap(prefix, AuroraConstant.ViewQN.getNameSpace(), AuroraConstant.ViewQN
 									.getLocalName());
 							view.setParent(input);
 							input.addChild(view);
@@ -121,7 +120,7 @@ public class ServiceTreePage extends CompositeMapTreePage {
 						CompositeMap dataSets = view.getChild(AuroraConstant.DataSetSQN.getLocalName());
 						if (dataSets == null) {
 							String prefix = CompositeMapUtil.getContextPrefix(input, AuroraConstant.DataSetSQN);
-							dataSets = new CompositeMap(prefix, AuroraConstant.DataSetSQN.getNameSpace(),
+							dataSets = new CommentCompositeMap(prefix, AuroraConstant.DataSetSQN.getNameSpace(),
 									AuroraConstant.DataSetSQN.getLocalName());
 							view.addChild(dataSets);
 							dataSets.setParent(view);
@@ -145,7 +144,7 @@ public class ServiceTreePage extends CompositeMapTreePage {
 					if (!CompositeMapUtil.validNextNodeLegalWithAction(objectCm, sourceCm)) {
 						return;
 					}
-					CompositeMap childCm = new CompositeMap(sourceCm);
+					CompositeMap childCm = new CommentCompositeMap(sourceCm);
 
 					if (childCm != null) {
 						objectCm.addChild(childCm);
