@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Aurora Framework Editor Plug-in Libs
 Bundle-SymbolicName: aurora.ide.libs
 Bundle-Version: 1.3.0.qualifier
-Bundle-ClassPath: aurora.jar,
- c3p0-0.9.1.2.jar,
+Bundle-ClassPath: c3p0-0.9.1.2.jar,
  classes12.jar,
  jotm-1.5.3.jar,
  jotm-client.jar,
@@ -17,7 +16,8 @@ Bundle-ClassPath: aurora.jar,
  xapool.jar,
  jco.jar,
  rhino-1.7R3.jar,
- poi-3.7-20101029.jar
+ poi-3.7-20101029.jar,
+ aurora.jar
 Bundle-Vendor: Aurora Framework
 Export-Package: aurora.application;
   uses:="uncertain.logging,
@@ -147,6 +147,10 @@ Export-Package: aurora.application;
    uncertain.util.template,
    uncertain.core,
    uncertain.composite",
+ aurora.ide.api.statistics,
+ aurora.ide.api.statistics.cvs,
+ aurora.ide.api.statistics.map,
+ aurora.ide.api.statistics.model,
  aurora.plugin.c3p0;
   uses:="javax.sql,
    uncertain.logging,
@@ -523,7 +527,11 @@ Export-Package: aurora.application;
    org.apache.poi.hssf.record.formula,
    org.apache.poi.ss.util,
    org.apache.poi.hssf.record.aggregates",
- org.apache.poi.ss.usermodel,
+ org.apache.poi.ss.usermodel;
+  uses:="org.apache.poi.hssf.util,
+   org.apache.poi.ss.util,
+   new org.apache.poi.ss.usermodel,
+   org.apache.poi.common.usermodel",
  org.enhydra.jdbc.core;uses:="javax.naming,org.enhydra.jdbc.util,javax.naming.spi",
  org.enhydra.jdbc.informix;uses:="org.enhydra.jdbc.standard,javax.sql",
  org.enhydra.jdbc.instantdb;
@@ -709,7 +717,7 @@ Export-Package: aurora.application;
    org.xml.sax.helpers,
    org.xml.sax",
  uncertain.composite.decorate;uses:="uncertain.composite",
- uncertain.composite.transform;uses:="uncertain.composite",
+ uncertain.composite.transform;uses:="uncertain.composite,uncertain.proc",
  uncertain.core;
   uses:="uncertain.schema,
    uncertain.ocm,
