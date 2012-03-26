@@ -94,7 +94,8 @@ public class PLSQLFormat {
 					indent--;
 				}
 				addIndent(indent);
-			} else if (("SELECT".equals(upper)) || ("UPDATE".equals(upper)) || ("DELETE".equals(upper)) || ("CREATE".equals(upper)) || ("INSERT".equals(upper)) || ("DROP".equals(upper)) || ("TRUNCATE".equals(upper)) || ("MERGE".equals(upper)) || ("ALTER".equals(upper)) || ("CREATE OR REPLACE".equals(upper))) {
+			} else if (("SELECT".equals(upper)) || ("UPDATE".equals(upper)) || ("DELETE".equals(upper)) || ("CREATE".equals(upper)) || ("INSERT".equals(upper)) || ("DROP".equals(upper))
+					|| ("TRUNCATE".equals(upper)) || ("MERGE".equals(upper)) || ("ALTER".equals(upper)) || ("CREATE OR REPLACE".equals(upper))) {
 				StringBuffer temp = new StringBuffer();
 				for (; i < sqlBuffer.size(); i++) {
 					String s = sqlBuffer.get(i).replaceAll("\r\n|\n", "");
@@ -115,9 +116,7 @@ public class PLSQLFormat {
 				}
 				addIndent(indent);
 				sb.append(ss[ss.length - 1]);
-				if (isBegin || isDeclare) {
-					sb.append(";");
-				}
+				sb.append(";");
 				sb.append("\n");
 				if (once) {
 					once = false;
