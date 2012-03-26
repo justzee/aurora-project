@@ -37,14 +37,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-import uncertain.composite.QualifiedName;
 import uncertain.schema.AbstractQualifiedNamed;
-import uncertain.schema.Extension;
 import uncertain.schema.ISchemaManager;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.statistics.map.PreferencesTag;
 import aurora.ide.dialog.AddTagDialog;
 import aurora.ide.helpers.LoadSchemaManager;
-import aurora.statistics.map.PreferencesTag;
 
 public class StatisticianPropertyPage extends PreferencePage implements IWorkbenchPreferencePage {
 	private Map<String, List<String>> customMap = new HashMap<String, List<String>>();
@@ -62,7 +60,13 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 	private String checked = "";
 
 	public StatisticianPropertyPage() {
-		initBaseTree();
+		ISchemaManager schemaManager = LoadSchemaManager.getSchemaManager();
+		for (Object object : schemaManager.getAllTypes()) {
+			initBaseTree((AbstractQualifiedNamed) object);
+		}
+		for (String tag : noNamespace) {
+			baseMapTree.Add("No namespace", tag);
+		}
 		baseMap = baseMapTree.getMap();
 		String[] ss = store.getString("statistician.custom").split("!");
 		String namespace = "";
@@ -81,57 +85,20 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 		baseMapTree.sort(false);
 	}
 
-	private void initBaseTree() {
-		ISchemaManager schemaManager = LoadSchemaManager.getSchemaManager();
-		for (Object object : schemaManager.getAllTypes()) {
-			String nameSpace = "";
-			String tag = "";
-			AbstractQualifiedNamed absQualifiedNamed = (AbstractQualifiedNamed) object;
-			nameSpace = absQualifiedNamed.getQName().getNameSpace();
-			tag = absQualifiedNamed.getQName().getLocalName();
-			if ("http://www.uncertain-framework.org/schema/simple-schema".equals(nameSpace)) {
-				continue;
-			}
-			if (nameSpace == null) {
-				nameSpace = "No namespace";
-			}
-			if (tag == null) {
-				tag = "";
-			}
-			baseMapTree.Add(nameSpace, tag);
-			if (absQualifiedNamed.getChilds() == null) {
-				continue;
-			}
-			for (Object ele : absQualifiedNamed.getChilds()) {
-				if (ele instanceof uncertain.schema.Extension) {
-					QualifiedName qn = ((Extension) ele).getBaseType();
-					nameSpace = qn.getNameSpace();
-					tag = qn.getLocalName();
-				} else if (!(ele instanceof uncertain.schema.Attribute)) {
-					AbstractQualifiedNamed aqn = (AbstractQualifiedNamed) ele;
-					if (null != aqn.getQName()) {
-						QualifiedName qn = aqn.getQName();
-						nameSpace = qn.getNameSpace();
-						tag = qn.getLocalName();
-						if (nameSpace == null) {
-							nameSpace = "No namespace";
-						}
-					}
-				}
-				if ("http://www.uncertain-framework.org/schema/simple-schema".equals(nameSpace)) {
-					continue;
-				}
-				if (nameSpace == null) {
-					nameSpace = "No namespace";
-				}
-				if (tag == null) {
-					tag = "";
-				}
-				baseMapTree.Add(nameSpace, tag);
+	private void initBaseTree(AbstractQualifiedNamed aqn) {
+		if (aqn.getQName() != null) {
+			String namespace = aqn.getQName().getNameSpace() == null ? "No namespace" : aqn.getQName().getNameSpace();
+			if(!"http://www.uncertain-framework.org/schema/simple-schema".equalsIgnoreCase(namespace)){
+				baseMapTree.Add(namespace, aqn.getQName().getLocalName());
 			}
 		}
-		for (String tag : noNamespace) {
-			baseMapTree.Add("No namespace", tag);
+		if (aqn.getChilds() == null) {
+			return;
+		}
+		for (Object obj : aqn.getChilds()) {
+			if (obj instanceof AbstractQualifiedNamed) {
+				initBaseTree((AbstractQualifiedNamed) obj);
+			}
 		}
 	}
 

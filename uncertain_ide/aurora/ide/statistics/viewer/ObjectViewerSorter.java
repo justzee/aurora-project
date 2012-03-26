@@ -157,28 +157,52 @@ public class ObjectViewerSorter extends ViewerSorter {
 			String s1 = o1.refInCount;
 			String s2 = o2.refInCount;
 			if (s1 != null && s2 != null) {
-				return s1.compareTo(s2);
+				if (Integer.parseInt(s1) > Integer.parseInt(s2)) {
+					return 1;
+				} else if (Integer.parseInt(s1) < Integer.parseInt(s2)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case -REFINCOUNT: {
 			String s1 = o1.refInCount;
 			String s2 = o2.refInCount;
 			if (s1 != null && s2 != null) {
-				return s2.compareTo(s1);
+				if (Integer.parseInt(s2) > Integer.parseInt(s1)) {
+					return 1;
+				} else if (Integer.parseInt(s2) < Integer.parseInt(s1)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case REFOUTCOUNT: {
 			String s1 = o1.refOutCount;
 			String s2 = o2.refOutCount;
 			if (s1 != null && s2 != null) {
-				return s1.compareTo(s2);
+				if (Integer.parseInt(s1) > Integer.parseInt(s2)) {
+					return 1;
+				} else if (Integer.parseInt(s1) < Integer.parseInt(s2)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		case -REFOUTCOUNT: {
 			String s1 = o1.refOutCount;
 			String s2 = o2.refOutCount;
 			if (s1 != null && s2 != null) {
-				return s2.compareTo(s1);
+				if (Integer.parseInt(s2) > Integer.parseInt(s1)) {
+					return 1;
+				} else if (Integer.parseInt(s2) < Integer.parseInt(s1)) {
+					return -1;
+				} else {
+					return 0;
+				}
 			}
 		}
 		}

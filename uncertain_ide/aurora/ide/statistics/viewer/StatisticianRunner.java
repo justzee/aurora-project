@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -24,6 +25,17 @@ import org.eclipse.swt.widgets.Display;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.statistics.IRunningListener;
+import aurora.ide.api.statistics.RepositoryInfo;
+import aurora.ide.api.statistics.Statistician;
+import aurora.ide.api.statistics.cvs.CVSEntryLineTag;
+import aurora.ide.api.statistics.cvs.CVSRepositoryLocation;
+import aurora.ide.api.statistics.cvs.CVSTag;
+import aurora.ide.api.statistics.cvs.FolderSyncInfo;
+import aurora.ide.api.statistics.map.PreferencesTag;
+import aurora.ide.api.statistics.map.StatisticsResult;
+import aurora.ide.api.statistics.model.ProjectObject;
+import aurora.ide.api.statistics.model.StatisticsProject;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.cache.CacheManager;
@@ -31,17 +43,6 @@ import aurora.ide.search.core.AuroraFileFinder;
 import aurora.ide.search.core.Message;
 import aurora.ide.search.ui.MessageFormater;
 import aurora.ide.statistics.repo.CVSFileReader;
-import aurora.statistics.IRunningListener;
-import aurora.statistics.RepositoryInfo;
-import aurora.statistics.Statistician;
-import aurora.statistics.cvs.CVSEntryLineTag;
-import aurora.statistics.cvs.CVSRepositoryLocation;
-import aurora.statistics.cvs.CVSTag;
-import aurora.statistics.cvs.FolderSyncInfo;
-import aurora.statistics.map.PreferencesTag;
-import aurora.statistics.map.StatisticsResult;
-import aurora.statistics.model.ProjectObject;
-import aurora.statistics.model.StatisticsProject;
 
 public class StatisticianRunner implements IRunningListener {
 	private StatisticsView statisticsView;
@@ -150,8 +151,8 @@ public class StatisticianRunner implements IRunningListener {
 
 	private void setPreferencesTag() {
 		IPreferenceStore store = AuroraPlugin.getDefault().getPreferenceStore();
-		if(store.getDefaultString("statistician.checked").trim().equals("")){
-			StringBuffer defaultStore=new StringBuffer();
+		if (store.getDefaultString("statistician.checked").trim().equals("")) {
+			StringBuffer defaultStore = new StringBuffer();
 			Map<String, List<String>> defaultMap = PreferencesTag.INSTANCE().getDefaultMap();
 			for (String n : defaultMap.keySet()) {
 				defaultStore.append("*");
@@ -186,21 +187,22 @@ public class StatisticianRunner implements IRunningListener {
 		PreferencesTag.INSTANCE().setNamespaceMap(map);
 	}
 
-	private ProjectObject createProjectObject(IFile file) {
+	public ProjectObject createProjectObject(IFile file) {
 		String type = getProjectObjectType(file);
 		if (type.equals(ProjectObject.UNSUPPORT))
 			return null;
 		ProjectObject po = new ProjectObject();
 		po.setType(type);
 		po.setName(file.getName());
-		po.setPath(file.getProject().getName()+"/"+file.getProjectRelativePath().toString());
+		po.setPath(new Path(file.getProject().getName()).append(file.getProjectRelativePath()).toString());
 		try {
 			CompositeMap compositeMap = CacheManager.getCompositeMap(file);
 			po.setRootMap(compositeMap);
-			po.setFile(file);
 			return po;
 		} catch (CoreException e) {
+			e.printStackTrace();
 		} catch (ApplicationException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -211,7 +213,7 @@ public class StatisticianRunner implements IRunningListener {
 	}
 
 	private Statistician noProjectStatistician() {
-		return new Statistician(StatisticsProject.NONE_PROJECT, LoadSchemaManager.getSchemaManager());
+		return new Statistician(StatisticsProject.NONE_PROJECT, LoadSchemaManager.getSchemaManager(), ObjectDependency.getInstance());
 	}
 
 	public boolean notice(ProjectObject po, int poIndex) {
@@ -268,7 +270,7 @@ public class StatisticianRunner implements IRunningListener {
 				sp.setRepositoryType(repInfo.getType());
 				sp.setStorer(repInfo.getUserName());
 			}
-			return new Statistician(sp, LoadSchemaManager.getSchemaManager());
+			return new Statistician(sp, LoadSchemaManager.getSchemaManager(), ObjectDependency.getInstance());
 		}
 		return this.noProjectStatistician();
 	}

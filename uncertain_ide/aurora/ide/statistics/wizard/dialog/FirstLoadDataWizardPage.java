@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Text;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.helpers.DialogUtil;
 import aurora.ide.statistics.DBManager;
 
 public class FirstLoadDataWizardPage extends WizardPage {
@@ -50,22 +49,18 @@ public class FirstLoadDataWizardPage extends WizardPage {
 				comProjectName.add(p.getName());
 				info.put(p.getName(), new ConnectionInfo(p, metaData.getUserName(), metaData.getURL(), metaData.getDriverName(), metaData.getDriverVersion()));
 			} catch (SQLException e) {
-				setPageComplete(false);
-				DialogUtil.showExceptionMessageBox(e);
-				return;
+				continue;
 			} catch (ApplicationException e) {
-				setPageComplete(false);
-				DialogUtil.showExceptionMessageBox(e);
-				return;
+				continue;
 			} finally {
 				try {
 					if (null != con) {
 						con.close();
 					}
 				} catch (SQLException e) {
-					setPageComplete(false);
-					DialogUtil.showExceptionMessageBox(e);
-					return;
+//					setPageComplete(false);
+//					DialogUtil.showExceptionMessageBox(e);
+//					return;
 				}
 			}
 		}

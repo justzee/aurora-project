@@ -54,15 +54,15 @@ import org.eclipse.ui.dialogs.ResourceSelectionDialog;
 import org.eclipse.ui.part.ViewPart;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.statistics.Statistician;
+import aurora.ide.api.statistics.map.StatisticsResult;
+import aurora.ide.api.statistics.model.ProjectObject;
+import aurora.ide.api.statistics.model.StatisticsProject;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.i18n.Messages;
 import aurora.ide.search.ui.EditorOpener;
 import aurora.ide.statistics.wizard.dialog.LoadDataWizard;
 import aurora.ide.statistics.wizard.dialog.SaveDataWizard;
-import aurora.statistics.Statistician;
-import aurora.statistics.map.StatisticsResult;
-import aurora.statistics.model.ProjectObject;
-import aurora.statistics.model.StatisticsProject;
 
 public class StatisticsView extends ViewPart {
 
@@ -128,7 +128,7 @@ public class StatisticsView extends ViewPart {
 		item.setControl(projectViewer.getControl());
 
 		makeActions();
-		//hookContextMenu();
+		// hookContextMenu();
 		contributeToActionBars();
 		saveToDBAction.setEnabled(false);
 		saveToXLSAction.setEnabled(false);
@@ -177,7 +177,7 @@ public class StatisticsView extends ViewPart {
 				if (e.button == 1 && selectNode != null) {
 					ObjectNode osr = (ObjectNode) selectNode;
 					try {
-						IFile file =ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(osr.path));
+						IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(osr.path));
 						EditorOpener editorOpener = new EditorOpener();
 						editorOpener.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file, true);
 					} catch (PartInitException e1) {
@@ -277,6 +277,12 @@ public class StatisticsView extends ViewPart {
 		manager.add(dbLoadAction);
 		manager.add(saveToDBAction);
 		manager.add(new Separator());
+
+		// manager.add(new Action() {
+		// public void run(){
+		//
+		// }
+		// });
 	}
 
 	public void setInput(final StatisticsResult statisticsResult, Statistician statistician) {
@@ -318,7 +324,6 @@ public class StatisticsView extends ViewPart {
 
 		dbLoadAction = new Action() {
 			public void run() {
-				// 选择，IProject关联的数据库设置，搜索所有保存的项目，然后根据选择进行加载。
 				LoadDataWizard wizard = new LoadDataWizard();
 				WizardDialog dialog = new WizardDialog(getSite().getShell(), wizard);
 				int reslut = dialog.open();
@@ -405,46 +410,43 @@ public class StatisticsView extends ViewPart {
 				});
 			}
 
-			@SuppressWarnings("unchecked")
 			private void fillExcelContent(HSSFSheet sheet) {
 				HSSFRow row;
 				StatisticsResult result = (StatisticsResult) objectViewer.getInput();
-				List<ProjectObject>[] listAll = new List[2];
-				listAll[0] = result.getScreens();
-				listAll[1] = result.getBms();
-				int count = 1;
-				for (List<ProjectObject> list : listAll) {
-					if (list == null) {
-						continue;
-					}
-					for (int i = 0; i < list.size(); i++) {
-						row = sheet.createRow(count);
-						HSSFCell cell = row.createCell(0);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						cell.setCellValue(list.get(i).getType());
+				List<ProjectObject> listAll = result.getProjectObjects();
+				for (int i = 0; i < listAll.size(); i++) {
+					row = sheet.createRow(i + 1);
+					HSSFCell cell = row.createCell(0);
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellValue(listAll.get(i).getType());
 
-						cell = row.createCell(1);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						cell.setCellValue(list.get(i).getName());
+					cell = row.createCell(1);
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellValue(listAll.get(i).getName());
 
-						cell = row.createCell(2);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						cell.setCellValue(list.get(i).getPath());
+					cell = row.createCell(2);
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellValue(listAll.get(i).getPath());
 
-						cell = row.createCell(3);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						cell.setCellValue(conversion(list.get(i).getFileSize()));
+					cell = row.createCell(3);
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellValue(conversion(listAll.get(i).getFileSize()));
 
-						cell = row.createCell(4);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						cell.setCellValue(conversion(list.get(i).getScriptSize()));
+					cell = row.createCell(4);
+					cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+					cell.setCellValue(conversion(listAll.get(i).getScriptSize()));
 
-						cell = row.createCell(5);
-						cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
-						cell.setCellValue(list.get(i).getTags().size());
+					cell = row.createCell(5);
+					cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+					cell.setCellValue(listAll.get(i).getTags().size());
 
-						count++;
-					}
+					cell = row.createCell(6);
+					cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+					cell.setCellValue(listAll.get(i).getDependencies().size());
+
+					cell = row.createCell(7);
+					cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+					cell.setCellValue(listAll.get(i).getReferenced());
 				}
 			}
 

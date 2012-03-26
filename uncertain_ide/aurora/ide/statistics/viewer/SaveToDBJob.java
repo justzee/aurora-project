@@ -11,10 +11,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.statistics.DatabaseAction;
+import aurora.ide.api.statistics.Statistician;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.statistics.DBManager;
-import aurora.statistics.DatabaseAction;
-import aurora.statistics.Statistician;
 
 public class SaveToDBJob extends Job {
 
@@ -45,8 +45,8 @@ public class SaveToDBJob extends Job {
 
 			monitor.setTaskName("保存统计数据");
 
-			aurora.statistics.Status save = statistician.save(connection);
-			if (save.getStatus() == aurora.statistics.Status.ERROR) {
+			aurora.ide.api.statistics.Status save = statistician.save(connection);
+			if (save.getStatus() == aurora.ide.api.statistics.Status.ERROR) {
 				monitor.worked(10);
 				monitor.setTaskName("数据保存失败 ：" + save.getMessage());
 

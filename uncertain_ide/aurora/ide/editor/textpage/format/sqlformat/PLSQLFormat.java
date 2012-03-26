@@ -62,7 +62,6 @@ public class PLSQLFormat {
 					isException = true;
 				} else {
 					isDeclare = true;
-					;
 				}
 				isBegin = false;
 			} else if (("END".equals(upper))) {

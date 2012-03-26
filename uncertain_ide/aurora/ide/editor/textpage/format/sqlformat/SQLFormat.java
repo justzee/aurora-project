@@ -306,6 +306,10 @@ public class SQLFormat {
 		}
 		String fixString = convertString(token, indent, isHeadLine);
 
+		if(!token.getCustom().equals(token.getOriginal())){
+			System.out.println(token);
+		}
+		
 		if ((this.rule.isWordBreak()) && (type != 60)) {
 			int lineLength = getLineLength(sb) + fixString.length();
 			if ((this.rule.getWidth() < lineLength) && (this.rule.getWidth() >= this.rule.getIndentString().length() * (indent + 1) + fixString.length())) {

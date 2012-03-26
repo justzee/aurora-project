@@ -6,7 +6,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-import aurora.statistics.model.StatisticsProject;
+import aurora.ide.api.statistics.model.StatisticsProject;
 
 public class LoadDataWizard extends Wizard {
 	FirstLoadDataWizardPage firstpage = new FirstLoadDataWizardPage("1");
