@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import uncertain.composite.CommentXMLOutputter;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.format.JSBeautifier;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;

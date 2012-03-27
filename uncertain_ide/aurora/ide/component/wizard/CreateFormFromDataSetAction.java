@@ -40,8 +40,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.composite.XMLOutputter;
@@ -50,6 +48,8 @@ import uncertain.schema.Element;
 import uncertain.schema.editor.AttributeValue;
 import uncertain.schema.editor.CompositeMapEditor;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.bm.editor.GridDialog;
 import aurora.ide.celleditor.AuroraCellEditor;

@@ -9,12 +9,12 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeLoader;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.bm.ModelFactory;
+import aurora.ide.api.composite.map.CommentCompositeLoader;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ProjectUtil;

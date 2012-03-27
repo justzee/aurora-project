@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.component.wizard.ActionsFactory;
 import aurora.ide.editor.AbstractCMViewer;
 import aurora.ide.editor.core.IViewer;

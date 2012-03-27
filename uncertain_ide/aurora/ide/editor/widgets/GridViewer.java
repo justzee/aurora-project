@@ -37,12 +37,12 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.celleditor.CellEditorFactory;
 import aurora.ide.celleditor.ICellEditor;
 import aurora.ide.editor.AbstractCMViewer;

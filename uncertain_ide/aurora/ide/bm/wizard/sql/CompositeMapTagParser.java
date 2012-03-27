@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import uncertain.composite.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+
 import uncertain.composite.CompositeMap;
 import uncertain.util.TagParseHandle;
 import uncertain.util.TagProcessor;

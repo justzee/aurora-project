@@ -24,7 +24,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
-import uncertain.composite.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+
 import uncertain.composite.CompositeMap;
 import uncertain.composite.NameProcessor;
 

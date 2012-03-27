@@ -14,9 +14,9 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;

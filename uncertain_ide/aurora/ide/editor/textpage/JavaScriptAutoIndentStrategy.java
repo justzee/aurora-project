@@ -6,7 +6,8 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
 
-import uncertain.composite.CommentXMLOutputter;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
+
 import uncertain.composite.XMLOutputter;
 
 /**

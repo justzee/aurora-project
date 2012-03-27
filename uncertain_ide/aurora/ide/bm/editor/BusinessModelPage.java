@@ -33,13 +33,13 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.editor.BaseCompositeMapViewer;
 import aurora.ide.editor.CompositeMapPage;

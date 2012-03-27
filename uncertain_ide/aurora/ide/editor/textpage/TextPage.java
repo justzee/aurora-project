@@ -31,8 +31,8 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerRulerAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.editor.textpage.action.CFormatAction;

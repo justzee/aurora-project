@@ -8,12 +8,12 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
 import uncertain.schema.Array;
 import uncertain.schema.Element;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.helpers.CompositeMapUtil;
 
 public class CompositeMapTreeContentProvider implements ITreeContentProvider {
