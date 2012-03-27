@@ -19,11 +19,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.TextParser;
 import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;

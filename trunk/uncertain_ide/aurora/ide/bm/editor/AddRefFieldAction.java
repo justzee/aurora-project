@@ -11,10 +11,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.QualifiedName;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;

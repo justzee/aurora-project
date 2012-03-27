@@ -18,8 +18,9 @@ import java.util.Set;
 
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
+
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;

@@ -39,8 +39,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
 import uncertain.core.UncertainEngine;
@@ -53,6 +51,8 @@ import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
 import aurora.database.service.DatabaseServiceFactory;
 import aurora.database.service.SqlServiceContext;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.AuroraDataBase;
 import aurora.ide.bm.editor.toolbar.action.ExecuteSqlAction;
 import aurora.ide.editor.core.ISqlViewer;

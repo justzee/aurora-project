@@ -9,12 +9,12 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
 import uncertain.ocm.OCManager;
 import uncertain.schema.Attribute;
 import aurora.bm.BusinessModel;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;

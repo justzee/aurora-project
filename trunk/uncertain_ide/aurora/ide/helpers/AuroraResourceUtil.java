@@ -37,11 +37,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeLoader;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.UncertainEngine;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeLoader;
 import aurora.ide.preferencepages.AuroraTemplateContextType;
 import aurora.ide.preferencepages.AuroraTemplateManager;
 

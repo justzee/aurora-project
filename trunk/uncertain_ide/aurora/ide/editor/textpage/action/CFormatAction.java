@@ -9,10 +9,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.XMLOutputter;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;

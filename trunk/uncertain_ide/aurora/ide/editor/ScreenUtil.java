@@ -1,7 +1,7 @@
 package aurora.ide.editor;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.helpers.AuroraConstant;
 
 public class ScreenUtil {

@@ -26,9 +26,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.part.ResourceTransfer;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Element;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.component.wizard.DataSetWizard;
 import aurora.ide.editor.CompositeMapTreePage;
 import aurora.ide.helpers.ApplicationException;

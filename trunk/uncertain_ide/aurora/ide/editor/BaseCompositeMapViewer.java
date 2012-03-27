@@ -23,10 +23,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Element;
 import uncertain.schema.IType;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.JavaScriptConfiguration;

@@ -26,8 +26,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;

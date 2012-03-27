@@ -28,8 +28,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;

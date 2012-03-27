@@ -6,9 +6,9 @@ package aurora.ide.editor;
 
 import org.eclipse.swt.SWT;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Element;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;

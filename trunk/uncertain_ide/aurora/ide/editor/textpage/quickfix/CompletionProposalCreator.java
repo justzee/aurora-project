@@ -26,13 +26,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.wizard.sql.BMFromSQLWizard;
 import aurora.ide.bm.wizard.sql.BMFromSQLWizardPage;
 import aurora.ide.builder.AuroraBuilder;

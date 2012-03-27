@@ -9,11 +9,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import aurora.bm.BusinessModel;
 import aurora.bm.Field;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;

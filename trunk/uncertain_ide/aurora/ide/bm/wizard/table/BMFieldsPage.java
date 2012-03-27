@@ -14,10 +14,10 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
 import uncertain.datatype.DataType;
 import uncertain.datatype.DataTypeRegistry;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.celleditor.CellInfo;
 import aurora.ide.celleditor.ICellEditor;

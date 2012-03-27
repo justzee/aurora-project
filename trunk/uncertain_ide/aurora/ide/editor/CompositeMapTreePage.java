@@ -14,10 +14,10 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;

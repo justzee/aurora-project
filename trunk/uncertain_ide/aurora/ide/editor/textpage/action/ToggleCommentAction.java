@@ -13,8 +13,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import uncertain.composite.CommentXMLOutputter;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.builder.RegionUtil;
 import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;

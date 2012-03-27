@@ -12,8 +12,8 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITypedRegion;
 import org.xml.sax.SAXException;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapLocatorParser;

@@ -33,9 +33,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
-import uncertain.composite.CommentCompositeMap;
-import uncertain.composite.CommentXMLOutputter;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;

@@ -12,8 +12,8 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
-import uncertain.composite.CommentCompositeMap;
 import uncertain.composite.CompositeMap;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.bm.editor.GridDialog;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
