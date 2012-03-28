@@ -28,6 +28,7 @@ Import-Package: org.eclipse.core.expressions,
  org.eclipse.ui.views.contentoutline
 Bundle-Localization: OSGI-INF/l10n/bundle
 Export-Package: aurora.ide,
+ aurora.ide.api.composite.map,
  aurora.ide.api.javascript,
  aurora.ide.bm,
  aurora.ide.bm.editor,
