@@ -32,6 +32,7 @@ public class CommentCompositeMapParser extends CompositeMapParser {
 
 	public CommentCompositeMapParser(CompositeLoader composite_loader) {
 		super(composite_loader);
+		this.composite_loader = composite_loader;
 	}
 
 	public void startElement(String namespaceURI, String localName,
@@ -139,8 +140,8 @@ public class CommentCompositeMapParser extends CompositeMapParser {
 		} catch (ParserConfigurationException ex) {
 			throw new SAXException("error when creating SAXParser", ex);
 		}
-		parser.setProperty("http://xml.org/sax/properties/lexical-handler",
-				this);
+		// parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+		// this);
 
 		stream = handleNewLineInAttribute(stream);
 
