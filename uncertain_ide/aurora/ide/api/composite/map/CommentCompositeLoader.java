@@ -190,7 +190,10 @@ public class CommentCompositeLoader extends CompositeLoader {
 			CompositeMap map = parse(fis);
 			map.setSourceFile(new File(file_name));
 			return map;
-		} finally {
+		} catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
 			if (fis != null)
 				fis.close();
 		}

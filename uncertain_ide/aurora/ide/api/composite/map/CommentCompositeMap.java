@@ -17,38 +17,81 @@ import uncertain.util.resource.ILocatable;
 import uncertain.util.resource.Location;
 
 public class CommentCompositeMap extends CompositeMap {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 152040602291601078L;
+
 	protected String globalComment;
 
 	protected String comment;
 
 	protected String endElementComment;
 
+	/**
+	 * Creates new CompositeMap
+	 */
 	public CommentCompositeMap() {
-		super();
+		super(DEFAULT_HASHMAP_SIZE);
 	}
 
-	public CommentCompositeMap(CompositeMap another) {
-		super(another);
+	/**
+	 * create a CompositeMap with name
+	 * 
+	 * @param _name
+	 *            name of this map
+	 */
+	public CommentCompositeMap(String _name) {
+		super(DEFAULT_HASHMAP_SIZE);
+		setName(_name);
 	}
 
-	public CommentCompositeMap(int size, float load_factor) {
-		super(size, load_factor);
+	/**
+	 * create a CompositeMap with prefix, namespace uri and name for example,
+	 * 
+	 * <PRE>
+	 * <bo:Employee xmlns:bo="http://someurl"/>
+	 * </PRE>
+	 * 
+	 * here prefix="bo", namespace_uri = "http://someurl", name="Employee"
+	 * 
+	 * @param _prefix
+	 *            namespace prefix
+	 * @param _uri
+	 *            namespace uri
+	 * @param _name
+	 *            name of this map
+	 */
+	public CommentCompositeMap(String _prefix, String _uri, String _name) {
+		super(DEFAULT_HASHMAP_SIZE);
+		setName(_name);
+		setPrefix(_prefix);
+		setNameSpaceURI(_uri);
 	}
 
 	public CommentCompositeMap(int size) {
 		super(size);
 	}
 
+	/**
+	 * same as HashMap( int, float)
+	 * 
+	 * @see java.util.HashMap
+	 */
+	public CommentCompositeMap(int size, float load_factor) {
+		super(size, load_factor);
+	}
+
+	/** constructs from another composite map */
+	public CommentCompositeMap(CompositeMap another) {
+		this(another.getPrefix(), another.getNamespaceURI(), another.getName());
+		copy(another);
+	}
+
 	public CommentCompositeMap(String name, Map map) {
-		super(name, map);
-	}
-
-	public CommentCompositeMap(String _prefix, String _uri, String _name) {
-		super(_prefix, _uri, _name);
-	}
-
-	public CommentCompositeMap(String _name) {
-		super(_name);
+		super();
+		setName(name);
+		putAll(map);
 	}
 
 	/** gets comment in XML document */
