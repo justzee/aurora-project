@@ -7,7 +7,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.navigator.ICommonLabelProvider;
 
+import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.helpers.ApplicationException;
@@ -15,10 +17,13 @@ import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.LocaleMessage;
 
-import uncertain.composite.CompositeMap;
+public class BMFileLabelProvider extends LabelProvider 
+//implements ICommonLabelProvider 
+{
 
-public class BMFileLabelProvider extends LabelProvider {
-
+	public BMFileLabelProvider() {
+		super();
+	}
 	public final int LimitDescLength = 15;
 	public String getText(Object element) {
 		IResource resource = resolveObject(element);

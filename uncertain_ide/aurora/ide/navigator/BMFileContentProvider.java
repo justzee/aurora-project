@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -27,18 +26,22 @@ import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ProjectUtil;
 
-public class BMFileContentProvider implements ITreeContentProvider, IResourceChangeListener, IResourceDeltaVisitor {
+public class BMFileContentProvider implements ITreeContentProvider,
+		IResourceChangeListener, IResourceDeltaVisitor {
 	private StructuredViewer viewer;
 	private static final Object[] NO_CHILD = new Object[0];
+
 	public BMFileContentProvider() {
 		super();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this,
+				IResourceChangeEvent.POST_CHANGE);
 	}
 
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IContainer) {
 			try {
-				Object[] bmFiles = getBMFilesFromResources(((IContainer) parentElement).members());
+				Object[] bmFiles = getBMFilesFromResources(((IContainer) parentElement)
+						.members());
 				return bmFiles;
 			} catch (CoreException e) {
 				DialogUtil.showExceptionMessageBox(e);
@@ -68,7 +71,8 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 				if (parentPath != null)
 					return getBMLinkFile(parentPath);
 				else {
-					return ResourcesPlugin.getWorkspace().getRoot().findMember(parentPath);
+					return ResourcesPlugin.getWorkspace().getRoot()
+							.findMember(parentPath);
 				}
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
@@ -149,7 +153,8 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 			return false;
 		}
 		try {
-			IResourceDelta bms = delta.findMember(new Path(ProjectUtil.getBMHome(project)));
+			IResourceDelta bms = delta.findMember(new Path(ProjectUtil
+					.getBMHome(project)));
 			if (bms == null)
 				return false;
 			handleBMFileDelta(bms);
@@ -164,6 +169,7 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 		});
 		return false;
 	}
+
 	private void handleBMFileDelta(IResourceDelta delta) {
 		if (delta == null)
 			return;
@@ -171,14 +177,18 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 		if (childs == null || childs.length == 0) {
 			IResource resource = delta.getResource();
 			if ((resource instanceof IFile)
-					&& AuroraConstant.BMFileExtension.equalsIgnoreCase(resource.getFileExtension())) {
+					&& AuroraConstant.BMFileExtension.equalsIgnoreCase(resource
+							.getFileExtension())) {
 				try {
 					if (IResourceDelta.REMOVED == delta.getKind()) {
-						BMHierarchyCache.getInstance().removeBMFile(delta.getResource());
+						BMHierarchyCache.getInstance().removeBMFile(
+								delta.getResource());
 					} else if (IResourceDelta.ADDED == delta.getKind()) {
-						BMHierarchyCache.getInstance().addBMFile(delta.getResource());
+						BMHierarchyCache.getInstance().addBMFile(
+								delta.getResource());
 					} else if (IResourceDelta.CHANGED == delta.getKind()) {
-						BMHierarchyCache.getInstance().updateBMFile(delta.getResource());
+						BMHierarchyCache.getInstance().updateBMFile(
+								delta.getResource());
 					}
 				} catch (ApplicationException e) {
 					DialogUtil.showExceptionMessageBox(e);
@@ -190,6 +200,7 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 			handleBMFileDelta(childs[i]);
 		}
 	}
+
 	private Object[] getBMFilesFromResources(IResource[] resources) throws ApplicationException {
 		List fileList = new LinkedList();
 		BMHierarchyViewerTester test = new BMHierarchyViewerTester();
@@ -206,17 +217,21 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 				fileList.add(child);
 			}
 		}
+
 		return fileList.toArray();
 	}
+
 	private BMFile getBMLinkFile(Object file) throws ApplicationException {
 		if (file instanceof IFile) {
 			IFile resource = (IFile) file;
 			return searchBMLinkFile(resource);
 		} else if (file instanceof BMFile) {
-			IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(((BMFile) file).getPath());
+			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(((BMFile) file).getPath());
 			return searchBMLinkFile(resource);
 		} else if (file instanceof IPath) {
-			IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember((IPath) file);
+			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember((IPath) file);
 			return searchBMLinkFile(resource);
 		} else if (file instanceof IResource) {
 			return searchBMLinkFile((IResource) file);
@@ -224,13 +239,18 @@ public class BMFileContentProvider implements ITreeContentProvider, IResourceCha
 			throw new ApplicationException("请检查对象是" + "IFile或者BMFile类型!");
 		}
 	}
-	private BMFile searchBMLinkFile(IResource resource) throws ApplicationException {
+
+	private BMFile searchBMLinkFile(IResource resource)
+			throws ApplicationException {
+		
+	
 		if (resource == null || !resource.exists())
 			return null;
 		if (!BMHierarchyCache.getInstance().isCached(resource.getProject())) {
 			BMHierarchyCache.getInstance().initCache(resource.getProject());
 		}
-		Map ifileMap = BMHierarchyCache.getInstance().getBMFileMapNotNull(resource.getProject());
+		Map ifileMap = BMHierarchyCache.getInstance().getBMFileMapNotNull(
+				resource.getProject());
 		Object obj = ifileMap.get(resource.getFullPath());
 		if (obj == null) {
 			return null;

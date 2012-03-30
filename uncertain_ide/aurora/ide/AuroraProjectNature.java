@@ -128,6 +128,7 @@ public class AuroraProjectNature implements IProjectNature {
 
 	public static boolean hasAuroraNature(IProject project)
 			throws CoreException {
+		
 		return project.hasNature(ID);
 	}
 

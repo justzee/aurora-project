@@ -4,9 +4,11 @@ package aurora.ide.bm;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeLoader;
@@ -20,6 +22,7 @@ import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
+import aurora.ide.search.cache.CacheManager;
 
 public class BMUtil {
 	public static final String ExtendAttrName = "extend";
@@ -108,17 +111,23 @@ public class BMUtil {
 		if (bmFile == null) {
 			throw new ApplicationException(bmFile + "文件不能为空！");
 		}
-		CompositeLoader cl = AuroraResourceUtil.getCompsiteLoader();
-		String localPath = bmFile.getLocation().toOSString();
-		CompositeMap bmData;
+//		CompositeLoader cl = AuroraResourceUtil.getCompsiteLoader();
+//		String localPath = bmFile.getLocation().toOSString();
+		CompositeMap bmData = null;
+//		try {
+//			bmData = cl.loadByFile(localPath);
+//		} catch (IOException e) {
+//			throw new ApplicationException("请查看" + localPath + "文件是否存在.");
+//		} catch (SAXException e) {
+//			throw new ApplicationException("请查看" + localPath + "文件格式是否正确！");
+//		}
 		try {
-			bmData = cl.loadByFile(localPath);
-		} catch (IOException e) {
-			throw new ApplicationException("请查看" + localPath + "文件是否存在.");
-		} catch (SAXException e) {
-			throw new ApplicationException("请查看" + localPath + "文件格式是否正确！");
+			bmData = CacheManager.getCompositeMap((IFile)bmFile);
+			String extendValue = bmData.getString(ExtendAttrName);
+			return extendValue;
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
-		String extendValue = bmData.getString(ExtendAttrName);
-		return extendValue;
+		return null;
 	}
 }
