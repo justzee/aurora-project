@@ -463,7 +463,7 @@ public class CommentCompositeMap extends CompositeMap {
 	 * @see CompositeMap(String, String,String)
 	 */
 	public CompositeMap createChild(String prefix, String uri, String name) {
-		CompositeMap child = new CompositeMap(prefix, uri, name);
+		CompositeMap child = new CommentCompositeMap(prefix, uri, name);
 		addChild(child);
 		return child;
 	}
