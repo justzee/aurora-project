@@ -28,7 +28,7 @@ public abstract class AbstractValidator implements IterationHandle {
 		} catch (Exception e) {
 			AuroraBuilder.addMarker(file, e.getMessage(), 1,
 					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
