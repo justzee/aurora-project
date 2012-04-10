@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.AuroraConstant;
@@ -61,19 +62,25 @@ public final class ResourceUtil {
 		return null;
 	}
 
+	public static final String getBMHome(IProject proj) {
+		IFolder folder = getBMHomeFolder(proj);
+		if (folder == null)
+			return "";
+		return folder.getFullPath().toString();
+	}
+
 	/**
 	 * if a project is a aurora project (has aurora nature),try to find its
 	 * bmhome<br/>
 	 * 1st. read its projectPropertyPage<br/>
-	 * 2nd. try to find WEB-INF (then append '/classes')
+	 * 2nd. try to find WEB-INF (then getFolder 'classes')
 	 * 
 	 * @param proj
-	 * @return the full path of bmhome (starts form the project root path)<br/>
-	 *         if any exception occurred , returns ""
+	 * @return if any exception occurred , returns null
 	 */
-	public static final String getBMHome(IProject proj) {
+	public static final IFolder getBMHomeFolder(IProject proj) {
 		if (!isAuroraProject(proj))
-			return "";
+			return null;
 		String bmHome = null;
 		try {
 			bmHome = proj.getPersistentProperty(ProjectPropertyPage.BMQN);
@@ -83,21 +90,13 @@ public final class ResourceUtil {
 		if (bmHome == null || bmHome.length() == 0) {
 			IFolder wiFolder = searchWebInf(proj);
 			if (wiFolder == null)
-				return "";
-			return wiFolder.getFullPath().toString() + "/classes";
+				return null;
+			return wiFolder.getFolder("classes");
 		}
-		return bmHome;
+		return ResourcesPlugin.getWorkspace().getRoot()
+				.getFolder(new Path(bmHome));
 	}
 
-	/**
-	 * get a aurora project`s webhome<br/>
-	 * 1st. try to read projectProperty<br/>
-	 * 2nd. use {@link #searchWebInf(IResource)} and getParent
-	 * 
-	 * 
-	 * @param proj
-	 * @return id any exception occurred , returns ""
-	 */
 	public static final String getWebHome(IProject proj) {
 		if (!isAuroraProject(proj))
 			return "";
@@ -114,6 +113,34 @@ public final class ResourceUtil {
 			return wiFolder.getParent().getFullPath().toString();
 		}
 		return webHome;
+	}
+
+	/**
+	 * get a aurora project`s webhome<br/>
+	 * 1st. try to read projectProperty<br/>
+	 * 2nd. use {@link #searchWebInf(IResource)} and getParent
+	 * 
+	 * 
+	 * @param proj
+	 * @return id any exception occurred , returns null
+	 */
+	public static final IFolder getWebHomeFolder(IProject proj) {
+		if (!isAuroraProject(proj))
+			return null;
+		String webHome = null;
+		try {
+			webHome = proj.getPersistentProperty(ProjectPropertyPage.WebQN);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		if (webHome == null || webHome.length() == 0) {
+			IFolder wiFolder = searchWebInf(proj);
+			if (wiFolder == null)
+				return null;
+			return (IFolder) wiFolder.getParent();
+		}
+		return ResourcesPlugin.getWorkspace().getRoot()
+				.getFolder(new Path(webHome));
 	}
 
 	/**
