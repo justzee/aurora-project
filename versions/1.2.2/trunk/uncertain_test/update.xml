@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<update schema="aa" action="CRUD">
-	<record _record_num_ ="1" _state_="UPDATE" field1="A" field2="B" field3="C" field4="" />
-	<record _record_num_="2" _state_="NEW" field1="A" field2="B" />
-	<record _record_num_="3" _state_="DELETE" />
-</update>
-
