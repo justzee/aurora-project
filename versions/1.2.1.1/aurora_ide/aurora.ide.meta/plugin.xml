@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.ui.newWizards">
+        <wizard category="aurora.ide.wizard" 
+            class="aurora.ide.meta.project.CreateMetaProjectWizard" 
+            finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
+            icon="icons/aurora.gif" id="aurora.ide.wizard.meta.ProjectWizard" 
+            name="Aurora 原型工程" project="true"/>
+        <wizard
+              category="aurora.ide.wizard"
+              class="aurora.ide.meta.gef.editors.wizard.CreateMetaWizard"
+              icon="icons/meta.png"
+              id="aurora.ide.wizard.CreateFormGridWizard"
+              name="UI Prototype文件">
+        </wizard>
+        <wizard
+              category="aurora.ide.wizard"
+              class="aurora.ide.meta.gef.designer.wizard.NewBmqWizard"
+              id="aurora.ide.wizard.NewBMQ"
+              name="Model Prototype文件">
+        </wizard>
+    </extension>
+     
+    <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="aurora.ide.preferencePage.TemplatesPage"
+            class="aurora.ide.meta.project.prototype.UIPrototypePage"
+            id="aurora.ide.meta.prototype.UI"
+            name="UI">
+      </page>
+    </extension>
+     
+	<extension
+         id="aurora.meta.gef.editor"
+         point="org.eclipse.ui.editors">
+      <editor
+            class="aurora.ide.meta.gef.editors.VScreenEditor"
+            default="true"
+            extensions="uip"
+            icon="icons/meta.png"
+            id="aurora.ide.meta.gef.editors.VScreenEditor"
+            name="Aurora UI Designer">
+      </editor>
+      <editor
+            class="aurora.ide.meta.gef.designer.BMDesigner"
+            default="true"
+            extensions="bmq"
+            id="aurora.ide.meta.gef.editors.BMDesigner"
+            name="BMQuickDesigner">
+      </editor>
+      <!--
+      <editor
+            class="aurora.ide.editor.CollaborateEditor"
+            filenames="*.service,*.screen,*.svc,*.bm"
+            icon="icons/service.gif"
+            id="aurora.ide.editor.CollaborateEditor"
+            default="false"
+            name="远程协作编辑器"/>
+       -->   
+	</extension>
+  
+    <extension point="org.eclipse.ui.propertyPages">
+		<page
+			adaptable="true"
+         	class="aurora.ide.meta.project.MetaProjectPropertyPage"
+         	icon="icons/aurora.gif"
+         	id="aurora.ide.meta.project.property"
+         	name="Aurora原型工程设置"
+         	objectClass="org.eclipse.core.resources.IProject">
+			<filter name="nature" value="aurora.ide.meta.nature"/>
+		</page>
+	</extension>
+	
+    <extension
+          id="nature"
+          name="Aurora Meta Project Nature"
+          point="org.eclipse.core.resources.natures">  
+       <runtime>  
+          <run  
+                class="aurora.ide.meta.project.AuroraMetaProjectNature">  
+          </run>  
+       </runtime>
+       <builder
+             id="aurora.ide.meta.autoGenBuilder">
+       </builder>
+    </extension>
+    <extension point="org.eclipse.ui.ide.projectNatureImages">
+  		<image 
+  		 id="aurora.project.nature.image"
+    	 natureId="aurora.ide.meta.nature"
+    	 icon="icons/aurora8x8.png">
+  		</image>
+ 	</extension>
+ 	
+ 	<extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Aurora原型工程"
+            visible="true"
+            id="aurora.meta.project.actionset">
+        
+         <action
+               label="生成Aurora代码"
+               icon="icons/screen_gen.png"
+               class="aurora.ide.meta.action.SourceCodeGenerator"
+               tooltip="生成Aurora代码"
+               toolbarPath="Aurora\meta"
+               id="aurora.ide.meta.action.SourceCodeGenerator"
+               style="pulldown"
+               >
+         </action>
+      </actionSet>
+   </extension>
+  <extension
+        point="org.eclipse.core.runtime.contentTypes">
+     <content-type
+           default-charset="UTF-8"
+           file-extensions="uip"
+           id="aurora.ide.meta.uip"
+           name="Aurora UIP File"
+           priority="normal">
+     </content-type>
+  </extension>
+  <extension
+        id="xmlProblem"
+        name="XML Problem"
+        point="org.eclipse.core.resources.markers">
+     <super
+           type="org.eclipse.core.resources.problemmarker">
+     </super>
+     <persistent
+           value="true">
+     </persistent>
+  </extension>
+  <extension
+        id="autoGenBuilder"
+        name="Aurora Meta Project Builder"
+        point="org.eclipse.core.resources.builders">
+     <builder
+           hasNature="true"
+           isConfigurable="true">
+        <run
+              class="aurora.ide.meta.builder.AutoGenBuilder">
+        </run>
+     </builder>
+  </extension>
+  <extension
+        point="org.eclipse.ui.popupMenus">
+     <objectContribution
+           id="aurora.ide.meta.contribution1"
+           nameFilter="*.bmq"
+           objectClass="org.eclipse.core.resources.IFile">
+        <action
+              class="aurora.ide.meta.popup.actions.AutoCreateTableAction"
+              enablesFor="+"
+              icon="icons/create_database_table.gif"
+              id="aurora.ide.meta.autoCreateTableAction"
+              label="Create Table"
+              menubarPath="additions">
+           <enablement>
+              <and>
+                 <objectClass
+                       name="org.eclipse.core.resources.IFile">
+                 </objectClass>
+                 <objectState
+                       name="extension"
+                       value="bmq">
+                 </objectState>
+                 <objectState
+                       name="projectNature"
+                       value="aurora.ide.meta.nature">
+                 </objectState>
+              </and>
+           </enablement>
+        </action>
+     </objectContribution>
+  </extension>
+    
+</plugin>
