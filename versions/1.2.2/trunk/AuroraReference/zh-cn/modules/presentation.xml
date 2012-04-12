@@ -1,0 +1,240 @@
+<chapter id="presentation">
+
+    <title>Aurora展示层(APL)</title>
+    <sect1 id="presentation-overview" revision="1">
+        <title>APL(Aurora Presentation Layer)概述</title>
+        
+        <para>
+            APL提供了一整套跨浏览器的UI组件库.所有的UI组件都是基于JavaScript和Html构建的,运行在客户端浏览器中.用户可以在客户端通过调用相应的函数改变UI组件的状态和行为.
+        </para>
+        
+        <para>
+            APL UI组件结构图:
+        </para>
+        <mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/architecture.jpg" format="JPG" align="center" width="555" depth="369" contentwidth="555" contentdepth="369"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/architecture.jpg" format="JPG" align="center"/>
+            </imageobject>
+        </mediaobject>
+
+        <para>
+            上图展示了所有APL UI组件的继承关系.
+        </para>
+    </sect1>
+
+    <sect1 id="presentation-serverside" revision="1">
+        <title>APL服务端工作原理</title>
+        
+        <para>
+            APL服务端简介
+        </para>
+
+        <sect2 id="presentation-serverside-ui" revision="1">
+            <title>Aurora如何创建用户界面</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-serverside-container" revision="1">
+            <title>数据容器</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-serverside-mapping" revision="1">
+            <title>组件映射</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-serverside-buildsession" revision="1">
+            <title>BuildSession</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-serverside-events" revision="1">
+            <title>事件机制</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-serverside-resource" revision="1">
+            <title>资源文件处理</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+        <sect2 id="presentation-serverside-dynamic" revision="1">
+            <title>动态组件配置</title>            
+            <para>
+                正文...
+            </para>
+        </sect2>
+        
+    </sect1>
+
+    <sect1 id="presentation-client" revision="1">
+        <title>APL UI组件</title>            
+        <para>
+            APL 提供了各种丰富的UI组件,例如布局组件(HBox,VBox,Form..),数据展现组件(Grid,Table,TreeGrid等),数据容器组件(DataSet等).
+        </para>
+        
+        <para>
+            APL UI组件兼容以下类型的浏览器
+        </para>
+        
+        <mediaobject>
+            <imageobject role="fo">
+                <imagedata fileref="images/browser.jpg" format="JPG" width="439" depth="40" contentwidth="439" contentdepth="40"/>
+            </imageobject>
+            <imageobject role="html">
+                <imagedata fileref="../shared/images/browser.jpg" format="JPG"/>
+            </imageobject>
+        </mediaobject>
+        
+        <sect2 id="presentation-client-lib" revision="1">
+            <title>核心Javascript API</title>            
+            <para>
+                APL采用了第三方的开源库Ext Core 3.0 (http://www.sencha.com/products/extcore/)作为底层的开发库,在此基础上构建了丰富的组件库.
+            </para>
+        </sect2>
+        
+        &dataset;
+        
+        <sect2 id="presentation-client-layout" revision="1">
+            <title>界面布局(Layout)</title>            
+            <para>
+               APL的布局是基于服务器端生成,这和其他的基于客户端布局的开源框架有点不同.APL的布局基本上是通过table在服务端事先生成好的,这样的好处在于可以
+               减少客户端机器的压力,充分利用服务器的资源优势.
+            </para>
+            
+            <para>
+               APL的布局主要是由Box,VBox,HBox,Form,FieldSet等容器组件组成.
+            </para>
+            
+            &box;
+            &vbox;
+            &hbox;
+            &form;
+            &fieldset;            
+        </sect2>
+        
+        <sect2 id="presentation-client-editor" revision="1">
+            <title>编辑组件</title>            
+            <para>
+               编辑组件是提供文本输入编辑及选择功能的组件，主要是由TextField,NumberField,ComboBox,DatePicker,Lov,DateTimePicker,TextArea,Radio,CheckBox等组件组成。
+            </para>
+            <para>
+               编辑组件也可作为Grid组件的Editor，具体请参阅Grid的编辑器。
+            </para>
+            &textfield;
+            
+            &numberfield;
+            
+            &combobox;
+            
+            &datefield;
+
+            &datepicker;            
+            
+            &lov;
+            
+            &multilov;
+            
+            &datetimepicker;
+            
+            &textarea;
+            
+            &radio;
+            
+            &checkbox;
+            
+        </sect2>
+        
+        &tab;
+		
+        &tree;
+        
+        &grid;
+        
+        &table;
+            
+        &window;
+        
+        <sect2 id="presentation-client-upload" revision="1">
+            <title>上传组件</title>            
+            <para>
+               正文 ...
+            </para>            
+        </sect2>
+        
+        &treegrid;
+    </sect1>
+    
+    <sect1 id="presentation-custom" revision="1">
+        <title>个性化及定制</title>
+        
+        <para>
+            个性化及定制：
+        </para>
+        <sect2 id="presentation-custom-theme" revision="1">
+            <title>界面定制</title>
+            <para>
+                界面定制及更改：
+            </para>
+        </sect2>
+        <sect2 id="presentation-custom-component" revision="1">
+            <title>组件样式修改</title>
+            <para>
+                组件样式修改：
+            </para>
+        </sect2>
+        <sect2 id="presentation-custom-site" revision="1">
+            <title>修改网页整体布局</title>
+            <para>
+                修改网页整体布局：
+            </para>
+        </sect2>
+    </sect1>
+    
+    
+    <sect1 id="presentation-language" revision="1">
+        <title>多语言支持</title>
+        
+        <para>
+            个性化及定制：
+        </para>
+        <sect2 id="presentation-language-database" revision="1">
+            <title>基于数据库存储的多语言支持</title>
+            <para>
+                基于数据库存储的多语言支持：
+            </para>
+        </sect2>
+        <sect2 id="presentation-language-custom" revision="1">
+            <title>自定义多语言实现</title>
+            <para>
+                自定义多语言实现：
+            </para>
+        </sect2>
+        <sect2 id="presentation-language-screen" revision="1">
+            <title>Screen及模板资源文件中的多语言支持</title>
+            <para>
+                xxx：
+            </para>
+        </sect2>
+    </sect1>
+    
+    $dataset
+</chapter>
+
+

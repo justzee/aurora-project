@@ -1,0 +1,5 @@
+<class-registry>
+
+	<feature-attach elementName="hello" featureClass="aurora.testcase.presentation.HelloWorldRenderer" />
+
+</class-registry>
