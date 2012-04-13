@@ -53,7 +53,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			if (map == null) {
 				map = loadWholeBM(file);
 				if (map != null) {
-					wholeBMMap.put(file, map);
+//					wholeBMMap.put(file, map);
 				}
 			}
 			return map;
@@ -89,7 +89,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 		}
 
 		private synchronized CompositeMap remove(IFile file) {
-			wholeBMMap.remove(file);
+//			wholeBMMap.remove(file);
 			return catchMap.remove(file);
 		}
 	}
