@@ -14,7 +14,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 
 import uncertain.composite.CompositeMap;
+import uncertain.ocm.OCManager;
+import aurora.bm.BusinessModel;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
 
@@ -23,6 +26,9 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 	private class ProjectCatcher {
 		private Map<IFile, CompositeMap> catchMap = new HashMap<IFile, CompositeMap>();
+
+		private Map<IFile, CompositeMap> wholeBMMap = new HashMap<IFile, CompositeMap>();
+
 		private IProject project;
 
 		private ProjectCatcher(IProject project) {
@@ -41,8 +47,33 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			return map;
 		}
 
+		private synchronized CompositeMap getWholeCompositeMap(IFile file)
+				throws CoreException, ApplicationException {
+			CompositeMap map = wholeBMMap.get(file);
+			if (map == null) {
+				map = loadWholeBM(file);
+				if (map != null) {
+					wholeBMMap.put(file, map);
+				}
+			}
+			return map;
+		}
+
 		private IProject getProject() {
 			return project;
+		}
+
+		private CompositeMap loadWholeBM(IFile file) throws CoreException,
+				ApplicationException {
+			CompositeMap bm = getCompositeMap(file);
+			BusinessModel r = createResult(bm, file);
+			return r.getObjectContext();
+		}
+
+		private BusinessModel createResult(CompositeMap config, IFile file) {
+			ExtendModelFactory factory = new ExtendModelFactory(
+					OCManager.getInstance(), file);
+			return factory.getModel(config);
 		}
 
 		private CompositeMap load(IFile file) throws CoreException,
@@ -58,6 +89,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 		}
 
 		private synchronized CompositeMap remove(IFile file) {
+			wholeBMMap.remove(file);
 			return catchMap.remove(file);
 		}
 	}
@@ -72,6 +104,12 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			ApplicationException {
 		ProjectCatcher projectCatcher = getProjectCatcher(file);
 		return (CompositeMap) projectCatcher.getCompositeMap(file);
+	}
+
+	public CompositeMap getWholeCompositeMap(IFile file) throws CoreException,
+			ApplicationException {
+		ProjectCatcher projectCatcher = getProjectCatcher(file);
+		return (CompositeMap) projectCatcher.getWholeCompositeMap(file);
 	}
 
 	private CompositeMap remove(IFile file) {
