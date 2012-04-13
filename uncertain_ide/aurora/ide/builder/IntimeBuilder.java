@@ -55,7 +55,7 @@ public class IntimeBuilder implements IReconcileListener {
 					IDocument doc = sourceViewer.getDocument();
 					new IntimeValidator(file, doc).validate();
 				} catch (Exception e) {
-					e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
 		});
