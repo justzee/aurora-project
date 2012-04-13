@@ -632,6 +632,10 @@ public class Util {
 
 	public static String getValueIgnoreCase(Attribute a, CompositeMap cMap) {
 		String name = a.getName();
+		return getValueIgnoreCase(cMap, name);
+	}
+
+	public static String getValueIgnoreCase(CompositeMap cMap, String name) {
 		Set keySet = cMap.keySet();
 		for (Object object : keySet) {
 			if (object instanceof String
