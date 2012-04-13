@@ -33,7 +33,10 @@ public class QuickAssistProcessor implements IQuickAssistProcessor {
 		MarkerAnnotation ma = (MarkerAnnotation) annotation;
 		for (String s : fixableMarkerType) {
 			try {
-				if (s.equals(ma.getMarker().getType()))
+				IMarker marker = ma.getMarker();
+				if (marker == null)
+					return false;
+				if (s.equals(marker.getType()))
 					return true;
 			} catch (CoreException e) {
 				e.printStackTrace();
