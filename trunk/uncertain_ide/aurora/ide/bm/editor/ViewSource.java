@@ -12,7 +12,7 @@ import aurora.bm.BusinessModel;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.editor.textpage.TextPage;
-import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.search.cache.CacheManager;
 
 public class ViewSource extends TextPage {
 
@@ -62,13 +62,15 @@ public class ViewSource extends TextPage {
 	public String getExtendContent() {
 		IFile file = (IFile) getEditorInput().getAdapter(IFile.class);
 		try {
-			
-			CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
-			BusinessModel r = createResult(bm, file);
-			return CommentXMLOutputter.defaultInstance().toXML(r.getObjectContext(),
-					true);
-//			return XMLOutputter.defaultInstance().toXML(r.getObjectContext(),
-//					true);
+
+			// CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
+			// BusinessModel r = createResult(bm, file);
+			CompositeMap wholeBMCompositeMap = CacheManager
+					.getWholeBMCompositeMap(file);
+			return CommentXMLOutputter.defaultInstance().toXML(
+					wholeBMCompositeMap, true);
+			// return XMLOutputter.defaultInstance().toXML(r.getObjectContext(),
+			// true);
 			// return r.getObjectContext().toXML();
 		} catch (Exception e) {
 			return e.getMessage();

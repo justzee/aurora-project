@@ -25,9 +25,14 @@ public class CacheManager {
 		return documentCacher;
 	}
 
-	public static CompositeMap getCompositeMap(IFile file) throws CoreException,
-			ApplicationException {
+	public static CompositeMap getCompositeMap(IFile file)
+			throws CoreException, ApplicationException {
 		return getCompositeMapCacher().getCompositeMap(file);
+	}
+
+	public static CompositeMap getWholeBMCompositeMap(IFile file)
+			throws CoreException, ApplicationException {
+		return getCompositeMapCacher().getWholeCompositeMap(file);
 	}
 
 	public static IDocument getDocument(IFile file) throws CoreException {
