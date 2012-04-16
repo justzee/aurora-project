@@ -42,7 +42,10 @@ public class JndiDataSourceCreator implements ApplicationInitializer{
 
     }
 	 public DataSource getDataSource() throws Exception {
-		 String jndi_name="java:comp/env/"+jndiname; 
+		 //默认jndiname为全路径，如果不是以java：开头的默认为tomcat的获取方式
+		 String jndi_name=jndiname;
+		 if(!jndiname.startsWith("java:"))
+			 jndi_name="java:comp/env/"+jndiname; 
 		 Context ctx = new InitialContext(); 
 		 if(ctx == null ) 
 			 throw new Exception("no context"); 
