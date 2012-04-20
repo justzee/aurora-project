@@ -85,6 +85,7 @@ public class AuroraPerspective implements IPerspectiveFactory {
 		factory.addNewWizardShortcut("aurora.ide.wizard.BMFromDBWizard");// NON-NLS-1
 		factory.addNewWizardShortcut("aurora.ide.wizard.BMFromProcedure");// NON-NLS-1
 		factory.addNewWizardShortcut("aurora.ide.wizard.CreateFormGridWizard");// NON-NLS-1
+		factory.addNewWizardShortcut("aurora.ide.wizard.NewBMQ");// NON-NLS-1
 		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");// NON-NLS-1
 		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");// NON-NLS-1
 
