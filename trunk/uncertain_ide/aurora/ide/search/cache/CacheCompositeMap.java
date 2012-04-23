@@ -23,6 +23,10 @@ class CacheCompositeMap extends CommentCompositeMap {
 
 	private CommentCompositeMap map;
 
+	CommentCompositeMap getRealMap() {
+		return map;
+	}
+
 	public CacheCompositeMap(CommentCompositeMap map) {
 		super();
 		this.map = map;
