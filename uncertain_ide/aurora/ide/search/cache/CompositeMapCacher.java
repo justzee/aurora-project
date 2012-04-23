@@ -66,7 +66,8 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private CompositeMap loadWholeBM(IFile file) throws CoreException,
 				ApplicationException {
-			CompositeMap bm = getCompositeMap(file);
+			CompositeMap bm = ((CacheCompositeMap) getCompositeMap(file))
+					.getRealMap();
 			BusinessModel r = createResult(bm, file);
 			return new CacheCompositeMap(
 					(CommentCompositeMap) r.getObjectContext());
