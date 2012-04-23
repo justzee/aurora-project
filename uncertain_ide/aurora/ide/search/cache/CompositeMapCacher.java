@@ -17,6 +17,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
@@ -53,7 +54,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			if (map == null) {
 				map = loadWholeBM(file);
 				if (map != null) {
-//					wholeBMMap.put(file, map);
+					// wholeBMMap.put(file, map);
 				}
 			}
 			return map;
@@ -67,7 +68,8 @@ public class CompositeMapCacher implements IResourceChangeListener,
 				ApplicationException {
 			CompositeMap bm = getCompositeMap(file);
 			BusinessModel r = createResult(bm, file);
-			return r.getObjectContext();
+			return new CacheCompositeMap(
+					(CommentCompositeMap) r.getObjectContext());
 		}
 
 		private BusinessModel createResult(CompositeMap config, IFile file) {
@@ -85,11 +87,11 @@ public class CompositeMapCacher implements IResourceChangeListener,
 				return null;
 			CompositeMap loaderFromString = CompositeMapUtil
 					.loaderFromString(document.get());
-			return loaderFromString;
+			return new CacheCompositeMap((CommentCompositeMap) loaderFromString);
 		}
 
 		private synchronized CompositeMap remove(IFile file) {
-//			wholeBMMap.remove(file);
+			// wholeBMMap.remove(file);
 			return catchMap.remove(file);
 		}
 	}
