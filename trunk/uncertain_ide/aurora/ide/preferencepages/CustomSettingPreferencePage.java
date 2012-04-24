@@ -21,13 +21,10 @@ public class CustomSettingPreferencePage extends FieldEditorPreferencePage
 	}
 	private static String[][] screenPage = {
 			{ LocaleMessage.getString("screen.file"), "0" },
-			{ LocaleMessage.getString("source.file"), "1" },
-			{ LocaleMessage.getString("preview"), "2" } };
+			{ LocaleMessage.getString("source.file"), "1" } };
 	private static String[][] bmPage = {
 			{ LocaleMessage.getString("business.model.file"), "0" },
-			{ LocaleMessage.getString("source.file"), "1" },
-			{ LocaleMessage.getString("auto.sql.test"), "2" },
-			{ LocaleMessage.getString("view.source"), "3" } };
+			{ LocaleMessage.getString("source.file"), "1" } };
 
 	public CustomSettingPreferencePage() {
 		super(FieldEditorPreferencePage.GRID);
