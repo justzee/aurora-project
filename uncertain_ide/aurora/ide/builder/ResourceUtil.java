@@ -106,7 +106,7 @@ public final class ResourceUtil {
 	 * @param bmFile
 	 * @return if not success ,return ""
 	 */
-	public String getBmPkgPath(IFile bmFile) {
+	public static String getBmPkgPath(IFile bmFile) {
 		if (bmFile == null)
 			return "";
 		IProject project = bmFile.getProject();
