@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import aurora.ide.AuroraProjectNature;
@@ -95,6 +96,31 @@ public final class ResourceUtil {
 		}
 		return ResourcesPlugin.getWorkspace().getRoot()
 				.getFolder(new Path(bmHome));
+	}
+
+	/**
+	 * get pkg name(class path) of bm file<br/>
+	 * if the file is not under <b>bmhome</b>, returns ""<br/>
+	 * if the file is null or not in a aurora project ,still return ""
+	 * 
+	 * @param bmFile
+	 * @return if not success ,return ""
+	 */
+	public String getBmPkgPath(IFile bmFile) {
+		if (bmFile == null)
+			return "";
+		IProject project = bmFile.getProject();
+		IFolder bmhome = getBMHomeFolder(project);
+		if (bmhome == null)
+			return "";
+		IPath bmhomepath = bmhome.getFullPath();
+		IPath bmfilepath = bmFile.getFullPath();
+		if (!bmhomepath.isPrefixOf(bmfilepath))
+			return "";
+		IPath path = bmfilepath.makeRelativeTo(bmhomepath);
+		path = path.removeFileExtension();
+		path.toString().replace(Path.SEPARATOR, '.');
+		return path.toString().replace(Path.SEPARATOR, '.');
 	}
 
 	public static final String getWebHome(IProject proj) {
