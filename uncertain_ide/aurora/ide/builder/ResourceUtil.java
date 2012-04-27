@@ -27,12 +27,12 @@ public final class ResourceUtil {
 	public static final IFile getBMFile(IProject proj, String clsPath) {
 		if (clsPath == null || proj == null)
 			return null;
-		String path = clsPath.replace('.', '/') + '.'
+		String path = clsPath.replace('.', Path.SEPARATOR) + '.'
 				+ AuroraConstant.BMFileExtension;
 		String bmhome = getBMHome(proj);
 		if (bmhome.length() == 0)
 			return null;
-		String fullPath = bmhome + '/' + path;
+		String fullPath = bmhome + Path.SEPARATOR + path;
 		IResource res = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(fullPath);
 		if (res instanceof IFile)
@@ -55,7 +55,7 @@ public final class ResourceUtil {
 		String webHome = getWebHome(proj);
 		if (webHome.length() == 0)
 			return null;
-		String fullPath = webHome + "/" + path;
+		String fullPath = webHome + Path.SEPARATOR + path;
 		IResource res = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(fullPath);
 		if (res instanceof IFile)
@@ -119,7 +119,6 @@ public final class ResourceUtil {
 			return "";
 		IPath path = bmfilepath.makeRelativeTo(bmhomepath);
 		path = path.removeFileExtension();
-		path.toString().replace(Path.SEPARATOR, '.');
 		return path.toString().replace(Path.SEPARATOR, '.');
 	}
 
@@ -232,7 +231,7 @@ public final class ResourceUtil {
 		if (webHome.length() == 0)
 			return null;
 		IResource res = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(webHome + "/WEB-INF");
+				.findMember(webHome + Path.SEPARATOR + "WEB-INF");
 		if (res instanceof IFolder)
 			return (IFolder) res;
 		return null;
