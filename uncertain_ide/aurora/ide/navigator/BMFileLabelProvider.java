@@ -7,7 +7,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.navigator.ICommonLabelProvider;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
