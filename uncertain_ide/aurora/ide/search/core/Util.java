@@ -141,7 +141,8 @@ public class Util {
 				int tokenOffset = scanner.getTokenOffset();
 				int tokenLength = scanner.getTokenLength();
 				if (text.getForeground().getRGB().equals(reginRGB)
-						&& name.equalsIgnoreCase(document.get(tokenOffset, tokenLength))) {
+						&& name.equalsIgnoreCase(document.get(tokenOffset,
+								tokenLength))) {
 					return new Region(tokenOffset, tokenLength);
 				}
 			}
@@ -224,7 +225,8 @@ public class Util {
 				if (text.getForeground().getRGB().equals(reginRGB)) {
 					if (name.length() == 0)
 						return new Region(tokenOffset, tokenLength);
-					//TODO String _value = Util.getValueIgnoreCase(attrib, map);?
+					// TODO String _value = Util.getValueIgnoreCase(attrib,
+					// map);?
 					int index = document.get(tokenOffset, tokenLength).indexOf(
 							name);
 					if (index != -1) {
@@ -272,8 +274,8 @@ public class Util {
 				IType attributeType = attrib.getAttributeType();
 				boolean referenceOf = isBMReference(attributeType);
 				if (referenceOf) {
-//					Object data = map.get(attrib.getName());
-//					return data;
+					// Object data = map.get(attrib.getName());
+					// return data;
 					return Util.getValueIgnoreCase(attrib, map);
 				}
 			}
@@ -640,20 +642,21 @@ public class Util {
 		for (Object object : keySet) {
 			if (object instanceof String
 					&& ((String) object).equalsIgnoreCase(name)) {
-				return cMap.get(object).toString();
+				return cMap.getString(object);
 			}
 		}
 		return null;
 	}
-	public static String getPKG(IPath path){
+
+	public static String getPKG(IPath path) {
 		String fileExtension = path.getFileExtension();
-		if("bm".equalsIgnoreCase(fileExtension)){
+		if ("bm".equalsIgnoreCase(fileExtension)) {
 			return toPKG(path.removeFileExtension());
 		}
-		if("screen".equalsIgnoreCase(fileExtension)){
+		if ("screen".equalsIgnoreCase(fileExtension)) {
 			return path.toString();
 		}
 		return "";
-		
+
 	}
 }
