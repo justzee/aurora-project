@@ -7,11 +7,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.XMLOutputter;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.editor.textpage.TextPage;
+import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.search.cache.CacheManager;
 
 public class ViewSource extends TextPage {
@@ -63,15 +65,17 @@ public class ViewSource extends TextPage {
 		IFile file = (IFile) getEditorInput().getAdapter(IFile.class);
 		try {
 
-			// CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
-			// BusinessModel r = createResult(bm, file);
+//			CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
+//			BusinessModel r = createResult(bm, file);
+//			CompositeMap wholeBM2 = r.getObjectContext();
+//			String xml2 = XMLOutputter.defaultInstance().toXML(
+//					wholeBM2, true);
+			
 			CompositeMap wholeBMCompositeMap = CacheManager
 					.getWholeBMCompositeMap(file);
-			return CommentXMLOutputter.defaultInstance().toXML(
+			String xml1 = CommentXMLOutputter.defaultInstance().toXML(
 					wholeBMCompositeMap, true);
-			// return XMLOutputter.defaultInstance().toXML(r.getObjectContext(),
-			// true);
-			// return r.getObjectContext().toXML();
+			return xml1;
 		} catch (Exception e) {
 			return e.getMessage();
 		}
