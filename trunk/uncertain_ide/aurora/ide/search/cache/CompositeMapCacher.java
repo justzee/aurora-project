@@ -20,6 +20,7 @@ import aurora.ide.AuroraPlugin;
 import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
 
 public class CompositeMapCacher implements IResourceChangeListener,
@@ -66,11 +67,13 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private CompositeMap loadWholeBM(IFile file) throws CoreException,
 				ApplicationException {
-			CompositeMap bm = ((CacheCompositeMap) getCompositeMap(file))
-					.getRealMap();
+			// CompositeMap bm = ((CacheCompositeMap) getCompositeMap(file))
+			// .getRealMap();
+			CompositeMap bm = AuroraResourceUtil.loadFromResource(file);
 			BusinessModel r = createResult(bm, file);
-			return new CacheCompositeMap(
-					(CommentCompositeMap) r.getObjectContext());
+			// return new CacheCompositeMap(
+			// (CommentCompositeMap) r.getObjectContext());
+			return r.getObjectContext();
 		}
 
 		private BusinessModel createResult(CompositeMap config, IFile file) {
