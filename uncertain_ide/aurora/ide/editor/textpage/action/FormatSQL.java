@@ -43,8 +43,11 @@ public class FormatSQL implements IEditorActionDelegate {
 			int begin = region.getOffset() + "<![CDATA[".length();
 			int length = region.getLength() - "<![CDATA[".length() - "]]>".length();
 			String sqlCode = document.get(begin, length);
-			SQLForm sf=new SQLForm();
+			SQLForm sf = new SQLForm();
 			sf.setSuppressEmptyLine(false);
+			sf.setAlignmentComma(false);
+			sf.setAlignmentKeyword(true);
+			sf.setAlignmentAs(false);
 			String[] temp = sf.formatSQLAsString(sqlCode).split("\n|\r\n");
 			StringBuffer result = new StringBuffer("\n");
 			for (String s : temp) {

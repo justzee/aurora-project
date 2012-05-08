@@ -143,6 +143,9 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
 			SQLForm sf = new SQLForm();
 			sf.setSuppressEmptyLine(false);
+			sf.setAlignmentComma(false);
+			sf.setAlignmentKeyword(true);
+			sf.setAlignmentAs(false);
 			String sqlCodeNew = sf.formatSQLAsString(sqlCode);
 			StringBuilder sb = new StringBuilder(5000);
 			sb.append(CommentXMLOutputter.LINE_SEPARATOR);

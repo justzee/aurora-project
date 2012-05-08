@@ -308,6 +308,9 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 						if (sqlbf != null) {
 							SQLForm sf = new SQLForm();
 							sf.setSuppressEmptyLine(false);
+							sf.setAlignmentComma(false);
+							sf.setAlignmentKeyword(true);
+							sf.setAlignmentAs(false);
 							st.setText(sf.formatSQLAsString(sql.trim()));
 						}
 					} catch (Throwable ex) {
