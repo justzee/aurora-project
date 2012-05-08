@@ -233,10 +233,15 @@ public class CommentCompositeMap extends CompositeMap {
 	public CompositeMap copy(CompositeMap another) {
 		// clear();
 		putAll(another);
-		addChilds(((CommentCompositeMap) another).childs);
-		this.text = ((CommentCompositeMap) another).text;
-		this.source = ((CommentCompositeMap) another).source;
-		this.location = ((CommentCompositeMap) another).location;
+		addChilds(another.getChilds());
+		
+		this.text = another.getText();
+		this.source = another.getSourceFile();
+		this.location = another.getLocation();
+		
+//		this.text = ((CommentCompositeMap) another).text;
+//		this.source = ((CommentCompositeMap) another).source;
+//		this.location = ((CommentCompositeMap) another).location;
 		return this;
 	}
 
@@ -410,7 +415,8 @@ public class CommentCompositeMap extends CompositeMap {
 	}
 
 	public void addChild(int index, CompositeMap child) {
-		((CommentCompositeMap) child).parent = this;
+		child.setParent(this);
+//		((CommentCompositeMap) child).parent = this;
 		getChildsNotNull().add(index, child);
 	}
 
@@ -421,7 +427,8 @@ public class CommentCompositeMap extends CompositeMap {
 	 *            child CompositeMap to add
 	 */
 	public void addChild(CompositeMap child) {
-		((CommentCompositeMap) child).parent = this;
+		child.setParent(this);
+//		((CommentCompositeMap) child).parent = this;
 		getChildsNotNull().add(child);
 	}
 
@@ -694,13 +701,15 @@ public class CommentCompositeMap extends CompositeMap {
 	public Object clone() {
 		CompositeMap m = (CompositeMap) super.clone();
 		if (childs != null) {
-			((CommentCompositeMap) m).childs = new LinkedList();
+			
+//			((CommentCompositeMap) m).childs = new LinkedList();
 			Iterator it = childs.iterator();
 			while (it.hasNext()) {
 				CompositeMap child = (CompositeMap) it.next();
 				CompositeMap new_child = (CompositeMap) child.clone();
 				new_child.setParent(m);
-				((CommentCompositeMap) m).childs.add(new_child);
+				m.getChildsNotNull().add(new_child);
+//				((CommentCompositeMap) m).childs.add(new_child);
 			}
 		}
 		return m;
