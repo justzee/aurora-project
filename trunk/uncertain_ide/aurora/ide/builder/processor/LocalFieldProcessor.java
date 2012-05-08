@@ -11,23 +11,36 @@ import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.IterationHandle;
-import uncertain.ocm.OCManager;
 import uncertain.schema.Attribute;
-import aurora.bm.BusinessModel;
-import aurora.ide.api.composite.map.CommentXMLOutputter;
-import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
-import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.preferencepages.BuildLevelPage;
 import aurora.ide.search.cache.CacheManager;
 
+/**
+ * check local field reference in bm
+ * 
+ * @author jessen
+ * 
+ */
 public class LocalFieldProcessor extends AbstractProcessor {
 	private int level;
+	/**
+	 * contains all name of map,that they are local field define(not a reference
+	 * to localfield)<br/>
+	 * <b>e.g.</b><br/>
+	 * {@code field} is a localfield define,but {@code query-field} is a
+	 * reference to localfield
+	 */
+	Set<String> localFieldDefine = new HashSet<String>() {
+		{
+			add("field");
+			add("ref-field");
+		}
+	};
 
 	class LocalFieldCollect implements IterationHandle {
 
@@ -35,21 +48,8 @@ public class LocalFieldProcessor extends AbstractProcessor {
 		private CompositeMap map;
 
 		public LocalFieldCollect(IFile file) {
-			CompositeMap bm = null;
 			try {
-				bm = CacheManager.getCompositeMap(file);
-				if (bm.get("extend") == null) {
-					map = bm;
-				} else {
-					bm = AuroraResourceUtil.loadFromResource(file);
-					BusinessModel r = createResult(bm, file);
-					// String str = XMLOutputter.defaultInstance().toXML(
-					// r.getObjectContext(), true);
-					String str = CommentXMLOutputter.defaultInstance().toXML(
-							r.getObjectContext(), true);
-					map = CompositeMapUtil.loaderFromString(str);
-				}
-
+				map = CacheManager.getWholeBMCompositeMap(file);
 			} catch (Exception e) {
 				AuroraBuilder.addMarker(file, e.getMessage(), 1,
 						IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
@@ -62,30 +62,21 @@ public class LocalFieldProcessor extends AbstractProcessor {
 			return set;
 		}
 
-		private BusinessModel createResult(CompositeMap config, IFile file) {
-			ExtendModelFactory factory = new ExtendModelFactory(
-					OCManager.getInstance(), file);
-			return factory.getModel(config);
-		}
-
 		public int process(CompositeMap map) {
 			try {
 				List<Attribute> list = SxsdUtil.getAttributesNotNull(map);
 				if (list == null)
 					return 0;
 				for (Attribute a : list) {
-					if (map.get(a.getName()) != null) {
-						if (SxsdUtil
-								.isLocalFieldReference(a.getAttributeType())) {
-							String name = a.getName();
-							String value = map.getString(name);
-							if (map.getName().equalsIgnoreCase("field")
-									|| map.getName().equalsIgnoreCase(
-											"ref-field")) {
-								if (name.equalsIgnoreCase("name")) {
-									set.add(value.toLowerCase());
-									continue;
-								}
+					String name = a.getName();
+					String value = map.getString(name);
+					if (value == null)
+						continue;
+					if (SxsdUtil.isLocalFieldReference(a.getAttributeType())) {
+						if (localFieldDefine.contains(map.getName())) {
+							if (name.equalsIgnoreCase("name")) {
+								set.add(value.toLowerCase());
+								continue;
 							}
 						}
 					}
@@ -94,7 +85,6 @@ public class LocalFieldProcessor extends AbstractProcessor {
 			}
 			return 0;
 		}
-
 	}
 
 	private Set<Object[]> fieldTask = new HashSet<Object[]>();
@@ -138,8 +128,7 @@ public class LocalFieldProcessor extends AbstractProcessor {
 		if (SxsdUtil.isLocalFieldReference(a.getAttributeType())) {
 			String name = a.getName();
 			String value = bc.map.getString(name);
-			if (bc.map.getName().equalsIgnoreCase("field")
-					|| bc.map.getName().equalsIgnoreCase("ref-field")) {
+			if (localFieldDefine.contains(bc.map.getName())) {
 				if (name.equalsIgnoreCase("name")) {
 					// fieldSet.add(value.toLowerCase());
 					return;
@@ -148,5 +137,4 @@ public class LocalFieldProcessor extends AbstractProcessor {
 			fieldTask.add(new Object[] { name, value, bc.map });
 		}
 	}
-
 }
