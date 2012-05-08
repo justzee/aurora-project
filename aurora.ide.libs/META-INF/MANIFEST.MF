@@ -20,7 +20,8 @@ Bundle-ClassPath: c3p0-0.9.1.2.jar,
  aurora.jar,
  SQLinForm.jar
 Bundle-Vendor: Aurora Framework
-Export-Package: aurora.application;
+Export-Package: SQLinForm_200,
+ aurora.application;
   uses:="uncertain.logging,
    uncertain.core,
    uncertain.composite,
