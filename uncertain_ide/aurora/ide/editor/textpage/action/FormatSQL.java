@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
-import SQLinForm_200.SQLForm;
 import aurora.ide.editor.textpage.TextPage;
+import aurora.ide.editor.textpage.format.SQLFormat;
 import aurora.ide.helpers.DialogUtil;
 
 public class FormatSQL implements IEditorActionDelegate {
@@ -43,12 +43,8 @@ public class FormatSQL implements IEditorActionDelegate {
 			int begin = region.getOffset() + "<![CDATA[".length();
 			int length = region.getLength() - "<![CDATA[".length() - "]]>".length();
 			String sqlCode = document.get(begin, length);
-			SQLForm sf = new SQLForm();
-			sf.setSuppressEmptyLine(false);
-			sf.setAlignmentComma(false);
-			sf.setAlignmentKeyword(true);
-			sf.setAlignmentAs(false);
-			String[] temp = sf.formatSQLAsString(sqlCode).split("\n|\r\n");
+			SQLFormat sf = new SQLFormat();
+			String[] temp = sf.format(sqlCode).split("\n|\r\n");
 			StringBuffer result = new StringBuffer("\n");
 			for (String s : temp) {
 				result.append(prefix + "    " + s + " \n");
