@@ -10,14 +10,13 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
+import SQLinForm_200.SQLForm;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.format.JSBeautifier;
-import aurora.ide.editor.textpage.format.sqlformat.PLSQLFormat;
 import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
 import aurora.ide.helpers.AuroraResourceUtil;
 
@@ -41,8 +40,7 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 
 	@Override
 	public void run() {
-		activeEditor = (TextPage) ((BaseCompositeMapEditor) AuroraPlugin
-				.getActivePage().getActiveEditor()).getActiveEditor();
+		activeEditor = (TextPage) ((BaseCompositeMapEditor) AuroraPlugin.getActivePage().getActiveEditor()).getActiveEditor();
 		page = (TextPage) activeEditor;
 		try {
 			switch (getSelectionType()) {
@@ -67,8 +65,7 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 	private int getSelectionType() throws Exception {
 		doc = page.getInputDocument();
 		CompositeMap rootMap = page.toCompoisteMap();
-		selectMap = QuickAssistUtil.findMap(rootMap, doc,
-				page.getSelectedRange().x);
+		selectMap = QuickAssistUtil.findMap(rootMap, doc, page.getSelectedRange().x);
 		String mapName = selectMap.getName();
 		if (mapName.equalsIgnoreCase("script"))
 			return JS;
@@ -90,8 +87,7 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 		int offset = page.getSelectedRange().x;
 		try {
 			CompositeMap data = page.toCompoisteMap();
-			String formatContent = AuroraResourceUtil.xml_decl
-					+ CommentXMLOutputter.defaultInstance().toXML(data, true);
+			String formatContent = AuroraResourceUtil.xml_decl + CommentXMLOutputter.defaultInstance().toXML(data, true);
 			if (content.equals(formatContent))
 				return;
 			page.refresh(formatContent);
@@ -108,8 +104,7 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 		CompositeMapInfo info = new CompositeMapInfo(selectMap, doc);
 		IRegion startRegion = info.getStartTagRegion();
 		IRegion endRegion = info.getEndTagRegion();
-		int jsOffset = startRegion.getOffset() + startRegion.getLength()
-				+ "<![CDATA[".length();
+		int jsOffset = startRegion.getOffset() + startRegion.getLength() + "<![CDATA[".length();
 		int jsLength = endRegion.getOffset() - "]]>".length() - jsOffset;
 		String jsCode;
 		try {
@@ -119,10 +114,8 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 			String prefix = info.getLeadPrefix();
 			JSBeautifier bf = new JSBeautifier();
 			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
-			String jsCodeNew = (CommentXMLOutputter.LINE_SEPARATOR + bf.beautify(
-					jsCode, bf.opts)).replaceAll("\n",
-							CommentXMLOutputter.LINE_SEPARATOR + indent)
-					+ CommentXMLOutputter.LINE_SEPARATOR + prefix;
+			String jsCodeNew = (CommentXMLOutputter.LINE_SEPARATOR + bf.beautify(jsCode, bf.opts)).replaceAll("\n", CommentXMLOutputter.LINE_SEPARATOR + indent) + CommentXMLOutputter.LINE_SEPARATOR
+					+ prefix;
 			if (jsCodeNew.equals(jsCode)) {
 				return;
 			}
@@ -139,8 +132,7 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 		CompositeMapInfo info = new CompositeMapInfo(selectMap, doc);
 		IRegion startRegion = info.getStartTagRegion();
 		IRegion endRegion = info.getEndTagRegion();
-		int sqlOffset = startRegion.getOffset() + startRegion.getLength()
-				+ "<![CDATA[".length();
+		int sqlOffset = startRegion.getOffset() + startRegion.getLength() + "<![CDATA[".length();
 		int sqlLength = endRegion.getOffset() - "]]>".length() - sqlOffset;
 		String sqlCode;
 		try {
@@ -149,8 +141,9 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 				return;
 			String prefix = info.getLeadPrefix();
 			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
-			PLSQLFormat sqlformat = new PLSQLFormat(sqlCode);
-			String sqlCodeNew = sqlformat.format();
+			SQLForm sf = new SQLForm();
+			sf.setSuppressEmptyLine(false);
+			String sqlCodeNew = sf.formatSQLAsString(sqlCode);
 			StringBuilder sb = new StringBuilder(5000);
 			sb.append(CommentXMLOutputter.LINE_SEPARATOR);
 			for (String line : sqlCodeNew.split("\n|\r\n")) {

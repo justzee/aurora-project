@@ -41,7 +41,7 @@ public class ExecuteSqlAction extends Action {
 		}
 		String[] parameters = new String[0];
 		if (sql.indexOf('$') != -1) {
-			sql = sql.replace("\r\n", " ");
+			sql = sql.replaceAll("\r\n|\r|\n", " ");
 			sql = sql.replace("@", "");
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			ParamQueryDialog dialog = new ParamQueryDialog(shell, sql);
