@@ -17,7 +17,8 @@ Bundle-ClassPath: c3p0-0.9.1.2.jar,
  jco.jar,
  rhino-1.7R3.jar,
  poi-3.7-20101029.jar,
- aurora.jar
+ aurora.jar,
+ SQLinForm.jar
 Bundle-Vendor: Aurora Framework
 Export-Package: aurora.application;
   uses:="uncertain.logging,
