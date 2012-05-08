@@ -1,6 +1,5 @@
 package aurora.ide.bm.editor;
 
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,6 +45,7 @@ import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
 import uncertain.ocm.IObjectRegistry;
+import SQLinForm_200.SQLForm;
 import aurora.bm.IModelFactory;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
@@ -77,7 +77,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private Connection connection;
 
 	private ToolBarManager toolBarManager;
-	private static final String[] tabs = {"query", "insert", "update", "delete"};
+	private static final String[] tabs = { "query", "insert", "update", "delete" };
 
 	private UncertainEngine uncertainEngine;
 	private BusinessModelService modelService;
@@ -134,8 +134,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 				sashForm.layout();
 			}
 			String sql = getSql().split(" ")[0];
-			int message = DialogUtil.showConfirmDialogBox(LocaleMessage.getString("are.you.sure.want.to") + sql + " "
-					+ resultCount + LocaleMessage.getString("records") + "?");
+			int message = DialogUtil.showConfirmDialogBox(LocaleMessage.getString("are.you.sure.want.to") + sql + " " + resultCount + LocaleMessage.getString("records") + "?");
 			try {
 				if (message == SWT.OK) {
 					connection.commit();
@@ -152,7 +151,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		if (uncertainEngine == null || !isModify()) {
 			return;
 		}
-		modelService = makeBusinessModelService(uncertainEngine,connection,content);
+		modelService = makeBusinessModelService(uncertainEngine, connection, content);
 		for (int i = 0; i < tabs.length; i++) {
 			StyledText st = (StyledText) tabFolder.getItem(i).getControl();
 			try {
@@ -191,7 +190,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		sashForm = new SashForm(viewForm, SWT.VERTICAL);
 		createSqlContent(sashForm);
 		createResultContent(sashForm);
-		sashForm.setWeights(new int[]{30, 70});
+		sashForm.setWeights(new int[] { 30, 70 });
 		viewForm.setContent(sashForm);
 	}
 
@@ -234,10 +233,12 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		}
 		String content;
 		try {
-			
-//			content = XMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
+
+			// content =
+			// XMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()),
+			// true);
 			content = CommentXMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
-			
+
 		} catch (Throwable e) {
 			throw new SystemException(e);
 		}
@@ -270,8 +271,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		Configuration rootConfig = uncertainEngine.createConfig();
 		rootConfig.addParticipant(this);
 		CompositeMap context = new CommentCompositeMap("root");
-		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject.cast(context,
-				BusinessModelServiceContext.class);
+		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject.cast(context, BusinessModelServiceContext.class);
 		bc.setConfig(rootConfig);
 		bc.setConnection(connection);
 		LoggerProvider lp = LoggerProvider.createInstance(Level.FINE, System.out);
@@ -297,16 +297,18 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 				public void widgetDefaultSelected(SelectionEvent e) {
 					widgetSelected(e);
 				}
+
 				public void widgetSelected(SelectionEvent e) {
-					if (tabFolder.getSelectionIndex() == itemIndex
-							&& (st.getText() != null && !st.getText().equals(""))) {
+					if (tabFolder.getSelectionIndex() == itemIndex && (st.getText() != null && !st.getText().equals(""))) {
 						return;
 					}
 					try {
 						StringBuffer sqlbf = modelService.getSql(tabs[itemIndex]);
 						String sql = sqlbf.toString();
 						if (sqlbf != null) {
-							st.setText(sql);
+							SQLForm sf = new SQLForm();
+							sf.setSuppressEmptyLine(false);
+							st.setText(sf.formatSQLAsString(sql.trim()));
 						}
 					} catch (Throwable ex) {
 						st.setText(ExceptionUtil.getExceptionTraceMessage(ex));
@@ -371,7 +373,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		ToolBar toolBar = new ToolBar(viewForm, SWT.RIGHT | SWT.FLAT);
 		toolBarManager = new ToolBarManager(toolBar);
 		ExecuteSqlAction action = new ExecuteSqlAction(this, ExecuteSqlAction.getDefaultImageDescriptor(), null);
-		addActions(new Action[]{action});
+		addActions(new Action[] { action });
 		viewForm.setTopLeft(toolBar);
 	}
 
@@ -401,20 +403,20 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		}
 		return input;
 	}
-	private BusinessModelService makeBusinessModelService(UncertainEngine uncertainEngine,Connection connection,String content) throws ApplicationException{
+
+	private BusinessModelService makeBusinessModelService(UncertainEngine uncertainEngine, Connection connection, String content) throws ApplicationException {
 		IObjectRegistry reg = uncertainEngine.getObjectRegistry();
-		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg
-				.getInstanceOfType(DatabaseServiceFactory.class);
+		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg.getInstanceOfType(DatabaseServiceFactory.class);
 
 		BusinessModelServiceContext bc = createContext(uncertainEngine, connection);
 		CompositeMap context = bc.getObjectContext();
-		
+
 		IDEModelFactory modelFactory = new IDEModelFactory(uncertainEngine.getOcManager());
 		uncertainEngine.getObjectRegistry().registerInstanceOnce(IModelFactory.class, modelFactory);
 		svcFactory.setModelFactory(modelFactory);
 		svcFactory.updateSqlCreator(modelFactory);
 		try {
-			CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadFromString(content,AuroraConstant.ENCODING);
+			CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadFromString(content, AuroraConstant.ENCODING);
 			BusinessModelService service = svcFactory.getModelService(bm_model, context);
 			return service;
 		} catch (Throwable e) {
