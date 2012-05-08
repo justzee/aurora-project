@@ -10,13 +10,13 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
 import uncertain.composite.CompositeMap;
-import SQLinForm_200.SQLForm;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.editor.BaseCompositeMapEditor;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.format.JSBeautifier;
+import aurora.ide.editor.textpage.format.SQLFormat;
 import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
 import aurora.ide.helpers.AuroraResourceUtil;
 
@@ -141,12 +141,8 @@ public class CFormatAction extends Action implements IEditorActionDelegate {
 				return;
 			String prefix = info.getLeadPrefix();
 			String indent = CommentXMLOutputter.DEFAULT_INDENT + prefix;
-			SQLForm sf = new SQLForm();
-			sf.setSuppressEmptyLine(false);
-			sf.setAlignmentComma(false);
-			sf.setAlignmentKeyword(true);
-			sf.setAlignmentAs(false);
-			String sqlCodeNew = sf.formatSQLAsString(sqlCode);
+			SQLFormat sf = new SQLFormat();
+			String sqlCodeNew = sf.format(sqlCode);
 			StringBuilder sb = new StringBuilder(5000);
 			sb.append(CommentXMLOutputter.LINE_SEPARATOR);
 			for (String line : sqlCodeNew.split("\n|\r\n")) {

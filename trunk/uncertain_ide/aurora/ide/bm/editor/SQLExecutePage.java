@@ -45,7 +45,6 @@ import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
 import uncertain.ocm.IObjectRegistry;
-import SQLinForm_200.SQLForm;
 import aurora.bm.IModelFactory;
 import aurora.database.service.BusinessModelService;
 import aurora.database.service.BusinessModelServiceContext;
@@ -58,6 +57,7 @@ import aurora.ide.bm.editor.toolbar.action.ExecuteSqlAction;
 import aurora.ide.editor.core.ISqlViewer;
 import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.SQLConfiguration;
+import aurora.ide.editor.textpage.format.SQLFormat;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
@@ -306,12 +306,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 						StringBuffer sqlbf = modelService.getSql(tabs[itemIndex]);
 						String sql = sqlbf.toString();
 						if (sqlbf != null) {
-							SQLForm sf = new SQLForm();
-							sf.setSuppressEmptyLine(false);
-							sf.setAlignmentComma(false);
-							sf.setAlignmentKeyword(true);
-							sf.setAlignmentAs(false);
-							st.setText(sf.formatSQLAsString(sql.trim()));
+							SQLFormat sf = new SQLFormat();
+							st.setText(sf.format(sql));
 						}
 					} catch (Throwable ex) {
 						st.setText(ExceptionUtil.getExceptionTraceMessage(ex));
