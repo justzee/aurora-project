@@ -51,11 +51,10 @@ public class SQLFormat {
 		// <sourceSql>1</sourceSql>
 		// <sqlSourceEnclosed>0</sqlSourceEnclosed>
 		// <sqlsourceCopied>false</sqlsourceCopied>
-		sf.setSuppressComment(false);// <suppressComment>false</suppressComment>
+//		sf.setSuppressComment(true);// <suppressComment>false</suppressComment>
 		// <targetSql>0</targetSql>
 		// <uppercase>0</uppercase>
 		// <useTab>false</useTab>
-		sf.setSuppressComment(true);
 		sf.setSuppressEmptyLine(false);
 		sf.setAndOrIndention(true);
 		sf.setdoubleIndentionMasterKeyword(false);
