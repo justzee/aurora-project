@@ -155,7 +155,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		for (int i = 0; i < tabs.length; i++) {
 			StyledText st = (StyledText) tabFolder.getItem(i).getControl();
 			try {
-				st.setText(modelService.getSql(tabs[i]).toString());
+				SQLFormat sf = new SQLFormat();
+				st.setText(sf.format(modelService.getSql(tabs[i]).toString()));
 			} catch (Throwable e) {
 				st.setText(ExceptionUtil.getExceptionTraceMessage(e));
 			}
