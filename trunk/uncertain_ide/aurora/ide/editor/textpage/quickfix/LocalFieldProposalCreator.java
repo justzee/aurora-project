@@ -34,9 +34,8 @@ public class LocalFieldProposalCreator extends AbstractProposalCreator {
 			String name = se.name;
 			result.add(new CompletionProposal(name, getMarkerOffset(),
 					getMarkerLength(), name.length(), img_rename, NLS.bind(
-							Messages.Change_to, name),
-					null, NLS
-							.bind(Messages.Suggest_change_to, name)));
+							Messages.Change_to, name), null, NLS.bind(
+							Messages.Suggest_change_to, name)));
 		}
 	}
 
@@ -45,10 +44,16 @@ public class LocalFieldProposalCreator extends AbstractProposalCreator {
 		IFile currentFile = AuroraPlugin.getActiveIFile();
 		if (currentFile == null)
 			return list;
-		ExtendModelFactory factory = new ExtendModelFactory(
-				OCManager.getInstance(), currentFile);
-		CompositeMap wholeMap = factory.getModel(getRootMap())
-				.getObjectContext();
+		CompositeMap wholeMap = getRootMap();
+		if (wholeMap.getString("extend") != null) {
+			try {
+				ExtendModelFactory factory = new ExtendModelFactory(
+						OCManager.getInstance(), currentFile);
+				wholeMap = factory.getModel(getRootMap()).getObjectContext();
+			} catch (Exception e) {
+				return list;
+			}
+		}
 		Set<String> localFields = new LocalFieldCollector(wholeMap).collect();
 		String locf = getMarkerWord();
 		for (String s : localFields) {
