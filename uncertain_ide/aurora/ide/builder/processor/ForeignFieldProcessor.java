@@ -22,7 +22,7 @@ import aurora.ide.search.core.Util;
  * @author jessen
  * 
  */
-public class ForeignFieldProcessor extends LocalFieldProcessor {
+public class ForeignFieldProcessor extends AbstractProcessor {
 	private int level;
 
 	@Override
@@ -55,7 +55,7 @@ public class ForeignFieldProcessor extends LocalFieldProcessor {
 		}
 		IFile bmfile = ResourceUtil.getBMFile(bc.file.getProject(), refModel);
 		if (bmfile != null) {
-			Set<String> locFields = new LocalFieldCollect(bmfile).collect();
+			Set<String> locFields = new LocalFieldCollector(bmfile).collect();
 			if (locFields.contains(value))
 				return;
 			String msg = String.format(

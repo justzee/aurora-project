@@ -1,16 +1,13 @@
 package aurora.ide.builder.processor;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.IterationHandle;
 import uncertain.schema.Attribute;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
@@ -18,7 +15,6 @@ import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.preferencepages.BuildLevelPage;
-import aurora.ide.search.cache.CacheManager;
 
 /**
  * check local field reference in bm
@@ -28,64 +24,6 @@ import aurora.ide.search.cache.CacheManager;
  */
 public class LocalFieldProcessor extends AbstractProcessor {
 	private int level;
-	/**
-	 * contains all name of map,that they are local field define(not a reference
-	 * to localfield)<br/>
-	 * <b>e.g.</b><br/>
-	 * {@code field} is a localfield define,but {@code query-field} is a
-	 * reference to localfield
-	 */
-	Set<String> localFieldDefine = new HashSet<String>() {
-		{
-			add("field");
-			add("ref-field");
-		}
-	};
-
-	class LocalFieldCollect implements IterationHandle {
-
-		private Set<String> set = new HashSet<String>();
-		private CompositeMap map;
-
-		public LocalFieldCollect(IFile file) {
-			try {
-				map = CacheManager.getWholeBMCompositeMap(file);
-			} catch (Exception e) {
-				AuroraBuilder.addMarker(file, e.getMessage(), 1,
-						IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
-			}
-		}
-
-		public Set<String> collect() {
-			if (map != null)
-				map.iterate(this, true);
-			return set;
-		}
-
-		public int process(CompositeMap map) {
-			try {
-				List<Attribute> list = SxsdUtil.getAttributesNotNull(map);
-				if (list == null)
-					return 0;
-				for (Attribute a : list) {
-					String name = a.getName();
-					String value = map.getString(name);
-					if (value == null)
-						continue;
-					if (SxsdUtil.isLocalFieldReference(a.getAttributeType())) {
-						if (localFieldDefine.contains(map.getName())) {
-							if (name.equalsIgnoreCase("name")) {
-								set.add(value.toLowerCase());
-								continue;
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-			}
-			return 0;
-		}
-	}
 
 	private Set<Object[]> fieldTask = new HashSet<Object[]>();
 
@@ -93,7 +31,7 @@ public class LocalFieldProcessor extends AbstractProcessor {
 	public void processComplete(IFile file, CompositeMap map1, IDocument doc) {
 		if (level == 0)
 			return;
-		Set<String> fieldSet = new LocalFieldCollect(file).collect();
+		Set<String> fieldSet = new LocalFieldCollector(file).collect();
 		if (fieldSet.size() == 0)
 			return;
 		for (Object[] objs : fieldTask) {
@@ -128,7 +66,7 @@ public class LocalFieldProcessor extends AbstractProcessor {
 		if (SxsdUtil.isLocalFieldReference(a.getAttributeType())) {
 			String name = a.getName();
 			String value = bc.map.getString(name);
-			if (localFieldDefine.contains(bc.map.getName())) {
+			if (LocalFieldCollector.localFieldDefine.contains(bc.map.getName())) {
 				if (name.equalsIgnoreCase("name")) {
 					// fieldSet.add(value.toLowerCase());
 					return;
