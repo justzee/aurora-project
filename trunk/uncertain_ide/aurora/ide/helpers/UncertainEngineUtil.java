@@ -52,6 +52,7 @@ public class UncertainEngineUtil {
 			UncertainEngine uncertainEngine = ei.getUncertainEngine();
 			return uncertainEngine;
 		} catch (Throwable e) {
+			e.printStackTrace();
 			throw new ApplicationException("启用EngineInitiator失败!", e);
 		}
 	}
