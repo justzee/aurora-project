@@ -77,6 +77,7 @@ public class ViewSource extends TextPage {
 					wholeBMCompositeMap, true);
 			return xml1;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return e.getMessage();
 		}
 	}
