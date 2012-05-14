@@ -18,13 +18,14 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeMapParser;
 import uncertain.composite.NameProcessor;
 
-public class CommentCompositeMapParser extends CompositeMapParser {
+public class CommentCompositeMapParser extends CompositeMapParser implements LexicalHandler{
 
 	public static final String SAX_NEWlINE = "&#xA;";
 
@@ -140,8 +141,8 @@ public class CommentCompositeMapParser extends CompositeMapParser {
 		} catch (ParserConfigurationException ex) {
 			throw new SAXException("error when creating SAXParser", ex);
 		}
-		// parser.setProperty("http://xml.org/sax/properties/lexical-handler",
-		// this);
+		 parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+		 this);
 
 		stream = handleNewLineInAttribute(stream);
 
@@ -333,6 +334,37 @@ public class CommentCompositeMapParser extends CompositeMapParser {
 	public void setDocumentLocator(Locator locator) {
 		this.locator = locator;
 		super.setDocumentLocator(locator);
+	}
+
+	public void startDTD(String name, String publicId, String systemId)
+			throws SAXException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void endDTD() throws SAXException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void startEntity(String name) throws SAXException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void endEntity(String name) throws SAXException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void startCDATA() throws SAXException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void endCDATA() throws SAXException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
