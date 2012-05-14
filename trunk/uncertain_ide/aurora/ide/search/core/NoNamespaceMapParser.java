@@ -85,8 +85,8 @@ public class NoNamespaceMapParser extends CompositeMapLocatorParser {
 		} catch (ParserConfigurationException ex) {
 			throw new SAXException("error when creating SAXParser", ex);
 		}
-//		parser.setProperty("http://xml.org/sax/properties/lexical-handler",
-//				this);
+		parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+				this);
 		parser.parse(stream, this);
 		CompositeMap root = getRoot();
 		root.setNamespaceMapping(namespaceMapping);
