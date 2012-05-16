@@ -49,6 +49,9 @@ public class GetFileNameAction  extends Action  implements IEditorActionDelegate
 			DialogUtil.showExceptionMessageBox(e);
 			return;
 		}
+		if(textData.length()<=0){
+			textData = "  ";
+		}
 //		String textData = tp.getEditorInput().getName();;
 		TextTransfer textTransfer = TextTransfer.getInstance();
 		cb.setContents(new Object[]{textData}, new Transfer[]{textTransfer});
