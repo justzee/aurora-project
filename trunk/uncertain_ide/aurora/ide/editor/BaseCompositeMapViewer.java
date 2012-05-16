@@ -114,9 +114,10 @@ public class BaseCompositeMapViewer implements IViewer {
 		String encoding = "UTF-8";
 		String xml_decl = "<?xml version=\"1.0\" encoding=\"" + encoding
 				+ "\"?>\n";
-//		return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
-		return xml_decl + CommentXMLOutputter.defaultInstance().toXML(data, true);
-		
+		// return xml_decl + XMLOutputter.defaultInstance().toXML(data, true);
+		return xml_decl
+				+ CommentXMLOutputter.defaultInstance().toXML(data, true);
+
 	}
 
 	public void setContent(CompositeMap content) {
@@ -173,9 +174,10 @@ public class BaseCompositeMapViewer implements IViewer {
 					| SWT.V_SCROLL | SWT.H_SCROLL);
 			textSection.configure(new JavaScriptConfiguration(
 					new ColorManager()));
-			textSection.getTextWidget().setFont(
-					new Font(parent.getShell().getDisplay(), "Courier New", 10,
-							0));
+			String fn = "Consolas";
+			if (SWT.getPlatform().equalsIgnoreCase("win32"))
+				fn = "Courier New";
+			textSection.getTextWidget().setFont(new Font(null, fn, 10, 0));
 			Document document = new Document();
 			textSection.setDocument(document);
 			textSection.getTextWidget().addFocusListener(new FocusListener() {
@@ -208,8 +210,9 @@ public class BaseCompositeMapViewer implements IViewer {
 		}
 
 		public void setInput(CompositeMap data) throws ApplicationException {
-//			Element em = LoadSchemaManager.getSchemaManager().getElement(data);
-			Element em =CompositeMapUtil.getElement(data);
+			// Element em =
+			// LoadSchemaManager.getSchemaManager().getElement(data);
+			Element em = CompositeMapUtil.getElement(data);
 			if (em != null && em.isArray()) {
 				gridViewer.createViewer(mTabFolder, data);
 				mTabFolder.getItem(1).setControl(gridViewer.getControl());
@@ -362,14 +365,14 @@ public class BaseCompositeMapViewer implements IViewer {
 		}
 
 		private boolean isArryRelation(CompositeMap parent, CompositeMap child) {
-//			Element parent_element = LoadSchemaManager.getSchemaManager()
-//					.getElement(parent);
-			Element parent_element =CompositeMapUtil.getElement(parent);
+			// Element parent_element = LoadSchemaManager.getSchemaManager()
+			// .getElement(parent);
+			Element parent_element = CompositeMapUtil.getElement(parent);
 			if (parent_element == null || !parent_element.isArray())
 				return false;
-//			Element child_element = LoadSchemaManager.getSchemaManager()
-//					.getElement(child);
-			Element child_element =CompositeMapUtil.getElement(child);
+			// Element child_element = LoadSchemaManager.getSchemaManager()
+			// .getElement(child);
+			Element child_element = CompositeMapUtil.getElement(child);
 			if (child_element == null)
 				return false;
 			IType parentIType = parent_element.getElementType();
