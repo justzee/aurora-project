@@ -54,8 +54,7 @@ public class TextPage extends TextEditor implements IViewer {
 	public static final String RULER_CONTEXT = EDITOR_CONTEXT + ".ruler";
 
 	protected static final String textPageId = "textPage";
-	public static final String textPageTitle = LocaleMessage
-			.getString("source.file");
+	public static final String textPageTitle = LocaleMessage.getString("source.file");
 	private boolean syc = false;
 	private ColorManager colorManager;
 	private FormEditor editor;
@@ -76,8 +75,7 @@ public class TextPage extends TextEditor implements IViewer {
 
 	// add by shiliyan
 	public Object getAdapter(Class adapter) {
-		if (Display.getCurrent() != null
-				&& IAnnotationModel.class.equals(adapter)) {
+		if (Display.getCurrent() != null && IAnnotationModel.class.equals(adapter)) {
 			return this.getAnnotationModel();
 		} else if (adapter == IContentOutlinePage.class) {
 			outline = new BaseOutlinePage(this);
@@ -124,8 +122,7 @@ public class TextPage extends TextEditor implements IViewer {
 		super.createPartControl(parent);
 		// add by shiliyan
 
-		getInputDocument().addDocumentListener(
-				new JavascriptDocumentListener(this));
+		getInputDocument().addDocumentListener(new JavascriptDocumentListener(this));
 
 		// add by shiliyan
 		getInputDocument().addDocumentListener(new IDocumentListener() {
@@ -142,8 +139,7 @@ public class TextPage extends TextEditor implements IViewer {
 			}
 		});
 		ProjectionViewer viewer = (ProjectionViewer) getSourceViewer();
-		ProjectionSupport projectionSupport = new ProjectionSupport(viewer,
-				getAnnotationAccess(), getSharedColors());
+		ProjectionSupport projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
 		projectionSupport.install();
 		// turn projection mode on
 		viewer.doOperation(ProjectionViewer.TOGGLE);
@@ -194,8 +190,7 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public int getCursorLine() {
-		return getSourceViewer().getTextWidget().getLineAtOffset(
-				getSourceViewer().getSelectedRange().x);
+		return getSourceViewer().getTextWidget().getLineAtOffset(getSourceViewer().getSelectedRange().x);
 	}
 
 	public Point getSelectedRange() {
@@ -203,8 +198,7 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public IFile getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
-				.getFile();
+		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
 		return ifile;
 	}
 
@@ -274,14 +268,12 @@ public class TextPage extends TextEditor implements IViewer {
 	 *      .swt.widgets.Composite,
 	 *      org.eclipse.jface.text.source.IVerticalRuler, int)
 	 */
-	protected ISourceViewer createSourceViewer(Composite parent,
-			IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-				getOverviewRuler(), isOverviewRulerVisible(), styles);
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
 		viewer.getTextWidget().addCaretListener(new CaretListener() {
-			public void caretMoved(CaretEvent event) {
+			public void caretMoved(final CaretEvent event) {
 				if (null != outline) {
 					outline.selectNode(event.caretOffset);
 				}
@@ -298,10 +290,8 @@ public class TextPage extends TextEditor implements IViewer {
 		 * .findContributedAction()中getSite().getId()总是为"",判断失效。
 		 * */
 		Action action = new MarkerRulerAction(
-				ResourceBundle
-						.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"),
-				"Editor.ManageBookmarks.", this, getVerticalRuler(),
-				IMarker.BOOKMARK, true);
+				ResourceBundle.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"),
+				"Editor.ManageBookmarks.", this, getVerticalRuler(), IMarker.BOOKMARK, true);
 		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
 		setAction("format", new CFormatAction());
 		setAction("linecomment", new ToggleCommentAction());
@@ -315,11 +305,11 @@ public class TextPage extends TextEditor implements IViewer {
 		try {
 			IFile ifile = ((IFileEditorInput) getEditorInput()).getFile();
 			File file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
-//			XMLOutputter.saveToFile(file,
-//					CompositeMapUtil.loaderFromString(getContent()));// parseString(getContent())
-			CommentXMLOutputter.saveToFile(file,
-					CompositeMapUtil.loaderFromString(getContent()));
-															// );//
+			// XMLOutputter.saveToFile(file,
+			// CompositeMapUtil.loaderFromString(getContent()));//
+			// parseString(getContent())
+			CommentXMLOutputter.saveToFile(file, CompositeMapUtil.loaderFromString(getContent()));
+			// );//
 			ifile.refreshLocal(IResource.DEPTH_ZERO, null);
 			// super.doSave(monitor);
 		} catch (Exception e) {
