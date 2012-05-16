@@ -3,132 +3,91 @@ package aurora.ide.editor.outline;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OutlineTree<T> {
-	private OutlineTree<T> parent;
-	private String id = "0";
-	private T data;
-	private List<OutlineTree<T>> children = new ArrayList<OutlineTree<T>>();
+import org.eclipse.jface.text.IRegion;
 
-	public OutlineTree(T data) {
-		this.data = data;
-	}
+public class OutlineTree {
+	private OutlineTree parent;
+	private String text;
+	private String other;
+	private IRegion startRegion;
+	private IRegion endRegion;
+	private IRegion region;
+	private String image;
+	private List<OutlineTree> children = new ArrayList<OutlineTree>();
 
 	public int getChildrenCount() {
 		return children.size();
 	}
 
-	public OutlineTree<T> getParent() {
+	public OutlineTree getParent() {
 		return parent;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public T getData() {
-		return data;
-	}
-
-	public void setData(T data) {
-		this.data = data;
-	}
-
-	public List<OutlineTree<T>> getChildren() {
+	public List<OutlineTree> getChildren() {
 		return children;
 	}
 
-	public void add(T data) {
-		OutlineTree<T> lt = new OutlineTree<T>(data);
-		add(lt);
-	}
-
-	public void add(int index, T data) {
-		OutlineTree<T> lt = new OutlineTree<T>(data);
-		add(index, lt);
-	}
-
-	public void add(OutlineTree<T> lt) {
-		lt.id = this.id + "|" + children.size();
+	public void add(OutlineTree lt) {
+		if (lt == null) {
+			return;
+		}
 		lt.parent = this;
 		children.add(lt);
 	}
 
-	public void add(int index, OutlineTree<T> lt) {
-		lt.id = this.id + "|" + index;
+	public void add(int index, OutlineTree lt) {
+		if (lt == null) {
+			return;
+		}
 		lt.parent = this;
 		children.add(index, lt);
-		for (int i = index; i < children.size(); i++) {
-			children.get(i).id = this.id + "|" + i;
-		}
 	}
 
 	public void removeAll() {
-		children = new ArrayList<OutlineTree<T>>();
+		children.clear();
 	}
 
-	public OutlineTree<T> remove(OutlineTree<T> lt) {
-		OutlineTree<T> t = null;
-		for (int i = 0; i < children.size(); i++) {
-			if (lt.id.equals(children.get(i).id) && lt.data.equals(children.get(i).data)) {
-				t = remove(i);
-			}
-		}
-		return t;
+	public boolean remove(OutlineTree lt) {
+		return children.remove(lt);
 	}
 
-	public OutlineTree<T> remove(int index) {
-		OutlineTree<T> t = null;
+	public OutlineTree remove(int index) {
+		OutlineTree t = null;
 		if (index < children.size() && index >= 0) {
 			t = children.remove(index);
-			for (int j = index + 1; j <= children.size(); j++) {
-				children.get(j - 1).id = this.id + "|" + (j - 1);
-			}
 		}
 		return t;
 	}
 
-	public OutlineTree<T> getChild(int index) {
+	public OutlineTree getChild(int index) {
 		if (index < 0 || index >= children.size()) {
 			return null;
 		}
 		return children.get(index);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
 	public boolean equals(Object t) {
-		if (!(t instanceof OutlineTree)) {
-			return false;
-		} else if (((OutlineTree<T>) t).id.equals(id)) {
-			return true;
+		if (t instanceof OutlineTree) {
+			OutlineTree ot = (OutlineTree) t;
+			return eq(ot.startRegion, startRegion) && eq(ot.endRegion, endRegion) && eq(ot.text, text)
+					&& eq(ot.other, other) && eq(ot.region, region);
 		}
 		return false;
 	}
 
-	public OutlineTree<T> findChild(String id) {
-		if (!id.matches("\\d+(\\|\\d+)*")) {
-			return null;
+	private boolean eq(Object o1, Object o2) {
+		if (o1 == null) {
+			return o1 == o2;
 		}
-		String[] layout = id.split("\\|");
-		OutlineTree<T> root = getRoot();
-		for (int i=1;i<layout.length;i++) {
-			String s=layout[i];
-			if (!"".equals(s.trim())) {
-				Integer n = new Integer(s);
-				root = root.getChild(n);
-			}
-		}
-		if (null == root) {
-			return null;
-		} else {
-			return root;
-		}
+		return o1.equals(o2);
 	}
 
-	public OutlineTree<T> getRoot() {
+	public OutlineTree getRoot() {
 		return getRoot(this);
 	}
 
-	private OutlineTree<T> getRoot(OutlineTree<T> lt) {
+	private OutlineTree getRoot(OutlineTree lt) {
 		if (null == lt) {
 			return null;
 		} else if (null == lt.getParent()) {
@@ -137,7 +96,72 @@ public class OutlineTree<T> {
 		return getRoot(lt.getParent());
 	}
 
-	public String toString() {
-		return data.toString();
+	public void copy(OutlineTree lt) {
+		if (lt == null) {
+			return;
+		}
+		startRegion = lt.startRegion;
+		endRegion = lt.endRegion;
+		text = lt.text;
+		other = lt.other;
+		region = lt.region;
 	}
+
+	@Override
+	public String toString() {
+		return text + " " + other;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public IRegion getStartRegion() {
+		return startRegion;
+	}
+
+	public void setStartRegion(IRegion startRegion) {
+		this.startRegion = startRegion;
+	}
+
+	public IRegion getEndRegion() {
+		return endRegion;
+	}
+
+	public void setEndRegion(IRegion endRegion) {
+		this.endRegion = endRegion;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public void setParent(OutlineTree parent) {
+		this.parent = parent;
+	}
+
+	public IRegion getRegion() {
+		return region;
+	}
+
+	public void setRegion(IRegion region) {
+		this.region = region;
+	}
+
+	public String getOther() {
+		return other;
+	}
+
+	public void setOther(String other) {
+		this.other = other;
+	}
+
 }
