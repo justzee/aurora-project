@@ -1,6 +1,8 @@
 package aurora.ide.editor.outline;
 
-import java.util.Iterator;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -18,295 +20,188 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.xml.sax.SAXException;
 
-import uncertain.composite.CompositeMap;
-import uncertain.composite.TextParser;
-import uncertain.schema.Element;
 import aurora.ide.AuroraPlugin;
-import aurora.ide.api.composite.map.CommentCompositeMap;
-import aurora.ide.builder.CompositeMapInfo;
 import aurora.ide.editor.textpage.TextPage;
-import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
-import aurora.ide.helpers.ApplicationException;
-import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
 
 public class BaseOutlinePage extends ContentOutlinePage {
 	protected TextPage editor;
-	private CompositeMap input;
-	private CompositeMap selectMap;
 	private IDocument document;
-	private OutlineTree<CompositeMap> labelRoot;
-	private OutlineTree<CompositeMap> selectTree;
+
+	private OutlineTree root;
 	private Selected selected = new Selected();
-	private boolean error = false;
-
-	private class DocumentListener implements IDocumentListener {
-
-		public void documentAboutToBeChanged(DocumentEvent event) {
-
-		}
-
-		public void documentChanged(DocumentEvent event) {
-//			event.
-			if (null == selectTree) {
-				return;
-			}
-			loadInput();
-			if (error) {
-				return;
-			}
-			OutlineTree<CompositeMap> rootNode = null;
-			if (null == selectTree.getParent()) {
-				rootNode = selectTree;
-			} else {
-				rootNode = selectTree.getParent();
-			}
-			correct(rootNode, labelRoot.findChild(rootNode.getId()));
-			getTreeViewer().refresh(rootNode);
-		}
-
-	}
 
 	public BaseOutlinePage(TextPage editor) {
 		this.editor = editor;
 		IDocument inputDocument = editor.getInputDocument();
 		inputDocument.addDocumentListener(new DocumentListener());
-		loadInput();
-	}
-
-	public void selectNode(int offset) {
-		if (!error) {
-			try {
-				CompositeMap temp = QuickAssistUtil.findMap(input, document,
-						offset);
-				if (null != selectMap
-						&& equalsRange(temp.getLocationNotNull().getRange(),
-								selectMap.getLocationNotNull().getRange())) {
-					return;
-				} else {
-					selectMap = temp;
-					findOutlineTree(labelRoot);
-					getTreeViewer().removeSelectionChangedListener(selected);
-					getTreeViewer().setSelection(
-							new StructuredSelection(selectTree));
-					getTreeViewer().addSelectionChangedListener(selected);
-				}
-			} catch (Exception e) {
-				// e.printStackTrace();
-			}
-		}
-	}
-
-	private void loadInput() {
-		try {
-			input = CompositeMapUtil.loaderFromString(editor.getInputDocument()
-					.get());
-			document = editor.getInputDocument();
-			error = false;
-		} catch (ApplicationException e) {
-			error = true;
-			return;
-		}
-		CompositeMap virtualNode = new CommentCompositeMap("VirtualNode");
-		labelRoot = new OutlineTree<CompositeMap>(virtualNode);
-		labelRoot.add(input);
-		fillLabel(input, labelRoot.getChild(0));
-	}
-
-	private void findOutlineTree(OutlineTree<CompositeMap> label) {
-		CompositeMap map = label.getData();
-		if (equalsRange(map.getLocationNotNull().getRange(), selectMap
-				.getLocationNotNull().getRange())) {
-			selectTree = label;
-			return;
-		}
-		for (int i = 0; i < label.getChildrenCount(); i++) {
-			findOutlineTree(label.getChild(i));
-		}
-	}
-
-	private boolean equalsRange(int[] a, int[] b) {
-		for (int i = 0; i < a.length; i++) {
-			if (a[i] != b[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void fillLabel(CompositeMap map, OutlineTree<CompositeMap> labelTree) {
-		Iterator<CompositeMap> it = map.getChildIterator();
-		for (int i = 0; null != it && it.hasNext(); i++) {
-			CompositeMap cm = it.next();
-			labelTree.add(cm);
-			fillLabel(cm, labelTree.getChild(i));
-		}
 	}
 
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
+		getTreeViewer().addSelectionChangedListener(selected);
 		getTreeViewer().setLabelProvider(new OutlineLabelProvider());
 		getTreeViewer().setContentProvider(new OutlineContentProvider());
+		root = loadTree();
+		getTreeViewer().setInput(root);
+		// getTreeViewer().expandAll();
+	}
 
-		getTreeViewer().setInput(labelRoot);
+	private OutlineTree loadTree() {
+		this.document = editor.getInputDocument();
+		OutlineParser p = new OutlineParser(document.get());
+		try {
+			p.parser();
+			return p.getTree();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void selectNode(int offset) {
+		OutlineTree tree = getTree(root == null ? null : root.getChild(0), offset);
+		if (tree == null) {
+			return;
+		}
+		getTreeViewer().removeSelectionChangedListener(selected);
+		getTreeViewer().setSelection(new StructuredSelection(tree));
 		getTreeViewer().addSelectionChangedListener(selected);
 	}
 
-	public void refresh() {
-		// if (null == selectTree) {
-		// return;
-		// }
-		// loadInput();
-		// if (error) {
-		// return;
-		// }
-		// OutlineTree<CompositeMap> rootNode = null;
-		// if (null == selectTree.getParent()) {
-		// rootNode = selectTree;
-		// } else {
-		// rootNode = selectTree.getParent();
-		// }
-		// correct(rootNode, labelRoot.findChild(rootNode.getId()));
-		// getTreeViewer().refresh(rootNode);
-	}
-
-	private void correct(OutlineTree<CompositeMap> ing,
-			OutlineTree<CompositeMap> ed) {
-		if (!ing.getData().equals(ed.getData())) {
-			ing.setData(ed.getData());
+	private OutlineTree getTree(OutlineTree tree, int offset) {
+		if (tree == null) {
+			return null;
 		}
-		if (ing.getChildrenCount() != ed.getChildrenCount()) {
-			ing.removeAll();
-			for (int i = 0; i < ed.getChildrenCount(); i++) {
-				ing.add(ed.getChild(i));
+		if (tree.getRegion() != null) {
+			if (tree.getRegion().getOffset() <= offset
+					&& tree.getRegion().getOffset() + tree.getRegion().getLength() > offset) {
+				return tree;
+			} else {
+				return null;
+			}
+		}
+		if (tree.getStartRegion().getOffset() <= offset
+				&& tree.getEndRegion().getOffset() + tree.getEndRegion().getLength() + 1 > offset) {
+			for (OutlineTree child : tree.getChildren()) {
+				OutlineTree t = getTree(child, offset);
+				if (t != null) {
+					return t;
+				}
 			}
 		} else {
-			for (int i = 0; i < ed.getChildrenCount(); i++) {
-				correct(ing.getChild(i), ed.getChild(i));
+			return null;
+		}
+		return tree;
+	}
+
+	private boolean eq(Object o1, Object o2) {
+		if (o1 == null) {
+			return o1 == o2;
+		}
+		return o1.equals(o2);
+	}
+
+	private void refresh(OutlineTree tree, OutlineTree input) {
+		if (tree == null) {
+
+		}
+		if (!eq(tree, input)) {
+			if (eq(tree.getText(), input.getText()) && eq(tree.getOther(), input.getOther())) {
+				input.copy(tree);
+			} else {
+				input.copy(tree);
+				getTreeViewer().refresh(input);
 			}
+		}
+		if (tree.getChildrenCount() != input.getChildrenCount()) {
+			input.removeAll();
+			for (int i = 0; i < tree.getChildrenCount(); i++) {
+				input.add(tree.getChild(i));
+			}
+			getTreeViewer().refresh(input);
+		} else {
+			for (int i = 0; i < tree.getChildrenCount(); i++) {
+				refresh(tree.getChild(i), input.getChild(i));
+			}
+		}
+	}
+
+	private Image getOutlineTreeImage(OutlineTree tree) {
+		if ("array".equals(tree.getImage())) {
+			return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
+		}
+		String defaultPath = LocaleMessage.getString("element.icon");
+		return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
+	}
+
+	class OutlineLabelProvider extends BaseLabelProvider implements ILabelProvider {
+		public String getText(Object obj) {
+			return obj.toString();
+		}
+
+		public Image getImage(Object element) {
+			return getOutlineTreeImage((OutlineTree) element);
 		}
 	}
 
 	class Selected implements ISelectionChangedListener {
-		@SuppressWarnings("unchecked")
 		public void selectionChanged(SelectionChangedEvent event) {
 			TreeSelection selection = (TreeSelection) event.getSelection();
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) selection
-					.getFirstElement();
-			if (null == lt || null == lt.getData()) {
+			OutlineTree lt = (OutlineTree) selection.getFirstElement();
+			if (lt == null) {
 				return;
 			}
-			CompositeMap data = lt.getData();
-			CompositeMapInfo info = new CompositeMapInfo(data, document);
-			IRegion region = info.getMapNameRegion();
-			if (region == null) {
-				System.out.println();
-				return;
-			}
-
-			TextSelection tt = new TextSelection(region.getOffset(),
-					region.getLength());
+			IRegion region = lt.getStartRegion();
+			// IRegion region = lt.getEndRegion();
+			TextSelection tt = new TextSelection(region.getOffset(), region.getLength());
 			editor.getEditorSite().getSelectionProvider().setSelection(tt);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	class OutlineContentProvider implements ITreeContentProvider {
-		public Object[] getChildren(Object parentElement) {
-			if (parentElement == null)
-				return null;
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) parentElement;
-			return lt.getChildren().toArray();
-		}
-
-		public Object getParent(Object element) {
-			if (element == null)
-				return null;
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
-			return lt.getParent();
-		}
-
-		public boolean hasChildren(Object element) {
-			if (element == null)
-				return false;
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
-			return lt.getChildrenCount() > 0;
-		}
-
-		public Object[] getElements(Object inputElement) {
-			return getChildren(inputElement);
-		}
-
 		public void dispose() {
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 
+		public Object[] getElements(Object inputElement) {
+			return ((OutlineTree) inputElement).getChildren().toArray();
+		}
+
+		public Object[] getChildren(Object parentElement) {
+			return ((OutlineTree) parentElement).getChildren().toArray();
+		}
+
+		public Object getParent(Object element) {
+			return ((OutlineTree) element).getParent();
+		}
+
+		public boolean hasChildren(Object element) {
+			return ((OutlineTree) element).getChildren().size() > 0;
+		}
+
 	}
 
-	class OutlineLabelProvider extends BaseLabelProvider implements
-			ILabelProvider {
-		@SuppressWarnings("unchecked")
-		public String getText(Object obj) {
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) obj;
-			String elementText = null;
-			CompositeMap elemenntCm = lt.getData();
-			String tagName = elemenntCm.getRawName();
-			String elementName = getElementName(elemenntCm);
-			if (elementName != null && !elementName.equals("")) {
-				elementText = elementName;
-			} else {
-				elementText = tagName;
-			}
-			return elementText;
+	class DocumentListener implements IDocumentListener {
+		public void documentAboutToBeChanged(DocumentEvent event) {
+
 		}
 
-		@SuppressWarnings("unchecked")
-		public Image getImage(Object element) {
-			OutlineTree<CompositeMap> lt = (OutlineTree<CompositeMap>) element;
-			CompositeMap elemenntCm = lt.getData();
-			//
-			Element ele = CompositeMapUtil.getElement(elemenntCm);
-			if (ele != null) {
-				if (ele.isArray()) {
-					return AuroraPlugin.getImageDescriptor(
-							LocaleMessage.getString("array.icon"))
-							.createImage();
-				}
+		public void documentChanged(DocumentEvent event) {
+			OutlineTree tree = loadTree();
+			if (tree == null) {
+				return;
 			}
-			String defaultPath = LocaleMessage.getString("element.icon");
-			return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
-		}
-
-		protected String getElementName(CompositeMap element) {
-			String tagName = element.getRawName();
-			Element elm = CompositeMapUtil.getElement(element);
-			String elemDesc = null;
-			if (elm != null && !elm.isArray()) {
-				if (elm.getDisplayMask() != null) {
-					elemDesc = TextParser.parse(elm.getDisplayMask(), element);
-				}
-				if (elemDesc != null) {
-					tagName = tagName + " " + elemDesc;
-				}
-			}
-			if (elemDesc == null) {
-				if (element.get("id") != null) {
-					elemDesc = element.getString("id");
-				} else if (element.get("name") != null) {
-					elemDesc = element.get("name").toString();
-				} else if (element.get("Name") != null) {
-					elemDesc = element.get("Name").toString();
-				}
-				if (elemDesc != null) {
-					tagName = tagName + " (" + elemDesc + ")";
-				}
-			}
-			return tagName;
+			refresh(tree, (OutlineTree) getTreeViewer().getInput());
 		}
 	}
 }
