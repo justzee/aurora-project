@@ -37,11 +37,15 @@ public class OutlineParser extends DefaultHandler2 {
 		tree.setOther(getValue(attributes));
 		offset = source.indexOf(qName, offset);
 		tree.setStartRegion(new Region(offset, qName.length()));
-		if (source.indexOf("/>", offset) > source.indexOf("<", offset)) {
+		int end = source.indexOf("/>", offset);
+		if (end > source.indexOf("<", offset) || end < 0) {
 			offset += qName.length();
 		} else {
 			int start = source.lastIndexOf("<", offset);
-			tree.setRegion(new Region(start, source.indexOf("/>", offset) + 2 - start));
+			int length = source.indexOf("/>", offset) + 2 - start;
+			if (length > 0) {
+				tree.setRegion(new Region(start, length));
+			}
 		}
 	}
 
@@ -52,12 +56,21 @@ public class OutlineParser extends DefaultHandler2 {
 
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
+		// TODO Auto-generated method stub
+	}
 
+	@Override
+	public void startCDATA() throws SAXException {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		offset = source.indexOf(qName, offset);
+		if (stack.peek().getRegion() == null) {
+			offset = source.indexOf("</" + qName, offset) + 2;
+		} else {
+			offset = source.indexOf(qName, offset);
+		}
 		stack.pop().setEndRegion(new Region(offset, qName.length()));
 		offset += qName.length();
 	}
@@ -73,7 +86,7 @@ public class OutlineParser extends DefaultHandler2 {
 	}
 
 	private String getValue(Attributes attributes) {
-		String[] values = { "id", "name", "type" };
+		String[] values = { "id", "name", "type", "field" };
 		for (int i = 0; i < attributes.getLength(); i++) {
 			for (String s : values) {
 				if (s.equalsIgnoreCase(attributes.getQName(i))) {

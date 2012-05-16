@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -17,8 +19,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.xml.sax.SAXException;
 
@@ -48,6 +52,21 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		root = loadTree();
 		getTreeViewer().setInput(root);
 		// getTreeViewer().expandAll();
+	}
+
+	@Override
+	public void setActionBars(IActionBars actionBars) {
+		IAction action = new Action("aurora.outline", SWT.TOGGLE) {
+			@Override
+			public void run() {
+
+			}
+		};
+
+		action.setToolTipText("action");
+		// action.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/collapseall.gif"));
+		actionBars.getToolBarManager().add(action);
+		super.setActionBars(actionBars);
 	}
 
 	private OutlineTree loadTree() {
