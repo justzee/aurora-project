@@ -1,4 +1,0 @@
-driver=oracle.jdbc.driver.OracleDriver
-url=jdbc:oracle:thin:@192.168.171.128:1521:ora10g
-user=scott
-password=tiger

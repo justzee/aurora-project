@@ -1,9 +1,0 @@
-<root>
-	<fields>
-		<field name="ID"  required="false"/>
-		<field name="NAME" required="true"/>
-	</fields>
-	<order-by>
-		<order field="NAME" />
-	</order-by>
-</root>

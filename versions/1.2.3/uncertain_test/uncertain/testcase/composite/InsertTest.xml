@@ -1,4 +1,0 @@
-<element-insert path="/fields" >
-  <field name="NEW_FIELD1" />
-  <field name="NEW_FIELD2" />  
-</element-insert>
