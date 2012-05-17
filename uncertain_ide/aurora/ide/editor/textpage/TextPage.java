@@ -275,7 +275,9 @@ public class TextPage extends TextEditor implements IViewer {
 		viewer.getTextWidget().addCaretListener(new CaretListener() {
 			public void caretMoved(final CaretEvent event) {
 				if (null != outline) {
+					// long s=System.currentTimeMillis();
 					outline.selectNode(event.caretOffset);
+					// System.out.println("caretMoved:"+(System.currentTimeMillis()-s));
 				}
 			}
 		});
