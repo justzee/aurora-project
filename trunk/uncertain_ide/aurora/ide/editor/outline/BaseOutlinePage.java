@@ -1,6 +1,8 @@
 package aurora.ide.editor.outline;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -23,8 +25,11 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.xml.sax.SAXException;
 
+import uncertain.schema.Element;
+import uncertain.schema.ISchemaManager;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.textpage.TextPage;
+import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 
 public class BaseOutlinePage extends ContentOutlinePage {
@@ -33,11 +38,20 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 	private OutlineTree root;
 	private Selected selected = new Selected();
+	private static List<String> arrays = new ArrayList<String>();
 
 	public BaseOutlinePage(TextPage editor) {
 		this.editor = editor;
 		IDocument inputDocument = editor.getInputDocument();
 		inputDocument.addDocumentListener(new DocumentListener());
+		ISchemaManager schemaManager = LoadSchemaManager.getSchemaManager();
+		if (arrays.size() <= 0) {
+			for (Object obj : schemaManager.getAllTypes()) {
+				if (obj instanceof Element) {
+					initArray((Element) obj);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -51,6 +65,20 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		// getTreeViewer().expandAll();
 	}
 
+	private void initArray(Element ele) {
+		if (ele.isArray()) {
+			arrays.add(ele.getLocalName());
+		}
+		if (ele.getChilds() == null) {
+			return;
+		}
+		for (Object obj : ele.getChilds()) {
+			if (obj instanceof Element) {
+				initArray((Element) obj);
+			}
+		}
+	}
+
 	@Override
 	public void setActionBars(IActionBars actionBars) {
 		// IAction action = new Action("aurora.outline", SWT.TOGGLE) {
@@ -60,8 +88,7 @@ public class BaseOutlinePage extends ContentOutlinePage {
 		// }
 		// };
 		// action.setToolTipText("action");
-		// //
-		// action.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/collapseall.gif"));
+		// //action.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/collapseall.gif"));
 		// actionBars.getToolBarManager().add(action);
 		super.setActionBars(actionBars);
 	}
@@ -170,10 +197,19 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 	class OutlineLabelProvider extends BaseLabelProvider implements ILabelProvider {
 		public String getText(Object obj) {
+			String name = ((OutlineTree) obj).getText();
+			int loc = name.indexOf(":");
+			if (loc >= 0 && arrays.contains(name.substring(loc + 1))) {
+				((OutlineTree) obj).setOther("[" + ((OutlineTree) obj).getChildrenCount() + "]");
+			}
 			return obj.toString();
 		}
 
 		public Image getImage(Object element) {
+			String name = ((OutlineTree) element).getOther();
+			if (name.matches("\\[\\d+\\]")) {
+				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
+			}
 			return getOutlineTreeImage((OutlineTree) element);
 		}
 	}
