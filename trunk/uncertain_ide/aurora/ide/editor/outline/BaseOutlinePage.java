@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -19,7 +17,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -56,16 +53,16 @@ public class BaseOutlinePage extends ContentOutlinePage {
 
 	@Override
 	public void setActionBars(IActionBars actionBars) {
-		IAction action = new Action("aurora.outline", SWT.TOGGLE) {
-			@Override
-			public void run() {
-
-			}
-		};
-
-		action.setToolTipText("action");
+		// IAction action = new Action("aurora.outline", SWT.TOGGLE) {
+		// @Override
+		// public void run() {
+		//
+		// }
+		// };
+		// action.setToolTipText("action");
+		// //
 		// action.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/collapseall.gif"));
-		actionBars.getToolBarManager().add(action);
+		// actionBars.getToolBarManager().add(action);
 		super.setActionBars(actionBars);
 	}
 
@@ -88,7 +85,11 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	public void selectNode(int offset) {
 		OutlineTree tree = getTree(root == null ? null : root.getChild(0), offset);
 		if (tree == null) {
-			return;
+			if (root.getChild(0) != null) {
+				tree = root.getChild(0);
+			} else {
+				return;
+			}
 		}
 		getTreeViewer().removeSelectionChangedListener(selected);
 		getTreeViewer().setSelection(new StructuredSelection(tree));
@@ -129,8 +130,8 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	}
 
 	private void refresh(OutlineTree tree, OutlineTree input) {
-		if (tree == null) {
-
+		if (tree == null || input == null) {
+			return;
 		}
 		if (!eq(tree, input)) {
 			if (eq(tree.getText(), input.getText()) && eq(tree.getOther(), input.getOther())) {
@@ -156,6 +157,12 @@ public class BaseOutlinePage extends ContentOutlinePage {
 	private Image getOutlineTreeImage(OutlineTree tree) {
 		if ("array".equals(tree.getImage())) {
 			return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
+		} else if ("script".equals(tree.getImage())) {
+			return AuroraPlugin.getImageDescriptor("icons/script.png").createImage();
+		} else if ("method".equals(tree.getImage())) {
+			return AuroraPlugin.getImageDescriptor("icons/method.gif").createImage();
+		} else if ("variable".equals(tree.getImage())) {
+			return AuroraPlugin.getImageDescriptor("icons/variable.gif").createImage();
 		}
 		String defaultPath = LocaleMessage.getString("element.icon");
 		return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
