@@ -1,0 +1,31 @@
+package aurora.ide.node.action;
+
+
+import org.eclipse.jface.resource.ImageDescriptor;
+
+import aurora.ide.AuroraPlugin;
+import aurora.ide.editor.core.IViewer;
+import aurora.ide.helpers.LocaleMessage;
+
+
+
+public class RefreshAction extends ActionListener {
+	IViewer viewer;
+
+	public RefreshAction(IViewer viewer,int actionStyle) {
+		setActionStyle(actionStyle);
+		this.viewer = viewer;
+	}
+
+	public void run() {
+		viewer.refresh(false);
+	}
+
+	public ImageDescriptor getDefaultImageDescriptor() {
+		return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("refresh.icon"));
+	}
+	public String getDefaultText(){
+		return LocaleMessage.getString("refresh");
+	}
+	 
+}
