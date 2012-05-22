@@ -76,7 +76,15 @@ public class UploadFileHandle implements IFeature, IController {
 
     boolean isSave = false;
 
-    MainService service;
+    public int getMax_upload_size() {
+		return Max_upload_size;
+	}
+
+	public void setMax_upload_size(int max_upload_size) {
+		Max_upload_size = max_upload_size;
+	}
+
+	MainService service;
 
     FileItem fileItem;
 
