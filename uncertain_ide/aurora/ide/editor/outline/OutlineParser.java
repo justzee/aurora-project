@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.Region;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Node;
@@ -30,6 +31,7 @@ public class OutlineParser extends DefaultHandler2 {
 	private Stack<OutlineTree> stack = new Stack<OutlineTree>();
 
 	public OutlineParser(String source) {
+		Assert.isNotNull(source);
 		this.setSource(source);
 		root = new OutlineTree();
 		stack.add(root);
@@ -44,6 +46,14 @@ public class OutlineParser extends DefaultHandler2 {
 		tree.setOther(getValue(attributes));
 		offset = source.indexOf(qName, offset);
 		tree.setStartRegion(new Region(offset, qName.length()));
+		int loc = qName.indexOf(":");
+		String name = qName;
+		if (loc >= 0) {
+			name = qName.substring(loc + 1);
+		}
+		if ("script".equalsIgnoreCase(name) || "style".equalsIgnoreCase(name)) {
+			tree.setImage("script");
+		}
 		int end = source.indexOf("/>", offset);
 		if (end > source.indexOf("<", offset) || end < 0) {
 			offset += qName.length();
@@ -64,7 +74,6 @@ public class OutlineParser extends DefaultHandler2 {
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if ("script".equalsIgnoreCase(stack.peek().getText())) {
-			stack.peek().setImage("script");
 			Parser p = new Parser();
 			AstRoot ast = null;
 			try {
