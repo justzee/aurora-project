@@ -11,10 +11,12 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
+import aurora.ide.editor.outline.BaseOutlinePage;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.helpers.ApplicationException;
@@ -31,6 +33,8 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	private File file;
 	protected int mainViewerIndex;
 	protected int textPageIndex;
+
+	private BaseOutlinePage outline = new BaseOutlinePage();;
 
 	public BaseCompositeMapEditor() {
 		super();
@@ -160,6 +164,14 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			}
 			sycTextPageWithMainViewerPage();
 		}
+		outline.setActiveEditor(getEditor(newPageIndex));
+	}
+
+	public Object getAdapter(Class adapter) {
+		if (adapter == IContentOutlinePage.class) {
+			return outline;
+		}
+		return super.getAdapter(adapter);
 	}
 
 	private boolean sycMainViewerPageWithTextPage() throws ApplicationException {

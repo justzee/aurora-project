@@ -79,21 +79,29 @@ public class ExecuteSqlAction extends Action {
 			}
 			if (resultSet != null) {
 				resultCount = resultSet.getFetchSize();
-				viewer.refresh(resultSet, resultCount);
-				try {
-					resultSet.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 			}
-			try {
-				stmt.close();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+			viewer.refresh(resultSet, resultCount);
 		} catch (SQLException e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
+		} finally {
+			try {
+				if (resultSet != null) {
+					resultSet.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+				try {
+					if (stmt != null) {
+						stmt.close();
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			}
 		}
 	}
 
