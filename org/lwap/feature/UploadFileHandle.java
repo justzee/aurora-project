@@ -349,7 +349,6 @@ public class UploadFileHandle implements IFeature, IController {
     }
 
     public int onBuildOutputContent(ProcedureRunner runner) throws Exception {
-
         if (isSave)
             return EventModel.HANDLE_NORMAL;
         CompositeMap context = runner.getContext();
@@ -360,8 +359,8 @@ public class UploadFileHandle implements IFeature, IController {
         Connection nativeConn=null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        ReadableByteChannel rbc = null;
-        WritableByteChannel wbc = null;
+//        ReadableByteChannel rbc = null;
+//        WritableByteChannel wbc = null;
         OutputStream os = null;
         InputStream is = null;
         HttpServletResponse response = service.getResponse();
@@ -400,13 +399,12 @@ public class UploadFileHandle implements IFeature, IController {
                 }
                 int sz = ft.getInt("FILE_SIZE", 0);
                 String file_name = ft.getString("FILE_NAME");
-                try{                	
-                	Class.forName("org.apache.catalina.startup.Bootstrap");
-                	if (sz > 0)
-                		response.setContentLength(sz);    
-                }catch(ClassNotFoundException e){
-                	
-                }
+//                try{                	
+//                	Class.forName("org.apache.catalina.startup.Bootstrap");
+//                	if (sz > 0)
+//                		response.setContentLength(sz);    
+//                }catch(ClassNotFoundException e){
+//                }
            
                 if (file_name != null) {
                     response.addHeader("Content-Disposition",
@@ -414,18 +412,22 @@ public class UploadFileHandle implements IFeature, IController {
                             "attachment; filename=\"" + toUtf8String(file_name) + "\"");
                 }
                 os = response.getOutputStream();
-                is = content.getBinaryStream();               
-                rbc = Channels.newChannel(is);
-                wbc = Channels.newChannel(os);
-                // System.out.println("buffer size:"+Buffer_size);
-                ByteBuffer buf = ByteBuffer.allocate(Buffer_size);
-                int size = -1;
-                while ((size = rbc.read(buf)) > 0) {
-                    buf.position(0);
-                    wbc.write(buf);
-                    buf.clear();
-                    os.flush();
+                is = content.getBinaryStream(); 
+                byte bufferArray[]=new byte[10240]; 
+                int byteLength= is.read(bufferArray);  
+                while(byteLength!=-1)  
+                {  
+                    os.write(bufferArray,0,byteLength);  
+                    byteLength=is.read(bufferArray);  
                 }
+                os.flush();
+//                int size = -1;
+//                while ((size = is.read(bufferArray)) > 0) {
+//                    buf.position(0);
+//                    wbc.write(buf);
+//                    buf.clear();
+//                    os.flush();
+//                }
             }
 
         } finally {
@@ -433,8 +435,8 @@ public class UploadFileHandle implements IFeature, IController {
             	DBUtil.closeStatement(pst);
                 DBUtil.closeResultSet(rs);              
                 DBUtil.closeConnection(conn);
-                if (rbc != null)
-                    rbc.close();
+//                if (rbc != null)
+//                    rbc.close();
                 if (pst != null)
                     pst.close();
                 if (is != null)
