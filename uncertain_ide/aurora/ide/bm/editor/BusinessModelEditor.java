@@ -75,7 +75,7 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
             }
         } else if (currentPage == textPageIndex && newPageIndex == mainViewerIndex && textPage.checkContentFormat()) {
             locateMainPage();
-        }
+        } 
     }
 
     private void locateMainPage() {
