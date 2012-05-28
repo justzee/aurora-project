@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="freemarker.jar" sourcepath="/Users/shishiliyan/Desktop/freemarker-2.3.19/src"/>
 	<classpathentry exported="true" kind="lib" path="SQLinForm.jar"/>
 	<classpathentry exported="true" kind="lib" path="aurora.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.4"/>
