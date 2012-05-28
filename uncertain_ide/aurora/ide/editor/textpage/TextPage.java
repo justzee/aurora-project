@@ -34,7 +34,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import uncertain.composite.CompositeMap;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.editor.core.IViewer;
-import aurora.ide.editor.outline.BaseOutlinePage;
+import aurora.ide.editor.outline.TextOutlinePage;
 import aurora.ide.editor.textpage.action.CFormatAction;
 import aurora.ide.editor.textpage.action.GetFileNameAction;
 import aurora.ide.editor.textpage.action.ToggleBlockCommentAction;
@@ -61,7 +61,7 @@ public class TextPage extends TextEditor implements IViewer {
 	private boolean modify = false;
 	private boolean ignorceSycOnce = false;
 	private IAnnotationModel annotationModel;
-	private BaseOutlinePage outline;
+	private TextOutlinePage outline;
 
 	public TextPage() {
 		super();
@@ -78,7 +78,7 @@ public class TextPage extends TextEditor implements IViewer {
 		if (Display.getCurrent() != null && IAnnotationModel.class.equals(adapter)) {
 			return this.getAnnotationModel();
 		} else if (adapter == IContentOutlinePage.class) {
-			outline = new BaseOutlinePage(this);
+			outline = new TextOutlinePage(this);
 			return outline;
 		}
 		return super.getAdapter(adapter);
