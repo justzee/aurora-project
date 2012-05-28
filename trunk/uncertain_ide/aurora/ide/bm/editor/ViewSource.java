@@ -7,13 +7,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 import uncertain.composite.CompositeMap;
-import uncertain.composite.XMLOutputter;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.editor.textpage.TextPage;
-import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.search.cache.CacheManager;
 
 public class ViewSource extends TextPage {

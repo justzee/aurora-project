@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
+import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
@@ -43,30 +44,35 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			mainViewerIndex = addPage(mainViewerPage);
 			textPageIndex = addPage(textPage, getEditorInput());
 			setPageText(textPageIndex, TextPage.textPageTitle);
-//			setActivePage(textPageIndex);
+			// setActivePage(textPageIndex);
 		} catch (PartInitException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
 	}
 
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
 		if (!(input instanceof IFileEditorInput))
-			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
+			throw new PartInitException(
+					"Invalid Input: Must be IFileEditorInput");
 		setSite(site);
 		setInput(input);
-		AuroraPlugin.getWorkspace().addResourceChangeListener(new InputFileListener(this));
+		AuroraPlugin.getWorkspace().addResourceChangeListener(
+				new InputFileListener(this));
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
 		String fileName = file.getName();
 		setPartName(fileName);
 		// todo delete
-//		autoAddAuroraNatue(ifile);
+		// autoAddAuroraNatue(ifile);
 
 	}
 
 	private void autoAddAuroraNatue(IFile file) {
-		if (file.getName().toLowerCase().endsWith("." + AuroraConstant.BMFileExtension)
-				|| file.getName().toLowerCase().endsWith("." + AuroraConstant.ScreenFileExtension)) {
+		if (file.getName().toLowerCase()
+				.endsWith("." + AuroraConstant.BMFileExtension)
+				|| file.getName().toLowerCase()
+						.endsWith("." + AuroraConstant.ScreenFileExtension)) {
 			IProject project = file.getProject();
 			try {
 				if (!AuroraProjectNature.hasAuroraNature(project)) {
@@ -78,12 +84,12 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		}
 	}
 
-//	protected int getCurrentPage() {
-//		int currentPage = super.getCurrentPage();
-//		if (currentPage == -1)
-//			currentPage = textPageIndex;
-//		return currentPage;
-//	}
+	// protected int getCurrentPage() {
+	// int currentPage = super.getCurrentPage();
+	// if (currentPage == -1)
+	// currentPage = textPageIndex;
+	// return currentPage;
+	// }
 
 	public void doSave(IProgressMonitor monitor) {
 		int currentPage = getCurrentPage();
@@ -129,18 +135,24 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	}
 
 	protected void pageChange(int newPageIndex) {
+		IEditorInput editorInput = this.getEditorInput();
+		if (editorInput instanceof IFileEditorInput) {
+			AuroraBuilder.deleteMarkers(((IFileEditorInput) editorInput)
+					.getFile());
+		}
 		super.pageChange(newPageIndex);
-		if(newPageIndex == mainViewerIndex ){
+		if (newPageIndex == mainViewerIndex) {
 			try {
 				sycMainViewerPageWithTextPage();
 			} catch (Exception e) {
 				textPage.setIgnorceSycOnce(true);
 				setActivePage(textPageIndex);
-				String errorMessage = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+				String errorMessage = e.getCause() != null ? e.getCause()
+						.getMessage() : e.getMessage();
 				DialogUtil.showErrorMessageBox(errorMessage);
 				return;
 			}
-		}else if(newPageIndex == textPageIndex ){
+		} else if (newPageIndex == textPageIndex) {
 			// setActivePage will call pageChage(),we should prevent dead lock.
 			if (textPage.isIgnorceSycOnce()) {
 				textPage.setIgnorceSycOnce(false);
@@ -150,12 +162,12 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		}
 	}
 
-	private boolean sycMainViewerPageWithTextPage() throws ApplicationException{
+	private boolean sycMainViewerPageWithTextPage() throws ApplicationException {
 		CompositeMap data = textPage.toCompoisteMap();
 		if (mainViewerPage.getData() == null) {
 			mainViewerPage.setData(data);
 		} else {
-			if (textPage.isModify()&& mainViewerPage != null)
+			if (textPage.isModify() && mainViewerPage != null)
 				mainViewerPage.refreshFormContent(data);
 		}
 		textPage.setModify(false);
@@ -163,9 +175,10 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	}
 
 	private boolean sycTextPageWithMainViewerPage() {
-		if(mainViewerPage.isModify()){
+		if (mainViewerPage.isModify()) {
 			mainViewerPage.setModify(false);
-			textPage.refresh(CompositeMapUtil.getFullContent(mainViewerPage.getData()));
+			textPage.refresh(CompositeMapUtil.getFullContent(mainViewerPage
+					.getData()));
 			return true;
 		}
 		return true;
