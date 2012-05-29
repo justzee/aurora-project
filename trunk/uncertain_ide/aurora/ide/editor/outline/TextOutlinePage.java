@@ -133,14 +133,14 @@ public class TextOutlinePage extends ContentOutlinePage {
 		}
 		if (tree.getRegion() != null) {
 			if (tree.getRegion().getOffset() <= offset
-					&& tree.getRegion().getOffset() + tree.getRegion().getLength() > offset) {
+					&& tree.getRegion().getOffset() + tree.getRegion().getLength() + 1 > offset) {
 				return tree;
 			} else {
 				return null;
 			}
 		}
 		if (tree.getStartRegion().getOffset() <= offset
-				&& tree.getEndRegion().getOffset() + tree.getEndRegion().getLength() + 1 > offset) {
+				&& tree.getEndRegion().getOffset() + tree.getEndRegion().getLength() + 2 > offset) {
 			for (OutlineTree child : tree.getChildren()) {
 				OutlineTree t = getTree(child, offset);
 				if (t != null) {
