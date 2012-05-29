@@ -34,13 +34,11 @@ public class BaseOutlinePage extends Page implements IContentOutlinePage {
 		if (editor instanceof TextPage) {
 			this.activeEditor = editor;
 			activePage = (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
-			if (control != null) {
-				if (activePage != null) {
-					initActivePage();
-					activePage.createControl(control);
-					getSite().getActionBars().updateActionBars();
-					control.layout();
-				}
+			if (control != null && activePage != null) {
+				initActivePage();
+				activePage.createControl(control);
+				getSite().getActionBars().updateActionBars();
+				control.layout();
 			}
 		}
 	}
@@ -78,7 +76,7 @@ public class BaseOutlinePage extends Page implements IContentOutlinePage {
 	}
 
 	public void setFocus() {
-		if (activePage != null) {
+		if (activePage != null && activePage.getControl() != null && (!activePage.getControl().isDisposed())) {
 			activePage.setFocus();
 		}
 	}
