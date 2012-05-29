@@ -113,6 +113,9 @@ public class TextOutlinePage extends ContentOutlinePage {
 	}
 
 	public void selectNode(int offset) {
+		if (getTreeViewer() == null) {
+			return;
+		}
 		OutlineTree root = (OutlineTree) getTreeViewer().getInput();
 		OutlineTree tree = getTree(root == null ? null : root.getChild(0), offset);
 		if (tree == null) {
