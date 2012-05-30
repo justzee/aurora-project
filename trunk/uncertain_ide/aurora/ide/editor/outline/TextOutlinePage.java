@@ -119,7 +119,7 @@ public class TextOutlinePage extends ContentOutlinePage {
 		OutlineTree root = (OutlineTree) getTreeViewer().getInput();
 		OutlineTree tree = getTree(root == null ? null : root.getChild(0), offset);
 		if (tree == null) {
-			if (root.getChild(0) != null) {
+			if (root != null && root.getChild(0) != null) {
 				tree = root.getChild(0);
 			} else {
 				return;
@@ -266,11 +266,18 @@ public class TextOutlinePage extends ContentOutlinePage {
 		}
 
 		public void documentChanged(DocumentEvent event) {
+			if (getTreeViewer() == null) {
+				return;
+			}
 			OutlineTree tree = loadTree();
 			if (tree == null) {
 				return;
 			}
-			refresh(tree, (OutlineTree) getTreeViewer().getInput());
+			if (getTreeViewer().getInput() == null) {
+				getTreeViewer().setInput(tree);
+			} else {
+				refresh(tree, (OutlineTree) getTreeViewer().getInput());
+			}
 		}
 	}
 }

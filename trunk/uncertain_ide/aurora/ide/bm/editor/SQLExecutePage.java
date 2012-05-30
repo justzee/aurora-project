@@ -111,8 +111,11 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	}
 
 	public String getSql() {
-		StyledText st = (StyledText) tabFolder.getSelection().getControl();
-		return st.getText();
+		if (tabFolder.getSelection() != null) {
+			StyledText st = (StyledText) tabFolder.getSelection().getControl();
+			return st.getText();
+		}
+		return null;
 	}
 
 	public boolean isModify() {
@@ -134,7 +137,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 				sashForm.layout();
 			}
 			String sql = getSql().split(" ")[0];
-			int message = DialogUtil.showConfirmDialogBox(LocaleMessage.getString("are.you.sure.want.to") + sql + " " + resultCount + LocaleMessage.getString("records") + "?");
+			int message = DialogUtil.showConfirmDialogBox(LocaleMessage.getString("are.you.sure.want.to") + sql + " "
+					+ resultCount + LocaleMessage.getString("records") + "?");
 			try {
 				if (message == SWT.OK) {
 					connection.commit();
@@ -238,7 +242,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 			// content =
 			// XMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()),
 			// true);
-			content = CommentXMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
+			content = CommentXMLOutputter.defaultInstance().toXML(
+					AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
 
 		} catch (Throwable e) {
 			throw new SystemException(e);
@@ -272,7 +277,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		Configuration rootConfig = uncertainEngine.createConfig();
 		rootConfig.addParticipant(this);
 		CompositeMap context = new CommentCompositeMap("root");
-		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject.cast(context, BusinessModelServiceContext.class);
+		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject.cast(context,
+				BusinessModelServiceContext.class);
 		bc.setConfig(rootConfig);
 		bc.setConnection(connection);
 		LoggerProvider lp = LoggerProvider.createInstance(Level.FINE, System.out);
@@ -300,7 +306,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 				}
 
 				public void widgetSelected(SelectionEvent e) {
-					if (tabFolder.getSelectionIndex() == itemIndex && (st.getText() != null && !st.getText().equals(""))) {
+					if (tabFolder.getSelectionIndex() == itemIndex
+							&& (st.getText() != null && !st.getText().equals(""))) {
 						return;
 					}
 					try {
@@ -404,9 +411,11 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		return input;
 	}
 
-	private BusinessModelService makeBusinessModelService(UncertainEngine uncertainEngine, Connection connection, String content) throws ApplicationException {
+	private BusinessModelService makeBusinessModelService(UncertainEngine uncertainEngine, Connection connection,
+			String content) throws ApplicationException {
 		IObjectRegistry reg = uncertainEngine.getObjectRegistry();
-		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg.getInstanceOfType(DatabaseServiceFactory.class);
+		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg
+				.getInstanceOfType(DatabaseServiceFactory.class);
 
 		BusinessModelServiceContext bc = createContext(uncertainEngine, connection);
 		CompositeMap context = bc.getObjectContext();
@@ -416,7 +425,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		svcFactory.setModelFactory(modelFactory);
 		svcFactory.updateSqlCreator(modelFactory);
 		try {
-			CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader().loadFromString(content, AuroraConstant.ENCODING);
+			CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader()
+					.loadFromString(content, AuroraConstant.ENCODING);
 			BusinessModelService service = svcFactory.getModelService(bm_model, context);
 			return service;
 		} catch (Throwable e) {
