@@ -6,9 +6,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.IPageBookViewPage;
+import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -31,12 +33,20 @@ public class BaseOutlinePage extends Page implements IContentOutlinePage {
 		if (activePage != null && activePage.getControl() != null) {
 			activePage.getControl().dispose();
 		}
+		IPageSite site = getSite();
+		if (site != null) {
+			IActionBars actions = site.getActionBars();
+			actions.getToolBarManager().removeAll();
+			actions.getMenuManager().removeAll();
+			actions.updateActionBars();
+		}
 		if (editor instanceof TextPage) {
 			this.activeEditor = editor;
 			activePage = (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
 			if (control != null && activePage != null) {
 				initActivePage();
 				activePage.createControl(control);
+				activePage.setActionBars(getSite().getActionBars());
 				getSite().getActionBars().updateActionBars();
 				control.layout();
 			}
@@ -53,9 +63,14 @@ public class BaseOutlinePage extends Page implements IContentOutlinePage {
 	}
 
 	private void initActivePage() {
-		getSite().getActionBars().getToolBarManager().removeAll();
-		getSite().getActionBars().getMenuManager().removeAll();
-
+		IPageSite site = getSite();
+		if (site == null) {
+			return;
+		}
+		IActionBars actions = site.getActionBars();
+		actions.getToolBarManager().removeAll();
+		actions.getMenuManager().removeAll();
+		actions.updateActionBars();
 		if (activePage instanceof IPageBookViewPage) {
 			IPageBookViewPage pageBook = (IPageBookViewPage) activePage;
 			if (pageBook.getSite() == null) {
