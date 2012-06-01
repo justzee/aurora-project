@@ -43,7 +43,7 @@
              description="Aurora EditorScope"
              parentId="org.eclipse.ui.textEditorScope"
              id="aurora.ide.EditorScope">
-       </context>
+       </context> 
    </extension>
    <extension
          id="BusinessModelEditor"
