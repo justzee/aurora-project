@@ -33,7 +33,9 @@ public class LocalFieldCollector implements IterationHandle {
 
 	public LocalFieldCollector(IFile file) {
 		try {
-			map = CacheManager.getWholeBMCompositeMap(file);
+			map = CacheManager.getCompositeMap(file);
+			if (map.get("extend") != null)
+				map = CacheManager.getWholeBMCompositeMap(file);
 		} catch (Exception e) {
 			AuroraBuilder.addMarker(file, e.getMessage(), 1,
 					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);
