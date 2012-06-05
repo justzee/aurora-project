@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import aurora.ide.AuroraMetaProjectNature;
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
@@ -180,6 +181,17 @@ public final class ResourceUtil {
 			return false;
 		try {
 			return AuroraProjectNature.hasAuroraNature(proj);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static final boolean isAuroraMetaProject(IProject proj) {
+		if (proj == null)
+			return false;
+		try {
+			return AuroraMetaProjectNature.hasAuroraNature(proj);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
