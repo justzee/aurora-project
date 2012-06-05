@@ -1,7 +1,8 @@
 package aurora.ide.builder.processor;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
@@ -17,17 +18,19 @@ import aurora.ide.helpers.LoadSchemaManager;
 public class UncertainNsProcessor extends AbstractProcessor {
 	private static Collection<?> allTypes = LoadSchemaManager
 			.getSchemaManager().getAllTypes();
-	private static final ArrayList<String> allTypesNames = new ArrayList<String>(
-			200);
-	private static String[] ignore = { "table", "label", "button", "form" };
+	private static final Set<String> allTypesNames = new HashSet<String>(200);
+	private static Set<String> ignore = new HashSet<String>();
 
 	static {
+		ignore.add("table");
+		ignore.add("label");
+		ignore.add("button");
+		ignore.add("form");
 		for (Object type : allTypes) {
 			if (type instanceof Element) {
 				String name = ((Element) type).getLocalName().toLowerCase();
-				if (contains(name))
-					continue;
-				allTypesNames.add(name);
+				if (ignore.contains(name))
+					allTypesNames.add(name);
 			}
 		}
 	}
@@ -38,7 +41,7 @@ public class UncertainNsProcessor extends AbstractProcessor {
 			return;
 		if (bc.map.getNamespaceURI() == null) {
 			String name = bc.map.getName().toLowerCase();
-			if (allTypesNames.indexOf(name) == -1)
+			if (!allTypesNames.contains(name))
 				return;
 			IRegion region = bc.info.getMapNameRegion();
 			int line = bc.info.getLineOfRegion(region);
@@ -48,14 +51,6 @@ public class UncertainNsProcessor extends AbstractProcessor {
 					BuildContext.LEVEL_NONOENAMESPACE,
 					AuroraBuilder.NONENAMESPACE);
 		}
-	}
-
-	private static boolean contains(String str) {
-		for (String s : ignore) {
-			if (s.equalsIgnoreCase(str))
-				return true;
-		}
-		return false;
 	}
 
 	@Override
