@@ -177,7 +177,7 @@ public final class ResourceUtil {
 	 * @return
 	 */
 	public static final boolean isAuroraProject(IProject proj) {
-		if (proj == null)
+		if (proj == null || !proj.exists() || !proj.isOpen())
 			return false;
 		try {
 			return AuroraProjectNature.hasAuroraNature(proj);
@@ -188,7 +188,7 @@ public final class ResourceUtil {
 	}
 
 	public static final boolean isAuroraMetaProject(IProject proj) {
-		if (proj == null)
+		if (proj == null || !proj.exists() || !proj.isOpen())
 			return false;
 		try {
 			return AuroraMetaProjectNature.hasAuroraNature(proj);
