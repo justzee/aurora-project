@@ -14,7 +14,6 @@ import org.eclipse.jface.text.rules.Token;
 
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
-import aurora.ide.search.core.Util;
 
 public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 
@@ -29,6 +28,129 @@ public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void autoCloseXMLTagBySlash(IDocument d, DocumentCommand c)
+			throws Exception {
+		if (c.offset <= 0 || d.getChar(c.offset - 1) != '<')
+			return;
+		String tagName = findOpeningTag(d, 0, c.offset - 1);
+		if (tagName == null)
+			return;
+		int nextChar = c.offset;
+		if (c.offset < d.getLength() && d.getChar(c.offset) == '>') {
+			nextChar++;
+		}
+		String tagName2 = findClosedTag(d, nextChar, d.getLength());
+		if (tagName.equals(tagName2))
+			return;
+		c.text = "/" + tagName + (nextChar == c.offset ? ">" : "");
+	}
+
+	private String findOpeningTag(IDocument doc, int start, int end)
+			throws Exception {
+		ITypedRegion[] regions = doc.computePartitioning(start, end - start);
+		Stack<String> tagStack = new Stack<String>();
+		for (int i = regions.length - 1; i >= 0; i--) {
+			String type = regions[i].getType();
+			String tagName = getTagName(doc, regions[i]);
+
+			if (XMLPartitionScanner.XML_START_TAG.equals(type)) {
+				char c = doc.getChar(regions[i].getOffset()
+						+ regions[i].getLength() - 2);
+				if (c == '/') {
+					// 自闭
+					debug("close:" + tagName);
+					continue;
+				}
+				if (tagStack.isEmpty()) {
+					debug("find open tag:" + tagName);
+					return tagName;
+				} else {
+					if (tagStack.peek().equals(tagName))
+						debug("Pop :" + tagStack.pop());
+					else {
+						debug("Unmatched tag:" + tagStack.peek() + " != "
+								+ tagName);
+						return null;
+					}
+				}
+			} else if (XMLPartitionScanner.XML_END_TAG.equals(type)) {
+				debug("Push:" + tagName);
+				if (tagName == null)
+					return null;
+				tagStack.push(tagName);
+			} else
+				continue;
+		}
+		return null;
+	}
+
+	private String findClosedTag(IDocument doc, int start, int end)
+			throws Exception {
+		while (start < doc.getLength() && doc.getChar(start) != '<')
+			start++;
+		if (start >= doc.getLength())
+			return null;
+		ITypedRegion[] regions = doc.computePartitioning(start, end - start);
+		Stack<String> tagStack = new Stack<String>();
+		debug("--------");
+		for (int i = 0; i < regions.length; i++) {
+			String type = regions[i].getType();
+			String tagName = getTagName(doc, regions[i]);
+
+			if (XMLPartitionScanner.XML_END_TAG.equals(type)) {
+				if (tagStack.isEmpty()) {
+					debug("find closed tag : " + tagName);
+					return tagName;
+				} else {
+					if (tagStack.peek().equals(tagName))
+						debug("Pop :" + tagStack.pop());
+					else {
+						debug("Unmatched tag:" + tagStack.peek() + " != "
+								+ tagName);
+						return null;
+					}
+				}
+			} else if (XMLPartitionScanner.XML_START_TAG.equals(type)) {
+				char c = doc.getChar(regions[i].getOffset() + 1);
+				if (c == '/') {
+					debug("xxx find closed tag:" + tagName);
+					return tagName;
+				}
+				c = doc.getChar(regions[i].getOffset() + regions[i].getLength()
+						- 2);
+				if (c == '/') {
+					// 自闭
+					debug("close:" + tagName);
+					continue;
+				}
+				debug("Push:" + tagName);
+				if (tagName == null)
+					return null;
+				tagStack.push(tagName);
+			} else
+				continue;
+		}
+		return null;
+	}
+
+	private String getTagName(IDocument doc, IRegion region) throws Exception {
+		XMLTagScanner scanner = new XMLTagScanner(new ColorManager());
+		scanner.setRange(doc, region.getOffset(), region.getLength());
+		IToken token = Token.EOF;
+		while ((token = scanner.nextToken()) != Token.EOF) {
+			if (token.getData() instanceof TextAttribute) {
+				TextAttribute text = (TextAttribute) token.getData();
+				int tokenOffset = scanner.getTokenOffset();
+				int tokenLength = scanner.getTokenLength();
+				if (text.getForeground().getRGB()
+						.equals(IColorConstants.TAG_NAME)) {
+					return doc.get(tokenOffset, tokenLength);
+				}
+			}
+		}
+		return null;
 	}
 
 	protected void autoCloseXMLTagByGt(IDocument d, DocumentCommand c)
@@ -101,123 +223,6 @@ public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 			return;
 		}
 
-	}
-
-	private void autoCloseXMLTagBySlash(IDocument d, DocumentCommand c)
-			throws Exception {
-		if (c.offset <= 0 || d.getChar(c.offset - 1) != '<')
-			return;
-		String tagName = findOpeningTag(d, 0, c.offset - 1);
-		if (tagName == null)
-			return;
-		int nextChar = c.offset;
-		if (c.offset < d.getLength() && d.getChar(c.offset) == '>') {
-			nextChar++;
-		}
-		String tagName2 = findClosedTag(d, nextChar, d.getLength());
-		if (tagName.equals(tagName2))
-			return;
-		c.text = "/" + tagName + (nextChar == c.offset ? ">" : "");
-	}
-
-	private String findOpeningTag(IDocument doc, int start, int end)
-			throws Exception {
-		ITypedRegion[] regions = doc.computePartitioning(start, end - start);
-		Stack<String> tagStack = new Stack<String>();
-		for (int i = regions.length - 1; i >= 0; i--) {
-			String type = regions[i].getType();
-			String tagName = getTagName(doc, regions[i]);
-			if (XMLPartitionScanner.XML_START_TAG.equals(type)) {
-				char c = doc.getChar(regions[i].getOffset()
-						+ regions[i].getLength() - 2);
-				if (c == '/') {
-					// 自闭
-					debug("close:" + tagName);
-					continue;
-				}
-				if (tagStack.isEmpty()) {
-					debug("find open tag:" + tagName);
-					return tagName;
-				} else {
-					if (tagStack.peek().equals(tagName))
-						debug("Pop :" + tagStack.pop());
-					else {
-						debug("Unmatched tag:" + tagStack.peek() + " != "
-								+ tagName);
-						return null;
-					}
-				}
-			} else if (XMLPartitionScanner.XML_END_TAG.equals(type)) {
-				debug("Push:" + tagName);
-				tagStack.push(tagName);
-			} else
-				continue;
-		}
-		return null;
-	}
-
-	private String findClosedTag(IDocument doc, int start, int end)
-			throws Exception {
-		while (start < doc.getLength() && doc.getChar(start) != '<')
-			start++;
-		if (start >= doc.getLength())
-			return null;
-		ITypedRegion[] regions = doc.computePartitioning(start, end - start);
-		Stack<String> tagStack = new Stack<String>();
-		debug("--------");
-		for (int i = 0; i < regions.length; i++) {
-			String type = regions[i].getType();
-			String tagName = getTagName(doc, regions[i]);
-			if (XMLPartitionScanner.XML_END_TAG.equals(type)) {
-				if (tagStack.isEmpty()) {
-					debug("find closed tag : " + tagName);
-					return tagName;
-				} else {
-					if (tagStack.peek().equals(tagName))
-						debug("Pop :" + tagStack.pop());
-					else {
-						debug("Unmatched tag:" + tagStack.peek() + " != "
-								+ tagName);
-						return null;
-					}
-				}
-			} else if (XMLPartitionScanner.XML_START_TAG.equals(type)) {
-				char c = doc.getChar(regions[i].getOffset() + 1);
-				if (c == '/') {
-					debug("xxx find closed tag:" + tagName);
-					return tagName;
-				}
-				c = doc.getChar(regions[i].getOffset() + regions[i].getLength()
-						- 2);
-				if (c == '/') {
-					// 自闭
-					debug("close:" + tagName);
-					continue;
-				}
-				debug("Push:" + tagName);
-				tagStack.push(tagName);
-			} else
-				continue;
-		}
-		return null;
-	}
-
-	private String getTagName(IDocument doc, IRegion region) throws Exception {
-		XMLTagScanner scanner = Util.getXMLTagScanner();
-		scanner.setRange(doc, region.getOffset(), region.getLength());
-		IToken token = Token.EOF;
-		while ((token = scanner.nextToken()) != Token.EOF) {
-			if (token.getData() instanceof TextAttribute) {
-				TextAttribute text = (TextAttribute) token.getData();
-				int tokenOffset = scanner.getTokenOffset();
-				int tokenLength = scanner.getTokenLength();
-				if (text.getForeground().getRGB()
-						.equals(IColorConstants.TAG_NAME)) {
-					return doc.get(tokenOffset, tokenLength);
-				}
-			}
-		}
-		return null;
 	}
 
 	private void debug(Object o) {
