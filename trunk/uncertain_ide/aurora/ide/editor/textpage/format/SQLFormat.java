@@ -13,7 +13,7 @@ public class SQLFormat {
 		sf.setAlignmentDeclaration(true);// <alignDecl>true</alignDecl>
 		sf.setAlignmentEqual(true);// <alignEqual>true</alignEqual>
 		sf.setAlignmentKeyword(false);// <alignKeyword>false</alignKeyword>
-		sf.setAlignmentOperator(true);// <alignOperator>true</alignOperator>
+		sf.setAlignmentOperator(false);// <alignOperator>true</alignOperator>
 		// sf.setBracketSpaces("0");// <bracketSpacing>0</bracketSpacing>
 		// <bracketSpacingAndOrWhen>false</bracketSpacingAndOrWhen>
 		// <breakAfterAnd>false</breakAfterAnd>
