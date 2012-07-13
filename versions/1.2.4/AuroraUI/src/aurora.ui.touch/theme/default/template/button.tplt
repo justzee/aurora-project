@@ -1,2 +1,0 @@
-<BUTTON type="${type}" ${id} class="${cls}" style="${style}">${text}</BUTTON>
-${events}

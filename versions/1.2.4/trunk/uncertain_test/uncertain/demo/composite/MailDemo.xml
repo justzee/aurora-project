@@ -1,7 +1,0 @@
-<o:mail xmlns:o="uncertain.demo.ocm" title="Greetings" from="somebody@gmail.com" to="myfriend@yahoo.com">
-	<attachments>
-		<o:attachment file="myphoto1.jpg"/>
-		<o:attachment file="myphoto2.jpg"/>
-	</attachments>	
-	<body>this is a test mail</body>
-</o:mail>
