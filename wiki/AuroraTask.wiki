@@ -1,0 +1,31 @@
+#介绍aurora系统中后台任务的设计和使用
+
+= 简介 =
+
+Aurora后台任务是在后台对任务依次运行。用户可以在前台提交一个任务后，无需一直等待任务执行完成，可以马上处理其他事项，稍等片刻后，可以通过系统的任务管理器查看刚才提交任务的执行情况。它适用于对长时间运行或者对响应时间要求不高的任务请求。
+
+
+= 详细设计 =
+
+Aurora后台任务按照优先级顺序依次执行。支持调用Java任务和数据库存储过程任务。每个任务表现为一条数据库表里的记录。表结构如下：
+
+表名：*SYS_TASKS*
+||字段名||数据类型||可否为空||描述||
+||TASK_ID||NUMBER||否||主键||
+||TASK_NAME||VARCHAR2(30)||是||任务名称||
+||TASK_DESCRIPTION||VARCHAR2(200)||是||任务描述||
+||EXECUTOR_INSTANCE||VARCHAR2(100)||是||指定服务器执行，默认为空即不限服务器||
+||PRIORITY||NUMBER||是||优先级，越小优先级越高||
+||TASK_TYPE||VARCHAR2(30)||是||SQL或JAVA任务||
+||SQL||VARCHAR2(2000)||是||执行的SQL语句||
+||PROC_FILE_PATH||VARCHAR2(200)||是||PROC文件路径，和PROC_CONTENT二选一||
+||PROC_CONTENT||CLOB||是||PROC内容，和PROC文件路径二选一||
+||CONTEXT||CLOB||是||上下文内容||
+||START_TIME||DATE||是||任务开始时间||
+||EXCEPTION||CLOB||是||运行时异常||
+||STATUS||VARCHAR2(30)||是||任务状态||
+||LAST_UPDATE_DATE||DATE||否||最后更新日期||
+||LAST_UPDATED_BY||NUMBER||否||最后更新用户ID||
+||CREATION_DATE||DATE||否||创建日期||
+||CREATED_BY||NUMBER||否||创建用户ID||
+
