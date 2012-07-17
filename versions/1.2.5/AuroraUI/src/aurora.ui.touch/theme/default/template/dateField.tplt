@@ -1,6 +1,0 @@
-<div class="${cls}" ${style} ${id}>
-	<div class="datefield-scroller"></div>
-</div>
-<script>
-	new Touch.DateField(${config});
-</script>
