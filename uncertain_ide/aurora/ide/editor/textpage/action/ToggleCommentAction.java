@@ -59,7 +59,7 @@ public class ToggleCommentAction extends Action implements
 			ITypedRegion pRegion = doc
 					.getPartition(partitionRegion.getOffset() - 1);
 			String pNode = get(doc, pRegion).toLowerCase();
-			if (pNode.matches("<script( .*){0,1}>")) {
+			if (pNode.matches("<.*script( .*){0,1}>")) {
 				doLineComment("//", page);
 			} else if (pNode.matches(".+-sql.+")) {
 				doLineComment("--", page);
