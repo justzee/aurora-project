@@ -156,9 +156,13 @@ public class FileBasedUpload extends UploadFileHandle {
 	                String file_name = ft.getString("FILE_NAME");
 	                if(sz>0)
 	                    response.setContentLength(sz);
-	                if(file_name!=null)
-	                response.addHeader("Content-Disposition", 
-	                        "attachment; filename="+toUtf8String(file_name));
+	                if(file_name!=null){
+	                	String userAgent = request.getHeader("User-Agent").toLowerCase();  
+	                	byte[] bytes = userAgent.contains("msie") ? file_name.getBytes() : file_name.getBytes("UTF-8"); // name.getBytes("UTF-8")处理safari的乱码问题  
+	                    file_name = new String(bytes, "ISO-8859-1"); // 各浏览器基本都支持ISO编码  
+	                	response.addHeader("Content-Disposition",     
+	                    		"attachment; filename=\"" + file_name + "\"");   
+	                }             
 	
 	                os = response.getOutputStream();
 	                is = new FileInputStream(path);
