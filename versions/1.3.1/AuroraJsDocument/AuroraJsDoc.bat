@@ -1,0 +1,1 @@
+java -jar ext-doc/ext-doc.jar -p D:/WorkDevSpace/eclipse3.3/workspace/AuroraUI/tools/aurora/tools/ext.xml -o src/doc -t ext-doc/template/ext/template.xml -verbose
