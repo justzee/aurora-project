@@ -36,7 +36,7 @@ public class UncertainEngineIDE extends UncertainEngine {
 		try {
 			super.bootstrap();
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			// LogUtil.getInstance().logWarning(AuroraPlugin.PLUGIN_ID, e);
 		}
 //		ISourceFileManager instanceOfType = (ISourceFileManager)this.getObjectRegistry().getInstanceOfType(ISourceFileManager.class);

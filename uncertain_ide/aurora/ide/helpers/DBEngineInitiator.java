@@ -28,7 +28,7 @@ public class DBEngineInitiator {
 		try {
 			uncertainEngine.startup();
 		} catch (Throwable e) {
-			LogUtil.getInstance().logWarning(AuroraPlugin.PLUGIN_ID, e);
+			throw new ApplicationException("启用UncertainEngine失败!", e);
 		}
 		DataSource ds = (DataSource) (uncertainEngine.getObjectRegistry().getInstanceOfType(DataSource.class));
 		if (ds == null) {
