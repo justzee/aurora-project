@@ -37,6 +37,7 @@ public class UncertainEngineUtil {
 			Connection conn = ds.getConnection();
 			conn.close();
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new ApplicationException("获取数据库连接失败!请查看" + AuroraConstant.DbConfigFileName + "是否配置正确.", e);
 		}
 		return true;
@@ -52,7 +53,6 @@ public class UncertainEngineUtil {
 			UncertainEngine uncertainEngine = ei.getUncertainEngine();
 			return uncertainEngine;
 		} catch (Throwable e) {
-			e.printStackTrace();
 			throw new ApplicationException("启用EngineInitiator失败!", e);
 		}
 	}
