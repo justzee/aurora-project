@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.xml.sax.SAXException;
@@ -35,6 +34,7 @@ import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
+import aurora.ide.helpers.LogUtil;
 
 public class TextOutlinePage extends ContentOutlinePage {
 	protected TextPage editor;
@@ -64,11 +64,19 @@ public class TextOutlinePage extends ContentOutlinePage {
 		getTreeViewer().setLabelProvider(new OutlineLabelProvider());
 		getTreeViewer().setContentProvider(new OutlineContentProvider());
 		getTreeViewer().setInput(loadTree());
-		// getTreeViewer().expandAll();
+		IAction collapse = new Action("aurora.outline", SWT.NONE) {
+			@Override
+			public void run() {
+				getTreeViewer().collapseAll();
+			}
+		};
+		collapse.setToolTipText("Collapse All");
+		collapse.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/collapseall.gif"));
+		getSite().getActionBars().getToolBarManager().add(collapse);
+		super.setActionBars(getSite().getActionBars());
 	}
 
 	private void initArray(Element ele) {
-		// System.out.println(ele);
 		if (ele.isArray()) {
 			arrays.add(ele.getLocalName());
 		}
@@ -82,20 +90,6 @@ public class TextOutlinePage extends ContentOutlinePage {
 		}
 	}
 
-	@Override
-	public void setActionBars(IActionBars actionBars) {
-		IAction collapse = new Action("aurora.outline", SWT.NONE) {
-			@Override
-			public void run() {
-				getTreeViewer().collapseAll();
-			}
-		};
-		collapse.setToolTipText("Collapse All");
-		collapse.setImageDescriptor(AuroraPlugin.getImageDescriptor("icons/collapseall.gif"));
-		actionBars.getToolBarManager().add(collapse);
-		super.setActionBars(actionBars);
-	}
-
 	private OutlineTree loadTree() {
 		IDocument document = editor.getInputDocument();
 		OutlineParser p = new OutlineParser(document.get());
@@ -103,11 +97,11 @@ public class TextOutlinePage extends ContentOutlinePage {
 			p.parser();
 			return p.getTree();
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			LogUtil.getInstance().logError(e.getMessage(), e);
 		} catch (SAXException e) {
-			// e.printStackTrace();
+			// LogUtil.getInstance().logWarning("outline parser", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogUtil.getInstance().logError(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -266,7 +260,7 @@ public class TextOutlinePage extends ContentOutlinePage {
 		}
 
 		public void documentChanged(DocumentEvent event) {
-			if (getTreeViewer() == null) {
+			if (getTreeViewer() == null||getTreeViewer().getTree().isDisposed()) {
 				return;
 			}
 			OutlineTree tree = loadTree();
