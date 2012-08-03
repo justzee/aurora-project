@@ -46,30 +46,34 @@ public class DialogUtil {
 		messageBox.open();
 	}
 
+	public static void logErrorException(Throwable e) {
+		logErrorException(MESSAGEBOX_ERROR, e);
+	}
 	public static void showExceptionMessageBox(Throwable e) {
 		showExceptionMessageBox(MESSAGEBOX_ERROR, e);
 	}
-
 	public static void showExceptionMessageBox(final String title,
 			final Throwable e) {
-//		if (ProjectUtil.isDebugMode(ProjectUtil.getIProjectFromSelection())) {
+		Display current = Display.getCurrent();
+		(current == null ? Display.getDefault() : current)
+				.asyncExec(new Runnable() {
+					public void run() {
+						Shell shell = getShell();
+						MessageBox messageBox = new MessageBox(shell,
+								SWT.ICON_ERROR | SWT.OK | SWT.APPLICATION_MODAL);
+						messageBox.setText(title);
+						String message = ExceptionUtil
+								.getExceptionTraceMessage(e);
+						messageBox.setMessage(message);
+						messageBox.open();
+					}
+				});
+	}
+
+	public static void logErrorException(final String title,
+			final Throwable e) {
 			Throwable full = new SystemException(e);
 			LogUtil.getInstance().logError("aurora ide ", full);
-//		}
-//		Display current = Display.getCurrent();
-//		(current == null ? Display.getDefault() : current)
-//				.asyncExec(new Runnable() {
-//					public void run() {
-//						Shell shell = getShell();
-//						MessageBox messageBox = new MessageBox(shell,
-//								SWT.ICON_ERROR | SWT.OK | SWT.APPLICATION_MODAL);
-//						messageBox.setText(title);
-//						String message = ExceptionUtil
-//								.getExceptionTraceMessage(e);
-//						messageBox.setMessage(message);
-//						messageBox.open();
-//					}
-//				});
 	}
 
 	public static int showConfirmDialogBox(String message) {
