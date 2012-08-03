@@ -60,7 +60,7 @@ public class ProjectPropertyPage extends PropertyPage {
 	private Text localWebUrlText;
 	private Text webHomeText;
 	private Text bmHomeText;
-	private Button debugButton;
+//	private Button debugButton;
 	private Button cb_isBuild;
 
 	protected Control createContents(Composite parent) {
@@ -223,20 +223,20 @@ public class ProjectPropertyPage extends PropertyPage {
 			}
 		});
 
-		debugButton = new Button(content, SWT.CHECK);
-		debugButton.setText("调试模式 ( 记录IDE运行日志,不建议开启. )");
-		String debugMode = null;
-		try {
-			debugMode = getProject().getPersistentProperty(DebugModeQN);
-		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
-		}
-		if ("true".equals(debugMode)) {
-			debugButton.setSelection(true);
-		}
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 3;
-		debugButton.setLayoutData(gridData);
+//		debugButton = new Button(content, SWT.CHECK);
+//		debugButton.setText("调试模式 ( 记录IDE运行日志,不建议开启. )");
+//		String debugMode = null;
+//		try {
+//			debugMode = getProject().getPersistentProperty(DebugModeQN);
+//		} catch (CoreException e) {
+//			DialogUtil.showExceptionMessageBox(e);
+//		}
+//		if ("true".equals(debugMode)) {
+//			debugButton.setSelection(true);
+//		}
+//		gridData = new GridData(GridData.FILL_HORIZONTAL);
+//		gridData.horizontalSpan = 3;
+//		debugButton.setLayoutData(gridData);
 
 		cb_isBuild = new Button(content, SWT.CHECK);
 		cb_isBuild.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
@@ -269,8 +269,8 @@ public class ProjectPropertyPage extends PropertyPage {
 			}
 		}
 		try {
-			project.setPersistentProperty(DebugModeQN,
-					String.valueOf(debugButton.getSelection()));
+//			project.setPersistentProperty(DebugModeQN,
+//					String.valueOf(debugButton.getSelection()));
 			project.setPersistentProperty(LoclaUrlHomeQN,
 					localWebUrlText.getText());
 			project.setPersistentProperty(buildNow,

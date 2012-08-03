@@ -44,7 +44,7 @@ public class OutlineParser extends DefaultHandler2 {
 		stack.push(tree);
 		tree.setText(qName);
 		tree.setOther(getValue(attributes));
-		offset = source.indexOf(qName, offset);
+		offset = source.indexOf("<" + qName, offset) + 1;
 		tree.setStartRegion(new Region(offset, qName.length()));
 		int loc = qName.indexOf(":");
 		String name = qName;
