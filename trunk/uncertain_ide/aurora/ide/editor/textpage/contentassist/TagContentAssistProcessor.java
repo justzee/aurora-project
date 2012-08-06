@@ -34,7 +34,7 @@ public class TagContentAssistProcessor implements IContentAssistProcessor {
 				return null;
 			return strategy.computeCompletionProposals(viewer, offset);
 		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		return null;
 	}

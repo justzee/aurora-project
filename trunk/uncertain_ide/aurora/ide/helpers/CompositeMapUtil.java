@@ -450,7 +450,7 @@ public class CompositeMapUtil {
 				try {
 					is.close();
 				} catch (IOException e) {
-					DialogUtil.showExceptionMessageBox(e);
+					DialogUtil.logErrorException(e);
 				}
 			}
 		}
@@ -478,7 +478,7 @@ public class CompositeMapUtil {
 				try {
 					is.close();
 				} catch (IOException e) {
-					DialogUtil.showExceptionMessageBox(e);
+					DialogUtil.logErrorException(e);
 				}
 			}
 		}

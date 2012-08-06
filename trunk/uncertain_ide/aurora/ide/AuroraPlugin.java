@@ -121,7 +121,7 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		try {
 			wp.openEditor(new FileEditorInput(file), id);
 		} catch (PartInitException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

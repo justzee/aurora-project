@@ -26,7 +26,7 @@ public class ProjectWizard extends BasicNewProjectResourceWizard {
 		try {
 			AuroraProjectNature.addAuroraNature(getNewProject());
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		return true;
 	}

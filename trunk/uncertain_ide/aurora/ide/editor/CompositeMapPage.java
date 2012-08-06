@@ -43,7 +43,7 @@ public abstract class CompositeMapPage extends FormPage implements IViewer {
 		try {
 			ifile.refreshLocal(IResource.DEPTH_ZERO, null);
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 	public boolean isFormContendCreated(){

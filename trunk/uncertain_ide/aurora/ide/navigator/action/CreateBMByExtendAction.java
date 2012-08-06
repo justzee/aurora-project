@@ -145,7 +145,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 							try {
 								doFinish(monitor);
 							} catch (CoreException e) {
-								DialogUtil.showExceptionMessageBox(e);
+								DialogUtil.logErrorException(e);
 							} finally {
 								monitor.done();
 							}
@@ -157,10 +157,10 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			try {
 				getContainer().run(true, false, op);
 			} catch (InterruptedException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return false;
 			} catch (InvocationTargetException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return false;
 			}
 			return true;
@@ -196,7 +196,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 				}
 				stream.close();
 			} catch (Throwable e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			} 
 			monitor.worked(1);
 			monitor.setTaskName("Opening file for editing...");
@@ -206,7 +206,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 					try {
 						IDE.openEditor(page, file, true);
 					} catch (PartInitException e) {
-						DialogUtil.showExceptionMessageBox(e);
+						DialogUtil.logErrorException(e);
 					}
 				}
 			});
@@ -585,7 +585,7 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 				}
 				grid.setData(getSimpleFields(data));
 			} catch (ApplicationException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			}
 			setControl(content);
 		}

@@ -52,6 +52,7 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 	public CompositeMapTreeViewer(IViewer parentViewer, CompositeMap data) {
 		this.parentViewer = parentViewer;
 		this.input = data;
+		
 	}
 
 	public void create(Composite parent) {

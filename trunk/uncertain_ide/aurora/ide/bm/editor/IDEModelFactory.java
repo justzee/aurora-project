@@ -44,7 +44,7 @@ public class IDEModelFactory extends ModelFactory {
 		    model = createBusinessModelInternal(config);
 		    model.setName(name);
 		} catch (IOException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return null;
 		} catch (ApplicationException e) {
 			DialogUtil.showExceptionMessageBox(e);

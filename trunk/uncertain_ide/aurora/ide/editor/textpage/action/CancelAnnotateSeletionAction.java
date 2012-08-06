@@ -70,7 +70,7 @@ public class CancelAnnotateSeletionAction implements IEditorActionDelegate {
 			}
 			document.replace(ts.getOffset(), ts.getLength(), content);
 		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return ;
 		}
 	}

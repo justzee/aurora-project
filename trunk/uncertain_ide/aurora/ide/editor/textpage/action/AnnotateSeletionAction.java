@@ -50,7 +50,7 @@ public class AnnotateSeletionAction implements IEditorActionDelegate {
 			}
 			document.replace(ts.getOffset(), ts.getLength(), content);
 		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return ;
 		}
 

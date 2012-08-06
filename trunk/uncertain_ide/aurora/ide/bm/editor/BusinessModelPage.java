@@ -103,7 +103,7 @@ public class BusinessModelPage extends CompositeMapPage {
 				CompositeLoader loader = AuroraResourceUtil.getCompsiteLoader();
 				data = loader.loadByFile(filePath);
 			} catch (IOException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return;
 			} catch (SAXException e) {
 				String emptyExcption = "Premature end of file";
@@ -124,7 +124,7 @@ public class BusinessModelPage extends CompositeMapPage {
 		try {
 			createContent(shell);
 		} catch (ApplicationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 
@@ -338,7 +338,7 @@ public class BusinessModelPage extends CompositeMapPage {
 			CommentXMLOutputter.saveToFile(file, data);
 			super.doSave(monitor);
 		} catch (IOException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

@@ -28,7 +28,7 @@ public class InputFileListener implements IResourceChangeListener, IResourceDelt
 				delta.accept(this);
 			}
 			catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			}
 		}
 	}

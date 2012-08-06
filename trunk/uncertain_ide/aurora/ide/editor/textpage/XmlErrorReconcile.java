@@ -39,7 +39,7 @@ public class XmlErrorReconcile implements IReconcileListener{
 			AuroraResourceUtil.getCompsiteLoader().loadFromString(
 					sourceViewer.getDocument().get(), "UTF-8");
 		} catch (IOException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		} catch (SAXException e) {
 			updateAnnotation(e);
 		}

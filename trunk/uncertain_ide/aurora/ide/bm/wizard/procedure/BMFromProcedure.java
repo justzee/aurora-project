@@ -138,7 +138,7 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (Throwable e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");

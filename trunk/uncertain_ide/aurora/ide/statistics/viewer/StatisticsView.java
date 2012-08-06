@@ -181,7 +181,7 @@ public class StatisticsView extends ViewPart {
 						EditorOpener editorOpener = new EditorOpener();
 						editorOpener.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file, true);
 					} catch (PartInitException e1) {
-						DialogUtil.showExceptionMessageBox(e1);
+						DialogUtil.logErrorException(e1);
 					}
 				}
 			}
@@ -404,7 +404,7 @@ public class StatisticsView extends ViewPart {
 							fOut.flush();
 							fOut.close();
 						} catch (IOException e) {
-							DialogUtil.showExceptionMessageBox(e);
+							DialogUtil.logErrorException(e);
 						}
 					}
 				});

@@ -58,11 +58,11 @@ public class ModelReferenceCellEditor extends StringTextCellEditor {
 			}
 			
 			public void focusGained(FocusEvent e) {
-				try {
+//				try {
 //					fireEvent();
-				} catch (Exception e1) {
-					DialogUtil.showExceptionMessageBox(e1);
-				}
+//				} catch (Exception e1) {
+//					DialogUtil.logErrorException(e1);
+//				}
 			}
 		});
 	}

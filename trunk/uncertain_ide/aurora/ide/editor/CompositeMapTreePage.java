@@ -45,22 +45,22 @@ public class CompositeMapTreePage extends CompositeMapPage {
 				data = loader.loadByFile(getFile().getAbsolutePath());
 
 			} catch (IOException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			} catch (SAXException e) {
 				String emptyExcption = "Premature end of file";
 				if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
 					data = ScreenUtil.createScreenTopNode();
 					((CommentCompositeMap)data).setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
 				} else {
-					DialogUtil.showExceptionMessageBox(e);
+//					DialogUtil.showExceptionMessageBox(e);
 					return;
 				}
-			}
+			} 
 		}
 		try {
 			createContent(shell);
 		} catch (ApplicationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

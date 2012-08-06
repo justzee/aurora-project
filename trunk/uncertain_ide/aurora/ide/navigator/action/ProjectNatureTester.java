@@ -29,7 +29,7 @@ public class ProjectNatureTester extends PropertyTester {
 					.hasAuroraNature(project);
 			return arg.equals(new Boolean(hasAuroraNature));
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return false;
 		}
 	}

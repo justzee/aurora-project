@@ -62,7 +62,7 @@ public class FormatSQL implements IEditorActionDelegate {
 				return;
 			tp.setHighlightRange(offset, length, true);
 		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

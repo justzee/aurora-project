@@ -78,7 +78,7 @@ public class BMFieldsPage extends WizardPage {
 			gridViewer.setCellEditors(celleditors);
 			gridViewer.setData(input);
 		} catch (ApplicationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		setControl(container);
 		setPageComplete(true);
