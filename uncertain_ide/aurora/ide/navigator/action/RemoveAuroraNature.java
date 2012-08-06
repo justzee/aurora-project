@@ -39,7 +39,7 @@ public class RemoveAuroraNature implements IObjectActionDelegate {
 				AuroraProjectNature.removeAuroraNature(project);
 			}
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

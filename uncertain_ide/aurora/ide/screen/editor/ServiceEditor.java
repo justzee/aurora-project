@@ -26,7 +26,7 @@ public class ServiceEditor extends CompositeMapTreeEditor {
 			setActivePage(CustomSettingPreferencePage
 					.getScreenEditorInitPageIndex());
 		} catch (PartInitException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

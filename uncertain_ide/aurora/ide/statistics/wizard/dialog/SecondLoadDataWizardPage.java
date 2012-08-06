@@ -55,7 +55,7 @@ public class SecondLoadDataWizardPage extends WizardPage {
 			con = db.getConnection();
 			projects = DatabaseAction.readAllProject(con);
 		} catch (SQLException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return;
 		} catch (ApplicationException e) {
 			DialogUtil.showExceptionMessageBox(e);
@@ -66,7 +66,7 @@ public class SecondLoadDataWizardPage extends WizardPage {
 					con.close();
 				}
 			} catch (SQLException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return;
 			}
 		}

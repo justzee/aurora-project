@@ -102,7 +102,7 @@ public class BMMainConfigPage extends WizardPageRefreshable {
 							autoRegisterPromptButton.setSelection(false);
 						}
 					} catch (ApplicationException e) {
-						DialogUtil.showExceptionMessageBox("不能连接到数据库，请检查配置!", e);
+						DialogUtil.logErrorException("不能连接到数据库，请检查配置!", e);
 						autoRegisterPromptButton.setSelection(false);
 					}
 				}

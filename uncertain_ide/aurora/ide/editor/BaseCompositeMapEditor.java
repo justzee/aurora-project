@@ -50,7 +50,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			setPageText(textPageIndex, TextPage.textPageTitle);
 			// setActivePage(textPageIndex);
 		} catch (PartInitException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 
@@ -83,7 +83,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 					AuroraProjectNature.addAuroraNature(project);
 				}
 			} catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			}
 		}
 	}

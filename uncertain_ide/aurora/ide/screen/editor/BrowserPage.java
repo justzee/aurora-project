@@ -207,7 +207,7 @@ public class BrowserPage extends FormPage {
 				openThisPage.setToolTipText(getLocalMainUrl() + thisFile);
 				openRemotePage.setToolTipText(getRemoteMainUrl() + thisFile);
 			} catch (ApplicationException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			}
 			itemBack.setEnabled(browser.isBackEnabled());
 			itemForward.setEnabled(browser.isForwardEnabled());

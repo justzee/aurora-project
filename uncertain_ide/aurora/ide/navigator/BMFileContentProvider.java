@@ -44,7 +44,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 						.members());
 				return bmFiles;
 			} catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return NO_CHILD;
 			} catch (ApplicationException e) {
 				DialogUtil.showExceptionMessageBox(e);
@@ -90,7 +90,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 			try {
 				return ((IContainer) element).members().length > 0;
 			} catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return false;
 			}
 		}
@@ -111,7 +111,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 			try {
 				return ((IContainer) inputElement).members();
 			} catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 				return NO_CHILD;
 			}
 		}
@@ -141,7 +141,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 			IResourceDelta delta = event.getDelta();
 			delta.accept(this);
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

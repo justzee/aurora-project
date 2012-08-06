@@ -31,7 +31,7 @@ public class ProjectUtil {
 			if ("true".equals(project.getPersistentProperty(ProjectPropertyPage.DebugModeQN)))
 				return true;
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		return false;
 	}

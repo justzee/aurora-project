@@ -40,7 +40,7 @@ public class XMLDoubleClickStrategy implements ITextDoubleClickStrategy {
 				try {
 					braceMatch.compute(event.caretOffset);
 				} catch (BadLocationException e) {
-					DialogUtil.showExceptionMessageBox(e);
+					DialogUtil.logErrorException(e);
 				}
 				if(keyWord == null||"".equals(keyWord))
 					return;

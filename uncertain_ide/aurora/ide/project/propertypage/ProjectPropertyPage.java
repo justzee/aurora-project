@@ -111,9 +111,9 @@ public class ProjectPropertyPage extends PropertyPage {
 				}
 			}
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		} catch (SystemException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 
 		Button webBrowseButton = new Button(content, SWT.PUSH);
@@ -161,9 +161,9 @@ public class ProjectPropertyPage extends PropertyPage {
 				}
 			}
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		} catch (SystemException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 
 		Button bmBrowseButton = new Button(content, SWT.PUSH);
@@ -258,14 +258,14 @@ public class ProjectPropertyPage extends PropertyPage {
 			try {
 				project.setPersistentProperty(WebQN, webHomeText.getText());
 			} catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			}
 		}
 		if (bmHomeText.getText() != null) {
 			try {
 				project.setPersistentProperty(BMQN, bmHomeText.getText());
 			} catch (CoreException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				DialogUtil.logErrorException(e);
 			}
 		}
 		try {
@@ -276,7 +276,7 @@ public class ProjectPropertyPage extends PropertyPage {
 			project.setPersistentProperty(buildNow,
 					cb_isBuild.getSelection() ? "true" : "false");
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		return true;
 	}

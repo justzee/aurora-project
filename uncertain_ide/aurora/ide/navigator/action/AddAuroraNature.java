@@ -39,7 +39,7 @@ public class AddAuroraNature implements IObjectActionDelegate {
 				AuroraProjectNature.addAuroraNature(project);
 			}
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

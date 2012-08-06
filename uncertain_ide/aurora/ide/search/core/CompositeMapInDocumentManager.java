@@ -138,7 +138,7 @@ public class CompositeMapInDocumentManager {
 				try {
 					is.close();
 				} catch (IOException e) {
-					DialogUtil.showExceptionMessageBox(e);
+					DialogUtil.logErrorException(e);
 				}
 			}
 		}

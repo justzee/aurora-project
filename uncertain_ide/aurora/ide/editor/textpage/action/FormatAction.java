@@ -52,15 +52,15 @@ public class FormatAction implements IEditorActionDelegate {
 			String formatContent = AuroraResourceUtil.xml_decl + CommentXMLOutputter.defaultInstance().toXML(data, true);
 			tp.refresh(formatContent);
 		} catch (IOException e) {
-			DialogUtil.showExceptionMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);
+			DialogUtil.logErrorException("解析"+file.getFullPath().toOSString()+"错误！",e);
 		} catch (SAXException e) {
-			DialogUtil.showExceptionMessageBox("解析"+file.getFullPath().toOSString()+"错误！",e);
+			DialogUtil.logErrorException("解析"+file.getFullPath().toOSString()+"错误！",e);
 		}finally{
 			try {
 				if(is != null)
 					is.close();
 			} catch (IOException e) {
-				DialogUtil.showExceptionMessageBox("关闭"+is+"错误！",e);
+				DialogUtil.logErrorException("关闭"+is+"错误！",e);
 			}
 		}
 		document = tp.getInputDocument();
@@ -72,7 +72,7 @@ public class FormatAction implements IEditorActionDelegate {
 				return;
 			tp.setHighlightRange(offset, length, true);
 		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		
 	}

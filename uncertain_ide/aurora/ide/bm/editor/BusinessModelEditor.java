@@ -37,7 +37,7 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
             this.setPageText(viewSourceIndex, LocaleMessage.getString("view.source"));
             setActivePage(CustomSettingPreferencePage.getBMEditorInitPageIndex());
         } catch (PartInitException e) {
-            DialogUtil.showExceptionMessageBox(e);
+            DialogUtil.logErrorException(e);
         }
     }
 

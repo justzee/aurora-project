@@ -111,7 +111,7 @@ public class ChildStrategy implements IContentAssistStrategy {
 			document.replace(partitionRegion.getOffset(), length, content);
 			return null;
 		} catch (BadLocationException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		return null;
 	}

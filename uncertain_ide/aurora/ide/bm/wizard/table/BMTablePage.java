@@ -85,7 +85,7 @@ public class BMTablePage extends WizardPageRefreshable {
 			dbMetaData = dbConnection.getMetaData();
 			input = getInput(dbMetaData, "%");
 		} catch (Exception e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return;
 		}
 		gridViewer = new GridViewer(columnNames, IGridViewer.filterBar | IGridViewer.NoToolBar

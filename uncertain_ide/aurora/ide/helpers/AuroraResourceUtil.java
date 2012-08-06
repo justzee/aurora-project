@@ -177,7 +177,7 @@ public class AuroraResourceUtil {
 				}
 			}
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 	}
 

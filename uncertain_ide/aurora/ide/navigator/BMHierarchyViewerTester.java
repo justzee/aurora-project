@@ -26,7 +26,7 @@ public class BMHierarchyViewerTester extends PropertyTester {
 				return false;
 			}
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 			return false;
 		}
 		if (receiver instanceof BMFile)
@@ -46,7 +46,7 @@ public class BMHierarchyViewerTester extends PropertyTester {
 		try {
 			return isValidDir(container);
 		} catch (CoreException e) {
-			DialogUtil.showExceptionMessageBox(e);
+			DialogUtil.logErrorException(e);
 		}
 		return false;
 	}
