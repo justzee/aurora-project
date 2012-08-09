@@ -168,8 +168,25 @@ public class CommentCompositeMapParser extends CompositeMapParser implements Lex
 				"UTF-8"));
 		return stream;
 	}
-
+	
 	public static String convertNewLine(String fileContent, int index) {
+		// 匹配双引号间内容
+		StringBuilder sb = new StringBuilder(fileContent);    
+		int leftIndex = sb.indexOf("\"");                     
+		while (leftIndex != -1) {                             
+			int rightIndex = sb.indexOf("\"", leftIndex + 1); 
+			for (int i = leftIndex + 1; i < rightIndex; i++) {
+				if (sb.charAt(i) == '\n') {                   
+					sb.replace(i, i + 1, SAX_NEWlINE);        
+					rightIndex += (SAX_NEWlINE.length() - 1); 
+				}                                             
+			}                                                 
+			leftIndex = sb.indexOf("\"", rightIndex + 1);     
+		}                                                     
+		return sb.toString();                                 
+	}   
+
+	public static String _convertNewLine(String fileContent, int index) {
 		// 匹配双引号间内容
 		String pstr = "\"([^\"]*)\"";
 		Pattern p = Pattern.compile(pstr);

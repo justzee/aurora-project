@@ -1,7 +1,5 @@
 package aurora.ide.editor.textpage;
 
-
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,43 +13,70 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import aurora.ide.helpers.AuroraResourceUtil;
-import aurora.ide.helpers.DialogUtil;
+import aurora.ide.editor.textpage.xml.validate.XMLErrorHandler;
+import aurora.ide.editor.textpage.xml.validate.XMLValidator;
 import aurora.ide.helpers.ExceptionUtil;
 
-public class XmlErrorReconcile implements IReconcileListener{
+public class XmlErrorReconcile implements IReconcileListener {
 	public static final String AnnotationType = "aurora.ide.text.valid";
 	private List xmlErrorAnnotatioList = new LinkedList();
 	private IAnnotationModel xmlErrorAnnotationModel;
 	private ISourceViewer sourceViewer;
-	
+
 	/**
 	 * @param sourceViewer
 	 */
 	public XmlErrorReconcile(ISourceViewer sourceViewer) {
 		super();
-		this.sourceViewer = sourceViewer;
+		this.setSourceViewer(sourceViewer);
 	}
+
 	public void reconcile() {
 		xmlErrorAnnotationModel = getAnnotationModel();
 		clearHistory();
-		try {
-			AuroraResourceUtil.getCompsiteLoader().loadFromString(
-					sourceViewer.getDocument().get(), "UTF-8");
-		} catch (IOException e) {
-			DialogUtil.logErrorException(e);
-		} catch (SAXException e) {
-			updateAnnotation(e);
-		}
-		
+		XMLValidator va = new XMLValidator(new XMLErrorHandler() {
+
+			@Override
+			public void warning(SAXParseException exception)
+					throws SAXException {
+				updateAnnotation(exception);
+			}
+
+			@Override
+			public void fatalError(SAXParseException exception)
+					throws SAXException {
+				updateAnnotation(exception);
+			}
+
+			@Override
+			public void configurationError(Exception e) {
+				if (e instanceof SAXParseException)
+					updateAnnotation((SAXParseException) e);
+			}
+
+		});
+		String xml = this.getSourceViewer().getDocument().get();
+		va.validate(xml);
+
+		// try {
+		// String str = sourceViewer.getDocument().get();
+		// AuroraResourceUtil.getCompsiteLoader().loadFromString(
+		// str, "UTF-8");
+		// } catch (IOException e) {
+		// DialogUtil.logErrorException(e);
+		// } catch (SAXException e) {
+		// updateAnnotation(e);
+		// }
+
 	}
+
 	private IAnnotationModel getAnnotationModel() {
 		if (xmlErrorAnnotationModel != null)
 			return xmlErrorAnnotationModel;
-		xmlErrorAnnotationModel = sourceViewer.getAnnotationModel();
+		xmlErrorAnnotationModel = getSourceViewer().getAnnotationModel();
 		if (xmlErrorAnnotationModel == null) {
 			xmlErrorAnnotationModel = new AnnotationModel();
-			xmlErrorAnnotationModel.connect(sourceViewer.getDocument());
+			xmlErrorAnnotationModel.connect(getSourceViewer().getDocument());
 		}
 		return xmlErrorAnnotationModel;
 	}
@@ -62,7 +87,8 @@ public class XmlErrorReconcile implements IReconcileListener{
 		}
 		xmlErrorAnnotatioList.clear();
 	}
-	private void updateAnnotation(SAXException e) {
+
+	private void updateAnnotation(SAXParseException e) {
 		Throwable rootCause = ExceptionUtil.getRootCause(e);
 		if (rootCause == null || !(rootCause instanceof SAXParseException))
 			return;
@@ -77,31 +103,42 @@ public class XmlErrorReconcile implements IReconcileListener{
 		xmlErrorAnnotationModel.addAnnotation(annotation, pos);
 		xmlErrorAnnotatioList.add(annotation);
 	}
+
 	public int getOffsetFromLine(int lineNumber) {
 		int offset = 0;
 		if (lineNumber < 0)
 			return offset;
 		try {
-			offset =sourceViewer.getDocument().getLineOffset(lineNumber);
-			if (offset >= sourceViewer.getDocument().getLength())
+			offset = getSourceViewer().getDocument().getLineOffset(lineNumber);
+			if (offset >= getSourceViewer().getDocument().getLength())
 				return getOffsetFromLine(lineNumber - 1);
 		} catch (BadLocationException e) {
 			return getOffsetFromLine(lineNumber - 1);
 		}
 		return offset;
 	}
+
 	public int getLengthOfLine(int lineNumber) {
 		int length = 0;
 		if (lineNumber < 0)
 			return length;
 		try {
-			length = sourceViewer.getDocument().getLineLength(lineNumber);
+			length = getSourceViewer().getDocument().getLineLength(lineNumber);
 		} catch (BadLocationException e) {
 			try {
-				length = sourceViewer.getDocument().getLineLength(lineNumber - 1);
+				length = getSourceViewer().getDocument().getLineLength(
+						lineNumber - 1);
 			} catch (BadLocationException e1) {
 			}
 		}
 		return length;
+	}
+
+	public ISourceViewer getSourceViewer() {
+		return sourceViewer;
+	}
+
+	public void setSourceViewer(ISourceViewer sourceViewer) {
+		this.sourceViewer = sourceViewer;
 	}
 }

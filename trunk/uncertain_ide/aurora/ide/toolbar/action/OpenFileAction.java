@@ -8,6 +8,10 @@ package aurora.ide.toolbar.action;
  *
  */
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -29,7 +33,13 @@ public class OpenFileAction implements IWorkbenchWindowActionDelegate {
 		IHandlerService hs = (IHandlerService) PlatformUI.getWorkbench().getAdapter(IHandlerService.class);
 		try {
 			hs.executeCommand("org.eclipse.ui.navigate.openResource", null);
-		}catch(Exception e){
+		} catch (ExecutionException e) {
+			DialogUtil.showExceptionMessageBox(e);
+		} catch (NotDefinedException e) {
+			DialogUtil.showExceptionMessageBox(e);
+		} catch (NotEnabledException e) {
+			DialogUtil.showExceptionMessageBox(e);
+		} catch (NotHandledException e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}
 	}
