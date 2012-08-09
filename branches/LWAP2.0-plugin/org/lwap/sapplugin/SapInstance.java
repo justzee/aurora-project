@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import uncertain.core.IGlobalInstance;
 
-public class SapInstance extends InstanceConfig implements IGlobalInstance {
+public class SapInstance extends InstanceConfig{
 	public SapInstance() {
 		super();		
 	}
