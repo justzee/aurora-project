@@ -72,4 +72,68 @@ public static final String LOGGING_TOPIC = "org.lwap.pluin.sap";
     public void onShutdown(){
         release();
     }
+    
+	public String getSid() {
+		return SID;
+	}
+
+	public void setSid(String sid) {
+		this.SID = sid;
+	}
+
+	public String getUserid() {
+		return USERID;
+	}
+
+	public void setUserid(String userid) {
+		this.USERID = userid;
+	}
+
+	public String getPassword() {
+		return PASSWORD;
+	}
+
+	public void setPassword(String password) {
+		this.PASSWORD = password;
+	}
+
+	public String getServer_ip() {
+		return SERVER_IP;
+	}
+
+	public void setServer_ip(String server_ip) {
+		this.SERVER_IP = server_ip;
+	}
+
+	public String getDefault_lang() {
+		return DEFAULT_LANG;
+	}
+
+	public void setDefault_lang(String default_lang) {
+		this.DEFAULT_LANG = default_lang;
+	}
+
+	public int getMax_conn() {
+		return MAX_CONN;
+	}
+
+	public void setMax_conn(int max_conn) {
+		this.MAX_CONN = max_conn;
+	}
+
+	public String getSap_client() {
+		return SAP_CLIENT;
+	}
+
+	public void setSap_client(String sap_client) {
+		this.SAP_CLIENT = sap_client;
+	}
+
+	public String getSystem_number() {
+		return SYSTEM_NUMBER;
+	}
+
+	public void setSystem_number(String system_number) {
+		this.SYSTEM_NUMBER = system_number;
+	} 
 }
