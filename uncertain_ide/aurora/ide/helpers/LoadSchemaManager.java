@@ -1,9 +1,10 @@
 package aurora.ide.helpers;
 
+import java.io.IOException;
+
 import uncertain.core.UncertainEngine;
-import uncertain.pkg.PackageManager;
 import uncertain.schema.ISchemaManager;
-import aurora.ide.preferencepages.SxsdDirPreferencePage;
+import aurora.ide.uncertain.engine.independent.instance.InstanceFactory;
 
 public class LoadSchemaManager {
 
@@ -11,14 +12,8 @@ public class LoadSchemaManager {
 
 	public static boolean refeshSchemaManager(String[] sxsdPaths) {
 		try {
-			UncertainEngine uncertainEngine = getUncertainEngine();
-			PackageManager pkgManager = uncertainEngine.getPackageManager();
-			if (sxsdPaths != null) {
-				for (int i = 0; i < sxsdPaths.length; i++) {
-					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
-				}
-			}
-		} catch (Exception e) {
+			InstanceFactory.refeshPreferenceSchemaSetting(sxsdPaths);
+		} catch (IOException e) {
 			DialogUtil.showErrorMessageBox(ExceptionUtil
 					.getExceptionTraceMessage(e));
 			return false;
@@ -27,14 +22,16 @@ public class LoadSchemaManager {
 	}
 
 	public static ISchemaManager refeshSchemaManager() {
-		try {
-			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
-			refeshSchemaManager(sxsdPaths);
-		} catch (Exception e) {
-			DialogUtil.showErrorMessageBox(ExceptionUtil
-					.getExceptionTraceMessage(e));
-		}
-		return getUncertainEngine().getSchemaManager();
+		InstanceFactory.refeshPreferenceSchemaSetting();
+		return InstanceFactory.getSchemaManager();
+		// try {
+		// String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
+		// refeshSchemaManager(sxsdPaths);
+		// } catch (Exception e) {
+		// DialogUtil.showErrorMessageBox(ExceptionUtil
+		// .getExceptionTraceMessage(e));
+		// }
+		// return getUncertainEngine().getSchemaManager();
 	}
 
 	static void showSxsdDirHint() {
@@ -43,23 +40,24 @@ public class LoadSchemaManager {
 	}
 
 	public static ISchemaManager getSchemaManager() {
-		if (uncertainEngine != null)
-			return uncertainEngine.getSchemaManager();
-		try {
-			UncertainEngine uncertainEngine = getUncertainEngine();
-			PackageManager pkgManager = uncertainEngine.getPackageManager();
-			String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
-			if (sxsdPaths != null) {
-				for (int i = 0; i < sxsdPaths.length; i++) {
-					pkgManager.loadPackgeDirectory(sxsdPaths[i]);
-				}
-			}
-		} catch (Throwable e) {
-			DialogUtil.showErrorMessageBox(ExceptionUtil
-					.getExceptionTraceMessage(e));
-			throw new RuntimeException(e);
-		}
-		return uncertainEngine.getSchemaManager();
+		return InstanceFactory.getSchemaManager();
+		// if (uncertainEngine != null)
+		// return uncertainEngine.getSchemaManager();
+		// try {
+		// UncertainEngine uncertainEngine = getUncertainEngine();
+		// PackageManager pkgManager = uncertainEngine.getPackageManager();
+		// String[] sxsdPaths = SxsdDirPreferencePage.getSxsdPaths();
+		// if (sxsdPaths != null) {
+		// for (int i = 0; i < sxsdPaths.length; i++) {
+		// pkgManager.loadPackgeDirectory(sxsdPaths[i]);
+		// }
+		// }
+		// } catch (Throwable e) {
+		// DialogUtil.showErrorMessageBox(ExceptionUtil
+		// .getExceptionTraceMessage(e));
+		// throw new RuntimeException(e);
+		// }
+		// return uncertainEngine.getSchemaManager();
 	}
 
 	private static UncertainEngine getUncertainEngine() {
