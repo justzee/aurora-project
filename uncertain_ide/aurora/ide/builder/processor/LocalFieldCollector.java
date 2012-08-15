@@ -49,6 +49,13 @@ public class LocalFieldCollector implements IterationHandle {
 	public Set<String> collect() {
 		if (map != null)
 			map.iterate(this, true);
+		Object obj = map.getObject("/features/standard-who");
+		if (obj != null) {
+			set.add("last_update_date");
+			set.add("last_updated_by");
+			set.add("creation_date");
+			set.add("created_by");
+		}
 		return set;
 	}
 
