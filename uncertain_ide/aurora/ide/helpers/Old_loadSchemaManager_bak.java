@@ -5,8 +5,8 @@ import java.io.IOException;
 import uncertain.core.UncertainEngine;
 import uncertain.pkg.PackageManager;
 import uncertain.schema.ISchemaManager;
+import aurora.ide.fake.uncertain.engine.InstanceFactory;
 import aurora.ide.preferencepages.SxsdDirPreferencePage;
-import aurora.ide.uncertain.engine.independent.instance.InstanceFactory;
 
 public class Old_loadSchemaManager_bak {
 

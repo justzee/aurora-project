@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import uncertain.core.UncertainEngine;
 import uncertain.schema.ISchemaManager;
-import aurora.ide.uncertain.engine.independent.instance.InstanceFactory;
+import aurora.ide.fake.uncertain.engine.InstanceFactory;
 
 public class LoadSchemaManager {
 
