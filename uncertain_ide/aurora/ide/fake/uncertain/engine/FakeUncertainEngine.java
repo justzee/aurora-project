@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import uncertain.composite.CompositeLoader;
 import uncertain.core.DirectoryConfig;
-import uncertain.core.IContainer;
-import uncertain.core.UncertainEngine;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.IClassLocator;
 import uncertain.ocm.IObjectCreator;
