@@ -78,8 +78,7 @@ public class ClassAnalyzer {
 		p.getter = m;
 	}	
 	
-	
-	public MappingRule analyze( Class type ){
+	public synchronized MappingRule analyze( Class type ){	
 		
 		prepare();
 		MappingRule rule = new MappingRule(type, oc_manager);
@@ -125,6 +124,7 @@ public class ClassAnalyzer {
 		}
 		
 		rule.getReady();
+		
 		return rule;
 	}
 	
