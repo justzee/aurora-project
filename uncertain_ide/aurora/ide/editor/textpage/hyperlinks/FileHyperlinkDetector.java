@@ -39,6 +39,7 @@ public class FileHyperlinkDetector implements IHyperlinkDetector {
 
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
+		
 		// get doc
 		IDocument doc = textViewer.getDocument();
 		try {
