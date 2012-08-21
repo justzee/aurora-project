@@ -94,6 +94,8 @@ public class BMFromProcedurePage extends WizardPage {
 						data = getProcedures();
 					} catch (ApplicationException e) {
 						DialogUtil.showExceptionMessageBox(e);
+//						setErrorMessage(e.getCause().getMessage());
+//						return;
 					} finally {
 						monitor.done();
 					}
