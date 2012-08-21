@@ -80,14 +80,18 @@ public class BMTablePage extends WizardPageRefreshable {
 		gridComposite.setLayoutData(gd);
 		gridComposite.setLayout(new GridLayout());
 		CompositeMap input = null;
-		try {
-			Connection dbConnection = wizard.getConnection();
-			dbMetaData = dbConnection.getMetaData();
-			input = getInput(dbMetaData, "%");
-		} catch (Exception e) {
-			DialogUtil.logErrorException(e);
-			return;
-		}
+	
+			Connection dbConnection;
+			try {
+				dbConnection = wizard.getConnection();
+				dbMetaData = dbConnection.getMetaData();
+				input = getInput(dbMetaData, "%");
+			} catch (ApplicationException e) {
+				DialogUtil.showExceptionMessageBox(e);
+			} catch (SQLException e) {
+				DialogUtil.showExceptionMessageBox(e);
+			}
+		
 		gridViewer = new GridViewer(columnNames, IGridViewer.filterBar | IGridViewer.NoToolBar
 				| IGridViewer.isOnlyUpdate);
 		try {
