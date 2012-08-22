@@ -8,7 +8,7 @@ import aurora.ide.fake.uncertain.engine.InstanceFactory;
 
 public class LoadSchemaManager {
 
-	private static UncertainEngine uncertainEngine;
+//	private static UncertainEngine uncertainEngine;
 
 	public static boolean refeshSchemaManager(String[] sxsdPaths) {
 		try {
@@ -60,8 +60,8 @@ public class LoadSchemaManager {
 		// return uncertainEngine.getSchemaManager();
 	}
 
-	private static UncertainEngine getUncertainEngine() {
-		return uncertainEngine == null ? uncertainEngine = UncertainEngineUtil
-				.getUncertainEngine() : uncertainEngine;
-	}
+//	private static UncertainEngine getUncertainEngine() {
+//		return uncertainEngine == null ? uncertainEngine = UncertainEngineUtil
+//				.getUncertainEngine() : uncertainEngine;
+//	}
 }
