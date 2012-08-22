@@ -4,6 +4,7 @@
  */
 package uncertain.ocm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -55,7 +56,11 @@ public class MethodAccessor  extends ObjectAccessor {
                  if( param[0]==null ) 
                      throw new IllegalArgumentException("Error when setting field value "+value+" for field " + this.getFieldName() + " in instance "+ obj.getClass().getName()+"["+obj+"]: Can't convert data type from "+value.getClass()+" to "+data_type.getName());
                 }
-            set_method.invoke(obj, param);
+            try {
+				set_method.invoke(obj, param);
+			} catch (IllegalArgumentException e) {				
+				throw new IllegalArgumentException(obj.getClass().getName()+"."+set_method, e);
+			} 
         }		
 	}
 	
