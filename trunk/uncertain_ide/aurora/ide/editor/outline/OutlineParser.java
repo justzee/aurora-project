@@ -173,7 +173,7 @@ public class OutlineParser extends DefaultHandler2 {
 	public void parser() throws ParserConfigurationException, SAXException, IOException {
 		SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 		parser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
-		InputStream is = new ByteArrayInputStream(source.getBytes());
+		InputStream is = new ByteArrayInputStream(source.getBytes("utf-8"));
 		try {
 			parser.parse(is, this);
 		} finally {
