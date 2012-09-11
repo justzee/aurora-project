@@ -11,7 +11,6 @@ import uncertain.schema.Attribute;
 import uncertain.schema.Element;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.search.core.CompositeMapIteator;
 
 public class TypeFinder extends CompositeMapIteator {
