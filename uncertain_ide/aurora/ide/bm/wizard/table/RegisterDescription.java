@@ -1,13 +1,16 @@
 package aurora.ide.bm.wizard.table;
 
-
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Set;
+
+import org.enhydra.jdbc.standard.StandardXAConnectionHandle;
 
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
@@ -22,6 +25,7 @@ public class RegisterDescription {
 	public static String LANGUAGE = "ZHS";
 	private HashMap promptList = new HashMap();
 	private Connection connection;
+
 	public RegisterDescription(Connection connection) {
 		this.connection = connection;
 	}
@@ -29,6 +33,7 @@ public class RegisterDescription {
 	public void addPrompt(String prompt_code, String description) {
 		promptList.put(prompt_code, description);
 	}
+
 	public HashMap getPromptList() {
 		return promptList;
 	}
@@ -42,7 +47,18 @@ public class RegisterDescription {
 			return;
 		String selectSQL = "select 1 from sys_prompts t where t.prompt_code=? and t.language=?";
 		String insertSQL = " insert into sys_prompts(prompt_id,prompt_code,language,description,created_by,creation_date,last_updated_by,last_update_date)values(sys_prompts_s.nextval,?,?,?,?,sysdate,?,sysdate)";
-		if (!(connection instanceof OracleConnection)) {
+		String databaseProductName = "";
+		try {
+			DatabaseMetaData m = connection.getMetaData();
+			databaseProductName = m.getDatabaseProductName();
+		} catch (SQLException e1) {
+			DialogUtil.logErrorException(e1);
+		}
+		// if (!(connection instanceof OracleConnection)) {
+		// DialogUtil.showErrorMessageBox("注册描述功能暂时只支持Oracle数据库");
+		// }
+
+		if (!"Oracle".equalsIgnoreCase(databaseProductName)) {
 			DialogUtil.showErrorMessageBox("注册描述功能暂时只支持Oracle数据库");
 		}
 		Set keySet = promptList.keySet();
@@ -77,10 +93,12 @@ public class RegisterDescription {
 				if (insertPS != null)
 					insertPS.close();
 			} catch (SQLException e) {
+				DialogUtil.logErrorException(e);
 				DialogUtil.showExceptionMessageBox(e);
 			}
 		}
 	}
+
 	public boolean isNone(ResultSet set) throws SystemException {
 		if (set == null)
 			return true;
