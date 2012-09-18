@@ -189,6 +189,13 @@
              label="%source.copyfilename"
              menubarPath="additions">
        </action>
+       <action
+             class="aurora.ide.editor.textpage.action.ExportFunctionSQLAction"
+             definitionId="aurora.ide.text.editor.export.function.register.sql"
+             id="aurora.ide.text.editor.export.function.register.sql.action"
+             label="%export.function.sql"
+             menubarPath="aurora.ide.sourcemenu/context">
+       </action>
 	   </viewerContribution>
     <objectContribution
           adaptable="true"
@@ -693,6 +700,12 @@
           id="aurora.ide.toggleblockcomment"
           name="Aurora Toggle Block Comment">
     </command>
+    <command
+          categoryId="aurora.ide.commands"
+          description="Export sql for register function"
+          id="aurora.ide.text.editor.export.function.register.sql"
+          name="Export SQL for register function">
+    </command>
  </extension>
   
  <extension
@@ -726,6 +739,12 @@
              contextId="org.eclipse.ui.textEditorScope"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="M1+M2+/">
+       </key>
+       <key
+             commandId="aurora.ide.text.editor.export.function.register.sql"
+             contextId="org.eclipse.ui.textEditorScope"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M1+M2+E">
        </key>
  </extension>
 

@@ -36,6 +36,7 @@ import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.outline.TextOutlinePage;
 import aurora.ide.editor.textpage.action.CFormatAction;
+import aurora.ide.editor.textpage.action.ExportFunctionSQLAction;
 import aurora.ide.editor.textpage.action.GetFileNameAction;
 import aurora.ide.editor.textpage.action.ToggleBlockCommentAction;
 import aurora.ide.editor.textpage.action.ToggleCommentAction;
@@ -301,6 +302,7 @@ public class TextPage extends TextEditor implements IViewer {
 		GetFileNameAction action2 = new GetFileNameAction();
 		action2.setActiveEditor(null, this);
 		setAction("copyFileName", action2);
+		setAction("ExportFunctionSQLAction",new ExportFunctionSQLAction());
 	}
 
 	public void doSave(IProgressMonitor monitor) {
