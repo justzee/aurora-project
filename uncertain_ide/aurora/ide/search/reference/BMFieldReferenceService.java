@@ -9,6 +9,7 @@ import uncertain.composite.QualifiedName;
 import uncertain.schema.Attribute;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.search.core.CompositeMapIteator;
 import aurora.ide.search.core.Util;
 
@@ -93,7 +94,7 @@ public class BMFieldReferenceService extends ReferenceSearchService {
 					CompositeMap map, Attribute attrib) {
 				Object pattern = getSearchPattern(new IResource[] { scope }, source);
 //				Object data = map.get(attrib.getName());
-				Object data = Util.getValueIgnoreCase(attrib, map);
+				Object data = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				return pattern == null ? false : pattern.equals(data);
 			}
 

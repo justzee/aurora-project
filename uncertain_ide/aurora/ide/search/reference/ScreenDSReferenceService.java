@@ -6,9 +6,9 @@ import org.eclipse.search.ui.ISearchQuery;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.search.core.AbstractSearchService;
 import aurora.ide.search.core.CompositeMapIteator;
-import aurora.ide.search.core.Util;
 
 public class ScreenDSReferenceService extends AbstractSearchService {
 
@@ -35,7 +35,7 @@ public class ScreenDSReferenceService extends AbstractSearchService {
 				}
 				Object pattern = getSearchPattern(roots, source);
 //				Object data = map.get(attrib.getName());
-				Object data = Util.getValueIgnoreCase(attrib, map);
+				Object data = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				return pattern == null ? false : pattern.equals(data);
 			}
 		};

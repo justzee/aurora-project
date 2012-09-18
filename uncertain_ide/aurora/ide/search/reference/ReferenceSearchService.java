@@ -10,6 +10,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import uncertain.schema.IType;
 import uncertain.schema.SimpleType;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.search.core.AbstractSearchService;
 import aurora.ide.search.core.CompositeMapIteator;
 import aurora.ide.search.core.Util;
@@ -71,7 +72,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	protected IFile findScreenFile(CompositeMap map, Attribute attrib) {
 		IFile file = this.getFile(map.getRoot());
 //		Object pkg = map.get(attrib.getName());
-		Object pkg = Util.getValueIgnoreCase(attrib, map);
+		Object pkg = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 		if (pkg == null) {
 			return null;
 		}
@@ -104,7 +105,7 @@ public class ReferenceSearchService extends AbstractSearchService implements
 	protected boolean bmRefMatch(CompositeMap map, Attribute attrib,
 			Object pattern) {
 //		Object data = map.get(attrib.getName());
-		Object data = Util.getValueIgnoreCase(attrib, map);
+		Object data = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 		if (data instanceof String && Util.bmRefMatch(pattern, (String) data)) {
 			return true;
 		}
