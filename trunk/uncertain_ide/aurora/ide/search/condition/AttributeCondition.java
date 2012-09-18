@@ -13,6 +13,7 @@ import org.eclipse.jface.text.IRegion;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import aurora.ide.editor.textpage.IColorConstants;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.search.core.Util;
 import aurora.ide.search.ui.LineElement;
 
@@ -89,7 +90,7 @@ public class AttributeCondition extends SearchCondition {
 			for (Iterator it = mapAttributes.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
 //				String _value = map.getString(attrib.getName());
-				String _value = Util.getValueIgnoreCase(attrib, map);
+				String _value = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				if (null == _value) {
 					continue;
 				}
@@ -145,7 +146,7 @@ public class AttributeCondition extends SearchCondition {
 			for (Iterator it = mapAttributes.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
 //				String _value = map.getString(attrib.getName());
-				String _value = Util.getValueIgnoreCase(attrib, map);
+				String _value = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				if (null == _value) {
 					continue;
 				}
@@ -182,7 +183,7 @@ public class AttributeCondition extends SearchCondition {
 			for (Iterator it = mapAttributes.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
 //				String _value = map.getString(attrib.getName());
-				String _value = Util.getValueIgnoreCase(attrib, map);
+				String _value = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				if (null == _value) {
 					continue;
 				}

@@ -160,13 +160,13 @@ public class FieldReferenceAction implements IEditorActionDelegate {
 					.equals(referenceTypeQName)) {
 //				return sourceFile = Util.findScreenFile(getFile(),
 //						map.get(attrib.getName()));
-				String valueIgnoreCase = Util.getValueIgnoreCase(attrib, map);
+				String valueIgnoreCase = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				return sourceFile = Util.findScreenFile(getFile(),valueIgnoreCase);
 			}
 			if (AbstractSearchService.bmReference.equals(referenceTypeQName)) {
 //				return sourceFile = Util.findBMFileByPKG(map.get(attrib
 //						.getName()));
-				String valueIgnoreCase = Util.getValueIgnoreCase(attrib, map);
+				String valueIgnoreCase = CompositeMapUtil.getValueIgnoreCase(attrib, map);
 				return sourceFile = Util.findBMFileByPKG(valueIgnoreCase);
 			}
 		}

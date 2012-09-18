@@ -22,9 +22,9 @@ import aurora.ide.api.statistics.map.StatisticsMap;
 import aurora.ide.api.statistics.model.Dependency;
 import aurora.ide.api.statistics.model.ProjectObject;
 import aurora.ide.builder.ResourceUtil;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
-import aurora.ide.search.core.Util;
 
 public class ObjectDependency implements IStatisticsManager {
 
@@ -57,7 +57,7 @@ public class ObjectDependency implements IStatisticsManager {
 			if (!(attributeType instanceof SimpleType) || (!qName.equals(((SimpleType) attributeType).getReferenceTypeQName()))) {
 				continue;
 			}
-			String s = Util.getValueIgnoreCase(attrib, sm.getMap());
+			String s = CompositeMapUtil.getValueIgnoreCase(attrib, sm.getMap());
 			if (s == null) {
 				continue;
 			}
@@ -161,6 +161,6 @@ public class ObjectDependency implements IStatisticsManager {
 	}
 
 	public String getValueIgnoreCase(Attribute a, CompositeMap cMap) {
-		return Util.getValueIgnoreCase(a, cMap);
+		return CompositeMapUtil.getValueIgnoreCase(a, cMap);
 	}
 }

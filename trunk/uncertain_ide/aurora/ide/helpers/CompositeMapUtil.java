@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 
 import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
+import aurora.ide.builder.BuildContext;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
@@ -344,6 +345,26 @@ public class CompositeMapUtil {
 			}
 		}
 		return allChildElements;
+	}
+
+	public static String getValueIgnoreCase(CompositeMap cMap, String name) {
+		Set keySet = cMap.keySet();
+		for (Object object : keySet) {
+			if (object instanceof String
+					&& ((String) object).equalsIgnoreCase(name)) {
+				return cMap.getString(object);
+			}
+		}
+		return null;
+	}
+
+	public static String getValueIgnoreCase(Attribute a, CompositeMap cMap) {
+		String name = a.getName();
+		return getValueIgnoreCase(cMap, name);
+	}
+
+	public static String getValueIgnoreCase(Attribute a, BuildContext bc) {
+		return CompositeMapUtil.getValueIgnoreCase(a, bc.map);
 	}
 
 	public static Namespace getQualifiedName(CompositeMap root, String prefix) {
