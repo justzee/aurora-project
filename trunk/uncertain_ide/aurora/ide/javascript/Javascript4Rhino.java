@@ -1,17 +1,12 @@
 package aurora.ide.javascript;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
@@ -24,6 +19,7 @@ import org.mozilla.javascript.ast.StringLiteral;
 import uncertain.composite.CompositeMap;
 import aurora.ide.editor.textpage.IColorConstants;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
+import aurora.ide.helpers.DialogUtil;
 import aurora.ide.search.core.Util;
 
 public class Javascript4Rhino {
@@ -92,6 +88,7 @@ public class Javascript4Rhino {
 		return parse;
 
 		 } catch (Exception e) {
+			 DialogUtil.logErrorException(e);
 //			 file.getProjectRelativePath();
 //			 System.out.println(file.getProjectRelativePath());
 //			 System.out.println(e.getClass());

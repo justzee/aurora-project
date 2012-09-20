@@ -134,7 +134,7 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		if (workbenchPage == null)
 			return null;
 		IEditorPart editorPart = workbenchPage.getActiveEditor();
-		if(editorPart == null){
+		if (editorPart == null) {
 			return null;
 		}
 		IEditorInput input = editorPart.getEditorInput();
@@ -180,7 +180,9 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		}
 		return section;
 	}
+
 	public static InputStream openFileStream(String path) throws IOException {
-		return FileLocator.openStream(Platform.getBundle(PLUGIN_ID), new Path(path), false);
+		return FileLocator.openStream(Platform.getBundle(PLUGIN_ID), new Path(
+				path), false);
 	}
 }
