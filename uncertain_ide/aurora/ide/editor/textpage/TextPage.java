@@ -302,7 +302,7 @@ public class TextPage extends TextEditor implements IViewer {
 		GetFileNameAction action2 = new GetFileNameAction();
 		action2.setActiveEditor(null, this);
 		setAction("copyFileName", action2);
-		setAction("ExportFunctionSQLAction",new ExportFunctionSQLAction());
+		setAction("ExportFunctionSQLAction",new ExportFunctionSQLAction(this));
 	}
 
 	public void doSave(IProgressMonitor monitor) {

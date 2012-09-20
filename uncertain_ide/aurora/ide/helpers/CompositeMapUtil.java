@@ -16,11 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.xml.sax.SAXException;
-
-import aurora.ide.api.composite.map.CommentCompositeMap;
-import aurora.ide.api.composite.map.CommentXMLOutputter;
-import aurora.ide.builder.BuildContext;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
@@ -34,6 +32,12 @@ import uncertain.schema.IType;
 import uncertain.schema.Namespace;
 import uncertain.schema.Schema;
 import uncertain.schema.SchemaManager;
+import aurora.ide.api.composite.map.Comment;
+import aurora.ide.api.composite.map.CommentCompositeMap;
+import aurora.ide.api.composite.map.CommentReader;
+import aurora.ide.api.composite.map.CommentXMLOutputter;
+import aurora.ide.builder.BuildContext;
+import aurora.ide.search.cache.CacheManager;
 
 public class CompositeMapUtil {
 
@@ -95,8 +99,8 @@ public class CompositeMapUtil {
 		if (parent == null || childQN == null)
 			return null;
 		String prefix = getContextPrefix(parent, childQN);
-		CompositeMap child = new CommentCompositeMap(prefix, childQN.getNameSpace(),
-				childQN.getLocalName());
+		CompositeMap child = new CommentCompositeMap(prefix,
+				childQN.getNameSpace(), childQN.getLocalName());
 		parent.addChild(child);
 		addArrayNode(parent);
 		return child;
@@ -133,8 +137,9 @@ public class CompositeMapUtil {
 				while (ite.hasNext()) {
 					Array array = (Array) ite.next();
 					String name = array.getLocalName();
-					CompositeMap newCM = new CommentCompositeMap(parentCM.getPrefix(),
-							parentCM.getNamespaceURI(), name);
+					CompositeMap newCM = new CommentCompositeMap(
+							parentCM.getPrefix(), parentCM.getNamespaceURI(),
+							name);
 					parentCM.addChild(newCM);
 				}
 			}
@@ -529,6 +534,25 @@ public class CompositeMapUtil {
 			LogUtil.getInstance().logError(e.getMessage(), e);
 		}
 
+		return null;
+	}
+
+	public static Comment getFileComment(IFile file) {
+		try {
+			CompositeMap hostMap = CacheManager.getCompositeMap(file);
+			if (hostMap instanceof CommentCompositeMap) {
+				String comment = ((CommentCompositeMap) hostMap).getComment();
+				CommentReader cr = new CommentReader(comment);
+				Comment read = cr.read();
+				return read;
+			}
+		} catch (CoreException e) {
+			DialogUtil.logErrorException(e);
+			e.printStackTrace();
+		} catch (ApplicationException e) {
+			DialogUtil.logErrorException(e);
+			e.printStackTrace();
+		}
 		return null;
 	}
 }
