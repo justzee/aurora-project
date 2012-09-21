@@ -17,6 +17,9 @@ public class CommentReader {
 
 	public Comment read() {
 		Comment c = new Comment();
+		if (comment == null) {
+			return c;
+		}
 		try {
 			List<String> sl = FileUtil
 					.readStringFileToList(new ByteArrayInputStream(comment
@@ -37,8 +40,8 @@ public class CommentReader {
 		if (begin == 0) {
 			int center = c.indexOf(":");
 			if (center != -1) {
-				String key = c.substring(begin+1, center);
-				String value = c.substring(center+1);
+				String key = c.substring(begin + 1, center);
+				String value = c.substring(center + 1);
 				if (!isBlank(key) && !isBlank(value)) {
 					cc.put(key.trim().toLowerCase(), value.trim());
 				}
