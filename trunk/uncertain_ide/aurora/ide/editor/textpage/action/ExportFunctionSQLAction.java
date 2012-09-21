@@ -40,18 +40,15 @@ public class ExportFunctionSQLAction extends Action implements
 		}
 		IFile file = (IFile) activeEditor.getEditorInput().getAdapter(
 				IFile.class);
-		if (file != null
-				&& file.exists()
-				&& getFilesExtensions().contains(
-						file.getFileExtension().toLowerCase())) {
+		if (PathUtil.isAuroraFile(file)) {
 
 			Shell shell = activeEditor.getSite().getShell();
 			FunctionRegisterWizard frw = new FunctionRegisterWizard(file);
-			
+
 			WizardDialog wd = new WizardDialog(shell, frw);
-			if(WizardDialog.OK != wd.open()){
+			if (WizardDialog.OK != wd.open()) {
 			}
-			
+
 		} else {
 			DialogUtil.showErrorMessageBox("找不到功能文件，不能继续");
 		}
@@ -62,10 +59,6 @@ public class ExportFunctionSQLAction extends Action implements
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		activeEditor = targetEditor;
-	}
-
-	private List<String> getFilesExtensions() {
-		return PathUtil.AURORA_FILE_EXTENSION;
 	}
 
 }

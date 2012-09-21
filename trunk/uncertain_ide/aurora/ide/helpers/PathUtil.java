@@ -313,4 +313,18 @@ public class PathUtil {
 		return getPKG(makeRelativeTo);
 	}
 
+	public static boolean isAuroraFile(IFile file) {
+		return isExists(file)
+				&& AURORA_FILE_EXTENSION.contains(file.getFileExtension()
+						.toLowerCase());
+	}
+
+	private static boolean isExists(IFile file) {
+		return file != null && file.exists();
+	}
+
+	public static boolean isBMFile(IFile file) {
+		return isExists(file)
+				&& "bm".equals(file.getFileExtension().toLowerCase());
+	}
 }

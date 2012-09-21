@@ -22,9 +22,12 @@ import aurora.ide.bm.ExtendModelFactory;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.helpers.PathUtil;
 
 public class CompositeMapCacher implements IResourceChangeListener,
 		IResourceDeltaVisitor {
+
+	private final static CompositeMap EMPTY_MAP = new CompositeMap();
 
 	private class ProjectCatcher {
 		private Map<IFile, CompositeMap> catchMap = new HashMap<IFile, CompositeMap>();
@@ -39,6 +42,9 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private synchronized CompositeMap getCompositeMap(IFile file)
 				throws CoreException, ApplicationException {
+			if (!PathUtil.isAuroraFile(file)) {
+				return EMPTY_MAP;
+			}
 			CompositeMap map = catchMap.get(file);
 			if (map == null) {
 				map = load(file);
@@ -51,6 +57,9 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private synchronized CompositeMap getWholeCompositeMap(IFile file)
 				throws CoreException, ApplicationException {
+			if (!PathUtil.isBMFile(file)) {
+				return EMPTY_MAP;
+			}
 			CompositeMap map = wholeBMMap.get(file);
 			if (map == null) {
 				map = loadWholeBM(file);

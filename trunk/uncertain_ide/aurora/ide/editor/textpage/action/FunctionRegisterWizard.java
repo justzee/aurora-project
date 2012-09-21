@@ -277,12 +277,11 @@ public class FunctionRegisterWizard extends Wizard {
 
 	private void fetchAll(IFile host) throws CoreException,
 			ApplicationException {
-		CompositeMap hostMap = CacheManager.getCompositeMap(host);
-
-		iterateAttribute(host, hostMap);
-
-		iterateScript(host, hostMap);
-
+		if (PathUtil.isAuroraFile(host)) {
+			CompositeMap hostMap = CacheManager.getCompositeMap(host);
+			iterateAttribute(host, hostMap);
+			iterateScript(host, hostMap);
+		}
 	}
 
 	private void iterateScript(IFile host, CompositeMap hostMap)
