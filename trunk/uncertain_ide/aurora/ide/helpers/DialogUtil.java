@@ -50,6 +50,7 @@ public class DialogUtil {
 		logErrorException(MESSAGEBOX_ERROR, e);
 	}
 	public static void showExceptionMessageBox(Throwable e) {
+		logErrorException(e);
 		showExceptionMessageBox(MESSAGEBOX_ERROR, e);
 	}
 	public static void showExceptionMessageBox(final String title,
