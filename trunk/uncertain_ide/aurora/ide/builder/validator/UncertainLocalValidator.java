@@ -31,7 +31,7 @@ public class UncertainLocalValidator extends AbstractValidator {
 			public void processMap(BuildContext bc) {
 				if (BuildContext.LEVEL_CONFIG_PROBLEM == 0)
 					return;
-				if (bc.map.getName().equalsIgnoreCase("path-config")) {
+				if ("path-config".equalsIgnoreCase(bc.map.getName())) {
 					for (Map.Entry entry : (Set<Map.Entry>) bc.map.entrySet()) {
 						String key = (String) entry.getKey();
 						String value = bc.map.getString(key);
