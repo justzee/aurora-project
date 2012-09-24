@@ -42,7 +42,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private synchronized CompositeMap getCompositeMap(IFile file)
 				throws CoreException, ApplicationException {
-			if (!PathUtil.isAuroraFile(file)) {
+			if (!PathUtil.isAuroraFile(file) && !PathUtil.isConfigFile(file)) {
 				return EMPTY_MAP;
 			}
 			CompositeMap map = catchMap.get(file);

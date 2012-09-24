@@ -25,6 +25,9 @@ public class PathUtil {
 	public static final List<String> AURORA_FILE_EXTENSION = Arrays.asList(
 			"bm", "screen", "svc");
 
+	public static final List<String> AURORA_CONFIG_FILE_EXTENSION = Arrays
+			.asList("xml", "proc", "config");
+
 	/**
 	 * 
 	 * @param file
@@ -314,9 +317,15 @@ public class PathUtil {
 	}
 
 	public static boolean isAuroraFile(IFile file) {
+		String fileExtension = getFileExtension(file);
 		return isExists(file)
-				&& AURORA_FILE_EXTENSION.contains(file.getFileExtension()
-						.toLowerCase());
+				&& AURORA_FILE_EXTENSION.contains(fileExtension.toLowerCase());
+	}
+
+	public static String getFileExtension(IFile file) {
+		String fileExtension = file.getFileExtension() == null ? "" : file
+				.getFileExtension();
+		return fileExtension;
 	}
 
 	private static boolean isExists(IFile file) {
@@ -324,7 +333,14 @@ public class PathUtil {
 	}
 
 	public static boolean isBMFile(IFile file) {
+		String fileExtension = getFileExtension(file);
+		return isExists(file) && "bm".equals(fileExtension.toLowerCase());
+	}
+
+	public static boolean isConfigFile(IFile file) {
+		String fileExtension = getFileExtension(file);
 		return isExists(file)
-				&& "bm".equals(file.getFileExtension().toLowerCase());
+				&& AURORA_CONFIG_FILE_EXTENSION.contains(fileExtension
+						.toLowerCase());
 	}
 }
