@@ -114,6 +114,12 @@ WHERE t1.user_id=? and t1.role_id = ?
  对比上下两句，可以观察到后面这个sql减少了与sys_user 的关联。后面这个sql执行获得结果后，系统再对结果集进行遍历，从缓存从添加sys_user 的数据。
 
 =注意事项=
-  * 局限：只支持inner join和left join，这两种方式以外的join不会利用缓存，还有如果关联关系中用表达式也不会利用缓存，仍旧采取sql的查询方式。
- * 调整：对于关联的多语言字段，比如启用了sys.sys_role的缓存，那么在关联中查找role_name，不用再写role_name_id，而是直接使用role_name即可。
- * 错误：对于关联sys.sys_user_role_groups在关联查询中加入关联表的查询会有问题
+
+== 局限== 
+只支持inner join和left join，这两种方式以外的join不会利用缓存，还有如果关联关系中用表达式也不会利用缓存，仍旧采取sql的查询方式。
+==调整==
+对于关联的多语言字段，比如启用了sys.sys_role的缓存，那么在关联中查找role_name，不用再写role_name_id，而是直接使用role_name即可。
+==错误==
+对于关联sys.sys_user_role_groups在关联查询中加入关联表的查询会有问题
+==副作用==
+降低启动速度。大致：数据在万级时会延迟几分钟，即十万级会延迟几十分钟。
