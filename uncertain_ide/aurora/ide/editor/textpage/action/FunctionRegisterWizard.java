@@ -125,7 +125,9 @@ public class FunctionRegisterWizard extends Wizard {
 	private List<IFile> files;
 
 	public String getFunctionCode() {
-		return functionCode;
+		if (functionCode != null)
+			return functionCode.toUpperCase();
+		return "";
 	}
 
 	public void setFunctionCode(String functionCode) {
@@ -149,7 +151,9 @@ public class FunctionRegisterWizard extends Wizard {
 	}
 
 	public String getModulesCode() {
-		return modulesCode;
+		if (modulesCode != null)
+			return modulesCode.toUpperCase();
+		return "";
 	}
 
 	public void setModulesCode(String modulesCode) {
@@ -270,8 +274,9 @@ public class FunctionRegisterWizard extends Wizard {
 	}
 
 	private String toExportSql() {
-		RegisterSql rsql = new RegisterSql(functionCode, functionName,
-				functionOrder, modulesCode, modulesName, hostPage);
+		RegisterSql rsql = new RegisterSql(this.getFunctionCode(),
+				this.getFunctionName(), this.getFunctionOrder(),
+				this.getModulesCode(), this.getModulesName(), hostPage);
 		return rsql.build(files);
 	}
 
