@@ -270,7 +270,6 @@ public class FunctionRegisterWizard extends Wizard {
 			return false;
 		}
 		return true;
-
 	}
 
 	private String toExportSql() {

@@ -2,6 +2,7 @@ package aurora.ide.editor.editorInput;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
@@ -50,7 +51,12 @@ public class StringEditorInput implements IStorageEditorInput {
 		return new IStorage() {
 
 			public InputStream getContents() throws CoreException {
-				return new ByteArrayInputStream(inputString.getBytes());
+				try {
+					return new ByteArrayInputStream(inputString.getBytes("utf-8"));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				return null;
 
 			}
 
