@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IStorageEditorInput;
+import org.eclipse.ui.WorkbenchEncoding;
 
 public class StringEditorInput implements IStorageEditorInput {
 
@@ -52,7 +53,8 @@ public class StringEditorInput implements IStorageEditorInput {
 
 			public InputStream getContents() throws CoreException {
 				try {
-					return new ByteArrayInputStream(inputString.getBytes("utf-8"));
+					String workbenchDefaultEncoding = WorkbenchEncoding.getWorkbenchDefaultEncoding();
+					return new ByteArrayInputStream(inputString.getBytes(workbenchDefaultEncoding));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}

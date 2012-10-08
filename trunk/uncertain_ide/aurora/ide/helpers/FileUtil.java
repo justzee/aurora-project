@@ -10,11 +10,16 @@ import java.util.List;
 public class FileUtil {
 
 	static public StringBuilder readStringFile(InputStream resourceAsStream) {
+		return readStringFile(resourceAsStream, "UTF-8");
+	}
+
+	static public StringBuilder readStringFile(InputStream resourceAsStream,
+			String charset) {
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(resourceAsStream,
-					"utf-8"));
+					charset));
 			String inLine = null;
 			while ((inLine = br.readLine()) != null) {
 				sb = sb.append(inLine).append("\n");
@@ -38,11 +43,16 @@ public class FileUtil {
 	}
 
 	static public List<String> readStringFileToList(InputStream resourceAsStream) {
+		return readStringFileToList(resourceAsStream, "UTF-8");
+	}
+
+	static public List<String> readStringFileToList(
+			InputStream resourceAsStream, String charset) {
 		List<String> sb = new ArrayList<String>();
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(resourceAsStream,
-					"utf-8"));
+					charset));
 			String inLine = null;
 			while ((inLine = br.readLine()) != null) {
 				sb.add(inLine);
