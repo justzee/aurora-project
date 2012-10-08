@@ -3,7 +3,6 @@ package aurora.ide.editor.widgets;
 
 import java.util.HashMap;
 
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -23,6 +22,8 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -31,6 +32,11 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 
+import uncertain.composite.CompositeMap;
+import uncertain.composite.QualifiedName;
+import uncertain.schema.Attribute;
+import uncertain.schema.Element;
+import uncertain.schema.editor.AttributeValue;
 import aurora.ide.celleditor.CellEditorFactory;
 import aurora.ide.celleditor.ICellEditor;
 import aurora.ide.editor.PropertyViewer;
@@ -40,7 +46,6 @@ import aurora.ide.editor.widgets.core.CategoryLabel;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.ActionListener;
 import aurora.ide.node.action.AddPropertyAction;
@@ -48,13 +53,6 @@ import aurora.ide.node.action.CategroyAction;
 import aurora.ide.node.action.CharSortAction;
 import aurora.ide.node.action.RefreshAction;
 import aurora.ide.node.action.RemovePropertyAction;
-
-
-import uncertain.composite.CompositeMap;
-import uncertain.composite.QualifiedName;
-import uncertain.schema.Attribute;
-import uncertain.schema.Element;
-import uncertain.schema.editor.AttributeValue;
 
 public class PropertyHashViewer extends PropertyViewer implements
 		ICategoryTableViewer {
