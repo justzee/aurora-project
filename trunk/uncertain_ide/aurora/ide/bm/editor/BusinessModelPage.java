@@ -23,8 +23,11 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -60,14 +63,16 @@ import aurora.ide.node.action.RemoveElementAction;
 
 public class BusinessModelPage extends CompositeMapPage {
 	private static final String PageId = "BusinessModelPage";
-	private static final String PageTitle = LocaleMessage.getString("business.model.file");
+	private static final String PageTitle = LocaleMessage
+			.getString("business.model.file");
 	private CTabFolder mTabFolder;
 	private CompositeMap data;
 	private SashForm sashForm;
 	private Composite shell;
 	private ArrayList childViews;
 
-	private static final String[] customTabs = new String[] { "primary-key", "order-by", "ref-fields" };
+	private static final String[] customTabs = new String[] { "primary-key",
+			"order-by", "ref-fields" };
 	private static final String ref_fields = "ref-fields";
 	private List tabFolerNameList;
 	private static Map customerTitles = new HashMap();
@@ -90,11 +95,13 @@ public class BusinessModelPage extends CompositeMapPage {
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = managedForm.getForm();
 		shell = form.getBody();
-		FillLayout layout = new FillLayout();
+		GridLayout layout = new GridLayout();
 		shell.setLayout(layout);
-		Element schemaElement = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.ModelQN);
+		Element schemaElement = LoadSchemaManager.getSchemaManager()
+				.getElement(AuroraConstant.ModelQN);
 		if (schemaElement == null) {
-			DialogUtil.showErrorMessageBox(LocaleMessage.getString("please.add.bm.schema.file"));
+			DialogUtil.showErrorMessageBox(LocaleMessage
+					.getString("please.add.bm.schema.file"));
 			return;
 		}
 		if (data == null) {
@@ -107,9 +114,11 @@ public class BusinessModelPage extends CompositeMapPage {
 				return;
 			} catch (SAXException e) {
 				String emptyExcption = "Premature end of file";
-				if (e.getMessage() != null && e.getMessage().indexOf(emptyExcption) != -1) {
+				if (e.getMessage() != null
+						&& e.getMessage().indexOf(emptyExcption) != -1) {
 					data = BMUtil.createBMTopNode();
-					((CommentCompositeMap)data).setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
+					((CommentCompositeMap) data)
+							.setComment("本文件为空,现在内容为系统自动创建,请修改并保存");
 				} else {
 					DialogUtil.showExceptionMessageBox(e);
 					return;
@@ -117,7 +126,8 @@ public class BusinessModelPage extends CompositeMapPage {
 			}
 			if (!data.getQName().equals(AuroraConstant.ModelQN)) {
 				DialogUtil.showErrorMessageBox("文件" + filePath + "的"
-						+ LocaleMessage.getString("this.root.element.is.not") + AuroraConstant.ModelQN + " !");
+						+ LocaleMessage.getString("this.root.element.is.not")
+						+ AuroraConstant.ModelQN + " !");
 				return;
 			}
 		}
@@ -140,8 +150,15 @@ public class BusinessModelPage extends CompositeMapPage {
 		initChildViews();
 		createMasterContent(sashForm);
 		createDetailContent(sashForm);
-		sashForm.setWeights(new int[] { 50, 50 });
+		sashForm.setLayoutData(new GridData(GridData.FILL_BOTH));
+		sashForm.setLayout(new GridLayout());
 		shell.layout(true);
+		sashForm.setWeights(new int[] { 40, 60 });
+		if (this.getSelectionTab() == null) {
+			CompositeMap child = data.getChild("operations");
+			String init_tab = child == null ? "fields" : "operations";
+			this.setSelectionTab(init_tab);
+		}
 	}
 
 	private void initChildViews() {
@@ -152,9 +169,13 @@ public class BusinessModelPage extends CompositeMapPage {
 			childViews = new ArrayList();
 	}
 
-	protected void createMasterContent(Composite parent) throws ApplicationException {
+	protected void createMasterContent(Composite parent)
+			throws ApplicationException {
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
-		PropertyHashViewer mPropertyEditor = new PropertyHashViewer(this, sashForm);
+		sashForm.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		sashForm.setLayout(new GridLayout(2, false));
+		PropertyHashViewer mPropertyEditor = new PropertyHashViewer(this,
+				sashForm);
 		childViews.add(mPropertyEditor);
 		mPropertyEditor.createEditor(false);
 		String errorMessage = mPropertyEditor.clear(true);
@@ -165,7 +186,8 @@ public class BusinessModelPage extends CompositeMapPage {
 		Group bmDescGroup = new Group(sashForm, SWT.NONE);
 		bmDescGroup.setLayout(new FillLayout());
 		bmDescGroup.setText("本BM功能描述");
-		final StyledText bmDescSt = new StyledText(bmDescGroup, SWT.MULTI | SWT.WRAP | SWT.BORDER);
+		final StyledText bmDescSt = new StyledText(bmDescGroup, SWT.MULTI
+				| SWT.WRAP | SWT.BORDER);
 		final String bmDesc = "description";
 		CompositeMap bmCm = data.getChild(bmDesc);
 		if (bmCm != null) {
@@ -178,7 +200,8 @@ public class BusinessModelPage extends CompositeMapPage {
 			public void modifyText(ModifyEvent e) {
 				CompositeMap bmCm = data.getChild(bmDesc);
 				if (bmCm == null) {
-					bmCm = new CommentCompositeMap(data.getPrefix(), data.getNamespaceURI(), bmDesc);
+					bmCm = new CommentCompositeMap(data.getPrefix(), data
+							.getNamespaceURI(), bmDesc);
 					data.addChild(bmCm);
 				}
 				bmCm.setText(bmDescSt.getText());
@@ -192,9 +215,12 @@ public class BusinessModelPage extends CompositeMapPage {
 		tabFolerNameList.add(i, tabFolerName);
 	}
 
-	private void createDetailContent(Composite parent) throws ApplicationException {
+	private void createDetailContent(Composite parent)
+			throws ApplicationException {
 		mTabFolder = createTabFolder(parent);
-		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.ModelQN);
+		mTabFolder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		Element model_em = LoadSchemaManager.getSchemaManager().getElement(
+				AuroraConstant.ModelQN);
 		Iterator arrays = model_em.getAllArrays().iterator();
 		for (int i = 0; arrays.hasNext(); i++) {
 			Array array = (Array) arrays.next();
@@ -202,23 +228,25 @@ public class BusinessModelPage extends CompositeMapPage {
 
 			if (array_data == null) {
 				String name = array.getLocalName();
-				array_data = new CommentCompositeMap(data.getPrefix(), data.getNamespaceURI(), name);
+				array_data = new CommentCompositeMap(data.getPrefix(),
+						data.getNamespaceURI(), name);
 				array_data.setParent(data);
 			}
-
 			IType type = array.getElementType();
 			if (!(type instanceof Element)) {
 				childViews.add(createBaseViewer(i, array, array_data));
 				registerTabFolder(i, array.getLocalName());
 				continue;
 			}
-			Element arrayType = LoadSchemaManager.getSchemaManager().getElement(type.getQName());
+			Element arrayType = LoadSchemaManager.getSchemaManager()
+					.getElement(type.getQName());
 			if (arrayType.getAllElements().size() > 0) {
 				childViews.add(createBaseViewer(i, array, array_data));
 				registerTabFolder(i, array.getLocalName());
 				continue;
 			} else {
-				final GridViewer gridViewer = new GridViewer(null, IGridViewer.fullEditable);
+				final GridViewer gridViewer = new GridViewer(null,
+						IGridViewer.fullEditable);
 				gridViewer.setParent(this);
 				gridViewer.createViewer(mTabFolder, array_data);
 
@@ -228,7 +256,8 @@ public class BusinessModelPage extends CompositeMapPage {
 					}
 				}
 
-				mTabFolder.getItem(i).setText(customTabTitle(array.getLocalName()));
+				mTabFolder.getItem(i).setText(
+						customTabTitle(array.getLocalName()));
 				mTabFolder.getItem(i).setControl(gridViewer.getControl());
 				childViews.add(gridViewer);
 				registerTabFolder(i, array.getLocalName());
@@ -236,8 +265,9 @@ public class BusinessModelPage extends CompositeMapPage {
 				mTabFolder.addSelectionListener(new SelectionListener() {
 
 					public void widgetSelected(SelectionEvent e) {
-						if (mTabFolder.getSelectionIndex() == itemIndex)
+						if (mTabFolder.getSelectionIndex() == itemIndex){
 							gridViewer.packColumns();
+						}
 					}
 
 					public void widgetDefaultSelected(SelectionEvent e) {
@@ -250,9 +280,10 @@ public class BusinessModelPage extends CompositeMapPage {
 
 	}
 
-	private BaseCompositeMapViewer createBaseViewer(int i, Array array, CompositeMap array_data)
-			throws ApplicationException {
-		BaseCompositeMapViewer baseViewer = new BaseCompositeMapViewer(this, array_data);
+	private BaseCompositeMapViewer createBaseViewer(int i, Array array,
+			CompositeMap array_data) throws ApplicationException {
+		BaseCompositeMapViewer baseViewer = new BaseCompositeMapViewer(this,
+				array_data);
 		baseViewer.createFormContent(mTabFolder);
 		mTabFolder.getItem(i).setText(customTabTitle(array.getLocalName()));
 		mTabFolder.getItem(i).setControl(baseViewer.getControl());
@@ -260,7 +291,8 @@ public class BusinessModelPage extends CompositeMapPage {
 	}
 
 	public void createCustomerActions(GridViewer pae) {
-//		Element element = LoadSchemaManager.getSchemaManager().getElement(pae.getInput());
+		// Element element =
+		// LoadSchemaManager.getSchemaManager().getElement(pae.getInput());
 		Element element = CompositeMapUtil.getElement(pae.getInput());
 		if (element == null) {
 			return;
@@ -269,19 +301,23 @@ public class BusinessModelPage extends CompositeMapPage {
 		if (element.isArray()) {
 			Action addAction = null;
 			if (ref_fields.equals(element.getLocalName())) {
-				addAction = new AddRefFieldAction(pae, pae.getInput().getParent(), ActionListener.DefaultImage);
+				addAction = new AddRefFieldAction(pae, pae.getInput()
+						.getParent(), ActionListener.DefaultImage);
 			} else {
-				addAction = new AddFieldAction(pae, data.getChild("fields"), pae.getInput());
+				addAction = new AddFieldAction(pae, data.getChild("fields"),
+						pae.getInput());
 			}
 			actions[0] = addAction;
 			actions[1] = new RefreshAction(pae, ActionListener.DefaultImage);
-			actions[2] = new RemoveElementAction(pae, ActionListener.DefaultImage);
+			actions[2] = new RemoveElementAction(pae,
+					ActionListener.DefaultImage);
 			pae.setActions(actions);
 		}
 	}
 
 	private CTabFolder createTabFolder(final Composite parent) {
-		final CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE | SWT.BORDER);
+		final CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE
+				| SWT.BORDER);
 		tabFolder.setMaximizeVisible(true);
 		tabFolder.addMouseListener(new MouseListener() {
 			public void mouseUp(MouseEvent e) {
@@ -305,7 +341,8 @@ public class BusinessModelPage extends CompositeMapPage {
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void minimize(CTabFolderEvent event) {
 				tabFolder.setMinimized(true);
-				tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+				tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+						false));
 				parent.layout(true);
 			}
 
@@ -324,7 +361,8 @@ public class BusinessModelPage extends CompositeMapPage {
 		tabFolder.setSimple(false);
 		tabFolder.setTabHeight(23);
 
-		Element model_em = LoadSchemaManager.getSchemaManager().getElement(AuroraConstant.ModelQN);
+		Element model_em = LoadSchemaManager.getSchemaManager().getElement(
+				AuroraConstant.ModelQN);
 		for (int i = 0; i < model_em.getAllArrays().size(); i++) {
 			new CTabItem(tabFolder, SWT.None | SWT.MULTI | SWT.V_SCROLL);
 		}
@@ -334,7 +372,7 @@ public class BusinessModelPage extends CompositeMapPage {
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			File file = getFile();
-//			XMLOutputter.saveToFile(file, data);
+			// XMLOutputter.saveToFile(file, data);
 			CommentXMLOutputter.saveToFile(file, data);
 			super.doSave(monitor);
 		} catch (IOException e) {
@@ -368,7 +406,8 @@ public class BusinessModelPage extends CompositeMapPage {
 			String tabFolderName = (String) tabIt.next();
 			CompositeMap array_data = data.getChild(tabFolderName);
 			if (array_data == null) {
-				array_data = new CommentCompositeMap(data.getPrefix(), data.getNamespaceURI(), tabFolderName);
+				array_data = new CommentCompositeMap(data.getPrefix(),
+						data.getNamespaceURI(), tabFolderName);
 				array_data.setParent(data);
 				Object childViewer = childViews.get(index + 1);
 				if (childViewer == null)
@@ -384,6 +423,7 @@ public class BusinessModelPage extends CompositeMapPage {
 			index++;
 		}
 	}
+
 	public CompositeMap getData() {
 		return data;
 	}
