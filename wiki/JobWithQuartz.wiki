@@ -1,8 +1,15 @@
 #summary Aurora系统中启用定时任务.
+#labels Quartz,svc,aurora
 
 = 简介 =
 
 Aurora中用开源框架Quartz来实现定时任务。支持定时调用java代码和Proc（等同于svc）文件。
+
+= 部署 =
+在项目jar目录下放置aurora-plugin.jar,并在${WEB-HOME}/WEB-INF/uncertain.xml文件的 *packages* 节点中添加元素：
+{{{
+<package-path classPath="aurora_plugin_package/aurora.plugin.quartz"/>
+}}}
 
 
 = 定时调用porc =
@@ -37,7 +44,7 @@ repeatCount="-1" repeatInterval="5000"/>
 
 }}}
  * 节点解释
-*job-instance* 表示一个定时任务实例，可以定义多个。它的jobName和triggerName分别对应jobs和triggers中name属性。
+job-instance 表示一个定时任务实例，可以定义多个。它的jobName和triggerName分别对应jobs和triggers中name属性。
 auroraJobDetail元素描述了要执行那个proc文件，simple-trigger元素描述了什么时候开始执行，以多快的频率重复定时执行。
 auroraJobDetail中stateful="true"表示，在下次执行时间到来时，如果发现在上一个任务没处理完，就等它执行结束再开始执行，false则表示仍旧立即执行。
 simple-trigger中repeatCount表示执行的次数，-1表示无限次。repeatInterval表示执行的频率，单位是毫毛。
