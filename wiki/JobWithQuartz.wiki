@@ -66,3 +66,56 @@ xmlns:p="uncertain.proc" trace="true">
 </p:procedure>
 }}}
 唯一跟svc不同是，顶级节点是procedure。
+
+=调用java程序=
+
+例子
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+
+<scheduler-config debug="true" xmlns="aurora.plugin.quartz" xmlns:qz="org.quartz">
+    
+    <jobs>
+        
+        <auroraJobDetail stateful="true" name="you_job_name" method="you_method_name"
+ 
+you_need_attr="you_setting_value" jobClass="you_packageName.you_className"/>
+        
+    </jobs>
+    
+    <triggers>
+        
+        <qz:simple-trigger name="every5sec" startTime="2012-01-01 00:00:00" 
+repeatCount="-1" repeatInterval="5000"/>
+        
+    </triggers>
+    
+    <instances>
+        
+        <job-instance jobName="you_job_name" triggerName="every5sec"/>
+        
+    </instances>
+    
+</scheduler-config>
+
+}}}
+
+这个例子与上面的例子基本相同，只是auroraJobDetail中jobClass和method和其他属性不同。jobClass表示需要调用的java类的全名，method表示需要调用的方法，另外还可以定义运行这个类需要设定的变量参数。
+
+ * java编写要则：
+  类的构造函数所依赖的参数要求是在aurora中已经注册和实例化的对象（即在IObjectRegistry中注册过），比如数据库连接工厂（IDatabaseServiceFactory）等，最好是无参数的构造函数。
+  方法名默认调用时run，也可以自己设定。方法所依赖的输入参数的同样是需要在aurora中已经注册和实例化的对象，另外多加一个JobExecutionContext。
+      
+ * 编写代码提示
+   IObjectRegistry，通过SchedulerConfig.getObjectRegistry()来IObjectRegistry实例，再通过IObjectRegistry来获得需要的实例。  
+   获得自定义属性的内容：
+{{{
+public void run(JobExecutionContext context) throws Exception {
+  AuroraJobDetail detail = (AuroraJobDetail) context.getJobDetail();
+  CompositeMap config = detail.getConfig();
+  //获得自定义属性的内容
+  String you_setting_value= config.getString("you_need_attr");
+  。。。。
+}}}
+   
+  
