@@ -1,0 +1,61 @@
+#summary Aurora系统中启用定时任务.
+
+= 简介 =
+
+Aurora中用开源框架Quartz来实现定时任务。支持定时调用java代码和Proc（等同于svc）文件。
+
+
+= 定时调用porc =
+
+ 例子
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+
+<scheduler-config debug="true" xmlns="aurora.plugin.quartz" xmlns:qz="org.quartz">
+    
+    <jobs>
+        
+        <auroraJobDetail stateful="true" name="you_job_name" method="run" 
+procedure="test.model_consumer" jobClass="aurora.plugin.quartz.ProcedureInvoke"/>
+        
+    </jobs>
+    
+    <triggers>
+        
+        <qz:simple-trigger name="every5sec" startTime="2012-01-01 00:00:00" 
+repeatCount="-1" repeatInterval="5000"/>
+        
+    </triggers>
+    
+    <instances>
+        
+        <job-instance jobName="you_job_name" triggerName="every5sec"/>
+        
+    </instances>
+    
+</scheduler-config>
+
+}}}
+ * 节点解释
+*job-instance* 表示一个定时任务实例，可以定义多个。它的jobName和triggerName分别对应jobs和triggers中name属性。
+auroraJobDetail元素描述了要执行那个proc文件，simple-trigger元素描述了什么时候开始执行，以多快的频率重复定时执行。
+auroraJobDetail中stateful="true"表示，在下次执行时间到来时，如果发现在上一个任务没处理完，就等它执行结束再开始执行，false则表示仍旧立即执行。
+simple-trigger中repeatCount表示执行的次数，-1表示无限次。repeatInterval表示执行的频率，单位是毫毛。
+ * 例子解释
+上面这个例子中表示要从2012年1月1日开始（因为并非未来的某个时间，所以立即执行），每五秒调用执行一次test.model_consumer文件，如果上次没执行完，则等待上次结束后再运行。
+ * proc文件解释
+下面我们再来看下test.model_consumer文件，它的完整路径是${WEB-HOME}/WEB-INF/classes/test/model_consumer.proc,内容格式跟svc相同：
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<p:procedure xmlns:a="http://www.aurora-framework.org/application"  xmlns:rs="aurora.database.rsconsumer" 
+xmlns:p="uncertain.proc" trace="true">
+	<a:model-query fetchAll="true" model="test.sys_user_test">
+		<a:consumer>
+			<rs:ModelActionConsumerWrapper useTransactionManager="false">
+				<a:model-insert model="test.account_test_temp"/>
+			</rs:ModelActionConsumerWrapper>
+		</a:consumer>
+   </a:model-query>
+</p:procedure>
+}}}
+唯一跟svc不同是，顶级节点是procedure。
