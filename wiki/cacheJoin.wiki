@@ -8,9 +8,9 @@
 
 = 配置 =
 
- * 在${WEB-HOME}/web-inf/aurora.feature目录下添加bm-cached-data.config文件，内容是
+ * 在${WEB-HOME}/web-inf/aurora.feature目录下添加bm-cached-join.config文件，内容是 
  {{{
-  <bm:BmCachedDataProvider xmlns:bm="aurora.bm" />
+  <bm:BmCachedJoin xmlns:bm="aurora.bm" />
  }}}
  * 在${WEB-HOME}/web-inf/cacheConfig目录下添加主数据表的配置文件。例如需要对sys_user表做缓存，对应的bm是sys.sys_user。那么添加一个sys_user.config（文件名可以任意，后缀必须是config），文件内容是
   {{{
