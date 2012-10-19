@@ -1,4 +1,3 @@
-#labels 配置eclipsejettycontext顺序加载
 =eclipse jetty context load order=
 *修改/etc/jetty.xml*
 {{{
