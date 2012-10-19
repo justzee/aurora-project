@@ -1,4 +1,4 @@
-#labels 配置,eclipse,jetty,context,load,order
+#labels jetty
 =eclipse jetty context load order=
 *修改/etc/jetty.xml*
 {{{
