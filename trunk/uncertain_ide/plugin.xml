@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <extension-point id="compositeMapCacher" name="CompoisiteMapCacher" schema="schema/compositeMapCacher.exsd"/>
     <extension point="org.eclipse.ui.newWizards">
         <category id="aurora.ide.wizard" name="%category.name">
         </category>
@@ -85,46 +86,72 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="aurora.ide.preferencePage"
-            class="aurora.ide.preferencepages.SxsdDirPreferencePage"
-            id="aurora.ide.preferencePage.SxsdDirectoryPreferencePage"
-            name="%page.builtin.package">
-      </page>
-      <page
-            category="aurora.ide.preferencePage"
-            class="aurora.ide.preferencepages.BrowserPreferencePage"
-            id="aurora.ide.preferencePage.BrowserPreferencePage"
-            name="%page.screen.preview">
-      </page>
-      <page
             class="aurora.ide.preferencepages.AuroraPreferencePage"
             id="aurora.ide.preferencePage"
             name="%page.root">
       </page>
+      
+      <!--editor-->
       <page
             category="aurora.ide.preferencePage"
+            class="aurora.ide.preferencepages.CustomSettingPreferencePage"
+            id="aurora.ide.editor.preferencePage"
+            name="Editor">
+      </page>
+      <page
+            category="aurora.ide.editor.preferencePage"
             class="aurora.ide.preferencepages.AuroraTemplatePreferencePage"
             id="aurora.ide.preferencePage.TemplatesPage"
             name="%page.templates">
       </page>
       <page
-            category="aurora.ide.preferencePage"
-            class="aurora.ide.preferencepages.CustomSettingPreferencePage"
-            id="aurora.ide.preferencePage.CustomPage"
-            name="%page.custom">
+            category="aurora.ide.editor.preferencePage"
+            class="aurora.ide.preferencepages.BrowserPreferencePage"
+            id="aurora.ide.preferencePage.BrowserPreferencePage"
+            name="%page.screen.preview">
+      </page>
+      <page 
+            category="aurora.ide.editor.preferencePage"
+            class="aurora.ide.preferencepages.FunctionRegisterPreferencePage"
+            id="aurora.ide.export.function.regiester.sql"
+            name="%function.register.sql">
+      </page>
+      
+      <!--building-->
+      <page
+      		category="aurora.ide.preferencePage"
+            class="aurora.ide.preferencepages.AuroraPreferencePage"
+            id="aurora.ide.building.preferencePage"
+            name="Building">
       </page>
       <page
-            category="aurora.ide.preferencePage.CustomPage"
+            category="aurora.ide.building.preferencePage"
             class="aurora.ide.preferencepages.BuildLevelPage"
             id="aurora.ide.preferencepages.BuildLevel"
             name="Errors/Warnings">
       </page>
+      
+      <!--viewer-->
+       <page
+       	    category="aurora.ide.preferencePage"
+            class="aurora.ide.preferencepages.AuroraPreferencePage"
+            id="aurora.ide.viewer.preferencePage"
+            name="Viewer">
+      </page>
       <page
-         category="aurora.ide.preferencePage"
+         category="aurora.ide.viewer.preferencePage"
          class="aurora.ide.preferencepages.StatisticianPropertyPage"
          id="aurora.ide.preferencepages.StatisticianPropertyPage"
          name="%page.statistician">
 	  </page>
+ 	  <!--root-->     
+      <page
+            category="aurora.ide.preferencePage"
+            class="aurora.ide.preferencepages.SxsdDirPreferencePage"
+            id="aurora.ide.preferencePage.SxsdDirectoryPreferencePage"
+            name="%page.builtin.package">
+      </page>
+      
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -940,5 +967,11 @@
     	 icon="icons/aurora8x8.png">
   		</image>
  	</extension>
+    <extension
+          point="aurora.ide.compositeMapCacher">
+          <files desc="AuroraFile" extentionNames="bm, screen, svc"/> 
+           <files desc="ConfigFile" extentionNames="xml, proc, config"/> 
+           <files desc="PrototypeFile" extentionNames="bmq, uip"/> 
+    </extension>
     
 </plugin>
