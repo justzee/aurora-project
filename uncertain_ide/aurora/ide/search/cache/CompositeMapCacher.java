@@ -42,7 +42,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private synchronized CompositeMap getCompositeMap(IFile file)
 				throws CoreException, ApplicationException {
-			if (!PathUtil.isAuroraFile(file) && !PathUtil.isConfigFile(file)) {
+			if (!CacheManager.isSupport(file)) {
 				return EMPTY_MAP;
 			}
 			CompositeMap map = catchMap.get(file);
@@ -88,6 +88,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 		private BusinessModel createResult(CompositeMap config, IFile file) {
 			ExtendModelFactory factory = new ExtendModelFactory(
 					OCManager.getInstance(), file);
+			// ModelFactory factory = new ModelFactory(OCManager.getInstance());
 			return factory.getModel(config);
 		}
 

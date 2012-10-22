@@ -47,7 +47,8 @@ public class BMFileContentProvider implements ITreeContentProvider,
 				DialogUtil.logErrorException(e);
 				return NO_CHILD;
 			} catch (ApplicationException e) {
-				DialogUtil.showExceptionMessageBox(e);
+				//错误信息不明确，
+				DialogUtil.logErrorException(e);
 				return NO_CHILD;
 			}
 		}
@@ -210,12 +211,19 @@ public class BMFileContentProvider implements ITreeContentProvider,
 				fileList.add(resources[i]);
 				continue;
 			}
-			BMFile bmFile = searchBMLinkFile(child);
-			if (bmFile != null) {
-				fileList.add(bmFile);
-			} else {
-				fileList.add(child);
+			try {
+				
+				BMFile bmFile = searchBMLinkFile(child);
+				if (bmFile != null) {
+					fileList.add(bmFile);
+				} else {
+					fileList.add(child);
+				}
+			} catch (ApplicationException e) {
+//				DialogUtil.showErrorMessageBox(child.getFullPath().toString());
+				throw e;
 			}
+			
 		}
 
 		return fileList.toArray();
