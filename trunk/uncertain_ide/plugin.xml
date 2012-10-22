@@ -971,7 +971,7 @@
           point="aurora.ide.compositeMapCacher">
           <files desc="AuroraFile" extentionNames="bm, screen, svc"/> 
            <files desc="ConfigFile" extentionNames="xml, proc, config"/> 
-           <files desc="PrototypeFile" extentionNames="bmq, uip"/> 
+           <files desc="PrototypeFile" extentionNames="bmq, uip,code"/> 
     </extension>
     
 </plugin>
