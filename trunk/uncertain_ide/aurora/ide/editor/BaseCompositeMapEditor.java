@@ -139,11 +139,11 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	}
 
 	protected void pageChange(int newPageIndex) {
-		IEditorInput editorInput = this.getEditorInput();
-		if (editorInput instanceof IFileEditorInput) {
-			AuroraBuilder.deleteMarkers(((IFileEditorInput) editorInput)
-					.getFile());
-		}
+//		IEditorInput editorInput = this.getEditorInput();
+//		if (editorInput instanceof IFileEditorInput) {
+//			AuroraBuilder.deleteMarkers(((IFileEditorInput) editorInput)
+//					.getFile());
+//		}
 		super.pageChange(newPageIndex);
 		if (newPageIndex == mainViewerIndex) {
 			try {
