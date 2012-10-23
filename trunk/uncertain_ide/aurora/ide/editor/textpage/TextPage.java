@@ -170,7 +170,7 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public String getContent() {
-		return getSourceViewer().getTextWidget().getText();
+		return getSourceViewer().getDocument().get();
 	}
 
 	public boolean canLeaveThePage() {
