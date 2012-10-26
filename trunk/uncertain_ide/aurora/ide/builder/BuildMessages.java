@@ -21,4 +21,18 @@ public final class BuildMessages {
 		return value;
 	}
 
+	/**
+	 * first get(key),if the value exists,then String.format(value,params)
+	 * 
+	 * @param key
+	 * @param params
+	 * @return
+	 */
+	public static String get(String key, Object... params) {
+		String value = get(key);
+		if (value != null)
+			value = String.format(value, params);
+		return value;
+	}
+
 }

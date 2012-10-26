@@ -1,5 +1,7 @@
 package aurora.ide.builder;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -247,5 +249,23 @@ public final class ResourceUtil {
 		if (res instanceof IFolder)
 			return (IFolder) res;
 		return null;
+	}
+
+	public static final ArrayList<IFolder> findAllWebInf(IProject proj) {
+		final ArrayList<IFolder> als = new ArrayList<IFolder>();
+		try {
+			proj.accept(new IResourceVisitor() {
+
+				@Override
+				public boolean visit(IResource resource) throws CoreException {
+					if ("WEB-INF".equals(resource.getName()))
+						als.add((IFolder) resource);
+					return true;
+				}
+			}, IResource.DEPTH_INFINITE, IResource.FOLDER);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return als;
 	}
 }
