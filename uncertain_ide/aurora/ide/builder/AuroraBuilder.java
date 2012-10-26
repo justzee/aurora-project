@@ -1,8 +1,7 @@
 package aurora.ide.builder;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -16,22 +15,22 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 
 import aurora.ide.builder.validator.BmValidator;
 import aurora.ide.builder.validator.ScreenValidator;
 import aurora.ide.builder.validator.SvcValidator;
 import aurora.ide.builder.validator.UncertainLocalValidator;
-import aurora.ide.helpers.LogUtil;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
+import aurora.ide.search.core.Message;
+import aurora.ide.search.ui.MessageFormater;
 
 public class AuroraBuilder extends IncrementalProjectBuilder {
-	private IProgressMonitor monitor;
 	private int filecount = 0;
 	private IPath webPath;
 
@@ -112,7 +111,9 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		return null;
 	}
 
-	private Set<IFolder> web_infs = new HashSet<IFolder>();
+	protected IResource fCurrentResource;
+	protected int fNumberOfScannedFiles;
+	private Job updateMonitorJob;
 
 	public static IMarker addMarker(IFile file, String msg, int lineno,
 			IRegion region, int sevrity, String markerType) {
@@ -131,13 +132,14 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 	 * java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
+	protected IProject[] build(int kind,
+			@SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor)
 			throws CoreException {
 		BuildContext.initBuildLevel();
+		updateMonitorJob = createJob(monitor);
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
-			this.monitor = monitor;
 			IResourceDelta delta = getDelta(getProject());
 			if (delta == null) {
 				return null;
@@ -147,6 +149,51 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			}
 		}
 		return null;
+	}
+
+	private Job createJob(final IProgressMonitor monitor) {
+		return new Job("Aurora build progress") {
+
+			private int fLastNumberOfScannedFiles = 0;
+
+			public IStatus run(final IProgressMonitor inner) {
+				while (!inner.isCanceled()) {
+					final IResource res = fCurrentResource;
+					if (res != null) {
+						if (!isRunInUI()) {
+							Display.getDefault().asyncExec(new Runnable() {
+								public void run() {
+									updateMonitor(monitor, res);
+								}
+							});
+						} else {
+							updateMonitor(monitor, res);
+						}
+					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						return Status.OK_STATUS;
+					}
+				}
+				return Status.OK_STATUS;
+			}
+
+			private boolean isRunInUI() {
+				return true;
+			}
+
+			private void updateMonitor(final IProgressMonitor monitor,
+					final IResource res) {
+				String fileName = res.getName();
+				final Object[] args = { fileName, fNumberOfScannedFiles,
+						filecount };
+				monitor.subTask(MessageFormater.format(Message._scanning, args));
+				int steps = fNumberOfScannedFiles - fLastNumberOfScannedFiles;
+				monitor.worked(steps);
+				fLastNumberOfScannedFiles += steps;
+			}
+		};
 	}
 
 	public static void deleteMarkers(IFile file) {
@@ -162,19 +209,16 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		try {
 			if (!checkWebDir())
 				return;
-			filecount = 0;
-			getProject().accept(new IResourceVisitor() {
-
-				public boolean visit(IResource resource) throws CoreException {
-					filecount++;
-					return true;
-				}
-			});
-			this.monitor = monitor;
+			getProject().accept(new ResourceCountVisitor());
 			monitor.beginTask("builder " + getProject().getName(), filecount);
+			updateMonitorJob.setSystem(true);
+			updateMonitorJob.schedule();
 			getProject().accept(new SampleResourceVisitor());
 		} catch (CoreException e) {
 			e.printStackTrace();
+		} finally {
+			updateMonitorJob.cancel();
+			monitor.done();
 		}
 	}
 
@@ -182,9 +226,13 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			IProgressMonitor monitor) throws CoreException {
 		if (!checkWebDir())
 			return;
-		filecount = 1;
+		delta.accept(new ResourceCountVisitor());
 		monitor.beginTask("builder " + getProject().getName(), filecount);
+		updateMonitorJob.setSystem(true);
+		updateMonitorJob.schedule();
 		delta.accept(new SampleDeltaVisitor());
+		updateMonitorJob.cancel();
+		monitor.done();
 	}
 
 	private boolean checkWebDir() throws CoreException {
@@ -192,77 +240,92 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		project.deleteMarkers(CONFIG_PROBLEM, false, IResource.DEPTH_ZERO);
 		String webdir = project
 				.getPersistentProperty(ProjectPropertyPage.WebQN);
-		if (webdir == null
-				|| !project.getParent()
-						.getFolder(new Path(webdir + "/WEB-INF")).exists()) {
-			IMarker marker = project.createMarker(CONFIG_PROBLEM);
-			marker.setAttribute(IMarker.MESSAGE, "[Web主目录]不存在或[WEB-INF]不存在!");
-			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					MessageBox mb = new MessageBox(new Shell(), SWT.ERROR);
-					mb.setText("builder error");
-					mb.setMessage("[Web主目录]不存在或[WEB-INF]不存在!");
-					mb.open();
-				}
-			});
-			return false;
-		}
-		webPath = new Path(webdir);
+		if (webdir == null) {
+			ArrayList<IFolder> als = ResourceUtil.findAllWebInf(project);
+			for (IFolder f : als)
+				f.deleteMarkers(CONFIG_PROBLEM, false, 0);
+			if (als.size() > 1) {
+				IMarker marker = als.get(1).createMarker(CONFIG_PROBLEM);
+				marker.setAttribute(IMarker.MESSAGE,
+						BuildMessages.get("build.webinfo.muliti"));
+				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+				return false;
+			} else if (als.size() == 0) {
+				IMarker marker = project.createMarker(CONFIG_PROBLEM);
+				marker.setAttribute(IMarker.MESSAGE,
+						BuildMessages.get("build.web.notexists"));
+				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+				// Display.getDefault().asyncExec(new Runnable() {
+				// public void run() {
+				// MessageBox mb = new MessageBox(new Shell(), SWT.ERROR);
+				// mb.setText(BuildMessages.get("build.error.prompt"));
+				// mb.setMessage(BuildMessages.get("build.web.notexists"));
+				// mb.open();
+				// }
+				// });
+				return false;
+			} else {
+				IFolder webinf = als.get(0);
+				webPath = webinf.getParent().getFullPath();
+				project.setPersistentProperty(ProjectPropertyPage.WebQN,
+						webPath.toString());
+				project.setPersistentProperty(ProjectPropertyPage.BMQN, webinf
+						.getFolder("classes").getFullPath().toString());
+			}
+		} else
+			webPath = new Path(webdir);
 		return true;
 	}
 
 	private void validate(IResource resource) {
-		monitor.subTask(resource.getName());
-		monitor.worked(1);
+		fCurrentResource = resource;
+		fNumberOfScannedFiles++;
 		if (!webPath.isPrefixOf(resource.getFullPath()))
 			return;
 		if (resource instanceof IFile) {
 			IFile file = (IFile) resource;
-			deleteMarkers(file);
-			String ext = file.getFileExtension();
-			if (ext != null)
-				ext = ext.toLowerCase();
-			if (file.getName().equalsIgnoreCase("uncertain.local.xml")) {
-				new UncertainLocalValidator(file).validate();
-			} else if ("bm".equals(ext)) {
-				new BmValidator(file).validate();
-			} else if ("svc".equals(ext)) {
-				new SvcValidator(file).validate();
-			} else if ("screen".equals(ext)) {
-				new ScreenValidator(file).validate();
-			} else if ("config".equals(ext)) {
-			}
+			validateFile(file);
+		}
+	}
 
-		} else if (resource instanceof IFolder) {
-			IFolder folder = (IFolder) resource;
-			if (!folder.getName().equals("WEB-INF")) {
-				return;
-			}
-			try {
-				if (folder.getProject().getPersistentProperty(
-						ProjectPropertyPage.WebQN) != null)
-					return;
-				folder.deleteMarkers(CONFIG_PROBLEM, false,
-						IResource.DEPTH_ZERO);
-				web_infs.add(folder);
-				if (web_infs.size() > 1) {
-					for (IFolder f : web_infs) {
-						f.deleteMarkers(CONFIG_PROBLEM, false,
-								IResource.DEPTH_ZERO);
-						IMarker marker = f.createMarker(CONFIG_PROBLEM);
-						marker.setAttribute(IMarker.MESSAGE, "有多个WEB-INF目录!");
-						marker.setAttribute(IMarker.SEVERITY,
-								IMarker.SEVERITY_ERROR);
-					}
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
+	private void validateFile(IFile file) {
+		deleteMarkers(file);
+		String ext = file.getFileExtension();
+		if (ext != null)
+			ext = ext.toLowerCase();
+		if (file.getName().equalsIgnoreCase("uncertain.local.xml")) {
+			new UncertainLocalValidator(file).validate();
+		} else if ("bm".equals(ext)) {
+			new BmValidator(file).validate();
+		} else if ("svc".equals(ext)) {
+			new SvcValidator(file).validate();
+		} else if ("screen".equals(ext)) {
+			new ScreenValidator(file).validate();
+		} else if ("config".equals(ext)) {
 		}
 	}
 
 	public static String[] getDefinedMarkerTypes() {
 		return definedMarkerTypes;
+	}
+
+	private class ResourceCountVisitor implements IResourceDeltaVisitor,
+			IResourceVisitor {
+
+		public ResourceCountVisitor() {
+			filecount = 0;
+		}
+
+		@Override
+		public boolean visit(IResource resource) throws CoreException {
+			filecount++;
+			return true;
+		}
+
+		@Override
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			filecount++;
+			return true;
+		}
 	}
 }
