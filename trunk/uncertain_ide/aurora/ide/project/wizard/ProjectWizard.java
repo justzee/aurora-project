@@ -87,7 +87,6 @@ public class ProjectWizard extends BasicNewProjectResourceWizard implements
 		Display.getCurrent().asyncExec(this);
 	}
 
-	@Override
 	public void run() {
 		try {
 			AuroraPlugin.getDefault().getWorkbench().getProgressService()
@@ -99,7 +98,6 @@ public class ProjectWizard extends BasicNewProjectResourceWizard implements
 		}
 	}
 
-	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
 		try {
