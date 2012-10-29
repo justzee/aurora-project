@@ -137,6 +137,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			throws CoreException {
 		BuildContext.initBuildLevel();
 		updateMonitorJob = createJob(monitor);
+		fNumberOfScannedFiles = 0;
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
