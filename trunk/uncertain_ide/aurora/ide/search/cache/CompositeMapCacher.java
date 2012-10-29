@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -30,7 +31,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 	private final static CompositeMap EMPTY_MAP = new CompositeMap();
 
 	private class ProjectCatcher {
-		private Map<IFile, CompositeMap> catchMap = new HashMap<IFile, CompositeMap>();
+		private Map<IFile, CacheFile> catchMap = new HashMap<IFile, CacheFile>();
 
 		private Map<IFile, CompositeMap> wholeBMMap = new HashMap<IFile, CompositeMap>();
 
@@ -45,14 +46,13 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			if (!CacheManager.isSupport(file)) {
 				return EMPTY_MAP;
 			}
-			CompositeMap map = catchMap.get(file);
-			if (map == null) {
-				map = load(file);
-				if (map != null) {
-					catchMap.put(file, map);
-				}
+			CacheFile cacheFile = catchMap.get(file);
+			if (cacheFile == null) {
+				CompositeMap map = load(file);
+				cacheFile = new CacheFile(file, map);
+				catchMap.put(file, cacheFile);
 			}
-			return map;
+			return cacheFile.getCompositeMap();
 		}
 
 		private synchronized CompositeMap getWholeCompositeMap(IFile file)
@@ -105,8 +105,12 @@ public class CompositeMapCacher implements IResourceChangeListener,
 		}
 
 		private synchronized CompositeMap remove(IFile file) {
-			// wholeBMMap.remove(file);
-			return catchMap.remove(file);
+			file.getModificationStamp();
+			CacheFile cacheFile = catchMap.get(file);
+			if (cacheFile != null && cacheFile.checkModification()) {
+				return catchMap.remove(file).getCompositeMap();
+			}
+			return null;
 		}
 	}
 
