@@ -256,7 +256,6 @@ public final class ResourceUtil {
 		try {
 			proj.accept(new IResourceVisitor() {
 
-				@Override
 				public boolean visit(IResource resource) throws CoreException {
 					if ("WEB-INF".equals(resource.getName()))
 						als.add((IFolder) resource);
