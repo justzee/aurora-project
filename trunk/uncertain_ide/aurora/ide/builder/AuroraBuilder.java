@@ -316,13 +316,11 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			filecount = 0;
 		}
 
-		@Override
 		public boolean visit(IResource resource) throws CoreException {
 			filecount++;
 			return true;
 		}
 
-		@Override
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			filecount++;
 			return true;
