@@ -80,6 +80,9 @@ public class QuickFixInformationControl extends AbstractInformationControl
 
 	private TextPage textPage;
 
+	private static Color gray_color = new Color(null, 128, 128, 128);
+	private static Color link_color = new Color(null, 0, 102, 204);
+
 	public QuickFixInformationControl(Shell parent, MarkerAnnotation ma,
 			boolean isResizeable) {
 		super(parent, isResizeable);
@@ -185,7 +188,7 @@ public class QuickFixInformationControl extends AbstractInformationControl
 		com.addPaintListener(new PaintListener() {
 
 			public void paintControl(PaintEvent e) {
-				e.gc.setForeground(new Color(com.getDisplay(), 128, 128, 128));
+				e.gc.setForeground(gray_color);
 				Rectangle r = text.getBounds();
 				int y = r.y + r.height + 1;
 				e.gc.drawLine(0, y, com.getShell().getSize().x, y);
@@ -201,7 +204,7 @@ public class QuickFixInformationControl extends AbstractInformationControl
 					guessWidth(hl, cps[i].getDisplayString()) + 10, 20);
 			hl.setText(cps[i].getDisplayString());
 			hl.setBackground(com.getBackground());
-			hl.setForeground(new Color(com.getDisplay(), 0, 102, 204));
+			hl.setForeground(link_color);
 			// hl.setUnderlined(true);
 			hl.addHyperlinkListener(new ProposalHyperlinkAdapter(cps[i]));
 			hl.addMouseTrackListener(new MouseTrackListener() {
