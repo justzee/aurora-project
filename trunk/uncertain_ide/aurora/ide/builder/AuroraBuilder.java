@@ -231,9 +231,12 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		monitor.beginTask("builder " + getProject().getName(), filecount);
 		updateMonitorJob.setSystem(true);
 		updateMonitorJob.schedule();
-		delta.accept(new SampleDeltaVisitor());
-		updateMonitorJob.cancel();
-		monitor.done();
+		try {
+			delta.accept(new SampleDeltaVisitor());
+		} finally {
+			updateMonitorJob.cancel();
+			monitor.done();
+		}
 	}
 
 	private boolean checkWebDir() throws CoreException {
