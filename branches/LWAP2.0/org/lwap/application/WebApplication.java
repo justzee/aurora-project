@@ -564,13 +564,13 @@ public static final String APPLICATION_CONFIG_PATH = "application.xml";
   	// load exception handle 	
   	load_exception_handle(application_conf); 
   	
-    Runtime.getRuntime().addShutdownHook(
-            new Thread(){
-                public void run(){
-                    shutdown();
-                }
-            }
-    );
+//    Runtime.getRuntime().addShutdownHook(
+//            new Thread(){
+//                public void run(){
+//                    shutdown();
+//                }
+//            }
+//    );
   }
   
   public CompositeMap getExceptionHandleConfig( Throwable exception ){
