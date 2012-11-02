@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -94,7 +93,6 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private CompositeMap load(IFile file) throws CoreException,
 				ApplicationException {
-
 			IDocument document = CacheManager.getDocumentCacher().getDocument(
 					file);
 			if (document == null)
