@@ -15,14 +15,14 @@ import aurora.ide.helpers.UncertainEngineUtil;
 
 import uncertain.core.UncertainEngine;
 
-public class AuroraProject implements IRunnableWithProgress {
+public class _AuroraProject implements IRunnableWithProgress {
 	private IProject project;
 	private UncertainEngine uncertainEngine ;
 	private ApplicationException runtiemException ;
 	public Exception getRuntiemException() {
 		return runtiemException;
 	}
-	public AuroraProject(IProject project){
+	public _AuroraProject(IProject project){
 		this.project = project;
 	}
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,

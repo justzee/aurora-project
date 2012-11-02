@@ -54,12 +54,12 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
             	String context = "";
             	if(mainFormPage.isModify())
             		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
-            	else if(textPage.isModify())
-            		context = textPage.getContent();
+            	else if(getTextPage().isModify())
+            		context = getTextPage().getContent();
             	else if(mainViewerPage.isFormContendCreated())
             		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
             	else
-            		context = textPage.getContent();
+            		context = getTextPage().getContent();
                 sqlPage.refresh(context);
             } catch (ApplicationException e) {
                 DialogUtil.showExceptionMessageBox(e);
@@ -73,7 +73,7 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
             } catch (ApplicationException e) {
                 DialogUtil.showExceptionMessageBox(e);
             }
-        } else if (currentPage == textPageIndex && newPageIndex == mainViewerIndex && textPage.checkContentFormat()) {
+        } else if (currentPage == textPageIndex && newPageIndex == mainViewerIndex && getTextPage().checkContentFormat()) {
             locateMainPage();
         } 
     }
@@ -82,8 +82,8 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
         CompositeMapLocatorParser parser = new CompositeMapLocatorParser();
 
         try {
-            InputStream content = new ByteArrayInputStream(textPage.getContent().getBytes("UTF-8"));
-            CompositeMap cm = parser.getCompositeMapFromLine(content, textPage.getCursorLine());
+            InputStream content = new ByteArrayInputStream(getTextPage().getContent().getBytes("UTF-8"));
+            CompositeMap cm = parser.getCompositeMapFromLine(content, getTextPage().getCursorLine());
             if (cm != null) {
                 while (cm.getParent() != null) {
                     CompositeMap parent = cm.getParent();
@@ -105,8 +105,8 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
             return;
         int line = 0;
         line = CompositeMapUtil.locateNode(CompositeMapUtil.getFullContent(mainFormPage.getData()), selection);
-        int offset = textPage.getOffsetFromLine(line);
-        textPage.setHighlightRange(offset, 10, true);
+        int offset = getTextPage().getOffsetFromLine(line);
+        getTextPage().setHighlightRange(offset, 10, true);
 
     }
 }
