@@ -171,7 +171,6 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 				.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
 		assistant
 				.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
-
 		assistant
 				.setInformationControlCreator(new HoverInformationControlCreator());
 		return assistant;

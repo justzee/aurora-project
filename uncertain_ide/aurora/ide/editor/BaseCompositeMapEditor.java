@@ -28,7 +28,7 @@ import aurora.ide.helpers.DialogUtil;
 public abstract class BaseCompositeMapEditor extends FormEditor {
 
 	protected CompositeMapPage mainViewerPage;
-	protected TextPage textPage = new TextPage(this);
+	private TextPage textPage = new TextPage(this);
 	private boolean dirty = false;
 	private File file;
 	protected int mainViewerIndex;
@@ -46,7 +46,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	protected void addPages() {
 		try {
 			mainViewerIndex = addPage(mainViewerPage);
-			textPageIndex = addPage(textPage, getEditorInput());
+			textPageIndex = addPage(getTextPage(), getEditorInput());
 			setPageText(textPageIndex, TextPage.textPageTitle);
 			// setActivePage(textPageIndex);
 		} catch (PartInitException e) {
@@ -100,14 +100,14 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 		if (currentPage == textPageIndex) {
 			try {
 				// sycMainViewerPageWithTextPage();
-				textPage.doSave(monitor);
+				getTextPage().doSave(monitor);
 			} catch (Throwable e) {
 				DialogUtil.showExceptionMessageBox(e);
 				return;
 			}
 		} else if (currentPage == mainViewerIndex) {
 			// ifile.refreshLocal will cause textChanged event,so prevent it;
-			textPage.setSyc(true);
+			getTextPage().setSyc(true);
 			mainViewerPage.doSave(monitor);
 		}
 		setDirty(false);
@@ -149,7 +149,7 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			try {
 				sycMainViewerPageWithTextPage();
 			} catch (Exception e) {
-				textPage.setIgnorceSycOnce(true);
+				getTextPage().setIgnorceSycOnce(true);
 				setActivePage(textPageIndex);
 				String errorMessage = e.getCause() != null ? e.getCause()
 						.getMessage() : e.getMessage();
@@ -158,8 +158,8 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			}
 		} else if (newPageIndex == textPageIndex) {
 			// setActivePage will call pageChage(),we should prevent dead lock.
-			if (textPage.isIgnorceSycOnce()) {
-				textPage.setIgnorceSycOnce(false);
+			if (getTextPage().isIgnorceSycOnce()) {
+				getTextPage().setIgnorceSycOnce(false);
 				return;
 			}
 			sycTextPageWithMainViewerPage();
@@ -175,25 +175,29 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 	}
 
 	private boolean sycMainViewerPageWithTextPage() throws ApplicationException {
-		CompositeMap data = textPage.toCompoisteMap();
+		CompositeMap data = getTextPage().toCompoisteMap();
 		if (mainViewerPage.getData() == null) {
 			mainViewerPage.setData(data);
 		} else {
-			if (textPage.isModify() && mainViewerPage != null)
+			if (getTextPage().isModify() && mainViewerPage != null)
 				mainViewerPage.refreshFormContent(data);
 		}
-		textPage.setModify(false);
+		getTextPage().setModify(false);
 		return true;
 	}
 
 	private boolean sycTextPageWithMainViewerPage() {
 		if (mainViewerPage.isModify()) {
 			mainViewerPage.setModify(false);
-			textPage.refresh(CompositeMapUtil.getFullContent(mainViewerPage
+			getTextPage().refresh(CompositeMapUtil.getFullContent(mainViewerPage
 					.getData()));
 			return true;
 		}
 		return true;
+	}
+
+	public TextPage getTextPage() {
+		return textPage;
 	}
 
 }
