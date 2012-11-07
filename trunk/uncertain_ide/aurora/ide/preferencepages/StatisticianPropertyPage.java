@@ -363,7 +363,10 @@ public class StatisticianPropertyPage extends PreferencePage implements IWorkben
 						s = s.substring(1);
 						namespace = s;
 					} else {
-						treeViewer.setChecked(baseMapTree.find(namespace, s), true);
+						TagTree find = baseMapTree.find(namespace, s);
+						if(find!=null){
+							treeViewer.setChecked(find, true);
+						}
 					}
 				}
 			}
