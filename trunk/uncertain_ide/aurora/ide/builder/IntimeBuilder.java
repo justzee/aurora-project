@@ -28,6 +28,7 @@ public class IntimeBuilder implements IReconcileListener {
 	}
 
 	public void reconcile() {
+		
 		if (!CustomSettingPreferencePage.getIntimeBuildEnable()) {
 			return;
 		}

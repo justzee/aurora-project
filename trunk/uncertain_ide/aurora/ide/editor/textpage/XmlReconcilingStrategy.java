@@ -1,7 +1,7 @@
 package aurora.ide.editor.textpage;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,22 +13,27 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 
-import aurora.ide.builder.IntimeBuilder;
 import aurora.ide.helpers.DialogUtil;
 
 public class XmlReconcilingStrategy implements IReconcilingStrategy,
 		IReconcilingStrategyExtension {
 
 	private ProjectionViewer mSourceViewer;
-	private List listeners;
+	private List<IReconcileListener> listeners = new ArrayList<IReconcileListener>();
 
 	public XmlReconcilingStrategy(ISourceViewer sourceViewer) {
 		this.mSourceViewer = (ProjectionViewer) sourceViewer;
-		listeners = new LinkedList();
-		listeners.add(new XmlErrorReconcile(mSourceViewer));
-		listeners.add(new ProjectionReconcile(mSourceViewer));
-		listeners.add(new IntimeBuilder(mSourceViewer));
 	}
+
+
+
+
+	public boolean addListener(IReconcileListener l) {
+		return listeners.add(l);
+	}
+	
+	
+
 
 	public void reconcile(IRegion partition) {
 		noticeListener();

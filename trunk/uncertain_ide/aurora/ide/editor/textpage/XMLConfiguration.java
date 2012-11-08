@@ -27,10 +27,12 @@ import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
+import aurora.ide.builder.IntimeBuilder;
 import aurora.ide.editor.textpage.contentassist.TagContentAssistProcessor;
 import aurora.ide.editor.textpage.format.DefaultFormattingStrategy;
 import aurora.ide.editor.textpage.format.DocTypeFormattingStrategy;
@@ -224,6 +226,9 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		XmlReconcilingStrategy strategy = new XmlReconcilingStrategy(
 				sourceViewer);
+		strategy.addListener(new XmlErrorReconcile(sourceViewer));
+		strategy.addListener(new ProjectionReconcile((ProjectionViewer) sourceViewer));
+		strategy.addListener(new IntimeBuilder(sourceViewer));
 		MonoReconciler reconciler = new MonoReconciler(strategy, false);
 		return reconciler;
 	}

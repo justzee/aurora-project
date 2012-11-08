@@ -3,6 +3,7 @@ package aurora.ide.builder.validator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
 
+import uncertain.composite.CompositeMap;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.processor.AbstractProcessor;
 import aurora.ide.helpers.ApplicationException;
@@ -26,7 +27,8 @@ public class IntimeValidator extends AbstractValidator {
 			e.printStackTrace();
 		}
 		AuroraBuilder.deleteMarkers(file);
-	}
+		
+ 	}
 
 	@Override
 	public AbstractProcessor[] getMapProcessor() {
