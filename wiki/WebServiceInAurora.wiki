@@ -310,7 +310,35 @@ nameSpace="http://www.aurora.org/simple" rootPath="/model/result1/cancat"/>
   </result1>
 </model>
 }}} 
- * *把cdata的内容变成父节点的一个属性*，例子：
+ * *属性变成子节点 *，例子：
+{{{
+ <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="expand">
+      <p:arguments>
+         <p:argument path="/model" type="uncertain.composite.CompositeMap"/>
+      </p:arguments>
+</p:method-invoke>
+}}} 
+ 原先的数据格式可能是这样的：
+{{{
+<model>
+        <record account_other_code="test1" account_id="1"/>
+        <record account_other_code="test2" account_id="2"/>
+</model>
+}}}
+ 处理后的格式就是这样的
+{{{
+    <model>
+        <record>
+            <account_other_code><![CDATA[test1]]></account_other_code>
+            <account_id><![CDATA[1]]></account_id>
+        </record>
+        <record>
+            <account_other_code><![CDATA[test2]]></account_other_code>
+            <account_id><![CDATA[2]]></account_id>
+        </record>
+    </model>
+}}}
+ * *把cdata的内容变成父节点的一个属性* ，例子：
 {{{
  <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="collapse">
       <p:arguments>
