@@ -13,7 +13,7 @@ Aurora中用开源框架Quartz来实现定时任务。支持定时调用java代�
 
 把配置好的内容写在${WEB-HOME}WEB-INF\aurora.plugin.quartz\job.config文件中
 
-= 定时调用porc =
+= 定时调用proc =
 
  ==例子==
 {{{
