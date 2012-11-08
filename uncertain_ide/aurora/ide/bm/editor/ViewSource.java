@@ -1,6 +1,10 @@
 package aurora.ide.bm.editor;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.reconciler.MonoReconciler;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Composite;
@@ -11,13 +15,30 @@ import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.ExtendModelFactory;
+import aurora.ide.editor.textpage.ColorManager;
+import aurora.ide.editor.textpage.ProjectionReconcile;
 import aurora.ide.editor.textpage.TextPage;
+import aurora.ide.editor.textpage.XMLConfiguration;
+import aurora.ide.editor.textpage.XmlErrorReconcile;
+import aurora.ide.editor.textpage.XmlReconcilingStrategy;
 import aurora.ide.search.cache.CacheManager;
 
 public class ViewSource extends TextPage {
 
 	public ViewSource(FormEditor editor) {
 		super(editor);
+		
+		setSourceViewerConfiguration(new XMLConfiguration(new ColorManager()){
+			public IReconciler getReconciler(ISourceViewer sourceViewer) {
+				XmlReconcilingStrategy strategy = new XmlReconcilingStrategy(
+						sourceViewer);
+				strategy.addListener(new XmlErrorReconcile(sourceViewer));
+				strategy.addListener(new ProjectionReconcile((ProjectionViewer) sourceViewer));
+				MonoReconciler reconciler = new MonoReconciler(strategy, false);
+				return reconciler;
+			}
+
+		});
 
 	}
 

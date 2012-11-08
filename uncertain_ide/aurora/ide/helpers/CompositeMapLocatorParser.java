@@ -270,10 +270,8 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 		function = lineToCompositeMap;
 		this.line = line;
 		parseStream(stream);
-
 		CompositeMap root = new CommentCompositeMap("root");
 		root.addChild(getRoot());
-
 		return targetCompositeMap;
 	}
 
