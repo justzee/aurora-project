@@ -16,6 +16,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.builder.ResourceUtil;
+import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
 
@@ -34,6 +35,11 @@ public class ProjectWizard extends BasicNewProjectResourceWizard implements
 		IProject proj = getNewProject();
 		if (proj == null)
 			return true;
+		try {
+			proj.setDefaultCharset(AuroraConstant.ENCODING, null);
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
 		IFolder web_inf = ResourceUtil.searchWebInf(proj);
 		if (web_inf == null) {
 			createBasicFolders(proj);
