@@ -376,6 +376,31 @@
 	      </action>
 	     
     </viewerContribution>
+    <objectContribution
+          adaptable="true"
+          id="aurora.ide.pkg.new"
+          objectClass="org.eclipse.core.resources.IResource">
+       <action
+             class="aurora.ide.navigator.action.CreateAuroraPkgAction"
+             enablesFor="1"
+             icon="icons/aurora.gif"
+             id="aurora.ide.action.CreateAuroraPkgAction"
+             label="New Aurora Package"
+             menubarPath="additions">
+       </action>
+       <enablement>
+          <and>
+             <instanceof
+                   value="org.eclipse.core.resources.IContainer">
+             </instanceof>
+             <test
+                   forcePluginActivation="true"
+                   property="aurora.ide.sxsd.valid.visable"
+                   value="true">
+             </test>
+          </and>
+       </enablement>
+    </objectContribution>
    </extension>
        <extension  point ="org.eclipse.core.expressions.propertyTesters" > 
     <propertyTester
