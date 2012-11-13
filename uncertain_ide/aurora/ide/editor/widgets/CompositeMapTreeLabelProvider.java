@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 
@@ -28,12 +29,14 @@ public class CompositeMapTreeLabelProvider extends BaseLabelProvider implements
 		Element ele = CompositeMapUtil.getElement(elemenntCm);
 		if (ele != null) {
 			if (ele.isArray()) {
-				return AuroraPlugin.getImageDescriptor(
-						LocaleMessage.getString("array.icon")).createImage();
+//				return AuroraPlugin.getImageDescriptor(
+//						LocaleMessage.getString("array.icon")).createImage();
+				return ImagesUtils.getImage("array.gif");
 			}
 		}
-		String defaultPath = LocaleMessage.getString("element.icon");
-		return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
+//		String defaultPath = LocaleMessage.getString("element.icon");
+//		return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
+		return ImagesUtils.getImage("element.gif");
 	}
 
 	/**

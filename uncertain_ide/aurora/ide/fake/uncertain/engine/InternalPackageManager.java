@@ -28,7 +28,6 @@ import uncertain.pkg.PackageManager;
 import uncertain.pkg.PackagePath;
 import uncertain.schema.SchemaManager;
 import uncertain.util.FileUtil;
-import aurora.ide.preferencepages.SxsdDirPreferencePage;
 
 public class InternalPackageManager extends PackageManager {
 

@@ -28,6 +28,7 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapLocatorParser;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
@@ -228,8 +229,9 @@ public class AttributeStrategy implements IContentAssistStrategy {
 	}
 
 	private static Image getDefaultImage() {
-		Image contentImage = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
-		return contentImage;
+		return ImagesUtils.getImage("contentassit.gif");
+//		Image contentImage = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("contentassit.icon")).createImage();
+//		return contentImage;
 	}
 	private TokenString createTokenString() throws ApplicationException {
 		IToken token = null;

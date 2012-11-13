@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.helpers.ImagesUtils;
 
 public abstract class AbstractProposalCreator {
 	public static Image img_new = null;
@@ -20,12 +21,18 @@ public abstract class AbstractProposalCreator {
 	public static Image img_rename = null;
 	static {
 		try {
-			img_new = AuroraPlugin.getImageDescriptor("/icons/add.gif")
-					.createImage();
-			img_remove = AuroraPlugin.getImageDescriptor("/icons/delete.gif")
-					.createImage();
-			img_rename = AuroraPlugin.getImageDescriptor("/icons/rename.gif")
-					.createImage();
+			img_new =
+			// AuroraPlugin.getImageDescriptor("/icons/add.gif")
+			// .createImage();
+			ImagesUtils.getImage("add.gif");
+			img_remove =
+			// AuroraPlugin.getImageDescriptor("/icons/delete.gif")
+			// .createImage();
+			ImagesUtils.getImage("delete.gif");
+			img_rename =
+			// AuroraPlugin.getImageDescriptor("/icons/rename.gif")
+			// .createImage();
+			ImagesUtils.getImage("rename.gif");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
