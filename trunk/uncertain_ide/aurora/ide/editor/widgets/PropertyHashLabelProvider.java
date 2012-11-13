@@ -1,6 +1,5 @@
 package aurora.ide.editor.widgets;
 
-
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -9,14 +8,14 @@ import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.widgets.core.CategoryLabel;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
-
 
 import uncertain.schema.Attribute;
 import uncertain.schema.editor.AttributeValue;
 
 public class PropertyHashLabelProvider extends BaseLabelProvider implements
-		ITableLabelProvider,ITableColorProvider {
+		ITableLabelProvider, ITableColorProvider {
 
 	public PropertyHashLabelProvider() {
 		super();
@@ -27,13 +26,16 @@ public class PropertyHashLabelProvider extends BaseLabelProvider implements
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
-		String imagePath = LocaleMessage.getString("property.icon");
+		// String imagePath = LocaleMessage.getString("property.icon");
 		if (columnIndex == 0) {
 			if (element instanceof CategoryLabel) {
-				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("category.icon"))
-						.createImage();
+				// return
+				// AuroraPlugin.getImageDescriptor(LocaleMessage.getString("category.icon"))
+				// .createImage();
+				return ImagesUtils.getImage("category.gif");
 			}
-			return AuroraPlugin.getImageDescriptor(imagePath).createImage();
+			return ImagesUtils.getImage("attribute.gif");
+			// return AuroraPlugin.getImageDescriptor(imagePath).createImage();
 		}
 		return null;
 	}
@@ -56,7 +58,6 @@ public class PropertyHashLabelProvider extends BaseLabelProvider implements
 		if (av.getAttribute() == null)
 			return av.getValueString();
 
-
 		if (columnIndex == 0) {
 			Attribute attr = av.getAttribute();
 			String text = attr.getLocalName();
@@ -72,6 +73,7 @@ public class PropertyHashLabelProvider extends BaseLabelProvider implements
 		} else
 			return "";
 	}
+
 	public Color getBackground(Object element, int columnIndex) {
 		if (columnIndex == 0)
 			if (rowNum % 2 == 0)
@@ -82,8 +84,8 @@ public class PropertyHashLabelProvider extends BaseLabelProvider implements
 	}
 
 	private int rowNum = 0;
-	private Color COLOR_ODD = new Color(null,245,255,255);
-	private Color COLOR_EVEN = new Color(null, 255,255,255);
+	private Color COLOR_ODD = new Color(null, 245, 255, 255);
+	private Color COLOR_EVEN = new Color(null, 255, 255, 255);
 
 	public Color getForeground(Object element, int columnIndex) {
 		return null;

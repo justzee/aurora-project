@@ -53,6 +53,7 @@ import aurora.ide.editor.widgets.core.IGridLabelProvider;
 import aurora.ide.editor.widgets.core.IGridViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.ActionListener;
 import aurora.ide.node.action.AddElementAction;
@@ -135,7 +136,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	public CompositeMap beforeDispose() {
 		CompositeMap records = null;
 		if ((gridStyle & IGridViewer.isMulti) == 0) {
-			IStructuredSelection selection = (IStructuredSelection) getViewer().getSelection();
+			IStructuredSelection selection = (IStructuredSelection) getViewer()
+					.getSelection();
 			records = (CompositeMap) selection.getFirstElement();
 			if (records == null)
 				return null;
@@ -221,7 +223,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		tableViewer.setSorter(viewSorter);
 	}
 
-	public void createViewer(Composite parent, CompositeMap data) throws ApplicationException {
+	public void createViewer(Composite parent, CompositeMap data)
+			throws ApplicationException {
 		createViewer(parent);
 		setData(data);
 	}
@@ -282,7 +285,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	}
 
 	public CompositeMap getFocus() {
-		IStructuredSelection selection = (IStructuredSelection) getViewer().getSelection();
+		IStructuredSelection selection = (IStructuredSelection) getViewer()
+				.getSelection();
 		CompositeMap record = (CompositeMap) selection.getFirstElement();
 		return record;
 	}
@@ -382,16 +386,24 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 					// do nothing
 				}
 				if (element != null && element.isArray()) {
-					final QualifiedName qName = element.getElementType().getQName();
-					Action addAction = new AddElementAction(this, data, qName, ActionListener.NONE);
+					final QualifiedName qName = element.getElementType()
+							.getQName();
+					Action addAction = new AddElementAction(this, data, qName,
+							ActionListener.NONE);
 					addAction.setText("");
-					addAction.setHoverImageDescriptor(AuroraPlugin.getImageDescriptor(LocaleMessage.getString("add.icon")));
+					addAction.setHoverImageDescriptor(AuroraPlugin
+							.getImageDescriptor(LocaleMessage
+									.getString("add.icon")));
 
-					Action removeAction = new RemoveElementAction(this, ActionListener.DefaultImage);
-					Action refreshAction = new RefreshAction(this, ActionListener.DefaultImage);
+					Action removeAction = new RemoveElementAction(this,
+							ActionListener.DefaultImage);
+					Action refreshAction = new RefreshAction(this,
+							ActionListener.DefaultImage);
 					toolBarManager.add(createActionContributionItem(addAction));
-					toolBarManager.add(createActionContributionItem(refreshAction));
-					toolBarManager.add(createActionContributionItem(removeAction));
+					toolBarManager
+							.add(createActionContributionItem(refreshAction));
+					toolBarManager
+							.add(createActionContributionItem(removeAction));
 					toolBarManager.update(true);
 					tableViewer.getTable().addKeyListener(new KeyListener() {
 						public void keyPressed(KeyEvent e) {
@@ -409,12 +421,18 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 		if ((gridStyle & IGridViewer.isMulti) != 0) {
 
-			Action allCheckAction = new Action(LocaleMessage.getString("all.checed"), AuroraPlugin.getImageDescriptor(LocaleMessage.getString("checked.icon"))) {
+			Action allCheckAction = new Action(
+					LocaleMessage.getString("all.checed"),
+					AuroraPlugin.getImageDescriptor(LocaleMessage
+							.getString("checked.icon"))) {
 				public void run() {
 					setAllChecked(tableViewer.getTable(), true);
 				}
 			};
-			Action unAllCheckAction = new Action(LocaleMessage.getString("non.checed"), AuroraPlugin.getImageDescriptor(LocaleMessage.getString("unchecked.icon"))) {
+			Action unAllCheckAction = new Action(
+					LocaleMessage.getString("non.checed"),
+					AuroraPlugin.getImageDescriptor(LocaleMessage
+							.getString("unchecked.icon"))) {
 				public void run() {
 					setAllChecked(tableViewer.getTable(), false);
 				}
@@ -444,12 +462,14 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			int id = 0;
 			for (Iterator it = attrib_list.iterator(); it.hasNext();) {
 				Attribute attrib = (Attribute) it.next();
-				ICellEditor cellEditor = CellEditorFactory.getInstance().createCellEditor(this, attrib, null, null);
+				ICellEditor cellEditor = CellEditorFactory.getInstance()
+						.createCellEditor(this, attrib, null, null);
 				if (cellEditor != null) {
 					cellEditors[id++] = cellEditor.getCellEditor();
 					addEditor(attrib.getLocalName(), cellEditor);
 				} else {
-					cellEditors[id++] = new TextCellEditor(tableViewer.getTable());
+					cellEditors[id++] = new TextCellEditor(
+							tableViewer.getTable());
 				}
 			}
 		}
@@ -466,12 +486,14 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	}
 
 	protected void createTableCompoment() throws ApplicationException {
-		if ((gridStyle & IGridViewer.fullEditable) == 0 && (gridStyle & IGridViewer.isOnlyUpdate) == 0) {
+		if ((gridStyle & IGridViewer.fullEditable) == 0
+				&& (gridStyle & IGridViewer.isOnlyUpdate) == 0) {
 			labelProvider = new PlainCompositeMapLabelProvider(getColumnNames());
 			tableViewer.setLabelProvider(labelProvider);
 			tableViewer.setCellModifier(new PlainCompositeMapCellModifier());
 		} else {
-			labelProvider = new PropertyGridLabelProvider(getColumnNames(), this);
+			labelProvider = new PropertyGridLabelProvider(getColumnNames(),
+					this);
 			tableViewer.setLabelProvider(labelProvider);
 			cellModifiers = new GridCellModifier(this);
 			tableViewer.setCellModifier(cellModifiers);
@@ -511,24 +533,31 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 					}
 				}
 			}
-			headerLabel.setText(LocaleMessage.getString("please.input") + columnText + LocaleMessage.getString("prefix.of.column"));
+			headerLabel.setText(LocaleMessage.getString("please.input")
+					+ columnText + LocaleMessage.getString("prefix.of.column"));
 
 			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 			headerLabel.setLayoutData(gd);
 
-			filterText = new Text(container, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
+			filterText = new Text(container, SWT.SINGLE | SWT.BORDER
+					| SWT.SEARCH);
 			gd.heightHint = 15;
 			filterText.setLayoutData(gd);
 		}
 		return filterText;
 	}
 
-	private void createTableColumn(TableViewer tableViewer) throws ApplicationException {
-		String seq_imagePath = LocaleMessage.getString("property.icon");
-		Image idp = AuroraPlugin.getImageDescriptor(seq_imagePath).createImage();
+	private void createTableColumn(TableViewer tableViewer)
+			throws ApplicationException {
+		// String seq_imagePath = LocaleMessage.getString("property.icon");
+		// Image idp =
+		// AuroraPlugin.getImageDescriptor(seq_imagePath).createImage();
+		// attribute.gif
+		Image idp = ImagesUtils.getImage("attribute.gif");
 		String[] fullColumnTitles = getfullColumnTitles();
 		for (int i = 0; i < fullColumnTitles.length; i++) {
-			TableColumn column = new TableColumn(tableViewer.getTable(), SWT.LEFT);
+			TableColumn column = new TableColumn(tableViewer.getTable(),
+					SWT.LEFT);
 			column.setText(fullColumnTitles[i]);
 			column.setImage(idp);
 			if (i == 0) {
@@ -539,7 +568,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		}
 	}
 
-	private void setColumnWidth(TableColumn column, TableViewer tableViewer, int propertyLength) {
+	private void setColumnWidth(TableColumn column, TableViewer tableViewer,
+			int propertyLength) {
 		final int defaultScreenWidth = 800;
 		final int defaultColumnWidth = 120;
 		final int appendWidth = 100;
@@ -584,7 +614,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 		} else {
 			fullColumnTitles[0] = "";
 		}
-		System.arraycopy(columnTitles, 0, fullColumnTitles, 1, columnTitles.length);
+		System.arraycopy(columnTitles, 0, fullColumnTitles, 1,
+				columnTitles.length);
 		return fullColumnTitles;
 	}
 
@@ -598,9 +629,11 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 	protected TableViewer createTableViewer() {
 		int style = 0;
 		if ((gridStyle & IGridViewer.isMulti) == 0) {
-			style = SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL;
+			style = SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL
+					| SWT.H_SCROLL;
 		} else
-			style = SWT.CHECK | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL;
+			style = SWT.CHECK | SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER
+					| SWT.V_SCROLL | SWT.H_SCROLL;
 		final TableViewer tableViewer = new TableViewer(viewForm, style);
 
 		tableViewer.setContentProvider(new PropertyGridContentProvider());
@@ -610,7 +643,8 @@ public class GridViewer extends AbstractCMViewer implements ITableViewer {
 			setAllChecked(tableViewer.getTable(), true);
 
 		if (isSerchable()) {
-			final CompositeMapFilter filter = new CompositeMapFilter(filterColumn);
+			final CompositeMapFilter filter = new CompositeMapFilter(
+					filterColumn);
 			tableViewer.addFilter(filter);
 			filterText.addModifyListener(new ModifyListener() {
 

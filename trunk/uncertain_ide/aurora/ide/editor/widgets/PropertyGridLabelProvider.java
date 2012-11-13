@@ -3,7 +3,6 @@
  */
 package aurora.ide.editor.widgets;
 
-
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -14,12 +13,13 @@ import aurora.ide.AuroraPlugin;
 import aurora.ide.celleditor.ICellEditor;
 import aurora.ide.editor.widgets.core.IGridLabelProvider;
 import aurora.ide.editor.widgets.core.IGridViewer;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
-
 
 import uncertain.composite.CompositeMap;
 
-public class PropertyGridLabelProvider extends BaseLabelProvider implements IGridLabelProvider, ITableColorProvider {
+public class PropertyGridLabelProvider extends BaseLabelProvider implements
+		IGridLabelProvider, ITableColorProvider {
 
 	/**
 	 * @param attribArray
@@ -55,14 +55,22 @@ public class PropertyGridLabelProvider extends BaseLabelProvider implements IGri
 		if (gridPropties == null || gridPropties.length == 0)
 			return null;
 
-		ICellEditor cellEditor = viewer.getCellEditor(gridPropties[columnIndex - 1]);
+		ICellEditor cellEditor = viewer
+				.getCellEditor(gridPropties[columnIndex - 1]);
 
 		if (cellEditor != null && cellEditor instanceof CheckboxCellEditor) {
 			CompositeMap data = (CompositeMap) element;
 			String returnValue = data.getString(gridPropties[columnIndex - 1]);
-			if (returnValue != null && returnValue.equals("true"))
-				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("checked.icon")).createImage();
-			return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("unchecked.icon")).createImage();
+			if (returnValue != null && returnValue.equals("true")) {
+
+				// return
+				// AuroraPlugin.getImageDescriptor(LocaleMessage.getString("checked.icon")).createImage();
+				return ImagesUtils.getImage("checked.gif");
+			}
+			// return
+			// AuroraPlugin.getImageDescriptor(LocaleMessage.getString("unchecked.icon")).createImage();
+			return ImagesUtils.getImage("unchecked.gif");
+
 		}
 
 		return null;
@@ -97,6 +105,7 @@ public class PropertyGridLabelProvider extends BaseLabelProvider implements IGri
 		}
 		return returnValue;
 	}
+
 	public void refresh() {
 		nodeIndex = 0;
 	}
@@ -111,8 +120,8 @@ public class PropertyGridLabelProvider extends BaseLabelProvider implements IGri
 	}
 
 	private int rowNum = 0;
-	private Color COLOR_ODD = new Color(null,245,255,255);
-	private Color COLOR_EVEN = new Color(null, 255,255,255);
+	private Color COLOR_ODD = new Color(null, 245, 255, 255);
+	private Color COLOR_EVEN = new Color(null, 255, 255, 255);
 
 	public Color getForeground(Object element, int columnIndex) {
 		return null;

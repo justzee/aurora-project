@@ -1,6 +1,5 @@
 package aurora.ide.editor.widgets;
 
-
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -32,6 +31,7 @@ import aurora.ide.editor.AbstractCMViewer;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.ActionInfo;
@@ -42,17 +42,16 @@ import aurora.ide.node.action.PasteAction;
 import aurora.ide.node.action.RefreshAction;
 import aurora.ide.node.action.RemoveElementAction;
 
-
-
 public class CompositeMapTreeViewer extends AbstractCMViewer {
 	protected TreeViewer treeViewer;
 	protected IViewer parentViewer;
 	private CompositeMap input;
 	public final static String VirtualNode = "VirtualNode";
+
 	public CompositeMapTreeViewer(IViewer parentViewer, CompositeMap data) {
 		this.parentViewer = parentViewer;
 		this.input = data;
-		
+
 	}
 
 	public void create(Composite parent) {
@@ -65,11 +64,12 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		if (parentData == null) {
 			parentData = createVirtualParentNode(input);
 		}
-		treeViewer.setContentProvider(new CompositeMapTreeContentProvider(input));
+		treeViewer
+				.setContentProvider(new CompositeMapTreeContentProvider(input));
 		treeViewer.setInput(parentData);
 
 		fillContextMenu();
-//		fillDNDListener();
+		// fillDNDListener();
 		fillKeyListener();
 		treeViewer.addDoubleClickListener(new ElementDoubleClickListener(this));
 		viewForm.setContent(treeViewer.getControl());
@@ -121,7 +121,8 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		if (parent == null) {
 			parent = createVirtualParentNode(data);
 		}
-		treeViewer.setContentProvider(new CompositeMapTreeContentProvider(data));
+		treeViewer
+				.setContentProvider(new CompositeMapTreeContentProvider(data));
 		treeViewer.setInput(parent);
 	}
 
@@ -133,16 +134,16 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		return treeViewer;
 	}
 
-
-
 	public MenuManager addChildElements() throws ApplicationException {
 		String text = LocaleMessage.getString("add.element.label");
-		ImageDescriptor imageDes = AuroraPlugin.getImageDescriptor(LocaleMessage.getString("add.icon"));
+		ImageDescriptor imageDes = AuroraPlugin
+				.getImageDescriptor(LocaleMessage.getString("add.icon"));
 		MenuManager childElementMenus = new MenuManager(text, imageDes, null);
 		final CompositeMap comp = focusData;
 
 		ActionInfo actionProperties = new ActionInfo(this, comp);
-		ActionsFactory.getInstance().addActionsToMenuManager(childElementMenus, actionProperties);
+		ActionsFactory.getInstance().addActionsToMenuManager(childElementMenus,
+				actionProperties);
 		return childElementMenus;
 	}
 
@@ -153,7 +154,8 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 
 		menuManager.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
-				manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				manager.add(new Separator(
+						IWorkbenchActionConstants.MB_ADDITIONS));
 				MenuManager childElements;
 				try {
 					childElements = addChildElements();
@@ -161,14 +163,19 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 				} catch (ApplicationException e) {
 					DialogUtil.showExceptionMessageBox(e);
 				}
-				manager.add(new CopyElementAction(CompositeMapTreeViewer.this, CopyElementAction
-						.getDefaultImageDescriptor(), CopyElementAction.getDefaultText()));
-				manager.add(new PasteAction(CompositeMapTreeViewer.this, ActionListener.DefaultImage
-						| ActionListener.DefaultTitle));
-				manager.add(new RemoveElementAction(CompositeMapTreeViewer.this, ActionListener.DefaultImage
-						| ActionListener.DefaultTitle));
-				manager.add(new RefreshAction(CompositeMapTreeViewer.this, ActionListener.DefaultImage
-						| ActionListener.DefaultTitle));
+				manager.add(new CopyElementAction(CompositeMapTreeViewer.this,
+						CopyElementAction.getDefaultImageDescriptor(),
+						CopyElementAction.getDefaultText()));
+				manager.add(new PasteAction(CompositeMapTreeViewer.this,
+						ActionListener.DefaultImage
+								| ActionListener.DefaultTitle));
+				manager.add(new RemoveElementAction(
+						CompositeMapTreeViewer.this,
+						ActionListener.DefaultImage
+								| ActionListener.DefaultTitle));
+				manager.add(new RefreshAction(CompositeMapTreeViewer.this,
+						ActionListener.DefaultImage
+								| ActionListener.DefaultTitle));
 			}
 		});
 
@@ -202,12 +209,14 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		Menu menu = new Menu(shell);
 
 		ToolItem addItem = new ToolItem(toolBar, SWT.DROP_DOWN);
-		setToolItemShowProperty(addItem, LocaleMessage.getString("add.element.label"), LocaleMessage
-				.getString("add.icon"));
-		addItem.addListener(SWT.Selection, new ToolBarAddElementListener(toolBar, menu, addItem, this));
+		setToolItemShowProperty(addItem,
+				LocaleMessage.getString("add.element.label"), "add.gif");
+		addItem.addListener(SWT.Selection, new ToolBarAddElementListener(
+				toolBar, menu, addItem, this));
 
 		final ToolItem cutItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(cutItem, LocaleMessage.getString("cut"), LocaleMessage.getString("cut.icon"));
+		setToolItemShowProperty(cutItem, LocaleMessage.getString("cut"),
+				"cut.gif");
 		cutItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				cutElement();
@@ -215,7 +224,8 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		});
 
 		final ToolItem copyItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(copyItem, LocaleMessage.getString("copy"), LocaleMessage.getString("copy.icon"));
+		setToolItemShowProperty(copyItem, LocaleMessage.getString("copy"),
+				"copy.gif");
 		copyItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				copyElement();
@@ -223,15 +233,16 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		});
 
 		final ToolItem pasteItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(pasteItem, LocaleMessage.getString("paste"), LocaleMessage.getString("paste.icon"));
+		setToolItemShowProperty(pasteItem, LocaleMessage.getString("paste"),
+				"paste.gif");
 		pasteItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				pasteElement();
 			}
 		});
 		final ToolItem refreshItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(refreshItem, LocaleMessage.getString("refresh"), LocaleMessage
-				.getString("refresh.icon"));
+		setToolItemShowProperty(refreshItem,
+				LocaleMessage.getString("refresh"), "refresh.gif");
 		refreshItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				treeViewer.refresh();
@@ -239,7 +250,8 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 			}
 		});
 		final ToolItem removeItem = new ToolItem(toolBar, SWT.PUSH);
-		setToolItemShowProperty(removeItem, LocaleMessage.getString("delete"), LocaleMessage.getString("delete.icon"));
+		setToolItemShowProperty(removeItem, LocaleMessage.getString("delete"),
+				"delete.gif");
 		removeItem.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				removeElement();
@@ -250,15 +262,19 @@ public class CompositeMapTreeViewer extends AbstractCMViewer {
 		((ViewForm) shell).setTopLeft(toolBar);
 	}
 
-	private void setToolItemShowProperty(ToolItem toolItem, String text, String iconPath) {
+	private void setToolItemShowProperty(ToolItem toolItem, String text,
+			String iconPath) {
 		if (text != null && !text.equals(""))
 			toolItem.setToolTipText(text);
 		if (iconPath != null && !iconPath.equals("")) {
-			Image icon = AuroraPlugin.getImageDescriptor(iconPath).createImage();
+			// Image icon =
+//			 AuroraPlugin.getImageDescriptor(iconPath).createImage();
+			Image icon = ImagesUtils.getImage(iconPath);
 			toolItem.setImage(icon);
 		}
 
 	}
+
 	private CompositeMap createVirtualParentNode(CompositeMap node) {
 		if (node == null)
 			return null;
