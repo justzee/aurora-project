@@ -15,7 +15,7 @@ import aurora.ide.api.statistics.Statistician;
 import aurora.ide.api.statistics.map.StatisticsResult;
 import aurora.ide.api.statistics.model.StatisticsProject;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.statistics.DBManager;
+import aurora.ide.helpers.DBManager;
 
 public class LoadFromDBJob extends Job {
 
