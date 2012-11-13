@@ -37,9 +37,7 @@ public class ViewSource extends TextPage {
 				MonoReconciler reconciler = new MonoReconciler(strategy, false);
 				return reconciler;
 			}
-
 		});
-
 	}
 
 	@Override

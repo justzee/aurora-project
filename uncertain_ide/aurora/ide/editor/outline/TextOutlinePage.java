@@ -32,6 +32,7 @@ import uncertain.schema.Element;
 import uncertain.schema.ISchemaManager;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.textpage.TextPage;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LoadSchemaManager;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.LogUtil;
@@ -184,16 +185,22 @@ public class TextOutlinePage extends ContentOutlinePage {
 
 	private Image getOutlineTreeImage(OutlineTree tree) {
 		if ("array".equals(tree.getImage())) {
-			return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
+			return ImagesUtils.getImage("array.gif");
+//			return AuroraPlugin.getImageDescriptor("icons/array.gif").createImage();
 		} else if ("script".equals(tree.getImage())) {
-			return AuroraPlugin.getImageDescriptor("icons/script.png").createImage();
+			return ImagesUtils.getImage("script.png");
+//			return AuroraPlugin.getImageDescriptor("icons/script.png").createImage();
 		} else if ("method".equals(tree.getImage())) {
-			return AuroraPlugin.getImageDescriptor("icons/method.gif").createImage();
+			return ImagesUtils.getImage("method.gif");
+//			return AuroraPlugin.getImageDescriptor("icons/method.gif").createImage();
 		} else if ("variable".equals(tree.getImage())) {
-			return AuroraPlugin.getImageDescriptor("icons/variable.gif").createImage();
+			return ImagesUtils.getImage("variable.gif");
+//			return AuroraPlugin.getImageDescriptor("icons/variable.gif").createImage();
 		}
 		String defaultPath = LocaleMessage.getString("element.icon");
-		return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
+//		icons/element.gif
+		return ImagesUtils.getImage("element.gif");
+//		return AuroraPlugin.getImageDescriptor(defaultPath).createImage();
 	}
 
 	class OutlineLabelProvider extends BaseLabelProvider implements ILabelProvider {
@@ -209,7 +216,8 @@ public class TextOutlinePage extends ContentOutlinePage {
 		public Image getImage(Object element) {
 			String name = ((OutlineTree) element).getOther();
 			if (name.matches("\\[\\d+\\]")) {
-				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
+				return ImagesUtils.getImage("array.gif");
+//				return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("array.icon")).createImage();
 			}
 			return getOutlineTreeImage((OutlineTree) element);
 		}

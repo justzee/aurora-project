@@ -135,7 +135,7 @@ public class ActionsFactory {
 			MenuItem itemPush = new MenuItem(menu, SWT.PUSH);
 			itemPush.addListener(SWT.Selection, action);
 			itemPush.setText(action.getText());
-			itemPush.setImage(action.getHoverImageDescriptor().createImage());
+			itemPush.setImage(action.getDefaultImage());
 		}
 	}
 
