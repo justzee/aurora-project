@@ -93,20 +93,24 @@ public class DBConnectionUtil {
 
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-
-			monitor.setTaskName("正在建立数据库连接");
+			monitor.beginTask("正在建立数据库连接", 150);
+			monitor.worked(30);
 			if (!fue.isRunning()) {
 				monitor.setTaskName("启动Aurora引擎");
 				fue.startup();
 			}
 			monitor.setTaskName("获取数据库连接");
+			monitor.worked(20);
 			IObjectRegistry mObjectRegistry = fue.getObjectRegistry();
 			DataSource ds = (DataSource) mObjectRegistry
 					.getInstanceOfType(DataSource.class);
+			monitor.worked(50);
 			try {
 				setConn(ds.getConnection());
 			} catch (SQLException e) {
 				throw new InvocationTargetException(e);
+			} finally {
+				monitor.done();
 			}
 		}
 
@@ -122,11 +126,7 @@ public class DBConnectionUtil {
 
 	public static Connection getDBConnection(IProject project)
 			throws ApplicationException {
-		FakeUncertainEngine fue = project_engine.get(project);
-		if (fue == null) {
-			fue = createFakeUncertainEngine(project);
-			project_engine.put(project, fue);
-		}
+		FakeUncertainEngine fue = getFakeUncertainEngine(project);
 		try {
 			Runner runnable = new DBConnectionUtil().new Runner(fue);
 			AuroraPlugin.getDefault().getWorkbench().getProgressService()
@@ -139,7 +139,16 @@ public class DBConnectionUtil {
 			throw new ApplicationException("获取数据库连接失败!请查看"
 					+ AuroraConstant.DbConfigFileName + "是否配置正确.", e);
 		}
+	}
 
+	public static FakeUncertainEngine getFakeUncertainEngine(IProject project)
+			throws ApplicationException {
+		FakeUncertainEngine fue = project_engine.get(project);
+		if (fue == null) {
+			fue = createFakeUncertainEngine(project);
+			project_engine.put(project, fue);
+		}
+		return fue;
 	}
 
 	public static boolean testDBConnection(IProject project, String webHome)

@@ -40,7 +40,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
-import uncertain.core.UncertainEngine;
 import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
@@ -59,9 +58,11 @@ import aurora.ide.editor.textpage.ColorManager;
 import aurora.ide.editor.textpage.SQLConfiguration;
 import aurora.ide.editor.textpage.format.SQLFormat;
 import aurora.ide.editor.widgets.GridViewer;
+import aurora.ide.fake.uncertain.engine.FakeUncertainEngine;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ExceptionUtil;
 import aurora.ide.helpers.LocaleMessage;
@@ -78,7 +79,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private ToolBarManager toolBarManager;
 	private static final String[] tabs = { "query", "insert", "update", "delete" };
 
-	private UncertainEngine uncertainEngine;
+	private FakeUncertainEngine uncertainEngine;
 	private BusinessModelService modelService;
 	private ViewForm viewForm;
 	private GridViewer tableViewer;
@@ -234,6 +235,10 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		} catch (SQLException e) {
 			throw new SystemException(e);
 		}
+		uncertainEngine = DBConnectionUtil.getFakeUncertainEngine(project);
+		if(!uncertainEngine.isRunning()){
+			uncertainEngine.startup();
+		}
 		String content;
 		try {
 
@@ -271,7 +276,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		return column_index;
 	}
 
-	private BusinessModelServiceContext createContext(UncertainEngine uncertainEngine, Connection connection) {
+	private BusinessModelServiceContext createContext(FakeUncertainEngine uncertainEngine, Connection connection) {
 		Configuration rootConfig = uncertainEngine.createConfig();
 		rootConfig.addParticipant(this);
 		CompositeMap context = new CommentCompositeMap("root");
@@ -316,6 +321,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 							st.setText(sf.format(sql));
 						}
 					} catch (Throwable ex) {
+						ex.printStackTrace();
 						st.setText(ExceptionUtil.getExceptionTraceMessage(ex));
 					}
 				}
@@ -409,7 +415,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		return input;
 	}
 
-	private BusinessModelService makeBusinessModelService(UncertainEngine uncertainEngine, Connection connection,
+	private BusinessModelService makeBusinessModelService(FakeUncertainEngine uncertainEngine, Connection connection,
 			String content) throws ApplicationException {
 		IObjectRegistry reg = uncertainEngine.getObjectRegistry();
 		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg
@@ -418,7 +424,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		BusinessModelServiceContext bc = createContext(uncertainEngine, connection);
 		CompositeMap context = bc.getObjectContext();
 
-		IDEModelFactory modelFactory = new IDEModelFactory(uncertainEngine.getOcManager());
+		IDEModelFactory modelFactory = new IDEModelFactory(uncertainEngine.getOc_manager());
 		uncertainEngine.getObjectRegistry().registerInstanceOnce(IModelFactory.class, modelFactory);
 		svcFactory.setModelFactory(modelFactory);
 		svcFactory.updateSqlCreator(modelFactory);

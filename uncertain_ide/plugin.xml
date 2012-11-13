@@ -110,14 +110,12 @@
             id="aurora.ide.preferencePage.BrowserPreferencePage"
             name="%page.screen.preview">
       </page>
-      <!--
       <page 
             category="aurora.ide.editor.preferencePage"
             class="aurora.ide.preferencepages.FunctionRegisterPreferencePage"
             id="aurora.ide.export.function.regiester.sql"
             name="%function.register.sql">
       </page>
-      -->
       
       <!--building-->
       <page
@@ -794,14 +792,12 @@
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="M1+M2+/">
        </key>
-       <!--
        <key
              commandId="aurora.ide.text.editor.export.function.register.sql"
              contextId="org.eclipse.ui.textEditorScope"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="M1+M2+E">
        </key>
-       -->
  </extension>
 
    <extension
@@ -1001,8 +997,6 @@
           <files desc="AuroraFile" extentionNames="bm, screen, svc"/> 
            <files desc="ConfigFile" extentionNames="xml, proc, config"/> 
            <files desc="PrototypeFile" extentionNames="bmq, uip,code,prototype"/> 
-           
-           
     </extension>
     
 </plugin>
