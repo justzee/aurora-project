@@ -14,7 +14,7 @@ import aurora.ide.AuroraPlugin;
 import aurora.ide.api.statistics.DatabaseAction;
 import aurora.ide.api.statistics.Statistician;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.statistics.DBManager;
+import aurora.ide.helpers.DBManager;
 
 public class SaveToDBJob extends Job {
 

@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.statistics.DBManager;
+import aurora.ide.helpers.DBManager;
 
 public class FirstLoadDataWizardPage extends WizardPage {
 

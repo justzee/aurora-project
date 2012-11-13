@@ -1,6 +1,5 @@
 package aurora.ide.navigator.action;
 
-
 import java.io.File;
 
 import org.eclipse.core.resources.IResource;
@@ -13,9 +12,9 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import uncertain.pkg.PackageManager;
 import uncertain.schema.SchemaManager;
+import aurora.ide.fake.uncertain.engine.InstanceFactory;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
-import aurora.ide.helpers.UncertainEngineUtil;
 
 public class SxsdPackageValidAction implements IObjectActionDelegate {
 
@@ -34,7 +33,8 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 		PackageManager pkgManager;
 		String fileList = "";
 		try {
-			pkgManager = UncertainEngineUtil.getUncertainEngine(selectedFile.getName()).getPackageManager();
+			pkgManager = InstanceFactory.getPackageManager();
+			// UncertainEngineUtil.getUncertainEngine(selectedFile.getName()).getPackageManager();
 			pkgManager.loadPackgeDirectory(selectedFile.getAbsolutePath());
 			File[] files = selectedFile.listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -42,7 +42,7 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 				if (file.isDirectory()
 						&& PackageManager.isPackageDirectory(file)) {
 					File mConfigPathFile = new File(file.getPath(), CONFIG_PATH);
-					if(mConfigPathFile == null)
+					if (mConfigPathFile == null)
 						return;
 					String extension = "." + SchemaManager.DEFAULT_EXTENSION;
 					File[] sxsdFiles = mConfigPathFile.listFiles();
@@ -62,12 +62,15 @@ public class SxsdPackageValidAction implements IObjectActionDelegate {
 					}
 				}
 			}
-			if(!fileList.equals("")){
-				fileList = LocaleMessage.getString("valid.sxsd.file.window.title")+"\r\n"+fileList;
-			}else{
+			if (!fileList.equals("")) {
+				fileList = LocaleMessage
+						.getString("valid.sxsd.file.window.title")
+						+ "\r\n"
+						+ fileList;
+			} else {
 				fileList = LocaleMessage.getString("no.file.is.valid");
 			}
-			DialogUtil.showMessageBox(SWT.ICON_INFORMATION,"Result",fileList);
+			DialogUtil.showMessageBox(SWT.ICON_INFORMATION, "Result", fileList);
 		} catch (Exception e) {
 			DialogUtil.showExceptionMessageBox(e);
 		}

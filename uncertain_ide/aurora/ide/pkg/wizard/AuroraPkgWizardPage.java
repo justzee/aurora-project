@@ -79,7 +79,6 @@ public class AuroraPkgWizardPage extends WizardPage implements ModifyListener {
 		}
 	}
 
-	@Override
 	public void modifyText(ModifyEvent e) {
 		String pkgName = text.getText();
 		validatePkgName(pkgName);

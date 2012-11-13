@@ -30,12 +30,12 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ExceptionUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
-import aurora.ide.helpers.UncertainEngineUtil;
 
 public class ProjectPropertyPage extends PropertyPage {
 	public ProjectPropertyPage() {
@@ -336,7 +336,7 @@ public class ProjectPropertyPage extends PropertyPage {
 			return "文件系统中不存在此目录!";
 		}
 		try {
-			UncertainEngineUtil.testDBConnection(project, locationPath);
+			DBConnectionUtil.testDBConnection(project, locationPath);
 		} catch (ApplicationException e) {
 			return ExceptionUtil.getExceptionTraceMessage(e);
 		}
