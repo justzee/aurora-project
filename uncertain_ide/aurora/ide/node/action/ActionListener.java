@@ -5,6 +5,7 @@ package aurora.ide.node.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -29,6 +30,9 @@ public abstract class ActionListener extends Action implements Listener {
 
 	public abstract ImageDescriptor getDefaultImageDescriptor();
 
+	public abstract Image getDefaultImage();
+
+	
 	public String getDefaultText() {
 		return "";
 	}

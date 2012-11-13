@@ -5,6 +5,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -13,6 +14,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.PropertyViewer;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
 
 
@@ -88,5 +90,8 @@ public class AddPropertyAction extends ActionListener {
 			}
 		};
 		return listener;
+	}
+	public Image getDefaultImage() {
+		return ImagesUtils.getImage("add.gif");
 	}
 }
