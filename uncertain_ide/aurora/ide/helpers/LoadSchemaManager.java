@@ -2,7 +2,6 @@ package aurora.ide.helpers;
 
 import java.io.IOException;
 
-import uncertain.core.UncertainEngine;
 import uncertain.schema.ISchemaManager;
 import aurora.ide.fake.uncertain.engine.InstanceFactory;
 
