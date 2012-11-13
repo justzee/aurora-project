@@ -1,6 +1,5 @@
 package aurora.ide.preferencepages;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +19,9 @@ import org.eclipse.swt.graphics.Image;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
-
 
 public class AuroraTemplateAssistProcessor extends TemplateCompletionProcessor {
 	protected String extractPrefix(ITextViewer viewer, int offset) {
@@ -68,8 +67,9 @@ public class AuroraTemplateAssistProcessor extends TemplateCompletionProcessor {
 	protected Image getImage(Template template) {
 		// return
 		// Activator.getDefault().getImageRegistry().get(Activator.ICON_TEMPLATE);
-		return AuroraPlugin.getImageDescriptor(
-				LocaleMessage.getString("category.icon")).createImage();
+		// return AuroraPlugin.getImageDescriptor(
+		// LocaleMessage.getString("category.icon")).createImage();
+		return ImagesUtils.getImage("category.gif");
 	}
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,

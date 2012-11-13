@@ -2,11 +2,13 @@ package aurora.ide.node.action;
 
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Event;
 
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
 
 
@@ -54,6 +56,9 @@ public class AddElementAction extends ActionListener{
 			text = childQN.getFullName();
 		}
 		return text;
+	}
+	public Image getDefaultImage() {
+		return ImagesUtils.getImage("element.gif");
 	}
 
 }
