@@ -66,7 +66,6 @@ import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ExceptionUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
-import aurora.ide.helpers.UncertainEngineUtil;
 
 public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private static final String PageId = "SQLExecutePage";
@@ -228,7 +227,6 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 
 	protected void initConnection() throws ApplicationException {
 		IProject project = ((IFileEditorInput) getEditor().getEditorInput()).getFile().getProject();
-		uncertainEngine = UncertainEngineUtil.initUncertainProject(project);
 		AuroraDataBase ad = new AuroraDataBase(project);
 		connection = ad.getDBConnection();
 		try {

@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 
 import uncertain.composite.CompositeMap;
@@ -22,6 +23,7 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.node.action.ActionListener;
 
@@ -191,5 +193,9 @@ public class AddRefFieldAction extends ActionListener {
 			return null;
 		String fieldKey =  sourceField+specialSeparator+relationName;
 		return fieldKey;
+	}
+	@Override
+	public Image getDefaultImage() {
+		return ImagesUtils.getImage("add.gif");
 	}
 }
