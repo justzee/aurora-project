@@ -17,7 +17,7 @@ public class RegisterSql {
 	private static final String PAGE_PATH = "#PAGE_PATH#";
 	private static final String PAGE_NAME = "#PAGE_NAME#";
 	private static final String PAGE_REGISTER_SQL = "sys_service_pkg.sys_service_load('#PAGE_PATH#','#PAGE_NAME#',1,1,0);";
-
+	
 	// 功能定义
 	private StringBuilder functionRegisterSql = new StringBuilder();
 	private static final String MODULE_REGISTER = "#MODULE_REGISTER#";
