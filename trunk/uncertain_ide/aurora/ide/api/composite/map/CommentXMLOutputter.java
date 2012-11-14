@@ -53,14 +53,14 @@ public class CommentXMLOutputter extends XMLOutputter {
 	}
 
 	String getIndentString(int level) {
-		StringBuffer pre_indent = new StringBuffer();
+		StringBuilder pre_indent = new StringBuilder();
 		if (mIndentString != null)
 			for (int i = 0; i < level; i++)
 				pre_indent.append(mIndentString);
 		return pre_indent.toString();
 	}
 
-	static void getAttributeXML(Map map, StringBuffer attribs) {
+	static void getAttributeXML(Map map, StringBuilder attribs) {
 		Iterator it = map.entrySet().iterator();
 		HashMap strings = new HashMap();
 		List keyList = new ArrayList();
@@ -112,7 +112,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 
 	}
 
-	void getChildXML(int level, List childs, StringBuffer buf, Map namespaces,
+	void getChildXML(int level, List childs, StringBuilder buf, Map namespaces,
 			Map prefix_mapping) {
 		if (childs == null)
 			return;
@@ -173,15 +173,15 @@ public class CommentXMLOutputter extends XMLOutputter {
 	}
 
 	/**
-	 * Append xml namespace declare to StringBuffer
+	 * Append xml namespace declare to StringBuilder
 	 * 
 	 * @param buf
-	 *            Target StringBuffer
+	 *            Target StringBuilder
 	 * @param prefix_mapping
 	 *            namespace url -> prefix
 	 * @return processed buf
 	 */
-	static StringBuffer appendNamespace(StringBuffer buf, Map prefix_mapping) {
+	static StringBuilder appendNamespace(StringBuilder buf, Map prefix_mapping) {
 		Iterator it = prefix_mapping.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry entry = (Map.Entry) it.next();
@@ -205,12 +205,12 @@ public class CommentXMLOutputter extends XMLOutputter {
 	String toXMLWithPrefixMapping(int level, CompositeMap map, Map namespaces,
 			Map prefix_mapping) {
 
-		StringBuffer attribs = new StringBuffer();
-		StringBuffer childs = new StringBuffer();
-		StringBuffer xml = new StringBuffer();
+		StringBuilder attribs = new StringBuilder();
+		StringBuilder childs = new StringBuilder();
+		StringBuilder xml = new StringBuilder();
 		String indent_str = getIndentString(level);
 		String namespace_uri = map.getNamespaceURI();
-		StringBuffer xmlns_declare = null;
+		StringBuilder xmlns_declare = null;
 
 		boolean need_new_line_local = mUseNewLine;
 
@@ -271,7 +271,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 				elm = prefix + ":" + elm;
 			}
 			if (level == 0) {
-				xmlns_declare = new StringBuffer();
+				xmlns_declare = new StringBuilder();
 				appendNamespace(xmlns_declare, prefix_mapping);
 			}
 		}
@@ -296,7 +296,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 
 	private String getComment(int level, CompositeMap map) {
 		if (map instanceof CommentCompositeMap) {
-			StringBuffer xml = new StringBuffer();
+			StringBuilder xml = new StringBuilder();
 			String indent_str = getIndentString(level);
 			if (((CommentCompositeMap) map).getComment() != null) {
 				String[] comms = ((CommentCompositeMap) map).getComment()
@@ -317,7 +317,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 
 	private String getEndElementComment(int level, CompositeMap map) {
 		if (map instanceof CommentCompositeMap) {
-			StringBuffer xml = new StringBuffer();
+			StringBuilder xml = new StringBuilder();
 			String indent_str = getIndentString(level);
 			if (((CommentCompositeMap) map).getEndElementComment() != null) {
 				String[] comms = ((CommentCompositeMap) map)
