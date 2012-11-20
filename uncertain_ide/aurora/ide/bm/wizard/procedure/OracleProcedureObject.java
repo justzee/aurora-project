@@ -249,7 +249,7 @@ public class OracleProcedureObject {
 
 	public void initParameters() throws ApplicationException {
 		parameters = new LinkedList();
-		Connection connection = DBConnectionUtil.getDBConnection(ProjectUtil
+		Connection connection = DBConnectionUtil.getDBConnectionSyncExec(ProjectUtil
 				.getIProjectFromSelection());
 		PreparedStatement st = null;
 		ResultSet rs = null;

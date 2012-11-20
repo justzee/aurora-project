@@ -138,6 +138,7 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (Throwable e) {
+			e.printStackTrace();
 			DialogUtil.logErrorException(e);
 		}
 		monitor.worked(1);
