@@ -135,7 +135,6 @@ public class EditTemplateDialog extends Dialog {
 		// -------
 		ModifyListener ml = new ModifyListener() {
 
-			@Override
 			public void modifyText(ModifyEvent e) {
 				validateInput();
 			}

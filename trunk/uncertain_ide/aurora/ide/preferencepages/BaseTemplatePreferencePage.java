@@ -801,16 +801,13 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 
 	class ConfigContentProvider implements IStructuredContentProvider {
 
-		@Override
 		public void dispose() {
 
 		}
 
-		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 
-		@Override
 		public Object[] getElements(Object inputElement) {
 			if (inputElement instanceof Config)
 				return ((Config) inputElement).getTemplates();
@@ -822,12 +819,10 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 	class TemplateLabelProvider extends BaseLabelProvider implements
 			ITableLabelProvider {
 
-		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
 
-		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			if (element instanceof Template) {
 				Template tpl = (Template) element;
