@@ -87,6 +87,7 @@ public class BMTablePage extends WizardPageRefreshable {
 				dbMetaData = dbConnection.getMetaData();
 				input = getInput(dbMetaData, "%");
 			} catch (ApplicationException e) {
+				e.printStackTrace();
 				this.setErrorMessage(e.getCause().getMessage());
 //				DialogUtil.showExceptionMessageBox(e);
 			} catch (SQLException e) {
