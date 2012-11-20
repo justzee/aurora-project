@@ -49,7 +49,6 @@ public class CompositeMapLocatorParser extends DefaultHandler implements
 	 */
 	public CompositeMapLocatorParser() {
 		super();
-		
 	}
 
 	/**

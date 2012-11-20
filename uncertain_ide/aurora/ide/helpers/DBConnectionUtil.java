@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import javax.sql.DataSource;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -18,6 +19,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 
 import uncertain.ocm.IObjectRegistry;
 import aurora.ide.AuroraPlugin;
@@ -69,15 +71,14 @@ public class DBConnectionUtil {
 	private static FakeUncertainEngine createFakeUncertainEngine(
 			IProject project) throws ApplicationException {
 		AuroraProject ap = new AuroraProject(project);
-		IFolder web_home = ap.getWeb_home();
+		IContainer web_home = ap.getWeb_home();
 		IFolder web_inf = ap.getWeb_inf();
 		if (web_home == null || web_inf == null) {
 			// do sth
 			throw new ApplicationException("Aurora 工程设置不正确 ");
 		}
 		FakeUncertainEngine fue = new FakeUncertainEngine(web_home
-				.getRawLocation().toOSString(), web_inf.getRawLocation()
-				.toOSString());
+				.getLocation().toOSString(), web_inf.getLocation().toOSString());
 		return fue;
 	}
 
@@ -93,12 +94,16 @@ public class DBConnectionUtil {
 
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
-			monitor.beginTask("正在建立数据库连接", 150);
+			monitor.beginTask("正在建立数据库连接", 130);
 			monitor.worked(30);
 			if (!fue.isRunning()) {
 				monitor.setTaskName("启动Aurora引擎");
 				fue.startup();
 			}
+			if (!fue.isSuccess()) {
+				throw new InterruptedException();
+			}
+
 			monitor.setTaskName("获取数据库连接");
 			monitor.worked(20);
 			IObjectRegistry mObjectRegistry = fue.getObjectRegistry();
@@ -127,11 +132,10 @@ public class DBConnectionUtil {
 	public static Connection getDBConnection(IProject project)
 			throws ApplicationException {
 		FakeUncertainEngine fue = getFakeUncertainEngine(project);
+		final Runner runnable = new DBConnectionUtil().new Runner(fue);
 		try {
-			Runner runnable = new DBConnectionUtil().new Runner(fue);
 			AuroraPlugin.getDefault().getWorkbench().getProgressService()
 					.busyCursorWhile(runnable);
-			return runnable.getConn();
 		} catch (InvocationTargetException e) {
 			throw new ApplicationException("获取数据库连接失败!请查看"
 					+ AuroraConstant.DbConfigFileName + "是否配置正确.", e);
@@ -139,12 +143,42 @@ public class DBConnectionUtil {
 			throw new ApplicationException("获取数据库连接失败!请查看"
 					+ AuroraConstant.DbConfigFileName + "是否配置正确.", e);
 		}
+		Connection conn = runnable.getConn();
+		return conn;
+	}
+
+	public static Connection getDBConnectionSyncExec(IProject project)
+			throws ApplicationException {
+		FakeUncertainEngine fue = getFakeUncertainEngine(project);
+		final Runner runnable = new DBConnectionUtil().new Runner(fue);
+		Display.getDefault().syncExec(new Runnable() {
+
+			public void run() {
+				try {
+					AuroraPlugin.getDefault().getWorkbench()
+							.getProgressService().busyCursorWhile(runnable);
+				} catch (InvocationTargetException e) {
+					// throw new ApplicationException("获取数据库连接失败!请查看"
+					// + AuroraConstant.DbConfigFileName + "是否配置正确.", e);
+				} catch (InterruptedException e) {
+					// throw new ApplicationException("获取数据库连接失败!请查看"
+					// + AuroraConstant.DbConfigFileName + "是否配置正确.", e);
+				}
+			}
+
+		});
+		Connection conn = runnable.getConn();
+		if (conn == null) {
+			throw new ApplicationException("获取数据库连接失败!请查看"
+					+ AuroraConstant.DbConfigFileName + "是否配置正确.");
+		}
+		return conn;
 	}
 
 	public static FakeUncertainEngine getFakeUncertainEngine(IProject project)
 			throws ApplicationException {
 		FakeUncertainEngine fue = project_engine.get(project);
-		if (fue == null) {
+		if (true || fue == null || fue.isRunning() == false) {
 			fue = createFakeUncertainEngine(project);
 			project_engine.put(project, fue);
 		}
