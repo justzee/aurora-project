@@ -93,12 +93,19 @@ public class CompositeMapCacher implements IResourceChangeListener,
 
 		private CompositeMap load(IFile file) throws CoreException,
 				ApplicationException {
+
 			IDocument document = CacheManager.getDocumentCacher().getDocument(
 					file);
+
+			// long tick = System.currentTimeMillis();
+
 			if (document == null)
 				return null;
 			CompositeMap loaderFromString = CompositeMapUtil
 					.loaderFromString(document.get());
+			// tick = System.currentTimeMillis() - tick;
+			//
+			// System.out.println("load document time : " + tick);
 			return new CacheCompositeMap((CommentCompositeMap) loaderFromString);
 		}
 

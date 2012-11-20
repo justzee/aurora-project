@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.sql.DataSource;
+
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.DirectoryConfig;
@@ -252,8 +254,8 @@ public class FakeUncertainEngine {
 
 		@Override
 		public IProcedureManager getProcedureManager() {
-//			return super.getProcedureManager();
-			 return FakeUncertainEngine.this.getProcedureManager();
+			// return super.getProcedureManager();
+			return FakeUncertainEngine.this.getProcedureManager();
 		}
 
 		@Override
@@ -527,43 +529,50 @@ public class FakeUncertainEngine {
 		mConfig.setLogger(mLogger);
 		setProcedureManager(new ProcedureManager(engine));
 		//
-		// File local_config_file = new File(getConfigDirectory(),
-		// "uncertain.local.xml");
-		// CompositeMap local_config_map = null;
-		// if (local_config_file.exists()) {
-		// try {
-		// local_config_map = compositeLoader.loadByFile(local_config_file
-		// .getAbsolutePath());
-		// } catch (Exception ex) {
-		// throw new RuntimeException(ex);
-		// }
-		// initialize(local_config_map);
-		// }
+//		 File local_config_file = new File(getConfigDirectory(),
+//		 "uncertain.local.xml");
+//		 CompositeMap local_config_map = null;
+//		 if (local_config_file.exists()) {
+//		 try {
+//		 local_config_map = compositeLoader.loadByFile(local_config_file
+//		 .getAbsolutePath());
+//		 } catch (Exception ex) {
+//		 throw new RuntimeException(ex);
+//		 }
+//		 initialize(local_config_map);
+//		 }
 
 		// new part, load all instances
 		loadInstanceFromPackage();
 		// old part
 		// scanConfigFiles(DEFAULT_CONFIG_FILE_PATTERN);
-		mIsRunning = true;
+		mIsRunning = isSuccess();
 		tick = System.currentTimeMillis() - tick;
 	}
 
-//	public void initialize(CompositeMap config) {
-//		// populate self from config
-//		if (config != null) {
-//			oc_manager.populateObject(config, this);
-//			CompositeMap child = config
-//					.getChild(DirectoryConfig.KEY_PATH_CONFIG);
-//			if (child != null) {
-//				if (directoryConfig == null)
-//					directoryConfig = DirectoryConfig
-//							.createDirectoryConfig(child);
-//				else
-//					directoryConfig.getObjectContext().putAll(child);
-//			}
-//			directoryConfig.checkValidation();
-//		}
-//	}
+	public boolean isSuccess() {
+		IObjectRegistry mObjectRegistry = getObjectRegistry();
+		DataSource ds = (DataSource) mObjectRegistry
+				.getInstanceOfType(DataSource.class);
+		return ds != null;
+	}
+
+	 public void initialize(CompositeMap config) {
+//	 // populate self from config
+//	 if (config != null) {
+//	 oc_manager.populateObject(config, this);
+//	 CompositeMap child = config
+//	 .getChild(DirectoryConfig.KEY_PATH_CONFIG);
+//	 if (child != null) {
+//	 if (directoryConfig == null)
+//	 directoryConfig = DirectoryConfig
+//	 .createDirectoryConfig(child);
+//	 else
+//	 directoryConfig.getObjectContext().putAll(child);
+//	 }
+//	 directoryConfig.checkValidation();
+//	 }
+	 }
 
 	public File getConfigDirectory() {
 		if (mConfigDir == null) {
