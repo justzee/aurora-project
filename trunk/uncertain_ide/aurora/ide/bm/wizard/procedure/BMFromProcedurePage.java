@@ -189,7 +189,7 @@ public class BMFromProcedurePage extends WizardPage {
 		return overwriteButton.getSelection();
 	}
 	public CompositeMap getProcedures() throws ApplicationException {
-		Connection connection = DBConnectionUtil.getDBConnection(project);
+		Connection connection = DBConnectionUtil.getDBConnectionSyncExec(project);
 		Statement st = null;
 		ResultSet rs = null;
 		try {
