@@ -173,7 +173,7 @@ public final class SxsdUtil {
 						"<tr><td>%s</td><td>%s</td><td>%s</td></tr>",
 						a.getName(),
 						convertToHTMLContent(notNull(a.getDocument())),
-						getTypeNameNotNull(a.getAttributeType())));
+						getTypeNameNotNull(a)));
 			}
 			sb.append("</table><br/>");
 		}
@@ -204,10 +204,8 @@ public final class SxsdUtil {
 		return content.replace(">", "&gt;");
 	}
 
-	public static String getTypeNameNotNull(IType type) {
-		if (type == null)
-			return "";
-		QualifiedName qfn = type.getQName();
+	public static String getTypeNameNotNull(Attribute a) {
+		QualifiedName qfn = a.getTypeQName();
 		if (qfn == null)
 			return "";
 		String name = qfn.getLocalName();
@@ -215,6 +213,18 @@ public final class SxsdUtil {
 			return "";
 		return name;
 	}
+
+	// public static String getTypeNameNotNull(IType type) {
+	// if (type == null)
+	// return "";
+	// QualifiedName qfn = type.getQName();
+	// if (qfn == null)
+	// return "";
+	// String name = qfn.getLocalName();
+	// if (name == null)
+	// return "";
+	// return name;
+	// }
 
 	public static String notNull(String str) {
 		return str == null ? "" : str;
