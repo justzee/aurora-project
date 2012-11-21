@@ -126,11 +126,9 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 				if (attrName.equalsIgnoreCase(a.getName())) {
 					sb.append(a.getName() + "<br/>"
 							+ SxsdUtil.notNull(a.getDocument()));
-					if (SxsdUtil.getTypeNameNotNull(a.getAttributeType())
-							.length() > 0)
+					if (SxsdUtil.getTypeNameNotNull(a).length() > 0)
 						sb.append("<br/>Type : "
-								+ SxsdUtil.getTypeNameNotNull(a
-										.getAttributeType()));
+								+ SxsdUtil.getTypeNameNotNull(a));
 					return sb.toString();
 				}
 			}
