@@ -158,12 +158,12 @@ public class RegisterSql {
 		root.put("module", module);
 
 		Map function = new HashMap();
-		module.put("function_name", this.functionName == null ? ""
+		function.put("function_name", this.functionName == null ? ""
 				: functionName);
-		module.put("function_code", this.functionCode == null ? ""
+		function.put("function_code", this.functionCode == null ? ""
 				: functionCode);
-		module.put("host_path", this.hostPath == null ? "" : hostPath);
-		module.put("function_order", this.functionOrder == null ? "" : hostPath);
+		function.put("host_path", this.hostPath == null ? "" : hostPath);
+		function.put("function_order", this.functionOrder == null ? "" : hostPath);
 		root.put("function", function);
 		DefaultObjectWrapper dow = new DefaultObjectWrapper();
 		List<TemplateModel> pages = new ArrayList<TemplateModel>();
@@ -204,10 +204,10 @@ public class RegisterSql {
 		module.put("module_name", "modulesName");
 		root.put("module", module);
 		Map function = new HashMap();
-		module.put("function_name", "functionName");
-		module.put("function_code", "functionCode");
-		module.put("host_path", "hostPath");
-		module.put("function_order", "functionOrder");
+		function.put("function_name", "functionName");
+		function.put("function_code", "functionCode");
+		function.put("host_path", "hostPath");
+		function.put("function_order", "functionOrder");
 		root.put("function", function);
 		DefaultObjectWrapper dow = new DefaultObjectWrapper();
 		List<TemplateModel> pages = new ArrayList<TemplateModel>();
