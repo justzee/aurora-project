@@ -479,7 +479,7 @@
 		<extension
              point="org.eclipse.ui.navigator.navigatorContent">
           <commonFilter
-                activeByDefault="true"
+                activeByDefault="false"
                 class="aurora.ide.navigator.BMFileFilter"
                 description="Filter leaf BM"
                 id="aurora.ide.navigator.filter"
