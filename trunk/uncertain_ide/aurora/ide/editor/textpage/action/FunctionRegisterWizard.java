@@ -3,6 +3,7 @@
  */
 package aurora.ide.editor.textpage.action;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ide.IDE;
 import org.mozilla.javascript.ast.StringLiteral;
+import org.xml.sax.SAXException;
 
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
@@ -40,6 +41,7 @@ import aurora.ide.search.core.AbstractSearchService;
 import aurora.ide.search.reference.MapFinderResult;
 import aurora.ide.search.reference.MultiReferenceTypeFinder;
 import aurora.ide.search.reference.NamedMapFinder;
+import freemarker.template.TemplateException;
 
 /**
  * @author shiliyan
@@ -49,7 +51,7 @@ public class FunctionRegisterWizard extends Wizard {
 
 	private static final String DEFAULT_FUNCTION_ORDER = "10";
 
-	private IWizardPage settingPage = new WizardPage("") {
+	private WizardPage settingPage = new WizardPage("") {
 
 		public void createControl(Composite parent) {
 			parent.setLayout(new GridLayout());
@@ -257,7 +259,22 @@ public class FunctionRegisterWizard extends Wizard {
 			files = new ArrayList<IFile>();
 			files.add(hostPage);
 			fetchAll(hostPage);
-			String exportSql = toExportSql();
+			String exportSql = null;
+			try {
+				exportSql = toExportSql();
+			} catch (IOException e) {
+				settingPage.setErrorMessage("找不到摸版");
+				e.printStackTrace();
+				return false;
+			} catch (SAXException e) {
+				settingPage.setErrorMessage("找不到摸版");
+				e.printStackTrace();
+				return false;
+			} catch (TemplateException e) {
+				settingPage.setErrorMessage("找不到摸版");
+				e.printStackTrace();
+				return false;
+			}
 			IDE.openEditor(AuroraPlugin.getActivePage(), new StringEditorInput(
 					exportSql), "org.eclipse.ui.DefaultTextEditor");
 		} catch (CoreException e) {
@@ -272,7 +289,7 @@ public class FunctionRegisterWizard extends Wizard {
 		return true;
 	}
 
-	private String toExportSql() {
+	private String toExportSql() throws IOException, SAXException, TemplateException {
 		RegisterSql rsql = new RegisterSql(this.getFunctionCode(),
 				this.getFunctionName(), this.getFunctionOrder(),
 				this.getModulesCode(), this.getModulesName(), hostPage);
