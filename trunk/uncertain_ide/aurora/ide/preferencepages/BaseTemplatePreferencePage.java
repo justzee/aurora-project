@@ -122,6 +122,14 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 
 	public static InputStream getTemplateContent(String dirname)
 			throws IOException, SAXException {
+		File tplFile = getTemplateFile(dirname);
+		if (tplFile != null)
+			return new FileInputStream(tplFile);
+		return null;
+	}
+
+	public static File getTemplateFile(String dirname) throws IOException,
+			SAXException {
 		File dir = getTemplateDir(dirname);
 		File cfgFile = getConfigFile(dir);
 		Config cfg = loadConfig(cfgFile);
@@ -138,8 +146,7 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 				}
 			}
 		if (fn != null) {
-			File tplFile = new File(dir, fn);
-			return new FileInputStream(tplFile);
+			return new File(dir, fn);
 		}
 		return null;
 	}

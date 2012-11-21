@@ -1,5 +1,6 @@
 package aurora.ide.preferencepages;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -32,6 +33,10 @@ public class FunctionRegisterPreferencePage extends BaseTemplatePreferencePage {
 	public static InputStream getTemplateContent() throws IOException,
 			SAXException {
 		return BaseTemplatePreferencePage.getTemplateContent(template_dir_name);
+	}
+
+	public static File getTemplateFile() throws IOException, SAXException {
+		return BaseTemplatePreferencePage.getTemplateFile(template_dir_name);
 	}
 
 }
