@@ -1,5 +1,6 @@
 package aurora.ide.navigator;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,14 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 
+import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
@@ -47,7 +51,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 				DialogUtil.logErrorException(e);
 				return NO_CHILD;
 			} catch (ApplicationException e) {
-				//错误信息不明确，
+				// 错误信息不明确，
 				DialogUtil.logErrorException(e);
 				return NO_CHILD;
 			}
@@ -202,7 +206,8 @@ public class BMFileContentProvider implements ITreeContentProvider,
 		}
 	}
 
-	private Object[] getBMFilesFromResources(IResource[] resources) throws ApplicationException {
+	private Object[] getBMFilesFromResources(IResource[] resources)
+			throws ApplicationException {
 		List fileList = new LinkedList();
 		BMHierarchyViewerTester test = new BMHierarchyViewerTester();
 		for (int i = 0; i < resources.length; i++) {
@@ -212,7 +217,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 				continue;
 			}
 			try {
-				
+
 				BMFile bmFile = searchBMLinkFile(child);
 				if (bmFile != null) {
 					fileList.add(bmFile);
@@ -220,10 +225,10 @@ public class BMFileContentProvider implements ITreeContentProvider,
 					fileList.add(child);
 				}
 			} catch (ApplicationException e) {
-//				DialogUtil.showErrorMessageBox(child.getFullPath().toString());
+				// DialogUtil.showErrorMessageBox(child.getFullPath().toString());
 				throw e;
 			}
-			
+
 		}
 
 		return fileList.toArray();
@@ -248,14 +253,31 @@ public class BMFileContentProvider implements ITreeContentProvider,
 		}
 	}
 
-	private BMFile searchBMLinkFile(IResource resource)
+	private BMFile searchBMLinkFile(final IResource resource)
 			throws ApplicationException {
-		
-	
+
 		if (resource == null || !resource.exists())
 			return null;
 		if (!BMHierarchyCache.getInstance().isCached(resource.getProject())) {
-			BMHierarchyCache.getInstance().initCache(resource.getProject());
+			try {
+				AuroraPlugin.getDefault().getWorkbench().getProgressService()
+						.busyCursorWhile(new IRunnableWithProgress() {
+
+							public void run(IProgressMonitor monitor)
+									throws InvocationTargetException,
+									InterruptedException {
+								try {
+									BMHierarchyCache.getInstance().initCache(
+											resource.getProject());
+								} catch (ApplicationException e) {
+									throw new InvocationTargetException(e);
+								}
+							}
+						});
+			} catch (InvocationTargetException e) {
+				throw new ApplicationException("", e);
+			} catch (InterruptedException e) {
+			}
 		}
 		Map ifileMap = BMHierarchyCache.getInstance().getBMFileMapNotNull(
 				resource.getProject());
