@@ -98,7 +98,7 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 	public void init(IWorkbench workbench) {
 		templateDir = getTemplateDir(getTemplateDirName());
 		if (!templateDir.exists()) {
-			reset();
+			reset(templateDir);
 		}
 		initConfig();
 	}
@@ -131,6 +131,8 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 	public static File getTemplateFile(String dirname) throws IOException,
 			SAXException {
 		File dir = getTemplateDir(dirname);
+		if (!dir.exists())
+			reset(dir);
 		File cfgFile = getConfigFile(dir);
 		Config cfg = loadConfig(cfgFile);
 		String def = cfg.map.getString("default");
@@ -194,9 +196,9 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 
 	}
 
-	private void reset() {
+	private static void reset(File templateDir) {
 		URL ts = FileLocator.find(Platform.getBundle(AuroraPlugin.PLUGIN_ID),
-				new Path("templates/" + getTemplateDirName()), null); //$NON-NLS-1$
+				new Path("templates/" + templateDir.getName()), null); //$NON-NLS-1$
 		try {
 			ts = FileLocator.toFileURL(ts);
 			File initTplDir = new Path(ts.getPath()).toFile();
@@ -578,7 +580,7 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 	 */
 	protected void performDefaults() {
 		FileDeleter.deleteDirectory(templateDir);
-		reset();
+		reset(templateDir);
 		initConfig();
 		fTableViewer.setInput(config);
 		fTableViewer.refresh();
