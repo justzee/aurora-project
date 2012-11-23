@@ -83,7 +83,8 @@ public class RegisterSql {
 			if ("page_name".equals(arg)) {
 				return dow.wrap(page_name);
 			}
-			return dow.wrap("null");
+//			return dow.wrap("null");
+			return null;
 		}
 
 		public boolean isEmpty() throws TemplateModelException {
@@ -103,7 +104,8 @@ public class RegisterSql {
 			if ("bm_path".equals(arg)) {
 				return dow.wrap(bm_path);
 			}
-			return dow.wrap("null");
+//			return dow.wrap("null");
+			return null;
 		}
 
 		public boolean isEmpty() throws TemplateModelException {
@@ -122,21 +124,7 @@ public class RegisterSql {
 		this.modulesName = modulesName;
 		this.hostPage = hostPage;
 		hostPath = PathUtil.getPathInScreen(hostPage);
-		String moduleRegisterSql = MODULE_REGISTER_SQL.replace(MODULE_CODE,
-				modulesCode).replace(MODULE_NAME, modulesName);
-		functionRegisterSql = functionRegisterSql.append(moduleRegisterSql)
-				.append("\n");
-		String fRegisterSql = FUNCTION_REGISTER_SQL
-				.replace(FUNCTION_CODE, functionCode)
-				.replace(FUNCTION_NAME, functionName)
-				.replace(MODULE_CODE, modulesCode).replace(HOST_PATH, hostPath)
-				.replace(FUNCTION_ORDER, functionOrder);
-		functionRegisterSql = functionRegisterSql.append(fRegisterSql).append(
-				"\n");
-
-		InputStream resourceAsStream = getClass().getResourceAsStream(
-				"functionRegister.sql");
-		resultString = FileUtil.readStringFile(resourceAsStream).toString();
+		
 	}
 
 	public RegisterSql() {
@@ -163,7 +151,7 @@ public class RegisterSql {
 		function.put("function_code", this.functionCode == null ? ""
 				: functionCode);
 		function.put("host_path", this.hostPath == null ? "" : hostPath);
-		function.put("function_order", this.functionOrder == null ? "" : hostPath);
+		function.put("function_order", this.functionOrder == null ? "" : functionOrder);
 		root.put("function", function);
 		DefaultObjectWrapper dow = new DefaultObjectWrapper();
 		List<TemplateModel> pages = new ArrayList<TemplateModel>();
@@ -185,11 +173,11 @@ public class RegisterSql {
 				RegisterSql.ScreenPage p = new RegisterSql.ScreenPage(pagePath,
 						pageName);
 				pages.add(p);
-				if ("bm".equalsIgnoreCase(fileExtension)) {
-					String bmPath = PathUtil.getPathInScreen(f);
-					RegisterSql.Model m = new RegisterSql.Model(bmPath);
-					models.add(m);
-				}
+			}
+			if ("bm".equalsIgnoreCase(fileExtension)) {
+				String bmPath = PathUtil.getPathInScreen(f);
+				RegisterSql.Model m = new RegisterSql.Model(bmPath);
+				models.add(m);
 			}
 		}
 		root.put("pages", dow.wrap(pages));
@@ -223,6 +211,23 @@ public class RegisterSql {
 	}
 
 	private String old(List<IFile> files) {
+		String moduleRegisterSql = MODULE_REGISTER_SQL.replace(MODULE_CODE,
+				modulesCode).replace(MODULE_NAME, modulesName);
+		functionRegisterSql = functionRegisterSql.append(moduleRegisterSql)
+				.append("\n");
+		String fRegisterSql = FUNCTION_REGISTER_SQL
+				.replace(FUNCTION_CODE, functionCode)
+				.replace(FUNCTION_NAME, functionName)
+				.replace(MODULE_CODE, modulesCode).replace(HOST_PATH, hostPath)
+				.replace(FUNCTION_ORDER, functionOrder);
+		functionRegisterSql = functionRegisterSql.append(fRegisterSql).append(
+				"\n");
+
+		InputStream resourceAsStream = getClass().getResourceAsStream(
+				"functionRegister.sql");
+		resultString = FileUtil.readStringFile(resourceAsStream).toString();
+		
+		
 		for (IFile f : files) {
 			String fileExtension = f.getFileExtension();
 			if ("screen".equalsIgnoreCase(fileExtension)
