@@ -58,7 +58,8 @@ public class BaseCompositeMapViewer implements IViewer {
 		createElementContent(control);
 		createPropertyContent(control);
 		treeViewer.addSelectionChangedListener(new ElementSelectionListener());
-		control.setWeights(new int[] { 40, 60 });
+		control.addControlListener(new FixedSizeControlListener(500));
+		// control.setWeights(new int[] { 40, 60 });
 	}
 
 	private void createElementContent(Composite mContent) {
@@ -162,8 +163,7 @@ public class BaseCompositeMapViewer implements IViewer {
 
 		private void createPropertyGridTab(Composite parent)
 				throws ApplicationException {
-			gridViewer = new GridViewer(null, IGridViewer.fullEditable
-					| IGridViewer.isColumnPacked);
+			gridViewer = new GridViewer(null, IGridViewer.fullEditable);
 			gridViewer.setParent(this);
 			gridViewer.createViewer(parent);
 			mTabFolder.getItem(1).setControl(gridViewer.getControl());

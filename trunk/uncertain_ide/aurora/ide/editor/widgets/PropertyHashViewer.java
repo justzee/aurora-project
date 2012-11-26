@@ -1,6 +1,5 @@
 package aurora.ide.editor.widgets;
 
-
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
@@ -22,8 +21,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -82,15 +79,15 @@ public class PropertyHashViewer extends PropertyViewer implements
 		int xWidth = parent.getBounds().width;
 		if (xWidth < 100)
 			xWidth = 800;
-		final int appendWidth = 100;
-		Table table = tableViewer.getTable();
-		int columnWidth = (xWidth-appendWidth) / table.getColumnCount();
-		for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-			table.getColumn(i).setWidth(columnWidth);
-		}
+		// final int appendWidth = 100;
+		// Table table = tableViewer.getTable();
+		// int columnWidth = (xWidth - appendWidth) / table.getColumnCount();
+		// for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+		// table.getColumn(i).setWidth(columnWidth);
+		// }
 		setCellEditors();
 
-//		Element em = LoadSchemaManager.getSchemaManager().getElement(data);
+		// Element em = LoadSchemaManager.getSchemaManager().getElement(data);
 		Element em = CompositeMapUtil.getElement(data);
 		elementDocument.setText("");
 		if (em != null) {
@@ -100,10 +97,10 @@ public class PropertyHashViewer extends PropertyViewer implements
 		}
 	}
 
-	public String clear(boolean validation){
+	public String clear(boolean validation) {
 		if (tableViewer != null) {
 			String errorMessage = clearCellEditor(validation);
-			if(errorMessage != null)
+			if (errorMessage != null)
 				return errorMessage;
 			tableViewer.getTable().removeAll();
 			elementDocument.setText("");
@@ -122,6 +119,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 		createMainContent(viewForm);
 		sashForm.setWeights(new int[] { 92, 8 });
 	}
+
 	public void createEditor(boolean showElementDocument) {
 		Assert.isTrue(tableViewer == null, "The viewer has been created!");
 		sashForm = new SashForm(parent, SWT.VERTICAL);
@@ -131,11 +129,10 @@ public class PropertyHashViewer extends PropertyViewer implements
 		viewForm.setLayout(new FillLayout());
 		createToolbar(viewForm);
 		createMainContent(viewForm);
-		if(!showElementDocument){
+		if (!showElementDocument) {
 			sashForm.SASH_WIDTH = 0;
 			sashForm.setWeights(new int[] { 100, 0 });
-		}
-		else{
+		} else {
 			sashForm.setWeights(new int[] { 92, 8 });
 		}
 	}
@@ -157,11 +154,15 @@ public class PropertyHashViewer extends PropertyViewer implements
 		mTable.setHeaderVisible(true);
 
 		TableColumn propertycolumn = new TableColumn(mTable, SWT.LEFT);
+		propertycolumn.setWidth(150);
 		propertycolumn.setText(LocaleMessage.getString("property.name"));
-		new TableColumn(mTable, SWT.LEFT).setText(LocaleMessage
-				.getString("value"));
-		new TableColumn(mTable, SWT.LEFT).setText(LocaleMessage
-				.getString("description"));
+		TableColumn valueColumn = new TableColumn(mTable, SWT.LEFT);
+		valueColumn.setText(LocaleMessage.getString("value"));
+		valueColumn.setWidth(150);
+
+		TableColumn descColumn = new TableColumn(mTable, SWT.LEFT);
+		descColumn.setText(LocaleMessage.getString("description"));
+		descColumn.setWidth(250);
 		viewForm.setContent(tableViewer.getControl());
 		addKeyListener();
 		tableViewer.setSorter(new PropertyHashSorter(this, contentProvider));
@@ -195,7 +196,8 @@ public class PropertyHashViewer extends PropertyViewer implements
 		this.isCategory = isCategory;
 		repaint();
 	}
-	private void repaint(){
+
+	private void repaint() {
 		try {
 			clear(false);
 			setData(getInput());
@@ -223,9 +225,12 @@ public class PropertyHashViewer extends PropertyViewer implements
 	}
 
 	private void fillActionToolBars(ToolBarManager actionBarManager) {
-		Action addAction = new AddPropertyAction(this, ActionListener.DefaultImage);
-		Action removeAction = new RemovePropertyAction(this,ActionListener.DefaultImage);
-		Action refreshAction = new RefreshAction(this,ActionListener.DefaultImage);
+		Action addAction = new AddPropertyAction(this,
+				ActionListener.DefaultImage);
+		Action removeAction = new RemovePropertyAction(this,
+				ActionListener.DefaultImage);
+		Action refreshAction = new RefreshAction(this,
+				ActionListener.DefaultImage);
 
 		CategroyAction categroyAction = new CategroyAction(this);
 		CharSortAction charSortAction = new CharSortAction(this);
@@ -280,11 +285,11 @@ public class PropertyHashViewer extends PropertyViewer implements
 		customerEditors.put(property, cellEditor);
 	}
 
-	public String clearCellEditor(boolean validation){
+	public String clearCellEditor(boolean validation) {
 		Object[] editors = customerEditors.values().toArray();
 		for (int i = 0; i < editors.length; i++) {
 			ICellEditor ed = (ICellEditor) editors[i];
-			if(validation){
+			if (validation) {
 				if (!ed.validValue(ed.getSelection())) {
 					return ed.getErrorMessage();
 				}
@@ -307,7 +312,9 @@ public class PropertyHashViewer extends PropertyViewer implements
 			if (av instanceof CategoryLabel) {
 				continue;
 			}
-			ICellEditor cellEditor = CellEditorFactory.getInstance().createCellEditor(this, av.getAttribute(), getInput(), item);
+			ICellEditor cellEditor = CellEditorFactory
+					.getInstance()
+					.createCellEditor(this, av.getAttribute(), getInput(), item);
 			if (cellEditor != null) {
 				addEditor(av.getAttribute().getLocalName(), cellEditor);
 				fillTableCellEditor(table, item, av.getAttribute().getQName(),
