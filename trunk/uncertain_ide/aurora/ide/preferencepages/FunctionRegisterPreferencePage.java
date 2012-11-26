@@ -3,8 +3,13 @@ package aurora.ide.preferencepages;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.SAXException;
+
+import aurora.ide.editor.textpage.action.RegisterSql;
+import freemarker.template.TemplateModelException;
 
 public class FunctionRegisterPreferencePage extends BaseTemplatePreferencePage {
 
@@ -26,8 +31,13 @@ public class FunctionRegisterPreferencePage extends BaseTemplatePreferencePage {
 	}
 
 	@Override
-	protected String validateTemplate(String content) {
-		return super.validateTemplate(content);
+	protected Map<?, ?> getSimpleModel() {
+		try {
+			return RegisterSql.createTempConfig();
+		} catch (TemplateModelException e) {
+			e.printStackTrace();
+		}
+		return new HashMap();
 	}
 
 	public static InputStream getTemplateContent() throws IOException,
