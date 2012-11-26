@@ -156,7 +156,7 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 		return null;
 	}
 
-	abstract String getTemplateDirName();
+	protected abstract String getTemplateDirName();
 
 	private void initConfig() {
 		File configFile = getConfigFile(templateDir);
