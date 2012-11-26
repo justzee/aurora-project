@@ -13,6 +13,7 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 
+import aurora.ide.editor.textpage.js.validate.JSValidator;
 import aurora.ide.helpers.DialogUtil;
 
 public class XmlReconcilingStrategy implements IReconcilingStrategy,
@@ -25,15 +26,9 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy,
 		this.mSourceViewer = (ProjectionViewer) sourceViewer;
 	}
 
-
-
-
 	public boolean addListener(IReconcileListener l) {
 		return listeners.add(l);
 	}
-	
-	
-
 
 	public void reconcile(IRegion partition) {
 		noticeListener();
@@ -44,7 +39,6 @@ public class XmlReconcilingStrategy implements IReconcilingStrategy,
 	}
 
 	public void setDocument(IDocument document) {
-		// this.document = document;
 		noticeListener();
 
 	}
