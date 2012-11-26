@@ -23,8 +23,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -46,6 +44,7 @@ import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.bm.BMUtil;
 import aurora.ide.editor.BaseCompositeMapViewer;
 import aurora.ide.editor.CompositeMapPage;
+import aurora.ide.editor.FixedSizeControlListener;
 import aurora.ide.editor.core.IViewer;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.PropertyHashViewer;
@@ -153,7 +152,7 @@ public class BusinessModelPage extends CompositeMapPage {
 		sashForm.setLayoutData(new GridData(GridData.FILL_BOTH));
 		sashForm.setLayout(new GridLayout());
 		shell.layout(true);
-		sashForm.setWeights(new int[] { 40, 60 });
+		sashForm.setWeights(new int[] { 2, 4 });
 		if (this.getSelectionTab() == null) {
 			CompositeMap child = data.getChild("operations");
 			String init_tab = child == null ? "fields" : "operations";
@@ -208,7 +207,8 @@ public class BusinessModelPage extends CompositeMapPage {
 				refresh(true);
 			}
 		});
-		sashForm.setWeights(new int[] { 80, 20 });
+		sashForm.addControlListener(new FixedSizeControlListener(700));
+		// sashForm.setWeights(new int[] { 80, 20 });
 	}
 
 	private void registerTabFolder(int i, String tabFolerName) {
@@ -265,7 +265,7 @@ public class BusinessModelPage extends CompositeMapPage {
 				mTabFolder.addSelectionListener(new SelectionListener() {
 
 					public void widgetSelected(SelectionEvent e) {
-						if (mTabFolder.getSelectionIndex() == itemIndex){
+						if (mTabFolder.getSelectionIndex() == itemIndex) {
 							gridViewer.packColumns();
 						}
 					}
@@ -482,4 +482,5 @@ public class BusinessModelPage extends CompositeMapPage {
 			return true;
 		return false;
 	}
+
 }

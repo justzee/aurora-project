@@ -1,6 +1,5 @@
 package aurora.ide.node.action;
 
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -12,18 +11,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
+import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.editor.PropertyViewer;
 import aurora.ide.helpers.ImagesUtils;
 import aurora.ide.helpers.LocaleMessage;
 
-
-import uncertain.composite.CompositeMap;
-
 public class AddPropertyAction extends ActionListener {
 	PropertyViewer viewer;
 
-	public AddPropertyAction(PropertyViewer viewer,int actionStyle) {
+	public AddPropertyAction(PropertyViewer viewer, int actionStyle) {
 		setActionStyle(actionStyle);
 		this.viewer = viewer;
 	}
@@ -33,7 +30,8 @@ public class AddPropertyAction extends ActionListener {
 	}
 
 	public ImageDescriptor getDefaultImageDescriptor() {
-		return AuroraPlugin.getImageDescriptor(LocaleMessage.getString("add.icon"));
+		return AuroraPlugin.getImageDescriptor(LocaleMessage
+				.getString("add.icon"));
 	}
 
 	private void showInputDialog() {
@@ -45,14 +43,14 @@ public class AddPropertyAction extends ActionListener {
 		propertyLabe.setText(LocaleMessage.getString("property.name"));
 		propertyLabe.setBounds(20, 20, 50, 30);
 
-		final Text propertyText = new Text(shell, SWT.SHADOW_IN);
+		final Text propertyText = new Text(shell, SWT.BORDER);
 		propertyText.setBounds(80, 20, 300, 20);
 
 		Label valueLabel = new Label(shell, SWT.NONE);
 		valueLabel.setText(LocaleMessage.getString("value"));
 		valueLabel.setBounds(20, 50, 50, 30);
 
-		final Text valueText = new Text(shell, SWT.SHADOW_IN);
+		final Text valueText = new Text(shell, SWT.BORDER);
 		valueText.setBounds(80, 50, 300, 20);
 
 		final Button ok = new Button(shell, SWT.PUSH);
@@ -91,6 +89,7 @@ public class AddPropertyAction extends ActionListener {
 		};
 		return listener;
 	}
+
 	public Image getDefaultImage() {
 		return ImagesUtils.getImage("add.gif");
 	}
