@@ -214,6 +214,7 @@ public class PropertyHashViewer extends PropertyViewer implements
 
 	public void refresh(boolean dirty) {
 		if (dirty) {
+			repaint();
 			page.refresh(dirty);
 		} else
 			refresh();
