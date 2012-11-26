@@ -5,9 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -57,6 +59,7 @@ import org.xml.sax.SAXException;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import aurora.ide.AuroraPlugin;
+import aurora.ide.freemarker.FreeMarkerGenerator;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DialogUtil;
@@ -170,6 +173,8 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 			tpl.templateStr = getFileContent(f);// not affect dirty flag
 		}
 	}
+
+	protected abstract Map<?, ?> getSimpleModel();
 
 	private String getFileContent(File file) {
 		try {
@@ -663,6 +668,18 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 	 * @return
 	 */
 	protected String validateTemplate(String content) {
+		Map<?, ?> model = getSimpleModel();
+		if (model == null)
+			return null;
+		try {
+			@SuppressWarnings("deprecation")
+			freemarker.template.Template template = new freemarker.template.Template(
+					"test", new StringReader(content));
+			FreeMarkerGenerator fg = new FreeMarkerGenerator();
+			fg.gen(template, model);
+		} catch (Exception e) {
+			return e.getMessage();
+		}
 		return null;
 	}
 
