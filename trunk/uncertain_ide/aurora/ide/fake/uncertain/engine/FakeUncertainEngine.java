@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import javax.sql.DataSource;
 
+import uncertain.cache.CacheFactoryConfig;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.core.DirectoryConfig;
@@ -425,6 +426,9 @@ public class FakeUncertainEngine {
 			addContextListener((IContextListener) inst);
 		if (inst instanceof ILifeCycle) {
 			ILifeCycle c = (ILifeCycle) inst;
+			if(c instanceof CacheFactoryConfig){
+				return false;
+			}
 			if (c.startup()) {
 				mLoadedLifeCycleList.add(c);
 				return true;
