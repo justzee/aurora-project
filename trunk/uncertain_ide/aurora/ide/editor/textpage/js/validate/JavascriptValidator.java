@@ -3,9 +3,6 @@ package aurora.ide.editor.textpage.js.validate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ErrorReporter;

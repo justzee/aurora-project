@@ -137,8 +137,8 @@ public class TextPage extends TextEditor implements IViewer {
 		super.createPartControl(parent);
 		// add by shiliyan
 
-		getInputDocument().addDocumentListener(
-				new JavascriptDocumentListener(this));
+//		getInputDocument().addDocumentListener(
+//				new JavascriptDocumentListener(this));
 
 		// add by shiliyan
 		getInputDocument().addDocumentListener(new IDocumentListener() {

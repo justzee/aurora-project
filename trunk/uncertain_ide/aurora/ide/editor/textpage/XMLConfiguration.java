@@ -42,6 +42,7 @@ import aurora.ide.editor.textpage.format.XMLFormattingStrategy;
 import aurora.ide.editor.textpage.hover.HoverInformationControlCreator;
 import aurora.ide.editor.textpage.hover.TextHover;
 import aurora.ide.editor.textpage.hyperlinks.FileHyperlinkDetector;
+import aurora.ide.editor.textpage.js.validate.JSValidator;
 import aurora.ide.editor.textpage.quickfix.QuickAssistProcessor;
 import aurora.ide.editor.textpage.scanners.JSEditorCodeScanner;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
@@ -229,6 +230,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
 		strategy.addListener(new XmlErrorReconcile(sourceViewer));
 		strategy.addListener(new ProjectionReconcile((ProjectionViewer) sourceViewer));
 		strategy.addListener(new IntimeBuilder(sourceViewer));
+		strategy.addListener(new JSValidator(sourceViewer));
 		MonoReconciler reconciler = new MonoReconciler(strategy, false);
 		return reconciler;
 	}
