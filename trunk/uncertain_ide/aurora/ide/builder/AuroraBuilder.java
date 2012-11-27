@@ -33,18 +33,19 @@ import aurora.ide.search.ui.MessageFormater;
 public class AuroraBuilder extends IncrementalProjectBuilder {
 	private int filecount = 0;
 	private IPath webPath;
+	private ArrayList<IResource> filesToBuild = new ArrayList<IResource>();
 
 	class SampleDeltaVisitor implements IResourceDeltaVisitor {
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			IResource resource = delta.getResource();
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-				validate(resource);
+				filesToBuild.add(resource);
 				break;
 			case IResourceDelta.REMOVED:
 				break;
 			case IResourceDelta.CHANGED:
-				validate(resource);
+				filesToBuild.add(resource);
 				break;
 			}
 			// return true to continue visiting children.
@@ -54,7 +55,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 
 	class SampleResourceVisitor implements IResourceVisitor {
 		public boolean visit(IResource resource) {
-			validate(resource);
+			filesToBuild.add(resource);
 			// return true to continue visiting children.
 			return true;
 		}
@@ -138,6 +139,7 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		BuildContext.initBuildLevel();
 		updateMonitorJob = createJob(monitor);
 		fNumberOfScannedFiles = 0;
+		filesToBuild.clear();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
@@ -215,6 +217,12 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 			updateMonitorJob.setSystem(true);
 			updateMonitorJob.schedule();
 			getProject().accept(new SampleResourceVisitor());
+			for (IResource res : filesToBuild) {
+				if (monitor.isCanceled()) {
+					break;
+				}
+				validate(res);
+			}
 		} catch (CoreException e) {
 			e.printStackTrace();
 		} finally {
@@ -233,6 +241,12 @@ public class AuroraBuilder extends IncrementalProjectBuilder {
 		updateMonitorJob.schedule();
 		try {
 			delta.accept(new SampleDeltaVisitor());
+			for (IResource res : filesToBuild) {
+				if (monitor.isCanceled()) {
+					break;
+				}
+				validate(res);
+			}
 		} finally {
 			updateMonitorJob.cancel();
 			monitor.done();
