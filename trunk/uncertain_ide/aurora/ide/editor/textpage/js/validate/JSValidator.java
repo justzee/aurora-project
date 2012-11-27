@@ -54,12 +54,14 @@ public class JSValidator implements IReconcileListener {
 
 			public void run() {
 				int offset = mSourceViewer.getTextWidget().getCaretOffset();
-				if(offset<=0)
+				if (offset <= 0)
 					return;
 				try {
 					ITypedRegion partition = document.getPartition(offset);
-					ITypedRegion parentRegion = document.getPartition(partition
-							.getOffset() - 1);
+					int offset2 = partition.getOffset() - 1;
+					if (offset2 <= 0)
+						return;
+					ITypedRegion parentRegion = document.getPartition(offset2);
 					String parentNode = document.get(parentRegion.getOffset(),
 							parentRegion.getLength());
 					if (parentNode == null)
