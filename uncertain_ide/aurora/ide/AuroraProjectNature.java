@@ -1,11 +1,14 @@
 package aurora.ide;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -17,7 +20,11 @@ import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 import aurora.ide.builder.AuroraBuilder;
+import aurora.ide.builder.ResourceUtil;
+import aurora.ide.helpers.DialogUtil;
+import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.perspectives.AuroraPerspective;
+import aurora.ide.project.propertypage.ProjectPropertyPage;
 
 public class AuroraProjectNature implements IProjectNature {
 
@@ -67,7 +74,8 @@ public class AuroraProjectNature implements IProjectNature {
 		this.project = project;
 	}
 
-	public static void addAuroraNature(final IProject project) throws CoreException {
+	public static void addAuroraNature(final IProject project)
+			throws CoreException {
 		if (project.hasNature(ID))
 			return;
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -80,32 +88,68 @@ public class AuroraProjectNature implements IProjectNature {
 				break;
 			}
 		}
-		
-		 IRunnableWithProgress runnable = new IRunnableWithProgress() {
-	            public void run(IProgressMonitor monitor)
-	                    throws InvocationTargetException {
-	                try {
-	                	IProjectDescription description = project.getDescription();
-	            		String[] ids = description.getNatureIds();
-	            		String[] newIds = new String[ids.length + 1];
-	            		System.arraycopy(ids, 0, newIds, 0, ids.length);
-	            		newIds[ids.length] = ID;
-	            		description.setNatureIds(newIds);
-	            		project.setDescription(description, null);
-	                   
-	                } catch (CoreException e) {
-	                    throw new InvocationTargetException(e);
-	                }
-	            }
-	        };
-	        IProgressService service = PlatformUI.getWorkbench().getProgressService();
-	        try {
-	            service.run(false, false, runnable);
-	        } catch (InterruptedException e) {
-	            //Ignore interrupted exceptions
-	        } catch (InvocationTargetException e) {
-	            return;
-	        }
+
+		IRunnableWithProgress runnable = new IRunnableWithProgress() {
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException {
+				try {
+					IProjectDescription description = project.getDescription();
+					String[] ids = description.getNatureIds();
+					String[] newIds = new String[ids.length + 1];
+					System.arraycopy(ids, 0, newIds, 0, ids.length);
+					newIds[ids.length] = ID;
+					description.setNatureIds(newIds);
+					project.setDescription(description, null);
+
+				} catch (CoreException e) {
+					throw new InvocationTargetException(e);
+				}
+			}
+		};
+		IProgressService service = PlatformUI.getWorkbench()
+				.getProgressService();
+		try {
+			service.run(false, false, runnable);
+		} catch (InterruptedException e) {
+			// Ignore interrupted exceptions
+		} catch (InvocationTargetException e) {
+			return;
+		}
+		autoSetProjectProperty(project);
+
+	}
+
+	/**
+	 * 
+	 * @param project
+	 *            must has aurora nature
+	 * @throws CoreException
+	 */
+	public static void autoSetProjectProperty(IProject project)
+			throws CoreException {
+		ArrayList<IFolder> folders = ResourceUtil.findAllWebInf(project);
+		for (int i = 0; i < folders.size(); i++) {
+			IResource res = folders.get(i).findMember("classes");
+			if (!(res instanceof IFolder))
+				folders.remove(i--);
+		}
+		IFolder wiFolder = null;
+		if (folders.size() == 0) {
+			DialogUtil.showErrorMessageBox(project.getName()
+					+ " has no proper WEB-INF folder.");
+			return;
+		} else if (folders.size() > 1) {
+			ProjectUtil.openProjectPropertyPage(project);
+			return;
+		} else {
+			wiFolder = folders.get(0);
+			project.setPersistentProperty(ProjectPropertyPage.LoclaUrlHomeQN,
+					"http://127.0.0.1:8080/" + project.getName());
+			project.setPersistentProperty(ProjectPropertyPage.WebQN, wiFolder
+					.getFullPath().toString());
+			project.setPersistentProperty(ProjectPropertyPage.BMQN, wiFolder
+					.getFolder("classes").getFullPath().toString());
+		}
 	}
 
 	public static void removeAuroraNature(IProject project)
@@ -128,7 +172,7 @@ public class AuroraProjectNature implements IProjectNature {
 
 	public static boolean hasAuroraNature(IProject project)
 			throws CoreException {
-		
+
 		return project.hasNature(ID);
 	}
 

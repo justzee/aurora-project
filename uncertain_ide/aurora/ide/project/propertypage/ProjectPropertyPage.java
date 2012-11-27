@@ -2,6 +2,8 @@ package aurora.ide.project.propertypage;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -28,8 +30,8 @@ import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 import aurora.ide.AuroraPlugin;
+import aurora.ide.builder.ResourceUtil;
 import aurora.ide.helpers.ApplicationException;
-import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ExceptionUtil;
@@ -37,7 +39,8 @@ import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
 
-public class ProjectPropertyPage extends PropertyPage {
+public class ProjectPropertyPage extends PropertyPage implements Runnable,
+		IRunnableWithProgress {
 	public ProjectPropertyPage() {
 	}
 
@@ -60,7 +63,7 @@ public class ProjectPropertyPage extends PropertyPage {
 	private Text localWebUrlText;
 	private Text webHomeText;
 	private Text bmHomeText;
-//	private Button debugButton;
+	// private Button debugButton;
 	private Button cb_isBuild;
 
 	protected Control createContents(Composite parent) {
@@ -73,7 +76,7 @@ public class ProjectPropertyPage extends PropertyPage {
 
 		// web url
 		Label localWebLabel = new Label(content, SWT.NONE);
-		localWebLabel.setText("预览主页面");
+		localWebLabel.setText(LocaleMessage.getString("preview.url"));
 		localWebUrlText = new Text(content, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
@@ -95,8 +98,9 @@ public class ProjectPropertyPage extends PropertyPage {
 
 		// webDir
 		Label webDirGroup = new Label(content, SWT.NONE);
-		webDirGroup.setText("Web主目录");
+		webDirGroup.setText(LocaleMessage.getString("web.home"));
 		webHomeText = new Text(content, SWT.BORDER);
+		webHomeText.setEditable(false);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		webHomeText.setLayoutData(gridData);
 		String webDir = null;
@@ -117,11 +121,15 @@ public class ProjectPropertyPage extends PropertyPage {
 		}
 
 		Button webBrowseButton = new Button(content, SWT.PUSH);
-		webBrowseButton.setText("浏览(&W)..");
+		webBrowseButton.setText(LocaleMessage.getString("openBrowse"));
 		webBrowseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
+				IContainer initSelection = getProject();
+				IFolder folder = ResourceUtil.getWebHomeFolder(getProject());
+				if (folder != null)
+					initSelection = folder;
 				ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-						Display.getCurrent().getActiveShell(), getProject(),
+						Display.getCurrent().getActiveShell(), initSelection,
 						false, LocaleMessage
 								.getString("please.select.the.path"));
 				if (dialog.open() == ContainerSelectionDialog.OK) {
@@ -131,22 +139,23 @@ public class ProjectPropertyPage extends PropertyPage {
 						String errorMessage = validWebHome(getProject(),
 								selectionPath);
 						if (errorMessage != null) {
-							if (DialogUtil.showConfirmDialogBox("校验不通过："
-									+ errorMessage
-									+ AuroraResourceUtil.LineSeparator
-									+ "是否仍然继续设置?") != SWT.OK) {
-								return;
-							}
+							DialogUtil.showErrorMessageBox(
+									LocaleMessage.getString("check.failed"),
+									errorMessage);
+							return;
 						}
 						webHomeText.setText(selectionPath.toString());
+						bmHomeText.setText(selectionPath.append("WEB-INF")
+								.append("classes").toString());
 					}
 				}
 			}
 		});
 		// BMDir
 		Label bmDirLabel = new Label(content, SWT.NONE);
-		bmDirLabel.setText("BM主目录");
+		bmDirLabel.setText(LocaleMessage.getString("bm.home"));
 		bmHomeText = new Text(content, SWT.BORDER);
+		bmHomeText.setEditable(false);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		bmHomeText.setLayoutData(gridData);
 		String bmDir = null;
@@ -170,8 +179,12 @@ public class ProjectPropertyPage extends PropertyPage {
 		bmBrowseButton.setText(LocaleMessage.getString("openBrowse"));
 		bmBrowseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
+				IContainer initSelection = getProject();
+				IFolder folder = ResourceUtil.getBMHomeFolder(getProject());
+				if (folder != null)
+					initSelection = folder;
 				ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-						Display.getCurrent().getActiveShell(), getProject(),
+						Display.getCurrent().getActiveShell(), initSelection,
 						false, LocaleMessage
 								.getString("please.select.the.path"));
 				if (dialog.open() == ContainerSelectionDialog.OK) {
@@ -181,12 +194,10 @@ public class ProjectPropertyPage extends PropertyPage {
 						String errorMessage = validBMHome(getProject(),
 								selectionPath);
 						if (errorMessage != null) {
-							if (DialogUtil.showConfirmDialogBox("校验不通过："
-									+ errorMessage
-									+ AuroraResourceUtil.LineSeparator
-									+ "是否仍然继续设置?") != SWT.OK) {
-								return;
-							}
+							DialogUtil.showErrorMessageBox(
+									LocaleMessage.getString("check.failed"),
+									errorMessage);
+							return;
 						}
 						bmHomeText.setText(selectionPath.toString());
 					}
@@ -194,28 +205,30 @@ public class ProjectPropertyPage extends PropertyPage {
 			}
 		});
 		Button testConn = new Button(content, SWT.PUSH);
-		testConn.setText("保存设置,并测试数据库链接");
+		testConn.setText(LocaleMessage.getString("test.database"));
 		gridData = new GridData(GridData.BEGINNING);
 		gridData.horizontalSpan = 3;
 		testConn.setLayoutData(gridData);
 		testConn.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				if (checkInput()) {
-					String errorMessage = validWebHome(getProject(), new Path(
-							webHomeText.getText()));
-					if (errorMessage != null) {
-						if (DialogUtil.showConfirmDialogBox("校验不通过："
-								+ errorMessage
-								+ AuroraResourceUtil.LineSeparator
-								+ "是否仍然继续设置?") != SWT.OK) {
-							return;
-						}
-					} else {
-						DialogUtil.showMessageBox(SWT.ICON_INFORMATION, "OK",
-								"数据库连接测试成功!");
+				if (!checkInput()) {
+					if (getErrorMessage() != null) {
+						DialogUtil.showErrorMessageBox(getErrorMessage());
 					}
+					return;
 				}
-
+				saveInput();
+				try {
+					DBConnectionUtil.testDBConnection(getProject(),
+							webHomeText.getText());
+				} catch (ApplicationException ae) {
+					DialogUtil.showErrorMessageBox(
+							LocaleMessage.getString("check.failed"),
+							ExceptionUtil.getExceptionTraceMessage(ae));
+					return;
+				}
+				DialogUtil.showMessageBox(SWT.ICON_INFORMATION, "OK",
+						LocaleMessage.getString("test.database.ok"));
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -223,25 +236,25 @@ public class ProjectPropertyPage extends PropertyPage {
 			}
 		});
 
-//		debugButton = new Button(content, SWT.CHECK);
-//		debugButton.setText("调试模式 ( 记录IDE运行日志,不建议开启. )");
-//		String debugMode = null;
-//		try {
-//			debugMode = getProject().getPersistentProperty(DebugModeQN);
-//		} catch (CoreException e) {
-//			DialogUtil.showExceptionMessageBox(e);
-//		}
-//		if ("true".equals(debugMode)) {
-//			debugButton.setSelection(true);
-//		}
-//		gridData = new GridData(GridData.FILL_HORIZONTAL);
-//		gridData.horizontalSpan = 3;
-//		debugButton.setLayoutData(gridData);
+		// debugButton = new Button(content, SWT.CHECK);
+		// debugButton.setText("调试模式 ( 记录IDE运行日志,不建议开启. )");
+		// String debugMode = null;
+		// try {
+		// debugMode = getProject().getPersistentProperty(DebugModeQN);
+		// } catch (CoreException e) {
+		// DialogUtil.showExceptionMessageBox(e);
+		// }
+		// if ("true".equals(debugMode)) {
+		// debugButton.setSelection(true);
+		// }
+		// gridData = new GridData(GridData.FILL_HORIZONTAL);
+		// gridData.horizontalSpan = 3;
+		// debugButton.setLayoutData(gridData);
 
 		cb_isBuild = new Button(content, SWT.CHECK);
 		cb_isBuild.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 2, 1));
-		cb_isBuild.setText("立即开始 build ( build 过程可能耗时较长 )");
+		cb_isBuild.setText(LocaleMessage.getString("build.now"));
 
 		cb_isBuild.setSelection(getStoredBuildOption());
 		new Label(content, SWT.NONE);
@@ -251,65 +264,48 @@ public class ProjectPropertyPage extends PropertyPage {
 	private boolean checkInput() {
 		IProject project = getProject();
 		if (webHomeText.getText() == null || "".equals(webHomeText.getText())) {
-			setErrorMessage("请先设置Web主目录.");
+			setErrorMessage(LocaleMessage.getString("require.webhome"));
 			return false;
 		}
-		if (webHomeText.getText() != null) {
-			try {
-				project.setPersistentProperty(WebQN, webHomeText.getText());
-			} catch (CoreException e) {
-				DialogUtil.logErrorException(e);
-			}
+		String msg = validWebHome(project, new Path(webHomeText.getText()));
+		if (msg != null) {
+			setErrorMessage(msg);
+			return false;
 		}
-		if (bmHomeText.getText() != null) {
-			try {
-				project.setPersistentProperty(BMQN, bmHomeText.getText());
-			} catch (CoreException e) {
-				DialogUtil.logErrorException(e);
-			}
+		msg = validWebHome(project, new Path(bmHomeText.getText()));
+		if (msg != null) {
+			setErrorMessage(msg);
+			return false;
 		}
-		try {
-//			project.setPersistentProperty(DebugModeQN,
-//					String.valueOf(debugButton.getSelection()));
-			project.setPersistentProperty(LoclaUrlHomeQN,
-					localWebUrlText.getText());
-			project.setPersistentProperty(buildNow,
-					cb_isBuild.getSelection() ? "true" : "false");
-		} catch (CoreException e) {
-			DialogUtil.logErrorException(e);
-		}
+		setErrorMessage(null);
 		return true;
 	}
 
-	public boolean performOk() {
-		if (checkInput() && cb_isBuild.getSelection()) {
-			Display.getCurrent().asyncExec(new Runnable() {
-				public void run() {
-					try {
-						AuroraPlugin.getDefault().getWorkbench()
-								.getProgressService()
-								.busyCursorWhile(new IRunnableWithProgress() {
-									public void run(IProgressMonitor monitor)
-											throws InvocationTargetException,
-											InterruptedException {
-										try {
-											getProject()
-													.build(IncrementalProjectBuilder.FULL_BUILD,
-															monitor);
-										} catch (CoreException e) {
-											e.printStackTrace();
-										}
-									}
-								});
-					} catch (InvocationTargetException e1) {
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}
-				}
-			});
+	private void saveInput() {
+		try {
+			// project.setPersistentProperty(DebugModeQN,
+			// String.valueOf(debugButton.getSelection()));
+			IProject project = getProject();
+			project.setPersistentProperty(LoclaUrlHomeQN,
+					localWebUrlText.getText());
+			project.setPersistentProperty(WebQN, webHomeText.getText());
+			project.setPersistentProperty(BMQN, bmHomeText.getText());
+			project.setPersistentProperty(buildNow,
+					Boolean.toString(cb_isBuild.getSelection()));
+		} catch (CoreException e) {
+			DialogUtil.logErrorException(e);
 		}
-		return true;
+	}
+
+	public boolean performOk() {
+		if (checkInput()) {
+			saveInput();
+			if (cb_isBuild.getSelection()) {
+				Display.getCurrent().asyncExec(this);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private IProject getProject() {
@@ -326,19 +322,14 @@ public class ProjectPropertyPage extends PropertyPage {
 		IResource selectionResource = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(path);
 		if (selectionResource == null) {
-			return "此目录不存在，请重新选择！";
+			return LocaleMessage.getString("check.folder.not.exists");
 		}
 		if (!project.equals(selectionResource.getProject())) {
-			return "请选择本工程内的目录";
+			return LocaleMessage.getString("check.folder.not.in.project");
 		}
 		String locationPath = selectionResource.getLocation().toOSString();
 		if (locationPath == null) {
-			return "文件系统中不存在此目录!";
-		}
-		try {
-			DBConnectionUtil.testDBConnection(project, locationPath);
-		} catch (ApplicationException e) {
-			return ExceptionUtil.getExceptionTraceMessage(e);
+			return LocaleMessage.getString("check.folder.not.in.os");
 		}
 		return null;
 	}
@@ -348,19 +339,42 @@ public class ProjectPropertyPage extends PropertyPage {
 		IResource selectionResource = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(path);
 		if (selectionResource == null) {
-			return "此目录不存在，请重新选择！";
+			return LocaleMessage.getString("check.folder.not.exists");
 		}
 		if (!project.equals(selectionResource.getProject())) {
-			return "请选择本工程内的目录";
+			return LocaleMessage.getString("check.folder.not.in.project");
 		}
 		String locationPath = selectionResource.getLocation().toOSString();
 		if (locationPath == null) {
-			return "文件系统中不存在此目录!";
+			return LocaleMessage.getString("check.folder.not.in.os");
 		}
 		if (!classesDir.equals(selectionResource.getName().toLowerCase())) {
-			return "此文件名不是" + classesDir;
+			return String.format(LocaleMessage.getString("must.be.classes"),
+					classesDir);
 		}
 		return null;
+	}
+
+	@Override
+	protected void performDefaults() {
+		IProject proj = getProject();
+		IFolder folder = ResourceUtil.searchWebInf(getProject());
+		if (folder == null) {
+			return;
+		}
+		IResource clsFolder = folder.findMember("classes");
+		if (clsFolder instanceof IFolder) {
+			try {
+				localWebUrlText.setText(ProjectUtil.autoGetLocalWebUrl(proj));
+				webHomeText.setText(ProjectUtil.autoGetWebHome(proj));
+				bmHomeText.setText(ProjectUtil.autoGetBMHome(proj));
+				cb_isBuild.setSelection(false);
+			} catch (ApplicationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		super.performDefaults();
 	}
 
 	private boolean getStoredBuildOption() {
@@ -372,6 +386,28 @@ public class ProjectPropertyPage extends PropertyPage {
 		}
 		if (str == null)
 			return false;
-		return str.endsWith("true");
+		return Boolean.parseBoolean(str);
+	}
+
+	@Override
+	public void run(IProgressMonitor monitor) throws InvocationTargetException,
+			InterruptedException {
+		try {
+			getProject().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void run() {
+		try {
+			AuroraPlugin.getDefault().getWorkbench().getProgressService()
+					.busyCursorWhile(this);
+		} catch (InvocationTargetException e1) {
+			e1.printStackTrace();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 	}
 }
