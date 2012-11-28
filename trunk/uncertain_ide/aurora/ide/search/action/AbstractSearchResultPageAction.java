@@ -220,7 +220,7 @@ abstract public class AbstractSearchResultPageAction implements
 	}
 
 	protected IDocument getDocument(IFile file) throws CoreException {
-		return CacheManager.getDocumentCacher().getDocument(file);
+		return CacheManager.getDocument(file);
 	}
 
 	protected List getSelectionLineElement() {
