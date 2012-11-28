@@ -23,7 +23,7 @@ public class ScreenRefactoring {
 			"${/request/@context_path}");
 
 	public static IDocument getDocument(IFile file) throws CoreException {
-		return CacheManager.getDocumentCacher().getDocument(file);
+		return CacheManager.getDocument(file);
 	}
 
 	public static TextEdit createMoveTOScreenTextEdit(AbstractMatch match,

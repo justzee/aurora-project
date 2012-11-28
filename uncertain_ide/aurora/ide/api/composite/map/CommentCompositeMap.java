@@ -123,13 +123,57 @@ public class CommentCompositeMap extends CompositeMap {
 	}
 
 	public boolean equals(Object o) {
-		if (o instanceof CompositeMap) {
-			CompositeMap cm = (CompositeMap) o;
-			if (this.toXML().equals(cm.toXML())) {
-				return true;
-			}
+		// if (o instanceof CompositeMap) {
+		// CompositeMap cm = ((CompositeMap) o);
+		// if (this.toXML().equals(cm.toXML())) {
+		// return true;
+		// }
+		// }
+		// return false;
+		if ((o instanceof CompositeMap) == false) {
+			return false;
 		}
-		return false;
+		if (false == super.equals(o)) {
+			return false;
+		}
+		CompositeMap cm = ((CompositeMap) o);
+		if (false == eq(this.getQName(),cm.getQName())) {
+			return false;
+		}
+		if (cm instanceof CommentCompositeMap
+				&& false == eq( this.getComment(),
+						((CommentCompositeMap) cm).getComment())) {
+			return false;
+		}
+		if (false == eq(this.getText(),cm.getText())) {
+			return false;
+		}
+		List myChilds = this.getChildsNotNull();
+		List tChilds = cm.getChildsNotNull();
+		if (myChilds.size() != tChilds.size()) {
+			return false;
+		}
+		return myChilds.equals(tChilds);
+
+		// if (o instanceof CompositeMap) {
+		// CompositeMap cm = ((CompositeMap) o);
+		// if (this.toXML().equals(cm.toXML()) && !super.equals(o)) {
+		// System.out.println();
+		// super.equals(o);
+		// return true;
+		// }
+		// if (!this.toXML().equals(cm.toXML()) && super.equals(o)) {
+		// System.out.println();
+		// super.equals(o);
+		// return false;
+		// }
+		// }
+	}
+
+	private boolean eq(Object o1, Object o2) {
+		if (o1 == null)
+			return o2 == null;
+		return o1.equals(o2);
 	}
 
 	public String toXML() {

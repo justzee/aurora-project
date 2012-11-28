@@ -23,8 +23,8 @@ public abstract class AbstractValidator implements IterationHandle {
 		super();
 		this.file = file;
 		try {
-			map = CacheManager.getCompositeMapCacher().getCompositeMap(file);
-			doc = CacheManager.getDocumentCacher().getDocument(file);
+			map = CacheManager.getCompositeMap(file);
+			doc = CacheManager.getDocument(file);
 		} catch (Exception e) {
 			AuroraBuilder.addMarker(file, e.getMessage(), 1,
 					IMarker.SEVERITY_ERROR, AuroraBuilder.FATAL_ERROR);

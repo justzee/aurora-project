@@ -17,7 +17,6 @@ import aurora.ide.helpers.ApplicationException;
 
 public class CacheManager {
 	private static CompositeMapCacher mapCacher;
-	private static DocumentCacher documentCacher;
 
 	private static final String POINT_ID = "aurora.ide.compositeMapCacher";
 
@@ -61,13 +60,6 @@ public class CacheManager {
 		return mapCacher;
 	}
 
-	public static final DocumentCacher getDocumentCacher() {
-		if (documentCacher == null) {
-			documentCacher = new DocumentCacher();
-		}
-		return documentCacher;
-	}
-
 	public static CompositeMap getCompositeMap(IFile file)
 			throws CoreException, ApplicationException {
 		return getCompositeMapCacher().getCompositeMap(file);
@@ -79,7 +71,17 @@ public class CacheManager {
 	}
 
 	public static IDocument getDocument(IFile file) throws CoreException {
-		return getDocumentCacher().getDocument(file);
+		return getCompositeMapCacher().getDocument(file);
+	}
+
+	public static String getTOXML(IFile file) throws CoreException,
+			ApplicationException {
+		return getCompositeMapCacher().getTOXML(file);
+	}
+
+	public static String getString(IFile file) throws CoreException,
+			ApplicationException {
+		return getCompositeMapCacher().getString(file);
 	}
 
 }

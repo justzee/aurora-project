@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.ui.part.FileEditorInput;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
@@ -19,9 +20,11 @@ import aurora.bm.BusinessModel;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.bm.ExtendModelFactory;
+import aurora.ide.editor.textpage.XMLDocumentProvider;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.PathUtil;
 
 public class CompositeMapCacher implements IResourceChangeListener,
@@ -40,21 +43,28 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			this.project = project;
 		}
 
-		private synchronized CompositeMap getCompositeMap(IFile file)
-				throws CoreException, ApplicationException {
+		private CompositeMap getCompositeMap(IFile file) throws CoreException,
+				ApplicationException {
 			if (!CacheManager.isSupport(file)) {
 				return EMPTY_MAP;
 			}
-			CacheFile cacheFile = catchMap.get(file);
-			if (cacheFile == null) {
-				CompositeMap map = load(file);
-				cacheFile = new CacheFile(file, map);
-				catchMap.put(file, cacheFile);
+			CacheFile cacheFile = getCacheFile(file);
+			if (cacheFile.getCompositeMap() == null) {
+				cacheFile.setCompositeMap(loadCompositeMap(file));
 			}
 			return cacheFile.getCompositeMap();
 		}
 
-		private synchronized CompositeMap getWholeCompositeMap(IFile file)
+		private CacheFile getCacheFile(IFile file) {
+			CacheFile cacheFile = catchMap.get(file);
+			if (cacheFile == null) {
+				cacheFile = new CacheFile(file);
+				catchMap.put(file, cacheFile);
+			}
+			return cacheFile;
+		}
+
+		private CompositeMap getWholeCompositeMap(IFile file)
 				throws CoreException, ApplicationException {
 			if (!PathUtil.isBMFile(file)) {
 				return EMPTY_MAP;
@@ -69,7 +79,7 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			return map;
 		}
 
-		private IProject getProject() {
+		public IProject getProject() {
 			return project;
 		}
 
@@ -91,31 +101,68 @@ public class CompositeMapCacher implements IResourceChangeListener,
 			return factory.getModel(config);
 		}
 
-		private CompositeMap load(IFile file) throws CoreException,
+		private CompositeMap loadCompositeMap(IFile file) throws CoreException,
 				ApplicationException {
 
-			IDocument document = CacheManager.getDocumentCacher().getDocument(
-					file);
-
-			// long tick = System.currentTimeMillis();
-
+			IDocument document = CacheManager.getDocument(file);
 			if (document == null)
 				return null;
 			CompositeMap loaderFromString = CompositeMapUtil
 					.loaderFromString(document.get());
-			// tick = System.currentTimeMillis() - tick;
-			//
-			// System.out.println("load document time : " + tick);
 			return new CacheCompositeMap((CommentCompositeMap) loaderFromString);
 		}
 
-		private synchronized CompositeMap remove(IFile file) {
-			file.getModificationStamp();
+		private void remove(IFile file) {
 			CacheFile cacheFile = catchMap.get(file);
 			if (cacheFile != null && cacheFile.checkModification()) {
-				return catchMap.remove(file).getCompositeMap();
+				catchMap.remove(file).clear();
 			}
-			return null;
+		}
+
+		public IDocument getDocument(IFile file) {
+			if (!CacheManager.isSupport(file)) {
+				return null;
+			}
+			CacheFile cacheFile = getCacheFile(file);
+			if (cacheFile.getDocument() == null) {
+				cacheFile.setDocument(loadDocument(file));
+			}
+			return cacheFile.getDocument();
+		}
+
+		protected IDocument loadDocument(IFile file) {
+			FileEditorInput element = new FileEditorInput(file);
+			XMLDocumentProvider provider = new XMLDocumentProvider();
+			try {
+				provider.connect(element);
+			} catch (CoreException e) {
+				DialogUtil.logErrorException(e);
+			}
+			IDocument document = provider.getDocument(element);
+			return document;
+		}
+
+		public String getTOXML(IFile file) throws CoreException,
+				ApplicationException {
+			if (!CacheManager.isSupport(file)) {
+				return null;
+			}
+			CacheFile cacheFile = getCacheFile(file);
+			if (cacheFile.getToXML() == null) {
+				cacheFile.setToXML(getCompositeMap(file).toXML());
+			}
+			return cacheFile.getToXML();
+		}
+
+		public String getString(IFile file) {
+			if (!CacheManager.isSupport(file)) {
+				return null;
+			}
+			CacheFile cacheFile = getCacheFile(file);
+			if (cacheFile.getString() == null) {
+				cacheFile.setString(this.getDocument(file).get());
+			}
+			return cacheFile.getString();
 		}
 	}
 
@@ -137,11 +184,11 @@ public class CompositeMapCacher implements IResourceChangeListener,
 		return (CompositeMap) projectCatcher.getWholeCompositeMap(file);
 	}
 
-	private CompositeMap remove(IFile file) {
-		return getProjectCatcher(file).remove(file);
+	private void remove(IFile file) {
+		getProjectCatcher(file).remove(file);
 	}
 
-	private synchronized ProjectCatcher getProjectCatcher(IFile file) {
+	private ProjectCatcher getProjectCatcher(IFile file) {
 		IProject project = file.getProject();
 		ProjectCatcher projectCatcher = catcher.get(project);
 		if (projectCatcher == null) {
@@ -171,4 +218,20 @@ public class CompositeMapCacher implements IResourceChangeListener,
 		return true;
 	}
 
+	public IDocument getDocument(IFile file) throws CoreException {
+		ProjectCatcher projectCatcher = getProjectCatcher(file);
+		return projectCatcher.getDocument(file);
+	}
+
+	public String getTOXML(IFile file) throws CoreException,
+			ApplicationException {
+		ProjectCatcher projectCatcher = getProjectCatcher(file);
+		return projectCatcher.getTOXML(file);
+	}
+
+	public String getString(IFile file) throws CoreException,
+			ApplicationException {
+		ProjectCatcher projectCatcher = getProjectCatcher(file);
+		return projectCatcher.getString(file);
+	}
 }

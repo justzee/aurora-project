@@ -426,7 +426,7 @@ abstract public class AbstractSearchService implements ISearchService {
 	}
 
 	public IDocument getDocument(IFile file) throws CoreException {
-		return CacheManager.getDocumentCacher().getDocument(file);
+		return CacheManager.getDocument(file);
 	}
 
 	protected abstract Object createPattern(IResource[] roots, Object source);

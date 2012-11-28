@@ -242,6 +242,6 @@ public class FolderMoveParticipant extends MoveParticipant {
 	}
 
 	public IDocument getDocument(IFile file) throws CoreException {
-		return CacheManager.getDocumentCacher().getDocument(file);
+		return CacheManager.getDocument(file);
 	}
 }
