@@ -10,6 +10,7 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.ast.AstNode;
 import org.mozilla.javascript.ast.AstRoot;
@@ -34,7 +35,7 @@ public class Javascript4Rhino {
 	}
 
 	public void setSource(String source) {
-//		this.source = convertJS(source);
+		// this.source = convertJS(source);
 		this.source = Util.convertJS(source);
 	}
 
@@ -82,18 +83,20 @@ public class Javascript4Rhino {
 	}
 
 	public AstRoot createAST(IProgressMonitor monitor) {
-		Parser p = new Parser();
-		 try {
-		AstRoot parse = p.parse(source == null ? "" : source, "Aurora", 1);
-		return parse;
-
-		 } catch (Exception e) {
-			 DialogUtil.logErrorException(e);
-//			 file.getProjectRelativePath();
-//			 System.out.println(file.getProjectRelativePath());
-//			 System.out.println(e.getClass());
-//			 e.printStackTrace();
-		 }
+		CompilerEnvirons compilerEnvirons = new CompilerEnvirons();
+		// 1.73默认false，1.74默认true
+		compilerEnvirons.setReservedKeywordAsIdentifier(true);
+		Parser p = new Parser(compilerEnvirons);
+		try {
+			AstRoot parse = p.parse(source == null ? "" : source, "Aurora", 1);
+			return parse;
+		} catch (Exception e) {
+			DialogUtil.logErrorException(e);
+			// file.getProjectRelativePath();
+			// System.out.println(file.getProjectRelativePath());
+			// System.out.println(e.getClass());
+			// e.printStackTrace();
+		}
 		// // modules/wfl/pad/wfl_deliver_for_pad.screen,
 		// // L/web/modules/wfl/pad/wfl_notification_window_for_pad.screen
 		// // /web/modules/sys/sys_customization_arrays.screen
@@ -111,7 +114,7 @@ public class Javascript4Rhino {
 		// System.out.println(source);
 		// System.out.println();
 		// }
-		 return null;
+		return null;
 	}
 
 	public List<StringLiteral> getStringLiteralNodes(IProgressMonitor monitor) {
