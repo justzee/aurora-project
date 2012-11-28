@@ -389,7 +389,6 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 		return Boolean.parseBoolean(str);
 	}
 
-	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
 		try {
@@ -399,7 +398,6 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 		}
 	}
 
-	@Override
 	public void run() {
 		try {
 			AuroraPlugin.getDefault().getWorkbench().getProgressService()
