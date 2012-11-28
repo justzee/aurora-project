@@ -196,7 +196,8 @@ public class BMFileContentProvider implements ITreeContentProvider,
 								delta.getResource());
 					}
 				} catch (ApplicationException e) {
-					DialogUtil.showExceptionMessageBox(e);
+//					DialogUtil.showExceptionMessageBox(e);
+					DialogUtil.logErrorException(e);
 				}
 			}
 			return;
