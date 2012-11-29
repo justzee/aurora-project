@@ -146,7 +146,7 @@ public class AuroraProjectNature implements IProjectNature {
 			project.setPersistentProperty(ProjectPropertyPage.LoclaUrlHomeQN,
 					"http://127.0.0.1:8080/" + project.getName());
 			project.setPersistentProperty(ProjectPropertyPage.WebQN, wiFolder
-					.getFullPath().toString());
+					.getParent().getFullPath().toString());
 			project.setPersistentProperty(ProjectPropertyPage.BMQN, wiFolder
 					.getFolder("classes").getFullPath().toString());
 		}
