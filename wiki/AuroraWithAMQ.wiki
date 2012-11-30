@@ -53,7 +53,7 @@
  * 一个运行：ant producer
 如果成功发送/接收了消息就OK了。
 
-另外可以打开http://localhost:8161/admin,看看此页面能否正常访问。
+另外可以打开[http://localhost:8161/admin]，看看此页面能否正常访问。
 
 ----
 ==在aurora中使用activemq==
@@ -114,7 +114,8 @@ message="priviledge_setting_change"/>
   启动服务的时候，同时去数据库中抢夺资源锁，谁先抢到，谁就是主机，没抢到处于等待状态，等这台主机意外宕机后，再去抢锁，同样是谁先抢到，就谁是主机。
  # 调用:在svc中输入
 {{{ 
-<msg:message-creator message="lookup_update" topic="dml_event" trxType="true">
+<msg:message-creator xmlns:msg="aurora.application.features.msg"
+ message="lookup_update" topic="dml_event" trxType="true">
     <msg:properties>
       <msg:property key="code" value="${/parameter/record/@code}"/>
       <msg:property key="language" value="${/session/@lang}"/>
