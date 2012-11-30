@@ -1,5 +1,5 @@
 #summary 在Aurora中使用Apache ActiveMQ
-#labels document
+#labels activemq,aurora,jms
 
 == Apache ActiveMQ简介 ==
 
@@ -18,8 +18,8 @@
     # 可以很容易得调用内嵌JMS provider,进行测试
 
 ====ActiveMQ安装====
-  * 首先去[http://activemq.apache.org/activemq-542-release.html activemq]下载5.42版本(5.5以上版本只支持JDK1.6以上)， 
-  * 解压apache-activemq-5.4.2-bin.zip(或者apache-activemq-5.4.2-bin.tar.gz )目录如下:
+  * JDK1.6及以上请安装最新版本的[http://activemq.apache.org/download.html     ActiveMQ],JDK1.5请下载5.42版本(5.5以上版本只支持JDK1.6以上)[http://www.apache.org/dyn/closer.cgi?path=%2Factivemq%2Fapache-activemq%2F5.4.3%2Fapache-activemq-5.4.3-bin.zip ActiveMQ5.42]下载， 
+  * 解压zip(或者bin.tar.gz )目录如下:
  
    +bin (windows下面的bat和unix/linux下面的sh)
 
@@ -33,7 +33,7 @@
    
    +lib (activemMQ使用到的lib)
    
-   -activemq-all-5.4.2.jar(ActiveMQ的binary)
+   -activemq-all-**.jar(ActiveMQ的binary)
 
    -LICENSE.txt
 
@@ -53,28 +53,38 @@
  * 一个运行：ant producer
 如果成功发送/接收了消息就OK了。
 
+另外可以打开http://localhost:8161/admin,看看此页面能否正常访问。
+
 ----
 ==在aurora中使用activemq==
- # 获得aurora activemq的支持jar(从[https://aurora-project.googlecode.com/svn/trunk/aurora-plugin/aurora/plugin/amq]编译获得)、以及从activemq/lib中复制activemq-core-5.4.2.jar、geronimo-jms-1.1-spec-1.1.1.jar 放入%WEB_HOME%/web-inf/lib中
- # 在%WEB_HOME%/web-inf/下添加amq.config,内容参考如下
+ # 获得aurora activemq的支持jar(从[https://aurora-project.googlecode.com/svn/trunk/aurora-plugin/aurora/plugin/amq]编译获得)、以及从activemq/lib中复制activemq-core-**.jar、geronimo-jms-1.1-spec-1.1.1.jar 放入%WEB_HOME%/web-inf/lib中
+ # 在%WEB_HOME%/web-inf/aurora.feature/下添加msg.config,内容参考如下
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<amq:AMQ-client-instance xmlns:amq="aurora.plugin.amq"  xmlns:jms="aurora.plugin.jms" 
-url="failover:(tcp://localhost:61616,tcp://192.168.11.66:61616)">
-	<jms:messageHandlers>
-		<jms:defaultMessageHandler name="handler1" procedure="init.load_priviledge_check_data"/>
-	</jms:messageHandlers>
-	<jms:consumers >
-		<jms:consumer topic="test1">
-			<jms:events>
-				<jms:event message="resource_update"  handler="handler1"/>
-			</jms:events>
-		</jms:consumer>
-	</jms:consumers>
+<amq:AMQ-client-instance xmlns:msg="aurora.application.features.msg" 
+xmlns:jms="aurora.plugin.jms" xmlns:amq="aurora.plugin.amq" 
+url="failover:(tcp://192.168.11.111:61616)">
+	    <messageHandlers>
+	        <msg:DefaultMessageHandler name="refreshPriviledge" 
+procedure="init.load_priviledge_check_data"/>
+	        <msg:DefaultMessageHandler name="refreshService" 
+procedure="init.load_system_service"/>
+	    </messageHandlers>
+		
+	    <consumers>
+	        <jms:consumer topic="application_foundation">
+	            <events>
+	                <msg:event handler="refreshPriviledge" 
+message="priviledge_setting_change"/>
+	                <msg:event handler="refreshService" message="service_config_change"/>
+	            </events>
+	        </jms:consumer>
+			<jms:DefaultNoticeConsumer topic="dml_event"/>
+	    </consumers>
 </amq:AMQ-client-instance>
  }}}    
-  说明 failover是amq内置的一种集群协议，它支持自动重连机制，即如果localhost机器意外中断，会自动重连到remotehost1。此处我们可以定义多台主机。
- # 修改apache-activemq-5.4.2\conf\activemq.xml文件，以配合实现客户端的重连机制
+  说明 failover是amq内置的一种集群协议，它支持自动重连机制，即如果localhost机器意外中断，会自动重连到remotehost1。此处我们可以定义多台主机,请修改上面的IP地址为ActiveMQ实际安装的IP地址。
+ # 修改apache-activemq-**\conf\activemq.xml文件，以配合实现客户端的重连机制
 {{{
 <beans
   xmlns="http://www.springframework.org/schema/beans"...>
@@ -102,7 +112,15 @@ url="failover:(tcp://localhost:61616,tcp://192.168.11.66:61616)">
   amq服务器的重连机制如下：
   如客户端所配置的，我们有两台主机，一台是localhost，一台是remotehost1。两台机器的activemq.xml连接同一个数据库（即配置信息相同）。 
   启动服务的时候，同时去数据库中抢夺资源锁，谁先抢到，谁就是主机，没抢到处于等待状态，等这台主机意外宕机后，再去抢锁，同样是谁先抢到，就谁是主机。
- # 调用:在svc中输入`<jms:jms-message-dispatch message="resource_update" xmlns:jms="aurora.plugin.jms"/>`
+ # 调用:在svc中输入
+{{{ 
+<msg:message-creator message="lookup_update" topic="dml_event" trxType="true">
+    <msg:properties>
+      <msg:property key="code" value="${/parameter/record/@code}"/>
+      <msg:property key="language" value="${/session/@lang}"/>
+    </msg:properties>
+</msg:message-creator>
+}}}
  # 启动
   # 启动activeMQ
   # 重启Web服务
