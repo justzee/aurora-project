@@ -28,7 +28,7 @@ public class FreeMarkerGenerator {
 //		template.setEncoding(encoding)
 //		template.getConfiguration();
 		out.flush();
-		String string = new String( out.toString().getBytes("utf-8"));
+		String string =  out.toString();
 		return string;
 	}
 }
