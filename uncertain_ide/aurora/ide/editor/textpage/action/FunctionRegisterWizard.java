@@ -276,7 +276,7 @@ public class FunctionRegisterWizard extends Wizard {
 				return false;
 			}
 			IDE.openEditor(AuroraPlugin.getActivePage(), new StringEditorInput(
-					exportSql), "org.eclipse.ui.DefaultTextEditor");
+					exportSql,"utf-8"), "org.eclipse.ui.DefaultTextEditor");
 		} catch (CoreException e) {
 			DialogUtil.logErrorException(e);
 			e.printStackTrace();
