@@ -25,8 +25,10 @@ public class FreeMarkerGenerator {
 		// Writer out = new OutputStreamWriter(System.out);
 		StringWriter out = new StringWriter();
 		template.process(config, out);
+//		template.setEncoding(encoding)
+//		template.getConfiguration();
 		out.flush();
-		String string = out.toString();
+		String string = new String( out.toString().getBytes("utf-8"));
 		return string;
 	}
 }

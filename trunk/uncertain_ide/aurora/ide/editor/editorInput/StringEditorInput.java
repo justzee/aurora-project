@@ -10,14 +10,15 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IStorageEditorInput;
-import org.eclipse.ui.WorkbenchEncoding;
 
 public class StringEditorInput implements IStorageEditorInput {
 
 	private final String inputString;
+	private String encoding;
 
-	public StringEditorInput(String inputString) {
+	public StringEditorInput(String inputString,String encoding) {
 		this.inputString = inputString == null ? "" : inputString;
+		this.encoding = encoding;
 	}
 
 	public boolean exists() {
@@ -53,8 +54,8 @@ public class StringEditorInput implements IStorageEditorInput {
 
 			public InputStream getContents() throws CoreException {
 				try {
-					String workbenchDefaultEncoding = WorkbenchEncoding.getWorkbenchDefaultEncoding();
-					return new ByteArrayInputStream(inputString.getBytes(workbenchDefaultEncoding));
+//					String workbenchDefaultEncoding = WorkbenchEncoding.getWorkbenchDefaultEncoding();
+					return new ByteArrayInputStream(inputString.getBytes(encoding));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}
