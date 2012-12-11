@@ -25,7 +25,8 @@ import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeMapParser;
 import uncertain.composite.NameProcessor;
 
-public class CommentCompositeMapParser extends CompositeMapParser implements LexicalHandler{
+public class CommentCompositeMapParser extends CompositeMapParser implements
+		LexicalHandler {
 
 	public static final String SAX_NEWlINE = "&#xA;";
 
@@ -141,8 +142,8 @@ public class CommentCompositeMapParser extends CompositeMapParser implements Lex
 		} catch (ParserConfigurationException ex) {
 			throw new SAXException("error when creating SAXParser", ex);
 		}
-		 parser.setProperty("http://xml.org/sax/properties/lexical-handler",
-		 this);
+		parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+				this);
 
 		stream = handleNewLineInAttribute(stream);
 
@@ -168,23 +169,27 @@ public class CommentCompositeMapParser extends CompositeMapParser implements Lex
 				"UTF-8"));
 		return stream;
 	}
-	
+
 	public static String convertNewLine(String fileContent, int index) {
 		// 匹配双引号间内容
-		StringBuilder sb = new StringBuilder(fileContent);    
-		int leftIndex = sb.indexOf("\"");                     
-		while (leftIndex != -1) {                             
-			int rightIndex = sb.indexOf("\"", leftIndex + 1); 
+		StringBuilder sb = new StringBuilder(fileContent);
+		int leftIndex = sb.indexOf("\"");
+		int d = SAX_NEWlINE.length() - 1;
+		while (leftIndex != -1) {
+			int rightIndex = sb.indexOf("\"", leftIndex + 1);
+			if (rightIndex == -1)
+				break;
 			for (int i = leftIndex + 1; i < rightIndex; i++) {
-				if (sb.charAt(i) == '\n') {                   
-					sb.replace(i, i + 1, SAX_NEWlINE);        
-					rightIndex += (SAX_NEWlINE.length() - 1); 
-				}                                             
-			}                                                 
-			leftIndex = sb.indexOf("\"", rightIndex + 1);     
-		}                                                     
-		return sb.toString();                                 
-	}   
+				if (sb.charAt(i) == '\n') {
+					sb.replace(i, i + 1, SAX_NEWlINE);
+					i += d;
+					rightIndex += d;
+				}
+			}
+			leftIndex = sb.indexOf("\"", rightIndex + 1);
+		}
+		return sb.toString();
+	}
 
 	public static String _convertNewLine(String fileContent, int index) {
 		// 匹配双引号间内容
@@ -356,32 +361,32 @@ public class CommentCompositeMapParser extends CompositeMapParser implements Lex
 	public void startDTD(String name, String publicId, String systemId)
 			throws SAXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void endDTD() throws SAXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void startEntity(String name) throws SAXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void endEntity(String name) throws SAXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void startCDATA() throws SAXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void endCDATA() throws SAXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
