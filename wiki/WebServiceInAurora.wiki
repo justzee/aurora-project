@@ -42,6 +42,7 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
                    <!--其他原有内容-->
 		   <p:switch test="@is_autocrud_service">
    }}}
+   base 64解码后的用户名和密码可以通过/Authorization/@user和/Authorization/@password拿到。
  # 添加[[WEB-HOME]]\WEB-INF\aurora.feature\soap.config，这里可以定义发生任意错误时的格式，例如
    {{{
    <ws:SOAPConfiguration xmlns:ws="aurora.service.ws">
