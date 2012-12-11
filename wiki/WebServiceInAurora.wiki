@@ -1,5 +1,5 @@
 #summary 介绍如何在Aurora框架中提供WebService及调用Web Service
-#labels webservice,aurora
+#labels webservice,aurora,soap,wsdl
 
 == Web Service ==
 
@@ -7,8 +7,55 @@
 == 在Aurora中发布Web Service ==
  # 从[http://www.aurora-framework.org/release/ Aurora-framework]上下载最新的aurora.jar
  # 添加web service监听器。打开[[WEB-HOME]]\WEB-INF\aurora.feature\service-listener.config,在 `<participant-list category="service">` 节点下，添加 `<participant class="aurora.service.ws.SOAPServiceInterpreter"/>` 子节点。
- # 取消此svc的登录校验。在系统注册svc文件时，设置不需要登录的权限。对于webservice作为一个独立部署的工程，可以取消service-procedure.config配置文件，这样所有的文件都不需要登录校验。
- # 撰写svc文件，提供给他人调用即可。
+ # 在web.xml下添加wsdl的servlet
+   {{{
+   <!--第一段-->
+   <servlet>
+        <servlet-name>wsdl</servlet-name>
+        <servlet-class>aurora.service.http.WSDLServlet</servlet-class>
+    </servlet>
+    <!--第二段-->
+    <servlet-mapping>
+	<servlet-name>wsdl</servlet-name>
+	<url-pattern>/wsdl/*</url-pattern>
+    </servlet-mapping>  
+   }}}
+  配置后，可以根据bm自动生成wsdl文件，目前不支持svc自动生成wsdl文件。例如：可以通过 [http://localhost:8080/hec2dev/wsdl/db.sys_notify_pkg.update_notify/update] 来查看db/sys_notify_pkg/update_notify.bm这个bm自动生成的wsd文件。
+ # 添加soap用户名和密码校验
+   修改[[WEB-HOME]]\WEB-INF\aurora.feature\service-procedure.config文件为
+   {{{
+<p:procedure-registry xmlns:t="aurora.application.action"
+ xmlns:a="http://www.aurora-framework.org/application" xmlns:p="uncertain.proc"
+ xmlns:ws="aurora.service.ws">
+    <p:procedures>
+        <p:procedure name="pre-service">
+            <p:set field="@success" value="true"/>
+            <t:session-copy/>
+	    <p:echo/><!--调式的时候启用，正式部署时删除-->
+     <!--soapaction这个几个字符根据客户端的不同可能大小写有差异，可以在一次调用后，通过日志输出确定这个具体的大小写-->
+	    <p:switch test="/request/@soapaction">
+		<p:case Value="*">
+		    <ws:WS-login-checker model="db.sys_ws_login_check_pkg.login_check" modelaction="execute"
+field="/parameter/@return_value" value="N" message="没有权限登录"/>
+		</p:case>
+                <p:case>
+                   <!--其他原有内容-->
+		   <p:switch test="@is_autocrud_service">
+   }}}
+ # 添加[[WEB-HOME]]\WEB-INF\aurora.feature\soap.config，这里可以定义发生任意错误时的格式，例如
+   {{{
+   <ws:SOAPConfiguration xmlns:ws="aurora.service.ws">
+   <errorResponseTemplate>
+		<![CDATA[
+	<soapErrorResponse xmlns="http://www.aurora-framework.org/application">         
+		<status>N</status>         
+		<message>${/error/@message}</message>      
+	</soapErrorResponse>
+		]]>
+   </errorResponseTemplate>
+</ws:SOAPConfiguration>
+   }}}
+ # 撰写bm/svc文件，提供给他人调用即可。
 === 简单例子 ===
 我们提供一个svc，此svc把请求的数据插入到一个数据库表中。
  # create table account_test(ACCOUNT_ID number,ACCOUNT_OTHER_CODE varchar2(100)); 新建一个对应的结果表 
@@ -252,6 +299,17 @@ inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
 }}}
    # 调用此svc，并查看日志和数据库记录是否正确。
 === svc常用功能简介 ===
+ * echo 输出消息
+  例子：
+ {{{
+   <p:echo xmlns:p="uncertain.proc"/><!--打印整个上下文（context）的内容-->
+   <p:echo xmlns:p="uncertain.proc" message="***mark here***"/><!--打印***mark here***--  >
+ }}}
+ * set 增加或者设置属性
+   例子：
+ {{{
+   <p:set field="@success" value="true" xmlns:p="uncertain.proc"/><!--设置/@success的属性为true-->
+ }}}
  * 最基本的四个功能:model-query,model-insert,model-update,model-delete
  * *把单条记录查询结果返回的属性直接更新到指定的节点上: fetchOneRecord="true"* 。例子：
 {{{
@@ -427,3 +485,6 @@ nameSpace="http://www.aurora.org/simple" rootPath="/model/result1/cancat"/>
   </syncAccResponse1>
 </model>
 }}}
+== 相关工具推荐 ==
+ # SOAP UI，可以根据wsdl自动生成需要的报文模板，填充内容后可以模拟客户端调用
+ # tcpmon，可以监听和截获某个端口的所有数据，通过它可以查看http请求和返回的所有头和内容信息。
