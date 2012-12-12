@@ -34,8 +34,8 @@ public class CommentXMLOutputter extends XMLOutputter {
 	public static final String LINE_SEPARATOR = System
 			.getProperty("line.separator");
 
-	public static XMLOutputter default_inst = new CommentXMLOutputter(DEFAULT_INDENT,
-			true);
+	public static XMLOutputter default_inst = new CommentXMLOutputter(
+			DEFAULT_INDENT, true);
 
 	public static XMLOutputter defaultInstance() {
 		return default_inst;
@@ -135,7 +135,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 			new_count = new Integer(count.intValue() + 1);
 		} else
 			new_count = new Integer(1);
-		namespaces.put(((CommentCompositeMap)map).namespace_uri, new_count);
+		namespaces.put(((CommentCompositeMap) map).namespace_uri, new_count);
 		return namespaces;
 	}
 
@@ -237,7 +237,7 @@ public class CommentXMLOutputter extends XMLOutputter {
 		getAttributeXML(map, attribs);
 
 		String endElementComment = getEndElementComment(level + 1, map);
-		if (map.getChilds() == null) {
+		if (map.getChilds() == null || map.getChilds().size() == 0) {
 			if (endElementComment != null) {
 				childs.append(LINE_SEPARATOR).append(endElementComment);
 			}

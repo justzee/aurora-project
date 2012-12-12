@@ -137,19 +137,25 @@ public class CommentCompositeMap extends CompositeMap {
 			return false;
 		}
 		CompositeMap cm = ((CompositeMap) o);
-		if (false == eq(this.getQName(),cm.getQName())) {
+		if (false == eq(this.getQName(), cm.getQName())) {
 			return false;
 		}
 		if (cm instanceof CommentCompositeMap
-				&& false == eq( this.getComment(),
+				&& false == eq(this.getComment(),
 						((CommentCompositeMap) cm).getComment())) {
 			return false;
 		}
-		if (false == eq(this.getText(),cm.getText())) {
+		if (false == eq(this.getText(), cm.getText())) {
 			return false;
 		}
-		List myChilds = this.getChildsNotNull();
-		List tChilds = cm.getChildsNotNull();
+
+		List myChilds = this.getChilds();
+		List tChilds = cm.getChilds();
+		if (myChilds == null)
+			return tChilds == null;
+		else if (tChilds == null)
+			return false;
+
 		if (myChilds.size() != tChilds.size()) {
 			return false;
 		}
