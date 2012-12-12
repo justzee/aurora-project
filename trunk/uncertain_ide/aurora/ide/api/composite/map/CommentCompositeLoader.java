@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
+import aurora.ide.helpers.DialogUtil;
+
 import uncertain.cache.ICache;
 import uncertain.cache.MapBasedCache;
 import uncertain.composite.CharCaseProcessor;
@@ -190,9 +192,10 @@ public class CommentCompositeLoader extends CompositeLoader {
 			CompositeMap map = parse(fis);
 			map.setSourceFile(new File(file_name));
 			return map;
-//		} catch (Exception e){
-//			e.printStackTrace();
-//			return null;
+		} catch (Exception e){
+			e.printStackTrace();
+			DialogUtil.logErrorException(e);
+			return null;
 		}finally {
 			if (fis != null)
 				fis.close();
