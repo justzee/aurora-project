@@ -20,7 +20,7 @@
 	<url-pattern>/wsdl/*</url-pattern>
     </servlet-mapping>  
    }}}
-  配置后，可以根据bm自动生成wsdl文件，目前不支持svc自动生成wsdl文件。例如：可以通过 [http://localhost:8080/hec2dev/wsdl/db.sys_notify_pkg.update_notify/update] 来查看db/sys_notify_pkg/update_notify.bm这个bm自动生成的wsd文件。
+  配置后，可以根据bm自动生成wsdl文件，目前不支持svc自动生成wsdl文件。例如：可以通过 [http://localhost:8080/hec2dev/wsdl/db.sys_notify_pkg.update_notify/update] 来查看db/sys_notify_pkg/update_notify.bm这个bm自动生成的wsdl文件。
  # 添加soap用户名和密码校验
    修改[[WEB-HOME]]\WEB-INF\aurora.feature\service-procedure.config文件为
    {{{
