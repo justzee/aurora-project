@@ -51,6 +51,7 @@
          point="org.eclipse.ui.editors">
       <editor
             class="aurora.ide.screen.editor.ServiceEditor"
+            contributorClass="aurora.ide.editor.BaseCompositeMapEditorContributor"
             default="true"
             filenames="*.service,*.screen,*.svc"
             icon="icons/service.gif"
@@ -58,6 +59,7 @@
             name="%editor.screen"/>
       <editor
             class="aurora.ide.sxsd.editor.SxsdEditor"
+            contributorClass="aurora.ide.editor.BaseCompositeMapEditorContributor"
             default="true"
             filenames="*.sxsd"
             icon="icons/sxsd.gif"
@@ -66,6 +68,7 @@
       </editor>
       <editor
             class="aurora.ide.bm.editor.BusinessModelEditor"
+            contributorClass="aurora.ide.editor.BaseCompositeMapEditorContributor"
             default="true"
             filenames="*.bm"
             icon="icons/bm.gif"
