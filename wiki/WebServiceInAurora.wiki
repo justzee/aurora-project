@@ -1,5 +1,5 @@
 #summary 介绍如何在Aurora框架中提供WebService及调用Web Service
-#labels webservice,aurora,soap,wsdl
+#labels webservice,aurora,soap,wsdl,soapui,axis2
 
 == Web Service ==
 
@@ -43,15 +43,15 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
 		   <p:switch test="@is_autocrud_service">
    }}}
    base 64解码后的用户名和密码可以通过/Authorization/@user和/Authorization/@password拿到。
- # 添加[[WEB-HOME]]\WEB-INF\aurora.feature\soap.config，这里可以定义发生任意错误时的格式，例如
+ # 添加[[WEB-HOME]]\WEB-INF\aurora.feature\soap.config，这里可以定义错误发生时返回的格式,务必跟正常返回的格式保持一致，例如
    {{{
    <ws:SOAPConfiguration xmlns:ws="aurora.service.ws">
    <errorResponseTemplate>
 		<![CDATA[
-	<soapErrorResponse xmlns="http://www.aurora-framework.org/application">         
+	<soapResponse xmlns="http://www.aurora-framework.org/application">         
 		<status>N</status>         
 		<message>${/error/@message}</message>      
-	</soapErrorResponse>
+	</soapResponse>
 		]]>
    </errorResponseTemplate>
 </ws:SOAPConfiguration>
@@ -59,244 +59,583 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
  # 撰写bm/svc文件，提供给他人调用即可。
 === 简单例子 ===
 我们提供一个svc，此svc把请求的数据插入到一个数据库表中。
- # create table account_test(ACCOUNT_ID number,ACCOUNT_OTHER_CODE varchar2(100)); 新建一个对应的结果表 
- # 建立一个此表的bm：
+ # create table SYS_WEB_SERVICE_TEST ( RECORD_ID NUMBER, RECORD_CODE VARCHAR2(100)); 新建一个对应的结果表 
+ # 建立一个此表的bm,sys.test.sys_web_service_test：
 {{{ 
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-$Author: linjinxiao 
-$Date: 2011-11-9 上午10:42:34 
-$Revision: 1.0 
-$Purpose: 
+    $Author: linjinxiao  
+    $Date: 2012-12-27 上午10:58:40  
+    $Revision: 1.0  
+    $Purpose: 
 -->
-<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" alias="t1" baseTable="ACCOUNT_TEST">
-  <bm:fields>
-    <bm:field name="ACCOUNT_ID" databaseType="NUMBER" datatype="java.lang.Long" 
-physicalName="ACCOUNT_ID" prompt="ACOUNT_TEST.ACCOUNT_ID"/>
-    <bm:field name="ACCOUNT_OTHER_CODE" databaseType="VARCHAR2" 
-datatype="java.lang.String" physicalName="ACCOUNT_OTHER_CODE" prompt="ACOUNT_TEST.ACCOUNT_OTHER_CODE"/>
-  </bm:fields>
+<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" alias="t1" baseTable="SYS_WEB_SERVICE_TEST">
+    <bm:fields>
+        <bm:field name="record_id" databaseType="NUMBER" datatype="java.lang.Long" physicalName="RECORD_ID" 
+                  prompt="SYS_WEB_SERVICE_TEST.RECORD_ID"/>
+        <bm:field name="record_code"databaseType="VARCHAR2"datatype="java.lang.String" physicalName="RECORD_CODE"
+                  prompt="SYS_WEB_SERVICE_TEST.RECORD_CODE"/>
+    </bm:fields>
 </bm:model>
 }}}
- # 在modules/sys目录下新建ws_test.svc文件，并输入以下内容
+ # 新建modules/sys/test/sys_web_service_one_record_test.svc文件，并输入以下内容
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<a:service xmlns:a="http://www.aurora-framework.org/application">
+<!--
+    $Author: linjinxiao  
+    $Date: 2012-12-27 上午11:07:34  
+    $Revision: 1.0  
+    $Purpose: 
+-->
+<a:service xmlns:a="http://www.aurora-framework.org/application" xmlns:p="uncertain.proc" trace="true">
     <a:init-procedure>
-	<a:model-insert model="fnd.account_test"/>
+        <a:model-insert model="sys.test.sys_web_service_test"/>
+        <!--
+       	构造 返回格式，跟错误返回格式保持一致
+        <soapResponse xmlns="http://www.aurora-framework.org/application" success="true">
+            <message>OK</message>
+            <success>Y</success>
+        </soapResponse>
+        -->
+        <p:set field="/soapResponse/@success" value="Y"/>
+        <p:set field="/soapResponse/@message" value="OK"/>
+        <p:echo/>
+        <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="expand">
+            <p:arguments>
+                <p:argument path="/soapResponse" type="uncertain.composite.CompositeMap"/>
+            </p:arguments>
+        </p:method-invoke>
+        <p:set-element namespace="http://www.aurora-framework.org/application" target="/soapResponse"/>
     </a:init-procedure>
-    <a:service-output output="/parameter"/>
+    <a:service-output output="/soapResponse"/>
 </a:service>
 }}}
   以上内容就完成了服务器的编写，下面提供客户端的调用代码示例
  # 使用开源框架axis2为例
 {{{
-public class LowLevelClient {
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.namespace.QName;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.commons.httpclient.Header;
+
+import com.sun.xml.internal.messaging.saaj.util.Base64;
+
+public class OneRecordClient {
+
 	public static void main(String[] args) throws AxisFault {
 		ServiceClient client = new ServiceClient();
 		Options options = new Options();
-		options.setTo(new EndpointReference(
-				"http://127.0.0.1:8080/newhec/modules/sys/ws_test.svc"));//修正为实际工程的URL
+		options.setTo(new EndpointReference("http://127.0.0.1:8080/hec2dev/modules/sys/test/sys_web_service_one_record_test.svc"));// 修正为实际工程的URL
+		addAuthorization("linjinxiao", "ok", options);
 		client.setOptions(options);
 		OMElement request = makeRequest();
 		OMElement response = client.sendReceive(request);
-		System.out.println("ok:"+response.toString());
+		System.out.println("response:" + response.toString());
 	}
+
+	private static void addAuthorization(String userName, String password, Options options) {
+		String encoded = new String(Base64.encode(new String(userName + ":" + password).getBytes()));
+		List list = new ArrayList();
+		// Create an instance of org.apache.commons.httpclient.Header
+		Header header = new Header();
+		header.setName("Authorization");
+		header.setValue("Basic " + encoded);
+		list.add(header);
+		options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, list);
+	}
+
 	private static OMElement makeRequest() {
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMElement request = factory.createOMElement(new QName(
-				"", "parameter"));
-		request.addAttribute("ACCOUNT_ID", "123", null);
-		request.addAttribute("ACCOUNT_OTHER_CODE", "test", null);
+		OMElement request = factory.createOMElement(new QName("", "parameter"));
+		request.addAttribute("record_id", "1", null);
+		request.addAttribute("record_code", "axis2", null);
 		return request;
 	}
+}
 }}}
  # 查看插入数据库记录是否成功和控制台的结果是否正确。
+ # 使用SOAP UI客户端
+   需要的WSDL文件内容
+{{{
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/schema" targetNamespace="http://www.aurora-framework.org/schema" name="sys.test.sys_web_service_test">
+    <wsdl:types>
+        <xsd:schema
+        	targetNamespace="http://www.aurora-framework.org/schema">
+        	<xsd:element name="parameter">
+        		<xsd:complexType>
+        			<xsd:attribute type="xsd:long" name="record_id" />
+        			<xsd:attribute type="xsd:string" name="record_code" />
+        		</xsd:complexType>
+        	</xsd:element>
+        	<xsd:element name="soapResponse">
+        		<xsd:complexType>
+        			<xsd:sequence>
+        				<xsd:element name="success" type="xsd:string">
+        				</xsd:element>
+        				<xsd:element name="message"
+        					type="xsd:string">
+        				</xsd:element>
+        			</xsd:sequence>
+        		</xsd:complexType>
+        	</xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="insertRequestmessage">
+        <wsdl:part element="tns:parameter" name="insertRequestpart"/>
+    </wsdl:message>
+    <wsdl:message name="insertResponsemessage">
+    	<wsdl:part name="insertResponsepart" element="tns:soapResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="sys.test.sys_web_service_test_portType">
+        <wsdl:operation name="insert">
+            <wsdl:input message="tns:insertRequestmessage"/>
+            <wsdl:output message="tns:insertResponsemessage"></wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding type="tns:sys.test.sys_web_service_test_portType" name="sys.test.sys_web_service_test_binding">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="insert">
+            <soap:operation soapAction="insert"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="sys.test.sys_web_service_test_service">
+        <wsdl:port name="sys.test.sys_web_service_test_port" binding="tns:sys.test.sys_web_service_test_binding">
+            <soap:address location="http://127.0.0.1:8080/hec2dev/modules/sys/test/sys_web_service_one_record_test.svc"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
+}}}
 ===复杂例子===
 这个例子处理有头行结构的例子。譬如，调用方发送过来的请求是如下格式
 {{{
- <requestHead seqNo="1"/>
+  <requestHead sequenceNo="1"/>
   <requestBody>
     <records>
-       <record ACCOUNT_ID="22" ACCOUNT_OTHER_CODE="test"/>
-       <record ACCOUNT_ID="33" ACCOUNT_OTHER_CODE="test2"/>
+       <record record_id="11" record_code="multi1"/>
+       <record record_id="22" record_code="multi2"/>
     </records>
   </requestBody>
 }}}
 返回的结构要求是如下格式
 {{{
-<responseHead xmlns="http://aurora.org" seqNo="1" />
-<requestBody responsedate="3008900">
+<responseHead xmlns="http://www.aurora-framework.org/application" sequenceNo="1" />
+<responseBody responseDate="2012-12-27">
     <records>
-      <record ACCOUNT_ID="22" ACCOUNT_OTHER_CODE="test" REQUEST_RESULT="successful"  />
-       <record ACCOUNT_ID="33" ACCOUNT_OTHER_CODE="test2" REQUEST_RESULT="successful" />
+		<record record_id="11" record_code="multi1" record_status="ok"  />
+		<record record_id="22" record_code="multi2" record_status="ok" />
     </records>
-</requestBody>
+</responseBody>
 }}}
  # 我们创建一个pkg：
 {{{ 
-create or replace package ACCOUNT_TEST_PKG is
-  procedure insert_account_test(p_account_id         number,
-                                p_account_other_code varchar2,
-                                p_request_result     out varchar2);
-end ACCOUNT_TEST_PKG;
+create or replace package SYS_WEB_SERVICE_TEST_PKG is
 
-create or replace package body "ACCOUNT_TEST_PKG" is
-  procedure insert_account_test(p_account_id         number,
-                                p_account_other_code varchar2,
-                                p_request_result     out varchar2) is
+  -- Author  : LINJINXIAO
+  -- Created : 2012/12/27 14:16:36
+  -- Purpose : Web Service测试
+
+  procedure insert_sys_web_service_test(p_record_id     number,
+                                        p_record_code   varchar2,
+                                        p_record_status out varchar2);
+
+end SYS_WEB_SERVICE_TEST_PKG;
+/
+create or replace package body SYS_WEB_SERVICE_TEST_PKG is
+
+  procedure insert_sys_web_service_test(p_record_id     number,
+                                        p_record_code   varchar2,
+                                        p_record_status out varchar2) is
   begin
-  
-    insert into account_test
-      (account_id, account_other_code)
+    insert into sys_web_service_test
+      (record_id, record_code)
     values
-      (p_account_id, p_account_other_code);
-    p_request_result := 'successful';
-  
-  end;
-end ACCOUNT_TEST_PKG;
+      (p_record_id, p_record_code);
+    p_record_status := 'ok';
+  end insert_sys_web_service_test;
+
+end SYS_WEB_SERVICE_TEST_PKG;
 /
 }}}
- # 在bm中调用此pkg：
+ # 在db.sys_web_service_test_pkg.insert_sys_web_service_test bm中调用此pkg：
 {{{ 
-<bm:operations>
-        <bm:operation name="insert">
-            <bm:update-sql><![CDATA[
-            begin
-              ACCOUNT_TEST_PKG.insert_account_test        
-                (
-                  p_account_id => ${@ACCOUNT_ID},
-                  p_account_other_code => ${@ACCOUNT_OTHER_CODE}, 
-                  p_request_result => ${@REQUEST_RESULT}
-                 ); 
-            end;               
-]]></bm:update-sql>
-            <bm:parameters>
-                <bm:parameter name="ACCOUNT_ID"/>
-                <bm:parameter name="ACCOUNT_OTHER_CODE"/>
-                <bm:parameter name="REQUEST_RESULT" output="true" outputPath="@REQUEST_RESULT"/>
-            </bm:parameters>
-        </bm:operation>
-    </bm:operations>
-}}}
- # 撰写svc如下：
-{{{
 <?xml version="1.0" encoding="UTF-8"?>
-<a:service xmlns:a="http://www.aurora-framework.org/application" 
-xmlns:p="uncertain.proc">
-    <a:init-procedure>
-        <p:echo/>
-        <!-- 对数据进行循环操作-->
-	<batch-apply sourcepath="/parameter/requestBody/records">
-	   <a:model-insert model="fnd.account_test"/> 
-	</batch-apply>
-        <!--更改节点的名称和namespace-->
-	<p:set-element target="/parameter/requestHead" name="responseHead" namespace="http://aurora.org" />
-         <!-- 获得当前的时间--> 
-	 <a:model-query fetchAll="true" fethOneRecord="true" model="ccic.systest"
- rootPath="/parameter/requestBody"/>
-     </a:init-procedure>
-    <a:service-output output="/parameter/"/>
-</a:service>
-}}}
- # 撰写客户端调用代码，同样是利用开源框架axis2：
-{{{
-private static OMElement makeRequest2() {
- OMFactory factory = OMAbstractFactory.getOMFactory();
- OMElement request = factory.createOMElement(new QName("soap:Body"));
- OMElement requestHead = factory.createOMElement(new QName("requestHead"));
- requestHead.addAttribute("seqNo", "1", null);
- OMElement requestBody = factory.createOMElement(new QName("requestBody "));
-
- OMElement records = factory.createOMElement(new QName("records "));
- OMElement record = factory.createOMElement(new QName("record "));
- record.addAttribute("ACCOUNT_ID", "11", null);
- record.addAttribute("ACCOUNT_OTHER_CODE", "test", null);
-
- records.addChild(record);
- requestBody.addChild(records);
- request.addChild(requestHead);
- request.addChild(requestBody);
-   
- return request;
-}
-}}}
- # 执行此客户端，并查询数据库记录和返回结果是否正确。
-
-== 调用WebService ==
-假设服务端要求提交的格式如下：
-{{{
- <axis2ns1:cancat xmlns:axis2ns1="http://www.aurora.org/simple/">
-            <s1>abc</s1>
-            <s2>def</s2>
- </axis2ns1:cancat>
-}}}
-返回的格式如下：
-{{{
-<ns1:syncAccResponse xmlns:ns1=\http://service.test.com\>
-	<ns1:out>
-		<ns2:Account xmlns:ns2=\http://dto.test.com\>
-			<ACCOUNT_ID xmlns=\http://dto.test.com\>1681</ACCOUNT_ID>
-			<ACCOUNT_OTHER_CODE xmlns=\http://dto.test.com\></ACCOUNT_OTHER_CODE>
-		</ns2:Account>
-		<ns2:Account xmlns:ns2=\http://dto.test.com\>
-			<ACCOUNT_ID xmlns=\http://dto.test.com\>1682</ACCOUNT_ID>
-			<ACCOUNT_OTHER_CODE xmlns=\http://dto.test.com\></ACCOUNT_OTHER_CODE>
-		</ns2:Account>
-	</ns1:out>
-</ns1:syncAccResponse>
-}}}
- # 模拟第三方发布服务，以axis2为例
-   # 下载[http://axis.apache.org/axis2/java/core/download.cgi axis2]
-   #  把[http://aurora-project.googlecode.com/files/simple.zip simpleWebService]部署到[[AXIS2_HOME]]/repository/services下，然后启动服务
- # 编写客户端代码
-   # 编写systest.bm文件
-{{{
-<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $Author: linjinxiao  
+    $Date: 2012-12-27 下午2:19:28  
+    $Revision: 1.0  
+    $Purpose: 
+-->
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm">
     <bm:operations>
-        <bm:operation name="query">
-            <bm:query-sql><![CDATA[select '3008900' exp_report_number,
-                                  '222222222' employee_code,
-                                  '测试'  name,
-                                  'MAS'  unit_code,
-                                  'test@hand-china.com' email,
-								  '0' type
-                          from dual
-]]></bm:query-sql>
+        <bm:operation name="execute">
+            <bm:parameters>
+                <bm:parameter name="record_id" dataType="java.lang.Long" input="true" output="false" />
+                <bm:parameter name="record_code" dataType="java.lang.String" input="true" output="false" />
+                <bm:parameter name="record_status" dataType="java.lang.String" input="false" output="true"/>
+            </bm:parameters>
+            <bm:update-sql><![CDATA[
+                begin
+                    SYS_WEB_SERVICE_TEST_PKG.INSERT_SYS_WEB_SERVICE_TEST
+                    (
+                        p_record_id=>${@record_id},
+                        p_record_code=>${@record_code},
+                        p_record_status=>${@record_status}
+                    );
+                end;]]></bm:update-sql>
         </bm:operation>
     </bm:operations>
 </bm:model>
 }}}
+ # 撰写modules/sys/test/sys_web_service_multi_records_test.svc如下：
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $Author: linjinxiao  
+    $Date: 2012-12-27 上午11:07:34  
+    $Revision: 1.0  
+    $Purpose: 
+-->
+<a:service xmlns:a="http://www.aurora-framework.org/application" xmlns:p="uncertain.proc" trace="true">
+    <a:init-procedure>
+        <!-- 对数据进行循环操作-->
+        <batch-apply sourcepath="/parameter/requestBody/records">
+            <a:model-execute model="db.sys_web_service_test_pkg.insert_sys_web_service_test"/>
+        </batch-apply>
+        <!--更改节点的名称和namespace-->
+        <p:set-element name="responseHead" namespace="http://www.aurora-framework.org/application" target="/parameter/requestHead"/>
+        <p:set-element name="responseBody" namespace="http://www.aurora-framework.org/application" target="/parameter/requestBody"/>
+        <!-- 获得当前的时间-->
+        <a:model-query fetchAll="true" fethOneRecord="true" model="sys.test.sys_query_sysdate"/>
+        <p:echo />
+        <p:set field="/parameter/responseBody/@responseDate" sourceField="/model/record/@sysdate" />
+    </a:init-procedure>
+    <a:service-output output="/parameter"/>
+</a:service>
+}}}
+其中sys.test.sys_query_sysdate的bm内容是
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $Author: linjinxiao  
+    $Date: 2012-12-27 下午2:26:31  
+    $Revision: 1.0  
+    $Purpose: 
+-->
+<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm">
+    <bm:operations>
+        <bm:operation name="query">
+            <bm:query-sql><![CDATA[select sysdate from dual]]></bm:query-sql>
+        </bm:operation>
+    </bm:operations>
+    <bm:fields>
+        <bm:field name="sysdate" databaseType="DATE" datatype="java.util.Date" physicalName="SYSDATE"/>
+    </bm:fields>
+</bm:model>
+}}}
+ # 撰写客户端调用代码，同样是利用开源框架axis2：
+{{{
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.namespace.QName;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.commons.httpclient.Header;
+
+import com.sun.xml.internal.messaging.saaj.util.Base64;
+
+public class MultiRecordsClient {
+	public static void main(String[] args) throws AxisFault {
+		ServiceClient client = new ServiceClient();
+		Options options = new Options();
+		options.setTo(new EndpointReference("http://localhost:8080/hec2dev/modules/sys/test/sys_web_service_multi_records_test.svc"));
+		addAuthorization("linjinxiao", "ok", options);
+		client.setOptions(options);
+		OMElement request = makeRequest();
+		OMElement response = client.sendReceive(request);
+		System.out.println("response:" + response.toString());
+	}
+
+	private static void addAuthorization(String userName, String password, Options options) {
+		String encoded = new String(Base64.encode(new String(userName + ":" + password).getBytes()));
+		List list = new ArrayList();
+		// Create an instance of org.apache.commons.httpclient.Header
+		Header header = new Header();
+		header.setName("Authorization");
+		header.setValue("Basic " + encoded);
+		list.add(header);
+		options.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_HEADERS, list);
+	}
+
+	private static OMElement makeRequest() {
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMElement parameter = factory.createOMElement(new QName("http://www.aurora-framework.org/application", "parameter"));
+		OMElement requestHead = factory.createOMElement(new QName("requestHead"));
+		OMElement requestBody = factory.createOMElement(new QName("requestBody"));
+		OMElement records = factory.createOMElement(new QName("records"));
+		OMElement record1 = factory.createOMElement(new QName("record"));
+		record1.addAttribute("record_id", "11", null);
+		record1.addAttribute("record_code", "multi1", null);
+		records.addChild(record1);
+		OMElement record2 = factory.createOMElement(new QName("record"));
+		record2.addAttribute("record_id", "22", null);
+		record2.addAttribute("record_code", "multi2", null);
+		records.addChild(record2);
+		requestBody.addChild(records);
+		parameter.addChild(requestHead);
+		parameter.addChild(requestBody);
+		return parameter;
+	}
+}
+
+}}}
+ # 执行此客户端，并查询数据库记录和返回结果是否正确。
+ # 使用soapUI作为客户端
+   添加wsdl内容如：
+{{{
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/schema" targetNamespace="http://www.aurora-framework.org/schema" name="sys.test.sys_web_service_multi_records_test">
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://www.aurora-framework.org/schema">
+            <xsd:element name="insertRequesttype">
+                <xsd:complexType>
+                	<xsd:sequence>
+                		<xsd:element name="requestHead" maxOccurs="1" minOccurs="0">
+                			<xsd:complexType>
+                				<xsd:attribute name="sequenceNo"
+                					type="xsd:string">
+                				</xsd:attribute>
+                			</xsd:complexType>
+                		</xsd:element>
+                		<xsd:element name="requestBody" maxOccurs="1" minOccurs="1">
+                			<xsd:complexType>
+                				<xsd:sequence>
+                					<xsd:element name="records" maxOccurs="1" minOccurs="1" type="tns:recordsComplexType">
+
+                					</xsd:element>
+                				</xsd:sequence>
+                			</xsd:complexType>
+                		</xsd:element>
+                	</xsd:sequence>
+                	
+
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:complexType name="RecordType">
+            	<xsd:attribute name="record_id" type="xsd:string"></xsd:attribute>
+            	<xsd:attribute name="record_code" type="xsd:string"></xsd:attribute>
+            	<xsd:attribute name="record_status" type="xsd:string"></xsd:attribute>
+            </xsd:complexType>
+            <xsd:element name="insertResponsetype">
+            	<xsd:complexType>
+            		<xsd:sequence>
+            			<xsd:element name="responseBody">
+            				<xsd:complexType>
+            					<xsd:sequence>
+            						<xsd:element name="records"
+            							type="tns:recordsComplexType">
+            						</xsd:element>
+            					</xsd:sequence>
+            					<xsd:attribute name="responseDate"
+            						type="xsd:string">
+            					</xsd:attribute>
+            				</xsd:complexType>
+            			</xsd:element>
+            		</xsd:sequence>
+            	</xsd:complexType>
+            </xsd:element>
+            <xsd:complexType name="recordsComplexType">
+            	<xsd:sequence>
+            		<xsd:element minOccurs="1" maxOccurs="unbounded"
+            			name="record" type="tns:RecordType">
+            		</xsd:element>
+            	</xsd:sequence>
+            </xsd:complexType>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="insertRequestmessage">
+        <wsdl:part element="tns:insertRequesttype" name="insertRequestpart"/>
+    </wsdl:message>
+    <wsdl:message name="insertResponse">
+    	<wsdl:part name="insertResponsepar" element="tns:insertResponsetype"></wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="sys.test.sys_web_service_test_portType">
+        <wsdl:operation name="insert">
+            <wsdl:input message="tns:insertRequestmessage"/>
+            <wsdl:output message="tns:insertResponse"></wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding type="tns:sys.test.sys_web_service_test_portType" name="sys.test.sys_web_service_multi_records_test_binding">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="insert">
+            <soap:operation soapAction="insert"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="sys.test.sys_web_service_test_service">
+        <wsdl:port name="sys.test.sys_web_service_test_port" binding="tns:sys.test.sys_web_service_multi_records_test_binding">
+            <soap:address location="http://127.0.0.1:8081/hec2dev/modules/sys/test/sys_web_service_multi_records_test.svc"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
+}}}
+
+== 调用WebService ==
+假设服务端要求提交的格式如下：
+{{{
+ <a:soapRequest xmlns:a="http://www.aurora-framework.org/application">
+	<a:param1>1</a:param1>
+	<a:param2>code</a:param2>
+ </a:soapRequest>
+}}}
+返回的格式如下：
+{{{
+<a:soapResponse xmlns:a="http://www.aurora-framework.org/application">
+	<a:records>
+		<a:record>
+			<a:record_id>1111</a:record_id>
+			<a:record_code>axis2</a:record_code>
+		</a:record>
+		<a:record>
+			<a:record_id >2222</a:record_id>
+			<a:record_code>soapUI</a:record_code>
+		</a:record>
+	</a:records>
+</a:soapResponse>
+}}}
+ # 模拟第三方发布服务，以axis2为例
+   # 下载[http://axis.apache.org/axis2/java/core/download.cgi axis2]
+   #  把[http://aurora-project.googlecode.com/files/aurora_ws_call.zip aurora_call Web Service]部署到[[AXIS2_HOME]]/repository/services下，然后启动服务axis2server.bat/axis2server.sh
+   #wsdl文件如下：
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="simple" targetNamespace="http://www.aurora-framework.org/application" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/application" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.aurora-framework.org/application">
+      <xsd:element name="soapRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+          	<xsd:element name="param1" type="xsd:string"/>
+          	<xsd:element name="param2" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="soapResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="records" maxOccurs="1" minOccurs="1">
+      				<xsd:complexType>
+      					<xsd:sequence>
+      						<xsd:element name="record" maxOccurs="unbounded" minOccurs="1">
+      							<xsd:complexType>
+
+      								<xsd:sequence>
+      									<xsd:element name="record_id"
+      										type="xsd:string">
+      									</xsd:element>
+      									<xsd:element name="record_code"
+      										type="xsd:string">
+      									</xsd:element>
+      								</xsd:sequence>
+      							</xsd:complexType>
+      						</xsd:element>
+      					</xsd:sequence>
+      				</xsd:complexType>
+      			</xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="soapRequest">
+    <wsdl:part name="parameters" element="tns:soapRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="soapResponse">
+    <wsdl:part name="parameters" element="tns:soapResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="auroraCallportType">
+    <wsdl:operation name="auroraCall">
+      <wsdl:input message="tns:soapRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:soapResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="auroraCallbinding" type="tns:auroraCallportType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="auroraCall">
+      <soap:operation soapAction="http://www.aurora-framework.org/application/auroraCall"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="auroraCall">
+    <wsdl:port name="auroraCallSOAP" binding="tns:auroraCallbinding">
+      <soap:address location="http://localhost:8080/axis2/services/auroraCall"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
+
+}}}
+ # 编写客户端代码
    # 编写svc文件
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<a:service xmlns:a="http://www.aurora-framework.org/application"
- xmlns:p="uncertain.proc" xmlns:rs="aurora.database.rsconsumer" >
+<!--
+    $Author: linjinxiao  
+    $Date: 2012-12-27 上午11:07:34  
+    $Revision: 1.0  
+    $Purpose: 
+-->
+<a:service xmlns:a="http://www.aurora-framework.org/application" xmlns:as="aurora.service" xmlns:p="uncertain.proc" trace="true">
     <a:init-procedure>
         <!-- 构建符合的请求的格式-->
-	<a:model-query fetchAll="true" prefix="ns1"
- nameSpace="http://www.aurora.org/simple" localName="cancat" model="sys.systest" rootPath="/model/result1"/>
-	<a:model-query fetchAll="true" model="sys.systest" localName="s1" 
-attribAsCdata="true" attribAsCdataList="unit_code"rootPath="/model/result1/cancat"/>
-	<a:model-query fetchAll="true" model="sys.systest" localName="s2" 
-attribAsCdata="true" attribAsCdataList="employee_code" rootPath="/model/result1/cancat"/>
-        <!-- 请求WebService-->
-	<a:ws-invoker raiseExceptionOnError="false" url="http://localhost:8080/axis2/services/simple" 
-inputPath="/model/result1/cancat" returnPath="/model/syncAccResponse"/>
-        <!--把子节点中cdata的内容整合成父节点中的一个属性 -->
-       <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="collapse">
+        <p:set field="/soapRequest/@param1" value="1"/>
+        <p:set field="/soapRequest/@param2" value="code"/>
+        <p:set-element namespace="http://www.aurora-framework.org/application" target="/soapRequest"/>
+        <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="expand">
             <p:arguments>
-                <p:argument path="/model/syncAccResponse/out" type="uncertain.composite.CompositeMap"/>
+                <p:argument path="/soapRequest" type="uncertain.composite.CompositeMap"/>
             </p:arguments>
-      </p:method-invoke>
-      <as:SetParameterParsed />
-      <!--循环处理子节点 -->
-      <batch-apply sourcepath="/model/syncAccResponse/out">
-         <a:model-insert model="fnd.account_test"/> 
-      </batch-apply>
+        </p:method-invoke>
+        <!-- 请求WebService-->
+        <a:ws-invoker inputPath="/soapRequest" raiseExceptionOnError="false" returnPath="/soapResponse" url="http://localhost:8080/axis2/services/auroraCall"/>
+        <!--把子节点中cdata的内容整合成父节点中的一个属性 -->
+        <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="collapse">
+            <p:arguments>
+                <p:argument path="/soapResponse" type="uncertain.composite.CompositeMap"/>
+            </p:arguments>
+        </p:method-invoke>
+        <p:echo />
+        <as:SetParameterParsed/>
+        <!-- 对数据进行循环操作-->
+        <batch-apply sourcepath="/soapResponse/records">
+            <a:model-insert model="sys.test.sys_web_service_test"/>
+        </batch-apply>
     </a:init-procedure>
- <a:service-output output="/parameter/"/>
+    <a:service-output output="/parameter"/>
+</a:service>
 }}}
    # 调用此svc，并查看日志和数据库记录是否正确。
 === svc常用功能简介 ===
