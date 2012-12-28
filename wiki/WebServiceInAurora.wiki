@@ -827,4 +827,4 @@ nameSpace="http://www.aurora.org/simple" rootPath="/model/result1/cancat"/>
 }}}
 == 相关工具推荐 ==
  # [http://sourceforge.net/projects/soapui/files/soapui/ soapUI]，可以根据wsdl自动生成需要的报文模板，填充内容后可以模拟客户端调用
- # tcpmon，可以监听和截获某个端口的所有数据，通过它可以查看http请求和返回的所有头和内容信息。
+ # [http://ws.apache.org/commons/tcpmon/download.cgi tcpmon]，可以监听和截获某个端口的所有数据，通过它可以查看http请求和返回的所有头和内容信息。
