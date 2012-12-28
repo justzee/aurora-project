@@ -161,7 +161,7 @@ public class OneRecordClient {
 }
 }}}
  # 查看插入数据库记录是否成功和控制台的结果是否正确。
- # 使用SOAP UI客户端
+ # 使用[http://sourceforge.net/projects/soapui/files/soapui/ soapUI]客户端
    需要的WSDL文件内容
 {{{
 <wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/schema" targetNamespace="http://www.aurora-framework.org/schema" name="sys.test.sys_web_service_test">
@@ -520,7 +520,7 @@ public class MultiRecordsClient {
 }}}
  # 模拟第三方发布服务，以axis2为例
    # 下载[http://axis.apache.org/axis2/java/core/download.cgi axis2]
-   #  把[http://aurora-project.googlecode.com/files/aurora_ws_call.zip aurora_call Web Service]部署到[[AXIS2_HOME]]/repository/services下，然后启动服务axis2server.bat/axis2server.sh
+   #  把[https://aurora-project.googlecode.com/files/auroraCall.zip aurora_call Web Service]部署到[[AXIS2_HOME]]/repository/services下，然后启动服务axis2server.bat/axis2server.sh
    #wsdl文件如下：
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
@@ -826,5 +826,5 @@ nameSpace="http://www.aurora.org/simple" rootPath="/model/result1/cancat"/>
 </model>
 }}}
 == 相关工具推荐 ==
- # SOAP UI，可以根据wsdl自动生成需要的报文模板，填充内容后可以模拟客户端调用
+ # [http://sourceforge.net/projects/soapui/files/soapui/ soapUI]，可以根据wsdl自动生成需要的报文模板，填充内容后可以模拟客户端调用
  # tcpmon，可以监听和截获某个端口的所有数据，通过它可以查看http请求和返回的所有头和内容信息。
