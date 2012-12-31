@@ -630,7 +630,7 @@ full_payload:
 
 }}}
 
-== 调用WebService ==
+== 调用Web Service ==
 假设服务端要求提交的格式如下：
 {{{
  <a:soapRequest xmlns:a="http://www.aurora-framework.org/application">
