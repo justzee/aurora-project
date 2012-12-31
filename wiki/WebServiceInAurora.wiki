@@ -215,6 +215,81 @@ public class OneRecordClient {
     </wsdl:service>
 </wsdl:definitions>
 }}}
+ # PL/SQL客户端调用
+ 先添加公共的函数
+{{{
+  procedure call_web_service(p_url            in varchar2, --不是wsdl的链接，而是真实需要调用的地址
+                             p_payload        in varchar2,
+                             p_operation_name in varchar2,
+                             p_user_name      in varchar2,
+                             p_password       in varchar2,
+                             po_response      out varchar2) is
+    v_http_req      utl_http.req;
+    v_http_resp     utl_http.resp;
+    v_part_response varchar2(32767);
+    v_full_payload  VARCHAR2(32767);
+  begin
+    v_http_req := utl_http.begin_request(p_url,
+                                         'POST',
+                                         utl_http.http_version_1_1);
+  
+    --utl_http.set_header(v_http_req, 'Content-Type', 'text/xml');
+    utl_http.set_header(v_http_req,
+                        'Content-Type',
+                        'text/xml;charset=utf-8');
+  
+    utl_http.set_header(v_http_req, 'SOAPAction', p_operation_name);
+    if (p_user_name is not null) then
+      utl_http.set_authentication(v_http_req, p_user_name, p_password);
+    end if;
+    v_full_payload := '<?xml version="1.0" encoding="utf-8"?>' ||
+                      ' <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' ||
+                      NEW_LINE || '   <soapenv:Body>' || NEW_LINE ||
+                      '       ' || p_payload || NEW_LINE ||
+                      '   </soapenv:Body>' || NEW_LINE ||
+                      '</soapenv:Envelope>' || NEW_LINE;
+    utl_http.set_header(v_http_req,
+                        'Content-Length',
+                        length(v_full_payload));
+    dbms_output.put_line('full_payload:' || NEW_LINE || v_full_payload);
+    utl_http.write_text(v_http_req, v_full_payload);
+    v_http_resp := utl_http.get_response(v_http_req);
+    po_response := po_response || v_http_resp.status_code;
+    begin
+      loop
+        utl_http.read_text(v_http_resp, v_part_response);
+        po_response := po_response || v_part_response;
+      end loop;
+    exception
+      when utl_http.end_of_body then
+        null;
+    end;
+    utl_http.end_response(v_http_resp);
+  exception
+    when others then
+      po_response := 'err: ' || sqlerrm;
+  end call_web_service;
+}}}
+ 然后再写例子
+{{{
+    function example_call_ws_one_record return varchar2 is
+    v_content  varchar2(500);
+    v_response varchar2(3000);
+  begin
+    v_content := '<insertRequesttype xmlns="http://www.aurora-framework.org/schema" record_id="1" record_code="plsql"/>';
+    call_web_service(p_payload => v_content,
+                     --换成实际的IP地址和端口
+                     p_url            => 'http://10.213.208.54:8080/hec2dev/autocrud/sys.test.sys_web_service_test/insert',
+                     p_operation_name => 'insert',
+                     p_user_name      => 'linjinxiao',
+                     p_password       => 'ok',
+                     po_response      => v_response);
+    dbms_output.put_line(v_response);
+    return v_response;
+  
+  end example_call_ws_one_record;
+}}}
+ 其中v_content的内容格式在有WSDL文件的前提下，用soapUI生成代码模版，然后用pl/sql拼接出类似的字符串格式即可。
 ===复杂例子===
 这个例子处理有头行结构的例子。譬如，调用方发送过来的请求是如下格式
 {{{
@@ -494,6 +569,66 @@ public class MultiRecordsClient {
     </wsdl:service>
 </wsdl:definitions>
 }}}
+ # PL/SQL客户端调用
+{{{
+  function example_call_ws_multi_records return varchar2 is
+    v_content  varchar2(500);
+    v_response varchar2(3000);
+  begin
+    v_content := '<sch:insertRequesttype xmlns:sch="http://www.aurora-framework.org/schema">
+         <requestHead sequenceNo="1"/>
+         <requestBody>
+            <records>
+               <record record_id="11111" record_code="pl/sql" />
+               <record record_id="22222" record_code="oracle" />
+            </records>
+         </requestBody>
+      </sch:insertRequesttype>';
+    call_web_service(p_payload => v_content,
+                     --换成实际的IP地址和端口
+                     p_url            => 'http://10.213.208.54:8081/hec2dev/modules/sys/test/sys_web_service_multi_records_test.svc',
+                     p_operation_name => 'insert',
+                     p_user_name      => 'linjinxiao',
+                     p_password       => 'ok',
+                     po_response      => v_response);
+  
+    dbms_output.put_line(v_response);
+    return v_response;
+  end example_call_ws_multi_records;
+}}}
+输出结果如下：
+{{{
+full_payload:
+<?xml version="1.0" encoding="utf-8"?> <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Body>
+       <sch:insertRequesttype xmlns:sch="http://www.aurora-framework.org/schema">
+         <requestHead sequenceNo="1"/>
+         <requestBody>
+            <records>
+               <record record_id="11111" record_code="pl/sql" />
+               <record record_id="22222" record_code="oracle" />
+            </records>
+         </requestBody>
+      </sch:insertRequesttype>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+200<?xml version='1.0' encoding='UTF-8'?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Body>
+        <parameter __parameter_parsed__="true" success="true">
+            <responseHead xmlns="http://www.aurora-framework.org/application" sequenceNo="1"/>
+            <responseBody xmlns="http://www.aurora-framework.org/application" responseDate="2012-12-31">
+                <records>
+                    <record record_code="pl/sql" __parameter_parsed__="true" record_id="11111" record_status="ok"/>
+                    <record record_code="oracle" __parameter_parsed__="true" record_id="22222" record_status="ok"/>
+                </records>
+            </responseBody>
+        </parameter>
+    </soapenv:Body>
+</soapenv:Envelope>
+
+}}}
 
 == 调用WebService ==
 假设服务端要求提交的格式如下：
@@ -521,7 +656,7 @@ public class MultiRecordsClient {
  # 模拟第三方发布服务，以axis2为例
    # 下载[http://axis.apache.org/axis2/java/core/download.cgi axis2]
    #  把[https://aurora-project.googlecode.com/files/auroraCall.zip aurora_call Web Service]部署到[[AXIS2_HOME]]/repository/services下，然后启动服务axis2server.bat/axis2server.sh
-   #wsdl文件如下：
+   # wsdl文件如下：
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions name="simple" targetNamespace="http://www.aurora-framework.org/application" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/application" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
