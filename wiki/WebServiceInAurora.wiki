@@ -48,7 +48,7 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
    <ws:SOAPConfiguration xmlns:ws="aurora.service.ws">
    <errorResponseTemplate>
 		<![CDATA[
-	<soapResponse xmlns="http://www.aurora-framework.org/application">         
+	<soapResponse xmlns="http://www.aurora-framework.org/schema">         
 		<status>N</status>         
 		<message>${/error/@message}</message>      
 	</soapResponse>
@@ -92,7 +92,7 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
         <a:model-insert model="sys.test.sys_web_service_test"/>
         <!--
        	构造 返回格式，跟错误返回格式保持一致
-        <soapResponse xmlns="http://www.aurora-framework.org/application" success="true">
+        <soapResponse xmlns="http://www.aurora-framework.org/schema" success="true">
             <message>OK</message>
             <success>Y</success>
         </soapResponse>
@@ -105,7 +105,7 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
                 <p:argument path="/soapResponse" type="uncertain.composite.CompositeMap"/>
             </p:arguments>
         </p:method-invoke>
-        <p:set-element namespace="http://www.aurora-framework.org/application" target="/soapResponse"/>
+        <p:set-element namespace="http://www.aurora-framework.org/schema" target="/soapResponse"/>
     </a:init-procedure>
     <a:service-output output="/soapResponse"/>
 </a:service>
@@ -167,7 +167,7 @@ public class OneRecordClient {
 <wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/schema" targetNamespace="http://www.aurora-framework.org/schema" name="sys.test.sys_web_service_test">
     <wsdl:types>
         <xsd:schema
-        	targetNamespace="http://www.aurora-framework.org/schema">
+        	targetNamespace="http://www.aurora-framework.org/schema" elementFormDefault="qualified">
         	<xsd:element name="parameter">
         		<xsd:complexType>
         			<xsd:attribute type="xsd:long" name="record_id" />
@@ -303,7 +303,7 @@ public class OneRecordClient {
 }}}
 返回的结构要求是如下格式
 {{{
-<responseHead xmlns="http://www.aurora-framework.org/application" sequenceNo="1" />
+<responseHead xmlns="http://www.aurora-framework.org/schema" sequenceNo="1" />
 <responseBody responseDate="2012-12-27">
     <records>
 		<record record_id="11" record_code="multi1" record_status="ok"  />
@@ -387,8 +387,8 @@ end SYS_WEB_SERVICE_TEST_PKG;
             <a:model-execute model="db.sys_web_service_test_pkg.insert_sys_web_service_test"/>
         </batch-apply>
         <!--更改节点的名称和namespace-->
-        <p:set-element name="responseHead" namespace="http://www.aurora-framework.org/application" target="/parameter/requestHead"/>
-        <p:set-element name="responseBody" namespace="http://www.aurora-framework.org/application" target="/parameter/requestBody"/>
+        <p:set-element name="responseHead" namespace="http://www.aurora-framework.org/schema" target="/parameter/requestHead"/>
+        <p:set-element name="responseBody" namespace="http://www.aurora-framework.org/schema" target="/parameter/requestBody"/>
         <!-- 获得当前的时间-->
         <a:model-query fetchAll="true" fethOneRecord="true" model="sys.test.sys_query_sysdate"/>
         <p:echo />
@@ -458,7 +458,7 @@ public class MultiRecordsClient {
 
 	private static OMElement makeRequest() {
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMElement parameter = factory.createOMElement(new QName("http://www.aurora-framework.org/application", "parameter"));
+		OMElement parameter = factory.createOMElement(new QName("http://www.aurora-framework.org/schema", "parameter"));
 		OMElement requestHead = factory.createOMElement(new QName("requestHead"));
 		OMElement requestBody = factory.createOMElement(new QName("requestBody"));
 		OMElement records = factory.createOMElement(new QName("records"));
@@ -484,7 +484,7 @@ public class MultiRecordsClient {
 {{{
 <wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/schema" targetNamespace="http://www.aurora-framework.org/schema" name="sys.test.sys_web_service_multi_records_test">
     <wsdl:types>
-        <xsd:schema targetNamespace="http://www.aurora-framework.org/schema">
+        <xsd:schema targetNamespace="http://www.aurora-framework.org/schema" elementFormDefault="qualified">
             <xsd:element name="insertRequesttype">
                 <xsd:complexType>
                 	<xsd:sequence>
@@ -617,8 +617,8 @@ full_payload:
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
     <soapenv:Body>
         <parameter __parameter_parsed__="true" success="true">
-            <responseHead xmlns="http://www.aurora-framework.org/application" sequenceNo="1"/>
-            <responseBody xmlns="http://www.aurora-framework.org/application" responseDate="2012-12-31">
+            <responseHead xmlns="http://www.aurora-framework.org/schema" sequenceNo="1"/>
+            <responseBody xmlns="http://www.aurora-framework.org/schema" responseDate="2012-12-31">
                 <records>
                     <record record_code="pl/sql" __parameter_parsed__="true" record_id="11111" record_status="ok"/>
                     <record record_code="oracle" __parameter_parsed__="true" record_id="22222" record_status="ok"/>
@@ -633,14 +633,14 @@ full_payload:
 == 调用Web Service ==
 假设服务端要求提交的格式如下：
 {{{
- <a:soapRequest xmlns:a="http://www.aurora-framework.org/application">
+ <a:soapRequest xmlns:a="http://www.aurora-framework.org/schema">
 	<a:param1>1</a:param1>
 	<a:param2>code</a:param2>
  </a:soapRequest>
 }}}
 返回的格式如下：
 {{{
-<a:soapResponse xmlns:a="http://www.aurora-framework.org/application">
+<a:soapResponse xmlns:a="http://www.aurora-framework.org/schema">
 	<a:records>
 		<a:record>
 			<a:record_id>1111</a:record_id>
@@ -659,9 +659,9 @@ full_payload:
    # wsdl文件如下：
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="simple" targetNamespace="http://www.aurora-framework.org/application" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/application" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<wsdl:definitions name="simple" targetNamespace="http://www.aurora-framework.org/schema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.aurora-framework.org/schema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
-    <xsd:schema targetNamespace="http://www.aurora-framework.org/application">
+    <xsd:schema targetNamespace="http://www.aurora-framework.org/schema" elementFormDefault="qualified">
       <xsd:element name="soapRequest">
         <xsd:complexType>
           <xsd:sequence>
@@ -716,7 +716,7 @@ full_payload:
   <wsdl:binding name="auroraCallbinding" type="tns:auroraCallportType">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="auroraCall">
-      <soap:operation soapAction="http://www.aurora-framework.org/application/auroraCall"/>
+      <soap:operation soapAction="http://www.aurora-framework.org/schema/auroraCall"/>
       <wsdl:input>
         <soap:body use="literal"/>
       </wsdl:input>
@@ -748,7 +748,7 @@ full_payload:
         <!-- 构建符合的请求的格式-->
         <p:set field="/soapRequest/@param1" value="1"/>
         <p:set field="/soapRequest/@param2" value="code"/>
-        <p:set-element namespace="http://www.aurora-framework.org/application" target="/soapRequest"/>
+        <p:set-element namespace="http://www.aurora-framework.org/schema" target="/soapRequest"/>
         <p:method-invoke className="uncertain.composite.CompositeUtil" methodName="expand">
             <p:arguments>
                 <p:argument path="/soapRequest" type="uncertain.composite.CompositeMap"/>
