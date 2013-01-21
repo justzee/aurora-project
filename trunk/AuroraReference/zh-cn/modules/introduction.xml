@@ -4,8 +4,8 @@
         <title>前言</title>
       <para>Aurora是一个基于J2EE的Web应用开发框架，主要面向企业应用。在介绍Aurora框架之前，我们先看看用Aurora开发出来的应用实例。鉴于企业应用通常都不会像J2EE宠物商店那么简单，我们将选择一个典型的业务：销售订单，来作为演示场景。我们的示例程序包括以下几个界面：销售订单录入，销售出库，销售订单查询。请点击此处查看在线演示程序：</para>
 
-    <para>...</para>
-
+    <para><ulink url="http://aurora.hand-china.com/demo/">浏览器中打开</ulink></para>
+	
     <para>从应用开发者的角度，Aurora与其它框架的最大区别，就是大多数功能都是通过XML配置文件，而不是Java代码来实现的。实际上，Aurora可以看做是一个配置解析器，通过解析配置文件来实现各种功能。我们以【销售订单】这个演示界面为例，说明在Aurora框架下应用程序是如何开发出来的。</para>
 
     <mediaobject>
@@ -18,7 +18,7 @@
     </mediaobject>
     
 
-    <para>首先我们来看前端界面部分。用户所访问的每一个界面（我们可以在demo系统中看到的.screen链接），都对应一个XML格式的配置文件，它在server端被解析，产生HTML输出，生成供浏览器展示的UI。以...界面为例，按各种条件查询数据，点击某条记录能够在一个弹出窗口中编辑数据，像这样一个典型的企业应用界面，其源代码如下：</para>
+    <para>首先我们来看前端界面部分。用户所访问的每一个界面（我们可以在demo系统中看到的.screen链接），都对应一个XML格式的配置文件，它在server端被解析，产生HTML输出，生成供浏览器展示的UI。以[查询界面]为例，按各种条件查询数据，点击某条记录能够在一个弹出窗口中编辑数据，像这样一个典型的企业应用界面，其源代码如下：</para>
 
     <programlisting><![CDATA[                
 <a:screen xmlns:a="http://www.aurora-framework.org/application" trace="true">

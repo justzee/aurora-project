@@ -48,9 +48,16 @@
            <para>Aurora界面组件的工作模式，可以简单地归纳为：输入组件的运行时期配置（例如，表格的高度，宽度），以及组件绑定的数据模型（例如，一个代表员工清单的的数据集），由组件经过加工，输出文本字节流（HTML/SVG/VML...）。下面的例子中，我们开发一个用于显示金额的组件currency-label，字体加粗，对于负数显示为红色，这个组件可以绑定到数据集的任意一个数字型字段。</para>
 
     <para>使用这个组件很简单：</para>
-           <programlisting><![CDATA[                
-<a:currencyLabel name="count1" bindTarget="demo_ds" prompt="金额"/>
-                ]]></programlisting>
+           <programlisting><![CDATA[
+<a:hBox labelWidth="100">
+	<label>正数：</label>
+    <a:curLabel value="10000"/>
+</a:hBox>
+<a:hBox labelWidth="100">
+	<label>负数：</label>
+    <a:curLabel value="-10000"/>
+</a:hBox>
+]]></programlisting>
 
     <para>它将产生这样的输出：</para>
 
@@ -65,29 +72,50 @@
 
     <para>为便于彻底分离组件的外观与核心逻辑，我们可以将html部分放入模板：</para>
 
-    <para>currency-label.tplt 
+    <para>curlabel.tplt 
     <programlisting><![CDATA[                
-<DIV class="${wrapClass}" style="width:${width}px;${style}" id="${id}"></DIV>
-<script>
-	new Aurora.Label(${config});
-	${binding}
-</script>
+<DIV class="${wrapClass}" style="width:${width}px;${style}"   >${value}</DIV>
                 ]]></programlisting> </para>
 
     <para>CurrencyLabel.java 
     <programlisting><![CDATA[                
-public class CurrencyLabel extends Label {
-	
-	private static final String DEFAULT_RENDERER = "Aurora.formatMoney";
-	private static final String DEFAULT_TEMPLATE = "currenyLabel.tplt";
-	
-	public void onCreateViewContent(BuildSession session, ViewContext context) throws IOException {
-		context.setTemplate(session.getTemplateByName(DEFAULT_TEMPLATE));
-		CompositeMap view = context.getView();
-		
-		String renderer = view.getString(PROPERTITY_RENDERER);
-		if(renderer==null)view.putString(PROPERTITY_RENDERER, DEFAULT_RENDERER);		
-		super.onCreateViewContent(session, context);
+public class CurrencyLabel {
+	public void onCreateViewContent(BuildSession session,
+			ViewContext view_context) {
+		CompositeMap view = view_context.getView();
+		// 从model中获取需要显示的字段
+		CompositeMap model = view_context.getModel();
+
+		String val = view.getString(PROPERTITY_VALUE, "");
+		String format = view.getString(PROPERTITY_FORMAT, "###,###.00");
+		int width = view.getInt(PROPERTITY_WIDTH, 150);
+		String sty = view.getString(PROPERTITY_STYLE, "");
+		Object obj = model.getObject(val);
+		obj = obj == null ? val : obj;
+		String value = "";
+		if (obj instanceof Date) {
+			SimpleDateFormat sdf = new SimpleDateFormat(format);
+			value = sdf.format((Date) obj);
+		} else if (obj instanceof Long || obj instanceof Double || obj instanceof Integer) {
+			DecimalFormat df = new DecimalFormat(format);
+			value = df.format(obj);
+		} else if (obj != null) {
+			value = obj.toString();
+		}
+
+		String wrapClass = "item-label";
+		try {
+			wrapClass = Integer.valueOf(value) > 0 ? "item-label"
+					: "item-label-red";
+		} catch (NumberFormatException e) {
+		}
+
+		// 将动态内容放入ViewContext的Map中，后面将用于替换模版中的同名标记
+		Map content_map = view_context.getMap();
+		content_map.put("wrapClass", wrapClass);
+		content_map.put("width", width);
+		content_map.put("style", sty);
+		content_map.put("value", value);
 	}
 }
                 ]]></programlisting> </para>
@@ -100,37 +128,25 @@ public class CurrencyLabel extends Label {
 height:22px;
 color:red;
 font-weight:bold;
+line-height:22px;
+vertical-align:middle;
 }
-                ]]></programlisting> currency-label.tplt 
+                ]]></programlisting> curlabel.tplt 
                 <programlisting><![CDATA[                
-<DIV class="${wrapClass}" style="width:${width}px;${style}" id="${id}"></DIV>
-<script>
-	(function(){
-		var label = new Aurora.Label(${config});
-		${binding}
-		var value = label.record.get(label.binder.name);
-		if(Number(value)<0){
-			label.wrap.addClass('item-label-red');
-		}else{
-			label.wrap.removeClass('item-label-red');
-		}
-	})();
-</script>
+<DIV class="${wrapClass}" style="width:${width}px;${style}"   >${value}</DIV>
                 ]]></programlisting> </para>
 
     <para>如果一个组件包含下级组件，它将递归地调用下级组件的渲染过程，但它可以不需要了解下级组件的任何细节，因此，第三方组件可以很好地与现成组件搭配使用。下面的例子中，我们显示通过数据库查询获得的员工信息。这里使用aurora标准组件库中的repeater组件对数据集进行循环，每条记录使用box组件对字段进行布局，再使用前面我们自行开发的currency-label组件显示员工工资。</para>
-
-
     <para>界面配置代码：</para>
     
-    <programlisting><![CDATA[                
-            <a:repeater datamodel="/model/emp_list">
-                <a:hBox labelWidth="100">
-                    <label>工资：</label>
-                    <a:viewItem format="###,###.00" style="font-weight:bold" value="@total_amount"/>
-                </a:hBox>
-            </a:repeater>
-                ]]></programlisting> 
+    <programlisting><![CDATA[
+<a:repeater datamodel="/model/emp_list">
+	<a:hBox labelWidth="100">
+    	<label>工资：</label>
+        <a:curLabel value="@total_amount"/>
+	</a:hBox>
+</a:repeater>
+]]></programlisting> 
 
 
     <para>产生的效果：</para>
@@ -143,7 +159,12 @@ font-weight:bold;
                 <imagedata fileref="../shared/images/presentation/emp_s.png" format="png" align="center"/>
             </imageobject>
         </mediaobject>
-        
+<para>
+Demo地址：
+    <programlisting><![CDATA[
+http://aurora.hand-china.com/demo/modules/component/Comp1010/currencyLabel.screen
+]]></programlisting>
+</para>
         </sect2>
         
         
@@ -192,26 +213,34 @@ font-weight:bold;
 
     <para>在前一章中，我们已经看到了Aurora模型层是如何能够灵活地通过配置改变数据结构，这时就用得上了。我们所需做的，只是在原有的数据查询操作之后，增加一个分组转换的转换器：</para>
 
- <programlisting><![CDATA[                
- <t:group-transform groupfield="department_id" source="/model/source_emp_list" subgroupname="enabled_flag" target="/model/target_emp_list/a"></t:group-transform>
-                ]]></programlisting> 
+ <programlisting><![CDATA[
+  <t:group-transform groupfield="department_id" source="/model/source_emp_list" subgroupname="enabled_flag"
+  target="/model/target_emp_list/a"></t:group-transform>
+ ]]></programlisting> 
 
 
     <para>然后修改界面配置，在原来的列表之外增加一层repeater：</para>
 
   <programlisting><![CDATA[                
 <a:repeater datamodel="/model/target_emp_list/a">
-                <a:listView datamodel="enabled_flag">
-                    <a:columns>
-                        <a:column name="employee_code" align="center" prompt="员工工号"/>
-                        <a:column name="employee_name" align="center" prompt="员工名"/>
-                        <a:column name="department_id" align="center" prompt="部门id"/>
-                    </a:columns>
-                </a:listView>
-            </a:repeater>
+    <a:listView datamodel="enabled_flag">
+        <a:columns>
+            <a:column name="employee_code" align="center" prompt="员工工号"/>
+            <a:column name="employee_name" align="center" prompt="员工名"/>
+            <a:column name="department_id" align="center" prompt="部门id"/>
+        </a:columns>
+    </a:listView>
+</a:repeater>
                 ]]></programlisting>
 
     <para>完全不需要修改模型层的java代码（因为根本就没有这样的代码），重新编译。</para>
+<para>
+Demo地址：
+    <programlisting><![CDATA[
+http://aurora.hand-china.com/demo/modules/component/emp1010/empdemo.screen
+]]></programlisting> 
+</para>
+        
         </sect2>
         
         <sect2 id="presentation-server-client" revision="1">
