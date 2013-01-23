@@ -111,6 +111,7 @@ public class DBConnectionUtil {
 					.getInstanceOfType(DataSource.class);
 			monitor.worked(50);
 			try {
+				ds.setLoginTimeout(3);
 				setConn(ds.getConnection());
 			} catch (SQLException e) {
 				throw new InvocationTargetException(e);

@@ -1,6 +1,10 @@
 package aurora.ide.bm.editor;
 
+import java.util.ResourceBundle;
+
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -9,6 +13,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+import org.eclipse.ui.texteditor.MarkerRulerAction;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
@@ -21,6 +27,11 @@ import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.XMLConfiguration;
 import aurora.ide.editor.textpage.XmlErrorReconcile;
 import aurora.ide.editor.textpage.XmlReconcilingStrategy;
+import aurora.ide.editor.textpage.action.CFormatAction;
+import aurora.ide.editor.textpage.action.ExportFunctionSQLAction;
+import aurora.ide.editor.textpage.action.GetFileNameAction;
+import aurora.ide.editor.textpage.action.ToggleBlockCommentAction;
+import aurora.ide.editor.textpage.action.ToggleCommentAction;
 import aurora.ide.search.cache.CacheManager;
 
 public class ViewSource extends TextPage {
@@ -77,6 +88,28 @@ public class ViewSource extends TextPage {
 	public boolean isEditorInputReadOnly() {
 		return true;
 	}
+	
+	protected void createActions() {
+//		super.createActions();
+//		/**
+//		 * 只可手工添加，通过plugin.xml配置无效。 因为textEditor作为MultiPageEditorPart时,
+//		 * 点击左侧垂直条，AbstractTextEditor
+//		 * .findContributedAction()中getSite().getId()总是为"",判断失效。
+//		 * */
+//		Action action = new MarkerRulerAction(
+//				ResourceBundle
+//						.getBundle("org.eclipse.ui.texteditor.ConstructedTextEditorMessages"),
+//				"Editor.ManageBookmarks.", this, getVerticalRuler(),
+//				IMarker.BOOKMARK, true);
+//		setAction(ITextEditorActionConstants.RULER_DOUBLE_CLICK, action);
+//		setAction("format", new CFormatAction());
+//		setAction("linecomment", new ToggleCommentAction());
+//		setAction("blockcomment", new ToggleBlockCommentAction());
+//		GetFileNameAction action2 = new GetFileNameAction();
+//		action2.setActiveEditor(null, this);
+//		setAction("copyFileName", action2);
+//		setAction("ExportFunctionSQLAction", new ExportFunctionSQLAction(this));
+	}
 
 	public String getExtendContent() {
 		IFile file = (IFile) getEditorInput().getAdapter(IFile.class);
@@ -97,6 +130,9 @@ public class ViewSource extends TextPage {
 			e.printStackTrace();
 			return e.getMessage();
 		}
+	}
+	protected void createUndoRedoActions(){
+		
 	}
 
 	private BusinessModel createResult(CompositeMap config, IFile file) {

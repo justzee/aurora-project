@@ -4,6 +4,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 
 import aurora.ide.editor.textpage.IReconcileListener;
@@ -53,7 +54,10 @@ public class JSValidator implements IReconcileListener {
 		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
-				int offset = mSourceViewer.getTextWidget().getCaretOffset();
+				StyledText textWidget = mSourceViewer.getTextWidget();
+				if(textWidget==null)
+					return;
+				int offset = textWidget.getCaretOffset();
 				if (offset <= 0)
 					return;
 				try {

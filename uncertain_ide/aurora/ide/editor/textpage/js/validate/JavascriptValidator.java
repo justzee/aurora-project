@@ -46,6 +46,7 @@ public class JavascriptValidator {
 			// source = new String(charArray);
 			source = Util.convertJS(source);
 			// ////
+			
 			cx.compileString(source, name, 0, null);
 			WarningReporter warningReporter = new WarningReporter();
 			scope.put("meReport", scope, warningReporter);
@@ -68,7 +69,11 @@ public class JavascriptValidator {
 			// that is ok; @see org.mozilla.javascript.EvaluatorException
 		} catch (IOException e) {
 			// js/fulljslint.js ;
-		} finally {
+		} catch (Exception e){
+//			by: org.mozilla.javascript.Parser$ParserException
+			e.printStackTrace();
+		} 
+		finally {
 			Context.exit();
 		}
 	}
