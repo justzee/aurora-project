@@ -198,7 +198,6 @@ Library.
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.forms"/>
       <import plugin="aurora.ide.libs" version="1.3.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.update.scheduler" version="3.2.200" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ltk.core.refactoring"/>
       <import plugin="org.eclipse.ltk.ui.refactoring"/>
       <import plugin="org.eclipse.core.filesystem"/>
@@ -213,6 +212,13 @@ Library.
          download-size="0"
          install-size="0"
          version="1.3.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="aurora.ide.views"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
