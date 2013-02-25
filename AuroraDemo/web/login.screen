@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $Author: niujiaqing1265 $
+    $Date: 2010/11/18 08:21:59 $
+    $Revision: 1.13 $
+    $Purpose: 登陆界面
+-->
+<a:screen xmlns:s="aurora.plugin.script" xmlns:a="http://www.aurora-framework.org/application" trace="true">
+    <a:init-procedure/>
+    <a:view>
+        <a:dataSets>
+            <a:dataSet id="login_dataset" autocreate="true"/>
+        </a:dataSets>
+        <script><![CDATA[
+           function login(){
+           
+           }
+            
+        ]]></script>
+        <a:form id="loginForm" labelWidth="100" row="1" style="position:absolute;left:-2000px;top:-2000px;" title="登录" width="330">
+            <a:vBox className="mytable" labelWidth="80">
+                <a:textField name="user_name" id="user_name_tf" bindTarget="login_dataset" prompt="用户名" width="150">
+                </a:textField>
+                <a:passWord name="user_password" bindTarget="login_dataset" prompt="密码" width="150">
+                </a:passWord>
+            </a:vBox>
+            <a:hBox width="90">
+                <a:button id="btn_1" click="login" height="45" text="登录" width="72"/>
+            </a:hBox>
+        </a:form>
+        <script><![CDATA[
+            Aurora.onReady(function() {
+                Aurora.center('loginForm');
+                Aurora.get('loginForm').show();
+            });
+        ]]></script>
+    </a:view>
+</a:screen>
