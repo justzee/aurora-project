@@ -7,12 +7,12 @@
 -->
 <a:screen xmlns:s="aurora.plugin.script" xmlns:a="http://www.aurora-framework.org/application">
     <a:init-procedure>
-        <s:server-script import="pur/PUR5010/pur_purchase_order_new.js"/>
+        <s:server-script import="pur/pur_purchase_order_new.js"/>
     </a:init-procedure>
     <a:view>
-        <a:link id="lk_header_submit" url="${/request/@context_path}/modules/pur/PUR5010/pur_purchase_order_header_submit.svc"/>
-        <a:link id="lk_order_number_check" url="${/request/@context_path}/modules/pur/PUR5010/pur_purchase_order_number_check.svc"/>
-        <a:link id="lk_order_delete" url="${/request/@context_path}/modules/pur/PUR5010/pur_purchase_order_delete.svc"/>
+        <a:link id="lk_header_submit" url="${/request/@context_path}/modules/pur/pur_purchase_order_header_submit.svc"/>
+        <a:link id="lk_order_number_check" url="${/request/@context_path}/modules/pur/pur_purchase_order_number_check.svc"/>
+        <a:link id="lk_order_delete" url="${/request/@context_path}/modules/pur/pur_purchase_order_delete.svc"/>
         <script><![CDATA[
             var create_new = true;
                         
@@ -256,14 +256,20 @@
         ]]></script>
         <a:dataSets>
             <a:dataSet id="ord_order_status_ds" lookupCode="SALE_ORD_STATUS"/>
-            <a:dataSet id="ord_order_currency_code_ds" loadData="true" model="ord.ORD5010.gld_currency_code_com"/>
-            <a:dataSet id="order_headers_ds" autoCreate="true" model="pur.PUR5010.pur_purchase_order_headers" queryUrl="${/request/@context_path}/autocrud/pur.PUR5010.pur_purchase_order_headers/query?purchase_order_header_id=${/parameter/@purchase_order_header_id}" submitUrl="${/request/@context_path}/modules/pur/PUR5010/pur_purchase_order_save.svc">
+            <a:dataSet id="ord_order_currency_code_ds">
+                <a:datas>
+                    <a:record currency_code="CNY"/>
+                    <a:record currency_code="JPY"/>
+                    <a:record currency_code="USD"/>
+                </a:datas>
+            </a:dataSet>
+            <a:dataSet id="order_headers_ds" autoCreate="true" model="pur.pur_purchase_order_headers" queryUrl="${/request/@context_path}/autocrud/pur.pur_purchase_order_headers/query?purchase_order_header_id=${/parameter/@purchase_order_header_id}" submitUrl="${/request/@context_path}/modules/pur/pur_purchase_order_save.svc">
                 <a:fields>
                     <a:field name="order_number" required="true"/>
                     <a:field name="buyer_employee_id" defaultValue="${/session/@employee_id}"/>
                     <a:field name="buyer_employee_name" defaultValue="${/session/@employee_name}" readOnly="true"/>
                     <a:field name="vender_id"/>
-                    <a:field name="customer_desc" lovHeight="500" lovService="pur.PUR5010.fnd_business_partner_lov" lovWidth="500" required="true" title="客户选择">
+                    <a:field name="customer_desc" lovHeight="500" lovService="pur.fnd_business_partner_lov" lovWidth="500" required="true" title="客户选择">
                         <a:mapping>
                             <a:map from="partner_id" to="vender_id"/>
                             <a:map from="partner_name" to="customer_name"/>
@@ -277,13 +283,12 @@
                 <a:events>
                     <a:event name="add" handler="onHeadDsAdd"/>
                     <a:event name="load" handler="onHeadDsLoad"/>
-                    <a:event name="submitsuccess" handler="onHeadDsSubmitSuccess"/>
                 </a:events>
             </a:dataSet>
-            <a:dataSet id="order_lines_ds" bindName="lines" bindTarget="order_headers_ds" fetchAll="true" model="ord.ORD5010.ord_sales_order_lines" selectable="true">
+            <a:dataSet id="order_lines_ds" bindName="lines" bindTarget="order_headers_ds" fetchAll="true" model="pur.pur_purchase_order_lines" selectable="true">
                 <a:fields>
                     <a:field name="item_id" required="true"/>
-                    <a:field name="item_desc" lovGridHeight="260" lovService="ord.ORD5010.inv_item_basic_lov" lovWidth="600" required="true" title="选择物品">
+                    <a:field name="item_desc" lovGridHeight="260" lovService="pur.inv_item_basic_lov" lovWidth="600" required="true" title="选择物品">
                         <a:mapping>
                             <a:map from="item_desc" to="item_desc"/>
                             <a:map from="item_id" to="item_id"/>
@@ -299,31 +304,24 @@
             </a:dataSet>
         </a:dataSets>
         <a:defaultScreen>
-            <a:screenTopToolbar>
-                <a:screenTitle/>
-                <a:toolbarButton className="item-rbtn-blue button-save" click="btn_save_order" text="保存订单" width="100"/>
-                <a:toolbarButton click="btn_save_add_order" style="margin-left:20px;" text="保存并新增" width="100"/>
-                <a:toolbarButton className="item-rbtn-blue button-delete" click="btn_delete_order" text="删除订单" width="100"/>
-                <a:toolbarButton className="item-rbtn-blue button-excel" click="btn_submit_order" text="提交订单" width="100"/>
-            </a:screenTopToolbar>
-            <a:box column="1">
-                <a:hBox labelWidth="100">
-                    <a:textField name="order_number" bindTarget="order_headers_ds" prompt="订单号">
-                        <a:events>
-                            <a:event name="blur" handler="onOrderNumberBlur"/>
-                        </a:events>
-                    </a:textField>
-                    <a:lov name="customer_desc" bindTarget="order_headers_ds" prompt="客户"/>
-                    <a:comboBox name="currency_code" bindTarget="order_headers_ds" prompt="币种" width="60"/>
-                    <a:datePicker name="order_date" bindTarget="order_headers_ds" prompt="订单日期"/>
-                </a:hBox>
-                <a:hBox labelWidth="100">
-                    <a:label name="status_name" bindTarget="order_headers_ds" prompt="状态" renderer="status_name_renderer" style="background-color:#ccc;text-align:center;" width="80"/>
-                    <a:hBox>
-                        <a:label name="buyer_employee_name" bindTarget="order_headers_ds" prompt="销售员" style="background-color:#ccc;text-align:center;" width="90"/>
-                    </a:hBox>
-                </a:hBox>
-            </a:box>
+            <a:form column="2" title="订单新增" width="500">
+                <a:textField name="order_number" bindTarget="order_headers_ds" prompt="订单号">
+                    <a:events>
+                        <a:event name="blur" handler="onOrderNumberBlur"/>
+                    </a:events>
+                </a:textField>
+                <a:lov name="customer_desc" bindTarget="order_headers_ds" prompt="客户"/>
+                <a:comboBox name="currency_code" bindTarget="order_headers_ds" prompt="币种" width="60"/>
+                <a:datePicker name="order_date" bindTarget="order_headers_ds" prompt="订单日期"/>
+                <a:label name="status_name" bindTarget="order_headers_ds" prompt="状态" renderer="status_name_renderer" style="background-color:#ccc;text-align:center;" width="80"/>
+                <a:label name="buyer_employee_name" bindTarget="order_headers_ds" prompt="销售员" style="background-color:#ccc;text-align:center;" width="90"/>
+            </a:form>
+            <a:hBox>
+                <a:button click="btn_save_order" text="保存订单" width="100"/>
+                <a:button click="btn_save_add_order" text="保存并新增" width="100"/>
+                <a:button click="btn_delete_order" text="删除订单" width="100"/>
+                <a:button click="btn_submit_order" text="提交订单" width="100"/>
+            </a:hBox>
             <a:grid bindTarget="order_lines_ds" height="350" navBar="true" width="1000">
                 <a:columns>
                     <a:column name="line_number" align="center" editor="e_tf" prompt="行号" width="40"/>
