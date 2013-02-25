@@ -13,6 +13,6 @@
         <ns1:data-filter name="customer_flag" enforceOperations="query" expression="c.customer_flag=&apos;Y&apos;"/>
         <ns1:data-filter name="enabled_flag" enforceOperations="query" expression="c.enabled_flag=&apos;Y&apos;"/>
         <ns1:data-filter name="management_flag" enforceOperations="query" expression="c.management_flag=&apos;Y&apos;"/>
-        <ns1:data-filter name="company_id" enforceOperations="query" expression="c.company_id=${/session/@company_id}"/>
+        <ns1:data-filter name="company_id" enforceOperations="query" expression="c.company_id=22"/>
     </ns1:data-filters>
 </ns1:model>
