@@ -1,0 +1,75 @@
+<chapter id="preparations">
+    <title>准备工作</title>
+    <sect1 id="preparations-info"  revision="1">
+        <title>环境准备</title>
+        <para>
+        Aurora 是一个开源的web框架。
+        </para>
+    </sect1>
+    <sect1 id="preparations-jdk"  revision="1">
+        <title>JDK</title>
+        <para>
+            JDK 1.4 
+        </para>
+    </sect1>
+    <sect1 id="preparations-webapp"  revision="1">
+        <title>应用服务器</title>
+        <para>
+            Tomcat 5 
+        </para>
+    </sect1>
+    <sect1 id="preparations-database"  revision="1">
+        <title>数据库</title>
+        <para>
+            MySql 5.0
+        </para>
+    </sect1>       
+</chapter>
+
+<chapter id="install">
+    <title>安装配置</title>
+    <sect1 id="install-download"  revision="1">
+        <title>下载</title>
+        <para>
+        下载 Aurora
+        </para>
+    </sect1>
+    <sect1 id="install-init"  revision="1">
+        <title>初始化数据库</title>
+        <para>
+            sql
+        </para>
+    </sect1>
+    <sect1 id="install-config"  revision="1">
+        <title>配置环境</title>
+        <para>
+            config
+        </para>
+    </sect1> 
+</chapter>
+
+<chapter id="helloworld">
+    <title>HelloWorld</title>
+    <sect1 id="helloworld-screen"  revision="1">
+        <title>开发一个helloworld</title>
+        <para>
+        Aurora 是一个开源的web框架。
+        </para>
+    </sect1>     
+</chapter>
+
+<chapter id="purchaseorder">
+    <title>采购订单</title>
+    <sect1 id="purchaseorder-query" revision="1">
+        <title>查询界面</title>            
+        <para>
+            正文...
+        </para>
+    </sect1>
+    <sect1 id="purchaseorder-add" revision="1">
+        <title>新增界面</title>            
+        <para>
+            正文...
+        </para>
+    </sect1> 
+</chapter>
