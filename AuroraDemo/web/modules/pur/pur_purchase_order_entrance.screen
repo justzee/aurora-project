@@ -2,10 +2,20 @@
 <a:screen xmlns:a="http://www.aurora-framework.org/application">
     <a:init-procedure/>
     <a:view>
+        <a:link id="pur_5010_new_order_link" url="${/request/@context_path}/modules/pur/pur_purchase_order_new.screen"/>
         <script><![CDATA[
         
     	function query(){
     	 	$('order_header_ds').query();
+    	}
+    	function create(){
+    	    new Aurora.Window({
+    	 		id:'pur_5010_order_form_window', 
+    	 	   	url:$('pur_5010_new_order_link').getUrl(), 
+    	 	   	title:'新增采购订单', 
+    	 	   	fullScreen:true,
+    	 	   	listeners:{'close':query}
+    	 	});
     	}
     	function pur_5010_main_order_number_render(value,record,name){
     		var url = '';
@@ -33,8 +43,9 @@
                     </a:events>
                 </a:textField>
             </a:form>
-             <a:hBox>
+            <a:hBox>
                 <a:button click="query" text="查询"/>
+                <a:button click="create" text="新增"/>
             </a:hBox>
             <a:grid id="pur_5010_order_header_grid" bindTarget="order_header_ds" height="350" marginHeight="125" marginWidth="50" navBar="true" width="1160">
                 <a:columns>
