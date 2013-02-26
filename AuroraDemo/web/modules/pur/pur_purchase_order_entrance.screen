@@ -13,7 +13,8 @@
     	 		id:'pur_5010_order_form_window', 
     	 	   	url:$('pur_5010_new_order_link').getUrl(), 
     	 	   	title:'新增采购订单', 
-    	 	   	fullScreen:true,
+    	 	   	width:540,
+    	 	   	height:540,
     	 	   	listeners:{'close':query}
     	 	});
     	}

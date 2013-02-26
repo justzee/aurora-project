@@ -322,7 +322,7 @@
                 <a:button click="btn_delete_order" text="删除订单" width="100"/>
                 <a:button click="btn_submit_order" text="提交订单" width="100"/>
             </a:hBox>
-            <a:grid bindTarget="order_lines_ds" height="350" navBar="true" width="1000">
+            <a:grid bindTarget="order_lines_ds" height="350" navBar="false" width="500">
                 <a:columns>
                     <a:column name="line_number" align="center" editor="e_tf" prompt="行号" width="40"/>
                     <a:column name="item_desc" editor="e_lov" prompt="物品" width="120"/>
