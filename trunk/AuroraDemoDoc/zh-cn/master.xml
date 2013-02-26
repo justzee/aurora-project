@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+      "../support/docbook-dtd/docbookx.dtd"
+[
+<!ENTITY journey           SYSTEM "modules/journey.xml">
+]>
+
+<book lang="zh-cn">
+
+    <bookinfo>
+        <title>AURORA</title>
+        <releaseinfo>1.0</releaseinfo>
+    </bookinfo>
+    <toc/>
+    <preface id="preface" revision="2">
+        <title>前言</title>
+        <para>
+        </para>
+        <sect1 id="preface-translate-comments-zh-cn">
+            <title>Aurora介绍</title>
+            <para>
+	            Aurora是一个web开发平台
+            </para>
+        </sect1>
+    </preface>
+    &journey;
+</book>
+
