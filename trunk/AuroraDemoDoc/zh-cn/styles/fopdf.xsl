@@ -23,14 +23,11 @@
                 <fo:table-column column-width="175mm"/>
                 <fo:table-body>
                     <fo:table-row>
-                        <fo:table-cell text-align="center">
-                            <fo:block>
-                                <fo:external-graphic src="file:images/aurora_logo.jpg"/>
+                        <fo:table-cell text-align="left">
+                            <fo:block font-family="SimHei" font-weight="900" font-size="30pt" padding-top="10mm" padding-left="10mm">
+                                <xsl:value-of select="bookinfo/title"/>
                             </fo:block>
-                            <fo:block font-family="SimHei" font-size="22pt" padding-before="10mm">
-                                <xsl:value-of select="bookinfo/subtitle"/>
-                            </fo:block>
-                            <fo:block font-family="SimHei" font-size="12pt" padding="10mm">
+                            <fo:block font-family="SimHei" font-size="12pt" padding-top="5mm">
                                 Version:
                                 <xsl:value-of select="bookinfo/releaseinfo"/>
                             </fo:block>
