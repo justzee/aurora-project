@@ -1,0 +1,18 @@
+
+    <sect1 id="install-download"  revision="1">
+        <title>下载Aurora</title>
+        <para>Aurora采用开源协议
+        </para>
+    </sect1>
+    <sect1 id="install-init"  revision="1">
+        <title>初始化数据库</title>
+        <para>
+            sql
+        </para>
+    </sect1>
+    <sect1 id="install-config"  revision="1">
+        <title>配置环境</title>
+        <para>
+            config
+        </para>
+    </sect1> 
