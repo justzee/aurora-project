@@ -1,18 +1,307 @@
-
-    <sect1 id="install-download"  revision="1">
-        <title>下载Aurora</title>
-        <para>Aurora采用开源协议
-        </para>
-    </sect1>
-    <sect1 id="install-init"  revision="1">
-        <title>初始化数据库</title>
-        <para>
-            sql
-        </para>
-    </sect1>
-    <sect1 id="install-config"  revision="1">
-        <title>配置环境</title>
-        <para>
-            config
-        </para>
-    </sect1> 
+<sect1 id="install-download"  revision="1">
+    <title>下载Aurora</title>
+    <para>Aurora采用开源协议
+        <ulink url="http://www.gnu.org/licenses/lgpl.html">GNU Lesser GPL</ulink>。代码托管于
+        <ulink url="https://code.google.com/p/aurora-project/">Google Code</ulink>
+    可以通过SVN工具下载源代码。</para>
+    <para>同时我们也提供了发布的版本可供下载</para>
+    <ulink url="http://www.aurora-framework.org/release/">Aurora Download</ulink>
+    <para>演示环境我们采用1.4.1版本。</para>
+</sect1>
+<sect1 id="install-init"  revision="1">
+    <title>数据库</title>
+    <para>安装好Mysql，正常启动后我们打开Mysql客户端工具来创建一个库。这里客户端工具我们采用MySql Workbench。</para>
+    <para>打开MySql Workbench,默认会有一个本机的连接配置，打开后输入密码进入主界面。</para>
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/database/mysql1.jpg" format="JPG" width="292" depth="79" contentwidth="292" contentdepth="79"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/database/mysql1.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>
+    <para>打开主界面后，我们来创建一个名为aurora的库。</para>
+    <para>点击创建按钮</para>
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/database/mysql2.jpg" format="JPG" width="160" depth="20" contentwidth="160" contentdepth="20"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/database/mysql2.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>
+    <para>输入名称和字符集，点击确定。这样名为aurora的库就创建完毕。</para>
+    <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/database/mysql3.jpg" format="JPG" width="264" depth="74" contentwidth="264" contentdepth="74"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="../shared/database/mysql3.jpg" format="JPG"/>
+        </imageobject>
+    </mediaobject>
+</sect1>
+<sect1 id="install-config"  revision="1">
+    <title>配置环境</title>
+    <para>Aurora的框架程序以及依赖jar下载完毕后，就可以创建一个工程。</para>
+    <sect2 id="install-config-step1"  revision="1">
+        <title>创建一个工程</title>
+        <para>首先创建一个名为web的文件夹，作为演示项目的根目录，然后创建相关目录和配置文件。</para>
+        <para></para>
+        <para></para>
+        <programlisting><![CDATA[
+web
+|-- WEB-INF
+|   |-- aurora.database
+|   |   |-- database.config
+|   |   |-- datasource.config
+|   |-- aurora.feature
+|   |   |-- application.config
+|   |   |-- service-listener.config
+|   |   |-- service-logging.config
+|   |   |-- service-procedure.config
+|   |-- aurora.presentation
+|   |   |-- freemarker-provider.config
+|   |   |-- presentation-manager.config
+|   |-- classes
+|   |-- lib
+|   |-- uncertain.local.xml
+|   |-- uncertain.xml
+|   |-- web.xml
+        ]]></programlisting>
+    </sect2> 
+    <sect2 id="install-config-jar"  revision="1">
+        <title>配置依赖jar包</title>
+        <para>将aurora.jar,aurora-plugin.jar 以及 dependency.rar中的jar拷贝到lib目录下</para>
+    </sect2> 
+    <sect2 id="install-config-ui"  revision="1">
+        <title>配置UI</title>
+        <para>配置UI，我们需要新增加2个文件夹。</para>
+        <para>(1)将resource.zip解压到web目录下</para>
+        <para>(2)将aurora.ui.zip解压到WEB-INF目录下</para>
+    </sect2>
+    <sect2 id="install-config-cfg"  revision="1">
+        <title>配置文件</title>
+        <para>在上面提到的WEB-INF目录下可以看到很多以config为后缀的文件，这些都是aurora启动时必须的配置文件，下面会一一提到。</para>
+        <sect3 id="install-config-database"  revision="1">
+            <title>database.config</title>
+            <para>为了兼容不同数据库的特性，我们需要配置database.config</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<d:database-factory xmlns:d="http://www.aurora-framework.org/schema/database" defaultDatabase="MySQL5">
+    <d:databases>
+        <d:database-profile databaseName="MySQL5">
+            <d:keywords 
+                current_time="now()"
+                current_date="curdate()"
+                composite_statement_prefix="BEGIN "
+                composite_statement_postfix=" END;" 
+                composite_statement_separator=";"
+                />
+            <d:properties key1="value1" />
+            <d:sql-builder-mapping sqlBuilder="aurora.database.local.mysql.sql.MysqlDeleteBuilder">
+                <d:mappings>
+                    <d:statement-mapping statementClass="aurora.database.sql.DeleteStatement" />
+                </d:mappings>
+            </d:sql-builder-mapping>
+        </d:database-profile>
+    </d:databases>
+    <d:properties user_id_path="/session/@user_id" last_updated_date_field="LAST_UPDATE_DATE" 
+        language_path="/session/@lang">
+        <d:multi-language-storage model="fnd.fnd_descriptions" ref_table="REF_TABLE" 
+        ref_field="REF_FIELD" description="DESCRIPTION_TEXT" pk_id="DESCRIPTION_ID" 
+        sequence="getMlNextId()"/>
+    </d:properties> 
+</d:database-factory>
+            ]]></programlisting>            
+        </sect3>
+        
+        
+        <sect3 id="install-config-datasource"  revision="1">
+            <title>datasource.config</title>
+            <para>通过配置datasource.config来设置对应数据库的配置信息</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<dc:data-source-config xmlns:dc="aurora.datasource" useTransactionManager="false">
+    <dc:database-connections>
+        <dc:database-connection driverClass="com.mysql.jdbc.Driver"
+            url="jdbc:mysql://172.20.0.38:3306/aurora" userName="aurora"
+            password="aurora" pool="false">
+            <dc:properties> minPoolSize=10 maxPoolSize=50
+                testConnectionOnCheckin=true checkoutTimeout=3000
+                idleConnectionTestPeriod=60 maxIdleTime=120
+                preferredTestQuery=select 1 from dual </dc:properties>
+        </dc:database-connection>
+    </dc:database-connections>
+</dc:data-source-config>
+            ]]></programlisting>
+        </sect3>
+        
+             
+        <sect3 id="install-config-application"  revision="1">
+            <title>application.config</title>
+            <para>application.config配置了应用级别的属性信息</para>
+            <programlisting><![CDATA[
+<application-config xmlns="aurora.application" enableBMTrace="true">
+    <application-view-config defaultPackage="ui.template" defaultTemplate="default" 
+    defaultTheme="default" defaultAutoAppend="false" defaultAutoCount="true" 
+    resourceCacheName="SystemResourceConfig" defaultTitle="Aurora Demo"/>
+</application-config>            
+            ]]></programlisting>
+        </sect3>
+        
+        
+        <sect3 id="install-config-service-listener"  revision="1">
+            <title>service-listener.config</title>
+            <para>配置参与service渲染过程的特性类</para>
+            <programlisting><![CDATA[
+<participant-manager xmlns="uncertain.event">
+    <participant-list category="service">
+        <participant class="aurora.service.json.JSONServiceInterpreter" />
+        <participant class="aurora.service.ws.SOAPServiceInterpreter"/>
+        <participant class="aurora.plugin.export.ModelOutput" />
+        <participant class="aurora.application.action.DoDispatch"/>
+        <participant class="aurora.application.features.DataSetInit"/>
+        <participant class="aurora.application.features.UploadInit"/>
+        <participant class="aurora.service.lock.SessionLockChecker"/>
+    </participant-list> 
+</participant-manager>           
+            ]]></programlisting>
+        </sect3>
+        
+        
+        <sect3 id="install-config-service-logging"  revision="1">
+            <title>service-logging.config</title>
+            <para>配置日志相关属性</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:service-logging xmlns:ns1="aurora.application.features" append="false" 
+     defaultLogLevel="FINE" pattern="_${/session/@session_id}_" enablePerServiceConfig="false">
+    <!--
+    <topics>
+        <logging-topic name="uncertain.proc" level="CONFIG"/>
+        <logging-topic name="aurora.presentation.buildsession" level="CONFIG"/>
+        <logging-topic name="aurora.presentation.manager" level="CONFIG"/>
+        <logging-topic name="aurora.database" level="CONFIG"/>
+    </topics>
+    -->
+</ns1:service-logging>          
+            ]]></programlisting>
+        </sect3> 
+        
+        
+        <sect3 id="install-config-service-procedure"  revision="1">
+            <title>service-procedure.config</title>
+            <para>配置service调用逻辑</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<p:procedure-registry xmlns:t="aurora.application.action" 
+   xmlns:a="http://www.aurora-framework.org/application" xmlns:p="uncertain.proc">
+    <p:procedures>
+        <p:procedure name="pre-service">
+            <p:set field="@success" value="true"/>
+            <t:session-copy/>
+        </p:procedure>
+        <p:procedure name="session-destroy">
+        </p:procedure>
+    </p:procedures>
+</p:procedure-registry>         
+            ]]></programlisting>
+        </sect3>
+        
+        <sect3 id="install-config-freemarker"  revision="1">
+            <title>freemarker-provider.config</title>
+            <para>freemarker-provider.config配置了freemarer模板的相关属性以及实现类</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" ?>
+<FreeMarkerProvider xmlns="aurora.presentation" defaultEncoding="UTF-8" />       
+            ]]></programlisting>
+        </sect3>
+        
+        
+        <sect3 id="install-config-presentation"  revision="1">
+            <title>presentation-manager.config</title>
+            <para>presentation-manager.config配置UI引用路径</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<p:presentation-manager xmlns:p="aurora.presentation">
+    <packages>
+        <p:package-path path="${uiPackageBasePath}/aurora.ui.std" />
+    </packages>
+</p:presentation-manager>     
+            ]]></programlisting>
+        </sect3>
+        
+        
+        <sect3 id="install-config-uncertain-local"  revision="1">
+            <title>uncertain.local.xml</title>
+            <para>在local文件中配置刚才我们解压后的ui目录以及日志目录</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<uncertain-engine defaultLogLevel="INFO">
+    <path-config logPath="D:/web/logs" 
+        uiPackageBasePath="D:/web/WEB-INF/aurora.ui"/>
+</uncertain-engine>   
+            ]]></programlisting>
+        </sect3> 
+        
+        
+        <sect3 id="install-config-uncertain"  revision="1">
+            <title>uncertain.xml</title>
+            <para>uncertain文件配置框架基础的包信息</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<uncertain-engine name="hap">
+    <packages>
+        <package-path classPath="aurora_plugin_package/aurora.plugin.jms"/>
+        <package-path classPath="aurora_plugin_package/aurora.plugin.memcached"/>
+        <package-path classPath="aurora_plugin_package/aurora.plugin.dataimport"/>
+        <package-path classPath="aurora_plugin_package/aurora.plugin.export"/>
+        <package-path classPath="aurora_plugin_package/aurora.plugin.script"/>
+    </packages>
+</uncertain-engine>  
+            ]]></programlisting>
+        </sect3>  
+        
+        
+        <sect3 id="install-config-web"  revision="1">
+            <title>web.xml</title>
+            <para>web.xml配置框架的servlet</para>
+            <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd"-->
+<web-app>
+    <display-name>Aurora Demo</display-name>
+    <listener>
+        <listener-class>aurora.service.http.WebContextInit</listener-class>
+    </listener>
+    <listener>
+        <listener-class>aurora.security.HttpSessionCleaner</listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>service</servlet-name>
+        <servlet-class>aurora.service.http.FacadeServlet</servlet-class>
+        <async-supported>false</async-supported>
+    </servlet>
+    <servlet>
+        <servlet-name>autocrud</servlet-name>
+        <servlet-class>aurora.service.http.AutoCrudServlet</servlet-class>
+        <async-supported>false</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>service</servlet-name>
+        <url-pattern>*.screen</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>service</servlet-name>
+        <url-pattern>*.svc</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>autocrud</servlet-name>
+        <url-pattern>/autocrud/*</url-pattern>
+    </servlet-mapping>
+</web-app>  
+            ]]></programlisting>
+        </sect3>             
+    </sect2>
+</sect1> 
