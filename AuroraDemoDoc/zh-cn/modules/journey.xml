@@ -6,44 +6,26 @@
     </sect1>
     <sect1 id="preparations-jdk"  revision="1">
         <title>JDK</title>
-        <para>Aurora是基于J2EE的开发框架，因此需要JDK的环境来运行。这里我们需要JDK 1.5以上的稳定版本.</para>
+        <para>Aurora是基于J2EE的开发框架，因此需要JDK的环境来运行。这里我们需要JDK 1.5以上的稳定版本。</para>
         <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java SE Download</ulink>.
-        
+        <para>具体的安装过程不再详细描述。</para>
     </sect1>
     <sect1 id="preparations-webapp"  revision="1">
         <title>应用服务器</title>
-        <para>
-            Tomcat 5 
-        </para>
+        <para>Aurora需要运行在J2EE的容器中，市面上流行的开源或者商业应用服务器都可以运行Aurora。这里我们采用最流行的开源应用服务器Tomcat。</para>
+        <ulink url="http://tomcat.apache.org/">Tomcat Download</ulink>.  
+        <para>具体的安装过程不再详细描述。</para>      
     </sect1>
     <sect1 id="preparations-database"  revision="1">
         <title>数据库</title>
-        <para>
-            MySql 5.0
-        </para>
+        <para>Aurora可以兼容市面上常见的数据库，为了演示方便我们采用最流行的MySql数据库引擎。</para>
+        <ulink url="http://dev.mysql.com/downloads/mysql/">MySql Download</ulink>.  
     </sect1>       
 </chapter>
 
 <chapter id="install">
     <title>安装配置</title>
-    <sect1 id="install-download"  revision="1">
-        <title>下载</title>
-        <para>
-        下载 Aurora
-        </para>
-    </sect1>
-    <sect1 id="install-init"  revision="1">
-        <title>初始化数据库</title>
-        <para>
-            sql
-        </para>
-    </sect1>
-    <sect1 id="install-config"  revision="1">
-        <title>配置环境</title>
-        <para>
-            config
-        </para>
-    </sect1> 
+    &installation;
 </chapter>
 
 <chapter id="helloworld">
