@@ -3,7 +3,8 @@
       "../support/docbook-dtd/docbookx.dtd"
 [
 <!ENTITY journey           SYSTEM "modules/journey.xml">
-<!ENTITY installation           SYSTEM "modules/installation.xml">
+<!ENTITY installation      SYSTEM "modules/installation.xml">
+<!ENTITY helloworld        SYSTEM "modules/helloworld.xml">
 ]>
 
 <book lang="zh-cn">

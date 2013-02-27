@@ -30,12 +30,7 @@
 
 <chapter id="helloworld">
     <title>HelloWorld</title>
-    <sect1 id="helloworld-screen"  revision="1">
-        <title>开发一个helloworld</title>
-        <para>
-        Aurora 是一个开源的web框架。
-        </para>
-    </sect1>     
+    &helloworld;       
 </chapter>
 
 <chapter id="purchaseorder">
