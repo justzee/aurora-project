@@ -35,23 +35,6 @@
                     <para>跨平台(服务端,客户端).</para>
                 </listitem>
             </itemizedlist>
-            
-            <mediaobject>
-                <imageobject role="fo">
-                    <imagedata fileref="images/mvc.png" format="PNG"/>
-                </imageobject>
-                <imageobject role="html">
-                    <imagedata fileref="../shared/images/mvc.png" format="PNG"/>
-                </imageobject>
-                <textobject>
-                    <phrase>The Eiffel Tower</phrase>
-                  </textobject>
-                  <caption>
-                   <para>Designed by Gustave Eiffel in 1889, The Eiffel Tower is one of the
-                most widely recognized buildings in the world.
-                </para>
-                  </caption>
-            </mediaobject>
         </sect1>
     </preface>
     &journey;
