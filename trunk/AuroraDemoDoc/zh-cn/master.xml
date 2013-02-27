@@ -8,7 +8,7 @@
 <book lang="zh-cn">
 
     <bookinfo>
-        <title>AURORA</title>
+        <title>Getting Started Guide</title>
         <releaseinfo>1.0</releaseinfo>
     </bookinfo>
     <toc/>
@@ -17,10 +17,24 @@
         <para>
         </para>
         <sect1 id="preface-translate-comments-zh-cn">
-            <title>Aurora介绍</title>
+            <title>Aurora Framework</title>
             <para>
-	            Aurora是一个web开发平台
+	            Aurora是一个开源的web开发框架，采用Model-View-Controller(MVC)的三层架构。Aurora框架基于UI标签和业务模型，通过XML配置的方式来开发。
             </para>
+            <itemizedlist>
+                <listitem>
+                    <para>基于JavaEE,HTML,JavaScript,Css等开放技术</para>
+                </listitem>
+                <listitem>
+                    <para>界面开发基于XML配置.</para>
+                </listitem>
+                <listitem>
+                    <para>提供了大量可重用的组件</para>
+                </listitem>
+                <listitem>
+                    <para>跨平台(服务端,客户端).</para>
+                </listitem>
+            </itemizedlist>
         </sect1>
     </preface>
     &journey;
