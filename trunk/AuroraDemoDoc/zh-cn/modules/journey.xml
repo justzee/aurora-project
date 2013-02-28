@@ -35,16 +35,5 @@
 
 <chapter id="purchaseorder">
     <title>采购订单</title>
-    <sect1 id="purchaseorder-query" revision="1">
-        <title>查询界面</title>            
-        <para>
-            正文...
-        </para>
-    </sect1>
-    <sect1 id="purchaseorder-add" revision="1">
-        <title>新增界面</title>            
-        <para>
-            正文...
-        </para>
-    </sect1> 
+    &order;
 </chapter>

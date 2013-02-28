@@ -5,6 +5,9 @@
 <!ENTITY journey           SYSTEM "modules/journey.xml">
 <!ENTITY installation      SYSTEM "modules/installation.xml">
 <!ENTITY helloworld        SYSTEM "modules/helloworld.xml">
+<!ENTITY order		       SYSTEM "modules/order.xml">
+<!ENTITY order_entrance	   SYSTEM "modules/ord/order_entrance.xml">
+<!ENTITY order_new		   SYSTEM "modules/ord/order_new.xml">
 ]>
 
 <book lang="zh-cn">
