@@ -414,3 +414,24 @@ web
         </sect3>             
     </sect2>
 </sect1> 
+<sect1 id="install-run"  revision="1">
+    <title>运行环境</title>
+    <para>将整个工程目录发布到tomcat容器中，运行tomcat后会在控制台看到如下启动信息</para>
+    <programlisting><![CDATA[
+ 2013-03-04 10:24:26,742 [main] INFO  org.apache.catalina.core.AprLifecycleListener - The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: D:\WorkDevSpace\jdk1.6.0_12\bin;.;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:\WorkDevSpace\jdk1.6.0_12\jre\bin;D:\WorkDevSpace\jdk1.6.0_12\bin\..\jre\bin\client;D:\WorkDevSpace\jdk1.6.0_12\bin\..\jre\bin;C:\Program Files\Common Files\Microsoft Shared\Windows Live;.;D:\WorkDevSpace\jdk1.6.0_12\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\DMIX;C:\Program Files\ThinkPad\Bluetooth Software\;C:\Program Files\Lenovo\Access Connections\;C:\Program Files\Microsoft SQL Server\80\Tools\BINN;C:\Program Files\Windows Live\Shared;e:\Program Files\9158KTV\9158VirtualCamera\bin;e:\Program Files\9158VirtualCamera\bin;C:\Program Files\Common Files\Autodesk Shared\;D:\WorkDevSpace\Ora10InstantClient
+2013-03-04 10:24:26,949 [main] INFO  org.apache.coyote.http11.Http11BaseProtocol - Initializing Coyote HTTP/1.1 on http-8080
+2013-03-04 10:24:26,950 [main] INFO  org.apache.catalina.startup.Catalina - Initialization processed in 805 ms
+2013-03-04 10:24:27,037 [main] INFO  org.apache.catalina.core.StandardService - Starting service Catalina
+2013-03-04 10:24:27,041 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet Engine: Apache Tomcat/5.5.33
+2013-03-04 10:24:27,053 [main] INFO  org.apache.catalina.core.StandardHost - XML validation disabled
+************************************************************
+* Aurora-1.4.1  |  jndi:/localhost/aurora/  |  Aurora Demo *
+************************************************************
+2013-03-04 10:24:28,264 [main] INFO  com.mchange.v2.log.MLog - MLog clients using log4j logging.
+2013-03-04 10:24:28,843 [main] INFO  org.apache.coyote.http11.Http11BaseProtocol - Starting Coyote HTTP/1.1 on http-8080
+2013-03-04 10:24:28,939 [main] INFO  org.apache.jk.common.ChannelSocket - JK: ajp13 listening on /0.0.0.0:8009
+2013-03-04 10:24:28,942 [main] INFO  org.apache.jk.server.JkMain - Jk running ID=0 time=0/16  config=null
+2013-03-04 10:24:28,965 [main] INFO  org.apache.catalina.storeconfig.StoreLoader - Find registry server-registry.xml at classpath resource
+2013-03-04 10:24:29,015 [main] INFO  org.apache.catalina.startup.Catalina - Server startup in 2065 ms
+            ]]></programlisting>
+</sect1> 
