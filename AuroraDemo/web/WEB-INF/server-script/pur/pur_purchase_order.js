@@ -29,11 +29,6 @@ var PurOrder = {
 		if (arr.length == 0)
 			raise_app_error('没有订单行，不能保存。');
 		try{
-			println(h.company_id);
-			println(h.order_number);
-			println(h.buyer_employee_id);
-			println(h.order_date);
-			println(h.currency_code);
 			PurOrder.getHeadBm().insert(h);
 		}catch(e){
 			raise_app_error('订单编号重复，请重新输入。');
