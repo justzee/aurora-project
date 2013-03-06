@@ -271,7 +271,7 @@
           adaptable="true"
           id="aurora.ide.add.auroranature"
           objectClass="org.eclipse.core.resources.IProject">
-       <action
+       	<action
              class="aurora.ide.navigator.action.RemoveAuroraNature"
              enablesFor="1"
              icon="icons/aurora.gif"
