@@ -399,6 +399,7 @@ http://aurora.hand-china.com/demo/modules/component/emp1010/empdemo.screen
             
         &window;
         
+        &chart;
         <sect2 id="presentation-client-upload" revision="1">
             <title>上传组件</title>            
             <para>
