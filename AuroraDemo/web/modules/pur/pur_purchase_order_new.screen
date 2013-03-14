@@ -90,7 +90,7 @@
                             purchase_order_header_id: rec.get('purchase_order_header_id')
                         }],
                         success: function(res) {
-                            var ds = $('ord_sales_order_headers_ds');
+                            var ds = $('order_header_ds');
                             var r = ds.find('purchase_order_header_id', rec.get('purchase_order_header_id'));
                             ds.removeLocal(r);
                             $('${/parameter/@win_id}').close();
@@ -320,11 +320,10 @@
                 <a:button click="btn_save_order" text="保存订单" width="100"/>
                 <a:button click="btn_save_add_order" text="保存并新增" width="100"/>
                 <a:button click="btn_delete_order" text="删除订单" width="100"/>
-                <a:button click="btn_submit_order" text="提交订单" width="100"/>
+                <!--a:button click="btn_submit_order" text="提交订单" width="100"/-->
             </a:hBox>
             <a:grid bindTarget="order_lines_ds" height="350" navBar="false" width="500">
                 <a:columns>
-                    <a:column name="line_number" align="center" editor="e_tf" prompt="行号" width="40"/>
                     <a:column name="item_desc" editor="e_lov" prompt="物品" width="120"/>
                     <a:column name="quantity" align="right" editor="e_nf_float1" prompt="交易数量" renderer="non_negative_renderer" width="80"/>
                     <a:column name="price" align="right" editor="e_nf_float2" prompt="单价" width="50"/>
