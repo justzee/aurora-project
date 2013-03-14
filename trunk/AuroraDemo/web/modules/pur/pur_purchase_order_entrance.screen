@@ -9,9 +9,11 @@
     	 	$('order_header_ds').query();
     	}
     	function create(){
+    	    var link = $('pur_5010_new_order_link');
+    	    link.reset();
     	    new Aurora.Window({
     	 		id:'pur_5010_order_form_window', 
-    	 	   	url:$('pur_5010_new_order_link').getUrl(), 
+    	 	   	url:link.getUrl(), 
     	 	   	title:'新增采购订单', 
     	 	   	width:540,
     	 	   	height:540,
@@ -19,11 +21,22 @@
     	 	});
     	}
     	function pur_5010_main_order_number_render(value,record,name){
-    		var url = '';
-			return '<a href="javascript:pur_5010_jump_order_detail(\'' + url + '\');">'+value+'</a>';
+			return '<a href="javascript:pur_5010_jump_order_detail(\'' + record.get('purchase_order_header_id') + '\');">'+value+'</a>';
     	}
-    	function pur_5010_jump_order_detail(url){
-            
+    	function pur_5010_jump_order_detail(purchase_order_header_id){
+            var link = $('pur_5010_new_order_link');
+                link.reset();
+                link.set('purchase_order_header_id', purchase_order_header_id);
+                var win_id = 'win_edit';
+                link.set('win_id', win_id);
+                new Aurora.Window({
+                    id: win_id,
+                    url: link.getUrl(),
+                    title: '编辑订单',
+                    width:540,
+	    	 	   	height:540,
+	    	 	   	listeners:{'close':query}
+                });
     	}
     	function pur_5010_entrance_show_positive_number(value,record,name){
 		    if(value<0){
@@ -34,7 +47,7 @@
     	]]></script>
         <a:dataSets>
             <a:dataSet id="pur_5010_service_query_ds"/>
-            <a:dataSet id="order_header_ds" autoPageSize="true" autoQuery="true" model="pur.pur_purchase_order_headers" queryDataSet="pur_5010_service_query_ds" submitUrl="${/request/@context_path}/modules/pur/pur_purchase_order_submit.svc"/>
+            <a:dataSet id="order_header_ds" autoPageSize="true" autoQuery="true" model="pur.pur_purchase_order_headers" queryDataSet="pur_5010_service_query_ds" submitUrl="${/request/@context_path}/modules/pur/pur_purchase_order_header_submit.svc"/>
         </a:dataSets>
         <a:defaultScreen>
             <a:form title="订单查询" width="500">

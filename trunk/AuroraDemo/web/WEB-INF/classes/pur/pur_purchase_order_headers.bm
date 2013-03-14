@@ -17,6 +17,7 @@
         <bm:field name="currency_code" databaseType="VARCHAR" datatype="java.lang.String"/>
         <bm:field name="total_amount" expression="(select sum(l.amount) from pur_purchase_order_lines l where l.purchase_order_header_id=h.purchase_order_header_id)" forInsert="false" forUpdate="false"/>
         <bm:field name="status_name" expression="(select d.description_text from fnd_descriptions d where d.ref_table=&apos;SYS_CODE_VALUES&apos; and d.ref_field=&apos;CODE_VALUE_NAME_ID&apos; and d.language=&apos;ZHS&apos; and d.description_id=(select v.code_value_name_id from sys_code_values v where v.code_value=h.status and code_id=(select c.code_id from sys_codes c where c.code=&apos;SALE_ORD_STATUS&apos;)))" forInsert="false" forUpdate="false"/>
+        <bm:field name="customer_desc" expression="concat(p.partner_code,concat(&apos;-&apos;,p.partner_name))" forInsert="false" forUpdate="false"/>
     </bm:fields>
     <bm:query-fields>
         <bm:query-field field="purchase_order_header_id" queryOperator="="/>
@@ -41,7 +42,6 @@
         <bm:pk-field name="purchase_order_header_id"/>
     </bm:primary-key>
     <bm:data-filters>
-        <!--<bm:data-filter name="company_id" enforceOperations="query,update" expression="h.company_id=${/session/@company_id}"/>--><![CDATA[
-        
-    ]]></bm:data-filters>
+        <bm:data-filter name="company_id" enforceOperations="query,update" expression="h.company_id=22"/>
+    </bm:data-filters>
 </bm:model>
