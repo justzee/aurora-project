@@ -14,7 +14,7 @@
  
 Ext.Ajax.timeout = 1800000;
 
-$A = Aurora = {version: '1.0',revision:'$Rev: 7124 $'};
+$A = Aurora = {version: '1.0',revision:'$Rev: 7223 $'};
 //$A.firstFire = false;
 $A.fireWindowResize = function(){
     if($A.winWidth != $A.getViewportWidth() || $A.winHeight != $A.getViewportHeight()){
@@ -374,9 +374,12 @@ $A.request = function(opt){
                         if(errorCall)
                         errorCall.call(scope, res, options);
                     }                                                               
-                } else {
-                    $A.manager.fireEvent('ajaxsuccess', $A.manager, url,para,res);
-                    if(successCall)successCall.call(scope,res, options);
+                } else {                    
+                    if(successCall) {
+                        successCall.call(scope,res, options);
+                    }else {
+                        $A.manager.fireEvent('ajaxsuccess', $A.manager, url,para,res);
+                    }
                 }
             }
         },
@@ -700,14 +703,17 @@ $A.SideBar = function(){
                 this.hide();
                 var p;
                 if(msg){
-                    p = '<div class="item-slideBar">'+msg+'</div>';
+                    p = '<div class="item-slideBar"><div class="inner">'+msg+'</div></div>';
                 }else{
                     p = obj.html;
                 }
                 this.bar = Ext.get(Ext.DomHelper.insertFirst(Ext.getBody(),p));
                 this.bar.setStyle('z-index', 999999);
                 var screenWidth = $A.getViewportWidth();
+                var screenHeight = $A.getViewportHeight();
                 var x = Math.max(0,(screenWidth - this.bar.getWidth())/2);
+                var y = Math.max(0,(screenHeight - this.bar.getHeight())/2);
+                this.bar.setY(y);
                 this.bar.setX(x);
                 this.bar.fadeIn();
 //                this.bar.animate({height: {to: 50, from: 0}},0.35,function(){
