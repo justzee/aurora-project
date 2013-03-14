@@ -8,12 +8,35 @@
 <a:screen xmlns:s="aurora.plugin.script" xmlns:a="http://www.aurora-framework.org/application" trace="true">
     <a:init-procedure/>
     <a:view>
+        <a:link id="role_select_link_2" url="${/request/@context_path}/role_select.screen"/>
+        <a:link id="login_link_4" url="${/request/@context_path}/login.svc"/>
         <a:dataSets>
-            <a:dataSet id="login_dataset" autocreate="true"/>
+            <a:dataSet id="login_dataset" autocreate="true">
+                <a:fields>
+                    <a:field name="user_name" defaultValue="ADMIN"/>
+                    <a:field name="user_password" defaultValue="1"/>
+                    <a:field name="user_language" defaultValue="ZHS"/>
+                </a:fields>
+            </a:dataSet>
         </a:dataSets>
         <script><![CDATA[
            function login(){
-           
+                var lds = $('login_dataset');
+                var record = lds.getCurrentRecord();
+                Aurora.request({
+                    url: $('login_link_4').getUrl(),
+                    para: record.data,
+                    success: function(res) {
+                        if (res.result['encryted_session_id'] == 'ERROR') {
+                            Aurora.showInfoMessage('${l:PROMPT}', res.result['message'], function(cmp) {
+                                cmp.close();
+                            }, 250, 100);
+                        } else {
+                            window.location.href = $('role_select_link_2').getUrl() + location.search;
+                        }
+                    },
+                    scope: this
+                });
            }
             
         ]]></script>
