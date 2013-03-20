@@ -2,6 +2,7 @@ package aurora.ide.editor.textpage;
 
 import java.util.Stack;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
@@ -12,6 +13,7 @@ import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
+import uncertain.composite.XMLOutputter;
 import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 
@@ -24,6 +26,10 @@ public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 				autoCloseXMLTagBySlash(d, c);
 			} else if (">".equals(c.text)) {
 				// autoCloseXMLTagByGt(d, c);
+			}
+			if (c.text != null
+					&& (c.text.startsWith("\n") || c.text.startsWith("\r"))) {
+				autoInsertChild(d, c);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -223,6 +229,39 @@ public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 			return;
 		}
 
+	}
+
+	protected void autoInsertChild(IDocument d, DocumentCommand c) {
+		if (c.offset > d.getLength() - 2)
+			return;
+		try {
+			if (!"/>".equals(d.get(c.offset, 2)))
+				return;
+			ITypedRegion region = d.getPartition(c.offset);
+			if (!XMLPartitionScanner.XML_START_TAG.equals(region.getType()))
+				return;
+			String tagName = getTagName(d, region);
+			if (tagName == null)
+				tagName = "";
+			String format = ">%s%s%s</%s>";
+			boolean isTextTag = tagName.toLowerCase().matches(
+					".*((script)|(sql)|(style)|(freemarker)).*");
+			if (isTextTag) {
+				format = "><![CDATA[%s%s%s]]></%s>";
+			}
+			String resp = String.format(format, c.text,
+					XMLOutputter.DEFAULT_INDENT, c.text, tagName);
+			d.replace(c.offset, 2, resp);
+			c.offset += resp.length()
+					- (3 + tagName.length() + c.text.length() + (isTextTag ? 3
+							: 0));
+			c.text = "";
+
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void debug(Object o) {
