@@ -25,7 +25,6 @@
               Record代表一条数据对象,DataSet和Record的关系我们可以这样理解:假如我们把dataset比作数据库中的一张表,
                 那么record就是表中的一行记录.
             </para>
-            
             <sect3 id="presentation-client-dataset-tag" revision="1">
                 <title>
                   DataSet定义
@@ -34,7 +33,7 @@
                     在screen文件中我们通过&lt;a:dataSet&gt;标签来定义一个dataset对象
                 </para>
                 
-                <programlisting><![CDATA[                
+                <programlisting language="screen"><![CDATA[
 <a:dataSet model="sys.sys_user" id="sys_user_create_ds">
     <a:fields>
         <a:field name="user_name" required="true"/>
@@ -62,7 +61,7 @@
                     events标签定义了需要响应的事件函数,例如update事件,当dataset对其中一条record的field进行更新的时候,dataset会触发一个update事件,
                     这样我们可以通过配置一个客户端函数onUpdate来响应.                 
                 </para>
-                <programlisting><![CDATA[                
+                <programlisting language="javascript"><![CDATA[                
 function onUpdate(ds,record,name,value){
     if(name == 'user_password' || name == 'user_password_re'){
         record.validate((name == 'user_password') ? 'user_password_re' : 'user_password'); 

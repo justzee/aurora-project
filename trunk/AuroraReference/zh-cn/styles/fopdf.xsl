@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY db_xsl_path        "../../support/docbook-xsl/">
+    <!ENTITY db_xsl_path        "../../support/docbook-xsl-1.76.1/">
 ]>
 
 <xsl:stylesheet
@@ -12,6 +12,8 @@
     exclude-result-prefixes="#default">
 
     <xsl:import href="&db_xsl_path;/fo/docbook.xsl"/>
+    <xsl:import href="&db_xsl_path;/fo/highlight.xsl"/>
+    <xsl:import href="highlighting.xsl"/>
 
     <!--###################################################
                        Custom Title Page
