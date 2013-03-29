@@ -2,7 +2,7 @@
 
 
 <!DOCTYPE xsl:stylesheet [
-    <!ENTITY db_xsl_path        "../../support/docbook-xsl/">
+    <!ENTITY db_xsl_path        "../../support/docbook-xsl-1.76.1/">
 ]>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -11,10 +11,13 @@
                 exclude-result-prefixes="#default">
                 
 <xsl:import href="&db_xsl_path;/html/chunk.xsl"/>
+<xsl:import href="&db_xsl_path;/html/highlight.xsl"/>
+<xsl:import href="highlighting.xsl"/>
 
 <!--###################################################
                      HTML Settings
     ################################################### -->   
+    <xsl:param name="chunker.output.encoding" select="'UTF-8'"/>
 
     <xsl:param name="chunk.section.depth">'5'</xsl:param>
     <xsl:param name="use.id.as.filename">'1'</xsl:param>
