@@ -56,7 +56,7 @@
  */
 
 <div id="prop-DataSet-autoPageSize"></div>/**
- * 根据Grid的高度，自动填充行数。注：只在grid初次加载时生效，如果Grid设定了marginHeigt，行数不会根据窗口大小的调整而调整。
+ * 根据Grid的高度，自适应分页大小。注：只在grid初次加载时生效，如果Grid设定了marginHeigt，行数不会根据窗口大小的调整而调整。
  * @property autoPageSize
  * @type Boolean
  * @default false
@@ -108,10 +108,31 @@
  * @type String
  */
 
+<div id="prop-DataSet-maxPageSize"></div>/**
+ * 查询的分页大小的最大值，用于限制navBar中的分页输入框的输入上限
+ * @property maxPageSize
+ * @type Integer
+ * @default 1000
+ */
+ 
+<div id="prop-DataSet-modifiedCheck"></div>/**
+ * 是否检查dataset未保存
+ * @property modifiedCheck
+ * @type Boolean
+ * @default true
+ */
+ 
+<div id="prop-DataSet-notification"></div>/**
+ * 未保存提示信息,dataset未保存离开页面给予提示
+ * @property notification
+ * @type String
+ */
+
 <div id="prop-DataSet-pageSize"></div>/**
  * 查询的分页大小
  * @property pageSize
  * @type Integer
+ * @default 10
  */
 
 <div id="prop-DataSet-queryDataSet"></div>/**
