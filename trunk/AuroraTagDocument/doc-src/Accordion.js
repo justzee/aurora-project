@@ -42,6 +42,13 @@
  */
  
 /**
+ * 伸缩图标显示
+ * @property showIcon
+ * @type Boolean
+ * @default true
+ */
+ 
+/**
  * @property name
  * @remove
  */
