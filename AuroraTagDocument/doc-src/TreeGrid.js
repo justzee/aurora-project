@@ -64,6 +64,13 @@
  */
  
 /**
+ * tree节点图标
+ * @property iconfield
+ * @type String
+ * @default icon
+ */ 
+ 
+/**
  * @property rowRenderer
  * @remove
  */
@@ -77,3 +84,18 @@
  * @property navBar
  * @remove
  */
+ 
+/**
+ * @property navBarType
+ * @remove 
+ */
+ 
+ /**
+  * @property enablePageSize
+  * @remove
+  */
+  
+/**
+ * @property canPaste
+ * @remove
+ */  

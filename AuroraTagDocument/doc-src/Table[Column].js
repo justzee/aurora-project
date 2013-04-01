@@ -41,7 +41,14 @@
  * @property align
  * @type String
  * @default left
- */ 
+ */
+
+/**
+ * 隐藏列
+ * @property hidden
+ * @type Boolean
+ * @default false
+ */
 
 /**
  * <p>列渲染</p> 
