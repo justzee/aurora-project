@@ -23,7 +23,7 @@
     <para>
     	 在screen文件中我们通过&lt;a:lov&gt;标签来定义一个Lov对象。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="screen"><![CDATA[
 <a:dataSet id="gld_exchange_rate_ds" autocreate="true">
     <a:datas dataSource="/model/gerc"/>
     <a:fields>
@@ -60,7 +60,7 @@
     <para>
     	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，Lov会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="javascript"><![CDATA[
 function login(){
     var lds = $('login_dataset');
     var record = lds.getCurrentRecord();

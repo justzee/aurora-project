@@ -21,7 +21,7 @@
     <para>
     	 在screen文件中我们通过&lt;a:datePicker&gt;标签来定义一个DatePicker对象。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="screen"><![CDATA[
 <a:datePicker name="start_date" bindTarget="sys_user_create_ds" viewSize="2"
 	enableBesideDays="both" enableMonthBtn="both">
     <a:events>
@@ -38,7 +38,7 @@
     <para>
     	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，DatePicker会触发enterdown事件，这样我们可以通过配置一个客户端函数login来响应。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="javascript"><![CDATA[
 function login(){
     var lds = $('login_dataset');
     var record = lds.getCurrentRecord();
@@ -59,7 +59,7 @@ function login(){
     	<para>
 首先我们需要实现一个dayRenderer函数，来判断当前日期，然后返回一段html代码。 
     	</para>
-    	<programlisting><![CDATA[
+    	<programlisting language="javascript"><![CDATA[
 function rendererDay(cell,date,text,currentMonth){
 	var today=new Date();
 	if(date < new Date(today.getFullYear(),today.getMonth(),today.getDate())){
@@ -71,7 +71,7 @@ function rendererDay(cell,date,text,currentMonth){
 		<para>
 接下来在datepicker标签上指定dayRenderer属性为rendererDay. 
 		</para>
-		    	<programlisting><![CDATA[
+		    	<programlisting language="screen"><![CDATA[
 <a:datePicker dayRenderer="rendererDay"/>
 		]]></programlisting>
     </sect4>

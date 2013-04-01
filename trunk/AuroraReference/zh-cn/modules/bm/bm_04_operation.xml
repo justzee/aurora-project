@@ -6,7 +6,7 @@
 	    <para>
 	    对于复杂的业务场景，框架自动创建的SQL如果不能满足业务需求，可通过自定义SQL的方式来替代标准的SQL。和自定义查询类似，自定义insert,update,delete的SQL语句，也是通过在BM的operations标记下面新建对应名字的operation来实现的。例如：
 	    </para>
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" needAccessControl="false">
     <bm:operations>
         <bm:operation name="insert">
@@ -69,7 +69,7 @@ end;
   	<sect3>
   		<title>存储过程的调用</title>
   		<para>调用数据库中的存储过程，实现方式也是一样的，只是对于存储过程，我们约定其operation的名称一般为execute。例如：</para>
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm">
     <bm:operations>
         <bm:operation name="execute">

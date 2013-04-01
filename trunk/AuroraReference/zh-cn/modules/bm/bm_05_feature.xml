@@ -11,7 +11,7 @@
 	    </para>
 	    <para>
 	    Aurora的BM提供了一种基于配置的，声明式的功能扩展机制。以前面的emp.bm为例，我们在配置文件中增加一段feature配置：
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" xmlns:f="aurora.database.features" alias="e" baseTable="EMP" needAccessControl="false">
     <bm:fields>
@@ -42,13 +42,13 @@
 </bm:model>	    
 	    ]]></programlisting>
 	    在BM的最后，声明了features部分，并在其下设置了一个名为standard-who的feature。增加了这个设置以后，再看通过BM生成的insert,update语句，可以看到自动多出了对前面几个追溯字段的处理：  
-	    <programlisting><![CDATA[
+	    <programlisting language="sql"><![CDATA[
 INSERT INTO EMP 
 	( ...,CREATED_BY,CREATION_DATE,LAST_UPDATED_BY,LAST_UPDATE_DATE) 
 VALUES 
 	( ..., ${/session/@user_id},sysdate,${/session/@user_id},sysdate)	    
 	    ]]></programlisting>
-	    <programlisting><![CDATA[
+	    <programlisting language="sql"><![CDATA[
 UPDATE EMP e
 SET .... , e.LAST_UPDATED_BY=${/session/@user_id},e.LAST_UPDATE_DATE=sysdate
 WHERE e.empno = ${@empno}	    

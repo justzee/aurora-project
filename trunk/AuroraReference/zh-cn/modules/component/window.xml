@@ -9,7 +9,7 @@
     <para>
         window组件的创建都是通过JavaScript脚本创建的.
     </para>
-    <programlisting><![CDATA[                
+    <programlisting language="javascript"><![CDATA[                
 function openWindow(){
     var win = new Aurora.Window({id:'mywin', url:'user.screen',title:'窗口', height:400,width:700});
 }
@@ -128,7 +128,7 @@ function openWindow(){
             <para>
                提示信息窗口
             </para>
-            <programlisting><![CDATA[
+            <programlisting language="javascript"><![CDATA[
 Aurora.showMessage(title, msg,callback,width,height);    
             ]]></programlisting>
             <table frame="topbot" id="presentation-client-window-info-properties" revision="8">
@@ -229,7 +229,7 @@ Aurora.showMessage(title, msg,callback,width,height);
             <para>
                带警告图标的窗口
             </para>
-            <programlisting><![CDATA[
+            <programlisting language="javascript"><![CDATA[
 Aurora.showWarningMessage(title, msg,callback,width,height);    
             ]]></programlisting>
             <para>
@@ -240,7 +240,7 @@ Aurora.showWarningMessage(title, msg,callback,width,height);
             <para>
                带信息图标的窗口
             </para>
-            <programlisting><![CDATA[
+            <programlisting language="javascript"><![CDATA[
 Aurora.showInfoMessage(title, msg,callback,width,height);    
             ]]></programlisting>
             <para>
@@ -251,7 +251,7 @@ Aurora.showInfoMessage(title, msg,callback,width,height);
             <para>
                带错误图标的窗口
             </para>
-            <programlisting><![CDATA[
+            <programlisting language="javascript"><![CDATA[
 Aurora.showErrorMessage(title, msg,callback,width,height);    
             ]]></programlisting>
             <para>
@@ -262,7 +262,7 @@ Aurora.showErrorMessage(title, msg,callback,width,height);
             <para>
                带确定取消按钮的确认窗口
             </para>
-            <programlisting><![CDATA[
+            <programlisting language="javascript"><![CDATA[
 Aurora.showConfirm(title, msg, okfun,cancelfun, width, height);    
             ]]></programlisting>
             <table frame="topbot" id="presentation-client-window-okcancel-properties" revision="8">

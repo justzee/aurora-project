@@ -22,7 +22,7 @@
 	    ]]></programlisting>
 	    <para>这里，该BM通过extend="test.emp"属性，声明从test.emp继承而来，并通过extendMode="reference"属性，声明继承模式为引用模式。在fields部分，定义了两个field，并且只设置了name属性。这意味着，该BM将从test.emp继承empno，employee_name这两个指定的字段。字段上的属性，如dataType，databaseType等也将一并继承过来。test.emp的其他字段，由于没有在子BM中声明，就不会出现在子BM中。</para>
 	    <para>查看通过该BM生成的查询SQL，可以看到：
-	    <programlisting><![CDATA[
+	    <programlisting language="sql"><![CDATA[
 SELECT t1.empno,t1.ename AS employee_name,dept.dname AS department_name
 FROM emp t1
 	LEFT OUTER JOIN dept dept ON t1.deptno = dept.deptno
@@ -54,7 +54,7 @@ FROM emp t1
 	    我们再看一个例子，上面的子BM中，我们首先设置name="empno"的physicalName属性，改为另外一个字段名，再增加一个名为salary的field，然后在ref-fields部分设置一个父BM没有设置过的字段，最后再增加一个data-filter：
 	    </para>
 	    <quote>test/emp_for_lov2.bm</quote>
-	    <programlisting  ><![CDATA[
+	    <programlisting  language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" alias="t2" extend="test.emp" extendMode="reference">
     <bm:fields>
         <bm:field name="empno" physicalName="empno1_that_not_exists"/>
@@ -82,7 +82,7 @@ WHERE mrg is not null
     	<title>重载模式</title>
     	<para>在BM中，设置extendMode="override"来设置继承模式为重载模式。这种模式与Java语言的继承模式类似，子BM将继承父BM的所有设置，子BM设置的同名属性、节点将覆盖父BM的设置。实例：</para>
     	<quote>test/emp_for_lov3.bm</quote>
-	    <programlisting  ><![CDATA[
+	    <programlisting  language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" alias="t2" extend="test.emp" extendMode="override" needAccessControl="false">
     <bm:fields>
         <bm:field name="empno" physicalName="empno1_that_not_exists"/>

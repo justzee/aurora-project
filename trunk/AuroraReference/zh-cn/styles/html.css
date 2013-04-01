@@ -353,6 +353,8 @@ span.interface,
 span.guilabel {
     font-weight: bold;
 }
-
+.hl-keyword {
+    color:#990033;
+}
 
     

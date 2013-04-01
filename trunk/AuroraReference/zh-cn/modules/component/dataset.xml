@@ -134,7 +134,7 @@ function onUpdate(ds,record,name,value){
                 <para>
                     例如:设置某一字段必输,我们可以在配置dataset的时候指定对应field的required值
                 </para>
-                <programlisting><![CDATA[                
+                <programlisting language="screen"><![CDATA[                
 <a:dataSet id="exp_employee_group_result_ds">
     <a:fields>
         <a:field name="expense_user_group_code" required="true"/>
@@ -146,7 +146,7 @@ function onUpdate(ds,record,name,value){
                 <para>
                     例如:设置某一字段只读,我们可以在配置dataset的时候指定对应field的readOnly值
                 </para>
-                <programlisting><![CDATA[                
+                <programlisting language="screen"><![CDATA[                
 <a:dataSet id="exp_employee_group_result_ds">
     <a:fields>
         <a:field name="expense_user_group_code" readOnly="true"/>
@@ -167,7 +167,7 @@ function onUpdate(ds,record,name,value){
                 <para>
                    例如:我们对2个日期字段进行校验,规则是结束日期不得小于开始日期.首先我们在dataset的2个日期field上配置validator
                 </para>
-                <programlisting><![CDATA[                
+                <programlisting language="screen"><![CDATA[                
 <a:dataSet id="fnd_companies_create_ds"  model="fnd.fnd_companies">
     <a:fields>
         ...
@@ -181,7 +181,7 @@ function onUpdate(ds,record,name,value){
                    接下来我们需要实现校验函数dateValidator
                 </para>
                 
-                <programlisting><![CDATA[                
+                <programlisting language="javascript"><![CDATA[                
 function dateValidator(record, name, value){
     if(name == 'start_date_active' || name == 'end_date_active'){
         var start_date = record.get('start_date_active');

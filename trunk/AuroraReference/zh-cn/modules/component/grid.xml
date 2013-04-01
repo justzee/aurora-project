@@ -7,7 +7,7 @@
     <para>
         我们通过&lt;a:grid&gt;标签来定义一个grid对象.
     </para>
-<programlisting><![CDATA[                
+<programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     <a:toolBar>
         <a:button icon="../../images/add.gif" text="HAP_NEW" click="addUserInfo"/>
@@ -52,7 +52,7 @@
         <para>
             column上的align属性,可以指定为center,left,right,对应列中的文字排列方式分别为居中,靠左,靠右.默认值是center
         </para>          
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -69,7 +69,7 @@
         <para>
             column上的lock属性,可以指定为true或者false,当指定为true的时候当前列将会被锁定.默认值是false
         </para>          
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -86,7 +86,7 @@
         <para>
             column上的resizable属性,可以指定为true或者false,当指定为true的时候当前列可以动态改变宽度.默认值是true
         </para>  
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -105,7 +105,7 @@
         <para>
             注意:当点击表头栏的时候会进行排序,这里是通过ajax重新进行了一次查询,是对所有数据的排序.
         </para>          
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -124,7 +124,7 @@
         <para>
             注意:当点击表头栏的时候会进行排序,这里是通过ajax重新进行了一次查询,是对所有数据的排序.
         </para>          
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -163,7 +163,7 @@
         <para>
             首先我们需要实现一个renderer函数,来判断当前金额,然后返回一段html代码.
         </para>   
-        <programlisting><![CDATA[                
+        <programlisting language="javascript"><![CDATA[                
 function moneyRenderer(value,record, name){    
     if(value >=0){
        return '<font color="green">'+value+'</font>'
@@ -175,7 +175,7 @@ function moneyRenderer(value,record, name){
         <para>
             接下来在column上指定renderer属性为moneyRenderer.
         </para>    
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -194,7 +194,7 @@ function moneyRenderer(value,record, name){
         <para>
             例如:我们需要对金额列进行汇总.首先需要实现一个汇总的函数summaryRenderer
         </para>   
-        <programlisting><![CDATA[                
+        <programlisting language="javascript"><![CDATA[                
 function summaryRenderer(datas,name){
     var sum = 0;
     for(var i=0;i<datas.length;i++){
@@ -211,7 +211,7 @@ function summaryRenderer(datas,name){
         <para>
             接下来在column上指定footerRenderer属性为summaryRenderer.
         </para>    
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid bindTarget="sys_user_result_ds" navBar="true" width="800" id="sys_user_define_grid" height="400">
     ...
     <a:columns>
@@ -232,7 +232,7 @@ function summaryRenderer(datas,name){
         <para>
             在Grid组件上提供了一个工具栏,Grid本身提供了内置的几个按钮,我们还可以自定义新的按钮.
         </para>  
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:grid id="grid" bindTarget="sys_function_result_ds" height="300" navBar="true" width="500">
     <a:toolBar>
         <a:button type="add"/>
@@ -270,7 +270,7 @@ function summaryRenderer(datas,name){
     <para>
             除了Grid内置的按钮,我们还可以自定义按钮
     </para>    
-    <programlisting><![CDATA[                
+    <programlisting language="screen"><![CDATA[                
 <a:grid id="grid" bindTarget="sys_function_result_ds" height="300" width="500">
     <a:toolBar>
         <a:button icon="../../images/add.gif" text="HAP_NEW" click="addUserInfo"/>
@@ -291,7 +291,7 @@ function summaryRenderer(datas,name){
         <para>
               大部分情况下我们需要对数据进行编辑,APL的Grid组件可以集成编辑器,只需要在列中配置editor.
         </para> 
-    <programlisting><![CDATA[                
+    <programlisting language="screen"><![CDATA[                
 <a:grid id="grid" bindTarget="sys_function_result_ds" height="300" width="500">
     <a:toolBar>
         <a:button type="add"/>

@@ -7,7 +7,7 @@
     <para>
         我们通过&lt;a:chart&gt;标签来定义一个chart对象.
     </para>
-<programlisting><![CDATA[  
+<programlisting language="screen"><![CDATA[  
 <a:dataSet id="ds1">
     <a:datas>
         <a:record amount="1041670" period="2009-01" sum="575197378.99" test="1"/>
@@ -116,7 +116,7 @@ style="width: 850px; height: 400px; margin:10px" type="line">
     <para>
 	每组数据的表示模式是由Dataset中field的属性type决定的。如下代码中type=column，表示销售金额显示成柱状图。
     </para>
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:dataSet id="ds1">
     <a:fields>
         <a:field name="period" prompt="月"/>
@@ -132,7 +132,7 @@ style="width: 850px; height: 400px; margin:10px" type="line">
         <para>
             前提是几组数据都是以柱状图来显示的。代码如下：
         </para>          
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:chart>
 <a:plotOptions>
 	<a:series stacking="normal" />
@@ -157,7 +157,7 @@ style="width: 850px; height: 400px; margin:10px" type="line">
         <para>
             在下面代码中，有两个地方用到了formatter渲染，一个是鼠标移到数据上时显示的tooltip的渲染，另一个是对dataLabel的渲染。
         </para>  
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <script>
 function renderer1() {
         return  this.percentage.toFixed(2) +' %';
@@ -202,7 +202,7 @@ function renderer2() {
         <para>
             很多情况下Dataset的field是动态的，这时候yAxi的name的绑定方式不能满足需求。这是我们需要利用另一个Dataset来存放这些动态field，然后用yAxi的bindTarget绑定到该Dataset,这时yAxi上name对应的是该Dataset的field。具体代码如下：
         </para>
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <a:dataSets>
 	<a:dataSet id="field_ds">
 		<a:datas>
@@ -229,7 +229,7 @@ function renderer2() {
         <para>
            要实现该功能，除了要加入aurora-plugin.jar外，还需要在web.xml中添加以下servlet。
         </para>  
-        <programlisting><![CDATA[                
+        <programlisting language="screen"><![CDATA[                
 <servlet>
     <servlet-name>exportchart</servlet-name>
     <servlet-class>aurora.plugin.chart.ExportChartServlet</servlet-class>
@@ -243,7 +243,7 @@ function renderer2() {
     	<para>
 	另外，在chart下要加入以下代码来增加导出按钮。
         </para>  
-    	<programlisting><![CDATA[                
+    	<programlisting language="screen"><![CDATA[                
 <a:chart>
 <a:exporting enabled="true"/>
 </a:chart>    

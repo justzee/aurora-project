@@ -21,7 +21,7 @@
     <para>
     	 在screen文件中我们通过&lt;a:checkBox&gt;标签来定义一个CheckBox对象。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="screen"><![CDATA[
 <a:dataSet id="sys_notify_edit_ds">
     <a:fields>
         <a:field name="enabled_flag" checkedValue="Y" defaultValue="Y" uncheckedValue="N"/>
@@ -42,7 +42,7 @@
     <para>
     	events标签定义了需要响应的事件函数，例如change事件，当选中的选项改变为选中另一个选项时，CheckBox会触发change事件，这样我们可以通过配置一个客户端函数onChange来响应。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="javascript"><![CDATA[
 function onChange(checkbox, newValue, oldValue){
     var record = $('sys_user_create_ds').getCurrentRecord();  
     if(newValue=='1'){

@@ -36,7 +36,7 @@
 	在以下的例子中，我们假设有一个dept表存储公司中的部门，emp表存储公司中的员工，每个员工归属于一个特定的部门。首先，对部门表建立BM：
 	</para>
     
-    <programlisting><![CDATA[
+    <programlisting language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" baseTable="dept" >
     <bm:fields>
         <bm:field name="deptno" databaseType="BIGINT" dataType="java.lang.Long"/>
@@ -50,7 +50,7 @@
 	
 	然后，对前面一节的例子进行扩展，建立emp与dept表的关联关系，并在emp表中引用
     
-    <programlisting><![CDATA[
+    <programlisting language="bm"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" alias="e" baseTable="EMP" needAccessControl="false">
     <bm:fields>
@@ -94,7 +94,7 @@
     <para>
     在上例中，&lt;relations&gt;部分配置BM与其他BM的JOIN关系。通过relation标签定义一个与其他BM的关联，在下面通过1..n个reference标签定义关联的条件。上例中第一个关联BM：
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="bm"><![CDATA[
         <bm:relation name="d" joinType="LEFT OUTER" refModel="test.dept">
             <bm:reference foreignField="deptno" localField="deptno"/>
         </bm:relation>
@@ -102,14 +102,14 @@
     <para>
     表示与名为test.dept的BM进行left outer join，通过下面的reference标签，设置以本BM中的deptno字段（由localField属性指定）等于test.dept的deptno字段（由foreignField属性指定），来构造join条件。&lt;relation&gt;的name属性，是对此关联关系的命名，在别的地方将通过这个名字来引用，也相当于被关联的表的别名。这样，形成的sql语句将是：
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="sql"><![CDATA[
 	FROM EMP e
 	LEFT OUTER JOIN dept d ON e.deptno = d.deptno
     ]]></programlisting> 
     <para>
     如果有多个关联字段（例如联合主键），就设置多个&lt;reference&gt;标签，逐一设置localField和foreignField属性。如果关联条件比较复杂，不是简单的A表某字段=B表某字段这样的形式，可以通过reference的expression属性来设置join的SQL表达式，如第二个reference：
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="bm"><![CDATA[
         <bm:relation name="m" joinType="LEFT OUTER" refModel="test.emp">
             <bm:reference expression="e.mgr = m.empno and m.deptno is not null"/>
         </bm:relation>
@@ -117,7 +117,7 @@
     <para>
     这里，EMP表又与自己进行left outer join，join条件由expression属性设定。这将构成如下SQL：
     </para>
-  	<programlisting><![CDATA[
+  	<programlisting language="sql"><![CDATA[
 	FROM EMP e
 	LEFT OUTER JOIN EMP m ON e.mgr = m.empno and m.deptno is not null
     ]]></programlisting> 
@@ -125,7 +125,7 @@
     <para>
     join条件设置好之后，就可以在&lt;ref-fields&gt;部分设置要引用的关联表中的字段。上面的例子中：
     </para>  
-    <programlisting><![CDATA[
+    <programlisting language="bm"><![CDATA[
     <bm:ref-fields>
         <bm:ref-field name="department_name" relationName="d" sourceField="dname"/>
         <bm:ref-field name="manager_name" relationName="m" sourceField="employee_name"/>
@@ -140,7 +140,7 @@
     <para>
     经过上述步骤，设置好关联的BM和引用的字段之后，最终形成的SQL语句将是：
     </para>  
-    <programlisting><![CDATA[
+    <programlisting language="sql"><![CDATA[
 	SELECT e.empno,e.ename AS employee_name,e.job,e.mgr,e.hiredate,e.deptno,e.sal,e.comm,d.dname AS department_name,m.ename AS manager_name
 	FROM EMP e
 	LEFT OUTER JOIN dept d ON e.deptno = d.deptno
@@ -154,7 +154,7 @@
         	<para>
         	通常，一个典型的查询界面会列出一些字段，让用户输入条件，然后根据用户输入，列出符合条件的结果。BM的&lt;query-fields&lt;部分可以定义哪些字段是可用于查询的，以及查询条件是什么。在本例中：
         	</para>
-		    <programlisting><![CDATA[
+		    <programlisting language="bm"><![CDATA[
     <bm:query-fields>
         <bm:query-field field="empno" queryOperator="="/>
         <bm:query-field field="deptno" queryOperator="="/>
@@ -203,11 +203,11 @@
 			</para>
 			<para>
 			再举一个自定义查询字段的例子，假设希望查到是管理者的员工，而管理者就是至少有一个员工的直接上级是其本人的员工。这个查询无法直接通过对基表字段的筛选来完成，需要使用SQL子查询，例如：
-		    <programlisting><![CDATA[
+		    <programlisting language="sql"><![CDATA[
 		    select ... from emp e where exists ( select 1 from emp e1 where e1.mgr = e.empno )
 		    ]]></programlisting> 			
 			那么，我们可以定义一个名为is_manager的参数，如果这个参数传递了值，就在构造上述子查询条件：
-		    <programlisting><![CDATA[
+		    <programlisting language="bm"><![CDATA[
         <bm:query-field name="is_manager" queryExpression="exists ( select 1 from emp e1 where e1.mgr = e.empno )"/>
 		    ]]></programlisting> 			
 			</para>
@@ -217,13 +217,13 @@
         	<title>数据限制条件</title>
         	<para>
         	很多时候，我们需要对查询SQL添加一些限制性的条件。例如，当前用户只能看他所在的部门的员工，或者只列出状态不等于作废的订单。不论用户输入什么查询参数，这些限制条件都是必须加上的。这时，我们可以配置BM的&lt;data-filters&gt;标记，添加必需的数据筛选条件：
-		    <programlisting><![CDATA[
+		    <programlisting language="bm"><![CDATA[
 		    <bm:data-filters>
 		        <bm:data-filter enforceOperations="query" expression="e.hiredate is not null"/>
 		    </bm:data-filters>
 		    ]]></programlisting>
 		    这表示，在执行查询的时候，e.hiredate is not null这个条件将会被无条件地加上。如果我们传递一个deptno=10的查询条件，可以看到对该BM执行query操作时候，实际拼接的SQL语句是：
-		    <programlisting><![CDATA[
+		    <programlisting language="sql"><![CDATA[
 			SELECT e.empno,e.ename AS employee_name,e.job,e.mgr,e.hiredate,e.deptno,e.sal,e.comm,d.dname AS department_name,m.ename AS manager_name
 			FROM EMP e
 				LEFT OUTER JOIN dept d ON e.deptno = d.deptno
@@ -234,7 +234,7 @@
 		    </para>
 		    <para>
 		    缺省状况下，限制条件会被拼接到所有可包含where从句的SQL操作中，包括update，delete。这样可以实现比较严密的记录级权限控制。例如，要求用户只能操作自己创建的订单，可以设置created_by=${/session/@user_id}。即使用户执行update操作，提交了一个别人创建的订单号，后台所执行的SQL语句将类似于：
-		    <programlisting><![CDATA[
+		    <programlisting language="sql"><![CDATA[
 		    update ord_order set .... where order_id=${/parameter/@order_id} and created_by=${/session/@user_id}
 		    ]]></programlisting>
 		    由于where从句的表达式不成立（其他人创建的订单，created_by不等于当前用户id），最终也不会有记录被更新。
@@ -338,7 +338,7 @@
 	            [Web目录]/autocrud/test.emp_for_query/query?ORDER_FIELD=employee_name&ORDER_TYPE=desc	
 			    ]]></programlisting>   
 			    查看执行日志，生成的SQL将是：
-			    <programlisting><![CDATA[
+			    <programlisting language="sql"><![CDATA[
 				SELECT e.empno,e.ename AS employee_name,e.job,e.mgr,e.hiredate,e.deptno,e.sal,e.comm,d.dname AS department_name,m.ename AS manager_name
 				FROM EMP e
 					LEFT OUTER JOIN dept d ON e.deptno = d.deptno
@@ -349,7 +349,7 @@
                 </para>
                 <para>
                 此外，也可以在BM上设置defaultOrderBy属性，如果客户端没有传递排序相关的参数，就使用这个属性设置的表达式，来构造order by部分。例如：
-			    <programlisting><![CDATA[
+			    <programlisting language="bm"><![CDATA[
 				<bm:model defaultOrderBy="deptno asc,employee_name desc">
 				...
 				</bm:model>
@@ -363,7 +363,7 @@
         <title>自定义查询语句</title>
         <para>
         如果BM自动生成的查询SQL无法满足实际需求，也可以使用自定义SQL语句来实现查询。在下面的例子中，我们使用Oracle数据库特有的group by rollup语法，来实现对员工数据按部门，职务的分类汇总。
-		<programlisting><![CDATA[
+		<programlisting language="bm"><![CDATA[
 		<bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" needAccessControl="false">
 		    <bm:operations>
 		        <bm:operation name="query">
@@ -417,7 +417,7 @@
 			[Web目录]/autocrud/test.emp_summary/query?deptno=10&ORDER_FIELD=total_employee&ORDER_TYPE=asc
 			]]></programlisting>
 			生成的SQL将是：
-        	<programlisting><![CDATA[
+        	<programlisting language="sql"><![CDATA[
 		     select  
 		      decode(grouping(e.job),0,d.dname,1,d.dname||' Total:') as department_name,
 		      e.job,

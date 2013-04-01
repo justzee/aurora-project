@@ -21,7 +21,7 @@
     <para>
     	 在screen文件中我们通过&lt;a:radio&gt;标签来定义一个Radio对象。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="screen"><![CDATA[
 <a:radio name="state" bindTarget="sys_user_create_ds" layout="vertical"
 style="padding-top:5px;padding-bottom:5px;" width="80">
     <a:items>
@@ -46,7 +46,7 @@ style="padding-top:5px;padding-bottom:5px;" width="80">
     <para>
     	events标签定义了需要响应的事件函数，例如change事件，当选中的选项改变为选中另一个选项时，Radio会触发change事件，这样我们可以通过配置一个客户端函数onRadioChange来响应。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="javascript"><![CDATA[
 function onRadioChange(radio, newValue, oldValue){
     var record = $('sys_user_create_ds').getCurrentRecord();  
     if(newValue=='1'){
@@ -68,7 +68,7 @@ function onRadioChange(radio, newValue, oldValue){
 	<para>
 		另外，radio标签还有另一种方式来定义Radio对象，Radio的选项不是用items标签来硬性定义，而是可以用类似于combobox的方法，将选项用options属性绑定到一个dataset数据集，相应的文本提示信息和选项值用labelField和valueField来指定。
 	</para>
-	<programlisting><![CDATA[
+	<programlisting language="screen"><![CDATA[
 <a:radio id="roleRadios" labelExpression="${@role_description}_${@company_short_name}"
 layout="vertical" options="/model/role_list" valueField="role_company" width="230">
     <a:events>

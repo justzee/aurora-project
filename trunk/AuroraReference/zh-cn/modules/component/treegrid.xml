@@ -3,7 +3,7 @@
     <para>
        TreeGrid是一个树状结构的表格组件,它集成了Grid和Tree的多种特性.
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="screen"><![CDATA[
 <a:treeGrid bindTarget="function_tree_ds" expandField="_expanded" height="400" id="functionTreeGrid" 
     idField="function_id" parentField="parent_function_id" showCheckBox="true" width="570">
     <a:columns>

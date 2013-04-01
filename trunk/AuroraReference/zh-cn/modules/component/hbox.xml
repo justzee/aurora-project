@@ -8,7 +8,7 @@
 	<para>
         HBox下的组件按照从左到右的方式进行布局
     </para>           
-    <programlisting><![CDATA[                
+    <programlisting language="screen"><![CDATA[                
     <a:hBox>
         <a:textField name="cmp1"/>
         <a:textField name="cmp2"/>

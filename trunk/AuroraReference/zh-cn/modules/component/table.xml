@@ -8,7 +8,7 @@
     <para>
         在screen文件中我们通过&lt;a:table&gt;标签来定义一个table对象.
     </para>
-<programlisting><![CDATA[
+<programlisting language="screen"><![CDATA[
 <a:table id="sys_user_define_grid" bindTarget="sys_user_result_ds" percentWidth="90"
 	style="margin:7px;" navBar="true" navBarType="simple" title="SYS_USER.USER_SEARCH">
     <a:columns>

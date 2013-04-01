@@ -8,7 +8,7 @@
 	<para>
         VBox下的组件按照自上而下的方式进行布局
     </para>           
-    <programlisting><![CDATA[                
+    <programlisting language="screen"><![CDATA[                
     <a:vBox>
         <a:textField name="cmp1"/>
         <a:textField name="cmp2"/>
