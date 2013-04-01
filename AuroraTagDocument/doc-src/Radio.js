@@ -53,3 +53,10 @@
  * @property labelExpression
  * @type String
  */
+ 
+/**
+ * 选项钮后缀符
+ * @property radioseparator
+ * @type String
+ * @default :
+ */

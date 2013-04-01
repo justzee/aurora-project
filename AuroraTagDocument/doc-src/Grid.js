@@ -37,6 +37,20 @@
  * 是否自动聚焦
  * @property autoFocus
  * @type Boolean
+ * @default false
+ */
+ 
+/**
+ * 是否自动新增行
+ * @property autoAppend
+ * @type Boolean
+ * @default true
+ */
+ 
+/**
+ * 是否根据width和marginWidth自动调整列宽
+ * @property autoAdjust
+ * @type Boolean
  * @default true
  */
  
@@ -48,7 +62,7 @@
  */
 
 /**
- * 导航条的类型，可选值：complex|simple
+ * 导航条的类型，可选值：complex|simple|tiny
  * @property navBarType
  * @type String
  * @default complex
@@ -88,4 +102,11 @@
  * <p>返回值css值可以是class或者style字符串,也可以是class和style字符串数组</p>
  * @property rowRenderer
  * @type Function
+ */
+
+/**
+ * 控制grid在dataset提交时是否被遮盖
+ * @property submask
+ * @type Boolean
+ * @default true
  */

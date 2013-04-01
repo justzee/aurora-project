@@ -88,3 +88,10 @@
  * @property marginWidth
  * @remove
  */
+ 
+/**
+ * 是否自动新增行
+ * @property autoAppend
+ * @type Boolean
+ * @default true
+ */

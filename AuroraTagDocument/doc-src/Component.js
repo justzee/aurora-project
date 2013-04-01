@@ -54,6 +54,13 @@
  * @property style
  * @type String
  */
+ 
+/**
+ * 组件的Tab导航序号,-1为不导航，0为默认顺序导航
+ * @property tabIndex
+ * @type Integer
+ * default 0
+ */
 
 /**
  * 组件的宽度,单位是像素(px)

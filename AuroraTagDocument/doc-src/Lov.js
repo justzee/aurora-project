@@ -72,6 +72,27 @@
  */
  
 /**
+ * 是否可输入
+ * @property editable
+ * @type Boolean
+ * @default true
+ */
+ 
+/**
+ * 是否通过输入内容自动查询返回给文本框
+ * @property fetchremote
+ * @type Boolean
+ * @default true
+ */
+ 
+/**
+ * 自动查询结果中有相同结果时，是否弹出选择框
+ * @property fetchsingle
+ * @type Boolean
+ * @default false
+ */
+ 
+/**
  * <p>autoComplete的渲染函数</p>
  * <p>函数参数为 function(Lov,record)</p>
  * <p>返回值:html字符串</p>

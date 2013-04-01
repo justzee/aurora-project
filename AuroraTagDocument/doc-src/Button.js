@@ -11,6 +11,20 @@
  */
 
 /**
+ * 按钮的样式
+ * @property btnStyle
+ * @type String
+ */
+
+
+/**
+ * 按钮的样式表
+ * @property btnClass
+ * @type String
+ */
+
+
+/**
  * 按钮点击相应函数
  * @property click
  * @type Function
@@ -30,7 +44,13 @@
  */
  
 /**
- * 按钮的文本(required)
+ * 按钮图标的对齐方式
+ * @property iconAlign
+ * @type String
+ */
+ 
+/**
+ * 按钮的文本
  * @property text
  * @type String
  * @requires

@@ -75,6 +75,32 @@
  */ 
 
 /**
+ * 是否自动调整列宽
+ * @property autoAdjust
+ * @type Boolean
+ * @default true
+ */ 
+
+/**
+ * 列名
+ * @property prompt
+ * @type String
+ */
+
+/**
+ * 列ID,主要用于个性化中
+ * @property id
+ * @type String
+ */
+
+/**
+ * 列宽自动调整的最大值，最大值不会超过grid的宽度
+ * @property maxAdjustWidth
+ * @type Integer
+ * @default 300
+ */
+ 
+/**
  * 是否对该列进行导出
  * @property forExport
  * @type Boolean
@@ -84,6 +110,18 @@
 /**
  * 导出时所代替的field名称
  * @property exportField
+ * @type String
+ */ 
+
+/**
+ * 导出数据格式
+ * @property exportDataFormat
+ * @type String
+ */ 
+
+/**
+ * 导出数据类型
+ * @property exportDataType
  * @type String
  */ 
 
