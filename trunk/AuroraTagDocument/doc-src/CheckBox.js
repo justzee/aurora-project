@@ -11,7 +11,19 @@
  */
  
 /**
+ * checkBox选中的值
+ * @property checkedValue
+ * @type String
+ */  
+ 
+/**
  * 显示在checkBox右边的描述
  * @property label
  * @type String
  */  
+ 
+/**
+ * checkBox未选中的值
+ * @property uncheckedValue
+ * @type String
+ */

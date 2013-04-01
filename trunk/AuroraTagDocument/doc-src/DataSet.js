@@ -106,6 +106,19 @@
  * @type Integer
  * @default 1000
  */
+ 
+/**
+ * 是否检查dataset未保存
+ * @property modifiedCheck
+ * @type Boolean
+ * @default true
+ */
+ 
+/**
+ * 未保存提示信息,dataset未保存离开页面给予提示
+ * @property notification
+ * @type String
+ */
 
 /**
  * 查询的分页大小

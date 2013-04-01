@@ -28,3 +28,10 @@
  * @type String
  * @default code
  */
+ 
+/**
+ * 检查输入匹配
+ * @property fetchRecord
+ * @type Boolean
+ * @default true
+ */
