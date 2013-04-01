@@ -53,6 +53,13 @@
  */
  
 /**
+ * tree节点图标
+ * @property iconfield
+ * @type String
+ * @default icon
+ */ 
+ 
+/**
  * dataset中用来排序树节点的field
  * @property sequenceField
  * @type String

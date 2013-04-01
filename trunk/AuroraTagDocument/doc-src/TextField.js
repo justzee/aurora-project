@@ -26,3 +26,16 @@
  * @type String
  * 
  */
+ 
+/**
+ * 通过正则表达式限制输入内容
+ * @property restrict
+ * @type String
+ * 
+ */ 
+
+ /**
+  * 输入限制提示信息
+  * @property restrictinfo
+  * @type String
+  */
