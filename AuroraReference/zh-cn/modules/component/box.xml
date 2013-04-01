@@ -9,7 +9,7 @@
     <para>
         box标签下的组件将会按照从左到右从上到下的原则进行排列.
     </para>           
-    <programlisting><![CDATA[                
+    <programlisting language="screen"><![CDATA[                
     <a:box column="2" row="3">
         <a:textField name="cmp1"/>
         <a:textField name="cmp2"/>

@@ -6,7 +6,7 @@
     <para>
      一个典型的BM文件如下所示：
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" baseTable="EMP" alias="e" >
     <bm:fields>
         <bm:field name="empno" databaseType="BIGINT" dataType="java.lang.Long"/>

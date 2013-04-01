@@ -25,7 +25,7 @@
 {"result":{"empno":1,"__parameter_parsed__":true,"deptno":10,"employee_name":"test_employee"},"success":true}
 	]]></programlisting> 
 	查看数据库中的emp表记录，可以看到新建了一条empno等于1的记录：
-	<programlisting><![CDATA[
+	<programlisting language="sql"><![CDATA[
 	SQL> select empno,ename,deptno from emp where empno=1;
  
      EMPNO ENAME                                                                                DEPTNO
@@ -61,7 +61,7 @@ No.8	Access path:@comm	Data type of passed value :[null]	Value:null	Output:false
  	<sect4>
 		<title>参数来源</title>
 		缺省设置下，参与insert操作的字段，其数据来自于数据池的/parameter部分，与该字段同名的参数，对应的XPath路径为/parameter/@[字段名]。如果某个字段的参数来自于其他路径，可以通过parameterPath属性，设置期望的参数路径。例如：
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <bm:field name="created_by" parameterPath="/session/@user_id" />
 		]]></programlisting> 
  	</sect4>
@@ -69,18 +69,18 @@ No.8	Access path:@comm	Data type of passed value :[null]	Value:null	Output:false
 		<title>自定义参数取值表达式</title>
 		<para>
 		如果某字段的insert参数是一个复杂的SQL表达式，而不是简单地来源于某个路径下的参数，那么可以通过insertExpression属性来设置需要实用的SQL表达式，例如：
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <bm:field name="creation_date" insertExpression="trunc(sysdate)" />
 		]]></programlisting>
 		在insertExpression中，也可以使用${}标记，来引用其他的参数。
 		</para>
 		<para>
 		例1：计算字段
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <bm:field name="total_price" insertExpression=" ${@total_amount} * ${@unit_price} * my_pkg.get_discount( ${/session/@user_id} ) " />
 		]]></programlisting>
 		例2：子查询
-	    <programlisting><![CDATA[
+	    <programlisting language="bm"><![CDATA[
 <bm:field name="empno"  insertExpression="(select max(empno)+1 from emp)"/>
 		]]></programlisting>
 		</para> 
@@ -103,7 +103,7 @@ SQL> select empno,ename,deptno from emp where empno=1;
          1 test_employee_update                                                                     20 		
  		]]></programlisting>
  		查看执行日志，对应的SQL操作是：
-        <programlisting><![CDATA[
+        <programlisting language="sql"><![CDATA[
 2011-08-03 17:07:54.180 [aurora.database] [CONFIG] 
 ============= BEGIN [Update] SQL Statement execution dump ============
 UPDATE EMP e
@@ -148,7 +148,7 @@ No.3	Access path:@empno	Data type of passed value :java.lang.Long	Value:1	Output
 			</para>
 			<para>
 			而有些字段是不依赖于客户端提交的参数的。例如，last_update_date字段记录最近一次更新操作的时间。无论客户端提交什么样的参数，执行update时都需要更新这个字段。这时，就需要在BM中设置该字段的forceUpdate属性为true。例如：
-			<programlisting><![CDATA[
+			<programlisting language="bm"><![CDATA[
 <bm:field name="last_update_date" forceUpdate="true" updateExpression="sysdate" />
 			]]></programlisting>
 			</para>
@@ -156,7 +156,7 @@ No.3	Access path:@empno	Data type of passed value :java.lang.Long	Value:1	Output
         <sect4>
         	<title>自定义update语句</title>
 			<para>有时候，某字段的update语句是一段SQL表达式，这段表达式所依赖的输入参数的名称不一定和字段相同。例如：
-			<programlisting><![CDATA[
+			<programlisting language="bm"><![CDATA[
 <bm:field name="total_amount" updateExpression="my_pkg.get_sum(${/parameter/@order_head_id})" />
 			]]></programlisting>
 			按照前面的逻辑，如果没有传递一个名叫total_amount的参数，这个字段就不会被更新。这时，就需要设置一下inputPath属性，设置成该字段所依赖的一个输入参数，如 inputPath="/parameter/@order_head_id"。 这样，只要传递了order_head_id参数，这个字段就会按updateExpression指定的表达式去执行update。
@@ -172,7 +172,7 @@ No.3	Access path:@empno	Data type of passed value :java.lang.Long	Value:1	Output
  		{empno:1}
  		]]></programlisting>
  		查看执行日志，对应的SQL操作是：
-        <programlisting><![CDATA[
+        <programlisting language="sql"><![CDATA[
 2011-08-03 17:36:49.96 [aurora.database] [CONFIG] 
 ============= BEGIN [Delete] SQL Statement execution dump ============
 DELETE FROM EMP t 
@@ -195,7 +195,7 @@ No.1	Access path:@empno	Data type of passed value :java.lang.Long	Value:1	Output
 ]
 		]]></programlisting>
 		这将提交两条记录，其中的_status属性值都是insert，这表示要对记录执行插入操作。查看执行日志，可以看到针对这两条记录，执行了两次SQL：
-        <programlisting><![CDATA[
+        <programlisting language="sql"><![CDATA[
 2011-08-04 14:59:49.300 [aurora.database] [CONFIG] ============ Running model batch update with data from path /parameter, total 2 records
 2011-08-04 14:59:49.300 [aurora.database] [CONFIG] execute insert on record No.0 for model test.dept
 2011-08-04 14:59:49.657 [aurora.database] [CONFIG] 
@@ -244,7 +244,7 @@ SQL> select deptno, dname from dept where dname like 'test%';
  		<title>级联操作</title>
  		<para>
  		实际应用中，经常有头行结构的数据一次提交保存的需求。BM为这种操作模式提供了级联操作的支持。例如：
- 		<programlisting><![CDATA[
+ 		<programlisting language="bm"><![CDATA[
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" baseTable="dept" needAccessControl="false">
     <bm:fields>
         <bm:field name="deptno" dataType="java.lang.Long" databaseType="BIGINT"/>
@@ -266,7 +266,7 @@ SQL> select deptno, dname from dept where dname like 'test%';
 ]
 		]]></programlisting>
 		除了dept自己的参数之外，每条记录多了一个名叫employees的数组，里面各有两条状态是insert的员工记录。这表示，对第一条记录，在dept表新建一条deptno=3的记录，并在emp表中插入两条属于该部门的新员工记录；对第二条记录，更新deptno=1的dname字段，同时也在emp表中新建两条属于该部门的员工记录。执行后，查看数据库，可见：
-        <programlisting><![CDATA[
+        <programlisting language="sql"><![CDATA[
 SQL> select deptno,dname from dept where dname like 'test%';
  
     DEPTNO DNAME
@@ -292,7 +292,7 @@ SQL> select empno,deptno,ename from emp where ename like 'emp%';
  			<title>通过相对路径指定外键字段值</title>
 	 		<para>
 	 		在上例中，员工记录的deptno字段是通过参数指定的。而实际应用中，子记录所对应的父记录主键值，通常来源于父记录。这时，可以在emp表中，设置deptno字段的parameterPath属性：
-	        <programlisting><![CDATA[
+	        <programlisting language="bm"><![CDATA[
 <bm:field name="deptno" parameterPath="../../@deptno"  />        
 			]]></programlisting>
 	 		这表示deptno字段来源于上上层记录的deptno属性。在XPath中，".."表示当前路径的上一级。由于我们提交的参数结构是每条dept记录下面包含一个employees数组，employees下面包含emp记录，所以对于emp记录来说，向上两级就是它所述的dept记录。

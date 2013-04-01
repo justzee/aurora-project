@@ -48,7 +48,7 @@
            <para>Aurora界面组件的工作模式，可以简单地归纳为：输入组件的运行时期配置（例如，表格的高度，宽度），以及组件绑定的数据模型（例如，一个代表员工清单的的数据集），由组件经过加工，输出文本字节流（HTML/SVG/VML...）。下面的例子中，我们开发一个用于显示金额的组件currency-label，字体加粗，对于负数显示为红色，这个组件可以绑定到数据集的任意一个数字型字段。</para>
 
     <para>使用这个组件很简单：</para>
-           <programlisting><![CDATA[
+           <programlisting language="screen"><![CDATA[
 <a:hBox labelWidth="100">
 	<label>正数：</label>
     <a:curLabel value="10000"/>
@@ -73,12 +73,12 @@
     <para>为便于彻底分离组件的外观与核心逻辑，我们可以将html部分放入模板：</para>
 
     <para>curlabel.tplt 
-    <programlisting><![CDATA[                
+    <programlisting language="myxml"><![CDATA[                
 <DIV class="${wrapClass}" style="width:${width}px;${style}"   >${value}</DIV>
                 ]]></programlisting> </para>
 
     <para>CurrencyLabel.java 
-    <programlisting><![CDATA[                
+    <programlisting language="java"><![CDATA[                
 public class CurrencyLabel {
 	public void onCreateViewContent(BuildSession session,
 			ViewContext view_context) {
@@ -123,7 +123,7 @@ public class CurrencyLabel {
     <para>Aurora提供组件皮肤切换的支持，所有资源文件，不论是在服务端使用的模板，还是客户端引用的javascript或css，都可以在不同皮肤下有自己的版本。如果我们希望我们的currency-label看起来更酷一点，可以为它开发一个新的皮肤，为此只需要重新构造模板文件和样式表：</para>
 
     <para>currency-label.css 
-    <programlisting><![CDATA[                
+    <programlisting language="css"><![CDATA[                
 .item-label-red{
 height:22px;
 color:red;
@@ -132,14 +132,14 @@ line-height:22px;
 vertical-align:middle;
 }
                 ]]></programlisting> curlabel.tplt 
-                <programlisting><![CDATA[                
+                <programlisting language="myxml"><![CDATA[                
 <DIV class="${wrapClass}" style="width:${width}px;${style}"   >${value}</DIV>
                 ]]></programlisting> </para>
 
     <para>如果一个组件包含下级组件，它将递归地调用下级组件的渲染过程，但它可以不需要了解下级组件的任何细节，因此，第三方组件可以很好地与现成组件搭配使用。下面的例子中，我们显示通过数据库查询获得的员工信息。这里使用aurora标准组件库中的repeater组件对数据集进行循环，每条记录使用box组件对字段进行布局，再使用前面我们自行开发的currency-label组件显示员工工资。</para>
     <para>界面配置代码：</para>
     
-    <programlisting><![CDATA[
+    <programlisting language="myxml"><![CDATA[
 <a:repeater datamodel="/model/emp_list">
 	<a:hBox labelWidth="100">
     	<label>工资：</label>
@@ -213,7 +213,7 @@ http://aurora.hand-china.com/demo/modules/component/Comp1010/currencyLabel.scree
 
     <para>在前一章中，我们已经看到了Aurora模型层是如何能够灵活地通过配置改变数据结构，这时就用得上了。我们所需做的，只是在原有的数据查询操作之后，增加一个分组转换的转换器：</para>
 
- <programlisting><![CDATA[
+ <programlisting language="screen"><![CDATA[
   <t:group-transform groupfield="department_id" source="/model/source_emp_list" subgroupname="enabled_flag"
   target="/model/target_emp_list/a"></t:group-transform>
  ]]></programlisting> 
@@ -221,7 +221,7 @@ http://aurora.hand-china.com/demo/modules/component/Comp1010/currencyLabel.scree
 
     <para>然后修改界面配置，在原来的列表之外增加一层repeater：</para>
 
-  <programlisting><![CDATA[                
+  <programlisting language="screen"><![CDATA[                
 <a:repeater datamodel="/model/target_emp_list/a">
     <a:listView datamodel="enabled_flag">
         <a:columns>

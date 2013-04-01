@@ -20,7 +20,7 @@
 
     <para>首先我们来看前端界面部分。用户所访问的每一个界面（我们可以在demo系统中看到的.screen链接），都对应一个XML格式的配置文件，它在server端被解析，产生HTML输出，生成供浏览器展示的UI。以[查询界面]为例，按各种条件查询数据，点击某条记录能够在一个弹出窗口中编辑数据，像这样一个典型的企业应用界面，其源代码如下：</para>
 
-    <programlisting><![CDATA[                
+    <programlisting language="screen"><![CDATA[                
 <a:screen xmlns:a="http://www.aurora-framework.org/application" trace="true">
     <a:init-procedure>
     	...

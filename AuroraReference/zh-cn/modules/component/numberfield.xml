@@ -21,7 +21,7 @@
     <para>
     	 在screen文件中我们通过&lt;a:numberField&gt;标签来定义一个NumberField对象。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="screen"><![CDATA[
 <a:numberField bindTarget="fnd_tax_type_codes_query_ds" name="tax_type_rate"
 	allowDecimals="true" allowFormat="true" decimalPrecision="1">
     <a:events>
@@ -38,7 +38,7 @@
     <para>
     	events标签定义了需要响应的事件函数，例如enterdown事件，当键盘键入回车键时，NumberField会触发enterdown事件，这样我们可以通过配置一个客户端函数queryTaxTypeCodes来响应。
     </para>
-    <programlisting><![CDATA[
+    <programlisting language="javascript"><![CDATA[
 function queryTaxTypeCodes(){
     $('fnd_tax_type_codes_result_ds').query();
 }

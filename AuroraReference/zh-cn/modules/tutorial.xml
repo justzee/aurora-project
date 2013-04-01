@@ -10,7 +10,7 @@
 
     <para>在示例程序中，对[订单]的查询及维护，就是通过这样一段配置来实现的：</para>
 
-    <programlisting><![CDATA[                
+    <programlisting language="bm"><![CDATA[                
 <bm:model xmlns:bm="http://www.aurora-framework.org/schema/bm" 
 xmlns:f="aurora.database.features" alias="h" baseTable="ord_sales_order_headers">
     <bm:fields>
@@ -84,7 +84,7 @@ pagesize=10&amp;pagenum=1&amp;_fetchall=false&amp;_autocount=false&amp;ORDER_FIE
     
     <para>使用soap客户段访问上面的连接则会得到标准的XML格式的结果：</para>
 
-   	     <programlisting><![CDATA[                
+   	     <programlisting language="myxml"><![CDATA[                
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
     <soapenv:Body>
         <ord.ORD5010.ord_sales_order_headers success="true">
@@ -113,7 +113,7 @@ pagesize=10&amp;pagenum=1&amp;_fetchall=false&amp;_autocount=false&amp;ORDER_FIE
     例如，为利用Oracle数据库的sequence特性去生成主键，只需要在原有的BM文件中添加一句配置： &lt;o:sequence-pk
     xmlns:o="...." /&gt; 这样，生成的insert语句就由原先的标准SQL：  </para>
     
-     <programlisting><![CDATA[
+     <programlisting language="sql"><![CDATA[
 insert into table_name (f1,f2, ..., fn) values (v1, v2, ... , vn) 
 变为 
 begin insert into table_name (f1, f2, ..., fn)
@@ -134,7 +134,7 @@ end;
     <para>
     	下面一组数据是数据库中常见的数据结构,包括组织，公司，姓名，工号，以及直接上级。我们分别进行数据分组、转化哈希表、行列转换与树形结构转换。    
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <source_emp_list>
     <record department_id="49" employee_code="EMP01" employee_name="莫言" employee_id="1"/>
     <record department_id="44" employee_code="EMP02" employee_name="李四" employee_id="5"/>
@@ -154,13 +154,13 @@ end;
 <para>
 		配置代码：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <t:group-transform groupfield="department_id" source="/model/source_emp_list" target="/model/group_transform"/>
 ]]></programlisting>
 <para>
 		转换结果：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <group_transform>
     <group>
         <record department_id="49" employee_code="EMP01" employee_name="莫言" employee_id="1"/>
@@ -186,13 +186,13 @@ end;
 <para>
 		配置代码：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <t:map-transform keyField="employee_code" source="/model/source_emp_list" target="/model/map_transform"/>
 ]]></programlisting>
 <para>
 		转换结果：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <map_transform EMP10="{department_id=49,employee_code=EMP10, employee_name=王洋, employee_id=10005}"
                EMP01="{department_id=49, employee_code=EMP01,employee_name=莫言, employee_id=1}" 
                EMP02="{department_id=44, employee_code=EMP02,employee_name=李四, employee_id=5}" 
@@ -210,14 +210,14 @@ end;
 <para>
 		配置代码：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <t:matrix-transform columnField="employee_code" valueField="employee_name" groupField="department_id" 
 		source="/model/source_emp_list" target="/model/matrix_transform"/>
 ]]></programlisting>
 <para>
 		转换结果：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <matrix_transform >
     <record department_id="44" EMP02="李四" EMP11="王猛" EMP09="李焱"/>
     <record department_id="46" EMP05="王五" EMP12="赵风"/>
@@ -230,14 +230,14 @@ end;
 <para>
 		配置代码：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <t:tree-transform idField="employee_id" parentField="superior" source="/model/source_emp_list" 
 	target="/model/tree_transform">
 ]]></programlisting>
 <para>
 		转换结果：
     </para>
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <tree_transform>
     <record employee_code="EMP01" employee_name="莫言" employee_id="1">
         <record employee_code="EMP06" employee_name="徐洋" supervisor="1" employee_id="10000"/>
@@ -260,7 +260,7 @@ end;
 
 
 
-<programlisting><![CDATA[
+<programlisting language="myxml"><![CDATA[
 <t:group-transform groupfield="department_id" source="/model/source_emp_list" 
 subgroupname="enabled_flag" target="/model/target_emp_list/a"></t:group-transform>
 ]]></programlisting>

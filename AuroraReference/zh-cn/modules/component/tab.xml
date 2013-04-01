@@ -8,7 +8,7 @@
     	<para>
     		在screen文件中我们通过&lt;a:tabPanel&gt;标签来定义tab的一个对象容器，用&lt;a:tab&gt;标签定义每一个tab对象.
     	</para>
-		<programlisting><![CDATA[                
+		<programlisting language="screen"><![CDATA[                
 		<a:tabPanel height="300" width="400">
 		    <a:tabs>
 		        <a:tab prompt="1" selected="true">
