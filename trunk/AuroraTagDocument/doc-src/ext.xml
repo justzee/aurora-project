@@ -49,42 +49,43 @@
 
         -->
     <sources>
+		<source src="../doc-src/Accordion.js"/>
+		<source src="../doc-src/Box.js"/>
+		<source src="../doc-src/Button.js"/>
+		<source src="../doc-src/CheckBox.js"/>
+		<source src="../doc-src/ComboBox.js"/>
 		<source src="../doc-src/Component.js"/>
 		<source src="../doc-src/DataSet.js"/>
-		<source src="../doc-src/DataSet[Record].js"/>
-		<source src="../doc-src/DataSet[Field].js"/>
 		<source src="../doc-src/DataSet[Field[Map]].js"/>
-		<source src="../doc-src/Field.js"/>
-		<source src="../doc-src/InputField.js"/>
-		<source src="../doc-src/TextField.js"/>
-		<source src="../doc-src/NumberField.js"/>
-		<source src="../doc-src/PassWord.js"/>
-		<source src="../doc-src/TriggerField.js"/>
-		<source src="../doc-src/ComboBox.js"/>
+		<source src="../doc-src/DataSet[Field].js"/>
+		<source src="../doc-src/DataSet[Record].js"/>
+		<source src="../doc-src/DateField.js"/>
 		<source src="../doc-src/DatePicker.js"/>
 		<source src="../doc-src/DateTimePicker.js"/>
-		<source src="../doc-src/DateField.js"/>
-        <source src="../doc-src/Label.js"/>
-		<source src="../doc-src/Lov.js"/>
-		<source src="../doc-src/MultiLov.js"/>
-		<source src="../doc-src/Button.js"/>
-		<source src="../doc-src/Radio.js"/>
-		<source src="../doc-src/CheckBox.js"/>
-		<source src="../doc-src/GridLayout.js"/>
-		<source src="../doc-src/Box.js"/>
-		<source src="../doc-src/HBox.js"/>
-		<source src="../doc-src/VBox.js"/>
-		<source src="../doc-src/Form.js"/>
+		<source src="../doc-src/Field.js"/>
 		<source src="../doc-src/FieldSet.js"/>
-		<source src="../doc-src/Table.js"/>
-		<source src="../doc-src/Table[Column].js"/>
+		<source src="../doc-src/Form.js"/>
 		<source src="../doc-src/Grid.js"/>
 		<source src="../doc-src/Grid[Column].js"/>
-		<source src="../doc-src/Tab.js"/>
-		<source src="../doc-src/Accordion.js"/>
+		<source src="../doc-src/GridLayout.js"/>
+		<source src="../doc-src/HBox.js"/>
+		<source src="../doc-src/InputField.js"/>
+        <source src="../doc-src/Label.js"/>
+		<source src="../doc-src/Lov.js"/>
 		<source src="../doc-src/Menu.js"/>
+		<source src="../doc-src/MultiLov.js"/>
+		<source src="../doc-src/NumberField.js"/>
+		<source src="../doc-src/PassWord.js"/>
+		<source src="../doc-src/Radio.js"/>
+		<source src="../doc-src/Tab.js"/>
+		<source src="../doc-src/Table.js"/>
+		<source src="../doc-src/Table[Column].js"/>
+		<source src="../doc-src/TriggerField.js"/>
+		<source src="../doc-src/TextField.js"/>
 		<source src="../doc-src/Tree.js"/>
 		<source src="../doc-src/TreeGrid.js"/>
+        <source src="../doc-src/Upload.js"/>
+		<source src="../doc-src/VBox.js"/>
     </sources>
     <tags>
         <tag name="author" title="Author"/>
