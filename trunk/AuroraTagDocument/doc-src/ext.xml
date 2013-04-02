@@ -81,6 +81,7 @@
 		<source src="../doc-src/PassWord.js"/>
         <source src="../doc-src/QueryForm.js"/>
 		<source src="../doc-src/Radio.js"/>
+        <source src="../doc-src/Spinner.js"/>
 		<source src="../doc-src/Tab.js"/>
 		<source src="../doc-src/Table.js"/>
 		<source src="../doc-src/Table[Column].js"/>
