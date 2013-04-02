@@ -10,6 +10,10 @@
 				,
                 {"href":"output/ComboBox.html","text":"ComboBox","id":"ComboBox","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/CurrencyField.html","text":"CurrencyField","id":"CurrencyField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/CurrencyLabel.html","text":"CurrencyLabel","id":"CurrencyLabel","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/DataSet.html","text":"DataSet","id":"DataSet","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/DataSet[Field[Map]].html","text":"DataSet[Field[Map]]","id":"DataSet[Field[Map]]","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -36,6 +40,8 @@
 				,
                 {"href":"output/Label.html","text":"Label","id":"Label","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Link.html","text":"Link","id":"Link","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Lov.html","text":"Lov","id":"Lov","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Menu.html","text":"Menu","id":"Menu","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
@@ -46,7 +52,11 @@
 				,
                 {"href":"output/PassWord.html","text":"PassWord","id":"PassWord","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/QueryForm.html","text":"QueryForm","id":"QueryForm","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Radio.html","text":"Radio","id":"Radio","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Spinner.html","text":"Spinner","id":"Spinner","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Tab.html","text":"Tab","id":"Tab","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -54,11 +64,15 @@
 				,
                 {"href":"output/Table[Column].html","text":"Table[Column]","id":"Table[Column]","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/TextArea.html","text":"TextArea","id":"TextArea","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/TextField.html","text":"TextField","id":"TextField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Tree.html","text":"Tree","id":"Tree","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/TreeGrid.html","text":"TreeGrid","id":"TreeGrid","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Upload.html","text":"Upload","id":"Upload","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/VBox.html","text":"VBox","id":"VBox","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				]};
@@ -83,6 +97,10 @@
 			"CheckBox":"icon-cls"
 			,
 			"ComboBox":"icon-cls"
+			,
+			"CurrencyField":"icon-cls"
+			,
+			"CurrencyLabel":"icon-cls"
 			,
 			"DataSet":"icon-cls"
 			,
@@ -110,6 +128,8 @@
 			,
 			"Label":"icon-cls"
 			,
+			"Link":"icon-cls"
+			,
 			"Lov":"icon-cls"
 			,
 			"Menu":"icon-cls"
@@ -120,7 +140,11 @@
 			,
 			"PassWord":"icon-cls"
 			,
+			"QueryForm":"icon-cls"
+			,
 			"Radio":"icon-cls"
+			,
+			"Spinner":"icon-cls"
 			,
 			"Tab":"icon-cls"
 			,
@@ -128,11 +152,15 @@
 			,
 			"Table[Column]":"icon-cls"
 			,
+			"TextArea":"icon-cls"
+			,
 			"TextField":"icon-cls"
 			,
 			"Tree":"icon-cls"
 			,
 			"TreeGrid":"icon-cls"
+			,
+			"Upload":"icon-cls"
 			,
 			"VBox":"icon-cls"
 			};
