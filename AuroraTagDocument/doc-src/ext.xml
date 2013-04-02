@@ -55,6 +55,8 @@
 		<source src="../doc-src/CheckBox.js"/>
 		<source src="../doc-src/ComboBox.js"/>
 		<source src="../doc-src/Component.js"/>
+        <source src="../doc-src/CurrencyField.js"/>
+        <source src="../doc-src/CurrencyLabel.js"/>
 		<source src="../doc-src/DataSet.js"/>
 		<source src="../doc-src/DataSet[Field[Map]].js"/>
 		<source src="../doc-src/DataSet[Field].js"/>
