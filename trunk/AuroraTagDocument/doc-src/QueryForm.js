@@ -85,3 +85,15 @@
  * @default true;
  */
  
+ /**
+  * @property marginHeight
+  * @remove
+  */
+
+
+ /**
+  * @property marginWidth
+  * @remove
+  */
+ 
+ 
