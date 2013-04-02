@@ -8,6 +8,15 @@
  * @author 牛佳庆
  */
  
+ 
+/**
+ * 是否只读
+ * @property readOnly
+ * @type Boolean
+ * @default false
+ */ 
+  
+ 
  /**
   * @property marginHeight
   * @remove
