@@ -73,11 +73,13 @@
 		<source src="../doc-src/HBox.js"/>
 		<source src="../doc-src/InputField.js"/>
         <source src="../doc-src/Label.js"/>
+        <source src="../doc-src/Link.js"/>
 		<source src="../doc-src/Lov.js"/>
 		<source src="../doc-src/Menu.js"/>
 		<source src="../doc-src/MultiLov.js"/>
 		<source src="../doc-src/NumberField.js"/>
 		<source src="../doc-src/PassWord.js"/>
+        <source src="../doc-src/QueryForm.js"/>
 		<source src="../doc-src/Radio.js"/>
 		<source src="../doc-src/Tab.js"/>
 		<source src="../doc-src/Table.js"/>
