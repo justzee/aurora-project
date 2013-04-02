@@ -80,6 +80,7 @@
 		<source src="../doc-src/Tab.js"/>
 		<source src="../doc-src/Table.js"/>
 		<source src="../doc-src/Table[Column].js"/>
+        <source src="../doc-src/TextArea.js"/>
 		<source src="../doc-src/TriggerField.js"/>
 		<source src="../doc-src/TextField.js"/>
 		<source src="../doc-src/Tree.js"/>
