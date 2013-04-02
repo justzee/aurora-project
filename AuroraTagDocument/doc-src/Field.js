@@ -37,3 +37,8 @@
  * @property marginHeight
  * @remove
  */
+ 
+  /**
+ * @property marginWidth
+ * @remove
+ */
