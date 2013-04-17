@@ -125,6 +125,9 @@ public class DatabaseQuery extends DatabaseAccess {
 
                 ResultSetLoader loader = new ResultSetLoader(rs);
                 loader.setKeyCase(getKeyCase());
+                loader.setLogger(mLogger);
+                if(getService()!=null)
+                    loader.setSource(getService().getServiceName());
                 // create target map if "Target" attribute is set
                 CompositeMap target_map;
                 String target_path = this.getTarget();

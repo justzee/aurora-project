@@ -1,7 +1,7 @@
 /*
  * ResultSetLoader.java
  *
- * Created on 2002Äê4ÔÂ5ÈÕ, ÏÂÎç4:19
+ * Created on 2002ï¿½ï¿½4ï¿½ï¿½5ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½4:19
  */
 
 package org.lwap.database;
@@ -15,6 +15,7 @@ import org.lwap.database.datatype.DataTypeManager;
 import org.lwap.database.datatype.DatabaseTypeField;
 
 import uncertain.composite.CompositeMap;
+import uncertain.logging.ILogger;
 
 /**
  *
@@ -23,11 +24,17 @@ import uncertain.composite.CompositeMap;
  */
 public class ResultSetLoader {
     
+    static int RECORD_COUNT_WARNING = 5000;
+    static final String KEY_SOURCE = "____RESULT_SET_SOURCE____";
+    
     ResultSetMetaData      rs_meta;
     public static final String CASE_UPPER = "upper";
     public static final String CASE_LOWER = "lower";
     
     String  attribute_case;
+    
+    String                      source = "Unknown";
+    ILogger                     logger;    
     
     /**
      * Set character case of key for map 
@@ -98,9 +105,17 @@ public class ResultSetLoader {
     }
     
     public CompositeMap loadList( CompositeMap map, String child_name, ResultSet rs) throws SQLException {
+        int size=0;
     	while(rs.next()){
     		map.addChild( load(child_name, rs));
+    		size++;
+    		if(size>RECORD_COUNT_WARNING){
+    		    warnResultSetSize();
+    		    map.put(KEY_SOURCE, source);
+    		}
     	}
+        if(size>RECORD_COUNT_WARNING)
+            warnResultSetSize(size);    	
     	return map;
     }
     
@@ -116,6 +131,38 @@ public class ResultSetLoader {
     	}
     	rs.close();
     	return map;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public ILogger getLogger() {
+        return logger;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setLogger(ILogger logger) {
+        this.logger = logger;
+    }
+    
+    public void warnResultSetSize(){
+        String s = "Record count from " + source + " is exceeding warning level of " + RECORD_COUNT_WARNING;
+        if(logger!=null)
+            logger.warning(s);
+        else
+            System.err.println(s);
+    }
+    
+    public void warnResultSetSize(int size){
+        String s = "ResultSet from "+source+" has "+size+" records";
+        if(logger!=null)
+            logger.warning(s);
+        else
+            System.err.println(s);
     }
 
 }
