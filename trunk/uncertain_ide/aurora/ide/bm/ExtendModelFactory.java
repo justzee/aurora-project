@@ -3,7 +3,9 @@ package aurora.ide.bm;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
 import aurora.bm.BusinessModel;
@@ -19,6 +21,40 @@ public class ExtendModelFactory extends ModelFactory {
 		super(ocm);
 		this.c_file = file;
 	}
+	
+	
+//	private boolean hasUseCacheJoin(String modelName) throws Exception{
+//		CompositeLoader cl = modelFactory.getCompositeLoader();
+//		if(cl == null){
+//			cl = CompositeLoader.createInstanceForOCM();
+//			cl.setDefaultExt(ModelFactory.DEFAULT_MODEL_EXTENSION);
+//		}
+//		CompositeMap model= cl.loadFromClassPath(modelName, cl.getDefaultExt());
+//		if(model != null)
+//			return model.getBoolean(KEY_USE_CACHE_JOIN, false);
+//		return false;
+//	}
+
+
+	@Override
+	public CompositeLoader getCompositeLoader() {
+		return new CompositeLoader(){
+			public CompositeMap loadFromClassPath(String full_name, String file_ext)
+					throws IOException, SAXException {
+				IFile file;
+				try {
+					file = (IFile) BMUtil.getBMResourceFromClassPath(
+							c_file.getProject(), full_name);
+					CompositeMap config = AuroraResourceUtil.loadFromResource(file);
+					return config;
+				} catch (ApplicationException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+	}
+
 
 	@Override
 	protected BusinessModel getNewModelInstance(String name, String ext)

@@ -4,6 +4,8 @@
 package aurora.ide.helpers;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -20,6 +22,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.xml.sax.SAXException;
 
+import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.CompositeUtil;
 import uncertain.composite.QualifiedName;
@@ -33,6 +36,7 @@ import uncertain.schema.Namespace;
 import uncertain.schema.Schema;
 import uncertain.schema.SchemaManager;
 import aurora.ide.api.composite.map.Comment;
+import aurora.ide.api.composite.map.CommentCompositeLoader;
 import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.api.composite.map.CommentReader;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
@@ -555,4 +559,64 @@ public class CompositeMapUtil {
 		}
 		return null;
 	}
+	public static CompositeMap loadFile(File file) {
+		InputStream is = null;
+		try {
+			is = new FileInputStream(file);
+			CompositeLoader parser = new CommentCompositeLoader();
+			CompositeMap rootMap = parser.loadFromStream(is);
+			return rootMap;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+	public static CompositeMap loadFile(IFile file) {
+		InputStream is = null;
+		try {
+			is = file.getContents(false);
+
+			CompositeLoader parser = new CommentCompositeLoader();
+			CompositeMap rootMap = parser.loadFromStream(is);
+			return rootMap;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+	public static CompositeMap loadFromStream(InputStream is) {
+		try {
+			CompositeLoader parser = new CommentCompositeLoader();
+			CompositeMap rootMap = parser.loadFromStream(is);
+			return rootMap;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
 }
+
