@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Aurora Framework Editor Plug-in Libs
-Bundle-SymbolicName: aurora.ide.libs
+Bundle-SymbolicName: aurora.ide.libs;singleton:=true
 Bundle-Version: 1.3.0.qualifier
 Bundle-ClassPath: c3p0-0.9.1.2.jar,
  classes12.jar,
@@ -21,7 +21,8 @@ Bundle-ClassPath: c3p0-0.9.1.2.jar,
  SQLinForm.jar,
  freemarker.jar,
  aurora-js.jar,
- aurora-plugin.jar
+ aurora-plugin.jar,
+ .
 Bundle-Vendor: Aurora Framework
 Export-Package: SQLinForm_200,
  aurora.application;
@@ -167,6 +168,7 @@ Export-Package: SQLinForm_200,
  aurora.ide.api.statistics.cvs,
  aurora.ide.api.statistics.map,
  aurora.ide.api.statistics.model,
+ aurora.ide.libs,
  aurora.javascript,
  aurora.javascript.annotations,
  aurora.javascript.ast,
@@ -856,3 +858,7 @@ Export-Package: SQLinForm_200,
  uncertain.util.resource;uses:="uncertain.core,uncertain.cache",
  uncertain.util.template;uses:="uncertain.composite"
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
+ org.eclipse.core.runtime;bundle-version="3.7.0"
+Bundle-Activator: aurora.ide.libs.AuroraResourcesPlugin
+Bundle-ActivationPolicy: lazy
