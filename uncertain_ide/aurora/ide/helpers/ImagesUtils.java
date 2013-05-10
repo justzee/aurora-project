@@ -9,12 +9,13 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
-import aurora.ide.AuroraPlugin;
+import aurora.ide.libs.AuroraImagesUtils;
+import aurora.ide.libs.AuroraResourcesPlugin;
 
 public class ImagesUtils {
 
 	// The plugin registry
-	private final static ImageRegistry PLUGIN_REGISTRY = AuroraPlugin
+	private final static ImageRegistry PLUGIN_REGISTRY = AuroraResourcesPlugin
 			.getDefault().getImageRegistry();
 
 	public static final IPath ICONS_PATH = new Path("$nl$/icons/"); //$NON-NLS-1$
@@ -34,28 +35,30 @@ public class ImagesUtils {
 	};
 
 	public static Image getImage(String key) {
-		Image image = PLUGIN_REGISTRY.get(key);
-		if (image == null) {
-			IPath append = ICONS_PATH.append(getPath(key));
-			ImageDescriptor imageDescriptor = AuroraPlugin
-					.getImageDescriptor(append.toString());
-			PLUGIN_REGISTRY.put(key, imageDescriptor);
-			image = PLUGIN_REGISTRY.get(key);
-		}
-		return image;
+//		Image image = PLUGIN_REGISTRY.get(key);
+//		if (image == null) {
+//			IPath append = ICONS_PATH.append(getPath(key));
+//			ImageDescriptor imageDescriptor = AuroraResourcesPlugin
+//					.getImageDescriptor(append.toString());
+//			PLUGIN_REGISTRY.put(key, imageDescriptor);
+//			image = PLUGIN_REGISTRY.get(key);
+//		}
+//		return image;
+		return AuroraImagesUtils.getImage(key);
 	}
 
 	public static ImageDescriptor getImageDescriptor(String key) {
-		ImageDescriptor image = PLUGIN_REGISTRY.getDescriptor(key);
-		if (image == null) {
-			IPath append = ICONS_PATH.append(getPath(key));
-			ImageDescriptor imageDescriptor = AuroraPlugin
-					.getImageDescriptor(append.toString());
-			PLUGIN_REGISTRY.put(key, imageDescriptor);
-			image = PLUGIN_REGISTRY.getDescriptor(key);
-		}
-
-		return image;
+//		ImageDescriptor image = PLUGIN_REGISTRY.getDescriptor(key);
+//		if (image == null) {
+//			IPath append = ICONS_PATH.append(getPath(key));
+//			ImageDescriptor imageDescriptor = AuroraResourcesPlugin
+//					.getImageDescriptor(append.toString());
+//			PLUGIN_REGISTRY.put(key, imageDescriptor);
+//			image = PLUGIN_REGISTRY.getDescriptor(key);
+//		}
+//
+//		return image;
+		return AuroraImagesUtils.getImageDescriptor(key);
 	}
 
 	private static String getPath(String key) {
