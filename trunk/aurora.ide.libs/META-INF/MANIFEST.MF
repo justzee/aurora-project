@@ -22,7 +22,7 @@ Bundle-ClassPath: c3p0-0.9.1.2.jar,
  freemarker.jar,
  aurora-js.jar,
  aurora-plugin.jar,
- .
+ library.jar
 Bundle-Vendor: Aurora Framework
 Export-Package: SQLinForm_200,
  aurora.application;
@@ -857,7 +857,7 @@ Export-Package: SQLinForm_200,
  uncertain.util.reflect;uses:="uncertain.composite",
  uncertain.util.resource;uses:="uncertain.core,uncertain.cache",
  uncertain.util.template;uses:="uncertain.composite"
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.core.runtime;bundle-version="3.7.0"
 Bundle-Activator: aurora.ide.libs.AuroraResourcesPlugin
