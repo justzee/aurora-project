@@ -85,7 +85,7 @@ web
         <sect3 id="install-config-database"  revision="1">
             <title>database.config</title>
             <para>为了兼容不同数据库的特性，我们需要配置database.config</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <d:database-factory xmlns:d="http://www.aurora-framework.org/schema/database" defaultDatabase="MySQL5">
     <d:databases>
@@ -169,7 +169,7 @@ web
                     </tbody>
                 </tgroup>
             </table>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <dc:data-source-config xmlns:dc="aurora.datasource" useTransactionManager="false">
     <dc:database-connections>
@@ -248,7 +248,7 @@ web
                     </tbody>
                 </tgroup>
             </table>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <application-config xmlns="aurora.application" enableBMTrace="true">
     <application-view-config defaultPackage="ui.template" defaultTemplate="default" 
     defaultTheme="default" defaultAutoAppend="false" defaultAutoCount="true" 
@@ -261,7 +261,7 @@ web
         <sect3 id="install-config-service-listener"  revision="1">
             <title>service-listener.config</title>
             <para>配置参与service渲染过程的特性类</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <participant-manager xmlns="uncertain.event">
     <participant-list category="service">
         <participant class="aurora.service.json.JSONServiceInterpreter" />
@@ -280,7 +280,7 @@ web
         <sect3 id="install-config-service-logging"  revision="1">
             <title>service-logging.config</title>
             <para>配置日志相关属性</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <ns1:service-logging xmlns:ns1="aurora.application.features" append="false" 
      defaultLogLevel="FINE" pattern="_${/session/@session_id}_" enablePerServiceConfig="false">
@@ -300,7 +300,7 @@ web
         <sect3 id="install-config-service-procedure"  revision="1">
             <title>service-procedure.config</title>
             <para>配置service调用逻辑，procedure中的逻辑会在以后的开发中不断修改</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <p:procedure-registry xmlns:t="aurora.application.action" 
    xmlns:a="http://www.aurora-framework.org/application" xmlns:p="uncertain.proc">
@@ -319,7 +319,7 @@ web
         <sect3 id="install-config-freemarker"  revision="1">
             <title>freemarker-provider.config</title>
             <para>freemarker-provider.config配置了freemarer模板的相关属性以及实现类,系统默认无需修改</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" ?>
 <FreeMarkerProvider xmlns="aurora.presentation" defaultEncoding="UTF-8" />       
             ]]></programlisting>
@@ -329,7 +329,7 @@ web
         <sect3 id="install-config-presentation"  revision="1">
             <title>presentation-manager.config</title>
             <para>presentation-manager.config配置UI引用路径,系统默认无需修改</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <p:presentation-manager xmlns:p="aurora.presentation">
     <packages>
@@ -343,7 +343,7 @@ web
         <sect3 id="install-config-uncertain-local"  revision="1">
             <title>uncertain.local.xml</title>
             <para>在这个文件中我们配置好日志文件生成的路径地址以及UI目录地址</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <uncertain-engine defaultLogLevel="INFO">
     <path-config logPath="D:/web/logs" 
@@ -356,7 +356,7 @@ web
         <sect3 id="install-config-uncertain"  revision="1">
             <title>uncertain.xml</title>
             <para>uncertain文件配置框架基础的包信息,无需修改</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <uncertain-engine name="hap">
     <packages>
@@ -374,7 +374,7 @@ web
         <sect3 id="install-config-web"  revision="1">
             <title>web.xml</title>
             <para>web.xml配置框架的servlet</para>
-            <programlisting><![CDATA[
+            <programlisting language="myxml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <!--DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
     "http://java.sun.com/dtd/web-app_2_3.dtd"-->
