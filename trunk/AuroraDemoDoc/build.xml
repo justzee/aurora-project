@@ -73,7 +73,9 @@
         <!-- Compile the documentation for a single language in all formats. -->
         <antcall target="lang.docpdf"/>
         <antcall target="lang.dochtml"/>
+        <!--
         <antcall target="lang.dochtmlsingle"/>
+        -->
         <antcall target="lang.htmlmisc"/>
     </target>
 
