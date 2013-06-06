@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 
-import uncertain.ocm.IObjectRegistry;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.fake.uncertain.engine.FakeUncertainEngine;
 import aurora.ide.project.AuroraProject;
@@ -86,10 +85,12 @@ public class DBConnectionUtil {
 
 		private Connection conn;
 		private FakeUncertainEngine fue;
+		private String dsName;
 
-		public Runner(FakeUncertainEngine fue) {
+		public Runner(FakeUncertainEngine fue, String dsName) {
 			super();
 			this.fue = fue;
+			this.dsName = dsName;
 		}
 
 		public void run(IProgressMonitor monitor)
@@ -103,16 +104,29 @@ public class DBConnectionUtil {
 			if (!fue.isSuccess()) {
 				throw new InterruptedException();
 			}
-
 			monitor.setTaskName("获取数据库连接");
 			monitor.worked(20);
-			IObjectRegistry mObjectRegistry = fue.getObjectRegistry();
-			DataSource ds = (DataSource) mObjectRegistry
-					.getInstanceOfType(DataSource.class);
+			// {
+			// IObjectRegistry mObjectRegistry = fue.getObjectRegistry();
+			// DataSource ds = (DataSource) mObjectRegistry
+			// .getInstanceOfType(DataSource.class);
+			//
+			// try {
+			// Connection connection = ds.getConnection();
+			// setConn(connection);
+			// System.out.println(connection);
+			// } catch (SQLException e) {
+			// e.printStackTrace();
+			// }
+			// }
+			DataSource ds = fue.getDatasource(dsName);
+			if (ds == null) {
+				throw new InterruptedException();
+			}
 			monitor.worked(50);
 			try {
-				ds.setLoginTimeout(3);
-				setConn(ds.getConnection());
+				Connection connection = ds.getConnection();
+				setConn(connection);
 			} catch (SQLException e) {
 				throw new InvocationTargetException(e);
 			} finally {
@@ -130,10 +144,11 @@ public class DBConnectionUtil {
 
 	}
 
-	public static Connection getDBConnection(IProject project)
-			throws ApplicationException {
+	public static Connection getDBConnection(IProject project,
+			String datasourceName) throws ApplicationException {
 		FakeUncertainEngine fue = getFakeUncertainEngine(project);
-		final Runner runnable = new DBConnectionUtil().new Runner(fue);
+		final Runner runnable = new DBConnectionUtil().new Runner(fue,
+				datasourceName);
 		try {
 			AuroraPlugin.getDefault().getWorkbench().getProgressService()
 					.busyCursorWhile(runnable);
@@ -148,10 +163,21 @@ public class DBConnectionUtil {
 		return conn;
 	}
 
+	public static Connection getDBConnection(IProject project)
+			throws ApplicationException {
+		return getDBConnection(project, null);
+	}
+
 	public static Connection getDBConnectionSyncExec(IProject project)
 			throws ApplicationException {
+		return getDBConnectionSyncExec(project, null);
+	}
+
+	public static Connection getDBConnectionSyncExec(IProject project,
+			String datasourceName) throws ApplicationException {
 		FakeUncertainEngine fue = getFakeUncertainEngine(project);
-		final Runner runnable = new DBConnectionUtil().new Runner(fue);
+		final Runner runnable = new DBConnectionUtil().new Runner(fue,
+				datasourceName);
 		Display.getDefault().syncExec(new Runnable() {
 
 			public void run() {
@@ -179,7 +205,7 @@ public class DBConnectionUtil {
 	public static FakeUncertainEngine getFakeUncertainEngine(IProject project)
 			throws ApplicationException {
 		FakeUncertainEngine fue = project_engine.get(project);
-		if (true || fue == null || fue.isRunning() == false) {
+		if (fue == null || fue.isRunning() == false) {
 			fue = createFakeUncertainEngine(project);
 			project_engine.put(project, fue);
 		}

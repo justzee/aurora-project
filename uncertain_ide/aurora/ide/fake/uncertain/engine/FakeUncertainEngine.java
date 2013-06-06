@@ -2,9 +2,13 @@ package aurora.ide.fake.uncertain.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -13,6 +17,7 @@ import javax.sql.DataSource;
 import uncertain.cache.CacheFactoryConfig;
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
+import uncertain.composite.IterationHandle;
 import uncertain.core.DirectoryConfig;
 import uncertain.core.IContainer;
 import uncertain.core.ILifeCycle;
@@ -42,8 +47,13 @@ import uncertain.proc.ParticipantRegistry;
 import uncertain.proc.ProcedureManager;
 import uncertain.schema.ISchemaManager;
 import uncertain.schema.SchemaManager;
+import aurora.datasource.DatabaseConnection;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DialogUtil;
+
+import com.mchange.v2.c3p0.DataSources;
+import com.mchange.v2.c3p0.DriverManagerDataSource;
 
 public class FakeUncertainEngine {
 	private SchemaManager mSchemaManager;
@@ -408,6 +418,8 @@ public class FakeUncertainEngine {
 
 					public void onInstanceCreate(Object instance,
 							File config_file) {
+						// System.out.println(instance);
+						// System.out.println(config_file);
 						if (!loadInstance(instance)) {
 							throw BuiltinExceptionFactory
 									.createInstanceStartError(instance,
@@ -426,7 +438,7 @@ public class FakeUncertainEngine {
 			addContextListener((IContextListener) inst);
 		if (inst instanceof ILifeCycle) {
 			ILifeCycle c = (ILifeCycle) inst;
-			if(c instanceof CacheFactoryConfig){
+			if (c instanceof CacheFactoryConfig) {
 				return false;
 			}
 			if (c.startup()) {
@@ -523,6 +535,40 @@ public class FakeUncertainEngine {
 		return objectRegistry;
 	}
 
+	Map<String, DataSource> datasources;
+
+	private List<DatabaseConnection> loadDataSourceConfig() {
+		File configDirectory = new File(directoryConfig.getConfigDirectory());
+		File config = new File(configDirectory,
+				"/aurora.database/datasource.config");
+		if (config.exists() == false) {
+			config = new File(configDirectory, "0.datasource.config");
+		}
+		final List<DatabaseConnection> dss = new ArrayList<DatabaseConnection>();
+		if (config.exists() == false) {
+			return dss;
+		}
+		CompositeMap loadFile = CompositeMapUtil.loadFile(config);
+		loadFile.iterate(new IterationHandle() {
+			public int process(CompositeMap map) {
+				if ("database-connection".equalsIgnoreCase(map.getName())) {
+					DatabaseConnection dc = new DatabaseConnection();
+					dc.setName(CompositeMapUtil.getValueIgnoreCase(map, "name"));
+					dc.setDriverClass(CompositeMapUtil.getValueIgnoreCase(map,
+							"driverClass"));
+					dc.setUrl(CompositeMapUtil.getValueIgnoreCase(map, "url"));
+					dc.setUserName(CompositeMapUtil.getValueIgnoreCase(map,
+							"userName"));
+					dc.setPassword(CompositeMapUtil.getValueIgnoreCase(map,
+							"password"));
+					dss.add(dc);
+				}
+				return IterationHandle.IT_CONTINUE;
+			}
+		}, true);
+		return dss;
+	}
+
 	public void startup() {
 		long tick = System.currentTimeMillis();
 
@@ -532,51 +578,76 @@ public class FakeUncertainEngine {
 
 		mConfig.setLogger(mLogger);
 		setProcedureManager(new ProcedureManager(engine));
-		//
-//		 File local_config_file = new File(getConfigDirectory(),
-//		 "uncertain.local.xml");
-//		 CompositeMap local_config_map = null;
-//		 if (local_config_file.exists()) {
-//		 try {
-//		 local_config_map = compositeLoader.loadByFile(local_config_file
-//		 .getAbsolutePath());
-//		 } catch (Exception ex) {
-//		 throw new RuntimeException(ex);
-//		 }
-//		 initialize(local_config_map);
-//		 }
 
-		// new part, load all instances
 		loadInstanceFromPackage();
-		// old part
-		// scanConfigFiles(DEFAULT_CONFIG_FILE_PATTERN);
+		datasources = new HashMap<String, DataSource>();
+		List<DatabaseConnection> loadDataSourceConfig = loadDataSourceConfig();
+		// createDatasource1(loadDataSourceConfig);
+		createDatasource2(loadDataSourceConfig);
+
 		mIsRunning = isSuccess();
 		tick = System.currentTimeMillis() - tick;
 	}
 
-	public boolean isSuccess() {
-		IObjectRegistry mObjectRegistry = getObjectRegistry();
-		DataSource ds = (DataSource) mObjectRegistry
-				.getInstanceOfType(DataSource.class);
-		return ds != null;
+	public void createDatasource2(List<DatabaseConnection> loadDataSourceConfig) {
+		for (DatabaseConnection dbConfig : loadDataSourceConfig) {
+			// Map<String, String> dbMap = new HashMap<String, String>();
+			DataSource ds = null;
+			// dbMap.put("username", dbConfig.getUserName());
+			// dbMap.put("password", dbConfig.getPassword());
+			// dbMap.put("driverClassName", dbConfig.getDriverClass());
+			// dbMap.put("url", dbConfig.getUrl());
+			ds = FakeDataSource.createDataSource(dbConfig);
+			this.datasources.put(dbConfig.getName(), ds);
+		}
 	}
 
-	 public void initialize(CompositeMap config) {
-//	 // populate self from config
-//	 if (config != null) {
-//	 oc_manager.populateObject(config, this);
-//	 CompositeMap child = config
-//	 .getChild(DirectoryConfig.KEY_PATH_CONFIG);
-//	 if (child != null) {
-//	 if (directoryConfig == null)
-//	 directoryConfig = DirectoryConfig
-//	 .createDirectoryConfig(child);
-//	 else
-//	 directoryConfig.getObjectContext().putAll(child);
-//	 }
-//	 directoryConfig.checkValidation();
-//	 }
-	 }
+	public void createDatasource1(List<DatabaseConnection> loadDataSourceConfig) {
+		for (DatabaseConnection dc : loadDataSourceConfig) {
+			// Class.forName(className)
+			try {
+				DriverManagerDataSource ds = (DriverManagerDataSource) DataSources
+						.unpooledDataSource();
+				// ds = DataSources.unpooledDataSource(dbConfig.getUrl(),
+				// dbConfig.getUserName(), dbConfig.getPassword());
+				ds.setDriverClass(dc.getDriverClass());
+				ds.setDescription(dc.getName());
+				ds.setJdbcUrl(dc.getUrl());
+				ds.setPassword(dc.getPassword());
+				ds.setUser(dc.getUserName());
+				this.datasources.put(dc.getName(), ds);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public boolean isSuccess() {
+		// if(true){
+		// IObjectRegistry mObjectRegistry = getObjectRegistry();
+		// DataSource ds = (DataSource) mObjectRegistry
+		// .getInstanceOfType(DataSource.class);
+		// return ds != null;
+		// }
+		return datasources.size() > 0;
+	}
+
+	public void initialize(CompositeMap config) {
+		// // populate self from config
+		// if (config != null) {
+		// oc_manager.populateObject(config, this);
+		// CompositeMap child = config
+		// .getChild(DirectoryConfig.KEY_PATH_CONFIG);
+		// if (child != null) {
+		// if (directoryConfig == null)
+		// directoryConfig = DirectoryConfig
+		// .createDirectoryConfig(child);
+		// else
+		// directoryConfig.getObjectContext().putAll(child);
+		// }
+		// directoryConfig.checkValidation();
+		// }
+	}
 
 	public File getConfigDirectory() {
 		if (mConfigDir == null) {
@@ -588,6 +659,14 @@ public class FakeUncertainEngine {
 	}
 
 	public void shutdown() {
+		for (ILifeCycle l : mLoadedLifeCycleList) {
+			try {
+				l.shutdown();
+			} catch (Throwable thr) {
+				mLogger.log(Level.WARNING, "Error when shuting down instance "
+						+ l, thr);
+			}
+		}
 		mIsRunning = false;
 	}
 
@@ -610,6 +689,18 @@ public class FakeUncertainEngine {
 
 	public void setProcedureManager(ProcedureManager mProcedureManager) {
 		this.mProcedureManager = mProcedureManager;
+	}
+
+	public DataSource getDatasource(String string) {
+		if (datasources == null)
+			return null;
+		return this.datasources.get(string);
+	}
+
+	public DataSource getDefaultDatasource() {
+		if (datasources == null)
+			return null;
+		return this.datasources.get(null);
 	}
 
 }

@@ -37,6 +37,9 @@ public class AuroraDataBase implements IRunnableWithProgress {
 	public Connection getDBConnection() throws ApplicationException{
 		return connection = DBConnectionUtil.getDBConnection(project);
 	}
+	public Connection getDBConnection(String datasourceName) throws ApplicationException{
+		return connection = DBConnectionUtil.getDBConnection(project,datasourceName);
+	}
 //		try {
 //			new ProgressMonitorDialog(null).run(true, true, this);
 //		} catch (InvocationTargetException e) {
