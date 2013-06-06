@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -62,22 +63,26 @@ import aurora.ide.fake.uncertain.engine.FakeUncertainEngine;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.ExceptionUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.SystemException;
+import aurora.ide.search.cache.CacheManager;
 
 public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private static final String PageId = "SQLExecutePage";
-	private static final String PageTitle = LocaleMessage.getString("auto.sql.test");
+	private static final String PageTitle = LocaleMessage
+			.getString("auto.sql.test");
 	private CTabFolder tabFolder;
 	private SashForm sashForm;
 
 	private Connection connection;
 
 	private ToolBarManager toolBarManager;
-	private static final String[] tabs = { "query", "insert", "update", "delete" };
+	private static final String[] tabs = { "query", "insert", "update",
+			"delete" };
 
 	private FakeUncertainEngine uncertainEngine;
 	private BusinessModelService modelService;
@@ -137,7 +142,10 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 				sashForm.layout();
 			}
 			String sql = getSql().split(" ")[0];
-			int message = DialogUtil.showConfirmDialogBox(LocaleMessage.getString("are.you.sure.want.to") + sql + " "
+			int message = DialogUtil.showConfirmDialogBox(LocaleMessage
+					.getString("are.you.sure.want.to")
+					+ sql
+					+ " "
 					+ resultCount + LocaleMessage.getString("records") + "?");
 			try {
 				if (message == SWT.OK) {
@@ -155,7 +163,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		if (uncertainEngine == null || !isModify()) {
 			return;
 		}
-		modelService = makeBusinessModelService(uncertainEngine, connection, content);
+		modelService = makeBusinessModelService(uncertainEngine, connection,
+				content);
 		for (int i = 0; i < tabs.length; i++) {
 			StyledText st = (StyledText) tabFolder.getItem(i).getControl();
 			try {
@@ -187,7 +196,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		this.modify = modify;
 	}
 
-	protected void createContent(Composite shell, FormToolkit toolkit) throws ApplicationException {
+	protected void createContent(Composite shell, FormToolkit toolkit)
+			throws ApplicationException {
 		viewForm = new ViewForm(shell, SWT.NONE);
 		viewForm.setLayout(new FillLayout());
 		createToolbar(viewForm);
@@ -214,29 +224,43 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 
 	}
 
-	protected void createResultContent(Composite parent) throws ApplicationException {
+	protected void createResultContent(Composite parent)
+			throws ApplicationException {
 		tableViewer = new GridViewer();
 		tableViewer.createViewer(parent);
 		tableViewer.getControl().setVisible(false);
 	}
 
 	protected File getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput()).getFile();
+		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
+				.getFile();
 		String fileName = AuroraResourceUtil.getIfileLocalPath(ifile);
 		return new File(fileName);
 	}
 
 	protected void initConnection() throws ApplicationException {
-		IProject project = ((IFileEditorInput) getEditor().getEditorInput()).getFile().getProject();
+		IFile file = ((IFileEditorInput) getEditor().getEditorInput())
+				.getFile();
+		IProject project = file.getProject();
 		AuroraDataBase ad = new AuroraDataBase(project);
-		connection = ad.getDBConnection();
+		// dataSourceName 对应的数据源的名称
+		String datasourceName = null;
+		try {
+			CompositeMap cMap = CacheManager.getWholeBMCompositeMap(file);
+			datasourceName = CompositeMapUtil.getValueIgnoreCase(cMap,
+					"dataSourceName");
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		connection = ad.getDBConnection(datasourceName);
 		try {
 			connection.setAutoCommit(false);
 		} catch (SQLException e) {
 			throw new SystemException(e);
 		}
 		uncertainEngine = DBConnectionUtil.getFakeUncertainEngine(project);
-		if(!uncertainEngine.isRunning()){
+		if (!uncertainEngine.isRunning()) {
 			uncertainEngine.startup();
 		}
 		String content;
@@ -246,12 +270,14 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 			// XMLOutputter.defaultInstance().toXML(AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()),
 			// true);
 			content = CommentXMLOutputter.defaultInstance().toXML(
-					AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(getFile().getAbsolutePath()), true);
+					AuroraResourceUtil.getCompsiteLoader().loadByFullFilePath(
+							getFile().getAbsolutePath()), true);
 
 		} catch (Throwable e) {
 			throw new SystemException(e);
 		}
-		modelService = makeBusinessModelService(uncertainEngine, connection, content);
+		modelService = makeBusinessModelService(uncertainEngine, connection,
+				content);
 	}
 
 	private ActionContributionItem createActionContributionItem(IAction action) {
@@ -260,7 +286,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		return aci;
 	}
 
-	private String[] createColumnProperties(ResultSet resultSet) throws SystemException {
+	private String[] createColumnProperties(ResultSet resultSet)
+			throws SystemException {
 		ResultSetMetaData resultSetMetaData;
 		String[] column_index = null;
 		try {
@@ -276,18 +303,21 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		return column_index;
 	}
 
-	private BusinessModelServiceContext createContext(FakeUncertainEngine uncertainEngine, Connection connection) {
+	private BusinessModelServiceContext createContext(
+			FakeUncertainEngine uncertainEngine, Connection connection) {
 		Configuration rootConfig = uncertainEngine.createConfig();
 		rootConfig.addParticipant(this);
 		CompositeMap context = new CommentCompositeMap("root");
-		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject.cast(context,
-				BusinessModelServiceContext.class);
+		BusinessModelServiceContext bc = (BusinessModelServiceContext) DynamicObject
+				.cast(context, BusinessModelServiceContext.class);
 		bc.setConfig(rootConfig);
 		bc.setConnection(connection);
-		LoggerProvider lp = LoggerProvider.createInstance(Level.FINE, System.out);
+		LoggerProvider lp = LoggerProvider.createInstance(Level.FINE,
+				System.out);
 		LoggingContext.setLoggerProvider(context, lp);
-		SqlServiceContext sc = SqlServiceContext.createSqlServiceContext(context);
-		sc.setTrace(true);
+		SqlServiceContext sc = SqlServiceContext
+				.createSqlServiceContext(context);
+		sc.setTrace(true); 
 		return bc;
 	}
 
@@ -296,7 +326,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		final String TabHeighGrab = "           ";
 		for (int i = 0; i < tabs.length; i++) {
 			tabFolder.getItem(i).setText(TabHeighGrab + tabs[i] + TabHeighGrab);
-			SourceViewer textSection = new SourceViewer(tabFolder, null, SWT.WRAP | SWT.V_SCROLL);
+			SourceViewer textSection = new SourceViewer(tabFolder, null,
+					SWT.WRAP | SWT.V_SCROLL);
 			textSection.configure(new SQLConfiguration(new ColorManager()));
 			Document document = new Document();
 			textSection.setDocument(document);
@@ -310,11 +341,13 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 
 				public void widgetSelected(SelectionEvent e) {
 					if (tabFolder.getSelectionIndex() == itemIndex
-							&& (st.getText() != null && !st.getText().equals(""))) {
+							&& (st.getText() != null && !st.getText()
+									.equals(""))) {
 						return;
 					}
 					try {
-						StringBuffer sqlbf = modelService.getSql(tabs[itemIndex]);
+						StringBuffer sqlbf = modelService
+								.getSql(tabs[itemIndex]);
 						String sql = sqlbf.toString();
 						if (sqlbf != null) {
 							SQLFormat sf = new SQLFormat();
@@ -331,7 +364,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	}
 
 	private CTabFolder createTabFolder(final Composite parent) {
-		final CTabFolder tabFolder = new CTabFolder(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		final CTabFolder tabFolder = new CTabFolder(parent, SWT.V_SCROLL
+				| SWT.H_SCROLL | SWT.BORDER);
 		tabFolder.setMaximizeVisible(true);
 		tabFolder.addMouseListener(new MouseListener() {
 			public void mouseUp(MouseEvent e) {
@@ -361,7 +395,8 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 
 			public void minimize(CTabFolderEvent event) {
 				tabFolder.setMinimized(true);
-				tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+				tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+						false));
 				parent.layout(true);
 			}
 
@@ -383,12 +418,14 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 	private void createToolbar(ViewForm viewForm) {
 		ToolBar toolBar = new ToolBar(viewForm, SWT.RIGHT | SWT.FLAT);
 		toolBarManager = new ToolBarManager(toolBar);
-		ExecuteSqlAction action = new ExecuteSqlAction(this, ExecuteSqlAction.getDefaultImageDescriptor(), null);
+		ExecuteSqlAction action = new ExecuteSqlAction(this,
+				ExecuteSqlAction.getDefaultImageDescriptor(), null);
 		addActions(new Action[] { action });
 		viewForm.setTopLeft(toolBar);
 	}
 
-	private void creatTableViewer(Composite parent, ResultSet resultSet) throws ApplicationException {
+	private void creatTableViewer(Composite parent, ResultSet resultSet)
+			throws ApplicationException {
 		tableViewer.clearAll(false);
 		tableViewer.createViewer(parent);
 		tableViewer.getControl().setVisible(true);
@@ -399,13 +436,15 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		tableViewer.packColumns();
 	}
 
-	private CompositeMap getInput(ResultSet tableRet, String[] ColumnProperties) throws SystemException {
+	private CompositeMap getInput(ResultSet tableRet, String[] ColumnProperties)
+			throws SystemException {
 		CompositeMap input = new CommentCompositeMap();
 		try {
 			while (tableRet.next()) {
 				CompositeMap element = new CommentCompositeMap();
 				for (int i = 0; i < ColumnProperties.length; i++) {
-					element.put(ColumnProperties[i], tableRet.getObject(ColumnProperties[i]));
+					element.put(ColumnProperties[i],
+							tableRet.getObject(ColumnProperties[i]));
 				}
 				input.addChild(element);
 			}
@@ -415,23 +454,29 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		return input;
 	}
 
-	private BusinessModelService makeBusinessModelService(FakeUncertainEngine uncertainEngine, Connection connection,
+	private BusinessModelService makeBusinessModelService(
+			FakeUncertainEngine uncertainEngine, Connection connection,
 			String content) throws ApplicationException {
 		IObjectRegistry reg = uncertainEngine.getObjectRegistry();
 		DatabaseServiceFactory svcFactory = (DatabaseServiceFactory) reg
 				.getInstanceOfType(DatabaseServiceFactory.class);
 
-		BusinessModelServiceContext bc = createContext(uncertainEngine, connection);
+		BusinessModelServiceContext bc = createContext(uncertainEngine,
+				connection);
 		CompositeMap context = bc.getObjectContext();
-
-		IDEModelFactory modelFactory = new IDEModelFactory(uncertainEngine.getOc_manager());
-		uncertainEngine.getObjectRegistry().registerInstanceOnce(IModelFactory.class, modelFactory);
+		IDEModelFactory modelFactory = new IDEModelFactory(
+				uncertainEngine.getOc_manager(),
+				((IFileEditorInput) getEditor().getEditorInput()).getFile());
+		uncertainEngine.getObjectRegistry().registerInstanceOnce(
+				IModelFactory.class, modelFactory);
 		svcFactory.setModelFactory(modelFactory);
 		svcFactory.updateSqlCreator(modelFactory);
 		try {
-			CompositeMap bm_model = svcFactory.getModelFactory().getCompositeLoader()
+			CompositeMap bm_model = svcFactory.getModelFactory()
+					.getCompositeLoader()
 					.loadFromString(content, AuroraConstant.ENCODING);
-			BusinessModelService service = svcFactory.getModelService(bm_model, context);
+			BusinessModelService service = svcFactory.getModelService(bm_model,
+					context);
 			return service;
 		} catch (Throwable e) {
 			throw new SystemException(e);
