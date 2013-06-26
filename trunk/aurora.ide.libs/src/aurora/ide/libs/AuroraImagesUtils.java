@@ -124,5 +124,4 @@ public class AuroraImagesUtils {
 	public static String toString(RGB color) {
 		return color.red + "," + color.green + "," + color.blue;
 	}
-	
 }
