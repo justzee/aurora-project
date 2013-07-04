@@ -28,6 +28,8 @@ import aurora.ide.builder.RegionUtil;
 import aurora.ide.builder.SxsdUtil;
 import aurora.ide.editor.textpage.quickfix.QuickAssistUtil;
 import aurora.ide.helpers.CompositeMapUtil;
+import aurora.ide.schema.ITypeDelegate;
+import aurora.ide.schema.SchemaTypeManager;
 
 public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 	private ISourceViewer sourceViewer;
@@ -86,6 +88,11 @@ public class TextHover extends DefaultTextHover implements ITextHoverExtension {
 					continue;
 				if (RegionUtil.isSubRegion(region, hoverRegion)) {
 					// return html(cursorMap.getString(key));
+					SchemaTypeManager stm = new SchemaTypeManager(cursorMap);
+					ITypeDelegate de = stm.getAttributeTypeDelegate(key);
+					if (de != null) {
+						return html(  de.getValue(cursorMap.getString(key)) );
+					}
 					return html("<pre>" + cursorMap.getString(key) + "</pre>");
 				}
 			}

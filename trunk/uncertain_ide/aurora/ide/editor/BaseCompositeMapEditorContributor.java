@@ -1,6 +1,7 @@
 package aurora.ide.editor;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.actions.ActionFactory;
@@ -30,10 +31,6 @@ public class BaseCompositeMapEditorContributor extends
 		return (editor == null ? null : editor.getAction(actionID));
 	}
 
-	/*
-	 * (non-JavaDoc) Method declared in
-	 * AbstractMultiPageEditorActionBarContributor.
-	 */
 
 	public void setActivePage(IEditorPart part) {
 		if (activeEditorPart == part)

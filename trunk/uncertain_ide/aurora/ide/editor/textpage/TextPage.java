@@ -8,6 +8,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -26,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -41,11 +45,12 @@ import aurora.ide.editor.textpage.action.ExportFunctionSQLAction;
 import aurora.ide.editor.textpage.action.GetFileNameAction;
 import aurora.ide.editor.textpage.action.ToggleBlockCommentAction;
 import aurora.ide.editor.textpage.action.ToggleCommentAction;
-import aurora.ide.editor.textpage.js.validate.JavascriptDocumentListener;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
+import aurora.ide.refactoring.ui.action.DelBmFieldAciton;
+import aurora.ide.refactoring.ui.action.RenameBmFieldAciton;
 
 public class TextPage extends TextEditor implements IViewer {
 	/** The ID of this editor as defined in plugin.xml */
@@ -136,7 +141,6 @@ public class TextPage extends TextEditor implements IViewer {
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		// add by shiliyan
-
 //		getInputDocument().addDocumentListener(
 //				new JavascriptDocumentListener(this));
 
@@ -186,7 +190,11 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public String getContent() {
-		return getSourceViewer().getDocument().get();
+		return getDocument().get();
+	}
+
+	public IDocument getDocument() {
+		return getSourceViewer().getDocument();
 	}
 
 	public boolean canLeaveThePage() {
@@ -343,7 +351,13 @@ public class TextPage extends TextEditor implements IViewer {
 			throw new RuntimeException(e);
 		}
 	}
-
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+		super.editorContextMenuAboutToShow(menu);
+//		String BM_REFACTORING = "BM_REFACTORING";
+//		IWorkbenchActionConstants.MB_ADDITIONS
+//		menu.appendToGroup(ITextEditorActionConstants.GROUP_REST,new Separator(BM_REFACTORING));
+		menu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, new RenameBmFieldAciton(this));
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
