@@ -87,6 +87,7 @@ public class FakeDataSource implements DataSource {
 		} catch (ClassNotFoundException e) {
 			throw new SQLException(e);
 		}
+		DriverManager.setLoginTimeout(5000);
 		Connection conn = DriverManager.getConnection(url, userName, password);
 		return conn;
 	}

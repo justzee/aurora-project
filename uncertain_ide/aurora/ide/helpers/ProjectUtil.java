@@ -18,6 +18,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
@@ -230,9 +231,16 @@ public class ProjectUtil {
 	}
 
 	public static IProject getIProjectFromActiveEditor() {
-		IEditorInput input = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage().getActiveEditor()
-				.getEditorInput();
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow == null) {
+			activeWorkbenchWindow = PlatformUI.getWorkbench()
+					.getWorkbenchWindows()[0];
+		}
+		IEditorInput input = activeWorkbenchWindow.getActivePage()
+				.getActiveEditor().getEditorInput();
+		if ((input instanceof IFileEditorInput) == false)
+			return null;
 		IFile ifile = ((IFileEditorInput) input).getFile();
 		IProject project = ifile.getProject();
 		return project;

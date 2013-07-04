@@ -141,7 +141,6 @@ public class DBConnectionUtil {
 		public void setConn(Connection conn) {
 			this.conn = conn;
 		}
-
 	}
 
 	public static Connection getDBConnection(IProject project,
