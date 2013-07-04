@@ -115,7 +115,7 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		IWorkbenchWindow iwb = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		if (iwb == null)
-			return;
+			iwb = PlatformUI.getWorkbench().getWorkbenchWindows()[0];
 		IWorkbenchPage wp = iwb.getActivePage();
 		if (wp == null)
 			return;
@@ -155,7 +155,11 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 		if (element instanceof IResource) {
 			this.selection = (IStructuredSelection) selection;
 		}
+//		else{
+//			selection = null;
+//		}
 	}
+	
 
 	public IStructuredSelection getStructuredSelection() {
 		return selection;
