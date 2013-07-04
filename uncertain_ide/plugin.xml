@@ -35,7 +35,6 @@
             icon="icons/sql.gif" id="aurora.ide.wizard.BMFromProcedure" 
             name="从数据库过程创建BM文件">
         </wizard>
-        
     </extension>
       <extension
           point="org.eclipse.ui.contexts">
@@ -68,7 +67,7 @@
       </editor>
       <editor
             class="aurora.ide.bm.editor.BusinessModelEditor"
-            contributorClass="aurora.ide.editor.BaseCompositeMapEditorContributor"
+            contributorClass="aurora.ide.editor.BmEditorContributor"
             default="true"
             filenames="*.bm"
             icon="icons/bm.gif"
@@ -375,7 +374,6 @@
 	         definitionId="aurora.ide.search.command.FiledReferenceCommand"
 	         class="aurora.ide.search.action.FieldReferenceAction"> 
 	      </action>
-	     
     </viewerContribution>
     <objectContribution
           adaptable="true"
