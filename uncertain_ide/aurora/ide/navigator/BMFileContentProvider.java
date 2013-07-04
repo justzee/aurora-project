@@ -196,7 +196,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 								delta.getResource());
 					}
 				} catch (ApplicationException e) {
-//					DialogUtil.showExceptionMessageBox(e);
+					// DialogUtil.showExceptionMessageBox(e);
 					DialogUtil.logErrorException(e);
 				}
 			}
@@ -254,7 +254,7 @@ public class BMFileContentProvider implements ITreeContentProvider,
 		}
 	}
 
-	private BMFile searchBMLinkFile(final IResource resource)
+	public static BMFile searchBMLinkFile(final IResource resource)
 			throws ApplicationException {
 
 		if (resource == null || !resource.exists())

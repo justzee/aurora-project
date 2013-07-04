@@ -204,6 +204,23 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 				}
 			}
 		});
+
+		// Label dbloginTimeOut = new Label(content, SWT.NONE);
+		// dbloginTimeOut.setText(LocaleMessage.getString("preview.url"));
+		// Text dbloginTimeOutText = new Text(content, SWT.BORDER);
+		// gridData = new GridData(GridData.FILL_HORIZONTAL);
+		// gridData.horizontalSpan = 2;
+		// dbloginTimeOutText.setLayoutData(gridData);
+		// try {
+		// String time = getProject().getPersistentProperty(new QualifiedName(
+		// AuroraPlugin.PLUGIN_ID,"dbloginTimeOutText" ));
+		// if (filtEmpty(time) != null) {
+		// dbloginTimeOutText.setText(time);
+		// }
+		// } catch (Throwable e) {
+		// DialogUtil.showExceptionMessageBox(e);
+		// }
+
 		Button testConn = new Button(content, SWT.PUSH);
 		testConn.setText(LocaleMessage.getString("test.database"));
 		gridData = new GridData(GridData.BEGINNING);

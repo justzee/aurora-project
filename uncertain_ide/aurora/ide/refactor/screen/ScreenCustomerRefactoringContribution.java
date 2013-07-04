@@ -12,7 +12,6 @@ public class ScreenCustomerRefactoringContribution extends
 		RefactoringContribution {
 
 	public ScreenCustomerRefactoringContribution() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
