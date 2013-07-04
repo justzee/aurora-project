@@ -1,4 +1,4 @@
-package aurora.ide.refactor.screen;
+package aurora.ide.refactor.bm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +18,8 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.ReplaceEdit;
 
-import uncertain.composite.CompositeMap;
-import aurora.ide.search.core.AbstractMatch;
-import aurora.ide.search.core.CompositeMapMatch;
-import aurora.ide.search.screen.custom.ScreenCustomService;
-
-public class ScreenCustomerRefactoring extends Refactoring {
+public class BMFieldRefactoring extends Refactoring {
 
 	private IStructuredSelection selection;
 
@@ -34,25 +28,33 @@ public class ScreenCustomerRefactoring extends Refactoring {
 	
 	private Map<IFile, TextFileChange> changeMap = new HashMap<IFile, TextFileChange>();
 
-	public ScreenCustomerRefactoring(IStructuredSelection selection) {
+	public BMFieldRefactoring(IStructuredSelection selection) {
 		this.selection = selection;
 		init(selection);
 	}
-
+	//look up bm hierarchy
+	//which cursorMap key value
+	//create textfilechange
+	// <bm:field <bm:query-field defaultDisplayField defaultOrderBy'aa,bb,cc'? <bm:pk-field
+//<bm:ref-field(relations) <bm:order-field 
+	//only  bm:LocalFieldReference 
+	//not bm:ForeignFieldReference
 	private void init(IStructuredSelection selection) {
-		if (selection == null)
-			return;
-		Iterator iterator = selection.iterator();
-		while (iterator.hasNext()) {
-			Object next = iterator.next();
-			if (next instanceof IResource) {
-				if ("screen".equalsIgnoreCase(((IResource) next)
-						.getFileExtension())
-						|| ((IResource) next).getType() == IResource.FOLDER) {
-					scopes.add((IResource) next);
-				}
-			}
-		}
+//		if (selection == null)
+//			return;
+//		Iterator iterator = selection.iterator();
+//		while (iterator.hasNext()) {
+//			Object next = iterator.next();
+//			if (next instanceof IResource) {
+//				if ("screen".equalsIgnoreCase(((IResource) next)
+//						.getFileExtension())
+//						|| ((IResource) next).getType() == IResource.FOLDER) {
+//					scopes.add((IResource) next);
+//				}
+//			}
+//		}
+
+	
 	}
 
 	@Override
@@ -70,27 +72,31 @@ public class ScreenCustomerRefactoring extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		List<AbstractMatch> result = new ArrayList<AbstractMatch>();
-		for (IResource scope : scopes) {
-			ScreenCustomService service = new ScreenCustomService(scope);
-			List<AbstractMatch> _result = service.service(pm);
-			result.addAll(_result);
-		}
+		
+		
+		//BMFieldReferenceService
+//		List<AbstractMatch> result = new ArrayList<AbstractMatch>();
+//		for (IResource scope : scopes) {
+//			ScreenCustomService service = new ScreenCustomService(scope);
+//			List<AbstractMatch> _result = service.service(pm);
+//			result.addAll(_result);
+//		}
+//	
+//		ScreenCustomerIDGen gen = new ScreenCustomerIDGen();
+//		for (int i = 0; i < result.size(); i++) {
+//			CompositeMapMatch object = (CompositeMapMatch) result.get(i);
+//			IFile file = (IFile) object.getElement();
+//			CompositeMap map = object.getMap();
+//			String id = gen.createID(file, map);
+//			TextFileChange textFileChange = getTextFileChange(file);
+//			int offset = object.getOriginalOffset();
+//			ReplaceEdit child = new ReplaceEdit(offset, 0, " " + id);
+//			textFileChange.addEdit(child);
+//		}
+//		changes.addAll(changeMap.values().toArray(
+//				new TextFileChange[changeMap.size()]));
 		CompositeChange changes = new CompositeChange("aurora changes");
 		changes.markAsSynthetic();
-		ScreenCustomerIDGen gen = new ScreenCustomerIDGen();
-		for (int i = 0; i < result.size(); i++) {
-			CompositeMapMatch object = (CompositeMapMatch) result.get(i);
-			IFile file = (IFile) object.getElement();
-			CompositeMap map = object.getMap();
-			String id = gen.createID(file, map);
-			TextFileChange textFileChange = getTextFileChange(file);
-			int offset = object.getOriginalOffset();
-			ReplaceEdit child = new ReplaceEdit(offset, 0, " " + id);
-			textFileChange.addEdit(child);
-		}
-		changes.addAll(changeMap.values().toArray(
-				new TextFileChange[changeMap.size()]));
 		return changes;
 	}
 
