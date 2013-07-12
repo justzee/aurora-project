@@ -51,6 +51,8 @@ import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.refactoring.ui.action.DelBmFieldAciton;
 import aurora.ide.refactoring.ui.action.RenameBmFieldAciton;
+import aurora.ide.refactoring.ui.action.ShowPromptsViewAction;
+import aurora.ide.refactoring.ui.action.SynDBAction;
 
 public class TextPage extends TextEditor implements IViewer {
 	/** The ID of this editor as defined in plugin.xml */
@@ -141,8 +143,8 @@ public class TextPage extends TextEditor implements IViewer {
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		// add by shiliyan
-//		getInputDocument().addDocumentListener(
-//				new JavascriptDocumentListener(this));
+		// getInputDocument().addDocumentListener(
+		// new JavascriptDocumentListener(this));
 
 		// add by shiliyan
 		getInputDocument().addDocumentListener(new IDocumentListener() {
@@ -224,8 +226,11 @@ public class TextPage extends TextEditor implements IViewer {
 	}
 
 	public IFile getFile() {
-		IFile ifile = ((IFileEditorInput) getEditor().getEditorInput())
-				.getFile();
+		if (getEditor().getEditorInput() instanceof IFileEditorInput == false)
+			return null;
+		IFileEditorInput editorInput = (IFileEditorInput) getEditor()
+				.getEditorInput();
+		IFile ifile = editorInput.getFile();
 		return ifile;
 	}
 
@@ -351,13 +356,21 @@ public class TextPage extends TextEditor implements IViewer {
 			throw new RuntimeException(e);
 		}
 	}
+
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-//		String BM_REFACTORING = "BM_REFACTORING";
-//		IWorkbenchActionConstants.MB_ADDITIONS
-//		menu.appendToGroup(ITextEditorActionConstants.GROUP_REST,new Separator(BM_REFACTORING));
-		menu.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, new RenameBmFieldAciton(this));
+		// String BM_REFACTORING = "BM_REFACTORING";
+		// IWorkbenchActionConstants.MB_ADDITIONS
+		// menu.appendToGroup(ITextEditorActionConstants.GROUP_REST,new
+		// Separator(BM_REFACTORING));
+		menu.appendToGroup(ITextEditorActionConstants.GROUP_REST,
+				new ShowPromptsViewAction(this));
+		if ("bm".equalsIgnoreCase(this.getFile().getFileExtension())) {
+			menu.appendToGroup(ITextEditorActionConstants.GROUP_REST,
+					new SynDBAction(this));
+		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -39,7 +39,7 @@ public class PromptsTypeDelegate implements ITypeDelegate {
 			"http://www.aurora-framework.org/schema/bm", "Prompts");
 
 	public String getValue(String code) {
-		if (isPromptsCode(code) == false)
+		if (PromptManager.isPromptsCode(code) == false)
 			return code;
 		String r = "";
 		IProject project = ProjectUtil.getIProjectFromActiveEditor();
@@ -64,8 +64,5 @@ public class PromptsTypeDelegate implements ITypeDelegate {
 		return  code;
 	}
 
-	public static  boolean isPromptsCode(String key) {
-//		"AB.A_9V".matches("[A-Z\\d_]+(\\.[A-Z\\d_]+)*")
-		return key.matches("[A-Z\\d_]+(\\.[A-Z\\d_]+)*");
-	}
+	
 }

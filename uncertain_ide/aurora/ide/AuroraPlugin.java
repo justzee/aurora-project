@@ -139,8 +139,11 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 			return null;
 		}
 		IEditorInput input = editorPart.getEditorInput();
-		IFile ifile = ((IFileEditorInput) input).getFile();
-		return ifile;
+		if(input instanceof IFileEditorInput){
+			IFile ifile = ((IFileEditorInput) input).getFile();
+			return ifile;
+		}
+		return null;
 	}
 
 	public static IWorkbenchPage getActivePage() {
