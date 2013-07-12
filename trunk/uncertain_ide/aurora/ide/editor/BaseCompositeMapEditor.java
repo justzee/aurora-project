@@ -1,6 +1,7 @@
 package aurora.ide.editor;
 
 import java.io.File;
+import java.net.MalformedURLException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -11,6 +12,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import uncertain.composite.CompositeMap;
@@ -56,15 +58,30 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		if (!(input instanceof IFileEditorInput))
+		
+		if (!(input instanceof IFileEditorInput)
+				//&&(input instanceof FileStoreEditorInput == false)
+				)
 			throw new PartInitException(
-					"Invalid Input: Must be IFileEditorInput");
+					"Invalid Input: Must be IFileEditorInput of FileStoreEditorInput");
 		setSite(site);
 		setInput(input);
 		AuroraPlugin.getWorkspace().addResourceChangeListener(
 				new InputFileListener(this));
-		IFile ifile = ((IFileEditorInput) input).getFile();
-		file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
+		
+		if(input instanceof IFileEditorInput){
+			IFile ifile = ((IFileEditorInput) input).getFile();
+			file = new File(AuroraResourceUtil.getIfileLocalPath(ifile));
+		}
+		if(input instanceof FileStoreEditorInput){
+			try {
+				file = new File(((FileStoreEditorInput) input).getURI().toURL().getFile());
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
 		String fileName = file.getName();
 		setPartName(fileName);
 		// todo delete

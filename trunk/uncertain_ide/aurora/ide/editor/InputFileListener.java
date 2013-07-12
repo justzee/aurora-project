@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.EditorPart;
 
@@ -36,11 +37,14 @@ public class InputFileListener implements IResourceChangeListener, IResourceDelt
 		IResource resource = delta.getResource();
 		if (resource instanceof IFile) {
 			IFile file = (IFile)resource;
-			if (file.equals(((IFileEditorInput)editor.getEditorInput()).getFile())) {
-				if (delta.getKind()==IResourceDelta.REMOVED ||
-						delta.getKind()==IResourceDelta.REPLACED)
-					closeEditor();
-				return false;
+			IEditorInput editorInput = editor.getEditorInput();
+			if(editorInput instanceof IFileEditorInput){
+				if (file.equals(((IFileEditorInput)editorInput).getFile())) {
+					if (delta.getKind()==IResourceDelta.REMOVED ||
+							delta.getKind()==IResourceDelta.REPLACED)
+						closeEditor();
+					return false;
+				}
 			}
 		}
 		return true;

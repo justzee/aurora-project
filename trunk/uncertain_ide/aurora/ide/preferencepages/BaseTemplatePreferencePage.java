@@ -584,14 +584,20 @@ public abstract class BaseTemplatePreferencePage extends PreferencePage
 	 * @see PreferencePage#performDefaults()
 	 */
 	protected void performDefaults() {
-		FileDeleter.deleteDirectory(templateDir);
-		reset(templateDir);
-		initConfig();
-		fTableViewer.setInput(config);
-		fTableViewer.refresh();
-		selectDefault();
-		// fTableViewer.setAllChecked(false);
-		// fTableViewer.setCheckedElements(getEnabledTemplates());
+		
+		int showConfirmDialogBox = DialogUtil.showConfirmDialogBox("default", "是否重置？");
+		
+		if(showConfirmDialogBox == Dialog.OK){
+			FileDeleter.deleteDirectory(templateDir);
+			reset(templateDir);
+			initConfig();
+			fTableViewer.setInput(config);
+			fTableViewer.refresh();
+			selectDefault();
+			// fTableViewer.setAllChecked(false);
+			// fTableViewer.setCheckedElements(getEnabledTemplates());
+		}
+		
 	}
 
 	private void selectDefault() {
