@@ -25,6 +25,8 @@ public class HoverInformationControlCreator implements
 		}
 		HoverInformationControl bic = new HoverInformationControl(parent,
 				"sans-serif", "Click for focus");
+//		Point computeSizeConstraints = bic.computeSizeConstraints(150, 100);
+//		bic.setSize(computeSizeConstraints.x, computeSizeConstraints.y);
 		return bic;
 	}
 }

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import aurora.datasource.DatabaseConnection;
+import aurora.ide.helpers.LogUtil;
 
 public class FakeDataSource implements DataSource {
 
@@ -84,23 +85,30 @@ public class FakeDataSource implements DataSource {
 	public Connection getConnection() throws SQLException {
 		try {
 			Class.forName(this.getDriverClass());
+			DriverManager.setLoginTimeout(5000);
+			Connection conn = DriverManager.getConnection(url, userName, password);
+			return conn;
 		} catch (ClassNotFoundException e) {
 			throw new SQLException(e);
+		}catch (SQLException e){
+			LogUtil.getInstance().logError(url, e);
+			throw e;
 		}
-		DriverManager.setLoginTimeout(5000);
-		Connection conn = DriverManager.getConnection(url, userName, password);
-		return conn;
 	}
 
 	public Connection getConnection(String username, String password)
 			throws SQLException {
 		try {
 			Class.forName(this.getDriverClass());
+			Connection conn = DriverManager.getConnection(url, username, password);
+			return conn;
 		} catch (ClassNotFoundException e) {
 			throw new SQLException(e);
+		}catch (SQLException e){
+			LogUtil.getInstance().logError(url, e);
+			throw e;
 		}
-		Connection conn = DriverManager.getConnection(url, username, password);
-		return conn;
+		
 	}
 
 	public static DataSource createDataSource(DatabaseConnection dbConfig) {

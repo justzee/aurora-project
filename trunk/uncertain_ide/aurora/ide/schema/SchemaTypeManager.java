@@ -2,10 +2,10 @@ package aurora.ide.schema;
 
 import java.util.List;
 
-import aurora.ide.helpers.LoadSchemaManager;
 import uncertain.composite.CompositeMap;
 import uncertain.schema.Attribute;
 import uncertain.schema.Element;
+import aurora.ide.helpers.LoadSchemaManager;
 
 public class SchemaTypeManager {
 	private CompositeMap map;
@@ -16,6 +16,8 @@ public class SchemaTypeManager {
 
 	public ITypeDelegate getAttributeTypeDelegate(String attr) {
 		Element element = LoadSchemaManager.getSchemaManager().getElement(map);
+		if(element == null)
+			return null;
 		List attributes = element.getAllAttributes();
 		for (Object attribute : attributes) {
 			if (attribute instanceof Attribute) {

@@ -41,6 +41,7 @@ public class HoverInformationControl extends BrowserInformationControl {
 		};
 	}
 
+
 	@SuppressWarnings("deprecation")
 	@Override
 	public void setInformation(String content) {
