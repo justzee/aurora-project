@@ -55,7 +55,7 @@ public class PromptsTypeDelegate implements ITypeDelegate {
 				r += "中文: " + prompts[0];
 			}
 			if (prompts[1] != null) {
-				r += "\r\n" + "英文: " + prompts[1];
+				r += "&nbsp;&nbsp;&nbsp;" + "英文: " + prompts[1];
 			}
 			return r;
 		} catch (ApplicationException e) {
