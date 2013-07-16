@@ -23,6 +23,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
+import aurora.ide.preferencepages.RefactorSettingPreferencePage;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.Util;
@@ -70,6 +71,16 @@ public class FileMoveParticipant extends MoveParticipant {
 			CheckConditionsContext context) throws OperationCanceledException {
 		this.check = true;
 		RefactoringStatus result = new RefactoringStatus();
+		
+		boolean refactorStatus = RefactorSettingPreferencePage.getRefactorStatus(RefactorSettingPreferencePage.REFACTOR_SETTING_FILE_MOVE);
+		if(refactorStatus == false){
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("IDE设置移动文件不启用重构."));
+			return result;
+		}
+		
+		
 		Object destination = this.getArguments().getDestination();
 		// bm move
 		if (destination instanceof IResource

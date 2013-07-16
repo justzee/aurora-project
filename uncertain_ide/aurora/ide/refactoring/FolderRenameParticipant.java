@@ -22,6 +22,7 @@ import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
+import aurora.ide.preferencepages.RefactorSettingPreferencePage;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.Util;
@@ -56,6 +57,15 @@ public class FolderRenameParticipant extends RenameParticipant {
 			CheckConditionsContext context) throws OperationCanceledException {
 		check = true;
 		RefactoringStatus result = new RefactoringStatus();
+		
+		boolean refactorStatus = RefactorSettingPreferencePage.getRefactorStatus(RefactorSettingPreferencePage.REFACTOR_SETTING_FOLDER_RENAME);
+		if(refactorStatus == false){
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("IDE设置修改目录名不启用重构."));
+			return result;
+		}
+		
 		IFolder currentFolder = folderRefactorParticipant.getCurrentFolder();
 		if (currentFolder.equals(Util.findWebInf(currentFolder).getParent())) {
 			this.check = false;

@@ -17,6 +17,7 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 import org.eclipse.text.edits.ReplaceEdit;
 
+import aurora.ide.preferencepages.RefactorSettingPreferencePage;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.Util;
@@ -53,6 +54,15 @@ public class FileRenameParticipant extends RenameParticipant {
 			CheckConditionsContext context) throws OperationCanceledException {
 		check = true;
 		RefactoringStatus result = new RefactoringStatus();
+		
+		boolean refactorStatus = RefactorSettingPreferencePage.getRefactorStatus(RefactorSettingPreferencePage.REFACTOR_SETTING_FILE_RENAME);
+		if(refactorStatus == false){
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("IDE设置修改文件名不启用重构."));
+			return result;
+		}
+		
 		String newName = this.getArguments().getNewName();
 		if (!newName.toLowerCase().endsWith(fileExtension.toLowerCase())) {
 			check = false;

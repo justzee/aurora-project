@@ -23,6 +23,7 @@ import org.eclipse.ltk.core.refactoring.participants.MoveParticipant;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
+import aurora.ide.preferencepages.RefactorSettingPreferencePage;
 import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.AbstractMatch;
 import aurora.ide.search.core.Util;
@@ -69,6 +70,15 @@ public class FolderMoveParticipant extends MoveParticipant {
 			CheckConditionsContext context) throws OperationCanceledException {
 		this.check = true;
 		RefactoringStatus result = new RefactoringStatus();
+
+		boolean refactorStatus = RefactorSettingPreferencePage.getRefactorStatus(RefactorSettingPreferencePage.REFACTOR_SETTING_FOLDER_MOVE);
+		if(refactorStatus == false){
+			this.check = false;
+			result.merge(RefactoringStatus
+					.createInfoStatus("IDE设置移动目录不启用重构."));
+			return result;
+		}
+		
 		Object destination = this.getArguments().getDestination();
 		// bm move
 		if (destination instanceof IResource
@@ -78,7 +88,7 @@ public class FolderMoveParticipant extends MoveParticipant {
 			if (pkg.length() == 0) {
 				this.check = false;
 				result.merge(RefactoringStatus
-						.createInfoStatus("目标目录不属于classes,Aurora重构不会进行,请Cancel后重新选择。"));
+						.createInfoStatus("目标目录不属于classes,Aurora重构不会进行,请Cancel后重新选择."));
 			}
 		}
 		// screen move
@@ -90,7 +100,7 @@ public class FolderMoveParticipant extends MoveParticipant {
 			if (webInf == null) {
 				this.check = false;
 				result.merge(RefactoringStatus
-						.createInfoStatus("WEB-INF未发现,Aurora重构不会进行,请Cancel后重新选择。"));
+						.createInfoStatus("WEB-INF未发现,Aurora重构不会进行,请Cancel后重新选择."));
 			}
 			if (webInf != null) {
 				IPath path = ((IResource) destination).getProjectRelativePath();
@@ -101,7 +111,7 @@ public class FolderMoveParticipant extends MoveParticipant {
 				if (!inWeb || inWebInf) {
 					this.check = false;
 					result.merge(RefactoringStatus
-							.createInfoStatus("目标目录无效,Aurora重构不会进行,请Cancel后重新选择。"));
+							.createInfoStatus("目标目录无效,Aurora重构不会进行,请Cancel后重新选择."));
 				}
 			}
 		}
