@@ -45,8 +45,11 @@ Aurora后台任务是指任务在后台依次运行。用户在前台提交一�
  * 启用后台任务处理器
    ${web-home}\WEB-INF\aurora.feature中添加task.config文件，内容如下：
    {{{
-   <task:TaskHandler xmlns:task="aurora.application.task" 
-   queryTaskBM="db.sys_tasks_pkg.gettask" finishTaskBM="db.sys_tasks_pkg.finishtask">
+   <task:TaskHandler xmlns:task="aurora.application.task" threadCount="4" 
+        oldTaskBM="db.sys_tasks_pkg.reset_unfinished_task_status" 
+      fetchTaskBM="db.sys_tasks_pkg.get_task_with_count" 
+     updateTaskBM="db.sys_tasks_pkg.update_task_running_status"  
+     finishTaskBM="db.sys_tasks_pkg.finish_task">
 </task:TaskHandler>
    }}}
    其中queryTaskBM是获取新任务的bm，finishTaskBM是执行完任务的bm。
@@ -54,18 +57,37 @@ Aurora后台任务是指任务在后台依次运行。用户在前台提交一�
  * 创建一个svc，内容如下：
  {{{
 <?xml version="1.0" encoding="UTF-8"?>
-<a:service xmlns:a="http://www.aurora-framework.org/application" xmlns:task="aurora.application.task" 
-xmlns:p="uncertain.proc" trace="true">
-
+<a:service xmlns:msg="aurora.application.features.msg" xmlns:a="http://www.aurora-framework.org/application"
+ xmlns:task="aurora.application.task" xmlns:excel="aurora.application.task.excel"
+ xmlns:rs="aurora.database.rsconsumer" xmlns:ex="aurora.plugin.export.task" 
+xmlns:mail="aurora.plugin.mail" xmlns:p="uncertain.proc" trace="true">
     <a:init-procedure>
-
-        <task:Task bm="db.sys_tasks_pkg.addtask" procFilePath="sys.create_excel" 
-      taskDescription="生成excel" taskName="生成excel" taskType="JAVA"/>
-
+        <task:async-task bm="db.sys_tasks_pkg.add_task" taskDescription="生成excel"
+           taskName="生成excel" taskType="JAVA">
+            <ex:ModelExportTask/>
+            <p:switch test="/parameter/@sendToMail">
+                <p:case Value="true">
+                    <mail:AutoSendMail content="mail" title="test" tto="jinxiao.lin@hand-china.com">
+                        <attachments>
+                            <mail:attachment path="${/parameter/@file_path}"/>
+                        </attachments>
+                    </mail:AutoSendMail>
+                    <excel:ExcelRemove path="${/parameter/@file_path}"/>
+                </p:case>
+                <p:case>
+                    <a:model-insert model="rpt.RPT1060.rpt_task_reports"/>
+                </p:case>
+            </p:switch>
+        </task:async-task>
+        <msg:message-creator message="task_message" topic="task">
+            <properties>
+                <msg:property key="task_id" value="${/parameter/@task_id}"/>
+                <msg:property key="cookie" value="${/request/@cookie}"/>
+            </properties>
+        </msg:message-creator>
     </a:init-procedure>
-
     <a:service-output output="/parameter/"/>
 </a:service>
 }}} 
 
-"bm"属性是指会把这些属性插入数据库的bm，其他属性都是数据库字段，只是名字进行了小驼峰命名法转换。
+"bm"属性是指会把这些属性插入数据库的bm。其他属性都是数据库表SYS_TASKS中的字段，只是名字进行了小驼峰命名法转换。
