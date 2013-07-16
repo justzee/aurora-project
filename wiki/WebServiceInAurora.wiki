@@ -799,6 +799,26 @@ full_payload:
 }}}
    # 调用此svc，并查看日志和数据库记录是否正确。
 === svc常用功能简介 ===
+ * aurora中的上下文（即context）
+   Aurora上下文是xml格式，它不仅存储了当前会话（session）的用户ID、角色ID、公司ID等信息，还存储了页面之间传递的参数等各种信息。
+   {{{
+<context BusinessModelOperation="execute" service_name="modules/psr/PSR1010/psr_report_output.svc" >
+    <request 
+url="/new_hec/modules/psr/PSR1010/psr_report_output.svc" 
+referer="http://localhost:10080/new_hec/modules/psr/PSR1020/psr_report_query.screen" 
+accept-encoding="gzip,deflate,sdch"/>
+    <cookie JSESSIONID="
+{maxage=-1, secure=false, name=JSESSIONID, path=null, domain=null, 
+value=24D3B80D0D2EB73703C0E8967C880B77.tomcat1}"/>
+    <parameter return_value="oracle.sql.CLOB@12462d5" __parameter_parsed__="true" 
+report_header_id="61"/>
+    <session company_id="1" session_id="5990" role_id="1" lang="ZHS" is_ipad="N" 
+user_id="21"/>
+    <access-check status_code="success"/>
+    <model/>
+</context>
+   }}}
+  从这个上下文中，我们可以看到/session/@company_id的值是1，/parameter/@report_header_id的值是61。
  * echo 输出消息
   例子：
  {{{
