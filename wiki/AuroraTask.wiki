@@ -79,6 +79,7 @@ xmlns:mail="aurora.plugin.mail" xmlns:p="uncertain.proc" trace="true">
                 </p:case>
             </p:switch>
         </task:async-task>
+
         <msg:message-creator message="task_message" topic="task">
             <properties>
                 <msg:property key="task_id" value="${/parameter/@task_id}"/>
