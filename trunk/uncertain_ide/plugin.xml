@@ -153,7 +153,13 @@
             id="aurora.ide.preferencePage.SxsdDirectoryPreferencePage"
             name="%page.builtin.package">
       </page>
-      
+       <!--refactor-->     
+      <page
+            category="aurora.ide.preferencePage"
+            class="aurora.ide.preferencepages.RefactorSettingPreferencePage"
+            id="aurora.ide.preferencepages.RefactorSettingPreferencePage"
+            name="Refactor">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
