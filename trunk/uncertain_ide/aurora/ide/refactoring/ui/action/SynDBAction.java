@@ -52,7 +52,7 @@ public class SynDBAction extends Action {
 
 	public CompositeMap selectedFields;
 
-	final private static String SQL = "select  t.COLUMN_NAME,c.comments,t.nullable,t.data_type,t.data_length  from user_tab_columns t, user_col_comments c where  t.column_name = c.column_name and t.table_name = c.table_name and t.table_name=?";
+	//final private static String SQL = "select  t.COLUMN_NAME,c.comments,t.nullable,t.data_type,t.data_length  from user_tab_columns t, user_col_comments c where  t.column_name = c.column_name and t.table_name = c.table_name and t.table_name=?";
 	final private static String COLUMN_SQL = "select  t.COLUMN_NAME,t.nullable,t.data_type,t.data_length  from user_tab_columns t where  t.table_name=?";
 	final private static String COMMENT_SQL = "select  c.COLUMN_NAME,c.comments  from  user_col_comments c where  c.table_name=?";
 
@@ -86,7 +86,8 @@ public class SynDBAction extends Action {
 	}
 
 	public String getBaseTable() {
-		return this.getFileProperty("baseTable").toUpperCase();
+		String fileProperty = this.getFileProperty("baseTable");
+		return fileProperty == null ? fileProperty : fileProperty.toUpperCase();
 	}
 
 	public String getDataSourceName() {
@@ -164,7 +165,7 @@ public class SynDBAction extends Action {
 				sta = conn.prepareStatement(COLUMN_SQL);
 				sta.setString(1, table);
 				ResultSet resultSet = sta.executeQuery();
-				while (resultSet.next()) { 
+				while (resultSet.next()) {
 					if (isExcluedColumns(resultSet.getString(columnNames[0]))) {
 						continue;
 					}
@@ -256,56 +257,56 @@ public class SynDBAction extends Action {
 		}
 	}
 
-//	public CompositeMap queryColumns2(String table, Connection conn) {
-//		CompositeMap input = new CommentCompositeMap();
-//		PreparedStatement sta = null;
-//		if (conn != null) {
-//			try {
-//				sta = conn.prepareStatement(SQL);
-//				sta.setString(1, table);
-//				ResultSet resultSet = sta.executeQuery();
-//				while (resultSet.next()) {
-//					if (isExcluedColumns(resultSet.getString(columnNames[0]))) {
-//						continue;
-//					}
-//					if (isExist(resultSet.getString(columnNames[0]))) {
-//						continue;
-//					}
-//					CompositeMap element = new CommentCompositeMap();
-//					element.put(columnNames[0],
-//							resultSet.getString(columnNames[0]));
-//					element.put(columnNames[1],
-//							resultSet.getString(columnNames[1]));
-//					element.put(columnNames[2],
-//							resultSet.getString(columnNames[2]));
-//					element.put(columnNames[3],
-//							resultSet.getString(columnNames[3]));
-//					element.put(columnNames[4],
-//							new Integer(resultSet.getInt(columnNames[4])));
-//					input.addChild(element);
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			} finally {
-//				if (sta != null) {
-//					try {
-//						sta.close();
-//					} catch (SQLException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//				if (conn != null) {
-//					try {
-//						conn.close();
-//					} catch (SQLException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		}
-//
-//		return input;
-//	}
+	// public CompositeMap queryColumns2(String table, Connection conn) {
+	// CompositeMap input = new CommentCompositeMap();
+	// PreparedStatement sta = null;
+	// if (conn != null) {
+	// try {
+	// sta = conn.prepareStatement(SQL);
+	// sta.setString(1, table);
+	// ResultSet resultSet = sta.executeQuery();
+	// while (resultSet.next()) {
+	// if (isExcluedColumns(resultSet.getString(columnNames[0]))) {
+	// continue;
+	// }
+	// if (isExist(resultSet.getString(columnNames[0]))) {
+	// continue;
+	// }
+	// CompositeMap element = new CommentCompositeMap();
+	// element.put(columnNames[0],
+	// resultSet.getString(columnNames[0]));
+	// element.put(columnNames[1],
+	// resultSet.getString(columnNames[1]));
+	// element.put(columnNames[2],
+	// resultSet.getString(columnNames[2]));
+	// element.put(columnNames[3],
+	// resultSet.getString(columnNames[3]));
+	// element.put(columnNames[4],
+	// new Integer(resultSet.getInt(columnNames[4])));
+	// input.addChild(element);
+	// }
+	// } catch (SQLException e) {
+	// e.printStackTrace();
+	// } finally {
+	// if (sta != null) {
+	// try {
+	// sta.close();
+	// } catch (SQLException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// if (conn != null) {
+	// try {
+	// conn.close();
+	// } catch (SQLException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// }
+	// }
+	//
+	// return input;
+	// }
 
 	private boolean isExist(String string) {
 		return this.bmFields.contains(string.toUpperCase());
@@ -318,7 +319,7 @@ public class SynDBAction extends Action {
 		selectedFields = null;
 		ColumnsDialog dia = new ColumnsDialog(shell);
 		if (dia.open() == ColumnsDialog.OK) {
-			if (selectedFields != null) {	
+			if (selectedFields != null) {
 				int offset = -1;
 				CompositeMap rootMap = getRootMap();
 				CompositeMap fields = rootMap.getChild("fields");
