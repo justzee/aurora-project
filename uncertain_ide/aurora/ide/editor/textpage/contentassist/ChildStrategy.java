@@ -283,10 +283,10 @@ public class ChildStrategy implements IContentAssistStrategy {
 	}
 
 	private static Image getDefaultImage() {
-//		Image contentImage = AuroraPlugin.getImageDescriptor(
-//				LocaleMessage.getString("contentassit.icon")).createImage();
-//		return contentImage;
-		return	ImagesUtils.getImage("contentassit.gif");
+		// Image contentImage = AuroraPlugin.getImageDescriptor(
+		// LocaleMessage.getString("contentassit.icon")).createImage();
+		// return contentImage;
+		return ImagesUtils.getImage("contentassit.gif");
 	}
 
 	private ICompletionProposal[] getDefaultCompletionProposal() {
@@ -314,7 +314,8 @@ public class ChildStrategy implements IContentAssistStrategy {
 				tagEnd++;
 				c = partitionText.charAt(tagEnd);
 			}
-			String tagName = partitionText.substring(1, tagEnd);
+			String tagName = partitionText.length() < 2 ? "" : partitionText
+					.substring(1, tagEnd);
 			tokenString = new TokenString(tagName,
 					partitionRegion.getOffset() + 1, cursorOffset);
 		} catch (BadLocationException e) {
