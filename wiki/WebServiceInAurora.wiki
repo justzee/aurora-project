@@ -80,7 +80,67 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
    [https://aurora-project.googlecode.com/svn/wiki/images/sys_all_ws.png]
    * 响应格式固定：默认是选中。如果输入是任意多行，返回格式也要求是任意多行，即把每行的处理结果返回到行上，再统一返回。而不是仅仅显示全局处理成功或失败。那么这时候请取消“响应格式固定”，因为它可能是返回任意多行。其他情况下，仅需要返回成功或失败，或者返回一些少数的几个参数，可以选择“响应格式固定”。在不选中的情况下，以svc实际返回的结果为准。
    * 注意：这个功能也支持bm wsdl的定义。目前bm的返回结果，默认是采取soap.config中定义的格式。如果需要自定义特殊格式，在这里定义。
-   * 定义好后，可以此svc的wsdl可以在线访问了。例如：   [ http://127.0.0.1:8080/hec2dev/wsdl/modules/sys/WS/sample/svc/sys_provide_webservice_one_record_sample.svc ]   
+   * 定义好后，可以此svc的wsdl可以在线访问了。例如：   [ http://127.0.0.1:8080/hec2dev/wsdl/modules/sys/WS/sample/svc/sys_provide_webservice_one_record_sample.svc ]
+  例子
+   * 假设svc地址是：
+{{{
+http://127.0.0.1:8080/hec2dev/modules/sys/WS/sample/svc/sys_provide_webservice_multi_records_sample.svc
+}}}
+   * 输入格式是：
+{{{
+<parameter sequenceNo="1" xmlns="http://www.aurora-framework.org/schema">
+    <records>
+       <record record_id="11" record_code="multi1"/>
+       <record record_id="22" record_code="multi2"/>
+   </records>
+</parameter>
+}}}
+   * 输出格式是：
+{{{
+<parameter responseDate="2013-7-22" sequenceNo="1" xmlns="http://www.aurora-framework.org/schema">
+    <records>
+         <record record_id="11" record_code="multi1" record_status="ok"  />
+         <record record_id="22" record_code="multi2" record_status="ok" />
+    </records>
+</parameter>
+}}}
+   即返回结果在每行上，而不是返回固定格式。
+   * 界面输入如下：
+   [https://aurora-project.googlecode.com/svn/wiki/images/sys_ws_multi_edit.png]
+   点击保存，并且不选中“响应格式固定”。
+   * 创建svc如下：
+{{{
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $Author: linjinxiao  
+    $Date: 2012-12-27 上午11:07:34  
+    $Revision: 1.0  
+    $Purpose: 
+-->
+<a:service xmlns:a="http://www.aurora-framework.org/application" xmlns:p="uncertain.proc" trace="true">
+    <a:init-procedure>
+        
+        <batch-apply sourcepath="/parameter/records">
+            <a:model-execute model="db.sys_webservice_util_pkg.insert_sys_webservice_sample"/>
+        </batch-apply>
+        
+        <p:set-element namespace="http://www.aurora-framework.org/schema" target="/parameter"/>
+
+        
+        <!-- 获得当前的时间-->
+        <a:model-query fetchAll="true" fethOneRecord="true" model="sys.WS.sample.sys_query_sysdate"/>
+        <p:set field="/parameter/@responseDate" sourceField="/model/record/@sysdate"/>
+
+    </a:init-procedure>
+    <a:service-output output="/parameter"/>
+</a:service>
+
+}}}
+   * 打开soapui，并添加wsdl
+   [http://127.0.0.1:8080/hec2dev/wsdl/modules/sys/WS/sample/svc/sys_provide_webservice_multi_records_sample.svc]
+   填入参数如下：
+   [https://aurora-project.googlecode.com/svn/wiki/images/soapui_multi.png]
+   点击运行，查看返回结果。
  # 撰写bm/svc文件，提供给他人调用即可。
 === 简单例子 ===
 我们提供一个svc，此svc把请求的数据插入到一个数据库表中。
