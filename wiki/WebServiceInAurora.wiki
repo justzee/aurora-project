@@ -65,7 +65,7 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
  # 访问BM的WSDL
    支持所有bm自动生成wsdl。例如：
    * http://localhost:8080/hec2dev/wsdl/db.sys_notify_pkg.update_notify/update
-   * http://127.0.0.1:8080/hec2dev/wsdl/sys.SYS1070.sys_tasks/query?multi=Y
+   * http://localhost:8080/hec2dev/wsdl/sys.SYS1070.sys_tasks/query?multi=Y
  # 访问SVC的WSDL
    svc的wsdl需要预定定义。如图：
    [https://aurora-project.googlecode.com/svn/wiki/images/sys_ws_edit.png]
@@ -78,8 +78,8 @@ field="/parameter/@return_value" value="N" message="没有权限登录"/>
     # 再更新输出格式，生成最终的wsdl
    管理所有svc的wsdl。如图：
    [https://aurora-project.googlecode.com/svn/wiki/images/sys_all_ws.png]
-   * 响应格式固定：默认是选中。如果输入是任意多行，返回格式也要求是任意多行，即把每行的处理结果返回到行上，再统一返回。而不是仅仅显示全局处理成功或失败。那么这时候请取消“响应格式固定”，因为它可能是返回任意多行。其他情况下，仅需要返回成功或失败，或者返回一些少数的几个参数，可以选择“响应格式固定”。如果不选中，那么以svc实际返回的结果为准。
-   * 注意：这个功能也支持bm wsdl的定义。目前bm的返回结果，是采取soap.congif中定义的格式，如果需要自定义特殊格式，在这里定义。
+   * 响应格式固定：默认是选中。如果输入是任意多行，返回格式也要求是任意多行，即把每行的处理结果返回到行上，再统一返回。而不是仅仅显示全局处理成功或失败。那么这时候请取消“响应格式固定”，因为它可能是返回任意多行。其他情况下，仅需要返回成功或失败，或者返回一些少数的几个参数，可以选择“响应格式固定”。在不选中的情况下，以svc实际返回的结果为准。
+   * 注意：这个功能也支持bm wsdl的定义。目前bm的返回结果，默认是采取soap.config中定义的格式。如果需要自定义特殊格式，在这里定义。
    * 定义好后，可以此svc的wsdl可以在线访问了。例如：   [ http://127.0.0.1:8080/hec2dev/wsdl/modules/sys/WS/sample/svc/sys_provide_webservice_one_record_sample.svc ]   
  # 撰写bm/svc文件，提供给他人调用即可。
 === 简单例子 ===
