@@ -858,7 +858,7 @@ Export-Package: SQLinForm_200,
  uncertain.util.resource;uses:="uncertain.core,uncertain.cache",
  uncertain.util.template;uses:="uncertain.composite"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
- org.eclipse.core.runtime;bundle-version="3.7.0"
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
 Bundle-Activator: aurora.ide.libs.AuroraResourcesPlugin
 Bundle-ActivationPolicy: lazy
