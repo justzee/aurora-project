@@ -52,7 +52,9 @@ Aurora后台任务是指任务在后台依次运行。用户在前台提交一�
      finishTaskBM="db.sys_tasks_pkg.finish_task">
 </task:TaskHandler>
    }}}
-   其中queryTaskBM是获取新任务的bm，finishTaskBM是执行完任务的bm。
+   * queryTaskBM是获取新任务的bm
+   * finishTaskBM是执行完任务的bm
+   * oldTaskBM是重启web服务器后执行上次意外中断的任务（状态既不是new，也不是done）。去掉这个属性，则不会执行上次意外中断的任务，但状态是new的，将会被执行。
 
  * 创建一个svc，内容如下：
  {{{
