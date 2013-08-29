@@ -39,13 +39,19 @@
 				,
                 {"href":"output/Aurora.MultiLov.html","text":"MultiLov","id":"Aurora.MultiLov","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
+                {"href":"output/Aurora.MultiTextField.html","text":"MultiTextField","id":"Aurora.MultiTextField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
                 {"href":"output/Aurora.NumberField.html","text":"NumberField","id":"Aurora.NumberField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Aurora.PercentField.html","text":"PercentField","id":"Aurora.PercentField","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Radio.html","text":"Radio","id":"Aurora.Radio","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Record.html","text":"Record","id":"Aurora.Record","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Record.Field.html","text":"Record.Field","id":"Aurora.Record.Field","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
+				,
+                {"href":"output/Aurora.Spinner.html","text":"Spinner","id":"Aurora.Spinner","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
                 {"href":"output/Aurora.Tab.html","text":"Tab","id":"Aurora.Tab","isClass":true,"iconCls":"icon-cls","cls":"cls","leaf":true}
 				,
@@ -148,13 +154,19 @@
 			,
 			"Aurora.MultiLov":"icon-cls"
 			,
+			"Aurora.MultiTextField":"icon-cls"
+			,
 			"Aurora.NumberField":"icon-cls"
+			,
+			"Aurora.PercentField":"icon-cls"
 			,
 			"Aurora.Radio":"icon-cls"
 			,
 			"Aurora.Record":"icon-cls"
 			,
 			"Aurora.Record.Field":"icon-cls"
+			,
+			"Aurora.Spinner":"icon-cls"
 			,
 			"Aurora.Tab":"icon-cls"
 			,
