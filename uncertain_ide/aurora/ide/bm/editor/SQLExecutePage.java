@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
@@ -39,8 +40,10 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
+import uncertain.composite.CaseInsensitiveMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
+import uncertain.composite.IterationHandle;
 import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
@@ -317,7 +320,7 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 		LoggingContext.setLoggerProvider(context, lp);
 		SqlServiceContext sc = SqlServiceContext
 				.createSqlServiceContext(context);
-		sc.setTrace(true); 
+		sc.setTrace(true);
 		return bc;
 	}
 
@@ -475,11 +478,23 @@ public class SQLExecutePage extends FormPage implements ISqlViewer {
 			CompositeMap bm_model = svcFactory.getModelFactory()
 					.getCompositeLoader()
 					.loadFromString(content, AuroraConstant.ENCODING);
-			BusinessModelService service = svcFactory.getModelService(bm_model,
+			CompositeMap cim = lowerCaseDeepClone(bm_model);
+			BusinessModelService service = svcFactory.getModelService(cim,
 					context);
 			return service;
 		} catch (Throwable e) {
 			throw new SystemException(e);
 		}
+	}
+
+	private CompositeMap lowerCaseDeepClone(CompositeMap map) {
+		CaseInsensitiveMap cim = new CaseInsensitiveMap(map);
+		List<CompositeMap> list = cim.getChilds();
+		if (list != null) {
+			for (int i = 0; i < list.size(); i++) {
+				list.set(i, lowerCaseDeepClone(list.get(i)));
+			}
+		}
+		return cim;
 	}
 }
