@@ -18,11 +18,17 @@ public class FileExplorer {
 	}
 
 	static public void open(String directory) {
-		if (defaultTarget.indexOf("{0}") == -1)
-			defaultTarget = defaultTarget.trim() + " {0}";
-		defaultTarget = MessageFormat.format(defaultTarget, directory);
+//		if (defaultTarget.indexOf("{0}") == -1)
+//			defaultTarget = defaultTarget.trim() + " {0}";
+//		defaultTarget = MessageFormat.format(defaultTarget, directory);
+//		try {
+//			Runtime.getRuntime().exec(defaultTarget);
+//		} catch (Throwable t) {
+//		}
+		
+		String target = MessageFormat.format(defaultTarget, directory);
 		try {
-			Runtime.getRuntime().exec(defaultTarget);
+			Runtime.getRuntime().exec(target);
 		} catch (Throwable t) {
 		}
 	}
