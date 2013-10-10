@@ -1,5 +1,8 @@
 package aurora.ide.editor.textpage;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -18,6 +21,8 @@ import aurora.ide.editor.textpage.scanners.XMLPartitionScanner;
 import aurora.ide.editor.textpage.scanners.XMLTagScanner;
 
 public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
+	private static Set<String> textTagMark = new HashSet<String>(Arrays.asList(
+			"script", "sql", "style", "freemarker"));
 
 	@Override
 	public void customizeDocumentCommand(IDocument d, DocumentCommand c) {
@@ -243,9 +248,9 @@ public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 			String tagName = getTagName(d, region);
 			if (tagName == null)
 				tagName = "";
+
 			String format = ">%s%s%s</%s>";
-			boolean isTextTag = tagName.toLowerCase().matches(
-					".*((script)|(sql)|(style)|(freemarker)).*");
+			boolean isTextTag = isTextTag(tagName.toLowerCase());
 			if (isTextTag) {
 				format = "><![CDATA[%s%s%s]]></%s>";
 			}
@@ -262,6 +267,15 @@ public class XMLAutoEditStrategy extends DefaultIndentLineAutoEditStrategy {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private boolean isTextTag(String tagName) {
+		String[] parts = tagName.split("[_-]+");
+		for (String s : parts) {
+			if (textTagMark.contains(s))
+				return true;
+		}
+		return false;
 	}
 
 	private void debug(Object o) {
