@@ -74,8 +74,8 @@ public class AuroraPlugin extends AbstractUIPlugin implements
 
 			selectionService.addSelectionListener(this);
 		}
-		StartJob sj = new StartJob();
-		sj.schedule();
+//		StartJob sj = new StartJob();
+//		sj.schedule();
 	}
 
 	/*
