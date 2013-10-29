@@ -7,6 +7,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.CompositeUtil;
 import uncertain.schema.Attribute;
 import aurora.ide.builder.AuroraBuilder;
 import aurora.ide.builder.BuildContext;
@@ -43,7 +44,19 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 		String value = bc.map.getString(name);
 		IRegion region = bc.info.getAttrValueRegion2(name);
 		int line = bc.info.getLineOfRegion(region);
-		CompositeMap refModelDeclearMap = bc.map.getParent();
+		CompositeMap refModelDeclearMap = null;
+		// bug fix 2013-10-29 13:44:39 jessen
+		if ("ref-field".equalsIgnoreCase(bc.map.getName())) {
+			// ref-field
+			String relationName = bc.map.getString("relationName");
+			if (relationName == null)
+				relationName = bc.map.getString("relationname");
+			refModelDeclearMap = CompositeUtil.findChild(bc.map.getRoot(),
+					"relation", "name", relationName);
+		} else {
+			// reference
+			refModelDeclearMap = bc.map.getParent();
+		}
 		String refModel = (String) Util
 				.getReferenceModelPKG(refModelDeclearMap);
 		if (refModel == null) {
