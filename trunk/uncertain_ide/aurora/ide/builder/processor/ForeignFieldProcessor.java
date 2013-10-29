@@ -3,6 +3,7 @@ package aurora.ide.builder.processor;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 
@@ -14,7 +15,9 @@ import aurora.ide.builder.BuildContext;
 import aurora.ide.builder.BuildMessages;
 import aurora.ide.builder.ResourceUtil;
 import aurora.ide.builder.SxsdUtil;
+import aurora.ide.helpers.ApplicationException;
 import aurora.ide.preferencepages.BuildLevelPage;
+import aurora.ide.search.cache.CacheManager;
 import aurora.ide.search.core.Util;
 
 /**
@@ -53,6 +56,15 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 				relationName = bc.map.getString("relationname");
 			refModelDeclearMap = CompositeUtil.findChild(bc.map.getRoot(),
 					"relation", "name", relationName);
+			if (refModelDeclearMap == null) {
+				// relation maybe defined in parent bm
+				try {
+					refModelDeclearMap = CompositeUtil.findChild(
+							CacheManager.getWholeBMCompositeMap(bc.file),
+							"relation", "name", relationName);
+				} catch (CoreException | ApplicationException e) {
+				}
+			}
 		} else {
 			// reference
 			refModelDeclearMap = bc.map.getParent();
