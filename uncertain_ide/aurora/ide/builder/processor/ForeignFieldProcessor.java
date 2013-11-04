@@ -62,7 +62,8 @@ public class ForeignFieldProcessor extends AbstractProcessor {
 					refModelDeclearMap = CompositeUtil.findChild(
 							CacheManager.getWholeBMCompositeMap(bc.file),
 							"relation", "name", relationName);
-				} catch (CoreException | ApplicationException e) {
+				} catch (CoreException e) {
+				} catch (ApplicationException e2) {
 				}
 			}
 		} else {
