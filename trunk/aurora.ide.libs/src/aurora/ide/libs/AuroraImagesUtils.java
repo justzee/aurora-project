@@ -3,6 +3,8 @@ package aurora.ide.libs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +13,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 
 public class AuroraImagesUtils {
 
@@ -125,4 +130,45 @@ public class AuroraImagesUtils {
 	public static String toString(RGB color) {
 		return color.red + "," + color.green + "," + color.blue;
 	}
+	public static  ImageData loadImageData(Path path) throws FileNotFoundException {
+		ImageLoader loader = new ImageLoader();
+		ImageData[] load = loader.load(new FileInputStream(path.toFile()));
+		ImageData imageData = load[0];
+		return imageData;
+	}
+
+	public static  String queryFile(Shell shell) {
+		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+		dialog.setText("Open File"); //$NON-NLS-1$
+		dialog.setFilterExtensions(new String[] { "*.png", "*.gif", "*.jpg",
+				"*.jpeg", "*.bmp", "*.tiff", });
+		String path = dialog.open();
+		if (path != null && path.length() > 0) {
+			return path;
+		}
+		return null;
+	}
+
+	public static  int getIconType(String ext) {
+		if ("png".equalsIgnoreCase(ext)) {
+			return SWT.IMAGE_PNG;
+		}
+		if ("gif".equalsIgnoreCase(ext)) {
+			return SWT.IMAGE_GIF;
+		}
+		if ("jpg".equalsIgnoreCase(ext)) {
+			return SWT.IMAGE_JPEG;
+		}
+		if ("jpeg".equalsIgnoreCase(ext)) {
+			return SWT.IMAGE_JPEG;
+		}
+		if ("bmp".equalsIgnoreCase(ext)) {
+			return SWT.IMAGE_BMP;
+		}
+		if ("tiff".equalsIgnoreCase(ext)) {
+			return SWT.IMAGE_TIFF;
+		}
+		return -1;
+	}
+
 }
