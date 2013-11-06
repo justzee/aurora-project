@@ -18,7 +18,7 @@
     # 可以很容易得调用内嵌JMS provider,进行测试
 
 ====ActiveMQ安装====
-  * JDK1.6及以上请安装最新版本的[http://activemq.apache.org/download.html     ActiveMQ],JDK1.5请下载5.42版本(5.5以上版本只支持JDK1.6以上)[http://www.apache.org/dyn/closer.cgi?path=%2Factivemq%2Fapache-activemq%2F5.4.3%2Fapache-activemq-5.4.3-bin.zip ActiveMQ5.42]下载， 
+  * JDK1.6及以上请安装最新版本的[http://activemq.apache.org/download.html     ActiveMQ],JDK1.5请下载5.42版本(5.5以上版本只支持JDK1.6以上)[http://www.apache.org/dyn/closer.cgi?path=%2Factivemq%2Fapache-activemq%2F5.4.3%2Fapache-activemq-5.4.3-bin.zip ActiveMQ5.43]下载， 
   * 解压zip(或者bin.tar.gz )目录如下:
  
    +bin (windows下面的bat和unix/linux下面的sh)
@@ -57,7 +57,8 @@
 
 ----
 ==在aurora中使用activemq==
- # 获得aurora activemq的支持jar(从[https://aurora-project.googlecode.com/svn/trunk/aurora-plugin/aurora/plugin/amq]编译获得)、以及从activemq/lib中复制activemq-core-**.jar、geronimo-jms-1.1-spec-1.1.1.jar 放入%WEB_HOME%/web-inf/lib中
+ # 获得aurora-pulgin.jar、并从activemq/lib中复制activemq-core-**.jar、geronimo-jms-1.1-spec-1.1.1.jar 放入%WEB_HOME%/web-inf/lib中
+ # 放置oracle驱动（比如ojdbc14.jar或class12.jar）到activemq\lib目录下
  # 在%WEB_HOME%/web-inf/aurora.feature/下添加msg.config,内容参考如下
 {{{
 <?xml version="1.0" encoding="UTF-8"?>
@@ -86,16 +87,145 @@ message="priviledge_setting_change"/>
   说明 failover是amq内置的一种集群协议，它支持自动重连机制，即如果localhost机器意外中断，会自动重连到remotehost1。此处我们可以定义多台主机,请修改上面的IP地址为ActiveMQ实际安装的IP地址。
  # 修改apache-activemq-**\conf\activemq.xml文件，以配合实现客户端的重连机制
 {{{
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!-- START SNIPPET: example -->
 <beans
-  xmlns="http://www.springframework.org/schema/beans"...>
-   <!--其他配置-->
-  <broker xmlns="http://activemq.apache.org/schema/core"...>
-      <persistenceAdapter>
-	<jdbcPersistenceAdapter dataDirectory="${activemq.base}/data" dataSource="#oracle-ds"/>
-      </persistenceAdapter>
-   <!--其他配置-->
-  </broker>
-  <bean id="oracle-ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+    <!-- Allows us to use system properties as variables in this configuration file -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <value>file:${activemq.conf}/credentials.properties</value>
+        </property>
+    </bean>
+
+    <!-- Allows log searching in hawtio console -->
+    <bean id="logQuery" class="org.fusesource.insight.log.log4j.Log4jLogQuery"
+          lazy-init="false" scope="singleton"
+          init-method="start" destroy-method="stop">
+    </bean>
+
+    <!--
+        The <broker> element is used to configure the ActiveMQ broker.
+    -->
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}">
+
+        <destinationPolicy>
+            <policyMap>
+              <policyEntries>
+                <policyEntry topic=">" >
+                    <!-- The constantPendingMessageLimitStrategy is used to prevent
+                         slow topic consumers to block producers and affect other consumers
+                         by limiting the number of messages that are retained
+                         For more information, see:
+
+                         http://activemq.apache.org/slow-consumer-handling.html
+
+                    -->
+                  <pendingMessageLimitStrategy>
+                    <constantPendingMessageLimitStrategy limit="1000"/>
+                  </pendingMessageLimitStrategy>
+                </policyEntry>
+              </policyEntries>
+            </policyMap>
+        </destinationPolicy>
+
+
+        <!--
+            The managementContext is used to configure how ActiveMQ is exposed in
+            JMX. By default, ActiveMQ uses the MBean server that is started by
+            the JVM. For more information, see:
+
+            http://activemq.apache.org/jmx.html
+        -->
+        <managementContext>
+            <managementContext createConnector="false"/>
+        </managementContext>
+
+        <!--
+            Configure message persistence for the broker. The default persistence
+            mechanism is the KahaDB store (identified by the kahaDB tag).
+            For more information, see:
+
+            http://activemq.apache.org/persistence.html
+        -->
+		<!--
+        <persistenceAdapter>
+            <kahaDB directory="${activemq.data}/kahadb"/>
+        </persistenceAdapter>
+		-->
+		<persistenceAdapter>
+			<jdbcPersistenceAdapter dataDirectory="${activemq.base}/data" dataSource="#oracle-ds"/>
+		</persistenceAdapter>
+
+          <!--
+            The systemUsage controls the maximum amount of space the broker will
+            use before disabling caching and/or slowing down producers. For more information, see:
+            http://activemq.apache.org/producer-flow-control.html
+          -->
+          <systemUsage>
+            <systemUsage>
+                <memoryUsage>
+                    <memoryUsage percentOfJvmHeap="70" />
+                </memoryUsage>
+                <storeUsage>
+                    <storeUsage limit="100 gb"/>
+                </storeUsage>
+                <tempUsage>
+                    <tempUsage limit="50 gb"/>
+                </tempUsage>
+            </systemUsage>
+        </systemUsage>
+
+        <!--
+            The transport connectors expose ActiveMQ over a given protocol to
+            clients and other brokers. For more information, see:
+
+            http://activemq.apache.org/configuring-transports.html
+        -->
+        <transportConnectors>
+            <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
+            <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="amqp" uri="amqp://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+        </transportConnectors>
+
+        <!-- destroy the spring context on shutdown to stop jetty -->
+        <shutdownHooks>
+            <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
+        </shutdownHooks>
+
+    </broker>
+
+    <!--
+        Enable web consoles, REST and Ajax APIs and demos
+        The web consoles requires by default login, you can disable this in the jetty.xml file
+
+        Take a look at ${ACTIVEMQ_HOME}/conf/jetty.xml for more details
+    -->
+    <import resource="jetty.xml"/>
+       
+    <bean id="oracle-ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
     <property name="url" value="jdbc:oracle:thin:@localhost:1521:AMQDB"/>
     <property name="username" value="scott"/>
@@ -103,7 +233,9 @@ message="priviledge_setting_change"/>
     <property name="maxActive" value="200"/>
     <property name="poolPreparedStatements" value="true"/>
   </bean>
+
 </beans>
+<!-- END SNIPPET: example -->
 }}}
   在启动amq后，会在数据中自动创建三种表
    * ACTIVEMQ_ACKS 接收应答表
