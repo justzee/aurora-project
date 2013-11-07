@@ -236,7 +236,7 @@ public class WebApplication implements Application {
 					}
 				}			
 			} 
-			service_name = service_name.substring(service_name.indexOf('/') + 1);
+//			service_name = service_name.substring(service_name.indexOf('/') + 1);
 		}
 		service_instance.setServiceName(service_name);
 		return service_instance;
