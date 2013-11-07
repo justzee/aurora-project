@@ -50,7 +50,7 @@ public class FacadeServlet extends HttpServlet {
   
   String get_service_name( HttpServletRequest request){
   	String service_name = request.getServletPath();
-  	service_name = service_name.substring(service_name.lastIndexOf('/')+1);
+  	service_name = service_name.substring(service_name.indexOf('/')+1);
   	return service_name ;
 //  	return servlet_context.getRealPath(request.getServletPath());
   }
