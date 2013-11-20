@@ -1,1 +1,0 @@
-<a:checkBox   name="${context.name}"  ${properties("bindTarget","prompt","width","text")} />                	

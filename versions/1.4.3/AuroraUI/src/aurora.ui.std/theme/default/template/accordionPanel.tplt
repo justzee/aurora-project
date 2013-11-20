@@ -1,6 +1,0 @@
-<DIV id="${id}" class="${wrapClass}" style="width:${width}px;${style}">
-		${accordions}
-</DIV>
-<SCRIPT LANGUAGE="JavaScript">
-	new Aurora.Accordion(${config});
-</SCRIPT>

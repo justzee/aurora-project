@@ -1,2 +1,0 @@
-<BUTTON type="${type}" ${id} class="${cls}" ${disabled} ${style}>${text}</BUTTON>
-${events}
