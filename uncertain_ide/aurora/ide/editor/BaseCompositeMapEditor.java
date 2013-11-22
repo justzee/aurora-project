@@ -98,7 +98,9 @@ public abstract class BaseCompositeMapEditor extends FormEditor {
 			try {
 				if (!AuroraProjectNature.hasAuroraNature(project)) {
 					AuroraProjectNature.addAuroraNature(project);
+					AuroraProjectNature.autoSetProjectProperty(project);
 				}
+				
 			} catch (CoreException e) {
 				DialogUtil.logErrorException(e);
 			}

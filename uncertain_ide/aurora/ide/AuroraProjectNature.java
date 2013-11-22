@@ -115,7 +115,7 @@ public class AuroraProjectNature implements IProjectNature {
 		} catch (InvocationTargetException e) {
 			return;
 		}
-		autoSetProjectProperty(project);
+//		autoSetProjectProperty(project);
 
 	}
 
