@@ -47,7 +47,8 @@ import aurora.ide.preferencepages.AuroraTemplateManager;
 
 public class AuroraResourceUtil {
 
-	public static final String LineSeparator = System.getProperty("line.separator");
+	public static final String LineSeparator = System
+			.getProperty("line.separator");
 	public static final String xml_decl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
 	public static String getIfileLocalPath(IFile ifile) {
@@ -56,7 +57,8 @@ public class AuroraResourceUtil {
 	}
 
 	public static String getLocalPathFromIPath(IPath path) {
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(path);
 		return resource.getLocation().toOSString();
 
 	}
@@ -65,10 +67,12 @@ public class AuroraResourceUtil {
 		return getIResourceFromIStructuredSelection(getStructuredSelection());
 	}
 
-	public static IResource getIResourceFromIStructuredSelection(IStructuredSelection selection) {
+	public static IResource getIResourceFromIStructuredSelection(
+			IStructuredSelection selection) {
 		if (selection == null)
 			return null;
-		StructuredSelection currentSelection = new StructuredSelection(IDE.computeSelectedResources(selection));
+		StructuredSelection currentSelection = new StructuredSelection(
+				IDE.computeSelectedResources(selection));
 		Iterator it = currentSelection.iterator();
 		if (it.hasNext()) {
 			Object object = it.next();
@@ -76,7 +80,8 @@ public class AuroraResourceUtil {
 			if (object instanceof IResource) {
 				selectedResource = (IResource) object;
 			} else if (object instanceof IAdaptable) {
-				selectedResource = (IResource) ((IAdaptable) object).getAdapter(IResource.class);
+				selectedResource = (IResource) ((IAdaptable) object)
+						.getAdapter(IResource.class);
 			}
 			if (selectedResource != null) {
 				if (selectedResource.getType() == IResource.FILE) {
@@ -90,46 +95,82 @@ public class AuroraResourceUtil {
 		return null;
 	}
 
+	// public static IStructuredSelection getStructuredSelection() {
+	// IStructuredSelection selectionToPass =
+	// AuroraPlugin.getDefault().getStructuredSelection();
+	// IWorkbenchWindow window =
+	// PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+	// if (window == null)
+	// return selectionToPass;
+	// ISelection selection = window.getSelectionService().getSelection();
+	// if (selection instanceof IStructuredSelection) {
+	// selectionToPass = (IStructuredSelection) selection;
+	// } else {
+	// // Build the selection from the IFile of the editor
+	// IWorkbenchPart part = window.getPartService().getActivePart();
+	// if (part instanceof IEditorPart) {
+	// IEditorInput input = ((IEditorPart) part).getEditorInput();
+	// Class fileClass = IFile.class;
+	// if (input != null && fileClass != null) {
+	// Object file = Platform.getAdapterManager().getAdapter(input, fileClass);
+	// if (file != null) {
+	// selectionToPass = new StructuredSelection(file);
+	// }
+	// }
+	// }
+	// }
+	// return selectionToPass;
+	// }
 	public static IStructuredSelection getStructuredSelection() {
-		IStructuredSelection selectionToPass = AuroraPlugin.getDefault().getStructuredSelection();
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IStructuredSelection selectionToPass = AuroraPlugin.getDefault()
+				.getStructuredSelection();
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
 		if (window == null)
 			return selectionToPass;
+		// Build the selection from the IFile of the editor
+
+		IWorkbenchPart part = window.getPartService().getActivePart();
+		if (part instanceof IEditorPart) {
+			IEditorInput input = ((IEditorPart) part).getEditorInput();
+			Class fileClass = IFile.class;
+			if (input != null && fileClass != null) {
+				Object file = Platform.getAdapterManager().getAdapter(input,
+						fileClass);
+				if (file != null) {
+					return selectionToPass = new StructuredSelection(file);
+				}
+			}
+		}
+
 		ISelection selection = window.getSelectionService().getSelection();
 		if (selection instanceof IStructuredSelection) {
 			selectionToPass = (IStructuredSelection) selection;
-		} else {
-			// Build the selection from the IFile of the editor
-			IWorkbenchPart part = window.getPartService().getActivePart();
-			if (part instanceof IEditorPart) {
-				IEditorInput input = ((IEditorPart) part).getEditorInput();
-				Class fileClass = IFile.class;
-				if (input != null && fileClass != null) {
-					Object file = Platform.getAdapterManager().getAdapter(input, fileClass);
-					if (file != null) {
-						selectionToPass = new StructuredSelection(file);
-					}
-				}
-			}
 		}
 		return selectionToPass;
 	}
 
-	public static String getRegisterPath(IFile file) throws ApplicationException {
+	public static String getRegisterPath(IFile file)
+			throws ApplicationException {
 		if (file == null)
 			return null;
 		char fileSeparatorChar = '/';
-		if (file.getName().endsWith("." + AuroraConstant.ScreenFileExtension) || file.getName().endsWith("." + AuroraConstant.SvcFileExtension)) {
+		if (file.getName().endsWith("." + AuroraConstant.ScreenFileExtension)
+				|| file.getName().endsWith(
+						"." + AuroraConstant.SvcFileExtension)) {
 			String fileName = AuroraResourceUtil.getIfileLocalPath(file);
 			String rootDir = ProjectUtil.getWebHomeLocalPath(file.getProject());
 			int webLocation = fileName.indexOf(rootDir);
 			if (webLocation == -1) {
 				return "";
 			}
-			String registerPath = fileName.substring(webLocation + rootDir.length() + 1);
-			registerPath = registerPath.replace(File.separatorChar, fileSeparatorChar);
+			String registerPath = fileName.substring(webLocation
+					+ rootDir.length() + 1);
+			registerPath = registerPath.replace(File.separatorChar,
+					fileSeparatorChar);
 			return registerPath;
-		} else if (file.getName().endsWith("." + AuroraConstant.BMFileExtension)) {
+		} else if (file.getName()
+				.endsWith("." + AuroraConstant.BMFileExtension)) {
 			String fileName = AuroraResourceUtil.getIfileLocalPath(file);
 			String rootDir = ProjectUtil.getBMHomeLocalPath(file.getProject());
 			int webLocation = fileName.indexOf(rootDir);
@@ -137,7 +178,8 @@ public class AuroraResourceUtil {
 			if (webLocation == -1) {
 				return "";
 			}
-			String registerPath = fileName.substring(webLocation + rootDir.length() + 1, endIndex);
+			String registerPath = fileName.substring(
+					webLocation + rootDir.length() + 1, endIndex);
 			registerPath = registerPath.replace(File.separatorChar, '.');
 			return registerPath;
 		}
@@ -145,7 +187,8 @@ public class AuroraResourceUtil {
 
 	}
 
-	public static CompositeMap loadFromResource(IResource file) throws ApplicationException {
+	public static CompositeMap loadFromResource(IResource file)
+			throws ApplicationException {
 		if (file == null || !file.exists()) {
 			return null;
 		}
@@ -157,9 +200,11 @@ public class AuroraResourceUtil {
 		try {
 			bmData = cl.loadByFile(fullLocationPath);
 		} catch (IOException e) {
-			throw new ApplicationException("文件路径" + fullLocationPath + "不存在!", e);
+			throw new ApplicationException("文件路径" + fullLocationPath + "不存在!",
+					e);
 		} catch (SAXException e) {
-			throw new ApplicationException("文件" + fullLocationPath + "格式不正确!", e);
+			throw new ApplicationException("文件" + fullLocationPath + "格式不正确!",
+					e);
 		}
 		return bmData;
 	}
@@ -169,7 +214,9 @@ public class AuroraResourceUtil {
 			IResource[] childs = parent.members();
 			for (int i = 0; i < childs.length; i++) {
 				IResource child = childs[i];
-				if (child.exists() && child.getName().toLowerCase().endsWith("." + AuroraConstant.BMFileExtension)) {
+				if (child.exists()
+						&& child.getName().toLowerCase()
+								.endsWith("." + AuroraConstant.BMFileExtension)) {
 					bmList.add(child);
 				}
 				if (child instanceof IContainer) {
@@ -191,7 +238,9 @@ public class AuroraResourceUtil {
 		projectCl.setSupportXInclude(false);
 		IProject project = ProjectUtil.getIProjectFromSelection();
 		if (project != null) {
-			projectCl.setBaseDir(project.getLocation().toFile().getParent().toString() + File.separator);
+			projectCl.setBaseDir(project.getLocation().toFile().getParent()
+					.toString()
+					+ File.separator);
 			cl.addExtraLoader(projectCl);
 		}
 		CompositeLoader curentDircl = new CommentCompositeLoader();
@@ -206,13 +255,15 @@ public class AuroraResourceUtil {
 	}
 
 	public static IFile getFileFromSelection() {
-		IStructuredSelection selection = AuroraPlugin.getDefault().getStructuredSelection();
+		IStructuredSelection selection = AuroraPlugin.getDefault()
+				.getStructuredSelection();
 		if (selection == null || !(selection instanceof IFile))
 			return null;
 		return (IFile) selection;
 	}
 
-	public static IResource getResource(IContainer parent, String resourceName) throws SystemException {
+	public static IResource getResource(IContainer parent, String resourceName)
+			throws SystemException {
 		IResource[] childs;
 		try {
 			childs = parent.members();
@@ -237,15 +288,19 @@ public class AuroraResourceUtil {
 		String templateString = "";
 		Template template = null;
 		try {
-			template = AuroraTemplateManager.getInstance().getTemplateStore().findTemplateById(AuroraTemplateContextType.SIGN);
+			template = AuroraTemplateManager.getInstance().getTemplateStore()
+					.findTemplateById(AuroraTemplateContextType.SIGN);
 		} catch (SystemException e1) {
 			DialogUtil.showExceptionMessageBox(e1);
 		}
 		;
 		if (template != null) {
-			TemplateContextType contextType = AuroraTemplateManager.getInstance().getContextTypeRegistry().getContextType(AuroraTemplateContextType.SIGN);
+			TemplateContextType contextType = AuroraTemplateManager
+					.getInstance().getContextTypeRegistry()
+					.getContextType(AuroraTemplateContextType.SIGN);
 			IDocument document = new Document();
-			TemplateContext context = new DocumentTemplateContext(contextType, document, 0, 0);
+			TemplateContext context = new DocumentTemplateContext(contextType,
+					document, 0, 0);
 			try {
 				TemplateBuffer buffer = context.evaluate(template);
 				templateString = buffer.getString();
@@ -265,7 +320,8 @@ public class AuroraResourceUtil {
 			url = loader.getResource(fileName);
 		}
 		if (url == null)
-			throw new IOException("Can't find " + fileName + " from current classpath");
+			throw new IOException("Can't find " + fileName
+					+ " from current classpath");
 		url = FileLocator.toFileURL(url);
 		return new File(url.getFile());
 	}
