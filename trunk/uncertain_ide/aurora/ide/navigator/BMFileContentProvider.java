@@ -151,7 +151,8 @@ public class BMFileContentProvider implements ITreeContentProvider,
 	}
 
 	public boolean visit(IResourceDelta delta) throws CoreException {
-		IProject project = ProjectUtil.getIProjectFromSelection();
+//		IProject project = ProjectUtil.getIProjectFromSelection();
+		IProject project  = delta.getResource().getProject();
 		if (project == null)
 			return false;
 		if (!AuroraProjectNature.hasAuroraNature(project)) {
@@ -169,7 +170,6 @@ public class BMFileContentProvider implements ITreeContentProvider,
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				viewer.refresh();
-
 			}
 		});
 		return false;

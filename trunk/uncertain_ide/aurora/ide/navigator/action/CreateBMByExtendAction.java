@@ -68,6 +68,7 @@ import aurora.ide.helpers.SystemException;
 public class CreateBMByExtendAction implements IObjectActionDelegate {
 
 	ISelection selection;
+	private IResource bmResource;
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 	}
@@ -82,14 +83,14 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 			DialogUtil.showErrorMessageBox(firstElment+"is not a IResource!");
 			return;
 		}
-		IResource resource = (IResource) firstElment;
-		if (!resource.getName().toLowerCase().endsWith("." + AuroraConstant.BMFileExtension)){
-			DialogUtil.showErrorMessageBox(resource+"不是bm文件!");
+		bmResource = (IResource) firstElment;
+		if (!bmResource.getName().toLowerCase().endsWith("." + AuroraConstant.BMFileExtension)){
+			DialogUtil.showErrorMessageBox(bmResource+"不是bm文件!");
 			return;
 		}
 		CompositeMap bm = null;
 		try {
-			bm = AuroraResourceUtil.loadFromResource(resource);
+			bm = AuroraResourceUtil.loadFromResource(bmResource);
 		} catch (ApplicationException e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
@@ -346,7 +347,8 @@ public class CreateBMByExtendAction implements IObjectActionDelegate {
 				}
 
 				private void pickParentBM() throws ApplicationException {
-					IProject project = ProjectUtil.getIProjectFromSelection();
+//					IProject project = ProjectUtil.getIProjectFromSelection();
+					IProject project = bmResource.getProject();
 					List bmList = ProjectUtil.getBMSFromProject(project);
 					CompositeMap bms = new CommentCompositeMap("bms");
 					String[] columnProperties = {"name", "fullpath"};

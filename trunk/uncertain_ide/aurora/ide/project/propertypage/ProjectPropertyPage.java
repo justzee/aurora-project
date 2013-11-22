@@ -38,6 +38,7 @@ import aurora.ide.helpers.ExceptionUtil;
 import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
+import aurora.ide.project.AuroraProject;
 
 public class ProjectPropertyPage extends PropertyPage implements Runnable,
 		IRunnableWithProgress {
@@ -119,36 +120,49 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 		} catch (SystemException e) {
 			DialogUtil.logErrorException(e);
 		}
-
 		Button webBrowseButton = new Button(content, SWT.PUSH);
 		webBrowseButton.setText(LocaleMessage.getString("openBrowse"));
 		webBrowseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				IContainer initSelection = getProject();
-				IFolder folder = ResourceUtil.getWebHomeFolder(getProject());
-				if (folder != null)
-					initSelection = folder;
-				ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-						Display.getCurrent().getActiveShell(), initSelection,
-						false, LocaleMessage
-								.getString("please.select.the.path"));
-				if (dialog.open() == ContainerSelectionDialog.OK) {
-					Object[] result = dialog.getResult();
-					if (result.length == 1) {
-						IPath selectionPath = (IPath) result[0];
-						String errorMessage = validWebHome(getProject(),
-								selectionPath);
-						if (errorMessage != null) {
-							DialogUtil.showErrorMessageBox(
-									LocaleMessage.getString("check.failed"),
-									errorMessage);
-							return;
-						}
-						webHomeText.setText(selectionPath.toString());
-						bmHomeText.setText(selectionPath.append("WEB-INF")
-								.append("classes").toString());
+				String path = openFolderSelectionDialog(LocaleMessage
+						.getString("please.select.the.path"));
+				if (null != path) {
+					String errorMessage = validWebHome(getProject(), new Path(
+							path));
+					if (errorMessage != null) {
+						DialogUtil.showErrorMessageBox(
+								LocaleMessage.getString("check.failed"),
+								errorMessage);
+					} else {
+						webHomeText.setText(path);
 					}
 				}
+				// IContainer initSelection = getProject();
+				// IFolder folder = ResourceUtil.getWebHomeFolder(getProject());
+				// if (folder != null)
+				// initSelection = folder;
+				// ContainerSelectionDialog dialog = new
+				// ContainerSelectionDialog(
+				// Display.getCurrent().getActiveShell(), initSelection,
+				// false, LocaleMessage
+				// .getString("please.select.the.path"));
+				// if (dialog.open() == ContainerSelectionDialog.OK) {
+				// Object[] result = dialog.getResult();
+				// if (result.length == 1) {
+				// IPath selectionPath = (IPath) result[0];
+				// String errorMessage = validWebHome(getProject(),
+				// selectionPath);
+				// if (errorMessage != null) {
+				// DialogUtil.showErrorMessageBox(
+				// LocaleMessage.getString("check.failed"),
+				// errorMessage);
+				// return;
+				// }
+				// webHomeText.setText(selectionPath.toString());
+				// bmHomeText.setText(selectionPath.append("WEB-INF")
+				// .append("classes").toString());
+				// }
+				// }
 			}
 		});
 		// BMDir
@@ -179,29 +193,42 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 		bmBrowseButton.setText(LocaleMessage.getString("openBrowse"));
 		bmBrowseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				IContainer initSelection = getProject();
-				IFolder folder = ResourceUtil.getBMHomeFolder(getProject());
-				if (folder != null)
-					initSelection = folder;
-				ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-						Display.getCurrent().getActiveShell(), initSelection,
-						false, LocaleMessage
-								.getString("please.select.the.path"));
-				if (dialog.open() == ContainerSelectionDialog.OK) {
-					Object[] result = dialog.getResult();
-					if (result.length == 1) {
-						IPath selectionPath = (IPath) result[0];
-						String errorMessage = validBMHome(getProject(),
-								selectionPath);
-						if (errorMessage != null) {
-							DialogUtil.showErrorMessageBox(
-									LocaleMessage.getString("check.failed"),
-									errorMessage);
-							return;
-						}
-						bmHomeText.setText(selectionPath.toString());
-					}
+				String path = openFolderSelectionDialog(LocaleMessage
+						.getString("please.select.the.path"));
+				if (null != path) {
+					String errorMessage = validBMHome(getProject(), new Path(
+							path));
+					if (errorMessage != null) {
+						DialogUtil.showErrorMessageBox(
+								LocaleMessage.getString("check.failed"),
+								errorMessage);
+					} else
+						bmHomeText.setText(path);
 				}
+				// IContainer initSelection = getProject();
+				// IFolder folder = ResourceUtil.getBMHomeFolder(getProject());
+				// if (folder != null)
+				// initSelection = folder;
+				// ContainerSelectionDialog dialog = new
+				// ContainerSelectionDialog(
+				// Display.getCurrent().getActiveShell(), initSelection,
+				// false, LocaleMessage
+				// .getString("please.select.the.path"));
+				// if (dialog.open() == ContainerSelectionDialog.OK) {
+				// Object[] result = dialog.getResult();
+				// if (result.length == 1) {
+				// IPath selectionPath = (IPath) result[0];
+				// String errorMessage = validBMHome(getProject(),
+				// selectionPath);
+				// if (errorMessage != null) {
+				// DialogUtil.showErrorMessageBox(
+				// LocaleMessage.getString("check.failed"),
+				// errorMessage);
+				// return;
+				// }
+				// bmHomeText.setText(selectionPath.toString());
+				// }
+				// }
 			}
 		});
 
@@ -387,7 +414,6 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 				bmHomeText.setText(ProjectUtil.autoGetBMHome(proj));
 				cb_isBuild.setSelection(false);
 			} catch (ApplicationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -413,6 +439,11 @@ public class ProjectPropertyPage extends PropertyPage implements Runnable,
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected String openFolderSelectionDialog(String msg) {
+		AuroraProject ap = new AuroraProject(getProject());
+		return ap.openFolderSelectionDialog(msg, this.getShell());
 	}
 
 	public void run() {
