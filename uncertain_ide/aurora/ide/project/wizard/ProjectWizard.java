@@ -50,6 +50,7 @@ public class ProjectWizard extends BasicNewProjectResourceWizard implements
 		}
 		try {
 			AuroraProjectNature.addAuroraNature(proj);
+			AuroraProjectNature.autoSetProjectProperty(proj);
 			if (web_inf != null) {
 				startBuild();
 			}
@@ -90,6 +91,7 @@ public class ProjectWizard extends BasicNewProjectResourceWizard implements
 	}
 
 	private void startBuild() {
+		//TODO
 		Display.getCurrent().asyncExec(this);
 	}
 

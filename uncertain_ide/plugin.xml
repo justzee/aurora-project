@@ -5,8 +5,8 @@
     <extension point="org.eclipse.ui.newWizards">
         <category id="aurora.ide.wizard" name="%category.name">
         </category>
-        <wizard category="aurora.ide.wizard" 
-            class="aurora.ide.project.wizard.ProjectWizard" 
+        <wizard category="aurora.ide.wizard"
+            class="aurora.ide.project.wizard.NewAuroraProjectWizard" 
             finalPerspective="aurora.ide.perspectives.AuroraPerspective" 
             icon="icons/aurora.gif" id="aurora.ide.wizard.ProjectWizard" 
             name="%aurora.project" project="true"/>
