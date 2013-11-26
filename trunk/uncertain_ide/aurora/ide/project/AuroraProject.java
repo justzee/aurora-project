@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -12,6 +13,8 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import aurora.ide.AuroraPlugin;
+import aurora.ide.AuroraProjectNature;
 import aurora.ide.helpers.StringUtil;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
 
@@ -84,8 +87,9 @@ public class AuroraProject {
 		super();
 		this.project = project;
 	}
-	
-	public String openFolderSelectionDialog(String msg,org.eclipse.swt.widgets.Shell shell) {
+
+	public String openFolderSelectionDialog(String msg,
+			org.eclipse.swt.widgets.Shell shell) {
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
 				shell, new WorkbenchLabelProvider(),
 				new BaseWorkbenchContentProvider());
@@ -108,6 +112,75 @@ public class AuroraProject {
 			Object firstResult = dialog.getFirstResult();
 			if (firstResult instanceof IResource) {
 				return ((IResource) firstResult).getFullPath().toString();
+			}
+		}
+		return null;
+	}
+
+	public static IProject openProjectSelectionDialog(
+			org.eclipse.swt.widgets.Shell shell) {
+		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
+				shell, new WorkbenchLabelProvider(),
+				new BaseWorkbenchContentProvider());
+		dialog.setMessage("Aurora Project ");
+		dialog.setInput(AuroraPlugin.getWorkspace().getRoot());
+		dialog.addFilter(new ViewerFilter() {
+			public boolean select(Viewer viewer, Object parentElement,
+					Object element) {
+
+				if (element instanceof IProject) {
+					try {
+						if (AuroraProjectNature
+								.hasAuroraNature((IProject) element))
+							return true;
+					} catch (CoreException e) {
+					}
+				}
+				return false;
+			}
+		});
+		int open = dialog.open();
+		if (ElementTreeSelectionDialog.OK == open) {
+			Object firstResult = dialog.getFirstResult();
+			if (firstResult instanceof IProject) {
+				return ((IProject) firstResult);
+			}
+		}
+		return null;
+	}
+
+	public static IPath openFolderSelectionDialog(
+			org.eclipse.swt.widgets.Shell shell) {
+		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
+				shell, new WorkbenchLabelProvider(),
+				new BaseWorkbenchContentProvider());
+		dialog.setMessage("Aurora Project ");
+		dialog.setInput(AuroraPlugin.getWorkspace().getRoot());
+		dialog.addFilter(new ViewerFilter() {
+			public boolean select(Viewer viewer, Object parentElement,
+					Object element) {
+
+				if (element instanceof IProject) {
+					try {
+						if (AuroraProjectNature
+								.hasAuroraNature((IProject) element))
+							return true;
+					} catch (CoreException e) {
+					}
+				}
+				if (element instanceof IFolder) {
+					if (((IContainer) element).getName().startsWith(".") == false) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+		int open = dialog.open();
+		if (ElementTreeSelectionDialog.OK == open) {
+			Object firstResult = dialog.getFirstResult();
+			if (firstResult instanceof IResource) {
+				return (((IResource) firstResult).getFullPath());
 			}
 		}
 		return null;
