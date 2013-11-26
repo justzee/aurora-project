@@ -1,11 +1,13 @@
 package aurora.ide.bm.wizard.table;
 
-
 import java.sql.Connection;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
@@ -22,14 +24,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
+import aurora.ide.AuroraProjectNature;
 import aurora.ide.editor.widgets.WizardPageRefreshable;
 import aurora.ide.helpers.ApplicationException;
+import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
-
-
+import aurora.ide.project.AuroraProject;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -76,14 +78,10 @@ public class BMMainConfigPage extends WizardPageRefreshable {
 		button.setText(LocaleMessage.getString("openBrowse"));
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin
-						.getWorkspace().getRoot(), false, LocaleMessage.getString("select.new.file.container"));
-				if (dialog.open() == ContainerSelectionDialog.OK) {
-					Object[] result = dialog.getResult();
-					if (result.length == 1) {
-						containerText.setText(((Path) result[0]).toString());
-					}
-				}
+				IPath path = AuroraProject
+						.openFolderSelectionDialog(getShell());
+				if (path != null)
+					containerText.setText(path.toString());
 			}
 		});
 
@@ -107,6 +105,7 @@ public class BMMainConfigPage extends WizardPageRefreshable {
 					}
 				}
 			}
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
@@ -119,8 +118,10 @@ public class BMMainConfigPage extends WizardPageRefreshable {
 	public Button getAutoRegisterPromptButton() {
 		return autoRegisterPromptButton;
 	}
+
 	public void initPageValues() {
-		if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection) {
+		if (selection != null && selection.isEmpty() == false
+				&& selection instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) selection;
 			if (ssel.size() > 1)
 				return;
@@ -135,25 +136,76 @@ public class BMMainConfigPage extends WizardPageRefreshable {
 			}
 		}
 	}
+
 	public void checkPageValues() {
-		IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getContainerName()));
-		if (getContainerName().length() == 0) {
-			updatePageStatus(LocaleMessage.getString("file.container.must.be.specified"));
+		String path = getContainerName();
+		if (path == null || "".equals(path)) {
+			updatePageStatus(LocaleMessage
+					.getString("file.container.must.be.specified"));
 			return;
 		}
-		if (container == null || (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			updatePageStatus(LocaleMessage.getString("file.container.must.exist"));
+		IPath p = new Path(path);
+		if (p.isEmpty() || p.hasTrailingSeparator()) {
+			updatePageStatus(LocaleMessage
+					.getString("file.container.must.be.specified"));
+			return;
+		}
+
+		IResource container = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(path);
+
+		if (container == null
+				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
+			updatePageStatus(LocaleMessage
+					.getString("file.container.must.exist"));
 			return;
 		}
 		if (!container.isAccessible()) {
-			updatePageStatus(LocaleMessage.getString("project.must.be.writable"));
+			updatePageStatus(LocaleMessage
+					.getString("project.must.be.writable"));
 			return;
 		}
+		IProject project = (IProject) (container.getType() == IResource.PROJECT ? container
+				: container.getProject());
+
+		try {
+			if (AuroraProjectNature.hasAuroraNature(project) == false) {
+				updatePageStatus(LocaleMessage.getString("无法找到Aurora工程"));
+				return;
+			}
+		} catch (CoreException e) {
+			updatePageStatus(LocaleMessage.getString("无法找到Aurora工程"));
+			return;
+		}
+
+		try {
+			Connection dbConnection = DBConnectionUtil.getDBConnection(project);
+			if (dbConnection == null) {
+				this.updatePageStatus("无法获取数据库连接");
+				return;
+			}
+		} catch (ApplicationException e) {
+			this.updatePageStatus("无法获取数据库连接");
+			return;
+		}
+
 		updatePageStatus(null);
 	}
 
 	public String getContainerName() {
 		return containerText.getText();
 	}
-	
+
+	public IProject getProject() {
+		if (this.isPageComplete() == false) {
+			return null;
+		}
+		IResource container = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(getContainerName());
+		IProject project = (IProject) (container.getType() == IResource.PROJECT ? container
+				: container.getProject());
+
+		return project;
+	}
+
 }

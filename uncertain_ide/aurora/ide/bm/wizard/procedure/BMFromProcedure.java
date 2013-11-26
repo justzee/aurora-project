@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
@@ -19,24 +20,26 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 
 import uncertain.composite.CompositeMap;
+import aurora.ide.AuroraProjectNature;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
 import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
+import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
-import aurora.ide.helpers.LocaleMessage;
 import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
+import aurora.ide.project.AuroraProject;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the
@@ -52,6 +55,7 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	private BMFromProcedurePage mainPage;
 	private IProject project;
 	private boolean isOverwrite;
+	private String errMsg;
 
 	/**
 	 * Constructor for BmNewWizard.
@@ -68,6 +72,11 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	public void addPages() {
 		mainPage = new BMFromProcedurePage(project);
 		addPage(mainPage);
+	}
+
+	@Override
+	public void createPageControls(Composite pageContainer) {
+		super.createPageControls(pageContainer);
 	}
 
 	/**
@@ -194,9 +203,8 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 				record.getString("object_name"),
 				record.getString("procedure_name"), record.getInt(
 						"subprogram_id").intValue(),
-				record.getString("object_type"));
-		String contents = xmlHint
-				+ AuroraResourceUtil.LineSeparator
+				record.getString("object_type"), project);
+		String contents = xmlHint + AuroraResourceUtil.LineSeparator
 				+ AuroraResourceUtil.getSign()
 				// +
 				// XMLOutputter.defaultInstance().toXML(Object.toCompositeMap(),
@@ -219,18 +227,14 @@ public class BMFromProcedure extends Wizard implements INewWizard {
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		project = ProjectUtil.getIProjectFromSelection();
-		if (project == null) {
-			ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-					getShell(), ResourcesPlugin.getWorkspace().getRoot(),
-					false, LocaleMessage.getString("select.new.file.container"));
-			if (dialog.open() == ContainerSelectionDialog.OK) {
-				Object[] result = dialog.getResult();
-				if (result.length == 1) {
-					project = ResourcesPlugin.getWorkspace().getRoot()
-							.findMember(((Path) result[0]).toString())
-							.getProject();
-				}
+		try {
+			if (project == null
+					|| (AuroraProjectNature.hasAuroraNature(project) == false)) {
+				IProject project = AuroraProject
+						.openProjectSelectionDialog(this.getShell());
+				this.project = project;
 			}
+		} catch (CoreException e) {
 		}
 	}
 }

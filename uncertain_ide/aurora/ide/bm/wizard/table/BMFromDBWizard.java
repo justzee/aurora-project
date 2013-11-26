@@ -13,6 +13,7 @@ import oracle.jdbc.driver.OracleConnection;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -43,7 +44,6 @@ import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DBConnectionUtil;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.LocaleMessage;
-import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
 
 /**
@@ -305,8 +305,10 @@ public class BMFromDBWizard extends Wizard implements INewWizard {
 
 	public Connection getConnection() throws ApplicationException {
 		if (connnect == null) {
-			connnect = DBConnectionUtil.getDBConnection(ProjectUtil
-					.getIProjectFromSelection());
+			IProject project = mainConfigPage.getProject();
+			if(project == null)
+				return connnect;
+			connnect = DBConnectionUtil.getDBConnection(project );
 			if (connnect instanceof OracleConnection) {
 				((OracleConnection) connnect).setRemarksReporting(true);
 			}

@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
+
 import uncertain.composite.CompositeMap;
 import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.api.composite.map.CommentXMLOutputter;
@@ -17,7 +19,6 @@ import aurora.ide.helpers.ApplicationException;
 import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.AuroraResourceUtil;
 import aurora.ide.helpers.DBConnectionUtil;
-import aurora.ide.helpers.ProjectUtil;
 import aurora.ide.helpers.SystemException;
 
 public class OracleProcedureObject {
@@ -27,8 +28,9 @@ public class OracleProcedureObject {
 	public int subprogram_id;
 	public String object_type;
 	public List parameters;
-	public static Map typeMap = new HashMap();
-	public static Map parameterMap = new HashMap();
+	private IProject project;
+	public static Map<String,String> typeMap = new HashMap<String,String>();
+	public static Map<String,String> parameterMap = new HashMap<String,String>();
 	static {
 		typeMap.put("PLS_INTEGER", "java.lang.Long");
 		typeMap.put("BOOLEAN", "java.lang.Boolean");
@@ -50,12 +52,13 @@ public class OracleProcedureObject {
 	 * @param objectType
 	 */
 	public OracleProcedureObject(String objectName, String procedureName,
-			int subprogramId, String objectType) {
+			int subprogramId, String objectType,IProject project ) {
 		super();
 		object_name = objectName;
 		procedure_name = procedureName;
 		subprogram_id = subprogramId;
 		object_type = objectType;
+		this.project = project;
 	}
 
 	public String getObject_name() {
@@ -249,8 +252,7 @@ public class OracleProcedureObject {
 
 	public void initParameters() throws ApplicationException {
 		parameters = new LinkedList();
-		Connection connection = DBConnectionUtil.getDBConnectionSyncExec(ProjectUtil
-				.getIProjectFromSelection());
+		Connection connection = DBConnectionUtil.getDBConnectionSyncExec(project);
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {

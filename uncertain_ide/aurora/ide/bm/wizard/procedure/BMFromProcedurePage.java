@@ -1,6 +1,5 @@
 package aurora.ide.bm.wizard.procedure;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -27,6 +26,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import uncertain.composite.CompositeMap;
+import aurora.ide.AuroraPlugin;
 import aurora.ide.api.composite.map.CommentCompositeMap;
 import aurora.ide.editor.widgets.GridViewer;
 import aurora.ide.editor.widgets.core.IGridViewer;
@@ -43,16 +43,18 @@ import aurora.ide.helpers.SystemException;
  */
 
 public class BMFromProcedurePage extends WizardPage {
-	private final String[] columnNames = {"object_name","procedure_name", "subprogram_id", "overload", "object_type"};
-	private final String[] columnTitles = {"对象","过程","顺序", "重载", "类型"};
+	private final String[] columnNames = { "object_name", "procedure_name",
+			"subprogram_id", "overload", "object_type" };
+	private final String[] columnTitles = { "对象", "过程", "顺序", "重载", "类型" };
 	public static final String FILE_EXT = "bm";
 	private Button overwriteButton;
 	private CTabFolder tabFolder;
 	private OracleProcedureObject focusObject;
 	private IProject project;
-	
+
 	private GridViewer gridViewer;
 	private CompositeMap data;
+
 	/**
 	 * Constructor for BMFromProcedurePage.
 	 * 
@@ -76,75 +78,87 @@ public class BMFromProcedurePage extends WizardPage {
 		container.setLayout(layout);
 
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		tabFolder = new CTabFolder(container, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		tabFolder = new CTabFolder(container, SWT.V_SCROLL | SWT.H_SCROLL
+				| SWT.BORDER);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
-		gd.heightHint=400;
+		gd.heightHint = 400;
 		tabFolder.setLayoutData(gd);
-		gridViewer = new GridViewer(columnNames, IGridViewer.filterBar|IGridViewer.isMulti);
+		gridViewer = new GridViewer(columnNames, IGridViewer.filterBar
+				| IGridViewer.isMulti);
 		try {
 			gridViewer.setFilterColumn("object_name");
 			gridViewer.setColumnTitles(columnTitles);
 			gridViewer.createViewer(tabFolder);
 			IRunnableWithProgress op = new IRunnableWithProgress() {
-				public void run(IProgressMonitor monitor) throws InvocationTargetException {
+				public void run(IProgressMonitor monitor)
+						throws InvocationTargetException {
 					try {
-						monitor.beginTask(LocaleMessage.getString("正在获取数据库过程,请稍等.."),
+						monitor.beginTask(
+								LocaleMessage.getString("正在获取数据库过程,请稍等.."),
 								IProgressMonitor.UNKNOWN);
 						data = getProcedures();
 					} catch (ApplicationException e) {
 						DialogUtil.showExceptionMessageBox(e);
-//						setErrorMessage(e.getCause().getMessage());
-//						return;
+						// setErrorMessage(e.getCause().getMessage());
+						// return;
 					} finally {
 						monitor.done();
 					}
 				}
-			};		
-			getContainer().run(true, true, op);
+			};
+			AuroraPlugin.getDefault().getWorkbench().getProgressService()
+			.busyCursorWhile(op);
+//			getContainer().run(true, true, op);
 			gridViewer.setData(data);
 		} catch (Throwable e) {
 			DialogUtil.showExceptionMessageBox(e);
 			return;
 		}
-		
+
 		CTabItem list = new CTabItem(tabFolder, SWT.H_SCROLL);
 		list.setText("   对象列表   ");
 		list.setControl(gridViewer.getControl());
 		final CTabItem deteil = new CTabItem(tabFolder, SWT.H_SCROLL);
 		deteil.setText("   明细   ");
 		deteil.setControl(gridViewer.getControl());
-		final StyledText content = new StyledText(tabFolder, SWT.WRAP | SWT.V_SCROLL);
-		content.setFont(new Font(tabFolder.getDisplay(), "Courier New", 10, SWT.NORMAL));
+		final StyledText content = new StyledText(tabFolder, SWT.WRAP
+				| SWT.V_SCROLL);
+		content.setFont(new Font(tabFolder.getDisplay(), "Courier New", 10,
+				SWT.NORMAL));
 		content.setEditable(false);
 		deteil.setControl(content);
 		gridViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				CompositeMap record = gridViewer.getFocus();
 				if (record != null) {
-					focusObject = new OracleProcedureObject(record.getString("object_name"), record.getString("procedure_name"), record.getInt(
-							"subprogram_id").intValue(), record.getString("object_type"));
+					focusObject = new OracleProcedureObject(record
+							.getString("object_name"), record
+							.getString("procedure_name"), record.getInt(
+							"subprogram_id").intValue(), record
+							.getString("object_type"), project);
 				} else {
 					focusObject = null;
-					
+
 				}
 			}
 		});
 		tabFolder.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				if (deteil.equals(e.item)) {
-					if(focusObject != null){
+					if (focusObject != null) {
 						try {
 							content.setText(focusObject.toText());
 						} catch (ApplicationException e1) {
 							DialogUtil.showExceptionMessageBox(e1);
 						}
-					}else{
+					} else {
 						content.setText("没有选择对象");
 					}
 				}
 
 			}
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
@@ -155,14 +169,16 @@ public class BMFromProcedurePage extends WizardPage {
 		gd.horizontalSpan = 3;
 		overwriteButton.setLayoutData(gd);
 		overwriteButton.setText("重名时,是否覆盖?");
-		initialize();
 		dialogChanged();
 		setControl(container);
+		validate();
 	}
+
 	public OracleProcedureObject getSelectionObject() {
 		return focusObject;
 	}
-	public CompositeMap getSelection(){
+
+	public CompositeMap getSelection() {
 		return gridViewer.getSelection();
 	}
 
@@ -170,10 +186,8 @@ public class BMFromProcedurePage extends WizardPage {
 		this.focusObject = selectionObject;
 	}
 
-	private void initialize() {
-	}
 	private void dialogChanged() {
-		if (!project.isAccessible()) {
+		if (project != null && !project.isAccessible()) {
 			updateStatus(LocaleMessage.getString("project.must.be.writable"));
 			return;
 		}
@@ -188,14 +202,19 @@ public class BMFromProcedurePage extends WizardPage {
 	public boolean isOverwrite() {
 		return overwriteButton.getSelection();
 	}
+
 	public CompositeMap getProcedures() throws ApplicationException {
-		Connection connection = DBConnectionUtil.getDBConnectionSyncExec(project);
+		if(project == null)
+			return new CompositeMap();
+		Connection connection = DBConnectionUtil
+				.getDBConnectionSyncExec(project);
 		Statement st = null;
 		ResultSet rs = null;
 		try {
 			st = connection.createStatement();
 			String select_sql = "select t.object_name, t.procedure_name, t.subprogram_id,t.overload, t.object_type"
-					+ " from user_procedures t " + " where t.subprogram_id <> 0 "
+					+ " from user_procedures t "
+					+ " where t.subprogram_id <> 0 "
 					+ " order by t.object_name, t.subprogram_id ";
 			rs = st.executeQuery(select_sql);
 			CompositeMap records = new CommentCompositeMap("records");
@@ -219,6 +238,22 @@ public class BMFromProcedurePage extends WizardPage {
 				} catch (SQLException e) {
 					throw new SystemException(e);
 				}
+			}
+		}
+	}
+
+	private void validate() {
+		if (project == null) {
+			this.updateStatus("无法找到Aurora工程");
+		} else {
+			try {
+				Connection dbConnection = DBConnectionUtil
+						.getDBConnection(project);
+				if (dbConnection == null) {
+					this.updateStatus("无法获取数据库连接");
+				}
+			} catch (ApplicationException e) {
+				this.updateStatus("无法获取数据库连接");
 			}
 		}
 	}
