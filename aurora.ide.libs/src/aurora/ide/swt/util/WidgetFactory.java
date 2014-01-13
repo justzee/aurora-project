@@ -2,7 +2,9 @@ package aurora.ide.swt.util;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
 public class WidgetFactory {
@@ -28,7 +30,16 @@ public class WidgetFactory {
 	}
 
 	static public Composite composite(Composite p) {
-		return new Composite(p, SWT.NONE);
+		Composite composite = new Composite(p, SWT.NONE);
+		composite.setLayout(new GridLayout());
+		return composite;
+	}
+
+	static public Group group(Composite p, String text) {
+		Group g = new Group(p, SWT.NONE);
+		g.setText(text);
+		g.setLayout(new GridLayout());
+		return g;
 	}
 
 	static public Label hSeparator(Composite parent) {
