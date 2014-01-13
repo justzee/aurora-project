@@ -4,11 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -62,15 +59,12 @@ abstract public class UWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
-		Composite control = new Composite(parent, SWT.NONE);
-		parent.setLayout(new GridLayout());
-		control.setLayoutData(new GridData(GridData.FILL_BOTH));
-		createPageControl(control);
-		this.setControl(control);
+		Composite c = createPageControl(parent);
+		this.setControl(c);
 		modelChanged();
 	}
 
-	abstract protected void createPageControl(Composite control);
+	abstract protected Composite createPageControl(Composite control);
 
 	public PageModel getModel() {
 		return model;
