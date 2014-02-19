@@ -12,9 +12,10 @@ public class FileExplorer {
 		defaultTarget = "shell_open_command {0}";
 		String osName = System.getProperty("os.name");
 		if (osName.indexOf("Windows") != -1)
-			defaultTarget = "explorer.exe {0}";
+			defaultTarget = "explorer.exe /e,/select, {0}";
 		else if (osName.indexOf("Mac") != -1)
 			defaultTarget = "open {0}";
+//		String cmd = String.format("explorer /e,/select, \"%s\"", file);
 	}
 
 	static public void open(String directory) {

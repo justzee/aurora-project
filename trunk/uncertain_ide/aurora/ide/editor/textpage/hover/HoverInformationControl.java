@@ -40,7 +40,10 @@ public class HoverInformationControl extends BrowserInformationControl {
 			}
 		};
 	}
-
+	public void dispose() {
+		this.handleDispose();
+		super.dispose();
+	}
 
 	@SuppressWarnings("deprecation")
 	@Override
