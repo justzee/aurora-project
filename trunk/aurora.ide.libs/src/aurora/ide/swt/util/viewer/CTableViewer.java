@@ -40,7 +40,7 @@ public class CTableViewer {
 		Composite buttonComposite = WidgetFactory.composite(tableComposite);
 		buttonComposite.setLayout(GridLayoutUtil.COLUMN_LAYOUT_1);
 		buttonComposite.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-		Button add = WidgetFactory.button(buttonComposite, "增加");
+		Button add = WidgetFactory.button(buttonComposite, Messages.CTableViewer_0);
 		add.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -48,7 +48,7 @@ public class CTableViewer {
 				clickAddButton(tableComposite.getShell(), tv);
 			}
 		});
-		Button del = WidgetFactory.button(buttonComposite, "删除");
+		Button del = WidgetFactory.button(buttonComposite, Messages.CTableViewer_1);
 		del.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -56,7 +56,7 @@ public class CTableViewer {
 				clickDelButton(tv);
 			}
 		});
-		Button up = WidgetFactory.button(buttonComposite, "向上");
+		Button up = WidgetFactory.button(buttonComposite, Messages.CTableViewer_2);
 		up.addSelectionListener(new SelectionAdapter() {
 
 			@Override
@@ -65,7 +65,7 @@ public class CTableViewer {
 			}
 
 		});
-		Button down = WidgetFactory.button(buttonComposite, "向下");
+		Button down = WidgetFactory.button(buttonComposite, Messages.CTableViewer_3);
 		down.addSelectionListener(new SelectionAdapter() {
 
 			@Override
