@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <description name="LWAP IDE" url="https://aurora-project.googlecode.com/svn/trunk/lwap_ide">
+      LWAP IDE
+   </description>
    <feature url="features/aurora.lwap.ide.feature_1.0.0.201402281407.jar" id="aurora.lwap.ide.feature" version="1.0.0.201402281407"/>
 </site>
