@@ -137,7 +137,7 @@ public class ServiceNewWizardPage extends WizardPage {
 	 * Ensures that both text fields are set.
 	 */
 
-	private void dialogChanged() {
+	protected void dialogChanged() {
 		IResource container = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(new Path(getContainerName()));
 		String fileName = getFileName();
@@ -169,16 +169,23 @@ public class ServiceNewWizardPage extends WizardPage {
 		}
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
-			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("screen") == false) {
-				updateStatus(LocaleMessage.getString("file.extension.must.be.screen"));
+			if(checkExt(fileName, dotLoc)){
 				return;
 			}
 		}
 		updateStatus(null);
 	}
 
-	private void updateStatus(String message) {
+	protected boolean checkExt(String fileName, int dotLoc) {
+		String ext = fileName.substring(dotLoc + 1);
+		if (ext.equalsIgnoreCase("screen") == false) {
+			updateStatus(LocaleMessage.getString("file.extension.must.be.screen"));
+			return true;
+		}
+		return false;
+	}
+
+	protected void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
 	}
@@ -188,15 +195,14 @@ public class ServiceNewWizardPage extends WizardPage {
 	}
 
 	public String getFileName() {
-		String fileName = fileText.getText();
+		String fileName = getFileTextText();
 		if(fileName.indexOf(".")==-1){
 			fileName = fileName+"."+FILE_EXT;
 		}
 		return fileName;
 	}
-	public static void main(String[] args){
-		ServiceNewWizardPage swp = new ServiceNewWizardPage(null);
-		swp.setVisible(true);
-		
+
+	protected String getFileTextText() { 
+		return fileText.getText();
 	}
 }

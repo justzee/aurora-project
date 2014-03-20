@@ -35,7 +35,6 @@ import aurora.ide.helpers.AuroraConstant;
 import aurora.ide.helpers.DialogUtil;
 import aurora.ide.helpers.StatusUtil;
 import aurora.ide.project.AuroraProject;
-import aurora.ide.project.propertypage.ProjectPropertyPage;
 
 public class NewAuroraProjectWizard extends BasicNewProjectResourceWizard
 		implements Runnable, IRunnableWithProgress {
@@ -76,7 +75,7 @@ public class NewAuroraProjectWizard extends BasicNewProjectResourceWizard
 
 	}
 
-	private IProject createNewProject() {
+	protected IProject createNewProject() {
 		if (newProject != null) {
 			return newProject;
 		}
@@ -195,7 +194,7 @@ public class NewAuroraProjectWizard extends BasicNewProjectResourceWizard
 			}
 			{
 				setPersistentProperty(proj);
-				AuroraProjectNature.addAuroraNature(proj);
+				addNature(proj);
 				// if (web_inf != null) {
 				// startBuild();
 				// }
@@ -206,6 +205,10 @@ public class NewAuroraProjectWizard extends BasicNewProjectResourceWizard
 		}
 
 		return true;
+	}
+
+	protected void addNature(IProject proj) throws CoreException {
+		AuroraProjectNature.addAuroraNature(proj);
 	}
 
 	// public boolean performFinish() {
@@ -239,7 +242,7 @@ public class NewAuroraProjectWizard extends BasicNewProjectResourceWizard
 	// return true;
 	// }
 
-	private void createBasicFolders(IProject proj) {
+	protected void createBasicFolders(IProject proj) {
 		String[] segs = { "webRoot", "WEB-INF", "classes" };
 		IPath path = proj.getFullPath();
 		try {
@@ -253,7 +256,7 @@ public class NewAuroraProjectWizard extends BasicNewProjectResourceWizard
 		}
 	}
 
-	private void setPersistentProperty(IProject proj) {
+	protected void setPersistentProperty(IProject proj) {
 		try {
 			AuroraProject ap = new AuroraProject(proj);
 			IFolder web_inf = ResourceUtil.searchWebInf(proj);

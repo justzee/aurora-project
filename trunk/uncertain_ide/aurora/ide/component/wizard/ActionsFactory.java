@@ -130,6 +130,8 @@ public class ActionsFactory {
 
 	public void addActionsToMenu(Menu menu, ActionInfo actionProperties) throws ApplicationException{
 		ActionListener[] actionListeners = createActions(actionProperties);
+		if(actionListeners == null)
+			return;
 		for (int i = 0; i < actionListeners.length; i++) {
 			ActionListener action = actionListeners[i];
 			MenuItem itemPush = new MenuItem(menu, SWT.PUSH);

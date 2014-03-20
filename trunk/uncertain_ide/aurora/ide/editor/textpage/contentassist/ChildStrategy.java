@@ -174,14 +174,17 @@ public class ChildStrategy implements IContentAssistStrategy {
 		String replaceString = CompositeMapUtil.getContextFullName(context,
 				childQN);
 		Map prefix_mapping = CompositeUtil.getPrefixMapping(context);
-		Object uri_obj = prefix_mapping.get(childQN.getNameSpace());
+		String nameSpace = childQN.getNameSpace();
+		Object uri_obj = prefix_mapping.get(nameSpace);
 		if (uri_obj == null) {
 			if (childQN.getPrefix() != null)
 				replaceString = replaceString + " xmlns:" + childQN.getPrefix()
-						+ "=\"" + childQN.getNameSpace() + "\" ";
+						+ "=\"" + nameSpace + "\" ";
 			else {
-				replaceString = replaceString + " xmlns=\""
-						+ childQN.getNameSpace() + "\" ";
+
+				String string = " xmlns=\"" + nameSpace + "\" ";
+				string = nameSpace == null ? "" : string;
+				replaceString = replaceString + string;
 			}
 		}
 		replaceString = replaceString + " />";
