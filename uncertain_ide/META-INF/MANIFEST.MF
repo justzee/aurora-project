@@ -99,5 +99,6 @@ Export-Package: aurora.ide,
  aurora.ide.sxsd.editor,
  aurora.ide.syscode,
  aurora.ide.toolbar.action,
- aurora.ide.view
+ aurora.ide.view,
+ aurora.ide.wizard
 
