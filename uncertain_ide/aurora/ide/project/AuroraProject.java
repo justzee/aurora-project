@@ -1,5 +1,9 @@
 package aurora.ide.project;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -13,8 +17,13 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import uncertain.composite.CompositeMap;
+import uncertain.composite.IterationHandle;
+
+import aurora.datasource.DatabaseConnection;
 import aurora.ide.AuroraPlugin;
 import aurora.ide.AuroraProjectNature;
+import aurora.ide.helpers.CompositeMapUtil;
 import aurora.ide.helpers.StringUtil;
 import aurora.ide.project.propertypage.ProjectPropertyPage;
 
@@ -186,4 +195,46 @@ public class AuroraProject {
 		return null;
 	}
 
+	public DatabaseConnection getDefaultDatasourceConfig() {
+		List<DatabaseConnection> datasouceConfig = getDatasouceConfig();
+		for (DatabaseConnection dc : datasouceConfig) {
+			if (dc.getName() == null)
+				return dc;
+		}
+		return null;
+	}
+
+	public List<DatabaseConnection> getDatasouceConfig() {
+
+		File configDirectory = this.getWeb_inf().getLocation().toFile();
+		File config = new File(configDirectory,
+				"/aurora.database/datasource.config");
+		if (config.exists() == false) {
+			config = new File(configDirectory, "0.datasource.config");
+		}
+		final List<DatabaseConnection> dss = new ArrayList<DatabaseConnection>();
+		if (config.exists() == false) {
+			return dss;
+		}
+		CompositeMap loadFile = CompositeMapUtil.loadFile(config);
+		loadFile.iterate(new IterationHandle() {
+			public int process(CompositeMap map) {
+				if ("database-connection".equalsIgnoreCase(map.getName())) {
+					DatabaseConnection dc = new DatabaseConnection();
+					dc.setName(CompositeMapUtil.getValueIgnoreCase(map, "name"));
+					dc.setDriverClass(CompositeMapUtil.getValueIgnoreCase(map,
+							"driverClass"));
+					dc.setUrl(CompositeMapUtil.getValueIgnoreCase(map, "url"));
+					dc.setUserName(CompositeMapUtil.getValueIgnoreCase(map,
+							"userName"));
+					dc.setPassword(CompositeMapUtil.getValueIgnoreCase(map,
+							"password"));
+					dss.add(dc);
+				}
+				return IterationHandle.IT_CONTINUE;
+			}
+		}, true);
+		return dss;
+
+	}
 }
