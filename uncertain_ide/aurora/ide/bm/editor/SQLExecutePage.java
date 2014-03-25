@@ -43,7 +43,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import uncertain.composite.CaseInsensitiveMap;
 import uncertain.composite.CompositeMap;
 import uncertain.composite.DynamicObject;
-import uncertain.composite.IterationHandle;
 import uncertain.event.Configuration;
 import uncertain.logging.LoggerProvider;
 import uncertain.logging.LoggingContext;
