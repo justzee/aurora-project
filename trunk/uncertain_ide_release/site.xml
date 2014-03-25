@@ -6,7 +6,7 @@
    <feature url="features/org.eclipse.gef_3.7.1.v20110830-1143-777D181B3Bz06C853D8863365.jar" id="org.eclipse.gef" version="3.7.1.v20110830-1143-777D181B3Bz06C853D8863365">
       <category name="aurora.ide"/>
    </feature>
-   <feature url="features/aurora.ide.core.feature_1.0.0.201403251536.jar" id="aurora.ide.core.feature" version="1.0.0.201403251536">
+   <feature url="features/aurora.ide.core.feature_1.0.0.201403251604.jar" id="aurora.ide.core.feature" version="1.0.0.201403251604">
       <category name="aurora.ide"/>
    </feature>
    <category-def name="aurora.ide" label="Aurora IDE">
