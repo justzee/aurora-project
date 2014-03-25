@@ -102,7 +102,7 @@ public class AuroraPerspective implements IPerspectiveFactory {
 	}
 
 	private void addFastViews(IPageLayout layout) {
-		layout.addFastView("org.eclipse.wst.server.ui.ServersView");
+//		layout.addFastView("org.eclipse.wst.server.ui.ServersView");
 	}
 
 	private void addPerspectiveShortcuts(IPageLayout layout) {
