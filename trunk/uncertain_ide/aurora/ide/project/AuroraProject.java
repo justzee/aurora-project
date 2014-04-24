@@ -206,7 +206,10 @@ public class AuroraProject {
 
 	public List<DatabaseConnection> getDatasouceConfig() {
 
-		File configDirectory = this.getWeb_inf().getLocation().toFile();
+		IFolder web_inf = this.getWeb_inf();
+		if(web_inf == null)
+			return new ArrayList<DatabaseConnection>();
+		File configDirectory = web_inf.getLocation().toFile();
 		File config = new File(configDirectory,
 				"/aurora.database/datasource.config");
 		if (config.exists() == false) {
