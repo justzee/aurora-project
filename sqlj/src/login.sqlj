@@ -1,0 +1,95 @@
+package test;
+import java.sql.*;
+
+import sqlj.core.*;
+import sqlj.exception.*;
+
+import java.util.Map;
+
+import aurora.application.util.MD5Util;
+import aurora.service.ServiceContext;
+import uncertain.composite.CompositeMap;
+
+public class login extends Procedure {
+	
+	private ServiceContext svcCtx ;
+	
+	public void execute(IContextService contextServ) throws Exception {
+		svcCtx = (ServiceContext)contextServ.getContext();
+//		svcCtx.getInstanceOfType(type)
+		login("mn1194","111111","ZHS","127.0.0.1");
+	}
+
+	private void login(String p_user_name, String p_password, String p_language,
+			String p_ip) throws Exception {
+		SysUser sys_user=DataTransfer.transfer1(SysUser.class,
+			#{select * from sys_user where user_name = upper(${p_user_name})});
+		Map nls_lang=DataTransfer.transfer1(Map.class,
+			#{select t.nls_language
+		        from sys_languages t, fnd_language_code f
+		       where t.language_code = f.language_code
+		         and t.language_code = ${p_language}
+		         and f.installed_flag = 'Y'});
+	    #{alter session set nls_language='${!nls_lang.get("nls_language")}'};
+	    validate_user(sys_user);
+	    validate_role(sys_user);
+	    validate_frozen_flag(sys_user);
+	    validate_password(sys_user,p_password);
+		int id;
+		#{begin select user_id into ${@id} from sys_user where user_name='MN1194';end;};
+		svcCtx.getParameter().put("id", id);
+	}
+	
+	private void validate_user(SysUser u) throws Exception{
+		if(u.start_date.getTime()>System.currentTimeMillis())
+			throw UserDefinedException.create("e_user_failure");
+		if(u.end_date!=null&&u.end_date.getTime()<System.currentTimeMillis())
+			throw UserDefinedException.create("e_user_failure");
+	}
+	
+	private void validate_role(SysUser u) throws Exception{
+		Map cc=DataTransfer.transfer1(Map.class,#{select count(1) count from fnd_companies});
+		long count = DataTransfer.castLong(cc.get("count"));
+		if(count == 0)
+			return;
+		try {
+			//just for test no_data_found ,so Object.class is ok
+			DataTransfer.transfer1(Object.class,
+			#{select 1
+		        from dual
+		       where exists
+		         (select *
+	                from sys_user_role_groups g
+	               where g.user_id = ${u.user_id}
+	                 and g.start_date <= trunc(sysdate)
+	                 and (g.end_date >= trunc(sysdate) or g.end_date is null))
+			});
+		}catch(NoDataFoundException e) {
+			throw UserDefinedException.create("e_role_null");
+		} catch (Exception e1) {
+			throw e1;
+		}
+	}
+	
+	private void validate_frozen_flag(SysUser u) throws Exception{
+		if("Y".equals(u.frozen_flag))
+			throw UserDefinedException.create("e_frozen_failure");
+	}
+	
+	private void validate_password(SysUser u,String p_password) throws Exception{
+		if(p_password==null)
+			throw UserDefinedException.create("e_password_null");
+		if(!MD5Util.md5Hex(p_password).equals(u.encrypted_user_password))
+			throw UserDefinedException.create("e_password_failure");
+		// sys_user_pkg.password_rule_check..
+	}
+	
+	public static class SysUser{
+		public long user_id;
+		public String user_name;
+		public Date start_date;
+		public Date end_date;
+		public String frozen_flag;
+		public String encrypted_user_password;
+	}
+}
