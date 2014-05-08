@@ -17,26 +17,26 @@ public class login extends Procedure {
 	public void execute(IContextService contextServ) throws Exception {
 		svcCtx = (ServiceContext)contextServ.getContext();
 //		svcCtx.getInstanceOfType(type)
-		login("mn1194","111111","ZHS","127.0.0.1");
+		login("mn1194","11111","ZHS","127.0.0.1");
 	}
 
 	private void login(String p_user_name, String p_password, String p_language,
 			String p_ip) throws Exception {
 		SysUser sys_user=DataTransfer.transfer1(SysUser.class,
 			#{select * from sys_user where user_name = upper(${p_user_name})});
-		Map nls_lang=DataTransfer.transfer1(Map.class,
+		String nls_lang=DataTransfer.transfer1(String.class,
 			#{select t.nls_language
 		        from sys_languages t, fnd_language_code f
 		       where t.language_code = f.language_code
 		         and t.language_code = ${p_language}
 		         and f.installed_flag = 'Y'});
-	    #{alter session set nls_language='${!nls_lang.get("nls_language")}'};
+	    #{alter session set nls_language='${!nls_lang}'};
 	    validate_user(sys_user);
 	    validate_role(sys_user);
 	    validate_frozen_flag(sys_user);
 	    validate_password(sys_user,p_password);
-		int id;
-		#{begin select user_id into ${@id} from sys_user where user_name='MN1194';end;};
+		int id=DataTransfer.transfer1(int.class,
+		#{select user_id from sys_user where user_name='MN1194'});
 		svcCtx.getParameter().put("id", id);
 	}
 	
@@ -48,8 +48,7 @@ public class login extends Procedure {
 	}
 	
 	private void validate_role(SysUser u) throws Exception{
-		Map cc=DataTransfer.transfer1(Map.class,#{select count(1) count from fnd_companies});
-		long count = DataTransfer.castLong(cc.get("count"));
+		int count=DataTransfer.transfer1(int.class,#{select count(1) count from fnd_companies});
 		if(count == 0)
 			return;
 		try {

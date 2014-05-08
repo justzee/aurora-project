@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.core.dom.AST;
@@ -33,6 +34,14 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
+import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
+import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
@@ -104,6 +113,16 @@ public class AstTransform {
 			transform(td);
 		}
 		return result;
+	}
+
+	public void compile2Class() throws Exception {
+		CompilationUnit unit = doTransform();
+		org.eclipse.jdt.internal.compiler.Compiler compiler = new org.eclipse.jdt.internal.compiler.Compiler(
+				new NameEnvironmentImpl(unit),
+				DefaultErrorHandlingPolicies.proceedWithAllProblems(),
+				new HashMap(), new CompilerRequestorImpl(),
+				new DefaultProblemFactory(Locale.getDefault()));
+		compiler.compile(new ICompilationUnit[] { new CompilationUnitImpl(unit) });
 	}
 
 	private void transform(TypeDeclaration typeDec) throws Exception {
@@ -178,7 +197,7 @@ public class AstTransform {
 						.equals(Map.class.getSimpleName())) {
 					updateReferenceInFor(efs);
 				}
-			} else /*if (s instanceof ExpressionStatement)*/ {
+			} else /*if (s instanceof ExpressionStatement)*/{
 				ASTNode astn = mi.getParent();
 				if (astn instanceof MethodInvocation) {
 					//as para
@@ -384,9 +403,9 @@ public class AstTransform {
 	}
 
 	/**
-	 * expression stands for the sql literal<br>
-	 * StringLiteral or StringBuilder.toString() (if the sql is dynamic)<br>
-	 * extra statements will add to <i>list<i>
+	 * expression stands for the sql literal<br> StringLiteral or
+	 * StringBuilder.toString() (if the sql is dynamic)<br> extra statements
+	 * will add to <i>list<i>
 	 * 
 	 * @param ast
 	 * @param psql
@@ -457,8 +476,8 @@ public class AstTransform {
 	}
 
 	/**
-	 * create an ParenthesizedExpression via a expression string<br>
-	 * the expression can be complex.
+	 * create an ParenthesizedExpression via a expression string<br> the
+	 * expression can be complex.
 	 * 
 	 * @param ast
 	 * @param expr
@@ -585,4 +604,96 @@ public class AstTransform {
 		return sl;
 	}
 
+	static private class CompilationUnitImpl implements ICompilationUnit {
+		private CompilationUnit unit;
+
+		CompilationUnitImpl(CompilationUnit unit) {
+			this.unit = unit;
+		}
+
+		public char[] getContents() {
+			char[] contents = null;
+			try {
+				Document doc = new Document();
+				TextEdit edits = unit.rewrite(doc, null);
+				edits.apply(doc);
+				String sourceCode = doc.get();
+				if (sourceCode != null)
+					contents = sourceCode.toCharArray();
+			} catch (BadLocationException e) {
+				throw new RuntimeException(e);
+			}
+			return contents;
+		}
+
+		public char[] getMainTypeName() {
+			TypeDeclaration classType = (TypeDeclaration) unit.types().get(0);
+			return classType.getName().getFullyQualifiedName().toCharArray();
+		}
+
+		public char[][] getPackageName() {
+			String[] names = getSimpleNames(this.unit.getPackage().getName()
+					.getFullyQualifiedName());
+			char[][] packages = new char[names.length][];
+			for (int i = 0; i < names.length; ++i)
+				packages[i] = names[i].toCharArray();
+			return packages;
+		}
+
+		private String[] getSimpleNames(String fullQname) {
+			return fullQname.split("\\.");
+		}
+
+		public char[] getFileName() {
+			String name = new String(getMainTypeName()) + ".java";
+			return name.toCharArray();
+		}
+
+		@Override
+		public boolean ignoreOptionalProblems() {
+			return false;
+		}
+	}
+
+	private static class NameEnvironmentImpl implements INameEnvironment {
+
+		public NameEnvironmentImpl(CompilationUnit unit) {
+
+		}
+
+		@Override
+		public NameEnvironmentAnswer findType(char[][] compoundTypeName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public NameEnvironmentAnswer findType(char[] typeName,
+				char[][] packageName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean isPackage(char[][] parentPackageName, char[] packageName) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void cleanup() {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+	private static class CompilerRequestorImpl implements ICompilerRequestor {
+
+		@Override
+		public void acceptResult(CompilationResult result) {
+			System.out.println(result);
+		}
+
+	}
 }
