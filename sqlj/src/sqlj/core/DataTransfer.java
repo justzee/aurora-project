@@ -2,6 +2,7 @@ package sqlj.core;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -13,19 +14,33 @@ import java.util.List;
 import java.util.Map;
 
 import sqlj.exception.NoDataFoundException;
+import sqlj.exception.TooManyColumnsException;
 import sqlj.exception.TooManyRowsException;
 import sqlj.parser.SqljParser;
 
 public class DataTransfer {
+	public static Class<?>[] supported_types = { String.class, int.class,
+			double.class, long.class, Date.class, Timestamp.class,
+			Integer.class, Long.class, Double.class, BigDecimal.class };
+	public static List<Class<?>> supported_type_list = Arrays
+			.asList(supported_types);
+
 	/**
 	 * transfer one row into given type object
 	 * 
 	 * @param clazz
+	 *            <table> <tr><td>sub class of Map</td><td>HashMap(interface) or
+	 *            clazz.newInstance()</td></tr> <tr><td>one of
+	 *            {@link #supported_types}</td><td>
+	 *            {@link #verboseGet(ResultSet, String, Class)} </td></tr>
+	 *            <tr><td><i>others</i></td><td>java bean(public
+	 *            fields)</td></tr> </table>
 	 * @param rs
 	 * @return
 	 * @throws Exception
-	 *             if <b>no_data_found</b> or <b>too_many_rows</b> or any others
-	 *             exception
+	 *             if <b>no_data_found</b> or <b>too_many_rows</b> or try to get
+	 *             one field but with more than one column
+	 *             (<b>too_many_columns</b>) or any others exception
 	 */
 	public static <T> T transfer1(Class<T> clazz, ResultSet rs)
 			throws Exception {
@@ -41,8 +56,10 @@ public class DataTransfer {
 				map = new HashMap();
 			fillMap(map, rs, column_names);
 			res = (T) map;
-		} else if (clazz == Long.class) {
-
+		} else if (supported_type_list.contains(clazz)) {
+			if (column_names.size() > 1)
+				throw new TooManyColumnsException();
+			return (T) verboseGet(rs, column_names.get(0), clazz);
 		} else {
 			Object bean = clazz.newInstance();
 			fillBean(bean, rs, column_names);

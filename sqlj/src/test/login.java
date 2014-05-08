@@ -17,7 +17,7 @@ public class login extends Procedure {
 	public void execute(IContextService contextServ) throws Exception {
 		svcCtx = (ServiceContext)contextServ.getContext();
 //		svcCtx.getInstanceOfType(type)
-		login("mn1194","111111","ZHS","127.0.0.1");
+		login("mn1194","11111","ZHS","127.0.0.1");
 	}
 
 	private void login(String p_user_name, String p_password, String p_language,
@@ -38,11 +38,11 @@ public class login extends Procedure {
 		__sqlj_ps_gen7.execute();
 		UPDATE_COUNT = __sqlj_ps_gen7.getUpdateCount();
 		ResultSet __sqlj_rs_gen1 = __sqlj_ps_gen7.getResultSet();
-		Map nls_lang=DataTransfer.transfer1(Map.class,
+		String nls_lang=DataTransfer.transfer1(String.class,
 			__sqlj_rs_gen1);
 	    StringBuilder __sqlj_sql_gen9 = new StringBuilder();
 		__sqlj_sql_gen9.append("alter session set nls_language='");
-		__sqlj_sql_gen9.append(nls_lang.get("nls_language"));
+		__sqlj_sql_gen9.append(nls_lang);
 		__sqlj_sql_gen9.append("'");
 		PreparedStatement __sqlj_ps_gen8 = getConnection().prepareStatement(
 				__sqlj_sql_gen9.toString());
@@ -54,16 +54,13 @@ public class login extends Procedure {
 	    validate_role(sys_user);
 	    validate_frozen_flag(sys_user);
 	    validate_password(sys_user,p_password);
-		int id;
-		CallableStatement __sqlj_ps_gen10 = getConnection()
-				.prepareCall(
-						"begin select user_id into ? from sys_user where user_name='MN1194';end;");
-		__sqlj_ps_gen10.registerOutParameter(1, Types.DECIMAL);
+		PreparedStatement __sqlj_ps_gen10 = getConnection().prepareStatement(
+				"select user_id from sys_user where user_name='MN1194'");
 		__sqlj_ps_gen10.execute();
 		UPDATE_COUNT = __sqlj_ps_gen10.getUpdateCount();
-		id = __sqlj_ps_gen10.getInt(1);
 		ResultSet __sqlj_rs_gen3 = __sqlj_ps_gen10.getResultSet();
-		;
+		int id=DataTransfer.transfer1(int.class,
+		__sqlj_rs_gen3);
 		svcCtx.getParameter().put("id", id);
 	}
 	
@@ -80,8 +77,7 @@ public class login extends Procedure {
 		__sqlj_ps_gen11.execute();
 		UPDATE_COUNT = __sqlj_ps_gen11.getUpdateCount();
 		ResultSet __sqlj_rs_gen4 = __sqlj_ps_gen11.getResultSet();
-		Map cc=DataTransfer.transfer1(Map.class,__sqlj_rs_gen4);
-		long count = DataTransfer.castLong(cc.get("count"));
+		int count=DataTransfer.transfer1(int.class,__sqlj_rs_gen4);
 		if(count == 0)
 			return;
 		try {
