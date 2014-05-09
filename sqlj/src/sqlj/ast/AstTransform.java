@@ -1,6 +1,5 @@
 package sqlj.ast;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,6 +66,7 @@ public class AstTransform {
 	public static final String METHOD_EXECUTE = "execute";
 	public static final String METHOD_GET_UPDATE_COUNT = "getUpdateCount";
 	public static final String METHOD_GET_RESULT_SET = "getResultSet";
+	public static final int API_LEVEL = AST.JLS3;
 
 	private ParsedSource parsedSource;
 
@@ -101,7 +101,7 @@ public class AstTransform {
 		StringBuilder strBuffer = parsedSource.getBuffer();
 		char[] cs = new char[strBuffer.length()];
 		strBuffer.getChars(0, cs.length, cs, 0);
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(API_LEVEL);
 		parser.setSource(cs);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		long t0 = System.currentTimeMillis();
@@ -485,7 +485,7 @@ public class AstTransform {
 	 * @return
 	 */
 	Expression parseExpression(AST ast, String expr) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(API_LEVEL);
 		parser.setKind(ASTParser.K_EXPRESSION);
 		parser.setSource(expr.toCharArray());
 		AST a = ast.newParenthesizedExpression().getAST();

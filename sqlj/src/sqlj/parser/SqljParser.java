@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 
 import sqlj.core.ParsedSource;
 import sqlj.core.SqljBlock;
+import sqlj.exception.ParserException;
 import sqlj.util.CharStack;
 
 public class SqljParser extends Parser {
@@ -33,7 +34,7 @@ public class SqljParser extends Parser {
 		return parsedSource;
 	}
 
-	void scan() {
+	void scan() throws ParserException {
 		boolean instr = false;
 		boolean inchar = false;
 		boolean inlc = false;//line comment
@@ -104,10 +105,18 @@ public class SqljParser extends Parser {
 	 * @param end
 	 *            index of last '}'
 	 */
-	private void handleSqlMark(int start, int end) {
+	private void handleSqlMark(int start, int end) throws ParserException {
 		SqljBlock sqljBlock = new SqljBlock();
 		sqljBlock.setStartIdx(start);
 		sqljBlock.setSourceRange(source, start + FLAG.length(), end);
+
+		try {
+			sqljBlock.getParsedSql();//maybe throws exception
+		} catch (ParserException e) {
+			throw new ParserException(source, e.getStart() + start
+					+ FLAG.length(), e.getEnd() + start + FLAG.length(),
+					e.getMessage());
+		}
 		parsedSource.registerSql(sqljBlock);
 		buffer.append(String.format("%s(%d,%s)",
 				SqlPosition.METHOD_SQL_EXECUTE, sqljBlock.getId(),

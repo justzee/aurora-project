@@ -37,7 +37,8 @@ public abstract class Parser {
 			if (!Character.isWhitespace(source.charAt(startIdx)))
 				return startIdx;
 		}
-		throw new ParserException("Unexpected end of source.");
+		throw new ParserException(source, len - 1, len,
+				"Unexpected end of source.");
 	}
 
 	protected int skipJavaIdPart(int startIdx) {
@@ -51,10 +52,12 @@ public abstract class Parser {
 	protected int skipJavaWord(int startIdx) throws ParserException {
 		int i1 = skipWhitespace(startIdx);
 		if (!Character.isJavaIdentifierStart(source.charAt(i1)))
-			throw new ParserException(source, i1, "$");
+			throw new ParserException(source, i1, i1 + 1, source.charAt(i1)
+					+ " is not a JavaIdentifierStart");
 		int i2 = skipJavaIdPart(i1);
 		if (i2 == i1)
-			throw new ParserException(source, i2, "_");
+			throw new ParserException(source, i2, i2 + 1, source.charAt(i2)
+					+ " is not a whitespace");
 		lastWord = source.substring(i1, i2);
 		int i3 = skipWhitespace(i2);
 		return i3;
@@ -64,7 +67,8 @@ public abstract class Parser {
 		startIdx = skipWhitespace(startIdx);
 		if (source.charAt(startIdx) == c)
 			return startIdx;
-		throw new ParserException(source, startIdx, "" + c);
+		throw new ParserException(source, startIdx, startIdx + 1, "unexpect "
+				+ c + " when expect " + source.charAt(startIdx));
 	}
 
 	protected int findMatch(CharStack cs, String source, int startIdx) {

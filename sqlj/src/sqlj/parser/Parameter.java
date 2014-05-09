@@ -2,25 +2,17 @@ package sqlj.parser;
 
 public class Parameter {
 	/**
-	 * dynamic parameter , not parameter binding
-	 * <ul>
-	 * <li>${!expression}</li>
+	 * dynamic parameter , not parameter binding <ul> <li>${!expression}</li>
 	 * </ul>
 	 * 
 	 */
 	public static final int NONE = 0;
 	/**
-	 * in parameter
-	 * <ul>
-	 * <li>${expression}</li>
-	 * </ul>
+	 * in parameter <ul> <li>${expression}</li> </ul>
 	 */
 	public static final int IN = 1;
 	/**
-	 * out parameter
-	 * <ul>
-	 * <li>${@variable}</li>
-	 * </ul>
+	 * out parameter <ul> <li>${@variable}</li> </ul>
 	 */
 	public static final int OUT = 2;
 

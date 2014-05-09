@@ -130,19 +130,19 @@ public class DataTransfer {
 		if (type == String.class)
 			return getString(rs, name);
 		if (type == double.class)
-			return getDouble(rs, name);
+			return getdouble(rs, name);
 		if (type == java.sql.Date.class)
 			return getDate(rs, name);
 		if (type == int.class)
-			return getInt(rs, name);
+			return getint(rs, name);
 		if (type == long.class)
-			return getLong(rs, name);
+			return getlong(rs, name);
 		if (type == Integer.class)
-			return getInt_(rs, name);
+			return getInteger(rs, name);
 		if (type == Long.class)
-			return getLong_(rs, name);
+			return getLong(rs, name);
 		if (type == Double.class)
-			return getDouble_(rs, name);
+			return getDouble(rs, name);
 		if (type == java.util.Date.class)
 			return getUtilDate(rs, name);
 		return rs.getObject(name);
@@ -153,11 +153,11 @@ public class DataTransfer {
 		return rs.getBigDecimal(name);
 	}
 
-	public static int getInt(ResultSet rs, String name) throws SQLException {
+	public static int getint(ResultSet rs, String name) throws SQLException {
 		return rs.getInt(name);
 	}
 
-	public static Integer getInt_(ResultSet rs, String name)
+	public static Integer getInteger(ResultSet rs, String name)
 			throws SQLException {
 		BigDecimal bd = rs.getBigDecimal(name);
 		if (bd == null)
@@ -165,23 +165,23 @@ public class DataTransfer {
 		return bd.intValue();
 	}
 
-	public static long getLong(ResultSet rs, String name) throws SQLException {
+	public static long getlong(ResultSet rs, String name) throws SQLException {
 		return rs.getLong(name);
 	}
 
-	public static Long getLong_(ResultSet rs, String name) throws SQLException {
+	public static Long getLong(ResultSet rs, String name) throws SQLException {
 		BigDecimal bd = rs.getBigDecimal(name);
 		if (bd == null)
 			return null;
 		return bd.longValue();
 	}
 
-	public static double getDouble(ResultSet rs, String name)
+	public static double getdouble(ResultSet rs, String name)
 			throws SQLException {
 		return rs.getDouble(name);
 	}
 
-	public static Double getDouble_(ResultSet rs, String name)
+	public static Double getDouble(ResultSet rs, String name)
 			throws SQLException {
 		BigDecimal bd = rs.getBigDecimal(name);
 		if (bd == null)

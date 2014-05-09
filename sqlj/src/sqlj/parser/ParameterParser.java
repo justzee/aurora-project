@@ -1,5 +1,9 @@
 package sqlj.parser;
 
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.Expression;
+
+import sqlj.ast.AstTransform;
 import sqlj.exception.ParserException;
 import sqlj.util.CharStack;
 
@@ -34,23 +38,42 @@ public class ParameterParser extends Parser {
 				cs.clear();
 				cs.push('{');
 				int i_ = findMatch(cs, source, i + 1);
-				Parameter p = new Parameter(c == '@' ? Parameter.OUT
-						: Parameter.NONE, source.substring(i + 1, i_).trim());
-				ps.addPara(p);
+				ps.addPara(createParameter(i, i_, c == '@' ? Parameter.OUT
+						: Parameter.NONE));
 				lastFlagIndex = i_;
 			} else {
 				sb.append('?');
 				cs.clear();
 				cs.push('{');
 				int i_ = findMatch(cs, source, i);
-				Parameter p = new Parameter(Parameter.IN, source.substring(i,
-						i_).trim());
-				ps.addPara(p);
+				ps.addPara(createParameter(i, i_, Parameter.IN));
 				lastFlagIndex = i_;
 			}
 		}
 		sb.append(source.substring(lastFlagIndex + 1));
 		ps.addFragment(sb.toString());
 		return ps;
+	}
+
+	private Parameter createParameter(int start, int end, int ptype)
+			throws ParserException {
+		String exp = source.substring(start, end);
+		checkExpression(exp, start, end);
+		Parameter p = new Parameter(ptype, exp);
+		return p;
+	}
+
+	private void checkExpression(String expression, int start, int end)
+			throws ParserException {
+		try {
+			ASTParser parser = ASTParser.newParser(AstTransform.API_LEVEL);
+			parser.setKind(ASTParser.K_EXPRESSION);
+			parser.setSource(expression.toCharArray());
+			Expression exp = (Expression)parser.createAST(null);
+		} catch (Exception e) {
+			//this exception will be handled in SqljParser, then it will be translated
+			throw new ParserException(source, start, end, expression
+					+ " is not a valid expression.");
+		}
 	}
 }
