@@ -23,7 +23,7 @@ public class login extends Procedure {
 	private void login(String p_user_name, String p_password, String p_language,
 			String p_ip) throws Exception {
 		SysUser sys_user=DataTransfer.transfer1(SysUser.class,
-			#{select * from sys_user where user_name = upper(${p_user_name})});
+			#{select * from sys_user where user_name = upper(${p_user_ name})});
 		String nls_lang=DataTransfer.transfer1(String.class,
 			#{select t.nls_language
 		        from sys_languages t, fnd_language_code f
