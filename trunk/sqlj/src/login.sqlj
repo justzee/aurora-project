@@ -62,7 +62,7 @@ public class login extends Procedure {
 	               where g.user_id = ${u.user_id}
 	                 and g.start_date <= trunc(sysdate)
 	                 and (g.end_date >= trunc(sysdate) or g.end_date is null))
-			})
+			});
 		}catch(NoDataFoundException e) {
 			throw UserDefinedException.create("e_role_null");
 		} catch (Exception e1) {
