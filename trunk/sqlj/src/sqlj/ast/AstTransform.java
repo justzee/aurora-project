@@ -149,7 +149,7 @@ public class AstTransform {
 		if (lastSqljBlock == null)
 			return idx;
 		trx += lastSqljBlock.getReplaceLength();
-		return lastSqljBlock.getBodyEndIdx() + (idx - trx);
+		return lastSqljBlock.getBodyEndIdx() + (idx - trx) + 1;
 	}
 
 	public void compile2Class() throws Exception {
