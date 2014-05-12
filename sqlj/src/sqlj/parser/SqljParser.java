@@ -118,8 +118,10 @@ public class SqljParser extends Parser {
 					e.getMessage());
 		}
 		parsedSource.registerSql(sqljBlock);
-		buffer.append(String.format("%s(%d,%s)",
+		String replacedStr = String.format("%s(%d,%s)",
 				SqlPosition.METHOD_SQL_EXECUTE, sqljBlock.getId(),
-				parsedSource.genId("rs")));
+				parsedSource.genId("rs"));
+		sqljBlock.setReplaceLength(replacedStr.length());
+		buffer.append(replacedStr);
 	}
 }

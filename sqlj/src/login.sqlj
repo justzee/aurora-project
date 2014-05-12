@@ -23,7 +23,7 @@ public class login extends Procedure {
 	private void login(String p_user_name, String p_password, String p_language,
 			String p_ip) throws Exception {
 		SysUser sys_user=DataTransfer.transfer1(SysUser.class,
-			#{select * from sys_user where user_name = upper(${p_user_ name})});
+			#{select * from sys_user where user_name = upper(${p_user_name})});
 		String nls_lang=DataTransfer.transfer1(String.class,
 			#{select t.nls_language
 		        from sys_languages t, fnd_language_code f
@@ -62,7 +62,7 @@ public class login extends Procedure {
 	               where g.user_id = ${u.user_id}
 	                 and g.start_date <= trunc(sysdate)
 	                 and (g.end_date >= trunc(sysdate) or g.end_date is null))
-			});
+			})
 		}catch(NoDataFoundException e) {
 			throw UserDefinedException.create("e_role_null");
 		} catch (Exception e1) {
