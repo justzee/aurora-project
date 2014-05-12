@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -50,6 +51,7 @@ import sqlj.core.ResultSetIterator;
 import sqlj.core.ResultSetUtil;
 import sqlj.core.SqljBlock;
 import sqlj.exception.ParserException;
+import sqlj.exception.TransformException;
 import sqlj.parser.Parameter;
 import sqlj.parser.ParsedSql;
 import sqlj.parser.SqlPosition;
@@ -76,7 +78,7 @@ public class AstTransform {
 	}
 
 	public String tranform() throws Exception {
-		CompilationUnit result = doTransform();
+		CompilationUnit result = createCompilationUnit();
 		Document doc = new Document(parsedSource.getBuffer().toString());
 		TextEdit edits = result.rewrite(doc, null);
 		edits.apply(doc);
@@ -92,13 +94,14 @@ public class AstTransform {
 	 * @throws Exception
 	 */
 	public void transform(IDocument doc) throws Exception {
-		CompilationUnit result = doTransform();
+		CompilationUnit result = createCompilationUnit();
 		TextEdit edits = result.rewrite(doc, null);
 		edits.apply(doc);
 	}
 
-	private CompilationUnit doTransform() throws Exception {
+	private CompilationUnit createCompilationUnit() throws Exception {
 		StringBuilder strBuffer = parsedSource.getBuffer();
+		//System.out.println(strBuffer);
 		char[] cs = new char[strBuffer.length()];
 		strBuffer.getChars(0, cs.length, cs, 0);
 		ASTParser parser = ASTParser.newParser(API_LEVEL);
@@ -106,17 +109,51 @@ public class AstTransform {
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		long t0 = System.currentTimeMillis();
 		CompilationUnit result = (CompilationUnit) parser.createAST(null);
-		System.err.println("createAST:" + (System.currentTimeMillis() - t0));
-		result.recordModifications();
-		List<TypeDeclaration> types = result.types();
-		for (TypeDeclaration td : types) {
-			transform(td);
+		if (result.getProblems().length == 0) {
+			result.recordModifications();
+			List<TypeDeclaration> types = result.types();
+			for (TypeDeclaration td : types) {
+				transform(td);
+			}
+		} else {
+			//System.out.println(strBuffer);
+			for (IProblem p : result.getProblems()) {
+				int dx = translateToAbs(p.getSourceStart())
+						- p.getSourceStart();
+				p.setSourceStart(p.getSourceStart() + dx);
+				p.setSourceEnd(p.getSourceEnd() + dx);
+			}
+			throw new TransformException(result.getProblems());
 		}
 		return result;
 	}
 
+	private int translateToAbs(int idx) {
+		int size = parsedSource.getSqljBlockSize();
+		int trx = 0;
+		SqljBlock lastSqljBlock = null;
+		for (int i = 0; i < size; i++) {
+			SqljBlock b = parsedSource.getSqlById(i);
+			if (lastSqljBlock == null) {
+				trx = b.getStartIdx();
+				if (trx > idx)
+					return idx;
+			} else {
+				trx += lastSqljBlock.getReplaceLength();
+				trx += (b.getStartIdx() - lastSqljBlock.getBodyEndIdx() - 1);
+				if (trx > idx)
+					return b.getStartIdx() - (trx - idx);
+			}
+			lastSqljBlock = b;
+		}
+		if (lastSqljBlock == null)
+			return idx;
+		trx += lastSqljBlock.getReplaceLength();
+		return lastSqljBlock.getBodyEndIdx() + (idx - trx);
+	}
+
 	public void compile2Class() throws Exception {
-		CompilationUnit unit = doTransform();
+		CompilationUnit unit = createCompilationUnit();
 		org.eclipse.jdt.internal.compiler.Compiler compiler = new org.eclipse.jdt.internal.compiler.Compiler(
 				new NameEnvironmentImpl(unit),
 				DefaultErrorHandlingPolicies.proceedWithAllProblems(),

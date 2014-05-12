@@ -38,7 +38,7 @@ public class ParameterParser extends Parser {
 				cs.clear();
 				cs.push('{');
 				int i_ = findMatch(cs, source, i + 1);
-				ps.addPara(createParameter(i, i_, c == '@' ? Parameter.OUT
+				ps.addPara(createParameter(i + 1, i_, c == '@' ? Parameter.OUT
 						: Parameter.NONE));
 				lastFlagIndex = i_;
 			} else {
@@ -69,7 +69,7 @@ public class ParameterParser extends Parser {
 			ASTParser parser = ASTParser.newParser(AstTransform.API_LEVEL);
 			parser.setKind(ASTParser.K_EXPRESSION);
 			parser.setSource(expression.toCharArray());
-			Expression exp = (Expression)parser.createAST(null);
+			Expression exp = (Expression) parser.createAST(null);
 		} catch (Exception e) {
 			//this exception will be handled in SqljParser, then it will be translated
 			throw new ParserException(source, start, end, expression

@@ -26,6 +26,10 @@ public class ParsedSource {
 		return idToSqlMap.get(id);
 	}
 
+	public int getSqljBlockSize() {
+		return idToSqlMap.size();
+	}
+
 	public void registerVariableType(String varName, String type) {
 		variableTypeMap.put(varName, type);
 	}
@@ -55,6 +59,7 @@ public class ParsedSource {
 
 	/**
 	 * {@link java.sql.Types}
+	 * 
 	 * @param varName
 	 * @return
 	 */
@@ -84,7 +89,7 @@ public class ParsedSource {
 	public void setBuffer(StringBuilder out) {
 		this.buffer = out;
 	}
-	
+
 	public StringBuilder getBuffer() {
 		return buffer;
 	}

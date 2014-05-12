@@ -12,6 +12,8 @@ public class SqljBlock {
 	private String sql;
 	private ParsedSql psql;
 
+	private int replaceLength;
+
 	private int id = -1;
 
 	public void setId(int id) {
@@ -78,5 +80,17 @@ public class SqljBlock {
 
 	public void setStartIdx(int startIdx) {
 		this.startIdx = startIdx;
+	}
+
+	public int getReplaceLength() {
+		return replaceLength;
+	}
+
+	public void setReplaceLength(int replaceLength) {
+		this.replaceLength = replaceLength;
+	}
+
+	public int getLength() {
+		return bodyEndIdx - startIdx+1;
 	}
 }
