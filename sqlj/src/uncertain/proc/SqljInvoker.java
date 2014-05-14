@@ -18,7 +18,7 @@ import aurora.service.ServiceContext;
 import aurora.service.exception.ExceptionDescriptorConfig;
 import aurora.service.exception.IExceptionDescriptor;
 
-public class SqljInvoker extends AbstractEntry implements IConnectionService {
+public class SqljInvoker extends AbstractEntry {
 
 	String proc;
 	private SqlServiceContext serviceContext;
@@ -53,25 +53,29 @@ public class SqljInvoker extends AbstractEntry implements IConnectionService {
 		if (proc == null) {
 			BuiltinExceptionFactory.createAttributeMissing(this, "proc");
 		}
-		final CompositeMap ctx = runner.getContext();
+		CompositeMap ctx = runner.getContext();
 		proc = TextParser.parse(proc, ctx);
-		Class<?> clazz = Class.forName(proc);
-		if (!sqlj.core.Procedure.class.isAssignableFrom(clazz)) {
-			throw new IllegalArgumentException(proc + " is not instanceof "
-					+ sqlj.core.Procedure.class.getName());
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(proc);
+		} catch (Exception e) {
+			throw new ClassNotFoundException("Can not find procedure :" + proc);
+		}
+		if (!sqlj.core.IProcedure.class.isAssignableFrom(clazz)) {
+			throw new IllegalArgumentException(proc + " is not an illegal procedure.");
 		}
 		serviceContext = (SqlServiceContext) DynamicObject.cast(ctx,
 				BusinessModelServiceContext.class);
-		sqlj.core.Procedure procedure = (sqlj.core.Procedure) clazz
+		serviceContext.initConnection(reg, null);
+		sqlj.core.IProcedure procedure = (sqlj.core.IProcedure) clazz
 				.newInstance();
-		procedure.setConnectionService(this);
-		procedure.execute(new IContextService() {
-
-			@Override
-			public Object getContext() {
-				return ServiceContext.createServiceContext(ctx);
-			}
-		});
+		procedure.setConnection(serviceContext.getConnection());
+		procedure.setContext(ServiceContext.createServiceContext(ctx));
+		try {
+			procedure.execute();
+		} finally {
+			procedure.cleanUp();
+		}
 	}
 
 	public String getProc() {
@@ -80,12 +84,6 @@ public class SqljInvoker extends AbstractEntry implements IConnectionService {
 
 	public void setProc(String proc) {
 		this.proc = proc;
-	}
-
-	@Override
-	public Connection getConnection() throws SQLException {
-		serviceContext.initConnection(reg, null);
-		return serviceContext.getConnection();
 	}
 
 }
