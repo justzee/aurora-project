@@ -1,60 +1,23 @@
 package sqlj.ast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.*;
 
 import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.ArrayType;
-import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.EnhancedForStatement;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.core.dom.QualifiedName;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.StringLiteral;
-import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeLiteral;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-import org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
-import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import org.eclipse.jdt.internal.compiler.env.NameEnvironmentAnswer;
+import org.eclipse.jdt.internal.compiler.*;
+import org.eclipse.jdt.internal.compiler.env.*;
 import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.*;
 import org.eclipse.text.edits.TextEdit;
 
-import sqlj.core.ParsedSource;
-import sqlj.core.ResultSetIterator;
-import sqlj.core.ResultSetUtil;
-import sqlj.core.SqljBlock;
+import sqlj.core.*;
 import sqlj.exception.ParserException;
 import sqlj.exception.TransformException;
-import sqlj.parser.Parameter;
-import sqlj.parser.ParsedSql;
-import sqlj.parser.SqlPosition;
+import sqlj.parser.*;
 
 public class AstTransform {
 	public static final String METHOD_GET = "get";
@@ -72,9 +35,16 @@ public class AstTransform {
 
 	private ParsedSource parsedSource;
 
+	private String rs_list_name;
+	private String conn_name;
+	private String ctx_name;
+
 	public AstTransform(ParsedSource parsedSource) {
 		super();
 		this.parsedSource = parsedSource;
+		rs_list_name = parsedSource.genId("rs_list");
+		conn_name = parsedSource.genId("conn");
+		ctx_name = parsedSource.genId("ctx");
 	}
 
 	public String tranform() throws Exception {
@@ -104,16 +74,17 @@ public class AstTransform {
 		//System.out.println(strBuffer);
 		char[] cs = new char[strBuffer.length()];
 		strBuffer.getChars(0, cs.length, cs, 0);
-		ASTParser parser = ASTParser.newParser(API_LEVEL);
-		parser.setSource(cs);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		CompilationUnit result = createAST(cs, ASTParser.K_COMPILATION_UNIT);
 		long t0 = System.currentTimeMillis();
-		CompilationUnit result = (CompilationUnit) parser.createAST(null);
 		if (result.getProblems().length == 0) {
 			result.recordModifications();
 			List<TypeDeclaration> types = result.types();
 			for (TypeDeclaration td : types) {
-				transform(td);
+				if (Modifier.isPublic(td.getModifiers())
+						&& !Modifier.isStatic(td.getModifiers())) {
+					transform(td);
+					break;
+				}
 			}
 		} else {
 			//System.out.println(strBuffer);
@@ -125,6 +96,7 @@ public class AstTransform {
 			}
 			throw new TransformException(result.getProblems());
 		}
+		System.out.println(System.currentTimeMillis() - t0);
 		return result;
 	}
 
@@ -163,6 +135,7 @@ public class AstTransform {
 	}
 
 	private void transform(TypeDeclaration typeDec) throws Exception {
+		addDefaultImpl(typeDec);
 		final ArrayList<MethodInvocation> list = new ArrayList<MethodInvocation>();
 		typeDec.accept(new ASTVisitor() {
 
@@ -208,6 +181,142 @@ public class AstTransform {
 		methodReplace(list);
 	}
 
+	private void addDefaultImpl(TypeDeclaration td) {
+		AST ast = td.getAST();
+		td.superInterfaceTypes().add(
+				ast.newSimpleType(ast.newName(IProcedure.class.getName())));
+
+		List<BodyDeclaration> bodys = td.bodyDeclarations();
+		FieldDeclaration fd_rs_list = ast
+				.newFieldDeclaration(newVariableDeclarationFragment(
+						ast,
+						rs_list_name,
+						newClassInstanceWithType(ast,
+								ArrayList.class.getName(),
+								ResultSet.class.getSimpleName())));
+		fd_rs_list.setType(newParameterizedType(ast, ArrayList.class.getName(),
+				ResultSet.class.getSimpleName()));
+		bodys.add(fd_rs_list);
+		createField(td, Connection.class, conn_name, false);
+		createField(td, Object.class, ctx_name, false);
+
+		for (Method m : IProcedure.class.getMethods()) {
+			String mName = m.getName();
+			if (mName.equals("execute"))
+				continue;
+			MethodDeclaration md = createFromMethod(ast, m);
+			//md.setBody(ast.newBlock());
+
+			if ("cleanUp".equals(mName)) {
+				createCleanUpMethod(ast, md);
+			} else if ("setConnection".equals(mName)) {
+				createSetConnectionMethod(ast, md);
+			} else if ("getConnection".equals(mName)) {
+				createGetConnectionMethod(ast, md);
+			} else if ("setContext".equals(mName)) {
+				createSetContextMethod(ast, md);
+			} else if ("getContext".equals(mName)) {
+				createGetContextMethod(ast, md);
+			}
+			bodys.add(md);
+		}
+	}
+
+	private void createField(TypeDeclaration td, Class type, String name,
+			boolean init) {
+		AST ast = td.getAST();
+		FieldDeclaration fd = ast
+				.newFieldDeclaration(newVariableDeclarationFragment(ast, name,
+						null));
+		fd.setType(newSimpleType(ast, type.getName()));
+		td.bodyDeclarations().add(fd);
+	}
+
+	private MethodDeclaration createFromMethod(AST ast, Method m) {
+		MethodDeclaration md = ast.newMethodDeclaration();
+		md.setName(ast.newSimpleName(m.getName()));
+		if (m.getReturnType() != void.class)
+			md.setReturnType2(ast.newSimpleType(ast.newName(m.getReturnType()
+					.getName())));
+		md.modifiers().addAll(ast.newModifiers(Modifier.PUBLIC));
+		for (Class c : m.getExceptionTypes()) {
+			md.thrownExceptions().add(ast.newName(c.getName()));
+		}
+		int i_ = 0;
+		for (Class c : m.getParameterTypes()) {
+			md.parameters()
+					.add(newSingleVariableDeclaration(ast,
+							newSimpleType(ast, c.getName()), "args" + i_, null));
+		}
+		return md;
+	}
+
+	private void createCleanUpMethod(AST ast, MethodDeclaration md) {
+		String src = String
+				.format("for(ResultSet rs:%s){try{if(rs!=null)rs.close();}catch(Exception e){}}",
+						rs_list_name);
+		Block stmt = createAST(src.toCharArray(), ASTParser.K_STATEMENTS);
+		md.setBody((Block) ASTNode.copySubtree(md.getAST(), stmt));
+	}
+
+	/**
+	 * <i>conn_name</i> = args0;
+	 * 
+	 * @param ast
+	 * @param md
+	 */
+	private void createSetConnectionMethod(AST ast, MethodDeclaration md) {
+		Block block = ast.newBlock();
+		Assignment assi = ast.newAssignment();
+		assi.setLeftHandSide(ast.newSimpleName(conn_name));
+		assi.setRightHandSide(ast.newSimpleName("args0"));
+		block.statements().add(ast.newExpressionStatement(assi));
+		md.setBody(block);
+	}
+
+	/**
+	 * return <i>conn_name</i>;
+	 * 
+	 * @param ast
+	 * @param md
+	 */
+	private void createGetConnectionMethod(AST ast, MethodDeclaration md) {
+		ReturnStatement rs = ast.newReturnStatement();
+		rs.setExpression(ast.newSimpleName(conn_name));
+		Block block = ast.newBlock();
+		block.statements().add(rs);
+		md.setBody(block);
+	}
+
+	/**
+	 * <i>ctx_name</i> = args0;
+	 * 
+	 * @param ast
+	 * @param md
+	 */
+	private void createSetContextMethod(AST ast, MethodDeclaration md) {
+		Block block = ast.newBlock();
+		Assignment assi = ast.newAssignment();
+		assi.setLeftHandSide(ast.newSimpleName(ctx_name));
+		assi.setRightHandSide(ast.newSimpleName("args0"));
+		block.statements().add(ast.newExpressionStatement(assi));
+		md.setBody(block);
+	}
+
+	/**
+	 * return <i>ctx_name</i>;
+	 * 
+	 * @param ast
+	 * @param md
+	 */
+	private void createGetContextMethod(AST ast, MethodDeclaration md) {
+		ReturnStatement rs = ast.newReturnStatement();
+		rs.setExpression(ast.newSimpleName(ctx_name));
+		Block block = ast.newBlock();
+		block.statements().add(rs);
+		md.setBody(block);
+	}
+
 	private Statement findStatement(ASTNode n) {
 		ASTNode p = n.getParent();
 		if (p instanceof Statement)
@@ -224,28 +333,40 @@ public class AstTransform {
 			int index = stmts.indexOf(s);
 			ArrayList<Statement> gene_stmts = generate__sqlj_execute(mi);
 			stmts.addAll(index, gene_stmts);
+			index += gene_stmts.size();
 			AST ast = mi.getAST();
-			if (s instanceof EnhancedForStatement) {
+
+			StructuralPropertyDescriptor loc = mi.getLocationInParent();
+			if (loc.getNodeClass() == EnhancedForStatement.class
+					&& "expression".equals(loc.getId())) {
 				EnhancedForStatement efs = (EnhancedForStatement) s;
 				Expression newExp = createNewResultSetIteratorExpression(ast,
 						rs_id, efs.getParameter().getType().toString());
 				efs.setExpression(newExp);
-				if (efs.getParameter().getType().toString()
-						.equals(Map.class.getSimpleName())) {
+				String refType = efs.getParameter().getType().toString();
+				if (refType.equals(Map.class.getSimpleName())
+						&& refType.endsWith(Map.class.getName())) {
 					updateReferenceInFor(efs);
 				}
-			} else /*if (s instanceof ExpressionStatement)*/{
-				ASTNode astn = mi.getParent();
-				if (astn instanceof MethodInvocation) {
-					//as para
-					MethodInvocation omi = (MethodInvocation) astn;
-					List<Expression> argsList = omi.arguments();
-					int idx = argsList.indexOf(mi);
-					argsList.set(idx, ast.newSimpleName(rs_id));
-				} else {
-					stmts.set(index + gene_stmts.size(),
-							ast.newEmptyStatement());
-				}
+			} else if (loc.getNodeClass() == VariableDeclarationFragment.class
+					&& "initializer".equals(loc.getId())) {
+				VariableDeclarationStatement vds = (VariableDeclarationStatement) s;
+				String src = String.format(
+						"DataTransfer.transfer1(%s.class,%s)", vds.getType()
+								.toString(), rs_id);
+				Expression exp = createAST(src.toCharArray(),
+						ASTParser.K_EXPRESSION);
+				mi.getParent().setStructuralProperty(loc,
+						ASTNode.copySubtree(ast, exp));
+			} else if (loc.getNodeClass() == MethodInvocation.class
+					&& "arguments".equals(loc.getId())) {
+				List<Expression> argslist = ((MethodInvocation) mi.getParent())
+						.arguments();
+				int idx = argslist.indexOf(mi);
+				argslist.set(idx, ast.newSimpleName(rs_id));
+			} else if (loc.getNodeClass() == ExpressionStatement.class
+					&& "expression".equals(loc.getId())) {
+				stmts.remove(index);
 			}
 		}
 	}
@@ -395,24 +516,30 @@ public class AstTransform {
 				ast.newSimpleName(stmt_name), METHOD_EXECUTE);
 		generated_statements.add(ast.newExpressionStatement(mi2));
 		//set UPDATE_COUNT flag
-		Assignment assi = ast.newAssignment();
-		assi.setLeftHandSide(ast.newSimpleName(UPDATE_COUNT));
-		assi.setRightHandSide(newMethodInvocation(ast,
-				ast.newSimpleName(stmt_name), METHOD_GET_UPDATE_COUNT));
-		generated_statements.add(ast.newExpressionStatement(assi));
+		//		Assignment assi = ast.newAssignment();
+		//		assi.setLeftHandSide(ast.newSimpleName(UPDATE_COUNT));
+		//		assi.setRightHandSide(newMethodInvocation(ast,
+		//				ast.newSimpleName(stmt_name), METHOD_GET_UPDATE_COUNT));
+		//		generated_statements.add(ast.newExpressionStatement(assi));
 		//fetch output parameters
 		performParameterFetching(ast, parsedSql, generated_statements,
 				stmt_name);
 		//set resultset
+		String rs_name = params.get(1).toString();
 		VariableDeclarationStatement rs_vds = newVariableDeclarationStatement(
 				ast,
 				java.sql.ResultSet.class.getSimpleName(),
 				newVariableDeclarationFragment(
 						ast,
-						params.get(1).toString(),
+						rs_name,
 						newMethodInvocation(ast, ast.newSimpleName(stmt_name),
 								METHOD_GET_RESULT_SET)));
 		generated_statements.add(rs_vds);
+		//put rs into list 
+		generated_statements.add(ast
+				.newExpressionStatement(newMethodInvocation(ast,
+						ast.newSimpleName(rs_list_name), "add",
+						ast.newSimpleName(rs_name))));
 		return generated_statements;
 	}
 
@@ -428,15 +555,27 @@ public class AstTransform {
 
 	Expression createNewResultSetIteratorExpression(AST ast, String rs_id,
 			String typeName) {
+		return newClassInstanceWithType(ast,
+				ResultSetIterator.class.getSimpleName(), typeName,
+				ast.newSimpleName(rs_id));
+	}
+
+	Expression newClassInstanceWithType(AST ast, String className,
+			String typeName, Expression... args) {
 		TypeLiteral fa = newTypeLiteral(ast, typeName);
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
-		ParameterizedType pt = ast.newParameterizedType(ast.newSimpleType(ast
-				.newSimpleName(ResultSetIterator.class.getSimpleName())));
-		pt.typeArguments().add(ast.newSimpleType(ast.newName(typeName)));
+		ParameterizedType pt = newParameterizedType(ast, className, typeName);
 		cic.setType(pt);
-		cic.arguments().add(ast.newSimpleName(rs_id));
-		cic.arguments().add(fa);
+		cic.arguments().addAll(Arrays.asList(args));
 		return cic;
+	}
+
+	ParameterizedType newParameterizedType(AST ast, String className,
+			String typeName) {
+		ParameterizedType pt = ast.newParameterizedType(ast.newSimpleType(ast
+				.newName(className)));
+		pt.typeArguments().add(ast.newSimpleType(ast.newName(typeName)));
+		return pt;
 	}
 
 	/**
@@ -609,6 +748,16 @@ public class AstTransform {
 		return vds;
 	}
 
+	SingleVariableDeclaration newSingleVariableDeclaration(AST ast, Type type,
+			String name, Expression init) {
+		SingleVariableDeclaration svd = ast.newSingleVariableDeclaration();
+		svd.setType(type);
+		svd.setName(ast.newSimpleName(name));
+		if (init != null)
+			svd.setInitializer(init);
+		return svd;
+	}
+
 	MethodInvocation newMethodInvocation(AST ast, Expression exp, String name,
 			Expression... args) {
 		MethodInvocation mi = ast.newMethodInvocation();
@@ -630,6 +779,10 @@ public class AstTransform {
 		return tl;
 	}
 
+	Type newSimpleType(AST ast, String type) {
+		return ast.newSimpleType(ast.newName(type));
+	}
+
 	boolean isPrimitiveType(String type) {
 		return Arrays.asList("int", "double", "long", "short", "byte", "char",
 				"boolean", "float").contains(type);
@@ -639,6 +792,16 @@ public class AstTransform {
 		StringLiteral sl = ast.newStringLiteral();
 		sl.setLiteralValue(value);
 		return sl;
+	}
+
+	public static <T extends ASTNode> T createAST(char[] cs, int kind) {
+		long t0 = System.currentTimeMillis();
+		ASTParser parser = ASTParser.newParser(API_LEVEL);
+		parser.setKind(kind);
+		parser.setSource(cs);
+		T r = (T) parser.createAST(null);
+		System.out.println(System.currentTimeMillis() - t0);
+		return r;
 	}
 
 	static private class CompilationUnitImpl implements ICompilationUnit {

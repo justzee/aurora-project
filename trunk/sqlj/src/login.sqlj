@@ -10,26 +10,24 @@ import aurora.application.util.MD5Util;
 import aurora.service.ServiceContext;
 import uncertain.composite.CompositeMap;
 
-public class login extends Procedure {
+public class login {
 	
 	private ServiceContext svcCtx ;
 	
-	public void execute(IContextService contextServ) throws Exception {
-		svcCtx = (ServiceContext)contextServ.getContext();
+	public void execute() throws Exception {
+		svcCtx = (ServiceContext)getContext();
 //		svcCtx.getInstanceOfType(type)
 		login("mn1194","11111","ZHS","127.0.0.1");
 	}
 
 	private void login(String p_user_name, String p_password, String p_language,
 			String p_ip) throws Exception {
-		SysUser sys_user=DataTransfer.transfer1(SysUser.class,
-			#{select * from sys_user where user_name = upper(${p_user_name})});
-		String nls_lang=DataTransfer.transfer1(String.class,
-			#{select t.nls_language
+		SysUser sys_user=#{select * from sys_user where user_name = upper(${p_ user_name})};
+		String nls_lang=#{select t.nls_language
 		        from sys_languages t, fnd_language_code f
 		       where t.language_code = f.language_code
 		         and t.language_code = ${p_language}
-		         and f.installed_flag = 'Y'});
+		         and f.installed_flag = 'Y'};
 	    #{alter session set nls_language='${!nls_lang}'};
 	    validate_user(sys_user);
 	    validate_role(sys_user);
@@ -48,7 +46,7 @@ public class login extends Procedure {
 	}
 	
 	private void validate_role(SysUser u) throws Exception{
-		int count=DataTransfer.transfer1(int.class,#{select count(1) count from fnd_companies});
+		int count=#{select count(1) count from fnd_companies};
 		if(count == 0)
 			return;
 		try {
