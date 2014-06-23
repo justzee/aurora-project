@@ -1,9 +1,7 @@
 package sqlj.parser;
 
-import java.io.Writer;
-
-import sqlj.core.SqljBlock;
 import sqlj.core.ParsedSource;
+import sqlj.core.SqljBlock;
 
 public abstract class SqlPosition {
 	public static final String METHOD_SQL_EXECUTE = "__sqlj_execute";

@@ -2,20 +2,11 @@ package sqlj.core;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import sqlj.exception.NoDataFoundException;
-import sqlj.exception.TooManyColumnsException;
-import sqlj.exception.TooManyRowsException;
+import sqlj.exception.*;
 import sqlj.parser.SqljParser;
 
 public class DataTransfer {
@@ -100,8 +91,7 @@ public class DataTransfer {
 			List<String> column_names) throws IllegalArgumentException,
 			IllegalAccessException, SQLException {
 		Field[] flds = bean.getClass().getFields();
-		List<Class<?>> supported_type_list = Arrays
-				.asList(SqljParser.supported_types);
+		
 		ArrayList<String> acceptedColumns = new ArrayList<String>();
 		for (Field f : flds) {
 			if (supported_type_list.contains(f.getType())) {
