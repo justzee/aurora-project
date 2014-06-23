@@ -2,10 +2,7 @@ package sqlj.core;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResultSetIterator<T> implements Iterable<T>, Iterator<T> {
 	final ResultSet rs;

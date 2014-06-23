@@ -1,17 +1,11 @@
 package sqlj.core;
 
-import java.sql.Connection;
 
 public interface IProcedure {
-	void setConnection(Connection conn);
+	
+	void __init__(IContext context);
+	void __finallize__();
+	
+	IContext getContext();
 
-	Connection getConnection();
-
-	void setContext(Object context);
-
-	Object getContext();
-
-	void execute() throws Exception;
-
-	void cleanUp();
 }
