@@ -349,6 +349,9 @@ public class FakeUncertainEngine {
 			internalPackageManager.loadPackgeDirectory(AuroraResourceUtil
 					.getClassPathFile("aurora_builtin_package")
 					.getCanonicalPath());
+			internalPackageManager.loadPackgeDirectory(AuroraResourceUtil
+					.getClassPathFile("aurora_plugin_package")
+					.getCanonicalPath());
 
 		} catch (IOException e) {
 			e.printStackTrace();
