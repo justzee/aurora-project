@@ -240,6 +240,27 @@ public class ExcelDataTable extends DynamicObject {
                         String str = value.toString().replace('\n', ' ');
                         str = str.replace('\r', ' ');
                         str = str.replace(separator_char, ' ');
+                        boolean flag=false;
+                		if(str.indexOf(",")>-1){
+                			flag=true;
+                		}else if(str.indexOf("\'")>-1){
+                			flag=true;			
+                		}	
+                		if(str.indexOf("\"")>-1){
+                			StringBuffer buf=new StringBuffer();
+                			boolean is_first=true;
+                			String[] strs=str.split("\"");
+                			for(int index=0;index<strs.length;index++){
+                				if(!is_first)
+                					buf.append("\"\"");
+                				buf.append(strs[index]);				
+                				is_first=false;
+                			}			
+                			flag=true;
+                			str=buf.toString();
+                		}		
+                		if(flag)
+                			str="\""+str+"\"";		
                         out.print(str);
                     }
 		       		else{
