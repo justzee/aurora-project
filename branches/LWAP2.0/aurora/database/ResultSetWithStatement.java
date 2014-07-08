@@ -670,6 +670,16 @@ public class ResultSetWithStatement implements ResultSet {
     public void updateNClob(String columnLabel, Reader reader)
             throws SQLException {
         realResultSet.updateNClob(columnLabel, reader);
-    }
+    }	
+
+	public Object getObject(int columnIndex, Class type) throws SQLException {
+		// TODO Auto-generated method stub
+		return realResultSet.getObject(columnIndex, type);
+	}
+
+	public Object getObject(String columnLabel, Class type) throws SQLException {
+		// TODO Auto-generated method stub
+		return realResultSet.getObject(columnLabel, type);
+	}
 
 }
