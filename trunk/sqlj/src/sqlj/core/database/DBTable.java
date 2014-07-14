@@ -16,7 +16,13 @@ public @interface DBTable {
 	String name();
 
 	/**
-	 * is standard who enabled
+	 * sequence that use to generate primary key
+	 * @return
+	 */
+	String sequence() default "";
+
+	/**
+	 * is standard who enabled,default true
 	 * 
 	 * @return
 	 */

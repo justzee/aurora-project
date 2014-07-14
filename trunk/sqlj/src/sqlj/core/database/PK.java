@@ -5,13 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * to indicate ,this field is used as primary key
+ * 
+ * @author jessen
+ * 
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DBField {
-	/**
-	 * the real name of column
-	 * 
-	 * @return
-	 */
-	String name() default "";
+public @interface PK {
+
 }

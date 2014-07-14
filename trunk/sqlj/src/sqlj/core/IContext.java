@@ -1,7 +1,11 @@
 package sqlj.core;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -46,4 +50,9 @@ public interface IContext {
 	 * clean procedures and resultsets associate with this IContext
 	 */
 	void clean();
+	
+	void insert(Object bean) throws SQLException, Exception;
+	void insert(Map map,String tableName,String pkName) throws SQLException, Exception;
+	void update(Object bean) throws SQLException, Exception;
+	void update (Map map,String tableName,String pkName) throws SQLException, Exception;
 }
