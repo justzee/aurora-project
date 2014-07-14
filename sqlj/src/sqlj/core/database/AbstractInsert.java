@@ -19,7 +19,7 @@ public abstract class AbstractInsert {
 	static String createdByField = "CREATED_BY";
 	static String creationDateField = "CREATION_DATE";
 	static String lastUpdatedByField = "LAST_UPDATED_BY";
-	static String lastUpdatedDateField = "LAST_UPDATED_DATE";
+	static String lastUpdatedDateField = "LAST_UPDATE_DATE";
 	static String[] stdwho_fields = { createdByField, creationDateField,
 			lastUpdatedByField, lastUpdatedDateField };
 	static List<String> stdwho_fields_list = Arrays.asList(stdwho_fields);
@@ -61,11 +61,11 @@ public abstract class AbstractInsert {
 		String _sql_ = createInsertSql();
 		String sql = getPrefix() + _sql_ + getSuffix();
 
-//		System.out.println(sql);
-		PreparedStatement ps = createStatemtent(conn, sql);
+		// System.out.println(sql);
+		PreparedStatement ps = createStatement(conn, sql);
 		performParameterBinding(ps);
 		Object pk = execute(ps);
-//		System.out.println("pk:" + pk);
+		// System.out.println("pk:" + pk);
 		setPrimaryKeyBack(pk);
 		return pk;
 	}
@@ -90,7 +90,7 @@ public abstract class AbstractInsert {
 	 */
 	protected abstract Object execute(PreparedStatement ps) throws SQLException;
 
-	protected abstract PreparedStatement createStatemtent(Connection conn,
+	protected abstract PreparedStatement createStatement(Connection conn,
 			String sql) throws SQLException;
 
 	protected int performParameterBinding(PreparedStatement ps)
@@ -100,8 +100,8 @@ public abstract class AbstractInsert {
 			InsertField insf = insertFieldOptions.get(c);
 			if (insf.isParamBinding()) {
 				ps.setObject(i, insf.getValue());
-//				System.out.printf("%d%30s%s\n", i, c,
-//						String.valueOf(insf.getValue()));
+				// System.out.printf("%d%30s%s\n", i, c,
+				// String.valueOf(insf.getValue()));
 				i++;
 			}
 		}
@@ -131,10 +131,8 @@ public abstract class AbstractInsert {
 
 		}
 		if (standardWhoEnabled) {
-			strb.append(",").append(createdByField);
-			strb.append(",").append(creationDateField);
-			strb.append(",").append(lastUpdatedByField);
-			strb.append(",").append(lastUpdatedDateField);
+			for (String s : stdwho_fields)
+				strb.append(",").append(s);
 		}
 		strb.append(")\nvalues\n(");
 		for (int i = 0; i < columns.length; i++) {
@@ -142,8 +140,8 @@ public abstract class AbstractInsert {
 				strb.append(",");
 			InsertField insf = insertFieldOptions.get(columns[i]);
 			if (insf == null) {
-//				System.err.println("InsertField for " + columns[i]
-//						+ " is null.");
+				// System.err.println("InsertField for " + columns[i]
+				// + " is null.");
 				continue;
 			}
 			if (insf.isParamBinding()) {
@@ -154,10 +152,13 @@ public abstract class AbstractInsert {
 
 		}
 		if (standardWhoEnabled) {
-			strb.append(",?");
-			strb.append(",").append(getTimeExpression());
-			strb.append(",?");
-			strb.append(",").append(getTimeExpression());
+			for (String s : stdwho_fields) {
+				InsertField insf = insertFieldOptions.get(s);
+				if (insf.isParamBinding())
+					strb.append(",").append("?");
+				else
+					strb.append(",").append(insf.getExpression());
+			}
 		}
 		strb.append(")");
 		return strb.toString();
@@ -202,12 +203,13 @@ public abstract class AbstractInsert {
 				continue;
 			columnList.add(name);
 			DBField af = f.getAnnotation(DBField.class);
+			PK pkaf = f.getAnnotation(PK.class);
 			InsertField insf = new InsertField();
 			if (af != null && af.name().length() > 0)
 				insf.setName(af.name());
-			if (af != null && af.pk()) {
+			if (pkaf != null) {
 				pkName = name;
-//				System.out.println("pk:" + pkName);
+				// System.out.println("pk:" + pkName);
 				insf.setParaBinding(false);
 				insf.setExpression(getInsertExpressionForPk());
 			} else {

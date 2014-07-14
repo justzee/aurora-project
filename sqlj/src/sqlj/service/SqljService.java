@@ -5,14 +5,21 @@ import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.util.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import sqlj.core.*;
+import sqlj.core.database.DatabaseDescriptor;
+import sqlj.core.database.IDatabaseDescriptor;
+import sqlj.core.database.MysqlInsert;
+import sqlj.core.database.OracleInsert;
 import sqlj.exception.MethodNotDeclaredException;
 import sqlj.exception.ProcedureCreateException;
 import uncertain.composite.CompositeMap;
+import uncertain.composite.JSONAdaptor;
 import uncertain.ocm.IObjectRegistry;
 import uncertain.proc.IProcedureManager;
+import uncertain.proc.ProcedureRunner;
 import aurora.database.service.SqlServiceContext;
 import aurora.service.ServiceContext;
 import aurora.service.ServiceController;
@@ -33,6 +40,7 @@ public class SqljService extends HttpServiceInstance implements IContext {
 	private IObjectRegistry objectRegistry;
 	IProcedure proc;
 	private boolean outputManual = false;
+	private IDatabaseDescriptor databaseDescriptor;
 
 	public SqljService(String name, IProcedureManager proc_manager) {
 		super(name, proc_manager);
@@ -47,7 +55,9 @@ public class SqljService extends HttpServiceInstance implements IContext {
 	@Override
 	public boolean invoke(uncertain.proc.Procedure proc1) throws Exception {
 		try {
-			getResponse().setContentType("application/json");
+			databaseDescriptor = new DatabaseDescriptor();
+			((DatabaseDescriptor)databaseDescriptor).init(getConnection().getMetaData());
+			getResponse().setContentType(JSONServiceInterpreter.DEFAULT_JSON_CONTENT_TYPE);
 			proc = getProcedure(procName);
 			Method m = getMethod();
 			if (m == null)
@@ -58,10 +68,16 @@ public class SqljService extends HttpServiceInstance implements IContext {
 			Throwable thr = e;
 			while (thr.getCause() != null)
 				thr = thr.getCause();
-			getContextMap().createChild("error").put("error", thr.getMessage());
-			getResponse().getWriter().print(
-					"{\"success\":false,error:\""
-							+ thr.getMessage().replace("\"", "\\\"") + "\"}");
+			ProcedureRunner runner = new ProcedureRunner();
+			runner.setContext(getContextMap());
+			CompositeMap error = getContextMap().createChild("error");
+			error.put("code", thr.getClass().getName());
+			if (thr instanceof SQLException) {
+				error.put("errorcode", ((SQLException) thr).getErrorCode());
+			}
+			error.put("message", thr.getMessage());
+			JSONServiceInterpreter intp = new JSONServiceInterpreter();
+			intp.onCreateFailResponse(runner);
 			return false;
 		}
 		if (!outputManual) {
@@ -104,6 +120,10 @@ public class SqljService extends HttpServiceInstance implements IContext {
 			}
 		}
 		return null;
+	}
+
+	public IDatabaseDescriptor getDatabaseDescriptor() {
+		return databaseDescriptor;
 	}
 
 	@Override
@@ -260,6 +280,36 @@ public class SqljService extends HttpServiceInstance implements IContext {
 
 	public String getParameterString(String key) {
 		return getServiceContext().getParameter().getString(key);
+	}
+
+	@Override
+	public void insert(Object bean) throws SQLException, Exception {
+		if (databaseDescriptor.isOracle())
+			new OracleInsert(this, bean).insert();
+		else if(databaseDescriptor.isMysql())
+			new MysqlInsert(this, bean).insert();
+	}
+
+	@Override
+	public void insert(Map map, String tableName, String pkName)
+			throws SQLException, Exception {
+		if (databaseDescriptor.isOracle())
+			new OracleInsert(this, map,tableName,pkName).insert();
+		else if(databaseDescriptor.isMysql())
+			new MysqlInsert(this, map,tableName,pkName).insert();
+	}
+
+	@Override
+	public void update(Object bean) throws SQLException, Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(Map map, String tableName, String pkName)
+			throws SQLException, Exception {
+		// TODO Auto-generated method stub
+
 	}
 
 }

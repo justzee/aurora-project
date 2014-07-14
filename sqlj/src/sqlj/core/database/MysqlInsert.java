@@ -48,7 +48,7 @@ public class MysqlInsert extends AbstractInsert {
 	}
 
 	@Override
-	protected PreparedStatement createStatemtent(Connection conn, String sql)
+	protected PreparedStatement createStatement(Connection conn, String sql)
 			throws SQLException {
 		return conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	}
