@@ -1,14 +1,32 @@
 package sqlj.ast;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.PrimitiveType;
+import org.eclipse.jdt.core.dom.QualifiedName;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 public class ASTNodeUtil {
 
 	/**
-	 * create an ParenthesizedExpression via a expression string<br> the
-	 * expression can be complex.
+	 * create an ParenthesizedExpression via a expression string<br>
+	 * the expression can be complex.
 	 * 
 	 * @param ast
 	 * @param expr
@@ -76,8 +94,8 @@ public class ASTNodeUtil {
 		return svd;
 	}
 
-	public static MethodInvocation newMethodInvocation(AST ast, Expression exp, String name,
-			Expression... args) {
+	public static MethodInvocation newMethodInvocation(AST ast, Expression exp,
+			String name, Expression... args) {
 		MethodInvocation mi = ast.newMethodInvocation();
 		mi.setExpression(exp);
 		mi.setName(ast.newSimpleName(name));
@@ -128,8 +146,11 @@ public class ASTNodeUtil {
 		ASTParser parser = ASTParser.newParser(AstTransform.API_LEVEL);
 		parser.setKind(kind);
 		parser.setSource(cs);
+		Map options = JavaCore.getOptions();
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_6, options);
+		parser.setCompilerOptions(options);
 		T r = (T) parser.createAST(null);
-		//		System.out.println(System.currentTimeMillis() - t0);
+		// System.out.println(System.currentTimeMillis() - t0);
 		return r;
 	}
 }

@@ -33,14 +33,14 @@ public interface IContext {
 	 * @throws ProcedureCreateException 
 	 * @see IProcedureFactory#createProcedure(IContext, Class)
 	 */
-	IProcedure getProcedure(Class<? extends IProcedure> procClass) throws ProcedureCreateException;
+	<T extends IProcedure> T getProcedure(Class<? extends IProcedure> procClass) throws ProcedureCreateException;
 	/**
 	 * @param procName
 	 * @return
 	 * @throws ProcedureCreateException 
 	 * @see #getProcedure(Class)
 	 */
-	IProcedure getProcedure(String procName) throws ProcedureCreateException;
+	<T extends IProcedure> T  getProcedure(String procName) throws ProcedureCreateException;
 	
 	
 	void registerProcedure(IProcedure proc);

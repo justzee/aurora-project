@@ -1,5 +1,8 @@
 package sqlj.parser;
 
+import java.util.Map;
+
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Expression;
 
@@ -69,6 +72,9 @@ public class ParameterParser extends Parser {
 			ASTParser parser = ASTParser.newParser(AstTransform.API_LEVEL);
 			parser.setKind(ASTParser.K_EXPRESSION);
 			parser.setSource(expression.toCharArray());
+			Map options = JavaCore.getOptions();
+			JavaCore.setComplianceOptions(JavaCore.VERSION_1_6, options);
+			parser.setCompilerOptions(options);
 			Expression exp = (Expression) parser.createAST(null);
 		} catch (Exception e) {
 			//this exception will be handled in SqljParser, then it will be translated

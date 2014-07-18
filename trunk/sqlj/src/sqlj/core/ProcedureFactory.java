@@ -5,7 +5,7 @@ import sqlj.exception.ProcedureCreateException;
 public class ProcedureFactory implements IProcedureFactory {
 
 	@Override
-	public IProcedure createProcedure(Class<? extends IProcedure> proClass)
+	public <T extends IProcedure> T  createProcedure(Class<? extends IProcedure> proClass)
 			throws ProcedureCreateException {
 		IProcedure proc = null;
 		try {
@@ -13,20 +13,20 @@ public class ProcedureFactory implements IProcedureFactory {
 		} catch (Exception e) {
 			throw new ProcedureCreateException(e);
 		}
-		return proc;
+		return (T) proc;
 	}
 
 	@Override
-	public IProcedure createProcedure(IContext context,
+	public <T extends IProcedure> T  createProcedure(IContext context,
 			Class<? extends IProcedure> proClass)
 			throws ProcedureCreateException {
 		IProcedure proc = createProcedure(proClass);
 		associate(context, proc);
-		return proc;
+		return (T) proc;
 	}
 
 	@Override
-	public IProcedure createProcedure(String procName)
+	public <T extends IProcedure> T  createProcedure(String procName)
 			throws ProcedureCreateException {
 		Class clazz = null;
 		try {
@@ -36,18 +36,18 @@ public class ProcedureFactory implements IProcedureFactory {
 					+ "' not exists.", e);
 		}
 		if (IProcedure.class.isAssignableFrom(clazz)) {
-			return createProcedure(clazz);
+			return (T) createProcedure(clazz);
 		}
 		throw new ProcedureCreateException("procedure '" + procName
 				+ "'is not illegal.", null);
 	}
 
 	@Override
-	public IProcedure createProcedure(IContext context, String procName)
+	public <T extends IProcedure> T  createProcedure(IContext context, String procName)
 			throws ProcedureCreateException {
 		IProcedure proc = createProcedure(procName);
 		associate(context, proc);
-		return proc;
+		return (T) proc;
 	}
 
 	public void associate(IContext context, IProcedure proc) {
