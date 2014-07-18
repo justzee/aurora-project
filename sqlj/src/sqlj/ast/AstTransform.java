@@ -105,7 +105,7 @@ public class AstTransform {
 		long t0 = System.currentTimeMillis();
 		if (result.getProblems().length == 0) {
 			result.recordModifications();
-			List<ImportDeclaration> importList=result.imports();
+			List<ImportDeclaration> importList = result.imports();
 			new OrganizeImport(result).organize();
 			List<TypeDeclaration> types = result.types();
 			for (TypeDeclaration td : types) {
@@ -123,6 +123,7 @@ public class AstTransform {
 						- p.getSourceStart();
 				p.setSourceStart(p.getSourceStart() + dx);
 				p.setSourceEnd(p.getSourceEnd() + dx);
+				System.out.println(p);
 			}
 			throw new TransformException(result.getProblems());
 		}
@@ -235,17 +236,23 @@ public class AstTransform {
 			StructuralPropertyDescriptor loc = mi.getLocationInParent();
 			if (loc.getNodeClass() == EnhancedForStatement.class
 					&& "expression".equals(loc.getId())) {
+				/*
+				 * for(Map m:#{...}){ ... }
+				 */
 				EnhancedForStatement efs = (EnhancedForStatement) s;
 				Expression newExp = createNewResultSetIteratorExpression(ast,
 						rs_id, efs.getParameter().getType().toString());
 				efs.setExpression(newExp);
 				String refType = efs.getParameter().getType().toString();
 				if (refType.equals(Map.class.getSimpleName())
-						&& refType.endsWith(Map.class.getName())) {
+						|| refType.equals(Map.class.getName())) {
 					updateReferenceInFor(efs);
 				}
 			} else if (loc.getNodeClass() == VariableDeclarationFragment.class
 					&& "initializer".equals(loc.getId())) {
+				/*
+				 * String name = #{select name from ...};
+				 */
 				VariableDeclarationStatement vds = (VariableDeclarationStatement) s;
 				String src = String.format(
 						"DataTransfer.transfer1(%s.class,%s)", vds.getType()
@@ -254,8 +261,33 @@ public class AstTransform {
 						ASTParser.K_EXPRESSION);
 				mi.getParent().setStructuralProperty(loc,
 						ASTNode.copySubtree(ast, exp));
+			} else if (loc.getNodeClass() == Assignment.class
+					&& "rightHandSide".equals(loc.getId())
+					&& (s instanceof ExpressionStatement)) {
+				/*
+				 * name = #{select name from ...};
+				 */
+				ExpressionStatement es = (ExpressionStatement) s;
+				Assignment assi = (Assignment) es.getExpression();
+				Expression left = assi.getLeftHandSide();
+				if (left instanceof SimpleName) {
+					String varType = parsedSource.getVariableType(left
+							.toString());
+					if (varType != null) {
+						String src = String.format(
+								"DataTransfer.transfer1(%s.class,%s)", varType,
+								rs_id);
+						Expression exp = createAST(src.toCharArray(),
+								ASTParser.K_EXPRESSION);
+						assi.setRightHandSide((Expression) ASTNode.copySubtree(
+								ast, exp));
+					}
+				}
 			} else if (loc.getNodeClass() == MethodInvocation.class
 					&& "arguments".equals(loc.getId())) {
+				/*
+				 * process(1,#{...},"C");
+				 */
 				List<Expression> argslist = ((MethodInvocation) mi.getParent())
 						.arguments();
 				int idx = argslist.indexOf(mi);

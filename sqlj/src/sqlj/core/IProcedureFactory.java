@@ -4,15 +4,15 @@ import sqlj.exception.ProcedureCreateException;
 
 public interface IProcedureFactory {
 
-	IProcedure createProcedure(Class<? extends IProcedure> proClass)
+	<T extends IProcedure> T  createProcedure(Class<? extends IProcedure> proClass)
 			throws ProcedureCreateException;
 
-	IProcedure createProcedure(IContext context,
+	<T extends IProcedure> T  createProcedure(IContext context,
 			Class<? extends IProcedure> proClass)
 			throws ProcedureCreateException;
 
-	IProcedure createProcedure(String procName) throws ProcedureCreateException;
+	<T extends IProcedure> T  createProcedure(String procName) throws ProcedureCreateException;
 
-	IProcedure createProcedure(IContext context, String procName)
+	<T extends IProcedure> T  createProcedure(IContext context, String procName)
 			throws ProcedureCreateException;
 }

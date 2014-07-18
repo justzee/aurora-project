@@ -56,8 +56,10 @@ public class SqljService extends HttpServiceInstance implements IContext {
 	public boolean invoke(uncertain.proc.Procedure proc1) throws Exception {
 		try {
 			databaseDescriptor = new DatabaseDescriptor();
-			((DatabaseDescriptor)databaseDescriptor).init(getConnection().getMetaData());
-			getResponse().setContentType(JSONServiceInterpreter.DEFAULT_JSON_CONTENT_TYPE);
+			((DatabaseDescriptor) databaseDescriptor).init(getConnection()
+					.getMetaData());
+			getResponse().setContentType(
+					JSONServiceInterpreter.DEFAULT_JSON_CONTENT_TYPE);
 			proc = getProcedure(procName);
 			Method m = getMethod();
 			if (m == null)
@@ -182,13 +184,14 @@ public class SqljService extends HttpServiceInstance implements IContext {
 	}
 
 	@Override
-	public IProcedure getProcedure(Class<? extends IProcedure> procClass)
+	public <T extends IProcedure> T getProcedure(
+			Class<? extends IProcedure> procClass)
 			throws ProcedureCreateException {
 		return getProcedureFactory().createProcedure(this, procClass);
 	}
 
 	@Override
-	public IProcedure getProcedure(String procName)
+	public <T extends IProcedure> T getProcedure(String procName)
 			throws ProcedureCreateException {
 		return getProcedureFactory().createProcedure(this, procName);
 	}
@@ -286,7 +289,7 @@ public class SqljService extends HttpServiceInstance implements IContext {
 	public void insert(Object bean) throws SQLException, Exception {
 		if (databaseDescriptor.isOracle())
 			new OracleInsert(this, bean).insert();
-		else if(databaseDescriptor.isMysql())
+		else if (databaseDescriptor.isMysql())
 			new MysqlInsert(this, bean).insert();
 	}
 
@@ -294,9 +297,9 @@ public class SqljService extends HttpServiceInstance implements IContext {
 	public void insert(Map map, String tableName, String pkName)
 			throws SQLException, Exception {
 		if (databaseDescriptor.isOracle())
-			new OracleInsert(this, map,tableName,pkName).insert();
-		else if(databaseDescriptor.isMysql())
-			new MysqlInsert(this, map,tableName,pkName).insert();
+			new OracleInsert(this, map, tableName, pkName).insert();
+		else if (databaseDescriptor.isMysql())
+			new MysqlInsert(this, map, tableName, pkName).insert();
 	}
 
 	@Override
