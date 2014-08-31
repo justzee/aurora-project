@@ -2,7 +2,7 @@
  * Created on 2014-8-22 上午12:33:47
  * $Id$
  */
-package aurora.workflow.execution;
+package aurora.bpm.execution;
 
 public class WorkflowInstanceQueryService {
 

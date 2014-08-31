@@ -2,7 +2,7 @@
  * Created on 2014-8-19 上午12:24:26
  * $Id$
  */
-package aurora.workflow.execution;
+package aurora.bpm.execution;
 
 public class WorkflowService {
     
