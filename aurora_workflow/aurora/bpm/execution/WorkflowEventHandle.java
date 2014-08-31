@@ -2,7 +2,7 @@
  * Created on 2014-8-21 下午11:58:24
  * $Id$
  */
-package aurora.workflow.execution;
+package aurora.bpm.execution;
 
 public class WorkflowEventHandle {
     
