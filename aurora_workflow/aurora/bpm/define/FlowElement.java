@@ -2,7 +2,7 @@
  * Created on 2014-8-23 下午5:49:19
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.define;
 
 import java.util.List;
 

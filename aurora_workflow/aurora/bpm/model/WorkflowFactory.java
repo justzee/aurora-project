@@ -13,7 +13,6 @@ import uncertain.composite.CompositeMap;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.OCManager;
 import uncertain.ocm.PackageMapping;
-import aurora.bpm.execution.ProcessInstance;
 
 public class WorkflowFactory {
     
@@ -36,10 +35,13 @@ public class WorkflowFactory {
         if(map==null)
             throw new IOException("Can't load "+cp);
         Definitions df = (Definitions)ocManager.createObject(map);
+        df.validate();
+        /*
         if(df!=null){
             Process p = df.getProcess();
             if(p!=null) p.resolveReference();
         }
+        */
         return df;
     }
     

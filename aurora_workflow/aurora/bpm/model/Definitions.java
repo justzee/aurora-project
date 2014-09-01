@@ -4,6 +4,8 @@
  */
 package aurora.bpm.model;
 
+import aurora.bpm.define.AbstractFlowElementsContainer;
+
 
 public class Definitions  extends AbstractFlowElementsContainer {
     
@@ -15,6 +17,11 @@ public class Definitions  extends AbstractFlowElementsContainer {
 
     public void addProcess(Process process) {
         this.process = process;
+    }
+    
+    @Override
+    public void validate(){
+        process.validate();
     }
     
     

@@ -2,7 +2,7 @@
  * Created on 2014-8-23 下午4:00:50
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.define;
 
 public interface IFlowElement extends IElement {
     
@@ -14,6 +14,6 @@ public interface IFlowElement extends IElement {
     
     public void setContainer( IFlowElementsContainer container );
     
-    //public void resolveReference();
+    public void validate();
 
 }

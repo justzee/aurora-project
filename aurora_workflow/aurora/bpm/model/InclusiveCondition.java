@@ -7,6 +7,9 @@ package aurora.bpm.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import aurora.bpm.define.ICondition;
+import aurora.bpm.define.IProcessInstancePath;
+
 public class InclusiveCondition implements ICondition {
     
     Set<String>     path_to_merge;

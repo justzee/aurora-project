@@ -2,9 +2,10 @@
  * Created on 2014-8-30 上午12:31:51
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.define;
 
-import aurora.bpm.execution.ProcessInstance;
+import aurora.bpm.model.ProcessInstance;
+import aurora.bpm.model.SequenceFlow;
 
 public interface IProcessInstancePath {
     

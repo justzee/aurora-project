@@ -4,11 +4,20 @@
  */
 package aurora.bpm.model;
 
+import aurora.bpm.define.FlowNode;
+import aurora.bpm.define.IEvent;
+import aurora.bpm.define.IProcessInstancePath;
+
 public class StartEvent extends FlowNode implements IEvent {
 
     @Override
     public void arrive(IProcessInstancePath path) {
         // do nothing
+    }
+    
+    @Override
+    public void validate(){
+        
     }
     
     

@@ -4,6 +4,13 @@
  */
 package aurora.bpm.model;
 
+import uncertain.core.ConfigurationError;
+import aurora.bpm.define.AbstractGateway;
+import aurora.bpm.define.ICondition;
+import aurora.bpm.define.IProcessInstance;
+import aurora.bpm.define.IProcessInstancePath;
+import aurora.bpm.define.ProcessStatus;
+
 public class InclusiveGateway extends AbstractGateway {
     
     public ICondition createWaitingCondition(){
@@ -34,6 +41,12 @@ public class InclusiveGateway extends AbstractGateway {
             SequenceFlow out = getOutgoing().get(0);
             waiting_path.moveTo(out.getTargetNode());
         }
+    }
+    
+    @Override
+    public void validate(){
+        if(getOutgoing().size()!=1)
+            throw new ConfigurationError("Gateway "+getId()+":Can have only 1 outgoing sequence flow:"+getOutgoing());
     }
 
 }

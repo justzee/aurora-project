@@ -2,10 +2,12 @@
  * Created on 2014-8-27 上午12:48:01
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.define;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import aurora.bpm.model.SequenceFlow;
 
 public abstract class FlowNode extends FlowElement implements IFlowNode {
     

@@ -4,6 +4,10 @@
  */
 package aurora.bpm.model;
 
+import aurora.bpm.define.Activity;
+import aurora.bpm.define.IProcessInstancePath;
+import aurora.bpm.define.ProcessStatus;
+
 public class UserTask extends Activity {
     
     @Override
@@ -21,6 +25,11 @@ public class UserTask extends Activity {
         }
         System.out.println("Workflow approved in "+time+" ms");
         path.moveTo(this.getOutgoing().get(0).getTargetNode());
+    }
+    
+    @Override
+    public void validate(){
+        
     }
         
 

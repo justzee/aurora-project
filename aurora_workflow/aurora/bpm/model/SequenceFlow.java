@@ -4,6 +4,9 @@
  */
 package aurora.bpm.model;
 
+import aurora.bpm.define.FlowElement;
+import aurora.bpm.define.IFlowElement;
+import aurora.bpm.define.IFlowNode;
 import uncertain.composite.CompositeMap;
 import uncertain.core.ConfigurationError;
 
@@ -43,7 +46,7 @@ public class SequenceFlow  extends FlowElement {
             throw new ConfigurationError("Line "+this.getOriginLocation().getStartLine()+":"+title+"-"+ id+" can't be connected by sequenceFlow");
     }
     
-    public void resolveReference(){
+    public void validate(){
         //System.out.println(this+"sourceRef:"+sourceRef+" targetRef:"+targetRef);
         source = getFlowNode("source", sourceRef);
         source.addOutgoingSequenceFlow(this);
