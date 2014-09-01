@@ -7,6 +7,9 @@ package aurora.bpm.model;
 import java.util.LinkedList;
 import java.util.List;
 
+import aurora.bpm.define.AbstractFlowElementsContainer;
+import aurora.bpm.define.IFlowElement;
+
 import uncertain.core.ConfigurationError;
 import uncertain.ocm.OCManager;
 
@@ -58,12 +61,15 @@ public class Process  extends AbstractFlowElementsContainer {
         addFlowElement(task);
     }
     
-    public void resolveReference(){
+    @Override
+    public void validate(){
         for(IFlowElement elm:this.getFlowElements()){
-            if(elm instanceof SequenceFlow){
-                SequenceFlow sf = (SequenceFlow)elm;
-                sf.resolveReference();
-            }
+            if(elm instanceof SequenceFlow)
+                elm.validate();
+        }
+        for(IFlowElement elm:this.getFlowElements()){
+            if(! (elm instanceof SequenceFlow))
+                elm.validate();
         }
     }
     

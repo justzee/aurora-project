@@ -2,7 +2,7 @@
  * Created on 2014-8-27 下午12:05:13
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.define;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 import uncertain.core.ConfigurationError;
 
-public class AbstractFlowElementsContainer extends BaseElement implements IFlowElementsContainer {
+public abstract class AbstractFlowElementsContainer extends BaseElement implements IFlowElementsContainer {
 
     Map<String, IFlowElement>  nodes;
     

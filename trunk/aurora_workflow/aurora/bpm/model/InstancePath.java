@@ -2,16 +2,15 @@
  * Created on 2014-8-29 下午10:41:47
  * $Id$
  */
-package aurora.bpm.execution;
+package aurora.bpm.model;
 
 import java.util.List;
 import java.util.LinkedList;
 
-import aurora.bpm.model.ICondition;
-import aurora.bpm.model.IFlowNode;
-import aurora.bpm.model.IProcessInstancePath;
-import aurora.bpm.model.ProcessStatus;
-import aurora.bpm.model.SequenceFlow;
+import aurora.bpm.define.ICondition;
+import aurora.bpm.define.IFlowNode;
+import aurora.bpm.define.IProcessInstancePath;
+import aurora.bpm.define.ProcessStatus;
 
 public class InstancePath implements IProcessInstancePath {
     

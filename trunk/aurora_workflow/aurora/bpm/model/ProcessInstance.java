@@ -2,18 +2,15 @@
  * Created on 2014-8-29 下午10:40:41
  * $Id$
  */
-package aurora.bpm.execution;
+package aurora.bpm.model;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import aurora.bpm.model.IFlowNode;
-import aurora.bpm.model.IProcessInstance;
-import aurora.bpm.model.IProcessInstancePath;
-import aurora.bpm.model.Process;
-import aurora.bpm.model.ProcessStatus;
-import aurora.bpm.model.SequenceFlow;
-import aurora.bpm.model.StartEvent;
+import aurora.bpm.define.IFlowNode;
+import aurora.bpm.define.IProcessInstance;
+import aurora.bpm.define.IProcessInstancePath;
+import aurora.bpm.define.ProcessStatus;
 
 public class ProcessInstance implements IProcessInstance {
     

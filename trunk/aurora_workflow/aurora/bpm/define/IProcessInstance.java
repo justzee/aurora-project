@@ -2,7 +2,7 @@
  * Created on 2014-8-30 上午12:31:28
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.define;
 
 public interface IProcessInstance {
     

@@ -4,11 +4,20 @@
  */
 package aurora.bpm.model;
 
+import aurora.bpm.define.FlowNode;
+import aurora.bpm.define.IEvent;
+import aurora.bpm.define.IProcessInstancePath;
+
 public class EndEvent extends FlowNode implements IEvent {
 
     @Override
     public void arrive(IProcessInstancePath path) {
         path.getOwner().finish();
+    }
+    
+    @Override
+    public void validate(){
+        
     }
         
 
