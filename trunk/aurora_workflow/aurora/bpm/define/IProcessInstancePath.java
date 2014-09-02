@@ -4,12 +4,12 @@
  */
 package aurora.bpm.define;
 
-import aurora.bpm.model.ProcessInstance;
+import aurora.bpm.engine.ProcessInstance;
 import aurora.bpm.model.SequenceFlow;
 
 public interface IProcessInstancePath {
     
-    public ProcessInstance getOwner();
+    public IProcessInstance getOwner();
 
     public IFlowNode getCurrentNode();
 
@@ -22,6 +22,10 @@ public interface IProcessInstancePath {
     public void finish();
     
     public void setProceedCondition(ICondition condition);
+    
+    public void setIndex(String index);
+    
+    public String getIndex();
     
     public ICondition getProceedCondition();
     

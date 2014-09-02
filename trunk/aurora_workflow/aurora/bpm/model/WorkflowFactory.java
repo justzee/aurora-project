@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 
+import aurora.bpm.engine.ProcessInstance;
+
 import uncertain.composite.CompositeLoader;
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.ClassRegistry;
@@ -36,23 +38,8 @@ public class WorkflowFactory {
             throw new IOException("Can't load "+cp);
         Definitions df = (Definitions)ocManager.createObject(map);
         df.validate();
-        /*
-        if(df!=null){
-            Process p = df.getProcess();
-            if(p!=null) p.resolveReference();
-        }
-        */
         return df;
     }
-    
-    public static void main(String[] args) throws Exception {
-        WorkflowFactory fact = new WorkflowFactory();
-        //System.out.println(fact.ocManager.getReflectionMapper().getMappingRule(SequenceFlow.class));
-        Definitions def = fact.loadFromClassPath("aurora.bpm.testcase.MyProcess");
-        Process process = def.getProcess();
-        ProcessInstance instance = new ProcessInstance(process);
-        instance.start();
-        System.out.println("Finished!");
-    }
+
 
 }

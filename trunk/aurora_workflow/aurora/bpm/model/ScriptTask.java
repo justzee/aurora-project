@@ -13,6 +13,7 @@ public class ScriptTask extends Activity {
     public void arrive(IProcessInstancePath path) {
         // execute script defined
         System.out.println("script executed");
+        path.moveTo(this.getOutgoing().get(0).getTargetNode());
     }
     
     @Override
