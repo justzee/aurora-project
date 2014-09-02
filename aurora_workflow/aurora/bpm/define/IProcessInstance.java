@@ -12,8 +12,10 @@ public interface IProcessInstance {
     
     public void terminate();
     
+    public ProcessStatus getStatus();
+    
     public IProcessInstancePath createPath( IFlowNode starting_node );
     
-    public IProcessInstancePath getPathByNode( String node_id );
+    public IProcessInstancePath getPathByIndex( String index );
 
 }

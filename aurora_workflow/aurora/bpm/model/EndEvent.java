@@ -13,6 +13,7 @@ public class EndEvent extends FlowNode implements IEvent {
     @Override
     public void arrive(IProcessInstancePath path) {
         path.getOwner().finish();
+        System.out.println("End event reached");
     }
     
     @Override

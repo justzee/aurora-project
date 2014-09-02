@@ -13,6 +13,8 @@ import aurora.bpm.define.ProcessStatus;
 
 public class InclusiveGateway extends AbstractGateway {
     
+    String pathIndex;
+    
     public ICondition createWaitingCondition(){
         InclusiveCondition condition = new InclusiveCondition();
         for(SequenceFlow flow:getIncoming()){
@@ -23,18 +25,25 @@ public class InclusiveGateway extends AbstractGateway {
     
     private void addArrival(IProcessInstancePath waiting_path, SequenceFlow flow_from){
         InclusiveCondition condition = (InclusiveCondition)waiting_path.getProceedCondition();
-        condition.addFlowFinished(flow_from.getId());
+        if(condition==null)
+            throw new IllegalStateException("Path in "+waiting_path.getCurrentNode()+" is not InclusiveGateway");
+        String id = flow_from.getId();
+        condition.addFlowFinished(id);
     }
     
     @Override
     public void arrive(IProcessInstancePath path) {
         path.finish();
         IProcessInstance inst = path.getOwner();
-        IProcessInstancePath waiting_path = inst.getPathByNode(getId());
+        IProcessInstancePath waiting_path = inst.getPathByIndex(pathIndex);
         if(waiting_path==null){
             waiting_path = inst.createPath(this);
             waiting_path.setStatus(ProcessStatus.WAITING);
             waiting_path.setProceedCondition(createWaitingCondition());
+            waiting_path.setIndex(pathIndex);
+            System.out.println("###### created waiting "+path);
+        }else{
+            System.out.println("###### Test waiting "+path);
         }
         addArrival(waiting_path, path.getFlowFrom());
         if(waiting_path.getProceedCondition().isMeet(waiting_path)){
@@ -47,6 +56,7 @@ public class InclusiveGateway extends AbstractGateway {
     public void validate(){
         if(getOutgoing().size()!=1)
             throw new ConfigurationError("Gateway "+getId()+":Can have only 1 outgoing sequence flow:"+getOutgoing());
+        pathIndex = "InclusiveGateway:"+getId();
     }
 
 }

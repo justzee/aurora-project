@@ -2,7 +2,7 @@
  * Created on 2014-8-29 下午10:40:41
  * $Id$
  */
-package aurora.bpm.model;
+package aurora.bpm.engine;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +11,9 @@ import aurora.bpm.define.IFlowNode;
 import aurora.bpm.define.IProcessInstance;
 import aurora.bpm.define.IProcessInstancePath;
 import aurora.bpm.define.ProcessStatus;
+import aurora.bpm.model.Process;
+import aurora.bpm.model.SequenceFlow;
+import aurora.bpm.model.StartEvent;
 
 public class ProcessInstance implements IProcessInstance {
     
@@ -18,15 +21,20 @@ public class ProcessInstance implements IProcessInstance {
     ProcessInstance     parent;
     List<InstancePath>  activePaths;
     ProcessStatus       status;
+    long                instance_id;
+    
+    ProcessEngine       engine;
 
-    public ProcessInstance(Process process) {
+    public ProcessInstance(ProcessEngine engine, Process process) {
         super();
+        this.engine = engine;
         this.process = process;
         activePaths = new LinkedList<InstancePath>();
     }
 
-    public ProcessInstance(Process process, ProcessInstance parent) {
+    public ProcessInstance(ProcessEngine engine, Process process, ProcessInstance parent) {
         super();
+        this.engine = engine;
         this.process = process;
         this.parent = parent;
     }
@@ -63,15 +71,21 @@ public class ProcessInstance implements IProcessInstance {
         status = ProcessStatus.TERMINATED;
     }
     
-    public IProcessInstancePath getPathByNode( String node_id ){
-        if(node_id==null)
-            throw new NullPointerException("node_id is null");
+    public IProcessInstancePath getPathByIndex( String index ){
         for(InstancePath path:activePaths){
-            if(node_id.equals(path.getCurrentNode().getId())){
+            if(index.equals(path.getIndex())){
                 return path;
             }            
         }
         return null;
+    }
+    
+    public void pathNodeArrive( InstancePath path, IFlowNode node ){
+        engine.addTask(instance_id, new NodeArriveTask(path,node));
+    }
+    
+    public ProcessStatus getStatus(){
+        return status;
     }
     
     
