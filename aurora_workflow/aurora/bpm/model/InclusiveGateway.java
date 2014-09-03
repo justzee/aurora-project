@@ -41,9 +41,6 @@ public class InclusiveGateway extends AbstractGateway {
             waiting_path.setStatus(ProcessStatus.WAITING);
             waiting_path.setProceedCondition(createWaitingCondition());
             waiting_path.setIndex(pathIndex);
-            System.out.println("###### created waiting "+path);
-        }else{
-            System.out.println("###### Test waiting "+path);
         }
         addArrival(waiting_path, path.getFlowFrom());
         if(waiting_path.getProceedCondition().isMeet(waiting_path)){
