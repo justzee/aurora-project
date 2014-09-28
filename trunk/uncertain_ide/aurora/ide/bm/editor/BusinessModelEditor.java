@@ -19,9 +19,9 @@ import aurora.ide.preferencepages.CustomSettingPreferencePage;
 public class BusinessModelEditor extends BaseCompositeMapEditor {
 
     protected BusinessModelPage mainFormPage;
-//    private SQLExecutePage       sqlPage    = new SQLExecutePage(this);
+    private SQLExecutePage       sqlPage    = new SQLExecutePage(this);
     private ViewSource           viewSource = new ViewSource(this);
-//    int                          SQLPageIndex;
+    int                          SQLPageIndex;
     private int                  viewSourceIndex;
 
     public CompositeMapPage initMainViewerPage() {
@@ -32,7 +32,7 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
     protected void addPages() {
         try {
             super.addPages();
-//            SQLPageIndex = addPage(sqlPage);
+            SQLPageIndex = addPage(sqlPage);
             viewSourceIndex = addPage(viewSource, getEditorInput());
             this.setPageText(viewSourceIndex, LocaleMessage.getString("view.source"));
             setActivePage(CustomSettingPreferencePage.getBMEditorInitPageIndex());
@@ -43,28 +43,28 @@ public class BusinessModelEditor extends BaseCompositeMapEditor {
 
     public void editorDirtyStateChanged() {
         super.editorDirtyStateChanged();
-//        sqlPage.setModify(true);
+        sqlPage.setModify(true);
     }
 
     protected void pageChange(int newPageIndex) {
         int currentPage = getCurrentPage();
         super.pageChange(newPageIndex);
-//        if (newPageIndex == SQLPageIndex) {
-//            try {
-//            	String context = "";
-//            	if(mainFormPage.isModify())
-//            		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
-//            	else if(getTextPage().isModify())
-//            		context = getTextPage().getContent();
-//            	else if(mainViewerPage.isFormContendCreated())
-//            		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
-//            	else
-//            		context = getTextPage().getContent();
-//                sqlPage.refresh(context);
-//            } catch (ApplicationException e) {
-//                DialogUtil.showExceptionMessageBox(e);
-//            }
-//        } else 
+        if (newPageIndex == SQLPageIndex) {
+            try {
+            	String context = "";
+            	if(mainFormPage.isModify())
+            		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
+            	else if(getTextPage().isModify())
+            		context = getTextPage().getContent();
+            	else if(mainViewerPage.isFormContendCreated())
+            		context = CompositeMapUtil.getFullContent(mainFormPage.getData());
+            	else
+            		context = getTextPage().getContent();
+                sqlPage.refresh(context);
+            } catch (ApplicationException e) {
+                DialogUtil.showExceptionMessageBox(e);
+            }
+        } else 
         	if (newPageIndex == viewSourceIndex) {
             viewSource.refresh();
         } else if (currentPage == mainViewerIndex && newPageIndex == textPageIndex
