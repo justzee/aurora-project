@@ -28,6 +28,7 @@ import aurora.ide.project.AuroraProject;
 public class DBConnectionUtil {
 
 	final private static HashMap<IProject, FakeUncertainEngine> project_engine = new HashMap<IProject, FakeUncertainEngine>();
+	private static Connection connection = null;
 
 	static {
 
@@ -145,6 +146,14 @@ public class DBConnectionUtil {
 
 	public static Connection getDBConnection(IProject project,
 			String datasourceName) throws ApplicationException {
+		try {
+			if (connection != null && connection.isClosed() == false) {
+				return connection;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
 		FakeUncertainEngine fue = getFakeUncertainEngine(project);
 		final Runner runnable = new DBConnectionUtil().new Runner(fue,
 				datasourceName);
@@ -159,7 +168,7 @@ public class DBConnectionUtil {
 					+ AuroraConstant.DbConfigFileName + "是否配置正确.", e);
 		}
 		Connection conn = runnable.getConn();
-		return conn;
+		return connection = conn;
 	}
 
 	public static Connection getDBConnection(IProject project)
@@ -174,6 +183,13 @@ public class DBConnectionUtil {
 
 	public static Connection getDBConnectionSyncExec(IProject project,
 			String datasourceName) throws ApplicationException {
+		try {
+			if (connection != null && connection.isClosed() == false) {
+				return connection;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		FakeUncertainEngine fue = getFakeUncertainEngine(project);
 		final Runner runnable = new DBConnectionUtil().new Runner(fue,
 				datasourceName);
@@ -198,7 +214,7 @@ public class DBConnectionUtil {
 			throw new ApplicationException("获取数据库连接失败!请查看"
 					+ AuroraConstant.DbConfigFileName + "是否配置正确.");
 		}
-		return conn;
+		return connection = conn;
 	}
 
 	public static FakeUncertainEngine getFakeUncertainEngine(IProject project)
