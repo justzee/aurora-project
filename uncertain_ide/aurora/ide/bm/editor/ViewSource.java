@@ -1,10 +1,6 @@
 package aurora.ide.bm.editor;
 
-import java.util.ResourceBundle;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -13,8 +9,6 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.texteditor.ITextEditorActionConstants;
-import org.eclipse.ui.texteditor.MarkerRulerAction;
 
 import uncertain.composite.CompositeMap;
 import uncertain.ocm.OCManager;
@@ -27,11 +21,6 @@ import aurora.ide.editor.textpage.TextPage;
 import aurora.ide.editor.textpage.XMLConfiguration;
 import aurora.ide.editor.textpage.XmlErrorReconcile;
 import aurora.ide.editor.textpage.XmlReconcilingStrategy;
-import aurora.ide.editor.textpage.action.CFormatAction;
-import aurora.ide.editor.textpage.action.ExportFunctionSQLAction;
-import aurora.ide.editor.textpage.action.GetFileNameAction;
-import aurora.ide.editor.textpage.action.ToggleBlockCommentAction;
-import aurora.ide.editor.textpage.action.ToggleCommentAction;
 import aurora.ide.search.cache.CacheManager;
 
 public class ViewSource extends TextPage {
