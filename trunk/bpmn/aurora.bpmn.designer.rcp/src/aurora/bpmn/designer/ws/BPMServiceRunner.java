@@ -40,6 +40,10 @@ public class BPMServiceRunner {
 	public BPMServiceResponse list() {
 		return run(service.getServiceModel().getListServiceUrl());
 	}
+	
+	public BPMServiceResponse delete() {
+		return run(service.getServiceModel().getDeleteServiceUrl());
+	}
 
 	// <soapenv:Envelope
 	// xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -74,7 +78,7 @@ public class BPMServiceRunner {
 								define.setName(bpm.getString("name", ""));
 								define.setCurrent_version_flag(bpm.getString(
 										"current_version_flag", "Y"));
-								define.setDefines(bpm.getText());
+								define.setDefine(bpm.getText());
 								define.setDescription(bpm.getString(
 										"description", ""));
 								define.setProcess_code(bpm.getString(
