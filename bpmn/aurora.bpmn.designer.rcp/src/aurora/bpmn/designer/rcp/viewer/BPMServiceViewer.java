@@ -174,7 +174,7 @@ public class BPMServiceViewer extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
+		viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.BORDER);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -229,7 +229,10 @@ public class BPMServiceViewer extends ViewPart {
 			MessageDialog.openError(this.getSite().getShell(), "Error",
 					"Error opening view:" + e.getMessage());
 		}
-
+	}
+	
+	public TreeViewer getTreeViewer(){
+		return this.viewer;
 	}
 
 }

@@ -13,6 +13,7 @@ public class ServiceModel {
 	private String saveServiceUrl = Endpoints.getSaveService();
 	private String listServiceUrl = Endpoints.getListService();
 	private String fetchServiceUrl = Endpoints.getFetchService();
+	private String deleteServiceUrl = Endpoints.getDeleteService();
 
 	private boolean isLoaded;
 
@@ -79,13 +80,32 @@ public class ServiceModel {
 	}
 
 	public void addDefine(BPMNDefineModel define) {
-		if(define!=null){
+		if (define != null) {
 			define.setServiceModel(this);
 			this.defines.add(define);
 		}
 	}
-	
-	public void reload(){
+
+	public void reload() {
+		List<BPMNDefineModel> unSaveDefines = new ArrayList<BPMNDefineModel>();
+		for (BPMNDefineModel define : defines) {
+			if (define.getDefine_id() == null) {
+				unSaveDefines.add(define);
+			}
+		}
 		defines = new ArrayList<BPMNDefineModel>();
+		defines.addAll(unSaveDefines);
+	}
+
+	public String getDeleteServiceUrl() {
+		return deleteServiceUrl;
+	}
+
+	public void setDeleteServiceUrl(String deleteServiceUrl) {
+		this.deleteServiceUrl = deleteServiceUrl;
+	}
+
+	public void removeDefine(BPMNDefineModel define) {
+		defines.remove(define);
 	}
 }

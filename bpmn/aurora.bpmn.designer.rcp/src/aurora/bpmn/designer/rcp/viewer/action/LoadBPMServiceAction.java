@@ -19,8 +19,8 @@ public class LoadBPMServiceAction extends Action {
 	private ServiceModel model;
 	private TreeViewer viewer;
 
-	public LoadBPMServiceAction(ServiceModel model,TreeViewer viewer){
-		super("连接服务");
+	public LoadBPMServiceAction(String text,ServiceModel model,TreeViewer viewer){
+		super(text);
 		this.model = model;
 		this.viewer = viewer;
 	}

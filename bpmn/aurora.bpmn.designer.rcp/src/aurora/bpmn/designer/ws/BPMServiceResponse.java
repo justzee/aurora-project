@@ -10,6 +10,8 @@ public class BPMServiceResponse {
 	public static final String FETCH = "fetch";
 	public static final String SAVE = "save";
 	public static final String LIST = "list";
+	public static final String DELETE = "delete";
+	
 	private String status_msg;
 	private int status;
 	private int bpmSize;

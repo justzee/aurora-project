@@ -55,7 +55,7 @@ public class BPMNDefineModel {
 		return defines;
 	}
 
-	public void setDefines(String defines) {
+	public void setDefine(String defines) {
 		this.defines = defines;
 	}
 
@@ -75,4 +75,14 @@ public class BPMNDefineModel {
 		this.serviceModel = serviceModel;
 	}
 
+	public void copy(BPMNDefineModel define) {
+		this.current_version_flag = define.getCurrent_version_flag();
+		this.define_id = define.getDefine_id();
+		this.defines = define.getDefines();
+		this.description = define.getDescription();
+		this.name = define.getName();
+		this.process_code = define.getProcess_code();
+		this.process_version = define.getProcess_version();
+
+	}
 }

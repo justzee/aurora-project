@@ -4,16 +4,15 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.PartInitException;
 
-import aurora.bpmn.designer.rcp.action.TestBPMN;
+import aurora.bpmn.designer.rcp.viewer.action.CreateBPMDefineAction;
+import aurora.bpmn.designer.rcp.viewer.action.DeleteBPMDefineAction;
+import aurora.bpmn.designer.rcp.viewer.action.EditBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.LoadBPMServiceAction;
+import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.ServiceModel;
-import aurora.ide.designer.editor.AuroraBpmnEditor;
-import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
 public class BPMServiceViewMenu {
 
@@ -45,35 +44,40 @@ public class BPMServiceViewMenu {
 		menu.add(new Action("新建服务") {
 
 		});
+
 		Object data = viewer.getTree().getSelection()[0].getData();
-		LoadBPMServiceAction lsa = new LoadBPMServiceAction(
-				(ServiceModel) data, viewer);
+		if (data instanceof ServiceModel) {
+			LoadBPMServiceAction lsa = new LoadBPMServiceAction("连接服务",
+					(ServiceModel) data, viewer);
 
-		menu.add(lsa);
-		menu.add(new Action("新建工作流") {
+			menu.add(lsa);
+			CreateBPMDefineAction ca = new CreateBPMDefineAction("新建工作流",
+					(ServiceModel) data, bpmServiceViewer);
+			menu.add(ca);
+			LoadBPMServiceAction lsar = new LoadBPMServiceAction("刷新",
+					(ServiceModel) data, viewer);
 
-		});
-		menu.add(new Action("编辑工作流") {
-			public void run() {
+			menu.add(lsar);
+			menu.add(new Action("删除服务") {
 
-				try {
-					bpmServiceViewer
-							.getSite()
-							.getPage()
-							.openEditor(
-									new BPMServiceInputStreamEditorInput(
-											TestBPMN.getStream()),
-									AuroraBpmnEditor.ID, true);
-				} catch (PartInitException e) {
-					MessageDialog.openError(bpmServiceViewer.getSite()
-							.getShell(), "Error",
-							"Error opening view:" + e.getMessage());
-				}
+			});
+			menu.add(new Action("属性") {
 
-			}
-		});
-		menu.add(new Action("刷新") {
+			});
 
-		});
+		}
+
+		if (data instanceof BPMNDefineModel) {
+			EditBPMDefineAction ea = new EditBPMDefineAction("编辑工作流",
+					(BPMNDefineModel) data, bpmServiceViewer);
+			menu.add(ea);
+			DeleteBPMDefineAction del = new DeleteBPMDefineAction("删除工作流",
+					(BPMNDefineModel) data, bpmServiceViewer);
+			menu.add(del);
+			menu.add(new Action("属性") {
+
+			});
+		}
+
 	}
 }

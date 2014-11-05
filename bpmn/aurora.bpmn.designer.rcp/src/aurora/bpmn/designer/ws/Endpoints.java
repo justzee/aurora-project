@@ -9,6 +9,8 @@ public class Endpoints {
 			+ "modules/bpm/ws/query_bpm_define_list.svc";
 	public static final String FETCH_SERVICE = HOST
 			+ "modules/bpm/ws/fetch_bpm_define.svc";
+	public static final String DEL_SERVICE = HOST
+			+ "modules/bpm/ws/del_bpm_define.svc";
 
 	public static String getListService() {
 		return LIST_SERVICE;
@@ -20,6 +22,10 @@ public class Endpoints {
 
 	public static String getFetchService() {
 		return FETCH_SERVICE;
+	}
+
+	public static String getDeleteService() {
+		return DEL_SERVICE;
 	}
 
 }
