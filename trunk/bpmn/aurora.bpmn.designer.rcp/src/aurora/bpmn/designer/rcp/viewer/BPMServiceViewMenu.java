@@ -1,7 +1,5 @@
 package aurora.bpmn.designer.rcp.viewer;
 
-import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -12,6 +10,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.PartInitException;
 
 import aurora.bpmn.designer.rcp.action.TestBPMN;
+import aurora.bpmn.designer.rcp.viewer.action.LoadBPMServiceAction;
+import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
@@ -45,9 +45,11 @@ public class BPMServiceViewMenu {
 		menu.add(new Action("新建服务") {
 
 		});
-		menu.add(new Action("链接服务") {
+		Object data = viewer.getTree().getSelection()[0].getData();
+		LoadBPMServiceAction lsa = new LoadBPMServiceAction(
+				(ServiceModel) data, viewer);
 
-		});
+		menu.add(lsa);
 		menu.add(new Action("新建工作流") {
 
 		});
@@ -70,7 +72,7 @@ public class BPMServiceViewMenu {
 
 			}
 		});
-		menu.add(new Action("断开链接") {
+		menu.add(new Action("刷新") {
 
 		});
 	}
