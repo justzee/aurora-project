@@ -1,6 +1,7 @@
 package aurora.bpmn.designer.rcp.viewer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.core.runtime.SafeRunner;
@@ -14,6 +15,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +25,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import aurora.bpmn.designer.rcp.action.TestBPMN;
+import aurora.bpmn.designer.ws.BPMNDefineModel;
+import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
@@ -83,55 +87,6 @@ public class BPMServiceViewer extends ViewPart {
 		}
 	}
 
-	class ViewContentProvider implements IStructuredContentProvider,
-			ITreeContentProvider {
-
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
-
-		public void dispose() {
-		}
-
-		public Object[] getElements(Object parent) {
-			return getChildren(parent);
-		}
-
-		public Object getParent(Object child) {
-			if (child instanceof TreeObject) {
-				return ((TreeObject) child).getParent();
-			}
-			return null;
-		}
-
-		public Object[] getChildren(Object parent) {
-			if (parent instanceof TreeParent) {
-				return ((TreeParent) parent).getChildren();
-			}
-			return new Object[0];
-		}
-
-		public boolean hasChildren(Object parent) {
-			if (parent instanceof TreeParent)
-				return ((TreeParent) parent).hasChildren();
-			return false;
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider {
-
-		public String getText(Object obj) {
-			return obj.toString();
-		}
-
-		public Image getImage(Object obj) {
-			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if (obj instanceof TreeParent)
-				imageKey = ISharedImages.IMG_OBJ_FOLDER;
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(imageKey);
-		}
-	}
-
 	/**
 	 * We will set up a dummy model to initialize tree heararchy. In real code,
 	 * you will connect to a real model and expose its hierarchy.
@@ -155,6 +110,65 @@ public class BPMServiceViewer extends ViewPart {
 		return root;
 	}
 
+	class ViewContentProvider implements IStructuredContentProvider,
+			ITreeContentProvider {
+
+		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+		}
+
+		public void dispose() {
+		}
+
+		public Object[] getElements(Object parent) {
+			if (parent instanceof ServiceModel[])
+				return (ServiceModel[]) parent;
+			return null;
+		}
+
+		public Object getParent(Object child) {
+			if (child instanceof BPMNDefineModel) {
+				return ((BPMNDefineModel) child).getServiceModel();
+			}
+			return null;
+		}
+
+		public Object[] getChildren(Object parent) {
+			if (parent instanceof ServiceModel) {
+				List<BPMNDefineModel> defines = ((ServiceModel) parent)
+						.getDefines();
+				return defines.toArray(new BPMNDefineModel[defines.size()]);
+			}
+			return new Object[0];
+		}
+
+		public boolean hasChildren(Object parent) {
+			if (parent instanceof ServiceModel) {
+				return ((ServiceModel) parent).getDefines().isEmpty() == false;
+			}
+			return false;
+		}
+	}
+
+	class ViewLabelProvider extends LabelProvider {
+
+		public String getText(Object obj) {
+			if (obj instanceof ServiceModel)
+				return ((ServiceModel) obj).getServiceName();
+			else if (obj instanceof BPMNDefineModel) {
+				return ((BPMNDefineModel) obj).getName();
+			}
+			return obj.toString();
+		}
+
+		public Image getImage(Object obj) {
+			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
+			if (obj instanceof ServiceModel)
+				imageKey = ISharedImages.IMG_OBJ_FOLDER;
+			return PlatformUI.getWorkbench().getSharedImages()
+					.getImage(imageKey);
+		}
+	}
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -164,8 +178,9 @@ public class BPMServiceViewer extends ViewPart {
 				| SWT.BORDER);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setInput(createDummyModel());
-		BPMServiceViewMenu menu = new BPMServiceViewMenu(viewer,this);
+		viewer.setSorter(new ViewerSorter());
+		viewer.setInput(createServiceModel());
+		BPMServiceViewMenu menu = new BPMServiceViewMenu(viewer, this);
 		menu.initContextMenu();
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(final DoubleClickEvent event) {
@@ -179,6 +194,11 @@ public class BPMServiceViewer extends ViewPart {
 		});
 	}
 
+	private ServiceModel[] createServiceModel() {
+
+		return new ServiceModel[] { new ServiceModel() };
+	}
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -190,13 +210,13 @@ public class BPMServiceViewer extends ViewPart {
 		// open editor
 
 		try {
-			URI modelUri = URI
-					.createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/0");
-			URI diagramUri = URI
-					.createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/1");
-			Bpmn2DiagramEditorInput input = new Bpmn2DiagramEditorInput(
-					modelUri, diagramUri,
-					"org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType");
+			// URI modelUri = URI
+			// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/0");
+			// URI diagramUri = URI
+			// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/1");
+			// Bpmn2DiagramEditorInput input = new Bpmn2DiagramEditorInput(
+			// modelUri, diagramUri,
+			// "org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType");
 			// diagramComposite.setInput(new DiagramEditorInput(uri,
 			// "org.eclipse.graphiti.examples.tutorial.diagram.TutorialDiagramTypeProvider"));
 			this.getSite()
