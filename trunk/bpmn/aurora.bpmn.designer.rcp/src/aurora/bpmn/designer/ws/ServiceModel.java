@@ -4,23 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceModel {
+	
+	public static final String SERVICE_NAME = "service_name";
+	public static final String HOST = "host";
+	public static final String PSD = "psd";
+	public static final String USER_NAME = "user_name";
 	// Authorization
 	private String userName = "abc";
 	private String password = "cba";
 
 	private String serviceName = "HEC BPM Service";
+	
+	private String host;
 
-	private String saveServiceUrl = Endpoints.getSaveService();
-	private String listServiceUrl = Endpoints.getListService();
-	private String fetchServiceUrl = Endpoints.getFetchService();
-	private String deleteServiceUrl = Endpoints.getDeleteService();
+	private String saveServiceUrl ;
+	private String listServiceUrl ;
+	private String fetchServiceUrl ;
+	private String deleteServiceUrl ;
 
 	private boolean isLoaded;
 
 	private List<BPMNDefineModel> defines = new ArrayList<BPMNDefineModel>();
 
 	public String getSaveServiceUrl() {
-		return saveServiceUrl;
+		return Endpoints.getSaveService(host);
 	}
 
 	public void setSaveServiceUrl(String saveServiceUrl) {
@@ -28,7 +35,7 @@ public class ServiceModel {
 	}
 
 	public String getListServiceUrl() {
-		return listServiceUrl;
+		return  Endpoints.getListService(host);
 	}
 
 	public void setListServiceUrl(String listServiceUrl) {
@@ -36,7 +43,7 @@ public class ServiceModel {
 	}
 
 	public String getFetchServiceUrl() {
-		return fetchServiceUrl;
+		return  Endpoints.getFetchService(host);
 	}
 
 	public void setFetchServiceUrl(String fetchServiceUrl) {
@@ -98,7 +105,7 @@ public class ServiceModel {
 	}
 
 	public String getDeleteServiceUrl() {
-		return deleteServiceUrl;
+		return  Endpoints.getDeleteService(host);
 	}
 
 	public void setDeleteServiceUrl(String deleteServiceUrl) {
@@ -107,5 +114,13 @@ public class ServiceModel {
 
 	public void removeDefine(BPMNDefineModel define) {
 		defines.remove(define);
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 }

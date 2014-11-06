@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.UIJob;
@@ -15,6 +16,7 @@ import org.eclipse.ui.progress.UIJob;
 import aurora.bpmn.designer.rcp.action.TestBPMN;
 import aurora.bpmn.designer.rcp.util.InputStreamUtil;
 import aurora.bpmn.designer.rcp.viewer.BPMServiceViewer;
+import aurora.bpmn.designer.rcp.viewer.action.wizard.CreateBPMDefineWizard;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
@@ -35,24 +37,32 @@ public class CreateBPMDefineAction extends Action {
 	}
 
 	public void run() {
-		LoadJob loadJob = new LoadJob("新建BPM Define");
-		loadJob.schedule();
+		CreateBPMDefineWizard w = new CreateBPMDefineWizard(viewer.getSite()
+				.getShell());
+		int open = w.open();
+		if (WizardDialog.OK == open) {
+			LoadJob loadJob = new LoadJob("新建BPM Define", w.getModel());
+			loadJob.schedule();
+		}
 	}
 
 	private class LoadJob extends UIJob {
 
-		public LoadJob(String name) {
+		private BPMNDefineModel define;
+
+		public LoadJob(String name, BPMNDefineModel model) {
 			super(name);
+			this.define = model;
 		}
 
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
-			BPMNDefineModel define = new BPMNDefineModel();
-			define.setCurrent_version_flag("Y");
-			define.setDescription("XX");
-			define.setName("Hello");
-			define.setProcess_code("007");
-			define.setProcess_version("001");
+			// BPMNDefineModel define = new BPMNDefineModel();
+			// define.setCurrent_version_flag("Y");
+			// define.setDescription("XX");
+			// define.setName("Hello");
+			// define.setProcess_code("007");
+			// define.setProcess_version("001");
 			define.setDefine(InputStreamUtil.stream2String(TestBPMN.getStream()));
 
 			BPMService service = new BPMService(model);

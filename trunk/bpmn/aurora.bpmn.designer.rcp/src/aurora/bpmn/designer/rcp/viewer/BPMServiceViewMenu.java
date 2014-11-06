@@ -5,12 +5,15 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 
 import aurora.bpmn.designer.rcp.viewer.action.CreateBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.DeleteBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.EditBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.LoadBPMServiceAction;
+import aurora.bpmn.designer.rcp.viewer.action.wizard.CreateBPMServiceWizard;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.ServiceModel;
 
@@ -42,7 +45,18 @@ public class BPMServiceViewMenu {
 
 	private void fillContextMenu(IMenuManager menu) {
 		menu.add(new Action("新建服务") {
+			public void run() {
+				Shell shell = bpmServiceViewer.getSite().getShell();
 
+				CreateBPMServiceWizard wizard = new CreateBPMServiceWizard(shell);
+				int open = wizard.open();
+				if(open == WizardDialog.OK){
+					ServiceModel serviceModel = wizard.getServiceModel();
+					ViewerInput viewerInput = bpmServiceViewer.getViewerInput();
+					viewerInput.addService(serviceModel);
+					bpmServiceViewer.getTreeViewer().refresh(viewerInput);
+				}
+			}
 		});
 
 		Object data = viewer.getTree().getSelection()[0].getData();
