@@ -1,11 +1,8 @@
 package aurora.bpmn.designer.rcp.viewer;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -33,82 +30,7 @@ import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 public class BPMServiceViewer extends ViewPart {
 	public static final String ID = "aurora.bpmn.designer.rcp.viewer.BPMServiceViewer";
 	private TreeViewer viewer;
-
-	class TreeObject {
-		private String name;
-		private TreeParent parent;
-
-		public TreeObject(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setParent(TreeParent parent) {
-			this.parent = parent;
-		}
-
-		public TreeParent getParent() {
-			return parent;
-		}
-
-		public String toString() {
-			return getName();
-		}
-	}
-
-	class TreeParent extends TreeObject {
-		private ArrayList children;
-
-		public TreeParent(String name) {
-			super(name);
-			children = new ArrayList();
-		}
-
-		public void addChild(TreeObject child) {
-			children.add(child);
-			child.setParent(this);
-		}
-
-		public void removeChild(TreeObject child) {
-			children.remove(child);
-			child.setParent(null);
-		}
-
-		public TreeObject[] getChildren() {
-			return (TreeObject[]) children.toArray(new TreeObject[children
-					.size()]);
-		}
-
-		public boolean hasChildren() {
-			return children.size() > 0;
-		}
-	}
-
-	/**
-	 * We will set up a dummy model to initialize tree heararchy. In real code,
-	 * you will connect to a real model and expose its hierarchy.
-	 */
-	private TreeObject createDummyModel() {
-		TreeObject to1 = new TreeObject("报销申请");
-		TreeObject to2 = new TreeObject("休假申请");
-		TreeObject to3 = new TreeObject("预算申请");
-		TreeParent p1 = new TreeParent("HEC");
-		p1.addChild(to1);
-		p1.addChild(to2);
-		p1.addChild(to3);
-
-		TreeObject to4 = new TreeObject("某某申请");
-		TreeParent p2 = new TreeParent("SRM");
-		p2.addChild(to4);
-
-		TreeParent root = new TreeParent("");
-		root.addChild(p1);
-		root.addChild(p2);
-		return root;
-	}
+	private ViewerInput viewerInput;
 
 	class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
@@ -120,8 +42,11 @@ public class BPMServiceViewer extends ViewPart {
 		}
 
 		public Object[] getElements(Object parent) {
-			if (parent instanceof ServiceModel[])
-				return (ServiceModel[]) parent;
+			if (parent instanceof ViewerInput) {
+				List<ServiceModel> services = ((ViewerInput) parent)
+						.getServices();
+				return services.toArray(new ServiceModel[services.size()]);
+			}
 			return null;
 		}
 
@@ -129,6 +54,8 @@ public class BPMServiceViewer extends ViewPart {
 			if (child instanceof BPMNDefineModel) {
 				return ((BPMNDefineModel) child).getServiceModel();
 			}
+			if (child instanceof ServiceModel)
+				return viewerInput;
 			return null;
 		}
 
@@ -174,12 +101,13 @@ public class BPMServiceViewer extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL
-				| SWT.BORDER);
+		viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new ViewerSorter());
-		viewer.setInput(createServiceModel());
+		viewerInput = createViewerInput();
+		viewer.setInput(getViewerInput());
 		BPMServiceViewMenu menu = new BPMServiceViewMenu(viewer, this);
 		menu.initContextMenu();
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -194,9 +122,11 @@ public class BPMServiceViewer extends ViewPart {
 		});
 	}
 
-	private ServiceModel[] createServiceModel() {
-
-		return new ServiceModel[] { new ServiceModel() };
+	private ViewerInput createViewerInput() {
+		ViewerInput viewerInput = new ViewerInput();
+		// init
+		viewerInput.addService(new ServiceModel());
+		return viewerInput;
 	}
 
 	/**
@@ -230,9 +160,13 @@ public class BPMServiceViewer extends ViewPart {
 					"Error opening view:" + e.getMessage());
 		}
 	}
-	
-	public TreeViewer getTreeViewer(){
+
+	public TreeViewer getTreeViewer() {
 		return this.viewer;
+	}
+
+	public ViewerInput getViewerInput() {
+		return viewerInput;
 	}
 
 }
