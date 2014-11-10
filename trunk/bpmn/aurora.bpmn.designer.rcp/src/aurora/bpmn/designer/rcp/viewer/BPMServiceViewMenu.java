@@ -55,6 +55,7 @@ public class BPMServiceViewMenu {
 					ServiceModel serviceModel = wizard.getServiceModel();
 					ViewerInput viewerInput = bpmServiceViewer.getViewerInput();
 					viewerInput.addService(serviceModel);
+					BPMServiceViewerStore.saveViewerInput(viewerInput);
 					bpmServiceViewer.getTreeViewer().refresh(viewerInput);
 				}
 			}

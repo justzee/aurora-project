@@ -17,6 +17,7 @@ import aurora.bpmn.designer.rcp.action.TestBPMN;
 import aurora.bpmn.designer.rcp.util.InputStreamUtil;
 import aurora.bpmn.designer.rcp.viewer.BPMServiceViewer;
 import aurora.bpmn.designer.rcp.viewer.action.wizard.CreateBPMDefineWizard;
+import aurora.bpmn.designer.ws.BPMNDefineCategory;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
@@ -37,15 +38,33 @@ public class CreateBPMDefineAction extends Action {
 	}
 
 	public void run() {
-		CreateBPMDefineWizard w = new CreateBPMDefineWizard(viewer.getSite()
-				.getShell());
+
+		CreateBPMDefineWizard w = new CreateBPMDefineWizard(
+				model.getAllBPMNDefineCategory(), viewer.getSite().getShell());
 		int open = w.open();
+
 		if (WizardDialog.OK == open) {
 			LoadJob loadJob = new LoadJob("新建BPM Define", w.getModel());
 			loadJob.schedule();
 		}
 	}
 
+	// private class CategoryJob extends UIJob{
+	//
+	// public CategoryJob(String name) {
+	// super(name);
+	// }
+	//
+	// @Override
+	// public IStatus runInUIThread(IProgressMonitor monitor) {
+	// BPMService service = new BPMService(model);
+	// BPMServiceRunner runner = new BPMServiceRunner(service);
+	// BPMServiceResponse list = runner.listBPMCategory();
+	// List<BPMNDefineCategory> categorys = list.getCategorys();
+	// return Status.OK_STATUS;
+	// }
+	//
+	// }
 	private class LoadJob extends UIJob {
 
 		private BPMNDefineModel define;
@@ -74,9 +93,19 @@ public class CreateBPMDefineAction extends Action {
 				List<BPMNDefineModel> defines = list.getDefines();
 				BPMNDefineModel repDefine = defines.get(0);
 				if (repDefine != null) {
-					model.addDefine(repDefine);
-					viewer.getTreeViewer().refresh(model);
-					viewer.getTreeViewer().expandToLevel(model, 1);
+
+					BPMNDefineCategory bpmnDefineCategory = model
+							.getBPMNDefineCategory(repDefine.getCategory_id());
+					if (bpmnDefineCategory != null) {
+						bpmnDefineCategory.addDefine(repDefine);
+						viewer.getTreeViewer().refresh(bpmnDefineCategory);
+						viewer.getTreeViewer().expandToLevel(
+								bpmnDefineCategory, 1);
+					} else {
+						model.addDefine(repDefine);
+						viewer.getTreeViewer().refresh(model);
+						viewer.getTreeViewer().expandToLevel(model, 1);
+					}
 					try {
 						ByteArrayInputStream is = new ByteArrayInputStream(
 								repDefine.getDefines().getBytes("UTF-8"));

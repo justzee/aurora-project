@@ -124,10 +124,7 @@ public class BPMServiceViewer extends ViewPart {
 	}
 
 	private ViewerInput createViewerInput() {
-		ViewerInput viewerInput = new ViewerInput();
-		// init
-		// viewerInput.addService(new ServiceModel());
-		return viewerInput;
+		return BPMServiceViewerStore.loadViewerInput();
 	}
 
 	/**
