@@ -93,7 +93,7 @@ public class LoadBPMServiceAction extends Action {
 					model.addDefine(dm);
 				}
 			}
-
+			model.setAllBPMNDefineCategory(mcs);
 		}
 
 	}

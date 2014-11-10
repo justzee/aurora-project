@@ -1,7 +1,9 @@
 package aurora.bpmn.designer.ws;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import aurora.bpmn.designer.rcp.viewer.INode;
 import aurora.bpmn.designer.rcp.viewer.IParent;
@@ -29,6 +31,7 @@ public class ServiceModel implements IParent {
 
 	private List<BPMNDefineModel> defines = new ArrayList<BPMNDefineModel>();
 	private List<BPMNDefineCategory> categorys = new ArrayList<BPMNDefineCategory>();
+	private Map<String, BPMNDefineCategory> mcs;
 
 	public String getSaveServiceUrl() {
 		return Endpoints.getSaveService(host);
@@ -155,5 +158,17 @@ public class ServiceModel implements IParent {
 		nodes.addAll(getCategorys());
 		nodes.addAll(getDefines());
 		return nodes.toArray(new INode[nodes.size()]);
+	}
+
+	public void setAllBPMNDefineCategory(Map<String, BPMNDefineCategory> mcs) {
+		this.mcs = mcs;
+	}
+
+	public BPMNDefineCategory getBPMNDefineCategory(String id) {
+		return mcs.get(id);
+	}
+	
+	public Collection<BPMNDefineCategory> getAllBPMNDefineCategory(){
+		return mcs.values();
 	}
 }
