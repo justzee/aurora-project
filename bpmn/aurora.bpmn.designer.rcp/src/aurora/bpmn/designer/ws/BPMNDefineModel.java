@@ -1,6 +1,9 @@
 package aurora.bpmn.designer.ws;
 
-public class BPMNDefineModel {
+import aurora.bpmn.designer.rcp.viewer.INode;
+import aurora.bpmn.designer.rcp.viewer.IParent;
+
+public class BPMNDefineModel implements INode{
 
 	private String name;
 	private String define_id;
@@ -9,6 +12,15 @@ public class BPMNDefineModel {
 	private String current_version_flag;
 	private String defines;
 	private String description;
+
+	// 0,1,2
+	private String approve_flag;
+	// Y N
+	private String enable;
+	private String category_id;
+	
+	private IParent parent;
+
 	private ServiceModel serviceModel;
 
 	public String getName() {
@@ -84,5 +96,37 @@ public class BPMNDefineModel {
 		this.process_code = define.getProcess_code();
 		this.process_version = define.getProcess_version();
 
+	}
+
+	public String getApprove_flag() {
+		return approve_flag;
+	}
+
+	public void setApprove_flag(String approve_flag) {
+		this.approve_flag = approve_flag;
+	}
+
+	public String getEnable() {
+		return enable;
+	}
+
+	public void setEnable(String enable) {
+		this.enable = enable;
+	}
+
+	public String getCategory_id() {
+		return category_id;
+	}
+
+	public void setCategory_id(String category_id) {
+		this.category_id = category_id;
+	}
+
+	public IParent getParent() {
+		return parent;
+	}
+
+	public void setParent(IParent parent) {
+		this.parent = parent;
 	}
 }

@@ -50,7 +50,7 @@ public class DeleteBPMDefineAction extends Action {
 			BPMService service = new BPMService(serviceModel);
 			service.setBPMNDefineModel(model);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
-			BPMServiceResponse list = runner.delete();
+			BPMServiceResponse list = runner.deleteBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 				List<BPMNDefineModel> defines = list.getDefines();

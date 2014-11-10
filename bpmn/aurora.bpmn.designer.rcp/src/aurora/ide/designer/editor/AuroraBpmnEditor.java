@@ -34,7 +34,7 @@ public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 			BPMService service = new BPMService(define.getServiceModel());
 			service.setBPMNDefineModel(define);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
-			BPMServiceResponse list = runner.save();
+			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 

@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TreeItem;
 
 import aurora.bpmn.designer.rcp.viewer.action.CreateBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.DeleteBPMDefineAction;
@@ -59,7 +60,10 @@ public class BPMServiceViewMenu {
 			}
 		});
 
-		Object data = viewer.getTree().getSelection()[0].getData();
+		TreeItem[] selection = viewer.getTree().getSelection();
+		if(selection.length == 0)
+			return;
+		Object data = selection[0].getData();
 		if (data instanceof ServiceModel) {
 			LoadBPMServiceAction lsa = new LoadBPMServiceAction("连接服务",
 					(ServiceModel) data, viewer);

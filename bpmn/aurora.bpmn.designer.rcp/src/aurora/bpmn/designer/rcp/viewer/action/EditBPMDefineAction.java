@@ -48,7 +48,7 @@ public class EditBPMDefineAction extends Action {
 			BPMService service = new BPMService(model.getServiceModel());
 			service.setBPMNDefineModel(model);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
-			BPMServiceResponse list = runner.fetch();
+			BPMServiceResponse list = runner.fetchBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 				List<BPMNDefineModel> defines = list.getDefines();

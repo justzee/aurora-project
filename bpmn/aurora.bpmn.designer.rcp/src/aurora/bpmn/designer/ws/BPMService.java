@@ -82,6 +82,9 @@ public class BPMService {
 		addAttribute(request, "current_version_flag",
 				dm.getCurrent_version_flag(), null);
 		addAttribute(request, "defines", dm.getDefines(), null);
+		addAttribute(request, "category_id", dm.getCategory_id(), null);
+		addAttribute(request, "enable", dm.getEnable(), null);
+		addAttribute(request, "approve_flag", dm.getApprove_flag(), null);
 		return request;
 	}
 
