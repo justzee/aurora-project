@@ -13,11 +13,11 @@ import uncertain.composite.CompositeMap;
 public class BPMServiceRunner {
 	private BPMService service;
 
-	public BPMServiceRunner(BPMService service){
+	public BPMServiceRunner(BPMService service) {
 		this.service = service;
 	}
-	
-	public BPMServiceResponse save() {
+
+	public BPMServiceResponse saveBPM() {
 		return run(service.getServiceModel().getSaveServiceUrl());
 	}
 
@@ -33,15 +33,18 @@ public class BPMServiceRunner {
 		return response;
 	}
 
-	public BPMServiceResponse fetch() {
+	public BPMServiceResponse fetchBPM() {
 		return run(service.getServiceModel().getFetchServiceUrl());
 	}
 
-	public BPMServiceResponse list() {
+	public BPMServiceResponse listBPM() {
 		return run(service.getServiceModel().getListServiceUrl());
 	}
-	
-	public BPMServiceResponse delete() {
+	public BPMServiceResponse listBPMCategory() {
+		return run(service.getServiceModel().getlistBPMCategoryServiceUrl());
+	}
+
+	public BPMServiceResponse deleteBPM() {
 		return run(service.getServiceModel().getDeleteServiceUrl());
 	}
 
@@ -69,24 +72,8 @@ public class BPMServiceRunner {
 					List childsNotNull = queryResult.getChildsNotNull();
 					for (Object object : childsNotNull) {
 						if (object instanceof CompositeMap) {
-							CompositeMap bpm = (CompositeMap) object;
-							String name = bpm.getName();
-							if ("bpm".equals(name)) {
-								BPMNDefineModel define = new BPMNDefineModel();
-								define.setDefine_id(bpm.getString("define_id",
-										null));
-								define.setName(bpm.getString("name", ""));
-								define.setCurrent_version_flag(bpm.getString(
-										"current_version_flag", "Y"));
-								define.setDefine(bpm.getText());
-								define.setDescription(bpm.getString(
-										"description", ""));
-								define.setProcess_code(bpm.getString(
-										"process_code", ""));
-								define.setProcess_version(bpm.getString(
-										"process_version", ""));
-								resp.addDefine(define);
-							}
+							parseCategory(resp, (CompositeMap) object);
+							parseBPM(resp, (CompositeMap) object);
 						}
 					}
 				}
@@ -105,6 +92,38 @@ public class BPMServiceRunner {
 		}
 
 		return resp;
+	}
+
+	private void parseCategory(BPMServiceResponse resp, CompositeMap category) {
+
+		String name = category.getName();
+		if ("bpmCategory".equals(name)) {
+			BPMNDefineCategory c = new BPMNDefineCategory();
+			c.setId(category.getString("id", null));
+			c.setName(category.getString("name", null));
+			c.setParent_id(category.getString("parent_id", null));
+			resp.addCategory(c);
+		}
+
+	}
+
+	public void parseBPM(BPMServiceResponse resp, CompositeMap bpm) {
+		String name = bpm.getName();
+		if ("bpm".equals(name)) {
+			BPMNDefineModel define = new BPMNDefineModel();
+			define.setDefine_id(bpm.getString("define_id", null));
+			define.setName(bpm.getString("name", ""));
+			define.setCurrent_version_flag(bpm.getString(
+					"current_version_flag", "Y"));
+			define.setDefine(bpm.getText());
+			define.setDescription(bpm.getString("description", ""));
+			define.setProcess_code(bpm.getString("process_code", ""));
+			define.setProcess_version(bpm.getString("process_version", ""));
+			define.setCategory_id(bpm.getString("category_id", ""));
+			define.setEnable(bpm.getString("enable", ""));
+			define.setApprove_flag(bpm.getString("approve_flag", ""));
+			resp.addDefine(define);
+		}
 	}
 
 }

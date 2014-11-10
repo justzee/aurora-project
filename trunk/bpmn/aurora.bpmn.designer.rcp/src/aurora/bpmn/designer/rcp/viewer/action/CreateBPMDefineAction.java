@@ -68,13 +68,15 @@ public class CreateBPMDefineAction extends Action {
 			BPMService service = new BPMService(model);
 			service.setBPMNDefineModel(define);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
-			BPMServiceResponse list = runner.save();
+			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 				List<BPMNDefineModel> defines = list.getDefines();
 				BPMNDefineModel repDefine = defines.get(0);
 				if (repDefine != null) {
 					model.addDefine(repDefine);
+					viewer.getTreeViewer().refresh(model);
+					viewer.getTreeViewer().expandToLevel(model, 1);
 					try {
 						ByteArrayInputStream is = new ByteArrayInputStream(
 								repDefine.getDefines().getBytes("UTF-8"));
@@ -93,8 +95,6 @@ public class CreateBPMDefineAction extends Action {
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
-					viewer.getTreeViewer().refresh(model);
-					viewer.getTreeViewer().expandToLevel(model, 1);
 				}
 
 			} else {

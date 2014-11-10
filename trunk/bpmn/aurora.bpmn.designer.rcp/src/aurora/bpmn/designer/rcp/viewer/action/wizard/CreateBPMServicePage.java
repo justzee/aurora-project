@@ -99,7 +99,7 @@ public class CreateBPMServicePage extends UWizardPage {
 			BPMService service = new BPMService(model);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			// model
-			BPMServiceResponse list = runner.list();
+			BPMServiceResponse list = runner.listBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 				verifyPage(null);

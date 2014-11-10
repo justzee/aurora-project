@@ -22,6 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import aurora.bpmn.designer.rcp.action.TestBPMN;
+import aurora.bpmn.designer.ws.BPMNDefineCategory;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
@@ -51,26 +52,24 @@ public class BPMServiceViewer extends ViewPart {
 		}
 
 		public Object getParent(Object child) {
-			if (child instanceof BPMNDefineModel) {
-				return ((BPMNDefineModel) child).getServiceModel();
-			}
 			if (child instanceof ServiceModel)
 				return viewerInput;
+			if (child instanceof INode) {
+				return ((INode) child).getParent();
+			}
 			return null;
 		}
 
 		public Object[] getChildren(Object parent) {
-			if (parent instanceof ServiceModel) {
-				List<BPMNDefineModel> defines = ((ServiceModel) parent)
-						.getDefines();
-				return defines.toArray(new BPMNDefineModel[defines.size()]);
+			if (parent instanceof IParent) {
+				return ((IParent) parent).getChildren();
 			}
 			return new Object[0];
 		}
 
 		public boolean hasChildren(Object parent) {
-			if (parent instanceof ServiceModel) {
-				return ((ServiceModel) parent).getDefines().isEmpty() == false;
+			if (parent instanceof IParent) {
+				return ((IParent) parent).getChildren().length > 0;
 			}
 			return false;
 		}
@@ -83,6 +82,8 @@ public class BPMServiceViewer extends ViewPart {
 				return ((ServiceModel) obj).getServiceName();
 			else if (obj instanceof BPMNDefineModel) {
 				return ((BPMNDefineModel) obj).getName();
+			} else if (obj instanceof BPMNDefineCategory) {
+				return ((BPMNDefineCategory) obj).getName();
 			}
 			return obj.toString();
 		}
@@ -125,7 +126,7 @@ public class BPMServiceViewer extends ViewPart {
 	private ViewerInput createViewerInput() {
 		ViewerInput viewerInput = new ViewerInput();
 		// init
-		viewerInput.addService(new ServiceModel());
+		// viewerInput.addService(new ServiceModel());
 		return viewerInput;
 	}
 

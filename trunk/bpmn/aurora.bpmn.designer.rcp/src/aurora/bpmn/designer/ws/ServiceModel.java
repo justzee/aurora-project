@@ -3,8 +3,11 @@ package aurora.bpmn.designer.ws;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceModel {
-	
+import aurora.bpmn.designer.rcp.viewer.INode;
+import aurora.bpmn.designer.rcp.viewer.IParent;
+
+public class ServiceModel implements IParent {
+
 	public static final String SERVICE_NAME = "service_name";
 	public static final String HOST = "host";
 	public static final String PSD = "psd";
@@ -14,17 +17,18 @@ public class ServiceModel {
 	private String password = "cba";
 
 	private String serviceName = "HEC BPM Service";
-	
+
 	private String host;
 
-	private String saveServiceUrl ;
-	private String listServiceUrl ;
-	private String fetchServiceUrl ;
-	private String deleteServiceUrl ;
+	private String saveServiceUrl;
+	private String listServiceUrl;
+	private String fetchServiceUrl;
+	private String deleteServiceUrl;
 
 	private boolean isLoaded;
 
 	private List<BPMNDefineModel> defines = new ArrayList<BPMNDefineModel>();
+	private List<BPMNDefineCategory> categorys = new ArrayList<BPMNDefineCategory>();
 
 	public String getSaveServiceUrl() {
 		return Endpoints.getSaveService(host);
@@ -35,7 +39,7 @@ public class ServiceModel {
 	}
 
 	public String getListServiceUrl() {
-		return  Endpoints.getListService(host);
+		return Endpoints.getListService(host);
 	}
 
 	public void setListServiceUrl(String listServiceUrl) {
@@ -43,7 +47,7 @@ public class ServiceModel {
 	}
 
 	public String getFetchServiceUrl() {
-		return  Endpoints.getFetchService(host);
+		return Endpoints.getFetchService(host);
 	}
 
 	public void setFetchServiceUrl(String fetchServiceUrl) {
@@ -88,24 +92,27 @@ public class ServiceModel {
 
 	public void addDefine(BPMNDefineModel define) {
 		if (define != null) {
+			define.setParent(this);
 			define.setServiceModel(this);
 			this.defines.add(define);
 		}
 	}
 
 	public void reload() {
-		List<BPMNDefineModel> unSaveDefines = new ArrayList<BPMNDefineModel>();
-		for (BPMNDefineModel define : defines) {
-			if (define.getDefine_id() == null) {
-				unSaveDefines.add(define);
-			}
-		}
+		// List<BPMNDefineModel> unSaveDefines = new
+		// ArrayList<BPMNDefineModel>();
+		// for (BPMNDefineModel define : defines) {
+		// if (define.getDefine_id() == null) {
+		// unSaveDefines.add(define);
+		// }
+		// }
 		defines = new ArrayList<BPMNDefineModel>();
-		defines.addAll(unSaveDefines);
+		categorys = new ArrayList<BPMNDefineCategory>();
+		// defines.addAll(unSaveDefines);
 	}
 
 	public String getDeleteServiceUrl() {
-		return  Endpoints.getDeleteService(host);
+		return Endpoints.getDeleteService(host);
 	}
 
 	public void setDeleteServiceUrl(String deleteServiceUrl) {
@@ -122,5 +129,31 @@ public class ServiceModel {
 
 	public void setHost(String host) {
 		this.host = host;
+	}
+
+	public List<BPMNDefineCategory> getCategorys() {
+		return categorys;
+	}
+
+	public void addCategory(BPMNDefineCategory category) {
+		category.setParent(this);
+		category.setServiceModel(this);
+		this.categorys.add(category);
+	}
+
+	public String getlistBPMCategoryServiceUrl() {
+		return Endpoints.getlistBPMCategoryService(host);
+	}
+
+	@Override
+	public IParent getParent() {
+		return null;
+	}
+
+	public INode[] getChildren() {
+		List<INode> nodes = new ArrayList<INode>();
+		nodes.addAll(getCategorys());
+		nodes.addAll(getDefines());
+		return nodes.toArray(new INode[nodes.size()]);
 	}
 }

@@ -7,16 +7,18 @@ public class BPMServiceResponse {
 
 	public static final int fail = -1;
 	public static final int sucess = 1;
-	public static final String FETCH = "fetch";
-	public static final String SAVE = "save";
-	public static final String LIST = "list";
-	public static final String DELETE = "delete";
-	
+	public static final String FETCH_BPM = "fetchBPM";
+	public static final String SAVE_BPM = "saveBPM";
+	public static final String LIST_BPM = "listBPM";
+	public static final String DELETE_BPM = "deleteBPM";
+	public static final String LIST_CATEGORY = "listCategory";
+
 	private String status_msg;
 	private int status;
 	private int bpmSize;
 	private String serviceType;
 	private List<BPMNDefineModel> defines = new ArrayList<BPMNDefineModel>();
+	private List<BPMNDefineCategory> categorys = new ArrayList<BPMNDefineCategory>();
 
 	public BPMServiceResponse(int status, String status_msg) {
 		super();
@@ -62,6 +64,14 @@ public class BPMServiceResponse {
 
 	public void addDefine(BPMNDefineModel define) {
 		this.defines.add(define);
+	}
+
+	public List<BPMNDefineCategory> getCategorys() {
+		return categorys;
+	}
+
+	public void addCategory(BPMNDefineCategory category) {
+		this.categorys.add(category);
 	}
 
 }
