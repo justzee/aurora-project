@@ -38,7 +38,7 @@ public class AuroraBpmn2ToolBehaviorProvider extends Bpmn2ToolBehaviorProvider {
 		featureProvider = (BPMN2FeatureProvider) getFeatureProvider();
 		palette = new ArrayList<IPaletteCompartmentEntry>();
 		createDefaultpalette();
-		createTimeEvent();
+		// createTimeEvent();
 		return palette.toArray(new IPaletteCompartmentEntry[palette.size()]);
 	}
 
@@ -77,18 +77,18 @@ public class AuroraBpmn2ToolBehaviorProvider extends Bpmn2ToolBehaviorProvider {
 				AuroraBpmn2FeatureMap.TASKS, palette);
 		createDrawer(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label,
 				AuroraBpmn2FeatureMap.GATEWAYS, palette);
-		createDrawer(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label,
-				AuroraBpmn2FeatureMap.EVENTS, palette);
-		createDrawer(
-				Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label,
-				AuroraBpmn2FeatureMap.EVENT_DEFINITIONS, palette);
+		// createDrawer(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label,
+		// AuroraBpmn2FeatureMap.EVENTS, palette);
+		// createDrawer(
+		// Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label,
+		// AuroraBpmn2FeatureMap.EVENT_DEFINITIONS, palette);
 		// createDrawer(Messages.BPMNToolBehaviorProvider_Data_Items_Drawer_Label,
 		// Bpmn2FeatureMap.DATA, palette);
 		createDrawer(Messages.BPMNToolBehaviorProvider_SubProcess_Drawer_Label,
 				AuroraBpmn2FeatureMap.SUBPROCESS, palette);
-		// createDrawer(
-		// Messages.BPMNToolBehaviorProvider_GlobalTasks_Drawer_Label,
-		// Bpmn2FeatureMap.GLOBAL_TASKS, palette);
+		createDrawer(
+				Messages.BPMNToolBehaviorProvider_GlobalTasks_Drawer_Label,
+				AuroraBpmn2FeatureMap.GLOBAL_TASKS, palette);
 		// createDrawer(
 		// Messages.BPMNToolBehaviorProvider_Choreography_Drawer_Label,
 		// Bpmn2FeatureMap.CHOREOGRAPHY, palette);

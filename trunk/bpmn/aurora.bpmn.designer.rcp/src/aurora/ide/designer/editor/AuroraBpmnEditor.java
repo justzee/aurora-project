@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.progress.UIJob;
 
 import aurora.bpmn.designer.rcp.util.InputStreamUtil;
@@ -40,6 +41,10 @@ public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 
 			} else {
 				// TODO
+				String serviceL = define.getServiceModel().getSaveServiceUrl();
+				MessageDialog.openError(this.getDisplay().getActiveShell(),
+						"Error", "服务" + serviceL + "未响应");
+				return Status.CANCEL_STATUS;
 			}
 			return Status.OK_STATUS;
 		}

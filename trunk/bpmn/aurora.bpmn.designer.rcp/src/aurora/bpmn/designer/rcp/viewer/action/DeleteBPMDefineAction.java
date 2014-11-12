@@ -5,8 +5,8 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.progress.UIJob;
 
 import aurora.bpmn.designer.rcp.viewer.BPMServiceViewer;
@@ -16,14 +16,12 @@ import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
 import aurora.bpmn.designer.ws.ServiceModel;
 
-public class DeleteBPMDefineAction extends Action {
+public class DeleteBPMDefineAction extends ViewAction {
 	private BPMNDefineModel model;
 	private BPMServiceViewer viewer;
 
-	public DeleteBPMDefineAction(String text, BPMNDefineModel model,
-			BPMServiceViewer viewer) {
-		super(text);
-		this.model = model;
+	public DeleteBPMDefineAction(String text, BPMServiceViewer viewer) {
+		this.setText(text);
 		this.viewer = viewer;
 	}
 
@@ -62,11 +60,26 @@ public class DeleteBPMDefineAction extends Action {
 				}
 
 			} else {
-				// TODO
+				String serviceL = model.getServiceModel().getDeleteServiceUrl();
+				MessageDialog.openError(this.getDisplay().getActiveShell(),
+						"Error", "服务" + serviceL + "未响应");
+				return Status.CANCEL_STATUS;
 			}
 			return Status.OK_STATUS;
 
 		}
+	}
+
+	@Override
+	public void init() {
+		TreeItem[] selection = viewer.getTreeViewer().getTree().getSelection();
+		if (selection.length > 0) {
+			Object data = selection[0].getData();
+			if (data instanceof BPMNDefineModel) {
+				this.model = (BPMNDefineModel) data;
+			}
+		}
+		this.setVisible(model instanceof BPMNDefineModel);
 	}
 
 }

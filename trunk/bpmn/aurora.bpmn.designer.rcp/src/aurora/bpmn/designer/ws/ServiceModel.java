@@ -2,6 +2,7 @@ package aurora.bpmn.designer.ws;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class ServiceModel implements IParent {
 	private List<BPMNDefineModel> defines = new ArrayList<BPMNDefineModel>();
 	private List<BPMNDefineCategory> categorys = new ArrayList<BPMNDefineCategory>();
 	private Map<String, BPMNDefineCategory> mcs;
+	private Map<String, BPMNDefineModelVER> vers = new HashMap<String, BPMNDefineModelVER>();
 
 	public String getSaveServiceUrl() {
 		return Endpoints.getSaveService(host);
@@ -95,6 +97,19 @@ public class ServiceModel implements IParent {
 
 	public void addDefine(BPMNDefineModel define) {
 		if (define != null) {
+			String process_code = define.getProcess_code();
+			BPMNDefineModelVER ver = vers.get(process_code);
+			if (ver == null) {
+				ver = new BPMNDefineModelVER();
+				// ver.setCategory_id(this.id);
+				ver.setParent(this);
+				ver.setProcess_code(process_code);
+				ver.setName(define.getName());
+				ver.setServiceModel(this);
+				vers.put(process_code, ver);
+			}
+			ver.addBPMNDefineModel(define);
+
 			define.setParent(this);
 			define.setServiceModel(this);
 			this.defines.add(define);
@@ -111,6 +126,7 @@ public class ServiceModel implements IParent {
 		// }
 		defines = new ArrayList<BPMNDefineModel>();
 		categorys = new ArrayList<BPMNDefineCategory>();
+		vers = new HashMap<String, BPMNDefineModelVER>();
 		// defines.addAll(unSaveDefines);
 	}
 
@@ -156,7 +172,7 @@ public class ServiceModel implements IParent {
 	public INode[] getChildren() {
 		List<INode> nodes = new ArrayList<INode>();
 		nodes.addAll(getCategorys());
-		nodes.addAll(getDefines());
+		nodes.addAll(vers.values());
 		return nodes.toArray(new INode[nodes.size()]);
 	}
 
@@ -167,8 +183,8 @@ public class ServiceModel implements IParent {
 	public BPMNDefineCategory getBPMNDefineCategory(String id) {
 		return mcs.get(id);
 	}
-	
-	public Collection<BPMNDefineCategory> getAllBPMNDefineCategory(){
+
+	public Collection<BPMNDefineCategory> getAllBPMNDefineCategory() {
 		return mcs.values();
 	}
 }
