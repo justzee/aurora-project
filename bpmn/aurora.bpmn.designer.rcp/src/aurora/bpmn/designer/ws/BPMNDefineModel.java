@@ -3,22 +3,22 @@ package aurora.bpmn.designer.ws;
 import aurora.bpmn.designer.rcp.viewer.INode;
 import aurora.bpmn.designer.rcp.viewer.IParent;
 
-public class BPMNDefineModel implements INode{
+public class BPMNDefineModel implements INode {
 
-	private String name;
+	private String name = "";
 	private String define_id;
-	private String process_code;
-	private String process_version;
+	private String process_code = "";
+	private String process_version = "";
 	private String current_version_flag;
 	private String defines;
-	private String description;
+	private String description = "";
 
 	// 0,1,2
-	private String approve_flag;
+	private String approve_flag = "0";
 	// Y N
-	private String enable;
+	private String enable = "N";
 	private String category_id;
-	
+
 	private IParent parent;
 
 	private ServiceModel serviceModel;

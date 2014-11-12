@@ -22,8 +22,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import aurora.bpmn.designer.rcp.action.TestBPMN;
+import aurora.bpmn.designer.rcp.viewer.action.EditBPMDefineAction;
 import aurora.bpmn.designer.ws.BPMNDefineCategory;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
+import aurora.bpmn.designer.ws.BPMNDefineModelVER;
 import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
@@ -84,6 +86,8 @@ public class BPMServiceViewer extends ViewPart {
 				return ((BPMNDefineModel) obj).getName();
 			} else if (obj instanceof BPMNDefineCategory) {
 				return ((BPMNDefineCategory) obj).getName();
+			} else if (obj instanceof BPMNDefineModelVER) {
+				return ((BPMNDefineModelVER) obj).getName();
 			}
 			return obj.toString();
 		}
@@ -91,6 +95,10 @@ public class BPMServiceViewer extends ViewPart {
 		public Image getImage(Object obj) {
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 			if (obj instanceof ServiceModel)
+				imageKey = ISharedImages.IMG_OBJ_FOLDER;
+			if (obj instanceof BPMNDefineCategory)
+				imageKey = ISharedImages.IMG_OBJ_FOLDER;
+			if (obj instanceof BPMNDefineModelVER)
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			return PlatformUI.getWorkbench().getSharedImages()
 					.getImage(imageKey);
@@ -136,7 +144,10 @@ public class BPMServiceViewer extends ViewPart {
 
 	private void handleDoubleClick(DoubleClickEvent event) {
 		// open editor
-
+//		EditBPMDefineAction editBPMDefineAction = new EditBPMDefineAction("编辑工作流", this);
+//		if(editBPMDefineAction.isVisible()){
+//			editBPMDefineAction.run();
+//		}
 		try {
 			// URI modelUri = URI
 			// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/0");

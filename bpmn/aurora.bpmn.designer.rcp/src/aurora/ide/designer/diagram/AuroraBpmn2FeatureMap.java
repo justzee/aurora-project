@@ -133,11 +133,11 @@ public class AuroraBpmn2FeatureMap {
 
 		features = new ArrayList<Class>();
 		features.add(CallActivity.class);
-		features.add(GlobalTask.class);
-		features.add(GlobalBusinessRuleTask.class);
-		features.add(GlobalManualTask.class);
-		features.add(GlobalScriptTask.class);
-		features.add(GlobalUserTask.class);
+//		features.add(GlobalTask.class);
+//		features.add(GlobalBusinessRuleTask.class);
+//		features.add(GlobalManualTask.class);
+//		features.add(GlobalScriptTask.class);
+//		features.add(GlobalUserTask.class);
 		GLOBAL_TASKS = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();

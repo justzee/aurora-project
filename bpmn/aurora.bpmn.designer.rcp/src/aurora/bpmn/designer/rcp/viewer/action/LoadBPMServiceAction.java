@@ -7,8 +7,9 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.progress.UIJob;
 
 import aurora.bpmn.designer.ws.BPMNDefineCategory;
@@ -18,14 +19,12 @@ import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
 import aurora.bpmn.designer.ws.ServiceModel;
 
-public class LoadBPMServiceAction extends Action {
+public class LoadBPMServiceAction extends ViewAction {
 	private ServiceModel model;
 	private TreeViewer viewer;
 
-	public LoadBPMServiceAction(String text, ServiceModel model,
-			TreeViewer viewer) {
-		super(text);
-		this.model = model;
+	public LoadBPMServiceAction(String text, TreeViewer viewer) {
+		this.setText(text);
 		this.viewer = viewer;
 	}
 
@@ -49,18 +48,21 @@ public class LoadBPMServiceAction extends Action {
 			BPMServiceResponse list = runner.listBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
-
+				model.reload();
 				merge(listBPMCategory, list);
 
-				List<BPMNDefineModel> defines = list.getDefines();
-				model.reload();
-				for (BPMNDefineModel bpmnDefineModel : defines) {
-					model.addDefine(bpmnDefineModel);
-				}
+				// List<BPMNDefineModel> defines = list.getDefines();
+				// model.reload();
+				// for (BPMNDefineModel bpmnDefineModel : defines) {
+				// model.addDefine(bpmnDefineModel);
+				// }
 				viewer.refresh(model);
 				viewer.expandToLevel(model, 1);
 			} else {
-				// TODO
+				String serviceL = model.getListServiceUrl();
+				MessageDialog.openError(this.getDisplay().getActiveShell(),
+						"Error", "服务" + serviceL + "未响应");
+				return Status.CANCEL_STATUS;
 			}
 			return Status.OK_STATUS;
 		}
@@ -96,6 +98,18 @@ public class LoadBPMServiceAction extends Action {
 			model.setAllBPMNDefineCategory(mcs);
 		}
 
+	}
+
+	@Override
+	public void init() {
+		TreeItem[] selection = viewer.getTree().getSelection();
+		if (selection.length > 0) {
+			Object data = selection[0].getData();
+			if (data instanceof ServiceModel) {
+				this.model = (ServiceModel) data;
+			}
+		}
+		this.setVisible(model instanceof ServiceModel);
 	}
 
 }

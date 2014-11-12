@@ -1,7 +1,10 @@
 package aurora.bpmn.designer.ws;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import aurora.bpmn.designer.rcp.viewer.INode;
 import aurora.bpmn.designer.rcp.viewer.IParent;
@@ -11,6 +14,9 @@ public class BPMNDefineCategory implements IParent {
 	private List<BPMNDefineCategory> categorys = new ArrayList<BPMNDefineCategory>();
 	private List<BPMNDefineModel> defines = new ArrayList<BPMNDefineModel>();
 
+	private Map<String,BPMNDefineModelVER> vers  = new HashMap<String,BPMNDefineModelVER>();
+	
+	
 	private IParent parent;
 
 	private ServiceModel serviceModel;
@@ -34,6 +40,22 @@ public class BPMNDefineCategory implements IParent {
 	}
 
 	public void addDefine(BPMNDefineModel define) {
+		
+		String process_code = define.getProcess_code();
+		
+		BPMNDefineModelVER ver = vers.get(process_code);
+		if(ver == null){
+			ver = new BPMNDefineModelVER();
+			ver.setCategory_id(this.id);
+			ver.setParent(this);
+			ver.setProcess_code(process_code);
+			ver.setName(define.getName());
+			ver.setServiceModel(serviceModel);
+			vers.put(process_code, ver);
+		}
+		ver.addBPMNDefineModel(define);
+		
+		
 		define.setParent(this);
 		define.setServiceModel(serviceModel);
 		this.defines.add(define);
@@ -87,8 +109,12 @@ public class BPMNDefineCategory implements IParent {
 	public INode[] getChildren() {
 		List<INode> nodes = new ArrayList<INode>();
 		nodes.addAll(getCategorys());
-		nodes.addAll(getDefines());
+		nodes.addAll(getDefineNodes());
 		return nodes.toArray(new INode[nodes.size()]);
+	}
+
+	private Collection<? extends INode> getDefineNodes() {
+		return vers.values();
 	}
 
 }

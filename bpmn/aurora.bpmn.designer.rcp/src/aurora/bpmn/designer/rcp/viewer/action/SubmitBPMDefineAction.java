@@ -21,11 +21,11 @@ import aurora.bpmn.designer.ws.BPMServiceRunner;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
-public class EditBPMDefineAction extends ViewAction {
+public class SubmitBPMDefineAction extends ViewAction {
 	private BPMNDefineModel model;
 	private BPMServiceViewer viewer;
 
-	public EditBPMDefineAction(String text, BPMServiceViewer viewer) {
+	public SubmitBPMDefineAction(String text, BPMServiceViewer viewer) {
 		this.setText(text);
 		this.viewer = viewer;
 	}
@@ -56,10 +56,10 @@ public class EditBPMDefineAction extends ViewAction {
 					model.copy(define);
 				}
 			} else {
-				String serviceL = model.getServiceModel().getFetchServiceUrl();
-				MessageDialog.openError(this.getDisplay().getActiveShell(),
-						"Error", "服务" + serviceL + "未响应");
-				return Status.CANCEL_STATUS;
+//				String serviceL = model.getListServiceUrl();
+//				MessageDialog.openError(this.getDisplay().getActiveShell(),
+//						"Error", "服务" + serviceL + "未响应");
+//				return Status.CANCEL_STATUS;
 			}
 
 			try {

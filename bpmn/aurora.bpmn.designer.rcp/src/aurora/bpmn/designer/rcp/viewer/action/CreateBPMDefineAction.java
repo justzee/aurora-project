@@ -8,7 +8,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.UIJob;
@@ -26,14 +28,13 @@ import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
-public class CreateBPMDefineAction extends Action {
+public class CreateBPMDefineAction extends ViewAction {
 	private ServiceModel model;
 	private BPMServiceViewer viewer;
 
-	public CreateBPMDefineAction(String text, ServiceModel model,
+	public CreateBPMDefineAction(String text,
 			BPMServiceViewer viewer) {
-		super(text);
-		this.model = model;
+		this.setText(text);
 		this.viewer = viewer;
 	}
 
@@ -127,11 +128,28 @@ public class CreateBPMDefineAction extends Action {
 				}
 
 			} else {
-				// TODO
+				String serviceL = model.getSaveServiceUrl();
+				MessageDialog.openError(this.getDisplay().getActiveShell(),
+						"Error", "服务" + serviceL + "未响应");
+				return Status.CANCEL_STATUS;
 			}
 			return Status.OK_STATUS;
 
 		}
+	}
+
+	@Override
+	public void init() {
+
+		TreeItem[] selection = viewer.getTreeViewer().getTree().getSelection();
+		if (selection.length > 0) {
+			Object data = selection[0].getData();
+			if (data instanceof ServiceModel) {
+				this.model = (ServiceModel) data;
+			}
+		}
+		this.setVisible(model instanceof ServiceModel);
+			
 	}
 
 }
