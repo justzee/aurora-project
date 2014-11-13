@@ -2,12 +2,13 @@ package aurora.bpmn.designer.rcp.viewer.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.TreeItem;
@@ -24,6 +25,7 @@ import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
@@ -32,8 +34,7 @@ public class CreateBPMDefineAction extends ViewAction {
 	private ServiceModel model;
 	private BPMServiceViewer viewer;
 
-	public CreateBPMDefineAction(String text,
-			BPMServiceViewer viewer) {
+	public CreateBPMDefineAction(String text, BPMServiceViewer viewer) {
 		this.setText(text);
 		this.viewer = viewer;
 	}
@@ -86,7 +87,9 @@ public class CreateBPMDefineAction extends ViewAction {
 			define.setDefine(InputStreamUtil.stream2String(TestBPMN.getStream()));
 
 			BPMService service = new BPMService(model);
-			service.setBPMNDefineModel(define);
+			service.setServiceType(Endpoints.T_CREATE_BPM);
+			// service.setBPMNDefineModel(define);
+			service.setParas(makeParas(define));
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
@@ -128,7 +131,8 @@ public class CreateBPMDefineAction extends ViewAction {
 				}
 
 			} else {
-				String serviceL = model.getSaveServiceUrl();
+				String serviceL = Endpoints.getSaveService(model.getHost(), "")
+						.getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -149,7 +153,43 @@ public class CreateBPMDefineAction extends ViewAction {
 			}
 		}
 		this.setVisible(model instanceof ServiceModel);
-			
+
 	}
 
+	private Map<String, String> makeParas(BPMNDefineModel define) {
+
+		Map<String, String> paras = new HashMap<String, String>();
+		paras.put("approve_flag", define.getApprove_flag());
+		paras.put("category_id", define.getCategory_id());
+
+		paras.put("current_version_flag", define.getCurrent_version_flag());
+
+		paras.put("defines", define.getDefines());
+
+		paras.put("description", define.getDescription());
+
+		paras.put("enable", define.getEnable());
+
+		paras.put("name", define.getName());
+
+		paras.put("process_code", define.getProcess_code());
+
+		paras.put("process_version", define.getProcess_version());
+		return paras;
+
+		// if (dm == null)
+		// return request;
+		// addAttribute(request, "define_id", dm.getDefine_id(), null);
+		// addAttribute(request, "name", dm.getName(), null);
+		// addAttribute(request, "process_code", dm.getProcess_code(), null);
+		// addAttribute(request, "process_version", dm.getProcess_version(),
+		// null);
+		// addAttribute(request, "description", dm.getDescription(), null);
+		// addAttribute(request, "current_version_flag",
+		// dm.getCurrent_version_flag(), null);
+		// addAttribute(request, "defines", dm.getDefines(), null);
+		// addAttribute(request, "category_id", dm.getCategory_id(), null);
+		// addAttribute(request, "enable", dm.getEnable(), null);
+		// addAttribute(request, "approve_flag", dm.getApprove_flag(), null);
+	}
 }

@@ -2,6 +2,7 @@ package aurora.bpmn.designer.ws;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
@@ -12,16 +13,21 @@ import uncertain.composite.CompositeMap;
 
 public class BPMServiceRunner {
 	private BPMService service;
+	private String host;
+	private String serviceType;
 
+	
 	public BPMServiceRunner(BPMService service) {
 		this.service = service;
+		this.host = service.getServiceModel().getHost();
+		serviceType = service.getServiceType();
 	}
 
 	public BPMServiceResponse saveBPM() {
-		return run(service.getServiceModel().getSaveServiceUrl());
+		return run(Endpoints.getSaveService(host, serviceType));
 	}
 
-	public BPMServiceResponse run(String endpoint) {
+	private BPMServiceResponse run(Endpoints endpoint) {
 		BPMServiceResponse response = null;
 		try {
 			OMElement send = service.send(endpoint);
@@ -31,21 +37,37 @@ public class BPMServiceRunner {
 					e.getMessage());
 		}
 		return response;
+
 	}
 
+	// public BPMServiceResponse run(String endpoint) {
+	// BPMServiceResponse response = null;
+	// try {
+	// OMElement send = service.send(endpoint);
+	// response = this.parseResponse(send);
+	// } catch (AxisFault e) {
+	// return new BPMServiceResponse(BPMServiceResponse.fail,
+	// e.getMessage());
+	// }
+	// return response;
+	// }
+
 	public BPMServiceResponse fetchBPM() {
-		return run(service.getServiceModel().getFetchServiceUrl());
+		return run(Endpoints.getFetchService(host, serviceType));
 	}
 
 	public BPMServiceResponse listBPM() {
-		return run(service.getServiceModel().getListServiceUrl());
+		return run(Endpoints.getListService(host, serviceType));
+
 	}
+
 	public BPMServiceResponse listBPMCategory() {
-		return run(service.getServiceModel().getlistBPMCategoryServiceUrl());
+
+		return run(Endpoints.getlistBPMCategoryService(host, serviceType));
 	}
 
 	public BPMServiceResponse deleteBPM() {
-		return run(service.getServiceModel().getDeleteServiceUrl());
+		return run(Endpoints.getDeleteService(host, serviceType));
 	}
 
 	// <soapenv:Envelope

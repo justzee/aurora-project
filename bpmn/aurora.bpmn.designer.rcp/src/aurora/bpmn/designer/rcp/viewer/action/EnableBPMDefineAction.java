@@ -46,8 +46,10 @@ public class EnableBPMDefineAction extends ViewAction {
 
 			BPMService service = new BPMService(model.getServiceModel());
 			service.setBPMNDefineModel(model);
+			String oen = model.getEnable();
+			model.setEnable("Y".equalsIgnoreCase(oen)?"N":"Y");
 			BPMServiceRunner runner = new BPMServiceRunner(service);
-			BPMServiceResponse list = runner.fetchBPM();
+			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 				List<BPMNDefineModel> defines = list.getDefines();
@@ -56,10 +58,11 @@ public class EnableBPMDefineAction extends ViewAction {
 					model.copy(define);
 				}
 			} else {
-//				String serviceL = model.getListServiceUrl();
-//				MessageDialog.openError(this.getDisplay().getActiveShell(),
-//						"Error", "服务" + serviceL + "未响应");
-//				return Status.CANCEL_STATUS;
+				model.setEnable(oen);
+				String serviceL = model.getServiceModel().getSaveServiceUrl();
+				MessageDialog.openError(this.getDisplay().getActiveShell(),
+						"Error", "服务" + serviceL + "未响应");
+				return Status.CANCEL_STATUS;
 			}
 
 			try {
@@ -92,7 +95,9 @@ public class EnableBPMDefineAction extends ViewAction {
 				this.model = (BPMNDefineModel) data;
 			}
 		}
-		this.setVisible(model instanceof BPMNDefineModel);
+		this.setVisible(model instanceof BPMNDefineModel
+				&& "2".equals(model.getApprove_flag())
+				&& "n".equalsIgnoreCase(model.getCurrent_version_flag()));
 	}
 
 }

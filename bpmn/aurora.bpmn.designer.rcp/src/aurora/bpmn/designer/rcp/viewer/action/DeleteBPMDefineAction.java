@@ -1,6 +1,8 @@
 package aurora.bpmn.designer.rcp.viewer.action;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -10,10 +12,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.progress.UIJob;
 
 import aurora.bpmn.designer.rcp.viewer.BPMServiceViewer;
+import aurora.bpmn.designer.rcp.viewer.IParent;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 import aurora.bpmn.designer.ws.ServiceModel;
 
 public class DeleteBPMDefineAction extends ViewAction {
@@ -46,7 +50,9 @@ public class DeleteBPMDefineAction extends ViewAction {
 
 			ServiceModel serviceModel = model.getServiceModel();
 			BPMService service = new BPMService(serviceModel);
-			service.setBPMNDefineModel(model);
+//			service.setBPMNDefineModel(model);
+			service.setParas(makeParas(model));
+			service.setServiceType(Endpoints.T_DELETE_BPM);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			BPMServiceResponse list = runner.deleteBPM();
 			int status = list.getStatus();
@@ -54,13 +60,15 @@ public class DeleteBPMDefineAction extends ViewAction {
 				List<BPMNDefineModel> defines = list.getDefines();
 				BPMNDefineModel repDefine = defines.get(0);
 				if (repDefine != null) {
-					serviceModel.removeDefine(model);
-					viewer.getTreeViewer().refresh(serviceModel);
-					viewer.getTreeViewer().expandToLevel(serviceModel, 1);
+					IParent parent = model.getParent();
+					parent.removeChild(model);
+					viewer.getTreeViewer().refresh(parent);
+					viewer.getTreeViewer().expandToLevel(parent, 1);
 				}
 
 			} else {
-				String serviceL = model.getServiceModel().getDeleteServiceUrl();
+				String serviceL = Endpoints.getDeleteService(serviceModel.getHost(), "")
+						.getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -79,7 +87,23 @@ public class DeleteBPMDefineAction extends ViewAction {
 				this.model = (BPMNDefineModel) data;
 			}
 		}
-		this.setVisible(model instanceof BPMNDefineModel);
-	}
+		// if (model instanceof BPMNDefineModel) {
+		// // model.getApprove_flag()==0
+		// // model.getCurrent_version_flag()==n
+		// // model.getEnable()==n
+		// }
 
+		this.setVisible(model instanceof BPMNDefineModel
+				&& "0".equals(model.getApprove_flag())
+				&& "n".equalsIgnoreCase(model.getCurrent_version_flag())
+				&& "n".equalsIgnoreCase(model.getEnable()));
+	}
+	private Map<String, String> makeParas(BPMNDefineModel define) {
+
+		Map<String, String> paras = new HashMap<String, String>();
+		paras.put("define_id", define.getDefine_id());
+		
+		return paras;
+
+	}
 }

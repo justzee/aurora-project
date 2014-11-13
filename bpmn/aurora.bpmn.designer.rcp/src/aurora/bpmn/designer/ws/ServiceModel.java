@@ -23,10 +23,10 @@ public class ServiceModel implements IParent {
 
 	private String host;
 
-	private String saveServiceUrl;
-	private String listServiceUrl;
-	private String fetchServiceUrl;
-	private String deleteServiceUrl;
+//	private String saveServiceUrl;
+//	private String listServiceUrl;
+//	private String fetchServiceUrl;
+//	private String deleteServiceUrl;
 
 	private boolean isLoaded;
 
@@ -35,29 +35,29 @@ public class ServiceModel implements IParent {
 	private Map<String, BPMNDefineCategory> mcs;
 	private Map<String, BPMNDefineModelVER> vers = new HashMap<String, BPMNDefineModelVER>();
 
-	public String getSaveServiceUrl() {
-		return Endpoints.getSaveService(host);
-	}
-
-	public void setSaveServiceUrl(String saveServiceUrl) {
-		this.saveServiceUrl = saveServiceUrl;
-	}
-
-	public String getListServiceUrl() {
-		return Endpoints.getListService(host);
-	}
-
-	public void setListServiceUrl(String listServiceUrl) {
-		this.listServiceUrl = listServiceUrl;
-	}
-
-	public String getFetchServiceUrl() {
-		return Endpoints.getFetchService(host);
-	}
-
-	public void setFetchServiceUrl(String fetchServiceUrl) {
-		this.fetchServiceUrl = fetchServiceUrl;
-	}
+//	public String getSaveServiceUrl() {
+//		return Endpoints.getSaveService(host);
+//	}
+//
+//	public void setSaveServiceUrl(String saveServiceUrl) {
+//		this.saveServiceUrl = saveServiceUrl;
+//	}
+//
+//	public String getListServiceUrl() {
+//		return Endpoints.getListService(host);
+//	}
+//
+//	public void setListServiceUrl(String listServiceUrl) {
+//		this.listServiceUrl = listServiceUrl;
+//	}
+//
+//	public String getFetchServiceUrl() {
+//		return Endpoints.getFetchService(host);
+//	}
+//
+//	public void setFetchServiceUrl(String fetchServiceUrl) {
+//		this.fetchServiceUrl = fetchServiceUrl;
+//	}
 
 	public String getUserName() {
 		return userName;
@@ -130,17 +130,13 @@ public class ServiceModel implements IParent {
 		// defines.addAll(unSaveDefines);
 	}
 
-	public String getDeleteServiceUrl() {
-		return Endpoints.getDeleteService(host);
-	}
-
-	public void setDeleteServiceUrl(String deleteServiceUrl) {
-		this.deleteServiceUrl = deleteServiceUrl;
-	}
-
-	public void removeDefine(BPMNDefineModel define) {
-		defines.remove(define);
-	}
+//	public String getDeleteServiceUrl() {
+//		return Endpoints.getDeleteService(host);
+//	}
+//
+//	public void setDeleteServiceUrl(String deleteServiceUrl) {
+//		this.deleteServiceUrl = deleteServiceUrl;
+//	}
 
 	public String getHost() {
 		return host;
@@ -160,9 +156,9 @@ public class ServiceModel implements IParent {
 		this.categorys.add(category);
 	}
 
-	public String getlistBPMCategoryServiceUrl() {
-		return Endpoints.getlistBPMCategoryService(host);
-	}
+//	public String getlistBPMCategoryServiceUrl() {
+//		return Endpoints.getlistBPMCategoryService(host);
+//	}
 
 	@Override
 	public IParent getParent() {
@@ -186,5 +182,46 @@ public class ServiceModel implements IParent {
 
 	public Collection<BPMNDefineCategory> getAllBPMNDefineCategory() {
 		return mcs.values();
+	}
+
+	@Override
+	public void removeChild(INode node) {
+		if (node instanceof BPMNDefineCategory) {
+			this.removeDefineCategory((BPMNDefineCategory) node);
+		}
+		if (node instanceof BPMNDefineModel) {
+			this.removeDefine((BPMNDefineModel) node);
+		}
+	}
+
+	public void removeDefineCategory(BPMNDefineCategory c) {
+		this.categorys.remove(c);
+	}
+
+	@Override
+	public void addChild(INode node) {
+		if (node instanceof BPMNDefineCategory) {
+			this.addCategory((BPMNDefineCategory) node);
+		}
+		if (node instanceof BPMNDefineModel) {
+			this.addDefine((BPMNDefineModel) node);
+		}
+	}
+
+	public void removeDefine(BPMNDefineModel define) {
+
+		if (define != null) {
+			String process_code = define.getProcess_code();
+			BPMNDefineModelVER ver = vers.get(process_code);
+			if (ver != null) {
+
+				ver.removeDefine(define);
+				if (ver.getChildren().length == 0) {
+					vers.remove(process_code);
+				}
+			}
+			this.defines.remove(define);
+		}
+		defines.remove(define);
 	}
 }

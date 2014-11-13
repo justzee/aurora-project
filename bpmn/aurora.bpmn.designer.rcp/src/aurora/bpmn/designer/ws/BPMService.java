@@ -1,7 +1,10 @@
 package aurora.bpmn.designer.ws;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -18,7 +21,11 @@ import org.apache.commons.httpclient.Header;
 
 public class BPMService {
 	private ServiceModel sm;
-	private BPMNDefineModel bdm;
+//	private BPMNDefineModel bdm;
+	
+	private Map<String,String> paras = new HashMap<String,String>();
+
+	private String serviceType;
 
 	public BPMService(ServiceModel sm) {
 		super();
@@ -29,30 +36,27 @@ public class BPMService {
 		return sm;
 	}
 
-	public BPMNDefineModel getBPMNDefineModel() {
-		return bdm;
-	}
-	
-	public void setBPMNDefineModel(BPMNDefineModel define){
-		this.bdm = define;
-	}
+//	public BPMNDefineModel getBPMNDefineModel() {
+//		return bdm;
+//	}
+//
+//	public void setBPMNDefineModel(BPMNDefineModel define) {
+//		this.bdm = define;
+//	}
 
-	
-
-	public OMElement send(String url)
-			throws AxisFault {
-		ServiceClient client = new ServiceClient();
-		Options options = new Options();
-		options.setTo(new EndpointReference(url));// 修正为实际工程的URL
-		// addAuthorization("linjinxiao", "ok", options);
-		addAuthorization(sm.getUserName(), sm.getPassword(), options);
-
-		client.setOptions(options);
-		OMElement request = makeRequest(bdm);
-		OMElement response = client.sendReceive(request);
-		return response;
-		// System.out.println("response:" + response.toString());
-	}
+//	public OMElement send(String url) throws AxisFault {
+//		ServiceClient client = new ServiceClient();
+//		Options options = new Options();
+//		options.setTo(new EndpointReference(url));// 修正为实际工程的URL
+//		// addAuthorization("linjinxiao", "ok", options);
+//		addAuthorization(sm.getUserName(), sm.getPassword(), options);
+//
+//		client.setOptions(options);
+//		OMElement request = makeRequest(bdm);
+//		OMElement response = client.sendReceive(request);
+//		return response;
+//		// System.out.println("response:" + response.toString());
+//	}
 
 	protected void addAuthorization(String userName, String password,
 			Options options) {
@@ -69,22 +73,17 @@ public class BPMService {
 				list);
 	}
 
-	protected OMElement makeRequest(BPMNDefineModel dm) {
+	protected OMElement makeRequest( String type) {
 		OMFactory factory = OMAbstractFactory.getOMFactory();
 		OMElement request = factory.createOMElement(new QName("", "parameter"));
-		if (dm == null)
-			return request;
-		addAttribute(request, "define_id", dm.getDefine_id(), null);
-		addAttribute(request, "name", dm.getName(), null);
-		addAttribute(request, "process_code", dm.getProcess_code(), null);
-		addAttribute(request, "process_version", dm.getProcess_version(), null);
-		addAttribute(request, "description", dm.getDescription(), null);
-		addAttribute(request, "current_version_flag",
-				dm.getCurrent_version_flag(), null);
-		addAttribute(request, "defines", dm.getDefines(), null);
-		addAttribute(request, "category_id", dm.getCategory_id(), null);
-		addAttribute(request, "enable", dm.getEnable(), null);
-		addAttribute(request, "approve_flag", dm.getApprove_flag(), null);
+		addAttribute(request, "serviceType", type, null);
+
+		if(this.paras!=null &&paras.size()>0){
+			Set<String> keySet = paras.keySet();
+			for (String key : keySet) {
+				addAttribute(request, key, paras.get(key), null);
+			}
+		}
 		return request;
 	}
 
@@ -92,6 +91,38 @@ public class BPMService {
 			OMNamespace omns) {
 		if (value != null)
 			request.addAttribute(att, value, null);
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public OMElement send(Endpoints endpoint) throws AxisFault {
+
+		ServiceClient client = new ServiceClient();
+		Options options = new Options();
+		options.setTo(new EndpointReference(endpoint.getUrl()));// 修正为实际工程的URL
+		// addAuthorization("linjinxiao", "ok", options);
+		addAuthorization(sm.getUserName(), sm.getPassword(), options);
+
+		client.setOptions(options);
+		OMElement request = makeRequest(endpoint.getType());
+		OMElement response = client.sendReceive(request);
+		return response;
+		// System.out.println("response:" + response.toString());
+
+	}
+
+	public Map<String,String> getParas() {
+		return paras;
+	}
+
+	public void setParas(Map<String,String> paras) {
+		this.paras = paras;
 	}
 
 }

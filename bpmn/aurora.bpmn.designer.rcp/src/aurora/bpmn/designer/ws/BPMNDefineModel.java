@@ -9,7 +9,8 @@ public class BPMNDefineModel implements INode {
 	private String define_id;
 	private String process_code = "";
 	private String process_version = "";
-	private String current_version_flag;
+	//Y N
+	private String current_version_flag ="N";
 	private String defines;
 	private String description = "";
 

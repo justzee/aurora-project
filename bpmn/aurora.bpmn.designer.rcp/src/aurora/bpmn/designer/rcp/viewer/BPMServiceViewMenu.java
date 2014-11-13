@@ -13,6 +13,7 @@ import aurora.bpmn.designer.rcp.viewer.action.BPMDefinePropertyAction;
 import aurora.bpmn.designer.rcp.viewer.action.CreateBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.CreateServiceAction;
 import aurora.bpmn.designer.rcp.viewer.action.DelServiceAction;
+import aurora.bpmn.designer.rcp.viewer.action.DeleteBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.EditBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.EnableBPMDefineAction;
 import aurora.bpmn.designer.rcp.viewer.action.LoadBPMServiceAction;
@@ -117,19 +118,13 @@ public class BPMServiceViewMenu {
 		actions.add(new CreateBPMDefineAction("新建工作流", bpmServiceViewer));
 		//TODO
 		actions.add(new CreateBPMDefineAction("创建新版本", bpmServiceViewer));
-		//TODO
 		actions.add(new DelServiceAction("删除服务", viewer));
 		
 		actions.add(new EditBPMDefineAction("编辑工作流", bpmServiceViewer));
-		//TODO
-		actions.add(new SubmitBPMDefineAction("删除工作流", bpmServiceViewer));
-		//TODO
-		actions.add(new EnableBPMDefineAction("提交工作流", bpmServiceViewer));
-		//TODO
-		actions.add(new EditBPMDefineAction("生效/失效工作流", bpmServiceViewer));
-		//TODO
+		actions.add(new DeleteBPMDefineAction("删除工作流", bpmServiceViewer));
+		actions.add(new SubmitBPMDefineAction("提交工作流", bpmServiceViewer));
+		actions.add(new EnableBPMDefineAction("生效/失效工作流", bpmServiceViewer));
 		actions.add(new ServicePropertyAction("属性", viewer));
-		//TODO
 		actions.add(new BPMDefinePropertyAction("属性", bpmServiceViewer));
 
 		return actions;

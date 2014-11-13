@@ -7,12 +7,7 @@ public class BPMServiceResponse {
 
 	public static final int fail = -1;
 	public static final int sucess = 1;
-	public static final String FETCH_BPM = "fetchBPM";
-	public static final String SAVE_BPM = "saveBPM";
-	public static final String LIST_BPM = "listBPM";
-	public static final String DELETE_BPM = "deleteBPM";
-	public static final String LIST_CATEGORY = "listCategory";
-
+	
 	private String status_msg;
 	private int status;
 	private int bpmSize;
