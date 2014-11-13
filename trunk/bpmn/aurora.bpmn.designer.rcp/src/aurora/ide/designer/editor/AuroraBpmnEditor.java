@@ -1,5 +1,8 @@
 package aurora.ide.designer.editor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2MultiPageEditor;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -13,6 +16,7 @@ import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 
 public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 
@@ -33,15 +37,19 @@ public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			BPMService service = new BPMService(define.getServiceModel());
-			service.setBPMNDefineModel(define);
+			// service.setBPMNDefineModel(define);
+			service.setServiceType(Endpoints.T_UPDATE_BPM);
+			service.setParas(makeParas(define));
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
 
 			} else {
-				// TODO
-				String serviceL = define.getServiceModel().getSaveServiceUrl();
+				// String serviceL =
+				// define.getServiceModel().getSaveServiceUrl();
+				String serviceL = Endpoints.getListService(
+						define.getServiceModel().getHost(), "").getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -49,13 +57,19 @@ public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 			return Status.OK_STATUS;
 		}
 
+		private Map<String, String> makeParas(BPMNDefineModel define) {
+			Map<String, String> paras = new HashMap<String, String>();
+			paras.put("defines", define.getDefines());
+			paras.put("define_id", define.getDefine_id());
+			return paras;
+		}
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		super.doSave(monitor);
 		Resource resource = this.getDesignEditor().getResource();
-//		System.out.println(resource.getURI());
+		// System.out.println(resource.getURI());
 		define.setDefine(InputStreamUtil.resource2String(resource));
 		new SaveJob("保存到Service").schedule();
 		// update to service
