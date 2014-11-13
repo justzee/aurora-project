@@ -46,7 +46,7 @@ public class CreateBPMServicePage extends UWizardPage {
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		c.setLayout(layout);
-		this.createInputField(c, "User Name", ServiceModel.HOST);
+		this.createInputField(c, "User Name", ServiceModel.USER_NAME);
 
 		Label n = new Label(c, SWT.NONE);
 		n.setText("Password");

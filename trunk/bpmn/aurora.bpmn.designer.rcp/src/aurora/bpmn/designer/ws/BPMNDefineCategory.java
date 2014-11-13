@@ -77,9 +77,9 @@ public class BPMNDefineCategory implements IParent {
 		this.serviceModel = serviceModel;
 	}
 
-	public void removeDefine(BPMNDefineModel define) {
-		defines.remove(define);
-	}
+//	public void removeDefine(BPMNDefineModel define) {
+//		defines.remove(define);
+//	}
 
 	public String getName() {
 		return name;
@@ -115,6 +115,47 @@ public class BPMNDefineCategory implements IParent {
 
 	private Collection<? extends INode> getDefineNodes() {
 		return vers.values();
+	}
+
+	@Override
+	public void removeChild(INode node) {
+		if (node instanceof BPMNDefineCategory) {
+			this.removeDefineCategory((BPMNDefineCategory) node);
+		}
+		if (node instanceof BPMNDefineModel) {
+			this.removeDefine((BPMNDefineModel) node);
+		}
+	}
+
+	public void removeDefineCategory(BPMNDefineCategory c) {
+		this.categorys.remove(c);
+	}
+
+	@Override
+	public void addChild(INode node) {
+		if (node instanceof BPMNDefineCategory) {
+			this.addCategory((BPMNDefineCategory) node);
+		}
+		if (node instanceof BPMNDefineModel) {
+			this.addDefine((BPMNDefineModel) node);
+		}
+	}
+
+	public void removeDefine(BPMNDefineModel define) {
+
+		if (define != null) {
+			String process_code = define.getProcess_code();
+			BPMNDefineModelVER ver = vers.get(process_code);
+			if (ver != null) {
+
+				ver.removeDefine(define);
+				if (ver.getChildren().length == 0) {
+					vers.remove(process_code);
+				}
+			}
+			this.defines.remove(define);
+		}
+		defines.remove(define);
 	}
 
 }

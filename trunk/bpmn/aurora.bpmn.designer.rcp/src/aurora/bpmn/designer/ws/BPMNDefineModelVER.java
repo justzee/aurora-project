@@ -69,4 +69,23 @@ public class BPMNDefineModelVER implements IParent {
 
 	}
 
+	@Override
+	public void removeChild(INode node) {
+		if (node instanceof BPMNDefineModel) {
+			this.removeDefine((BPMNDefineModel) node);
+		}
+	
+	}
+
+	public void removeDefine(BPMNDefineModel define) {
+		defines.remove(define);
+	}
+
+	@Override
+	public void addChild(INode node) {
+		if (node instanceof BPMNDefineModel) {
+			this.addBPMNDefineModel((BPMNDefineModel) node);
+		}
+	}
+
 }

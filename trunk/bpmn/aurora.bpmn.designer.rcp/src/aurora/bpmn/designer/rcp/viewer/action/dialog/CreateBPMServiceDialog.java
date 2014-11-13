@@ -2,6 +2,7 @@ package aurora.bpmn.designer.rcp.viewer.action.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -12,6 +13,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import aurora.ide.swt.util.WidgetFactory;
 
 public class CreateBPMServiceDialog extends Dialog {
 	private Text errorMessageText;
@@ -42,7 +45,22 @@ public class CreateBPMServiceDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		Composite c = (Composite) super.createDialogArea(parent);
+		Composite cc = (Composite) super.createDialogArea(parent);
+		
+		
+		Composite c2 = new Composite(cc,SWT.NONE);
+		c2.setLayout(new GridLayout());
+		c2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		Label l = new Label(c2,SWT.NONE);
+		l.setText("Service Model");
+		l.setFont(JFaceResources.getBannerFont());
+		WidgetFactory.hSeparator(c2);
+		
+		
+		Composite c = new Composite(cc,SWT.NONE);
+		c.setLayout(new GridLayout());
+		c.setLayoutData(new GridData(GridData.FILL_BOTH));
 		GridLayout ly = (GridLayout) c.getLayout();
 		ly.numColumns = 2;
 
@@ -84,7 +102,7 @@ public class CreateBPMServiceDialog extends Dialog {
 	@Override
 	protected Point getInitialSize() {
 		Point initialSize = super.getInitialSize();
-		return  initialSize;
+		return  new Point(600,550);
 	}
 
 	public void setErrorMessage(String errorMessage) {
