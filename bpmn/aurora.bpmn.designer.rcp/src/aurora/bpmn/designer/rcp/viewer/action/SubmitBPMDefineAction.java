@@ -1,6 +1,8 @@
 package aurora.bpmn.designer.rcp.viewer.action;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -14,6 +16,7 @@ import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 
 public class SubmitBPMDefineAction extends ViewAction {
 	private BPMNDefineModel model;
@@ -41,7 +44,8 @@ public class SubmitBPMDefineAction extends ViewAction {
 			BPMService service = new BPMService(model.getServiceModel());
 			String oaf = model.getApprove_flag();
 			model.setApprove_flag("1");
-			service.setBPMNDefineModel(model);
+			service.setServiceType(Endpoints.T_SUBMIT_BPM);
+			service.setParas(makeParas(model));
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
@@ -53,7 +57,8 @@ public class SubmitBPMDefineAction extends ViewAction {
 				}
 			} else {
 				model.setApprove_flag(oaf);
-				String serviceL = model.getServiceModel().getSaveServiceUrl();
+				String serviceL = Endpoints.getListService(
+						model.getServiceModel().getHost(), "").getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -76,6 +81,13 @@ public class SubmitBPMDefineAction extends ViewAction {
 				&& "0".equals(model.getApprove_flag())
 				&& "n".equalsIgnoreCase(model.getCurrent_version_flag())
 				&& "n".equalsIgnoreCase(model.getEnable()));
+	}
+
+	private Map<String, String> makeParas(BPMNDefineModel define) {
+		Map<String, String> paras = new HashMap<String, String>();
+		paras.put("approve_flag", define.getApprove_flag());
+		paras.put("define_id", define.getDefine_id());
+		return paras;
 	}
 
 }

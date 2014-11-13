@@ -2,7 +2,9 @@ package aurora.bpmn.designer.rcp.viewer.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +20,7 @@ import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
@@ -45,7 +48,9 @@ public class EditBPMDefineAction extends ViewAction {
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 
 			BPMService service = new BPMService(model.getServiceModel());
-			service.setBPMNDefineModel(model);
+//			service.setBPMNDefineModel(model);
+			service.setServiceType(Endpoints.T_FETCH_BPM);
+			service.setParas(makeParas(model));
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			BPMServiceResponse list = runner.fetchBPM();
 			int status = list.getStatus();
@@ -56,7 +61,8 @@ public class EditBPMDefineAction extends ViewAction {
 					model.copy(define);
 				}
 			} else {
-				String serviceL = model.getServiceModel().getFetchServiceUrl();
+				String serviceL = Endpoints.getFetchService(model.getServiceModel().getHost(), "")
+						.getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -93,6 +99,14 @@ public class EditBPMDefineAction extends ViewAction {
 			}
 		}
 		this.setVisible(model instanceof BPMNDefineModel);
+	}
+	private Map<String, String> makeParas(BPMNDefineModel define) {
+
+		Map<String, String> paras = new HashMap<String, String>();
+		paras.put("define_id", define.getDefine_id());
+		
+		return paras;
+
 	}
 
 }

@@ -2,7 +2,9 @@ package aurora.bpmn.designer.rcp.viewer.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +20,7 @@ import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
@@ -45,9 +48,11 @@ public class EnableBPMDefineAction extends ViewAction {
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 
 			BPMService service = new BPMService(model.getServiceModel());
-			service.setBPMNDefineModel(model);
+			// service.setBPMNDefineModel(model);
 			String oen = model.getEnable();
-			model.setEnable("Y".equalsIgnoreCase(oen)?"N":"Y");
+			model.setEnable("Y".equalsIgnoreCase(oen) ? "N" : "Y");
+			service.setServiceType(Endpoints.T_ENABLE_BPM);
+			service.setParas(makeParas(model));
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			BPMServiceResponse list = runner.saveBPM();
 			int status = list.getStatus();
@@ -59,7 +64,8 @@ public class EnableBPMDefineAction extends ViewAction {
 				}
 			} else {
 				model.setEnable(oen);
-				String serviceL = model.getServiceModel().getSaveServiceUrl();
+				String serviceL = Endpoints.getListService(
+						model.getServiceModel().getHost(), "").getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -98,6 +104,13 @@ public class EnableBPMDefineAction extends ViewAction {
 		this.setVisible(model instanceof BPMNDefineModel
 				&& "2".equals(model.getApprove_flag())
 				&& "n".equalsIgnoreCase(model.getCurrent_version_flag()));
+	}
+
+	private Map<String, String> makeParas(BPMNDefineModel define) {
+		Map<String, String> paras = new HashMap<String, String>();
+		paras.put("enable", define.getEnable());
+		paras.put("define_id", define.getDefine_id());
+		return paras;
 	}
 
 }

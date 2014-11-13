@@ -17,6 +17,7 @@ import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
+import aurora.bpmn.designer.ws.Endpoints;
 import aurora.bpmn.designer.ws.ServiceModel;
 
 public class LoadBPMServiceAction extends ViewAction {
@@ -44,7 +45,18 @@ public class LoadBPMServiceAction extends ViewAction {
 			BPMService service = new BPMService(model);
 			BPMServiceRunner runner = new BPMServiceRunner(service);
 			// model
+			service.setServiceType(Endpoints.T_LIST_CATEGORY);
 			BPMServiceResponse listBPMCategory = runner.listBPMCategory();
+			if (listBPMCategory.getStatus() == BPMServiceResponse.fail) {
+
+				String serviceL = Endpoints.getlistBPMCategoryService(
+						model.getHost(), "").getUrl();
+				MessageDialog.openError(this.getDisplay().getActiveShell(),
+						"Error", "服务" + serviceL + "未响应");
+				return Status.CANCEL_STATUS;
+
+			}
+			service.setServiceType(Endpoints.T_LIST_BPM);
 			BPMServiceResponse list = runner.listBPM();
 			int status = list.getStatus();
 			if (BPMServiceResponse.sucess == status) {
@@ -59,7 +71,8 @@ public class LoadBPMServiceAction extends ViewAction {
 				viewer.refresh(model);
 				viewer.expandToLevel(model, 1);
 			} else {
-				String serviceL = model.getListServiceUrl();
+				String serviceL = Endpoints.getListService(model.getHost(), "")
+						.getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
