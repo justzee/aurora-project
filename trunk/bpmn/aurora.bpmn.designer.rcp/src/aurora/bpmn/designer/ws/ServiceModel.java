@@ -110,7 +110,7 @@ public class ServiceModel implements IParent {
 			}
 			ver.addBPMNDefineModel(define);
 
-			define.setParent(this);
+//			define.setParent(this);
 			define.setServiceModel(this);
 			this.defines.add(define);
 		}
