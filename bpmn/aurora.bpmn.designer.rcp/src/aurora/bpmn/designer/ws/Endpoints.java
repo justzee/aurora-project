@@ -38,7 +38,7 @@ public class Endpoints {
 		this.url = url;
 	}
 
-	public Endpoints(String type, String url) {
+	public Endpoints(String url, String type) {
 		super();
 		this.type = type;
 		this.url = url;
