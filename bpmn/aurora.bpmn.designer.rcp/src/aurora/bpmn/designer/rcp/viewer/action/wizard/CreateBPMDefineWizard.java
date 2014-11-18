@@ -1,13 +1,11 @@
 package aurora.bpmn.designer.rcp.viewer.action.wizard;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 
 import aurora.bpmn.designer.ws.BPMNDefineCategory;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
-import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.swt.util.PageModel;
 import aurora.ide.swt.util.UWizard;
 
@@ -16,6 +14,8 @@ public class CreateBPMDefineWizard extends UWizard {
 	private BPMNDefineModel model;
 	private CreateBPMDefinePage page;
 	private Collection<BPMNDefineCategory> categorys;
+	private BPMNDefineModel copyFrom;
+	private boolean isNewVer;
 
 	public CreateBPMDefineWizard(Shell shell) {
 		super(shell);
@@ -31,6 +31,8 @@ public class CreateBPMDefineWizard extends UWizard {
 	public void addPages() {
 		page = new CreateBPMDefinePage("CreateBPMDefinePage");
 		page.setCategorys(categorys);
+		if (isNewVer)
+			page.setNewVer(copyFrom);
 		this.addPage(page);
 	}
 
@@ -57,4 +59,10 @@ public class CreateBPMDefineWizard extends UWizard {
 	public void setModel(BPMNDefineModel model) {
 		this.model = model;
 	}
+
+	public void setNewVer(BPMNDefineModel copyFrom) {
+		this.isNewVer = true;
+		this.copyFrom = copyFrom;
+	}
+
 }

@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import aurora.bpmn.designer.ws.BPMNDefineCategory;
+import aurora.bpmn.designer.ws.BPMNDefineModel;
+import aurora.ide.swt.util.TextField;
 import aurora.ide.swt.util.UWizardPage;
 
 public class CreateBPMDefinePage extends UWizardPage {
@@ -25,6 +27,9 @@ public class CreateBPMDefinePage extends UWizardPage {
 	public static final String CATEGORY_ID = "category_id";
 
 	public static final String NAME = "name";
+
+	private BPMNDefineModel copyFrom;
+	private boolean isNewVer;
 
 	private BPMNDefineCategory[] categorys;
 
@@ -56,8 +61,9 @@ public class CreateBPMDefinePage extends UWizardPage {
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		c.setLayout(layout);
-		this.createInputField(c, "Name", NAME);
-		this.createInputField(c, "Code", PROCESS_CODE);
+		TextField ni = this.createInputField(c, "Name", NAME);
+		TextField ci = this.createInputField(c, "Code", PROCESS_CODE);
+
 		this.createInputField(c, "Version", PROCESS_VERSION);
 
 		Label l = new Label(c, SWT.NONE);
@@ -81,7 +87,16 @@ public class CreateBPMDefinePage extends UWizardPage {
 
 			}
 		});
-
+		if (isNewVer) {
+			ni.getText().setEditable(false);
+			ni.getText().setEditable(false);
+			ci.getText().setEditable(false);
+			ci.getText().setEditable(false);
+			ni.setText(this.copyFrom.getName());
+			ci.getText().setText(this.copyFrom.getProcess_code());
+			combo.setVisible(false);
+			l.setVisible(false);
+		}
 		Label n = new Label(c, SWT.NONE);
 		n.setText("Description");
 		Text t = new Text(c, SWT.BORDER | SWT.MULTI);
@@ -106,4 +121,8 @@ public class CreateBPMDefinePage extends UWizardPage {
 				.size()]);
 	}
 
+	public void setNewVer(BPMNDefineModel copyFrom) {
+		this.isNewVer = true;
+		this.copyFrom = copyFrom;
+	}
 }

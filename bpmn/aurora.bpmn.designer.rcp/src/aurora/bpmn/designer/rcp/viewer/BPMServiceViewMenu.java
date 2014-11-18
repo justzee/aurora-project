@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Menu;
 
 import aurora.bpmn.designer.rcp.viewer.action.BPMDefinePropertyAction;
 import aurora.bpmn.designer.rcp.viewer.action.CreateBPMDefineAction;
+import aurora.bpmn.designer.rcp.viewer.action.CreateBPMDefineVerAction;
 import aurora.bpmn.designer.rcp.viewer.action.CreateServiceAction;
 import aurora.bpmn.designer.rcp.viewer.action.DelServiceAction;
 import aurora.bpmn.designer.rcp.viewer.action.DeleteBPMDefineAction;
@@ -117,7 +118,7 @@ public class BPMServiceViewMenu {
 		actions.add(new LoadBPMServiceAction("刷新", viewer));
 		actions.add(new CreateBPMDefineAction("新建工作流", bpmServiceViewer));
 		//TODO
-		actions.add(new CreateBPMDefineAction("创建新版本", bpmServiceViewer));
+		actions.add(new CreateBPMDefineVerAction("创建新版本", bpmServiceViewer));
 		actions.add(new DelServiceAction("删除服务", viewer));
 		
 		actions.add(new EditBPMDefineAction("编辑工作流", bpmServiceViewer));

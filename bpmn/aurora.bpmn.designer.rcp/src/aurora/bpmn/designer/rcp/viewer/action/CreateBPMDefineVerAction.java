@@ -16,8 +16,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.UIJob;
 
-import aurora.bpmn.designer.rcp.action.TestBPMN;
-import aurora.bpmn.designer.rcp.util.InputStreamUtil;
 import aurora.bpmn.designer.rcp.viewer.BPMServiceViewer;
 import aurora.bpmn.designer.rcp.viewer.action.wizard.CreateBPMDefineWizard;
 import aurora.bpmn.designer.ws.BPMNDefineCategory;
@@ -26,23 +24,24 @@ import aurora.bpmn.designer.ws.BPMService;
 import aurora.bpmn.designer.ws.BPMServiceResponse;
 import aurora.bpmn.designer.ws.BPMServiceRunner;
 import aurora.bpmn.designer.ws.Endpoints;
-import aurora.bpmn.designer.ws.ServiceModel;
 import aurora.ide.designer.editor.AuroraBpmnEditor;
 import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
 
-public class CreateBPMDefineAction extends ViewAction {
-	private ServiceModel model;
+public class CreateBPMDefineVerAction extends ViewAction {
+	private BPMNDefineModel model;
 	private BPMServiceViewer viewer;
 
-	public CreateBPMDefineAction(String text, BPMServiceViewer viewer) {
+	public CreateBPMDefineVerAction(String text, BPMServiceViewer viewer) {
 		this.setText(text);
 		this.viewer = viewer;
 	}
 
 	public void run() {
 
-		CreateBPMDefineWizard w = new CreateBPMDefineWizard(
-				model.getAllBPMNDefineCategory(), viewer.getSite().getShell());
+		CreateBPMDefineWizard w = new CreateBPMDefineWizard(model
+				.getServiceModel().getAllBPMNDefineCategory(), viewer.getSite()
+				.getShell());
+		w.setNewVer(model);
 		int open = w.open();
 
 		if (WizardDialog.OK == open) {
@@ -84,9 +83,12 @@ public class CreateBPMDefineAction extends ViewAction {
 			// define.setName("Hello");
 			// define.setProcess_code("007");
 			// define.setProcess_version("001");
-			define.setDefine(InputStreamUtil.stream2String(TestBPMN.getStream()));
+			define.setDefine(model.getDefines());
+			define.setName(model.getName());
+			define.setProcess_code(model.getProcess_code());
+			define.setCategory_id(model.getCategory_id());
 
-			BPMService service = new BPMService(model);
+			BPMService service = new BPMService(model.getServiceModel());
 			service.setServiceType(Endpoints.T_CREATE_BPM);
 			// service.setBPMNDefineModel(define);
 			service.setParas(makeParas(define));
@@ -100,16 +102,18 @@ public class CreateBPMDefineAction extends ViewAction {
 				if (repDefine != null) {
 
 					BPMNDefineCategory bpmnDefineCategory = model
-							.getBPMNDefineCategory(repDefine.getCategory_id());
+							.getServiceModel().getBPMNDefineCategory(
+									repDefine.getCategory_id());
 					if (bpmnDefineCategory != null) {
 						bpmnDefineCategory.addDefine(repDefine);
 						viewer.getTreeViewer().refresh(bpmnDefineCategory);
 						viewer.getTreeViewer().expandToLevel(
 								bpmnDefineCategory, 1);
 					} else {
-						model.addDefine(repDefine);
-						viewer.getTreeViewer().refresh(model);
-						viewer.getTreeViewer().expandToLevel(model, 1);
+						model.getServiceModel().addDefine(repDefine);
+						viewer.getTreeViewer().refresh(model.getServiceModel());
+						viewer.getTreeViewer().expandToLevel(
+								model.getServiceModel(), 1);
 					}
 					try {
 						ByteArrayInputStream is = new ByteArrayInputStream(
@@ -132,8 +136,8 @@ public class CreateBPMDefineAction extends ViewAction {
 				}
 
 			} else {
-				String serviceL = Endpoints.getSaveService(model.getHost(), "")
-						.getUrl();
+				String serviceL = Endpoints.getSaveService(
+						model.getServiceModel().getHost(), "").getUrl();
 				MessageDialog.openError(this.getDisplay().getActiveShell(),
 						"Error", "服务" + serviceL + "未响应");
 				return Status.CANCEL_STATUS;
@@ -149,11 +153,11 @@ public class CreateBPMDefineAction extends ViewAction {
 		TreeItem[] selection = viewer.getTreeViewer().getTree().getSelection();
 		if (selection.length > 0) {
 			Object data = selection[0].getData();
-			if (data instanceof ServiceModel) {
-				this.model = (ServiceModel) data;
+			if (data instanceof BPMNDefineModel) {
+				this.model = (BPMNDefineModel) data;
 			}
 		}
-		this.setVisible(model instanceof ServiceModel && model.isLoaded());
+		this.setVisible(model instanceof BPMNDefineModel);
 
 	}
 
