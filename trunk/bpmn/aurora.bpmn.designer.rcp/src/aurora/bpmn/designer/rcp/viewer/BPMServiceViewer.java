@@ -144,30 +144,35 @@ public class BPMServiceViewer extends ViewPart {
 
 	private void handleDoubleClick(DoubleClickEvent event) {
 		// open editor
-//		EditBPMDefineAction editBPMDefineAction = new EditBPMDefineAction("编辑工作流", this);
-//		if(editBPMDefineAction.isVisible()){
-//			editBPMDefineAction.run();
-//		}
-		try {
-			// URI modelUri = URI
-			// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/0");
-			// URI diagramUri = URI
-			// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/1");
-			// Bpmn2DiagramEditorInput input = new Bpmn2DiagramEditorInput(
-			// modelUri, diagramUri,
-			// "org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType");
-			// diagramComposite.setInput(new DiagramEditorInput(uri,
-			// "org.eclipse.graphiti.examples.tutorial.diagram.TutorialDiagramTypeProvider"));
-			this.getSite()
-					.getPage()
-					.openEditor(
-							new BPMServiceInputStreamEditorInput(
-									TestBPMN.getStream()), AuroraBpmnEditor.ID,
-							true);
-		} catch (PartInitException e) {
-			MessageDialog.openError(this.getSite().getShell(), "Error",
-					"Error opening view:" + e.getMessage());
+		EditBPMDefineAction editBPMDefineAction = new EditBPMDefineAction(
+				"编辑工作流", this);
+		editBPMDefineAction.init();
+		if (editBPMDefineAction.isVisible()) {
+			editBPMDefineAction.run();
 		}
+		// try {
+		// // URI modelUri = URI
+		// //
+		// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/0");
+		// // URI diagramUri = URI
+		// //
+		// .createURI("platform:/plugin/aurora.bpmn.designer.rcp/test.bpmn#/1");
+		// // Bpmn2DiagramEditorInput input = new Bpmn2DiagramEditorInput(
+		// // modelUri, diagramUri,
+		// // "org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType");
+		// // diagramComposite.setInput(new DiagramEditorInput(uri,
+		// //
+		// "org.eclipse.graphiti.examples.tutorial.diagram.TutorialDiagramTypeProvider"));
+		// this.getSite()
+		// .getPage()
+		// .openEditor(
+		// new BPMServiceInputStreamEditorInput(
+		// TestBPMN.getStream()), AuroraBpmnEditor.ID,
+		// true);
+		// } catch (PartInitException e) {
+		// MessageDialog.openError(this.getSite().getShell(), "Error",
+		// "Error opening view:" + e.getMessage());
+		// }
 	}
 
 	public TreeViewer getTreeViewer() {

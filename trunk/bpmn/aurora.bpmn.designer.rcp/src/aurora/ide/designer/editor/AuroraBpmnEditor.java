@@ -67,6 +67,10 @@ public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		if (define == null) {
+			MessageDialog.openError(this.getSite().getShell(), "Erroe", "无法保存");
+			return;
+		}
 		super.doSave(monitor);
 		Resource resource = this.getDesignEditor().getResource();
 		// System.out.println(resource.getURI());
@@ -86,5 +90,17 @@ public class AuroraBpmnEditor extends BPMN2MultiPageEditor {
 
 	public void setDefine(BPMNDefineModel define) {
 		this.define = define;
+	}
+
+	@Override
+	public String getTitle() {
+		return super.getTitle();
+	}
+
+	@Override
+	public String getPartName() {
+		if (define != null)
+			return define.getName();
+		return super.getPartName();
 	}
 }

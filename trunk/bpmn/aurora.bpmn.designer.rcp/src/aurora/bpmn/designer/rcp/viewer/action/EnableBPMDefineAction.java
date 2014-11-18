@@ -71,22 +71,22 @@ public class EnableBPMDefineAction extends ViewAction {
 				return Status.CANCEL_STATUS;
 			}
 
-			try {
-				ByteArrayInputStream is = new ByteArrayInputStream(model
-						.getDefines().getBytes("UTF-8"));
-				IEditorPart openEditor = viewer
-						.getSite()
-						.getPage()
-						.openEditor(new BPMServiceInputStreamEditorInput(is),
-								AuroraBpmnEditor.ID, true);
-				if (openEditor instanceof AuroraBpmnEditor) {
-					((AuroraBpmnEditor) openEditor).setDefine(model);
-				}
-			} catch (PartInitException e) {
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			// try {
+			// ByteArrayInputStream is = new ByteArrayInputStream(model
+			// .getDefines().getBytes("UTF-8"));
+			// IEditorPart openEditor = viewer
+			// .getSite()
+			// .getPage()
+			// .openEditor(new BPMServiceInputStreamEditorInput(is),
+			// AuroraBpmnEditor.ID, true);
+			// if (openEditor instanceof AuroraBpmnEditor) {
+			// ((AuroraBpmnEditor) openEditor).setDefine(model);
+			// }
+			// } catch (PartInitException e) {
+			// e.printStackTrace();
+			// } catch (UnsupportedEncodingException e) {
+			// e.printStackTrace();
+			// }
 			return Status.OK_STATUS;
 		}
 

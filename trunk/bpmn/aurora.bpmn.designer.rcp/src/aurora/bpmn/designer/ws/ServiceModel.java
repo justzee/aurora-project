@@ -124,6 +124,7 @@ public class ServiceModel implements IParent {
 		// unSaveDefines.add(define);
 		// }
 		// }
+		this.isLoaded = true;
 		defines = new ArrayList<BPMNDefineModel>();
 		categorys = new ArrayList<BPMNDefineCategory>();
 		vers = new HashMap<String, BPMNDefineModelVER>();

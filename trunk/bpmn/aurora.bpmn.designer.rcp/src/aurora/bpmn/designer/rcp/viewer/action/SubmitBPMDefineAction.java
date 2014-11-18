@@ -43,7 +43,7 @@ public class SubmitBPMDefineAction extends ViewAction {
 
 			BPMService service = new BPMService(model.getServiceModel());
 			String oaf = model.getApprove_flag();
-			model.setApprove_flag("1");
+			model.setApprove_flag("2");
 			service.setServiceType(Endpoints.T_SUBMIT_BPM);
 			service.setParas(makeParas(model));
 			BPMServiceRunner runner = new BPMServiceRunner(service);
