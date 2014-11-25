@@ -202,8 +202,17 @@
 		
 		
 		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.description.tab.simple"
+			class="aurora.ide.designer.diagram.feature.property.SimplePropertySection"
+			image="icons/20/Thumbnail.png"
+			popup="true"
+			label="Properties">
+		</propertyTab>
 		
 		<!--afterTab="org.eclipse.bpmn2.modeler.description.tab"-->
+		
+		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.description.tab.aurora"
 			class="aurora.ide.designer.diagram.feature.property.AuroraEXPropertySection"
@@ -213,6 +222,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Aurora Setting">
 		</propertyTab>
+		-->
 		</extension>
 		
 </plugin>
