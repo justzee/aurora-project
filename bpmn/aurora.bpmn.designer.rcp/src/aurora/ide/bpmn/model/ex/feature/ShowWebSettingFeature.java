@@ -10,16 +10,16 @@
  *******************************************************************************/
 package aurora.ide.bpmn.model.ex.feature;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.modeler.core.IConstants;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.AbstractObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.emf.ecore.EClass;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2MultiPageEditor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -29,7 +29,6 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
@@ -41,6 +40,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.internal.browser.DefaultWorkbenchBrowserSupport;
+
+import aurora.ide.designer.editor.AuroraBpmnEditor;
 
 /**
  * The Class ShowPropertiesFeature.
@@ -94,20 +97,21 @@ public class ShowWebSettingFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
-		if (businessObject!=null && pes.length==1) {
-			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
-			if (feature!=null) {
-				ModelEnablements me = getModelEnablements();
-				if (me!=null && me.isEnabled(businessObject.eClass().getName(), feature.getName())) {
-					this.context = context;
-					return true;
-				}
-			}
-		}
-		this.context = null;
-		return false;
+//		PictogramElement[] pes = context.getPictogramElements();
+//		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
+//		if (businessObject!=null && pes.length==1) {
+//			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
+//			if (feature!=null) {
+//				ModelEnablements me = getModelEnablements();
+//				if (me!=null && me.isEnabled(businessObject.eClass().getName(), feature.getName())) {
+//					this.context = context;
+//					return true;
+//				}
+//			}
+//		}
+//		this.context = null;
+//		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -123,29 +127,51 @@ public class ShowWebSettingFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
-		EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
-		List<Documentation> docList = (List<Documentation>)businessObject.eGet(feature);
-		Documentation documentation = null;
-		String text = ""; //$NON-NLS-1$
-		if (docList.size()>0) {
-			documentation = docList.get(0);
-			text = documentation.getText();
-		}
+
 		
-		DocumentationDialog dialog = new DocumentationDialog(Display.getDefault().getActiveShell());
-		dialog.setValue(text);
-		if (dialog.open() == Window.OK){
-			text = dialog.getValue();
-			if (documentation==null) {
-				if (text.isEmpty())
-					return;
-				documentation = Bpmn2Factory.eINSTANCE.createDocumentation();
-				docList.add(documentation);
-			}
-			documentation.setText(text);
+		DefaultWorkbenchBrowserSupport dbs = new DefaultWorkbenchBrowserSupport();
+		try {
+			PictogramElement[] pes = context.getPictogramElements();
+			EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
+			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+			Object eGet = businessObject.eGet(feature);
+			AuroraBpmnEditor multipageEditor = (AuroraBpmnEditor) BPMN2Editor.getActiveEditor().getMultipageEditor();
+//			this.getDiagramBehavior().getDiagramContainer();
+//			this.getDiagramEditor();
+			String define_id = multipageEditor.getDefine().getDefine_id();
+			dbs.createBrowser("aurora.ide.prototype.consultant.product.action.GetHelpAction")
+					.openURL(
+							new URL(
+									"http://aurora.hand-china.com/demo/modules/fnd/FND2020/fnd_company.screen?define_id="
+									+define_id +"&element_id="+eGet));
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
+	
+	
+//		EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
+//		List<Documentation> docList = (List<Documentation>)businessObject.eGet(feature);
+//		Documentation documentation = null;
+//		String text = ""; //$NON-NLS-1$
+//		if (docList.size()>0) {
+//			documentation = docList.get(0);
+//			text = documentation.getText();
+//		}
+//		
+//		DocumentationDialog dialog = new DocumentationDialog(Display.getDefault().getActiveShell());
+//		dialog.setValue(text);
+//		if (dialog.open() == Window.OK){
+//			text = dialog.getValue();
+//			if (documentation==null) {
+//				if (text.isEmpty())
+//					return;
+//				documentation = Bpmn2Factory.eINSTANCE.createDocumentation();
+//				docList.add(documentation);
+//			}
+//			documentation.setText(text);
+//		}
 	}
 
 	/* (non-Javadoc)
