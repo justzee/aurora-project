@@ -106,9 +106,9 @@ public class AuroraBpmn2FeatureMap {
 		features = new ArrayList<Class>();
 		features.add(StartEvent.class);
 		features.add(EndEvent.class);
-		features.add(IntermediateThrowEvent.class);
-		features.add(IntermediateCatchEvent.class);
-		features.add(BoundaryEvent.class);
+//		features.add(IntermediateThrowEvent.class);
+//		features.add(IntermediateCatchEvent.class);
+//		features.add(BoundaryEvent.class);
 		EVENTS = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
@@ -121,7 +121,7 @@ public class AuroraBpmn2FeatureMap {
 		GATEWAYS = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
-		features.add(Task.class);
+//		features.add(Task.class);
 		features.add(ManualTask.class);
 		features.add(UserTask.class);
 		features.add(ScriptTask.class);

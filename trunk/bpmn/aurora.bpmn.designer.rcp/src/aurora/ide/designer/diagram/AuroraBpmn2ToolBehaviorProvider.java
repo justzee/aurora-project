@@ -77,8 +77,8 @@ public class AuroraBpmn2ToolBehaviorProvider extends Bpmn2ToolBehaviorProvider {
 				AuroraBpmn2FeatureMap.TASKS, palette);
 		createDrawer(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label,
 				AuroraBpmn2FeatureMap.GATEWAYS, palette);
-		// createDrawer(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label,
-		// AuroraBpmn2FeatureMap.EVENTS, palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label,
+				AuroraBpmn2FeatureMap.EVENTS, palette);
 		// createDrawer(
 		// Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label,
 		// AuroraBpmn2FeatureMap.EVENT_DEFINITIONS, palette);
