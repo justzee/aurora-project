@@ -1,0 +1,10 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import java.io.Reader;
+
+public class approve {
+	public void approve(Long instance_id,Long record_id,Long user_id,String action_code) throws Exception {
+		
+	}
+}

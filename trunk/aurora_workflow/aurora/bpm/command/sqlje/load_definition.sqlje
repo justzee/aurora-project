@@ -1,0 +1,20 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import java.io.Reader;
+
+public class load_definition {
+
+	public String loadFromDb(String code,String version) throws Exception{
+		CompositeMap m = #{
+			 select * 
+			   from bpmn_process_define 
+			  where current_version_flag='Y' 
+				and approve_status='APPROVED' 
+				and valid_flag='Y' 
+				and process_code = ${code}
+				and process_version = ${version}};
+		String xml = m.getString("defines");
+		return xml;
+	}
+}

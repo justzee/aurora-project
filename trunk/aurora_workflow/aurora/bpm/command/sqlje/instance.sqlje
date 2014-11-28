@@ -1,0 +1,20 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import java.io.Reader;
+
+public class instance {
+	public Long create(String code,String version) throws Exception {
+		CompositeMap data = new CompositeMap();
+		data.put("status","RUNNING");
+		data.put("process_code",code);
+		data.put("process_version",version);
+		$insert("bpmn_process_instance","instance_id",data);
+		return data.getLong("instance_id");
+	}
+	
+	public CompositeMap query(Long instance_id) throws Exception{
+		CompositeMap map = #{select * from bpm_proess_instance where isntance_id=${instance_id}};
+		return map;
+	}
+}
