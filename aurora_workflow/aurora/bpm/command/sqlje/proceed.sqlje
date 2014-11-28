@@ -1,0 +1,16 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import java.io.Reader;
+
+public class proceed {
+	
+	public void proceed(Long instance_id,Long path_id) throws Exception {
+		$lock("bpm_path_instance","instance_id=${instance_id} and path_id=${path_id}");
+		CompositeMap path = #{select * from bpm_path_instance where instance_id=${instance_id} and path_id=${path_id}};
+		if("RUNNING".equals(path.getString("status"))) {
+			CompositeMap instance = #{select * from bpm_process_instance where instance_id=${instance_id}};
+			
+		}
+	}
+}
