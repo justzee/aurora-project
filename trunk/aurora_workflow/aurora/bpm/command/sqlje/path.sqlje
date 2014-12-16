@@ -1,35 +1,35 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
-import java.io.Reader;
+import aurora.bpm.command.sqlje.*;
 
 public class path {
 	public Long create(Long instance_id, String preNode, String currentNode)
 			throws Exception {
-		CompositeMap data = new CompositeMap();
-		data.put("instance_id", instance_id);
-		data.put("status", "RUNNING");
-		data.put("prev_node", preNode);
-		data.put("current_node", currentNode);
-		$insert("bpmn_path_instance", "path_id", data);
-		return data.getLong("path_id");
+		BpmnPathInstance bpi = new BpmnPathInstance();
+		bpi.instance_id = instance_id;
+		bpi.status = "RUNNING";
+		bpi.prev_node = preNode;
+		bpi.current_node = currentNode;
+		$sql.insert(bpi);
+		return bpi.path_id;
 	}
 
 	public void close(Long instance_id, Long path_id) throws Exception {
-		#{update bpm_path_instance
+		#{update bpmn_path_instance
 			 set status='FINISH'
 		   where instance_id=${instance_id} 
 			 and path_id=${path_id}
 		};
 	}
 
-	public CompositeMap query(Long path_id) throws Exception{
-		CompositeMap data = #{select * from bm_path_instance where path_id=${path_id}};
-		return data;
+	public BpmnPathInstance query(Long path_id) throws Exception{
+		BpmnPathInstance bpi = #{select * from bpmn_path_instance where path_id=${path_id}};
+		return bpi;
 	}
 
 	public void setCurrent(Long path_id,String nextNode) throws Exception{
-		#{update bpm_path_instance 
+		#{update bpmn_path_instance 
 			 set current_node = ${nextNode}
 		   where path_id = ${path_id}
 		};

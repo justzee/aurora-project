@@ -3,15 +3,16 @@ package aurora.bpm.command;
 import java.util.List;
 
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.SequenceFlow;
 
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
 
-public class ParallelGatewayExecutor extends AbstractCommandExecutor {
+public class InclusiveGatewayExecutor extends AbstractCommandExecutor {
 
-	public ParallelGatewayExecutor(IDatabaseServiceFactory dsf) {
+	public InclusiveGatewayExecutor(IDatabaseServiceFactory dsf) {
 		super(dsf);
 	}
 
@@ -23,13 +24,12 @@ public class ParallelGatewayExecutor extends AbstractCommandExecutor {
 				callStack));
 		for (FlowElement fe : process.getFlowElements()) {
 			if (fe instanceof ParallelGateway && eq(node_id, fe.getId())) {
-				ParallelGateway pg = (ParallelGateway) fe;
-				List<SequenceFlow> list = pg.getOutgoing();
-				for (SequenceFlow sf : list) {
-					createPath(callStack, sf, cmd);
-				}
+				InclusiveGateway ig = (InclusiveGateway) fe;
+				List<SequenceFlow> list = ig.getIncoming();
+				
 				break;
 			}
 		}
 	}
+
 }

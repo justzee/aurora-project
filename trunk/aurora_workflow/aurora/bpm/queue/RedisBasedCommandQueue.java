@@ -1,14 +1,13 @@
 package aurora.bpm.queue;
 
-import java.io.IOException;
 import java.util.List;
 
 import redis.clients.jedis.Jedis;
-import uncertain.core.ILifeCycle;
+import uncertain.logging.ILoggerProvider;
 import aurora.bpm.command.Command;
+import aurora.bpm.command.CommandRegistry;
 
-public class RedisBasedCommandQueue implements ICommandQueue {
-	static String LIST_KEY = "COMMAND_QUEUE";
+public class RedisBasedCommandQueue extends DefaultCommandQueue {
 	/**
 	 * operation will be blocked,so we need two clients
 	 */
@@ -16,8 +15,14 @@ public class RedisBasedCommandQueue implements ICommandQueue {
 	String ip = "127.0.0.1";
 	int port = 6379;
 
-	public RedisBasedCommandQueue() {
-
+	public RedisBasedCommandQueue(CommandRegistry cr,
+			ILoggerProvider loggerProvider) {
+		super();
+		if (cr == null)
+			throw new RuntimeException(
+					"RedisBasedCommandQueue init failed.(CommandRegistry is null)");
+		this.cr = cr;
+		this.logger = loggerProvider.getLogger("command-queue");
 	}
 
 	public void setIp(String ip) {
@@ -37,14 +42,18 @@ public class RedisBasedCommandQueue implements ICommandQueue {
 	}
 
 	@Override
-	public boolean offer(Command cmd) throws IOException {
-		clientPush.lpush(LIST_KEY, cmd.toString());
+	public boolean offer(Command cmd) throws Exception {
+		clientPush.lpush(getListKey(), cmd.toString());
 		return true;
+	}
+
+	private String getListKey() {
+		return "COMMAND-QUEUE-" + getQueueId();
 	}
 
 	@Override
 	public Command poll() throws ClassNotFoundException, Exception {
-		List<String> returns = clientPop.brpop(LIST_KEY, "0");
+		List<String> returns = clientPop.brpop(getListKey(), "0");
 		return Command.parseFromString(returns.get(1));
 	}
 
@@ -68,7 +77,8 @@ public class RedisBasedCommandQueue implements ICommandQueue {
 	public void connect() {
 		clientPush = new Jedis(ip, port);
 		clientPop = new Jedis(ip, port);
-		System.out.println("Redis server connected.");
+		System.out.printf("Redis server connected on %s:%d(queue id:%d)\n", ip,
+				port, getQueueId());
 	}
 
 }
