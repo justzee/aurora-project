@@ -1,10 +1,15 @@
 package aurora.bpm.command;
 
+import java.sql.Connection;
+
 import javax.sql.DataSource;
 
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.SequenceFlow;
 
 import uncertain.composite.CompositeMap;
+import aurora.bpm.command.sqlje.path;
+import aurora.bpm.define.FlowElement;
 import aurora.bpm.engine.ExecutorContext;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallEnabled;
@@ -44,7 +49,11 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	 */
 	protected ISqlCallStack createSqlCallStack() throws Exception {
 		DataSource ds = getDatabaseServiceFactory().getDataSource();
-		ISqlCallStack callStack = new SqlCallStack(ds, ds.getConnection());
+		Connection conn = ds.getConnection();
+		conn.setAutoCommit(false);
+		ISqlCallStack callStack = new SqlCallStack(ds, conn);
+		CompositeMap contextData = new CompositeMap("context");
+		callStack.setContextData(contextData);
 		return callStack;
 	}
 
@@ -57,7 +66,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	protected void releaseSqlCallStack(ISqlCallStack callStack)
 			throws Exception {
 		if (callStack != null)
-			callStack.free(callStack.getCurrentConnection());
+			callStack.cleanUp();
 	}
 
 	@Override
@@ -65,6 +74,10 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 		ISqlCallStack callStack = createSqlCallStack();
 		try {
 			executeWithSqlCallStack(callStack, cmd);
+			callStack.commit();
+		} catch (Exception e) {
+			callStack.rollback();
+			throw e;
 		} finally {
 			releaseSqlCallStack(callStack);
 		}
@@ -116,6 +129,10 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 		return map;
 	}
 
+	protected CompositeMap cloneOptions(Command cmd) {
+		return (CompositeMap) cmd.getOptions().clone();
+	}
+
 	/**
 	 * find CommandExecutor for <code>cmd2</code> ,and execute it with
 	 * <code>callStack</code>
@@ -129,6 +146,37 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 		ICommandExecutor executor = getExecutorContext().getCommandRegistry()
 				.findExecutor(cmd2);
 		executor.executeWithSqlCallStack(callStack, cmd2);
+	}
+
+	/**
+	 * create a path ,and call PROCEED
+	 * 
+	 * @throws Exception
+	 */
+	protected void createPath(ISqlCallStack callStack, SequenceFlow sf,
+			Command cmd) throws Exception {
+		path cp = createProc(path.class, callStack);
+		Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
+		Long path_id = cp.create(instance_id, sf.getSourceRef().getId(), sf
+				.getTargetRef().getId());
+		System.out.println("path created ,id:" + path_id);
+
+		CompositeMap opts = createOptionsWithProcessInfo(cmd);
+		opts.put("path_id", path_id);
+		// create a PROCEED command
+		Command cmd2 = new Command(ProceedCmdExecutor.TYPE, opts);
+		dispatchCommand(callStack, cmd2);
+	}
+
+	/**
+	 * get process from definitions
+	 * 
+	 * @param def
+	 * @return
+	 */
+	protected org.eclipse.bpmn2.Process getProcess(Definitions def) {
+		return (org.eclipse.bpmn2.Process) def.eContents().get(0);
+
 	}
 
 }

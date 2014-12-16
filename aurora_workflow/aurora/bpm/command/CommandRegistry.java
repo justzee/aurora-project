@@ -3,8 +3,12 @@ package aurora.bpm.command;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.ParallelGateway;
+
 import uncertain.ocm.IObjectCreator;
 import aurora.bpm.engine.ExecutorContext;
+import aurora.javascript.Ref;
 
 public class CommandRegistry {
 	private HashMap<String, ICommandExecutor> registry = new HashMap<String, ICommandExecutor>();
@@ -35,8 +39,8 @@ public class CommandRegistry {
 	}
 
 	/**
-	 * if the specified type is not registered, the UnknownCommandExecutor will be
-	 * returned
+	 * if the specified type is not registered, the UnknownCommandExecutor will
+	 * be returned
 	 * 
 	 * @param type
 	 * @return
@@ -66,6 +70,7 @@ public class CommandRegistry {
 			loadDefault_(ArriveCmdExecutor.class);
 			loadDefault_(ScriptTaskExecutor.class);
 			loadDefault_(UserTaskExecutor.class);
+			bind(ParallelGateway.class, ParallelGatewayExecutor.class);
 			System.out.println("builtin command registry loaded.");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -79,6 +84,15 @@ public class CommandRegistry {
 			String type = (String) fld.get(null);
 			registry(type, clazz);
 		}
+	}
+
+	private void bind(Class<? extends FlowNode> type,
+			Class<? extends ICommandExecutor> exec) throws Exception {
+		String name = type.getSimpleName();
+		if (name.endsWith("Impl"))
+			name = name.substring(0, name.length() - 4);
+		name = name.toUpperCase();
+		registry(name, exec);
 	}
 
 }

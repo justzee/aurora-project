@@ -26,34 +26,24 @@ public class CreateInstanceCmdExecutor extends AbstractCommandExecutor {
 		CompositeMap options = cmd.getOptions();
 
 		String version = options.getString(PROCESS_VERSION);
-		org.eclipse.bpmn2.Definitions def = loadDefinitions(cmd, callStack);
-		org.eclipse.bpmn2.Process process = (org.eclipse.bpmn2.Process) def
-				.eContents().get(0);
+		org.eclipse.bpmn2.Process process = (org.eclipse.bpmn2.Process) getProcess(loadDefinitions(
+				cmd, callStack));
 
 		instance ci = createProc(instance.class, callStack);
 		Long instance_id = ci.create(options.getString(PROCESS_CODE), version);
+		cmd.getOptions().put(INSTANCE_ID, instance_id);// set new instance_id back
 		System.out.println("instance created ,id:" + instance_id);
 		for (FlowElement fe : process.getFlowElements()) {
 			if (fe instanceof StartEvent) {
 				System.out.println("find start event:" + fe);
 				StartEvent se = (StartEvent) fe;
 				List<SequenceFlow> outgoing = se.getOutgoing();
-				path cp = createProc(path.class, callStack);
-				for (SequenceFlow path : outgoing) {
-					System.out.println("\toutgoing:" + path);
-					FlowNode target = path.getTargetRef();
+				for (SequenceFlow sf : outgoing) {
+					System.out.println("\toutgoing:" + sf);
+					FlowNode target = sf.getTargetRef();
 					System.out.println(target);
 					// create path
-					Long path_id = cp.create(instance_id, se.getId(),
-							target.getId());
-					System.out.println("path created ,id:" + path_id);
-
-					CompositeMap opts = createOptionsWithProcessInfo(cmd);
-					opts.put(INSTANCE_ID, instance_id);
-					opts.put("path_id", path_id);
-					// create a PROCEED command
-					Command cmd2 = new Command(ProceedCmdExecutor.TYPE, opts);
-					dispatchCommand(callStack, cmd2);
+					createPath(callStack, sf, cmd);
 				}
 			}
 		}

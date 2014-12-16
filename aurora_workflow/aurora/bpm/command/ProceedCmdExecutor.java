@@ -6,6 +6,7 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.SequenceFlow;
 
 import uncertain.composite.CompositeMap;
+import aurora.bpm.command.sqlje.BpmnPathInstance;
 import aurora.bpm.command.sqlje.path;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
@@ -22,12 +23,11 @@ public class ProceedCmdExecutor extends AbstractCommandExecutor {
 		path cp = createProc(path.class, callStack);
 		Long instance_id = cmd.getOptions().getLong("instance_id");
 		Long path_id = cmd.getOptions().getLong("path_id");
-		CompositeMap path = cp.query(path_id);
-		String preNode = path.getString("pre_node");
-		String curNode = path.getString("current_node");
-		org.eclipse.bpmn2.Definitions def = loadDefinitions(cmd, callStack);
-		org.eclipse.bpmn2.Process process = (org.eclipse.bpmn2.Process) def
-				.eContents().get(0);
+		BpmnPathInstance bpi = cp.query(path_id);
+		String preNode = bpi.prev_node;
+		String curNode = bpi.current_node;
+		org.eclipse.bpmn2.Process process = getProcess(loadDefinitions(cmd,
+				callStack));
 		List<FlowElement> eles = process.getFlowElements();
 		for (FlowElement ef : eles) {
 			if (ef instanceof SequenceFlow) {

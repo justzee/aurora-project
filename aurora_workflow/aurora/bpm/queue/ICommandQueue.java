@@ -3,6 +3,7 @@ package aurora.bpm.queue;
 import aurora.bpm.command.Command;
 
 public interface ICommandQueue {
+
 	/**
 	 * Inserts the specified element into this queue if it is possible to do so
 	 * immediately .
@@ -42,4 +43,12 @@ public interface ICommandQueue {
 	boolean isEmpty() throws Exception;
 
 	int size() throws Exception;
+	
+	void setQueueId(int queueId);
+	int getQueueId();
+
+	void startListen();
+
+	void stopListen();
+
 }
