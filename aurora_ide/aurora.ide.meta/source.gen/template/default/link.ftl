@@ -1,1 +1,0 @@
-<a:link ${properties("id","url","model","action")}/>
