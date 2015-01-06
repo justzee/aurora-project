@@ -5,12 +5,15 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.SequenceFlow;
 
 import uncertain.composite.CompositeMap;
+import aurora.bpm.command.sqlje.BpmnProcessInstance;
+import aurora.bpm.command.sqlje.instance;
 import aurora.bpm.command.sqlje.path;
-import aurora.bpm.define.FlowElement;
 import aurora.bpm.engine.ExecutorContext;
+import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallEnabled;
 import aurora.sqlje.core.ISqlCallStack;
@@ -21,6 +24,11 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	public static final String INSTANCE_ID = "instance_id";
 	public static final String PROCESS_CODE = "process_code";
 	public static final String PROCESS_VERSION = "process_version";
+	public static final String NODE_ID = "node_id";
+	public static final String RECORD_ID = "record_id";
+	public static final String USER_ID = "user_id";
+	public static final String[] STANDARD_PROPERTIES = { INSTANCE_ID,
+			PROCESS_CODE, PROCESS_VERSION, RECORD_ID, USER_ID };
 
 	private ExecutorContext context;
 	protected IDatabaseServiceFactory dsf;
@@ -73,7 +81,17 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	public void execute(Command cmd) throws Exception {
 		ISqlCallStack callStack = createSqlCallStack();
 		try {
-			executeWithSqlCallStack(callStack, cmd);
+			Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
+			boolean running = true;
+			if (instance_id != null) {
+				instance inst = createProc(instance.class, callStack);
+				BpmnProcessInstance bpi = inst.query(instance_id);
+				cmd.getOptions().put(PROCESS_CODE, bpi.process_code);
+				cmd.getOptions().put(PROCESS_VERSION, bpi.process_version);
+				running = eq(bpi.status, "RUNNING");
+			}
+			if (running)
+				executeWithSqlCallStack(callStack, cmd);
 			callStack.commit();
 		} catch (Exception e) {
 			callStack.rollback();
@@ -87,6 +105,31 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	public void executeWithSqlCallStack(ISqlCallStack callStack, Command cmd)
 			throws Exception {
 
+	}
+
+	protected BPMScriptEngine prepareScriptEngine(ISqlCallStack callStack,
+			Command cmd) {
+		BPMScriptEngine engine = getExecutorContext().createScriptEngine(
+				callStack.getContextData());
+		engine.registry("callStack", callStack);
+		engine.registry("command", cmd);
+		return engine;
+	}
+
+	/**
+	 * find all outgoing(s) ,and
+	 * {@link #createPath(ISqlCallStack,SequenceFlow,Command)} for each outgoing
+	 * 
+	 * @param callStack
+	 * @param node
+	 * @param cmd
+	 * @throws Exception
+	 */
+	protected void createOutgoingPath(ISqlCallStack callStack, FlowNode node,
+			Command cmd) throws Exception {
+		for (SequenceFlow sf : node.getOutgoing()) {
+			createPath(callStack, sf, cmd);
+		}
 	}
 
 	protected org.eclipse.bpmn2.Definitions loadDefinitions(String code,
@@ -115,17 +158,16 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	}
 
 	/**
-	 * copy <code>instance_id</code> ,<code>process_code</code>,
-	 * <code>process_version</code> from <code>cmd0</code>
+	 * copy <code>STANDARD_PROPERTIES</code> from <code>cmd0</code>
 	 * 
 	 * @param cmd0
-	 * @return
+	 * @return {@link STANDARD_PROPERTIES}
 	 */
-	protected CompositeMap createOptionsWithProcessInfo(Command cmd0) {
+	protected CompositeMap createOptionsWithStandardInfo(Command cmd0) {
 		CompositeMap map = new CompositeMap();
-		map.put(INSTANCE_ID, cmd0.getOptions().getString(INSTANCE_ID));
-		map.put(PROCESS_CODE, cmd0.getOptions().getString(PROCESS_CODE));
-		map.put(PROCESS_VERSION, cmd0.getOptions().getString(PROCESS_VERSION));
+		for (String p : STANDARD_PROPERTIES) {
+			map.put(p, cmd0.getOptions().getString(p));
+		}
 		return map;
 	}
 
@@ -161,7 +203,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 				.getTargetRef().getId());
 		System.out.println("path created ,id:" + path_id);
 
-		CompositeMap opts = createOptionsWithProcessInfo(cmd);
+		CompositeMap opts = createOptionsWithStandardInfo(cmd);
 		opts.put("path_id", path_id);
 		// create a PROCEED command
 		Command cmd2 = new Command(ProceedCmdExecutor.TYPE, opts);
@@ -175,8 +217,26 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	 * @return
 	 */
 	protected org.eclipse.bpmn2.Process getProcess(Definitions def) {
+
 		return (org.eclipse.bpmn2.Process) def.eContents().get(0);
 
+	}
+
+	protected org.eclipse.bpmn2.FlowElement findFlowElementById(
+			org.eclipse.bpmn2.Process process, String id) {
+		for (org.eclipse.bpmn2.FlowElement fe : process.getFlowElements())
+			if (eq(fe.getId(), id))
+				return fe;
+		return null;
+	}
+
+	protected <T extends org.eclipse.bpmn2.FlowElement> T findFlowElementById(
+			org.eclipse.bpmn2.Process process, String id, Class<T> type) {
+		for (org.eclipse.bpmn2.FlowElement fe : process.getFlowElements())
+			if (fe != null && type.isAssignableFrom(fe.getClass())
+					& eq(fe.getId(), id))
+				return (T) fe;
+		return null;
 	}
 
 }

@@ -63,8 +63,8 @@ public class path implements aurora.sqlje.core.ISqlCallEnabled {
 		getSqlCallStack().push(_$sqlje_ps_gen7);
 	}
 
-	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
 	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
+	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
 	protected SqlFlag $sql = new SqlFlag();
 
 	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
@@ -76,12 +76,12 @@ public class path implements aurora.sqlje.core.ISqlCallEnabled {
 		$sql.setInstanceManager(_$sqlje_instanceManager);
 	}
 
+	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
+		return _$sqlje_instanceManager;
+	}
+
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
 		_$sqlje_sqlCallStack = args0;
 		$sql.setSqlCallStack(_$sqlje_sqlCallStack);
-	}
-
-	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
-		return _$sqlje_instanceManager;
 	}
 }

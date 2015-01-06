@@ -1,0 +1,28 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import java.io.Reader;
+
+public class gateway {
+
+	/**
+	 * called when parallel_gateway arrived.
+	 */
+	public Long update_arrived(Long instance_id,String node_id) throws Exception{
+		#{update bpmn_parallel_gateway_status 
+			 set arrived_count = arrived_count + 1
+		   where instance_id = ${instance_id}
+			and  node_id     = ${node_id};
+		};
+		if($sql.rowcount()==0) {
+			//not created yet.
+			CompositeMap data = new CompositeMap();
+			data.put("instance_id",instance_id);
+			data.put("node_id",node_id);
+			data.put("arrived_count",1);
+			$sql.insert(data,"bpmn_parallel_gateway_status","status_id");
+		}
+		Long arrived=#{select arrived_count from bpmn_parallel_gateway_status where instance_id=${instance_id} and node_id=${node_id}};
+		return arrived;
+	}
+}

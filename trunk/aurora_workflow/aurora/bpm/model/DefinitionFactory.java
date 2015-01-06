@@ -136,11 +136,6 @@ public class DefinitionFactory {
 		return definitions;
 	}
 
-	public static void main(String[] args) throws Exception {
-		DefinitionFactory
-				.loadFromFile("/Users/jessen/work/Workspaces/WEB/aurora_workflow/aurora/bpm/testcase/MyProcess.bpmn");
-	}
-
 	public void clearCache() {
 		definitionCache.clear();
 	}
