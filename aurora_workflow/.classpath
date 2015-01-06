@@ -3,8 +3,6 @@
 	<classpathentry excluding="lib/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/uncertain"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Rhino"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Jedis"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aurora"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aurora-sqlje"/>
 	<classpathentry kind="lib" path="lib/ecore.xmi.jar"/>
@@ -16,5 +14,9 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.xsd_2.10.0.v20140901-1055.jar"/>
 	<classpathentry kind="lib" path="lib/osgi-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/runtime-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/Jedis.jar"/>
+	<classpathentry kind="lib" path="lib/commons-pool2-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/aurora-js.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/aurora-plugin"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
