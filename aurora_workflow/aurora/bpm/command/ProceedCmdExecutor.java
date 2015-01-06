@@ -36,8 +36,8 @@ public class ProceedCmdExecutor extends AbstractCommandExecutor {
 						&& eq(curNode, sf.getTargetRef().getId())) {
 					// path found
 					cp.close(instance_id, path_id);
-					CompositeMap opts = createOptionsWithProcessInfo(cmd);
-					opts.put("node_id", sf.getTargetRef().getId());
+					CompositeMap opts = createOptionsWithStandardInfo(cmd);
+					opts.put(NODE_ID, sf.getTargetRef().getId());
 
 					// create a ARRIVE command
 					Command cmd2 = new Command(ArriveCmdExecutor.TYPE, opts);

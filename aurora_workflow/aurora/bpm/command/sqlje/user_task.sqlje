@@ -1,0 +1,16 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import aurora.bpm.command.sqlje.*;
+
+public class user_task {
+	public Long create_receipient(Long instance_id, String node_id, Long user_id)
+			throws Exception {
+		BpmnInstanceNodeRecipient binp = new BpmnInstanceNodeRecipient();
+		binp.instance_id = instance_id;
+		binp.node_id = node_id;
+		binp.user_id = user_id;
+		$sql.insert(binp);
+		return binp.record_id;
+	}
+}

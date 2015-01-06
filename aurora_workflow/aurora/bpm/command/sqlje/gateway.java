@@ -2,59 +2,57 @@ package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
 import java.io.Reader;
-import aurora.bpm.command.sqlje.*;
 import java.sql.*;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class instance implements aurora.sqlje.core.ISqlCallEnabled {
-	public Long create(String code, String version, Long parent_id)
+public class gateway implements aurora.sqlje.core.ISqlCallEnabled {
+	/**
+	 * called when parallel_gateway arrived.
+	 */
+	public Long update_arrived(Long instance_id, String node_id)
 			throws Exception {
-		BpmnProcessInstance bpi = new BpmnProcessInstance();
-		bpi.status = "RUNNING";
-		bpi.process_code = code;
-		bpi.process_version = version;
-		bpi.parent_id = parent_id;
-		$sql.insert(bpi);
-		return bpi.instance_id;
-	}
-
-	public BpmnProcessInstance query(Long instance_id) throws Exception {
-		String _$sqlje_sql_gen3 = "select * from bpm_process_instance where instance_id=?";
+		String _$sqlje_sql_gen3 = "update bpmn_parallel_gateway_status \n\t\t\t set arrived_count = arrived_count + 1\n\t\t   where instance_id = ?\n\t\t\tand  node_id     = ?;\n\t\t";
 		PreparedStatement _$sqlje_ps_gen2 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen3);
 		_$sqlje_ps_gen2.setLong(1, instance_id);
+		_$sqlje_ps_gen2.setString(2, node_id);
 		$sql.clear();
 		_$sqlje_ps_gen2.execute();
 		$sql.UPDATECOUNT = _$sqlje_ps_gen2.getUpdateCount();
 		ResultSet _$sqlje_rs_gen0 = _$sqlje_ps_gen2.getResultSet();
 		getSqlCallStack().push(_$sqlje_rs_gen0);
 		getSqlCallStack().push(_$sqlje_ps_gen2);
-		BpmnProcessInstance bpi = DataTransfer.transfer1(
-				BpmnProcessInstance.class, _$sqlje_rs_gen0);
-		return bpi;
-	}
-
-	public void finish(Long instance_id) throws Exception {
-		String _$sqlje_sql_gen5 = "update bpmn_process_instance set status='FINISH' where instance_id=?";
+		if ($sql.rowcount() == 0) {
+			CompositeMap data = new CompositeMap();
+			data.put("instance_id", instance_id);
+			data.put("node_id", node_id);
+			data.put("arrived_count", 1);
+			$sql.insert(data, "bpmn_parallel_gateway_status", "status_id");
+		}
+		String _$sqlje_sql_gen5 = "select arrived_count from bpmn_parallel_gateway_status where instance_id=? and node_id=?";
 		PreparedStatement _$sqlje_ps_gen4 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen5);
 		_$sqlje_ps_gen4.setLong(1, instance_id);
+		_$sqlje_ps_gen4.setString(2, node_id);
 		$sql.clear();
 		_$sqlje_ps_gen4.execute();
 		$sql.UPDATECOUNT = _$sqlje_ps_gen4.getUpdateCount();
 		ResultSet _$sqlje_rs_gen1 = _$sqlje_ps_gen4.getResultSet();
 		getSqlCallStack().push(_$sqlje_rs_gen1);
 		getSqlCallStack().push(_$sqlje_ps_gen4);
+		Long arrived = DataTransfer.transfer1(Long.class, _$sqlje_rs_gen1);
+		return arrived;
 	}
 
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
 	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag();
 
-	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
-		return _$sqlje_instanceManager;
+	public void _$setInstanceManager(aurora.sqlje.core.IInstanceManager args0) {
+		_$sqlje_instanceManager = args0;
+		$sql.setInstanceManager(_$sqlje_instanceManager);
 	}
 
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
@@ -62,9 +60,8 @@ public class instance implements aurora.sqlje.core.ISqlCallEnabled {
 		$sql.setSqlCallStack(_$sqlje_sqlCallStack);
 	}
 
-	public void _$setInstanceManager(aurora.sqlje.core.IInstanceManager args0) {
-		_$sqlje_instanceManager = args0;
-		$sql.setInstanceManager(_$sqlje_instanceManager);
+	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
+		return _$sqlje_instanceManager;
 	}
 
 	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {

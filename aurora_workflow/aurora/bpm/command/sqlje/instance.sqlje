@@ -5,17 +5,18 @@ import java.io.Reader;
 import aurora.bpm.command.sqlje.*;
 
 public class instance {
-	public Long create(String code,String version) throws Exception {
+	public Long create(String code,String version,Long parent_id) throws Exception {
 		BpmnProcessInstance bpi = new BpmnProcessInstance();
 		bpi.status="RUNNING";
 		bpi.process_code=code;
 		bpi.process_version = version;
+		bpi.parent_id=parent_id;
 		$sql.insert(bpi);
 		return bpi.instance_id;
 	}
 	
 	public BpmnProcessInstance query(Long instance_id) throws Exception{
-		BpmnProcessInstance bpi = #{select * from bpm_proess_instance where isntance_id=${instance_id}};
+		BpmnProcessInstance bpi = #{select * from bpm_process_instance where instance_id=${instance_id}};
 		return bpi;
 	}
 	
