@@ -3,7 +3,7 @@
    <description name="Aurora SQLJE IDE Update Site" url="http://aurora-project.googlecode.com/svn/trunk/aurora.ide.sqlje.site/">
       IDE for aurora-sqlje feature. Auto translate sqlje source file to java file.
    </description>
-   <feature url="features/aurora.ide.sqlje.feature_1.0.0.201412161111.jar" id="aurora.ide.sqlje.feature" version="1.0.0.201412161111">
+   <feature url="features/aurora.ide.sqlje.feature_1.0.0.201501221601.jar" id="aurora.ide.sqlje.feature" version="1.0.0.201501221601">
       <category name="aurora.ide"/>
    </feature>
    <category-def name="aurora.ide" label="aurora.ide"/>
