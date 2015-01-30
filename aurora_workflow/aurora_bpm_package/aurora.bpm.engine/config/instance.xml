@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<u:instance-config xmlns:u="uncertain.pkg">
+	<u:instances>
+		<u:configurable-instance configFile="bpmn.config" >
+            <u:description>BPMN工作流引擎配置</u:description>
+            <u:required-instances>
+				<u:type typeName="aurora.database.service.IDatabaseServiceFactory" />
+				<u:type typeName="aurora.sqlje.core.IInstanceManager" />
+			</u:required-instances>
+        </u:configurable-instance>
+	</u:instances>
+</u:instance-config>
