@@ -2,6 +2,7 @@ package aurora.bpm.script;
 
 import java.util.HashMap;
 
+import jdk.nashorn.internal.parser.JSONParser;
 import uncertain.composite.CompositeMap;
 import aurora.javascript.Context;
 import aurora.javascript.RhinoException;
@@ -10,11 +11,14 @@ import aurora.javascript.Scriptable;
 import aurora.javascript.ScriptableObject;
 import aurora.javascript.Undefined;
 import aurora.javascript.Wrapper;
+import aurora.javascript.json.JsonParser;
 import aurora.plugin.script.engine.AuroraScriptEngine;
 import aurora.plugin.script.engine.CompiledScriptCache;
 import aurora.plugin.script.engine.InterruptException;
+import aurora.plugin.script.scriptobject.CompositeMapObject;
 
 public class BPMScriptEngine extends AuroraScriptEngine {
+	public static final String DATA_OBJECT = "data_object";
 	private HashMap<String, Object> localVariable = new HashMap<String, Object>();
 
 	public BPMScriptEngine(CompositeMap context) {
@@ -28,6 +32,14 @@ public class BPMScriptEngine extends AuroraScriptEngine {
 	@Override
 	protected void preDefine(Context cx, Scriptable scope) {
 		super.preDefine(cx, scope);
+		CompositeMap data_object = service_context.getChild(DATA_OBJECT);
+		if (data_object != null) {
+			Scriptable data = cx
+					.newObject(scope, CompositeMapObject.CLASS_NAME,
+							new Object[] { data_object });
+			ScriptableObject.defineProperty(scope, "$data", data,
+					ScriptableObject.EMPTY);
+		}
 		for (String key : localVariable.keySet())
 			ScriptableObject.defineProperty(scope, key, localVariable.get(key),
 					ScriptableObject.READONLY);
@@ -42,7 +54,7 @@ public class BPMScriptEngine extends AuroraScriptEngine {
 			scope.setParentScope(null);
 			scope.setPrototype(topLevel);
 			preDefine(cx, scope);
-			//ScriptImportor.organizeUserImport(cx, scope, service_context);
+			// ScriptImportor.organizeUserImport(cx, scope, service_context);
 			Script scr = CompiledScriptCache.getInstance()
 					.getScript(source, cx);
 			ret = scr == null ? null : scr.exec(cx, scope);

@@ -41,7 +41,6 @@ public class DefinitionFactory {
 
 	private String defaultLoadType = "db";// fs
 	private String baseDir = "";
-	private IDatabaseServiceFactory dsf;
 
 	// static {
 	// try {
@@ -64,10 +63,9 @@ public class DefinitionFactory {
 	// }
 	// }
 
-	public DefinitionFactory(OCManager ocm, IDatabaseServiceFactory dsf) {
+	public DefinitionFactory(OCManager ocm) {
 		super();
 		this.ocManager = ocm;
-		this.dsf = dsf;
 		loader = new CompositeLoader(".", "bpmn");
 		loader.setCaseInsensitive(true);
 		ClassRegistry reg = ocManager.getClassRegistry();

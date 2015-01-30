@@ -1,15 +1,14 @@
 package aurora.bpm.command;
 
-import java.util.List;
-
-import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.UserTask;
 
-import uncertain.composite.CompositeMap;
+import aurora.bpm.command.sqlje.BpmnUsertaskNode;
+import aurora.bpm.command.sqlje.approve;
+import aurora.bpm.command.sqlje.user_task;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
 
-public class UserTaskExecutor extends AbstractCommandExecutor {
+public class UserTaskExecutor extends ApproveCmdExecutor {
 	public UserTaskExecutor(IDatabaseServiceFactory dsf) {
 		super(dsf);
 	}
@@ -19,21 +18,51 @@ public class UserTaskExecutor extends AbstractCommandExecutor {
 	@Override
 	public void executeWithSqlCallStack(ISqlCallStack callStack, Command cmd)
 			throws Exception {
+		Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
+		Long user_id = cmd.getOptions().getLong(USER_ID);
 		String node_id = cmd.getOptions().getString(NODE_ID);
 		org.eclipse.bpmn2.Process process = getProcess(loadDefinitions(cmd,
 				callStack));
-		UserTask ut = findFlowElementById(process, node_id, UserTask.class);
-		List<ResourceRole> resRoles=ut.getResources();
-		for(ResourceRole rl:resRoles) {
-			//rl.get
+		UserTask currentNode = findFlowElementById(process, node_id,
+				UserTask.class);
+		String code = cmd.getOptions().getString(PROCESS_CODE);
+		String version = cmd.getOptions().getString(PROCESS_VERSION);
+		user_task ut = createProc(user_task.class, callStack);
+
+		// get configuration for current user task node
+		BpmnUsertaskNode userTaskSetting = ut.query(code, version, node_id);
+		Long usertask_id = userTaskSetting.usertask_id;
+
+		if (eq(userTaskSetting.recipient_type, 1L)) {
+			// 自动审批通过
+			// TODO create approve record
+			approve appr = createProc(approve.class, callStack);
+			appr.create_approve_record(instance_id, usertask_id, null, "PASS",
+					"[自动审批通过]", null, null, user_id);
+			callStack.getContextData().put(APPROVE_RESULT_PATH, 1L);
+			gotoNext(currentNode, callStack, cmd, process, node_id, 1L);
+			return;
+		} else if (eq(userTaskSetting.recipient_type, -1L)) {
+			// 自动审批拒绝
+			// TODO create approve record
+			approve appr = createProc(approve.class, callStack);
+			appr.create_approve_record(instance_id, usertask_id, null,
+					"REJECT", "[自动审批拒绝]", null, null, user_id);
+			callStack.getContextData().put(APPROVE_RESULT_PATH, -1L);
+			gotoNext(currentNode, callStack, cmd, process, node_id, -1L);
+			return;
 		}
-		//ut.get
-		System.out.println("[user task]" + node_id + ", recipient created.");
-		// test code
-		CompositeMap opts = cloneOptions(cmd);
-		Command cmd2 = new Command(ApproveCmdExecutor.TYPE, opts);
-		dispatchCommand(callStack, cmd2);
-		// end test code
+
+		ut.create_instance_node_rule(instance_id, usertask_id, user_id);
+		ut.create_instance_node_hierarchy(instance_id, usertask_id, user_id);
+		ut.create_instance_node_recipient(instance_id, usertask_id, user_id);
+
+		ut.auto_approve(instance_id, usertask_id, user_id);
+
+		if (ut.auto_pass(instance_id, usertask_id, user_id)) {
+			createOutgoingPath(callStack, currentNode, cmd);
+		}
+
 	}
 
 }

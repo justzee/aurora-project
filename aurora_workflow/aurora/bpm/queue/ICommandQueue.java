@@ -4,6 +4,8 @@ import aurora.bpm.command.Command;
 
 public interface ICommandQueue {
 
+	String QUEUE_ID = "__queue_id__";
+
 	/**
 	 * Inserts the specified element into this queue if it is possible to do so
 	 * immediately .
@@ -43,8 +45,11 @@ public interface ICommandQueue {
 	boolean isEmpty() throws Exception;
 
 	int size() throws Exception;
-	
+
 	void setQueueId(int queueId);
+	
+	void addQueueListener(IQueueListener ql);
+
 	int getQueueId();
 
 	void startListen();

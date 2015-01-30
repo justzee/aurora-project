@@ -11,5 +11,6 @@ public class BpmnPathInstance {
 	public String status;
 	public String prev_node;
 	public String current_node;
+	public String node_id;
 
 }

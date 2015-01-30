@@ -1,5 +1,6 @@
 package aurora.bpm.command;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
@@ -7,14 +8,22 @@ import javax.sql.DataSource;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.json.JSONObject;
 
 import uncertain.composite.CompositeMap;
+import uncertain.composite.JSONAdaptor;
+import uncertain.util.FastStringReader;
+import aurora.bpm.command.sqlje.BpmnProcessData;
 import aurora.bpm.command.sqlje.BpmnProcessInstance;
 import aurora.bpm.command.sqlje.instance;
 import aurora.bpm.command.sqlje.path;
 import aurora.bpm.engine.ExecutorContext;
+import aurora.bpm.queue.ICommandQueue;
+import aurora.bpm.queue.MultiCommandQueue;
 import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
+import aurora.javascript.json.JsonParser;
+import aurora.service.json.JSONPrintWriter;
 import aurora.sqlje.core.ISqlCallEnabled;
 import aurora.sqlje.core.ISqlCallStack;
 import aurora.sqlje.core.SqlCallStack;
@@ -24,11 +33,14 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	public static final String INSTANCE_ID = "instance_id";
 	public static final String PROCESS_CODE = "process_code";
 	public static final String PROCESS_VERSION = "process_version";
-	public static final String NODE_ID = "node_id";
 	public static final String RECORD_ID = "record_id";
 	public static final String USER_ID = "user_id";
-	public static final String[] STANDARD_PROPERTIES = { INSTANCE_ID,
-			PROCESS_CODE, PROCESS_VERSION, RECORD_ID, USER_ID };
+	public static final String[] STANDARD_PROPERTIES = {
+			ICommandQueue.QUEUE_ID, INSTANCE_ID, PROCESS_CODE, PROCESS_VERSION,
+			RECORD_ID, USER_ID };
+	public static final String NODE_ID = "node_id";
+	public static final String PATH_ID = "path_id";
+	public static final String SEQUENCE_FLOW_ID = "sequence_flow_id";
 
 	private ExecutorContext context;
 	protected IDatabaseServiceFactory dsf;
@@ -89,9 +101,24 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 				cmd.getOptions().put(PROCESS_CODE, bpi.process_code);
 				cmd.getOptions().put(PROCESS_VERSION, bpi.process_version);
 				running = eq(bpi.status, "RUNNING");
+				if(!running)
+					System.err.println("process status:"+bpi.status+"(instance_id:"+instance_id+")");
+					
 			}
-			if (running)
+			if (running && canExecute(callStack, cmd)) {
 				executeWithSqlCallStack(callStack, cmd);
+				// save data_object
+				CompositeMap map = callStack.getContextData().getChild(
+						BPMScriptEngine.DATA_OBJECT);
+				if (map != null) {
+					BpmnProcessData data = new BpmnProcessData();
+					data.instance_id = cmd.getOptions().getLong(INSTANCE_ID);
+					JSONObject jsonobj = JSONAdaptor.toJSONObject(map);
+					data.data_object = jsonobj.toString();
+					instance inst = createProc(instance.class, callStack);
+					inst.saveDataObject(data);
+				}
+			}
 			callStack.commit();
 		} catch (Exception e) {
 			callStack.rollback();
@@ -99,6 +126,10 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 		} finally {
 			releaseSqlCallStack(callStack);
 		}
+	}
+
+	protected boolean canExecute(ISqlCallStack callStack, Command cmd) {
+		return true;
 	}
 
 	@Override
@@ -185,9 +216,18 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	 */
 	protected void dispatchCommand(ISqlCallStack callStack, Command cmd2)
 			throws Exception {
+		// MultiCommandQueue mcq = (MultiCommandQueue) getExecutorContext()
+		// .getObjectRegistry().getInstanceOfType(MultiCommandQueue.class);
+		// if (mcq != null) {
+		// int queueId = cmd2.getOptions().getInt(ICommandQueue.QUEUE_ID);
+		// mcq.getCommandQueue(queueId).offer(cmd2);
+		// System.out.println("put a command into queue:" + cmd2);
+		// return;
+		// }
 		ICommandExecutor executor = getExecutorContext().getCommandRegistry()
 				.findExecutor(cmd2);
 		executor.executeWithSqlCallStack(callStack, cmd2);
+
 	}
 
 	/**
@@ -200,11 +240,15 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 		path cp = createProc(path.class, callStack);
 		Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
 		Long path_id = cp.create(instance_id, sf.getSourceRef().getId(), sf
-				.getTargetRef().getId());
-		System.out.println("path created ,id:" + path_id);
+				.getTargetRef().getId(), sf.getId());
+		System.out.printf("path <%s> created ,id:%d\n", sf.getId(), path_id);
+
+		cp.createPathLog(instance_id, path_id, 1L, sf.getSourceRef().getId(),
+				sf.getTargetRef().getId(), "");
 
 		CompositeMap opts = createOptionsWithStandardInfo(cmd);
-		opts.put("path_id", path_id);
+		opts.put(PATH_ID, path_id);
+		opts.put(SEQUENCE_FLOW_ID, sf.getId());
 		// create a PROCEED command
 		Command cmd2 = new Command(ProceedCmdExecutor.TYPE, opts);
 		dispatchCommand(callStack, cmd2);

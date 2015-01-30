@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.ParallelGateway;
@@ -11,7 +12,6 @@ import org.eclipse.bpmn2.StartEvent;
 
 import uncertain.ocm.IObjectCreator;
 import aurora.bpm.engine.ExecutorContext;
-import aurora.javascript.Ref;
 
 public class CommandRegistry {
 	private HashMap<String, ICommandExecutor> registry = new HashMap<String, ICommandExecutor>();
@@ -74,9 +74,11 @@ public class CommandRegistry {
 			loadDefault_(ScriptTaskExecutor.class);
 			loadDefault_(UserTaskExecutor.class);
 			loadDefault_(ManualTaskExecutor.class);
+			loadDefault_(ExceptionLoggerExecutor.class);
 			bind(StartEvent.class, CreateInstanceCmdExecutor.class);
 			bind(ParallelGateway.class, ParallelGatewayExecutor.class);
 			bind(InclusiveGateway.class, InclusiveGatewayExecutor.class);
+			bind(ExclusiveGateway.class, ExclusiveGatewayExecutor.class);
 			bind(EndEvent.class, EndEventExecutor.class);
 			System.out.println("builtin command registry loaded.");
 		} catch (Exception e) {

@@ -3,10 +3,11 @@ package aurora.bpm.command;
 import java.util.List;
 
 import org.eclipse.bpmn2.ExclusiveGateway;
-import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 
+import aurora.bpm.command.sqlje.BpmnProcessToken;
+import aurora.bpm.command.sqlje.path;
 import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
@@ -20,6 +21,18 @@ public class ExclusiveGatewayExecutor extends AbstractCommandExecutor {
 	@Override
 	public void executeWithSqlCallStack(ISqlCallStack callStack, Command cmd)
 			throws Exception {
+		// check and consume token
+		path p = createProc(path.class, callStack);
+		BpmnProcessToken token = p.getToken(
+				cmd.getOptions().getLong(INSTANCE_ID), cmd.getOptions()
+						.getString(SEQUENCE_FLOW_ID));
+		if (token == null) {
+			//this will never happen on normal situation
+			System.err.println("token not found:" + cmd);
+			return;
+		}
+		p.consumeToken(token);
+
 		String node_id = cmd.getOptions().getString(NODE_ID);
 		org.eclipse.bpmn2.Process process = getProcess(loadDefinitions(cmd,
 				callStack));
@@ -30,6 +43,7 @@ public class ExclusiveGatewayExecutor extends AbstractCommandExecutor {
 		BPMScriptEngine engine = prepareScriptEngine(callStack, cmd);
 		engine.registry("process", process);
 		engine.registry("currentNode", eg);
+
 		for (SequenceFlow sf : outgoings) {
 			if (sf == eg.getDefault())
 				continue;

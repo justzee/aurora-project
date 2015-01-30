@@ -1,10 +1,176 @@
 package aurora.bpm.command.sqlje;
 
+import java.util.Arrays;
+
 import uncertain.composite.*;
-import java.io.Reader;
 
 public class approve {
-	public void approve(Long instance_id,Long record_id,Long user_id,String action_code) throws Exception {
+	
+	public BpmnUsertaskNode queryByRecipientRecordId(Long record_id) throws Exception{
+		BpmnUsertaskNode bun=#{
+			select * from bpmn_usertask_node
+			where usertask_id = (
+					select usertask_id from bpmn_instance_node_recipient
+					where record_id = ${record_id})
+		};
 		
+		return bun;
 	}
+	
+	
+	public Long approve(Long instance_id,Long rcpt_record_id,Long user_id,String action_code,String approve_content) throws Exception {
+		BpmnInstanceNodeRecipient rcpt = null;
+		try {
+			rcpt = #{select * from bpmn_instance_node_recipient where record_id = ${rcpt_record_id}};
+		}catch(NoDataFoundException e) {
+			throw new Exception("工作流审批 : 未找到代办记录:record_id:"+rcpt_record_id);
+		}
+		if(check_approve_validation(rcpt_record_id,action_code,user_id)==0) {
+			throw new Exception("工作流审批 ：审批权限交验结果为'否', 工作流审批中止.");
+		}
+		if(!eq(rcpt.user_id , user_id)) {
+			System.out.println("工作流审批 ：user_id 权限检查结果为'否',工作流审批中止");
+			return -2L; 
+		}
+		//检查节点是否能进行指定的action
+		
+		Long usertask_id=rcpt.usertask_id;
+		
+		//创建审批记录
+		Long attachment_id = #{select n.attachment_id from bpmn_instance_node_recipient n where n.record_id=${rcpt_record_id}};
+		Long is_required=0L;
+		Long approve_record_id =create_approve_record(instance_id, usertask_id, 
+				rcpt.seq_number, action_code, approve_content, rcpt_record_id, attachment_id, user_id);
+		
+		//删除接收者记录
+		#{delete from bpmn_instance_node_recipient where record_id=${rcpt_record_id}};
+		
+		BpmnUsertaskNode bun = #{select * from bpmn_usertask_node where usertask_id=${usertask_id}};
+		if(in(bun.approval_type,0L,1L,2L,4L,7L)) {
+			return approveByApproverCount(instance_id, usertask_id, bun);
+		}
+		
+		
+		
+		return 0L;
+	}
+	
+	
+	public Long create_approve_record(Long instance_id,Long usertask_id,Long seq_number,String action_code,
+			String approve_content,Long rcpt_record_id,Long attachment_id,Long user_id)throws Exception{
+		BpmnApproveRecord bar = new BpmnApproveRecord();
+		bar.instance_id=instance_id;
+		bar.usertask_id=usertask_id;
+		bar.seq_number = seq_number;
+		bar.action_token = action_code;
+		bar.comment_text = approve_content;
+		bar.rcpt_record_id = rcpt_record_id;
+		bar.attachment_id=attachment_id;
+		$sql.insert(bar);
+		return bar.record_id;
+	}
+
+	/**
+	 * 按人数审批<br>
+	 * 
+	 * @return 返回 -1,审批拒绝<br>
+	 *         返回 1,审批通过<br>
+	 *         返回 0,审批尚未得出结果,需等待其他审批人
+	 * 
+	 */
+	private Long approveByApproverCount(Long instance_id,Long usertask_id,BpmnUsertaskNode bun) throws Exception {
+		//取得所有审批人数量
+		Long all_approver_count=#{
+				select count(1) from bpmn_instance_node_hierarchy
+					where instance_id=${instance_id}
+					and usertask_id=${usertask_id}
+					and coalesce(disabled_flag,'N')='N' };
+		//取得审批拒绝的人数
+		Long terminate_count=#{
+				select count(1) from bpmn_approve_record r
+					where r.instance_id=${instance_id}
+					and r.usertask_id=${usertask_id}
+					and r.action_token='REJECT'
+					and coalesce(disabled_flag,'N')='N'};
+		//取得审批通过的人数
+		Long passed_count = #{
+				select count(1) from bpmn_approve_record r
+					where r.instance_id=${instance_id}
+					and r.usertask_id = ${usertask_id}
+					and r.action_token= 'PASS'
+					and coalesce(disabled_flag,'N')='N'};
+					
+		Long quantity = nvl(bun.quantity,0L);
+		if(bun.approval_type == 0) {
+			//单人审批: 拒绝人数和总人数相同，则说明所有人都拒绝
+			if(terminate_count == all_approver_count)
+				return -1L;
+		}else if(bun.approval_type == 1) {
+			//全部审批 1
+		    //如果有1人拒绝则终止
+			if(terminate_count > 0)
+				return -1L;
+		} else if(bun.approval_type == 2) {
+			//一定比例2
+			//拒绝的比例 > (1 - 审批通过的比例) , 则终止
+			if(all_approver_count == 0)
+				return -1L;
+			if(terminate_count * 100d / all_approver_count > (100 - quantity))
+				return -1L;
+			if(passed_count * 100d / all_approver_count > quantity)
+				return 1L;
+		} else if(bun.approval_type == 4) {
+			//一定人数3
+			//拒绝的人数 > (总数 - 审批通过的人数)
+			if(terminate_count > (all_approver_count - quantity))
+				return -1L;
+			if(passed_count > quantity)
+				return 1L;
+		}else if(bun.approval_type == 6) {
+			//一票通过/拒绝
+			if(terminate_count > 0 && passed_count > 0)
+				System.err.println("一票通过/拒绝 数据异常");
+			if(terminate_count > 0)
+				return -1L;
+			if(passed_count > 0)
+				return 1L;
+		}
+		
+		//都拒绝时,拒绝,都通过时,通过
+		if(terminate_count == all_approver_count)
+			return -1L;
+		else if(passed_count == all_approver_count)
+			return 1L;
+		return 0L;
+	}
+
+	private Long approveByRuleCount() throws Exception {
+		return 1L;
+	}
+
+	public Long check_approve_validation(Long rcpt_record_id,
+			String action_code, Long user_id) throws Exception {
+		return 1L;
+	}
+
+	public static boolean eq(Object o1, Object o2) {
+		if (o1 == null)
+			return o2 == null;
+		return o1.equals(o2);
+	}
+
+	public static boolean in(Object o0, Object... args) {
+		return Arrays.asList(args).contains(o0);
+	}
+
+	public static <T> T coalesce(T obj, T def) {
+		if (obj == null)
+			return def;
+		return obj;
+	}
+
+	public static <T> T nvl(T obj, T def) {
+		return coalesce(obj, def);
+	}
+
 }

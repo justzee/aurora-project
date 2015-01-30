@@ -1,26 +1,72 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
+import java.util.List;
 import aurora.bpm.command.sqlje.*;
 
 public class path {
-	public Long create(Long instance_id, String preNode, String currentNode)
-			throws Exception {
+	public Long create(Long instance_id, String preNode, String currentNode,
+			String node_id) throws Exception {
 		BpmnPathInstance bpi = new BpmnPathInstance();
 		bpi.instance_id = instance_id;
 		bpi.status = "RUNNING";
 		bpi.prev_node = preNode;
 		bpi.current_node = currentNode;
+		bpi.node_id = node_id;
 		$sql.insert(bpi);
+
+		// generate token
+		BpmnProcessToken token = new BpmnProcessToken();
+		token.instance_id = instance_id;
+		token.path_id = bpi.path_id;
+		token.node_id = node_id;
+		$sql.insert(token);
+		//
 		return bpi.path_id;
 	}
 
-	public void close(Long instance_id, Long path_id) throws Exception {
+	public void createPathLog(Long instance_id, Long path_id, Long user_id,
+			String prev_node, String current_node, String log_content)
+			throws Exception {
+		BpmnPathLog bpl = new BpmnPathLog();
+		bpl.instance_id = instance_id;
+		bpl.path_id = path_id;
+		bpl.user_id = "" + user_id;
+		bpl.prev_node = prev_node;
+		bpl.current_node = current_node;
+		bpl.log_content = bpl.log_content;
+		$sql.insert(bpl);
+	}
+
+	public void closePath(Long instance_id, Long path_id) throws Exception {
 		#{update bpmn_path_instance
 			 set status='FINISH'
 		   where instance_id=${instance_id} 
-			 and path_id=${path_id}
-		};
+			 and path_id=${path_id}};
+	}
+
+	public BpmnProcessToken getToken(Long instance_id,String sf_id) throws Exception {
+		try {
+			BpmnProcessToken token = #{select * from bpmn_process_token 
+where instance_id=${instance_id} and node_id = ${sf_id} order by token_id}.limit(0,1);
+			return token;
+		}catch(NoDataFoundException e) {
+		}
+		return null;
+	}
+
+	public List<BpmnProcessToken> getTokens(Long instance_id,String sf_id) throws Exception {
+		List<BpmnProcessToken> list = #{select * from bpmn_process_token 
+where instance_id=${instance_id} and node_id = ${sf_id} order by token_id};
+		return list;
+	}
+
+	/**
+	 * consume a token and  close related path
+	 */
+	public void consumeToken(BpmnProcessToken token) throws Exception{
+		$sql.delete(token);
+		closePath(token.instance_id, token.path_id);
 	}
 
 	public BpmnPathInstance query(Long path_id) throws Exception{
@@ -34,4 +80,5 @@ public class path {
 		   where path_id = ${path_id}
 		};
 	}
+
 }

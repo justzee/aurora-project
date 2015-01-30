@@ -59,7 +59,6 @@ public class RedisBasedCommandQueue extends DefaultCommandQueue {
 
 	@Override
 	public Command peek() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -70,15 +69,21 @@ public class RedisBasedCommandQueue extends DefaultCommandQueue {
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public void connect() {
+		super.connect();
 		clientPush = new Jedis(ip, port);
 		clientPop = new Jedis(ip, port);
 		System.out.printf("Redis server connected on %s:%d(queue id:%d)\n", ip,
 				port, getQueueId());
+	}
+
+	public void disconnect() {
+		super.disconnect();
+		clientPop.close();
+		clientPush.close();
 	}
 
 }
