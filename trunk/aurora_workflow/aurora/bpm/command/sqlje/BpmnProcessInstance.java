@@ -12,4 +12,5 @@ public class BpmnProcessInstance {
 	public String process_code;
 	public String process_version;
 	public String description;
+	public Long instance_param;
 }

@@ -1,0 +1,130 @@
+package aurora.bpm.command.sqlje;
+
+import uncertain.composite.*;
+import java.util.List;
+
+public class recipient_rule_common {
+	
+	public BpmnDocumentReference getDocumentReference(Long instance_id) throws Exception{
+		BpmnDocumentReference doc_ref = #{select *
+			  from bpmn_document_reference
+			  where category_id = (select d.category_id
+			                         from bpmn_process_define d, bpmn_process_instance i
+			                        where d.process_code = i.process_code
+			                          and d.process_version = i.process_version
+			                          and i.instance_id = ${instance_id})
+		};
+		return doc_ref;
+	}
+	
+	public Long getInstanceParam(Long instance_id) throws Exception{
+		Long instance_param = #{select instance_param from bpmn_process_instance where instance_id=${instance_id}};
+		return instance_param;
+	}
+
+	public Long get_instance_company(Long instance_id) throws Exception {
+		try {
+			BpmnDocumentReference doc_ref = getDocumentReference(instance_id);
+			Long instance_param = getInstanceParam(instance_id);
+			Long comapny_id=#{
+				select ${! doc_ref.ref_company_column_name} 
+				from ${! doc_ref.document_table_name} z
+				where ${! doc_ref.ref_id_column_name} = ${instance_param}
+			};
+			return comapny_id;
+		}catch(NoDataFoundException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 取申请者 岗位
+	 */
+	public List<Long> get_document_position(Long instance_id) throws Exception{
+		BpmnDocumentReference doc_ref = getDocumentReference(instance_id);
+		Long instance_param = getInstanceParam(instance_id);
+		List<Long> list = #{
+			select distinct position_id 
+			from ${! "("+doc_ref.ref_detail+")"} z
+			where ${! doc_ref.ref_id_column_name} = ${instance_param}
+		};
+		return list;
+	}
+	
+	/**
+	 * 取 申请者
+	 */
+	public List<Long> get_document_employee(Long instance_id) throws Exception{
+		BpmnDocumentReference doc_ref = getDocumentReference(instance_id);
+		Long instance_param = getInstanceParam(instance_id);
+		List<Long> list = #{
+			select distinct employee_id 
+			from ${! "("+doc_ref.ref_detail+")"} z
+			where ${! doc_ref.ref_id_column_name} = ${instance_param}
+		};
+		return list;
+	}
+	
+	/**
+	 * 取得申请者部门
+	 */
+	public List<Long> get_document_unit(Long instance_id) throws Exception{
+		BpmnDocumentReference doc_ref = getDocumentReference(instance_id);
+		Long instance_param = getInstanceParam(instance_id);
+		List<Long> list = #{
+			select distinct unit_id 
+			from ${! "("+doc_ref.ref_detail+")"} z
+			where ${! doc_ref.ref_id_column_name} = ${instance_param}
+		};
+		return list;
+	}
+	
+
+	public Long insert_wfl_instance_node_hirc(Long instance_id, Long usertask_id,
+			Long seq_number, Long approver_id, String posted_flag,
+			String disabled_flag, String note, Long rule_record_id,
+			Long rule_detail_id, Long user_id, String added_order)
+			throws Exception {
+		BpmnInstanceNodeHierarchy hir = new BpmnInstanceNodeHierarchy();
+		hir.instance_id = instance_id;
+		hir.usertask_id = usertask_id;
+		hir.seq_number = seq_number;
+		hir.approver_id = approver_id;
+		hir.posted_flag = posted_flag;
+		hir.disabled_flag = disabled_flag;
+		hir.note = note;
+		hir.rule_record_id = rule_record_id;
+		hir.rule_detail_id = rule_detail_id;
+		hir.added_order = added_order;
+		$sql.insert(hir);
+		return hir.hierarchy_record_id;
+	}
+
+	public Long insert_wfl_instance_node_hirc(Long	seq_number,
+					Long	approver_id,
+					String	note,
+					Long	rule_record_id,
+					Long	rule_detail_id,
+					Long	user_id,
+					String	added_order) throws Exception{
+		BpmnInstanceNodeRule rule_record = #{select * from bpmn_instance_node_rule where rule_record_id = ${rule_record_id}};
+		return insert_wfl_instance_node_hirc(rule_record.instance_id,
+											rule_record.usertask_id,
+											seq_number,
+											approver_id,
+											"N",
+											"N",
+											note,
+											rule_record_id,
+											rule_detail_id,
+											user_id,
+											added_order);
+	}
+
+	public static boolean eq(Object o1, Object o2) {
+		if (o1 == null)
+			return o2 == null;
+		return o1.equals(o2);
+	}
+
+}

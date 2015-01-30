@@ -1,0 +1,48 @@
+package aurora.bpm.command.sqlje;
+
+import aurora.sqlje.core.annotation.*;
+import uncertain.composite.*;
+
+public class process_log {
+
+	public void log(Long instance_id, Long user_id, String event_type,
+			String log_content) throws Exception {
+		ProcessLog data = new ProcessLog();
+		data.instance_id = instance_id;
+		data.user_id = user_id;
+		data.event_type = event_type;
+		data.log_content = log_content;
+		$sql.insert(data);
+
+		commit();
+	}
+
+	private final void commit() throws SQLException {
+		ISqlCallStack cs = getSqlCallStack();
+		cs.commit();
+		cs.free(cs.getCurrentConnection(), false);
+	}
+
+	public void set_instance_error(Long instance_id) throws Exception{
+		#{update bpmn_process_instance set status='ERROR' where instance_id=${instance_id}};
+		
+		commit();
+	}
+
+	public static void log() {
+
+	}
+
+	@Table(name = "bpmn_process_log", stdwho = false)
+	public static class ProcessLog {
+		@PK
+		public Long log_id;
+		public Long instance_id;
+		public Long user_id;
+		public String event_type;
+		public String log_content;
+		@InsertExpression("CURRENT_TIMESTAMP")
+		public java.sql.Timestamp log_date;
+	}
+
+}

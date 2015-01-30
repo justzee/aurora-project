@@ -2,15 +2,324 @@ package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
 import aurora.bpm.command.sqlje.*;
+import java.util.*;
+import aurora.bpm.script.*;
 
 public class user_task {
-	public Long create_receipient(Long instance_id, String node_id, Long user_id)
-			throws Exception {
-		BpmnInstanceNodeRecipient binp = new BpmnInstanceNodeRecipient();
-		binp.instance_id = instance_id;
-		binp.node_id = node_id;
-		binp.user_id = user_id;
-		$sql.insert(binp);
-		return binp.record_id;
+
+	public BpmnUsertaskNode query(String code,String version,String node_id) throws Exception{
+		try {
+			BpmnUsertaskNode ut = #{select * from bpmn_usertask_node where process_code=${code} and process_version=${version} and node_id = ${node_id}};
+			return ut;
+		}catch(NoDataFoundException e) {
+			
+		}
+		return null;
 	}
+	
+
+	public List<BpmnNodeRecipientSet> getRecipientSet(Long usertask_id) throws Exception{
+		List<BpmnNodeRecipientSet> list = #{select * from bpmn_node_recipient_set where usertask_id = ${usertask_id} order by recipient_sequence};
+		return list;
+	}
+
+	public BpmnRecipientRules getRecipientRule(String rule_code) throws Exception{
+		BpmnRecipientRules rule = #{select * from bpmn_recipient_rules where rule_code = ${rule_code}};
+		return rule;
+	}
+
+	void log(Object obj) {
+		System.out.println(obj);
+	}
+
+	/**
+	 * 创建审批规则
+	 */
+	public void create_instance_node_rule(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+		//节点级审批规则
+		for(BpmnNodeRecipientSet node_recipient:#{select * from bpmn_node_recipient_set where usertask_id=${usertask_id}}) {
+			insert_wfl_instance_node_rule(instance_id,
+										  usertask_id,
+										  "NODE",
+										  node_recipient.recipient_set_id,
+										  node_recipient.rule_code,
+										  node_recipient.rule_sequence,
+										  node_recipient.recipient_sequence,
+										  node_recipient.parameter_1_value,
+										  node_recipient.parameter_2_value,
+										  node_recipient.parameter_3_value,
+										  node_recipient.parameter_4_value,
+										  "RECIPIENT_RULE",
+										  user_id );
+		}
+		//工作流级审批规则
+		//...
+		//系统级审批规则
+	}
+
+	public Long insert_wfl_instance_node_rule(Long instance_id,
+			Long usertask_id, String recipient_type, Long recipient_set_id,
+			String rule_code, Long rule_sequence, Long recipient_sequence,
+			String param1, String param2, String param3, String param4,
+			String rule_type, Long user_id) throws Exception {
+		BpmnInstanceNodeRule rule = new BpmnInstanceNodeRule();
+		rule.instance_id = instance_id;
+		rule.usertask_id = usertask_id;
+		rule.recipient_type = recipient_type;
+		rule.rule_code = rule_code;
+		rule.rule_sequence = rule_sequence;
+		rule.recipient_sequence = recipient_sequence;
+		rule.parameter_1_value = param1;
+		rule.parameter_2_value = param2;
+		rule.parameter_3_value = param3;
+		rule.parameter_4_value = param4;
+		rule.rule_type = rule_type;
+		//rule.user_id = user_id;
+		$sql.insert(rule);
+		return rule.rule_record_id;
+	}
+
+	/**
+	 * 创建审批层次
+	 */
+	public void create_instance_node_hierarchy(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+		for(BpmnInstanceNodeRule recipient_rule:#{select * from bpmn_instance_node_rule 
+			where instance_id = ${instance_id} and usertask_id=${usertask_id}
+		    			and rule_type = 'RECIPIENT_RULE' order by rule_sequence }) {
+			if(eq(recipient_rule.rule_code,"SCRIPT")) {
+				System.out.println("####will execute script here#####");//TODO
+			}else {
+				String proc_name = null;
+				if(eq(recipient_rule.rule_code,"SQLJE"))
+					proc_name = recipient_rule.parameter_1_value;
+				else {
+					proc_name = #{select procedure_name from bpmn_recipient_rules where rule_code = ${recipient_rule.rule_code}};
+				}
+				Class<? extends ISqlCallEnabled> clazz=null;
+				try {
+					clazz = (Class<? extends ISqlCallEnabled>)Class.forName(proc_name);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				ISqlCallEnabled proc = getInstanceManager().createInstance(clazz,this);
+				if(proc instanceof IRecipientRule) {
+					System.out.println("execute proc:"+proc_name);
+					((IRecipientRule)proc).execute(recipient_rule.parameter_1_value,
+							recipient_rule.parameter_2_value,
+							recipient_rule.parameter_3_value,
+							recipient_rule.parameter_4_value,
+							recipient_rule.rule_record_id);
+				}
+			}
+		}
+		
+		//删除重复记录
+		for(BpmnInstanceNodeHierarchy repeat_rcpt:#{select approver_id,
+											            min(t.hierarchy_record_id) as hierarchy_record_id
+											       from bpmn_instance_node_hierarchy t
+											      where t.instance_id = ${instance_id}
+											        and t.usertask_id = ${usertask_id}
+											      group by approver_id
+											     having count(*) > 1}) {
+			#{update bpmn_instance_node_hierarchy
+		         set disabled_flag    = 'Y',
+		             note             = 'Repeated Recipient Rule',
+		             last_update_date = CURRENT_TIMESTAMP,
+		             last_updated_by  = ${user_id}
+		       where instance_id = ${instance_id}
+		         and usertask_id = ${usertask_id}
+		         and approver_id = repeat_rcpt.approver_id
+		         and hierarchy_record_id > repeat_rcpt.hierarchy_record_id};
+		}
+	}
+
+	/**
+	 * 创建审批人(代办)
+	 */
+	public void create_instance_node_recipient(Long instance_id,
+			Long usertask_id, Long user_id) throws Exception {
+		CompositeMap current_node = #{select * from bpmn_usertask_node where usertask_id = ${usertask_id}};
+		Long current_node_id=usertask_id;
+		Long can_no_approver =current_node.getLong("can_no_approver",0);
+		
+		Long count = #{select count(*) from bpmn_instance_node_hierarchy
+			where instance_id=${instance_id}
+			and usertask_id = ${current_node_id}
+			and coalesce(posted_flag,'N')='N'
+			and coalesce(disabled_flag,'N')='N'};
+		if(count == 0 && can_no_approver == 0) {
+			throw new Exception(" no approver found ");//TODO
+		}
+		
+		
+		for(Long root_approver:#{select a.hierarchy_record_id
+								from bpmn_instance_node_hierarchy a
+								where a.instance_id = ${instance_id}
+								and a.usertask_id = ${usertask_id}
+								and a.rule_detail_id is null}) {
+			for(Map approver_seq : #{select a.rule_record_id,
+										min(a.seq_number) as seq_number
+									from bpmn_instance_node_hierarchy a
+									where a.instance_id=${instance_id}
+									and a.usertask_id =${usertask_id}
+									and coalesce(posted_flag,'N')='N'
+									and coalesce(disabled_flag,'N')='N'
+									group by a.rule_record_id}) {
+				Long rule_record_id = approver_seq.rule_record_id;
+				Long seq_number = approver_seq.seq_number;
+				Long root_hierarchy_id = root_approver;
+				count=#{select count(*)
+					from bpmn_instance_node_hierarchy a,bpmn_instance_node_recipient b
+					where a.hierarchy_record_id=b.hierarchy_record_id
+					and a.instance_id = ${instance_id}
+					and a.usertask_id = ${usertask_id}
+					and a.rule_record_id = ${rule_record_id}
+					and a.hierarchy_record_id in(
+							select a.hierarchy_record_id
+							from bpmn_instance_node_hierarchy a
+							where a.instance_id=${instance_id}
+							and a.usertask_id=${usertask_id}
+							and coalesce(posted_flag,'N')='N'
+							and coalesce(disabled_flag,'N')='N')
+					and a.seq_number<${seq_number}};
+				if(count==0) {
+					CompositeMap un_post_user=#{
+						 select a.approver_id, a.hierarchy_record_id
+					        from bpmn_instance_node_hierarchy a
+					       where instance_id = ${instance_id}
+					         and usertask_id = ${current_node_id}
+					         and seq_number = ${seq_number}
+					         and (rule_record_id = ${rule_record_id} or
+					             (rule_record_id is null and ${rule_record_id} is null))
+					         and hierarchy_record_id in
+					             (select a.hierarchy_record_id
+					                from bpmn_instance_node_hierarchy a
+					               where a.instance_id = ${instance_id}
+					                 and a.usertask_id = ${usertask_id}
+					                 and coalesce(posted_flag, 'N') = 'N'
+					                 and coalesce(disabled_flag, 'N ') = 'N')
+					         and coalesce(posted_flag, 'N') = 'N'
+					         and coalesce(disabled_flag, 'N') = 'N'}.limit(0,1);
+					Long approver_id		 = un_post_user.getLong("approver_id");
+					Long hierarchy_record_id = un_post_user.getLong("hierarchy_record_id");
+					#{update bpmn_instance_node_hierarchy
+						set posted_flag='Y',
+						last_update_date=current_timestamp,
+						last_updated_by=1
+						where hierarchy_record_id=${hierarchy_record_id}};
+					create_node_recipient(instance_id,
+										current_node_id,
+										seq_number,
+										approver_id,
+										hierarchy_record_id,
+										user_id);
+				}
+			}
+		}
+	}
+	
+	public Long  create_node_recipient(Long instance_id,Long usertask_id,Long seq_number,
+			Long recipient_id,Long hierarchy_record_id,Long user_id) throws Exception {
+		BpmnUsertaskNode node = #{select * from bpmn_usertask_node where usertask_id=${usertask_id}};
+		Timestamp date_limit=null;
+		if(node.is_date_limited == 1) {
+			//
+		}
+		
+		BpmnInstanceNodeRecipient rcpt = new BpmnInstanceNodeRecipient();
+		rcpt.instance_id = instance_id;
+		rcpt.usertask_id = usertask_id;
+		rcpt.seq_number = seq_number;
+		rcpt.user_id = user_id;
+		rcpt.date_limit = date_limit;
+		rcpt.hierarchy_record_id = hierarchy_record_id;
+		$sql.insert(rcpt);
+		Long record_id = rcpt.record_id;
+		
+		return record_id;
+	}
+	
+	
+	public boolean auto_approve(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+		for(CompositeMap recipient:#{
+			select r.*, n.can_auto_pass, n.is_self_re_commit
+            from bpmn_instance_node_recipient r,
+                 bpmn_usertask_node           n
+           where instance_id = ${instance_id}
+             and n.usertask_id = r.usertask_id
+             and (n.can_auto_pass = 1 or n.is_self_re_commit = 1)
+		}) {
+			String auto_approve_flag="N";
+			Long can_auto_pass = recipient.getLong("can_auto_pass");
+			Long record_id = recipient.getLong("record_id");
+			if(can_auto_pass==1) {
+				try {
+					BpmnInstanceNodeRecipient binc = #{select * from bpmn_instance_node_recipient 
+					where instance_id = ${instance_id} 
+					and record_id = ${record_id}};
+					if(binc.user_id == null) {
+						
+					}
+				}catch(NoDataFoundException e) {
+					
+				}
+				
+				
+			}
+		}
+		return false;
+	}
+	
+	public boolean auto_pass(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+		Long count_hirc = #{
+			select count(1) from bpmn_instance_node_hierarchy h
+			where h.instance_id=${instance_id}
+			and h.usertask_id = ${usertask_id}
+			and coalesce(h.disabled_flag,'N')='N'
+		};
+		Long can_no_approver = #{
+			select can_no_approver from bpmn_usertask_node
+			where usertask_id = ${usertask_id}
+		};
+		if(can_no_approver == null)
+			can_no_approver = 0L;
+		if(count_hirc == 0 && can_no_approver == 1) {
+			
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean eq(Object o1, Object o2) {
+		if (o1 == null)
+			return o2 == null;
+		return o1.equals(o2);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

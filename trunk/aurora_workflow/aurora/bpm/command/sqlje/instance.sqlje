@@ -1,26 +1,44 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
-import java.io.Reader;
+
 import aurora.bpm.command.sqlje.*;
 
 public class instance {
-	public Long create(String code,String version,Long parent_id) throws Exception {
+	public Long create(String code,String version,Long parent_id,Long instance_param) throws Exception {
 		BpmnProcessInstance bpi = new BpmnProcessInstance();
 		bpi.status="RUNNING";
 		bpi.process_code=code;
-		bpi.process_version = version;
+		bpi.process_version = version;   
 		bpi.parent_id=parent_id;
+		bpi.instance_param = instance_param;
 		$sql.insert(bpi);
+		
+		//create process data object
+		BpmnProcessData data = new BpmnProcessData();
+		data.instance_id = bpi.instance_id;
+		data.data_object = "{}";
+		$sql.insert(data);
+		//
 		return bpi.instance_id;
 	}
 	
 	public BpmnProcessInstance query(Long instance_id) throws Exception{
-		BpmnProcessInstance bpi = #{select * from bpm_process_instance where instance_id=${instance_id}};
+		BpmnProcessInstance bpi = #{select * from bpmn_process_instance where instance_id=${instance_id}};
 		return bpi;
+	}
+	
+	public BpmnProcessData getProcessData(Long instance_id) throws Exception{
+		BpmnProcessData data = #{select * from bpmn_process_data where instance_id = ${instance_id}};
+		return data;
+	}
+	
+	public void saveDataObject(BpmnProcessData data) throws Exception{
+		#{update bpmn_process_data set data_object = ${data.data_object} where instance_id = ${data.instance_id}};
 	}
 	
 	public void finish(Long instance_id) throws Exception{
 		#{update bpmn_process_instance set status='FINISH' where instance_id=${instance_id}};
+		//#{delete from bpmn_process_data where instance_id = ${instance_id}};
 	}
 }

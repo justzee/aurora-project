@@ -1,0 +1,67 @@
+package aurora.bpm.command.sqlje;
+
+import java.util.List;
+
+import uncertain.composite.*;
+
+public class get_employee_unit_manager extends recipient_rule_common implements
+		IRecipientRule {
+	public void execute(String param1, String param2, String param3,
+			String param4, Long rule_record_id) throws Exception {
+		BpmnInstanceNodeRule node_rule = #{select * from bpmn_instance_node_rule where rule_record_id=${rule_record_id}};
+		Long company_id = get_instance_company(node_rule.instance_id);
+		List<Long> positions = get_document_position(node_rule.instance_id);
+		if(positions.size()==0)
+			return;
+		for(Long position_id:positions) {
+			for(Long chief_position_id:#{SELECT n.chief_position_id
+	                FROM wfl_position_v p, wfl_unit_v n
+	               WHERE p.position_id = ${position_id}
+	                 AND p.unit_id = n.unit_id}) {
+				for(Long approver_id:#{SELECT DISTINCT u.user_id
+	                    FROM wfl_employee_assigns_v a, wfl_users_v u
+	                   WHERE a.position_id = ${chief_position_id}
+	                     AND a.employee_id = u.employee_id
+	                     AND a.company_id = ${company_id}}) {
+					insert_wfl_instance_node_hirc(node_rule.recipient_sequence,
+												approver_id,
+												"",
+												rule_record_id,
+												null,
+												1L,
+												null);
+				}
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

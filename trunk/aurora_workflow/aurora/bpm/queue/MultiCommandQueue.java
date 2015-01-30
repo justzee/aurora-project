@@ -56,8 +56,10 @@ public class MultiCommandQueue implements ILifeCycle {
 		try {
 			for (int i = 0; i < pollSize; i++) {
 				ICommandQueue cq = createQueue(i);
+				queuePool.add(cq);
 				cq.startListen();
 			}
+			System.out.println(queuePool.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

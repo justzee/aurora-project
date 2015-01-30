@@ -1,26 +1,28 @@
 package aurora.bpm.command;
 
 import java.io.ByteArrayInputStream;
-import java.io.Serializable;
 
 import org.json.JSONObject;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.JSONAdaptor;
 
-public class Command implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5148488911190894772L;
+public class Command {
 	String action;
 	CompositeMap options = new CompositeMap();
+	int queueId;
 
 	public Command() {
+		super();
+	}
+
+	public Command(String action) {
+		this();
+		setAction(action);
 	}
 
 	public Command(String action, CompositeMap options) {
+		this();
 		setAction(action);
 		setOptions(options);
 	}
@@ -47,6 +49,31 @@ public class Command implements Serializable {
 	public String toString() {
 		return "[" + action + ","
 				+ JSONAdaptor.toJSONObject(options).toString() + "]";
+	}
+
+	public int getQueueId() {
+		return queueId;
+	}
+
+	public void setQueueId(int queueId) {
+		this.queueId = queueId;
+	}
+
+	/**
+	 * action equals AND option equals too
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Command))
+			return false;
+		Command cmd = (Command) obj;
+		return eq(action, cmd.getAction()) && eq(options, cmd.getOptions());
+	}
+
+	private boolean eq(Object o1, Object o2) {
+		if (o1 == null)
+			return o2 == null;
+		return o1.equals(o2);
 	}
 
 	/**
