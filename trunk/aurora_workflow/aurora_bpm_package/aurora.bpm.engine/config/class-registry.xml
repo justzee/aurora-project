@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-registry>
+  <package-mapping packageName="aurora.bpm.queue" />
+  <package-mapping packageName="aurora.bpm.command"/>
+  <package-mapping packageName="aurora.bpm.engine"/>
+</class-registry>
