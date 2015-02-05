@@ -153,7 +153,11 @@ public class CreateBPMDefineAction extends ViewAction {
 				this.model = (ServiceModel) data;
 			}
 		}
-		this.setVisible(model instanceof ServiceModel && model.isLoaded());
+		// boolean b2 = model instanceof BPMNDefineCategory;
+		boolean b1 = model instanceof ServiceModel;
+
+		this.setVisible(model.isLoaded() ? model instanceof ServiceModel
+				: false);
 
 	}
 

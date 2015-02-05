@@ -36,27 +36,6 @@ public class BPMService {
 		return sm;
 	}
 
-//	public BPMNDefineModel getBPMNDefineModel() {
-//		return bdm;
-//	}
-//
-//	public void setBPMNDefineModel(BPMNDefineModel define) {
-//		this.bdm = define;
-//	}
-
-//	public OMElement send(String url) throws AxisFault {
-//		ServiceClient client = new ServiceClient();
-//		Options options = new Options();
-//		options.setTo(new EndpointReference(url));// 修正为实际工程的URL
-//		// addAuthorization("linjinxiao", "ok", options);
-//		addAuthorization(sm.getUserName(), sm.getPassword(), options);
-//
-//		client.setOptions(options);
-//		OMElement request = makeRequest(bdm);
-//		OMElement response = client.sendReceive(request);
-//		return response;
-//		// System.out.println("response:" + response.toString());
-//	}
 
 	protected void addAuthorization(String userName, String password,
 			Options options) {
