@@ -103,7 +103,7 @@ public class CreateBPMDefinePage extends UWizardPage {
 		GridData data = new GridData(GridData.FILL_BOTH);
 		t.setLayoutData(data);
 		t.addModifyListener(new TextModifyListener(DESCRIPTION, t));
-
+		// combo.select(index);
 		return c;
 	}
 

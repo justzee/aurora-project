@@ -3,7 +3,6 @@ package aurora.bpmn.designer.rcp.viewer;
 import java.util.List;
 
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -17,18 +16,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import aurora.bpmn.designer.rcp.action.TestBPMN;
+import aurora.bpmn.designer.rcp.Activator;
 import aurora.bpmn.designer.rcp.viewer.action.EditBPMDefineAction;
 import aurora.bpmn.designer.ws.BPMNDefineCategory;
 import aurora.bpmn.designer.ws.BPMNDefineModel;
 import aurora.bpmn.designer.ws.BPMNDefineModelVER;
 import aurora.bpmn.designer.ws.ServiceModel;
-import aurora.ide.designer.editor.AuroraBpmnEditor;
-import aurora.ide.designer.editor.BPMServiceInputStreamEditorInput;
+import aurora.ide.swt.util.ImagesUtils;
 
 public class BPMServiceViewer extends ViewPart {
 	public static final String ID = "aurora.bpmn.designer.rcp.viewer.BPMServiceViewer";
@@ -83,7 +80,8 @@ public class BPMServiceViewer extends ViewPart {
 			if (obj instanceof ServiceModel)
 				return ((ServiceModel) obj).getServiceName();
 			else if (obj instanceof BPMNDefineModel) {
-				return ((BPMNDefineModel) obj).getName();
+//				return ((BPMNDefineModel) obj).getName();
+				return ((BPMNDefineModel) obj).getProcess_version();
 			} else if (obj instanceof BPMNDefineCategory) {
 				return ((BPMNDefineCategory) obj).getName();
 			} else if (obj instanceof BPMNDefineModelVER) {
@@ -98,8 +96,10 @@ public class BPMServiceViewer extends ViewPart {
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			if (obj instanceof BPMNDefineCategory)
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
-			if (obj instanceof BPMNDefineModelVER)
-				imageKey = ISharedImages.IMG_OBJ_FOLDER;
+			if (obj instanceof BPMNDefineModelVER){
+//				imageKey = ISharedImages.IMG_OBJ_FOLDER;
+				return ImagesUtils.getImage("obj16/bpmn2process.png");
+			}
 			return PlatformUI.getWorkbench().getSharedImages()
 					.getImage(imageKey);
 		}
