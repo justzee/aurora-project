@@ -2,7 +2,6 @@ package aurora.bpm.script;
 
 import java.util.HashMap;
 
-import jdk.nashorn.internal.parser.JSONParser;
 import uncertain.composite.CompositeMap;
 import aurora.javascript.Context;
 import aurora.javascript.RhinoException;
@@ -11,7 +10,6 @@ import aurora.javascript.Scriptable;
 import aurora.javascript.ScriptableObject;
 import aurora.javascript.Undefined;
 import aurora.javascript.Wrapper;
-import aurora.javascript.json.JsonParser;
 import aurora.plugin.script.engine.AuroraScriptEngine;
 import aurora.plugin.script.engine.CompiledScriptCache;
 import aurora.plugin.script.engine.InterruptException;

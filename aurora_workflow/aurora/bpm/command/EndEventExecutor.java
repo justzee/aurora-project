@@ -14,7 +14,7 @@ public class EndEventExecutor extends AbstractCommandExecutor {
 	@Override
 	public void executeWithSqlCallStack(ISqlCallStack callStack, Command cmd)
 			throws Exception {
-		System.out.println("[end event]reached");
+		System.out.println("[End Event]"+cmd.getOptions().getString("node_id")+"  reached");
 		Long instance_id = cmd.getOptions()
 				.getLong(INSTANCE_ID);
 		instance inst = createProc(instance.class, callStack);

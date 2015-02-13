@@ -39,6 +39,7 @@ public class BpmnEngine extends AbstractLocatableObject implements ILifeCycle,
 			logger.log(Level.SEVERE, e.getMessage(), e);
 			throw e;
 		}
+		ior.registerInstanceOnce(getClass(), this);
 
 	}
 

@@ -37,10 +37,10 @@ public class UserTaskExecutor extends ApproveCmdExecutor {
 			// 自动审批通过
 			// TODO create approve record
 			approve appr = createProc(approve.class, callStack);
-			appr.create_approve_record(instance_id, usertask_id, null, "PASS",
+			appr.create_approve_record(instance_id, usertask_id, null, "AGREE",
 					"[自动审批通过]", null, null, user_id);
-			callStack.getContextData().put(APPROVE_RESULT_PATH, 1L);
-			gotoNext(currentNode, callStack, cmd, process, node_id, 1L);
+			callStack.getContextData().put(APPROVE_RESULT_PATH, "AGREE");
+			gotoNext(currentNode, callStack, cmd, process, node_id, "AGREE");
 			return;
 		} else if (eq(userTaskSetting.recipient_type, -1L)) {
 			// 自动审批拒绝
@@ -48,8 +48,8 @@ public class UserTaskExecutor extends ApproveCmdExecutor {
 			approve appr = createProc(approve.class, callStack);
 			appr.create_approve_record(instance_id, usertask_id, null,
 					"REJECT", "[自动审批拒绝]", null, null, user_id);
-			callStack.getContextData().put(APPROVE_RESULT_PATH, -1L);
-			gotoNext(currentNode, callStack, cmd, process, node_id, -1L);
+			callStack.getContextData().put(APPROVE_RESULT_PATH, "REJECT");
+			gotoNext(currentNode, callStack, cmd, process, node_id, "REJECT");
 			return;
 		}
 

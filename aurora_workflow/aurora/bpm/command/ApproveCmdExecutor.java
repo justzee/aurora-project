@@ -45,9 +45,9 @@ public class ApproveCmdExecutor extends AbstractCommandExecutor {
 		UserTask userTask = findFlowElementById(process, node_id,
 				UserTask.class);
 
-		Long result = appr.approve(instance_id, recipient_record, user_id,
+		String result = appr.approve(instance_id, recipient_record, user_id,
 				action_code, approve_content);
-		if (eq(result, 0L)) {
+		if (eq(result, "")) {
 			System.out
 					.printf("[usertask]%s approve not complete yet,wait ...\n",
 							node_id);
@@ -63,30 +63,30 @@ public class ApproveCmdExecutor extends AbstractCommandExecutor {
 
 	protected void gotoNext(UserTask userTask, ISqlCallStack callStack,
 			Command cmd, org.eclipse.bpmn2.Process process, String node_id,
-			Long result) throws Exception {
-		List<SequenceFlow> outgoings = userTask.getOutgoing();
-		// 如果下一个节点是选择网管,则交由选择网管进行判定
-		if (outgoings.size() == 1
-				&& outgoings.get(0).getTargetRef() instanceof ExclusiveGateway) {
-			System.out.printf("[usertask]%s decision will be made by <%s>\n",
-					node_id, outgoings.get(0).getTargetRef().getId());
-			createPath(callStack, outgoings.get(0), cmd);
-			return;
-		}
+			String result) throws Exception {
+		// List<SequenceFlow> outgoings = userTask.getOutgoing();
+		// // 如果下一个节点是选择网管,则交由选择网管进行判定
+		// if (outgoings.size() == 1
+		// && outgoings.get(0).getTargetRef() instanceof ExclusiveGateway) {
+		// System.out.printf("[usertask]%s decision will be made by <%s>\n",
+		// node_id, outgoings.get(0).getTargetRef().getId());
+		// createPath(callStack, outgoings.get(0), cmd);
+		// return;
+		// }
 
-		if (eq(result, 1L)) {
-			System.out.printf("[usertask]%s approve PASS\n", node_id);
+		if (!eq(result, "REJECT")) {
+			System.out.printf("[usertask]%s approve %s\n", node_id, result);
 			createOutgoingPath(callStack, userTask, cmd);
-		} else if (eq(result, -1L)) {
-			System.out.printf("[usertask]%s approve FAILED, goto End-Event\n",
+		} else {
+			System.out.printf("[usertask]%s approve REJECT, goto End-Event\n",
 					node_id);
 			List<org.eclipse.bpmn2.FlowElement> elements = process
 					.getFlowElements();
 			for (org.eclipse.bpmn2.FlowElement fe : elements) {
 				if (fe instanceof EndEvent) {
 					CompositeMap opts = cloneOptions(cmd);
-					Command cmd2 = new Command(EndEvent.class.getSimpleName(),
-							opts);
+					opts.put(NODE_ID, fe.getId());
+					Command cmd2 = new Command("ENDEVENT", opts);
 					dispatchCommand(callStack, cmd2);
 					return;
 				}

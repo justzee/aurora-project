@@ -70,15 +70,15 @@ public class get_employee_unit_manager extends recipient_rule_common implements
 		return _$sqlje_sqlCallStack;
 	}
 
-	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
-		_$sqlje_sqlCallStack = args0;
-	}
-
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
 	}
 
 	public void _$setInstanceManager(aurora.sqlje.core.IInstanceManager args0) {
 		_$sqlje_instanceManager = args0;
+	}
+
+	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
+		_$sqlje_sqlCallStack = args0;
 	}
 }

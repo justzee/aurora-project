@@ -197,7 +197,7 @@ public class user_task {
 					               where a.instance_id = ${instance_id}
 					                 and a.usertask_id = ${usertask_id}
 					                 and coalesce(posted_flag, 'N') = 'N'
-					                 and coalesce(disabled_flag, 'N ') = 'N')
+					                 and coalesce(disabled_flag, 'N') = 'N')
 					         and coalesce(posted_flag, 'N') = 'N'
 					         and coalesce(disabled_flag, 'N') = 'N'}.limit(0,1);
 					Long approver_id		 = un_post_user.getLong("approver_id");
@@ -222,7 +222,7 @@ public class user_task {
 			Long recipient_id,Long hierarchy_record_id,Long user_id) throws Exception {
 		BpmnUsertaskNode node = #{select * from bpmn_usertask_node where usertask_id=${usertask_id}};
 		Timestamp date_limit=null;
-		if(node.is_date_limited == 1) {
+		if(eq(node.is_date_limited , 1L)) {
 			//
 		}
 		
@@ -230,7 +230,7 @@ public class user_task {
 		rcpt.instance_id = instance_id;
 		rcpt.usertask_id = usertask_id;
 		rcpt.seq_number = seq_number;
-		rcpt.user_id = user_id;
+		rcpt.user_id = recipient_id;
 		rcpt.date_limit = date_limit;
 		rcpt.hierarchy_record_id = hierarchy_record_id;
 		$sql.insert(rcpt);
