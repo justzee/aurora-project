@@ -291,7 +291,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 				getSqlCallStack().push(_$sqlje_ps_gen44);
 				count = DataTransfer.transfer1(Long.class, _$sqlje_rs_gen12);
 				if (count == 0) {
-					String _$sqlje_sql_gen47 = "\n\t\t\t\t\t\t select a.approver_id, a.hierarchy_record_id\n\t\t\t\t\t        from bpmn_instance_node_hierarchy a\n\t\t\t\t\t       where instance_id = ?\n\t\t\t\t\t         and usertask_id = ?\n\t\t\t\t\t         and seq_number = ?\n\t\t\t\t\t         and (rule_record_id = ? or\n\t\t\t\t\t             (rule_record_id is null and ? is null))\n\t\t\t\t\t         and hierarchy_record_id in\n\t\t\t\t\t             (select a.hierarchy_record_id\n\t\t\t\t\t                from bpmn_instance_node_hierarchy a\n\t\t\t\t\t               where a.instance_id = ?\n\t\t\t\t\t                 and a.usertask_id = ?\n\t\t\t\t\t                 and coalesce(posted_flag, 'N') = 'N'\n\t\t\t\t\t                 and coalesce(disabled_flag, 'N ') = 'N')\n\t\t\t\t\t         and coalesce(posted_flag, 'N') = 'N'\n\t\t\t\t\t         and coalesce(disabled_flag, 'N') = 'N'";
+					String _$sqlje_sql_gen47 = "\n\t\t\t\t\t\t select a.approver_id, a.hierarchy_record_id\n\t\t\t\t\t        from bpmn_instance_node_hierarchy a\n\t\t\t\t\t       where instance_id = ?\n\t\t\t\t\t         and usertask_id = ?\n\t\t\t\t\t         and seq_number = ?\n\t\t\t\t\t         and (rule_record_id = ? or\n\t\t\t\t\t             (rule_record_id is null and ? is null))\n\t\t\t\t\t         and hierarchy_record_id in\n\t\t\t\t\t             (select a.hierarchy_record_id\n\t\t\t\t\t                from bpmn_instance_node_hierarchy a\n\t\t\t\t\t               where a.instance_id = ?\n\t\t\t\t\t                 and a.usertask_id = ?\n\t\t\t\t\t                 and coalesce(posted_flag, 'N') = 'N'\n\t\t\t\t\t                 and coalesce(disabled_flag, 'N') = 'N')\n\t\t\t\t\t         and coalesce(posted_flag, 'N') = 'N'\n\t\t\t\t\t         and coalesce(disabled_flag, 'N') = 'N'";
 					_$sqlje_sql_gen47 = $sql
 							._$prepareLimitSql(_$sqlje_sql_gen47);
 					PreparedStatement _$sqlje_ps_gen46 = getSqlCallStack()
@@ -353,13 +353,13 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		BpmnUsertaskNode node = DataTransfer.transfer1(BpmnUsertaskNode.class,
 				_$sqlje_rs_gen15);
 		Timestamp date_limit = null;
-		if (node.is_date_limited == 1) {
+		if (eq(node.is_date_limited, 1L)) {
 		}
 		BpmnInstanceNodeRecipient rcpt = new BpmnInstanceNodeRecipient();
 		rcpt.instance_id = instance_id;
 		rcpt.usertask_id = usertask_id;
 		rcpt.seq_number = seq_number;
-		rcpt.user_id = user_id;
+		rcpt.user_id = recipient_id;
 		rcpt.date_limit = date_limit;
 		rcpt.hierarchy_record_id = hierarchy_record_id;
 		$sql.insert(rcpt);
@@ -458,15 +458,15 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		return _$sqlje_sqlCallStack;
 	}
 
-	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
-		_$sqlje_sqlCallStack = args0;
-	}
-
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
 	}
 
 	public void _$setInstanceManager(aurora.sqlje.core.IInstanceManager args0) {
 		_$sqlje_instanceManager = args0;
+	}
+
+	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
+		_$sqlje_sqlCallStack = args0;
 	}
 }

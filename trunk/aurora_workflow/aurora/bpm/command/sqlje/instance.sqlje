@@ -14,10 +14,26 @@ public class instance {
 		bpi.instance_param = instance_param;
 		$sql.insert(bpi);
 		
+		//get parameters defined in bmpn_document_reference,put them into $data as default datas
+		BpmnDocumentReference doc_ref = null;
+		String data_object = "{}";
+		try {
+			doc_ref = #{select df.*
+				from bpmn_document_reference df,bpmn_process_define pd
+				where df.category_id = pd.category_id
+				and pd.process_code=${code}
+				and pd.process_version=${version}};
+			CompositeMap process_param = #{select * from ${! "("+doc_ref.ref_detail+")"} z
+											where ${! doc_ref.ref_id_column_name} = ${instance_param}};
+			data_object = uncertain.composite.JSONAdaptor.toJSONObject(process_param).toString();
+		}catch(NoDataFoundException e) {
+			
+		}
+		
 		//create process data object
 		BpmnProcessData data = new BpmnProcessData();
 		data.instance_id = bpi.instance_id;
-		data.data_object = "{}";
+		data.data_object = data_object;
 		$sql.insert(data);
 		//
 		return bpi.instance_id;
@@ -40,5 +56,6 @@ public class instance {
 	public void finish(Long instance_id) throws Exception{
 		#{update bpmn_process_instance set status='FINISH' where instance_id=${instance_id}};
 		//#{delete from bpmn_process_data where instance_id = ${instance_id}};
+		#{delete from bpmn_process_token where instance_id=${instance_id}};
 	}
 }
