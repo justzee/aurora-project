@@ -1,0 +1,21 @@
+CREATE TABLE `bpmn_node_recipient_set` (
+  `recipient_set_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'RECIPIENT_SET_ID',
+  `usertask_id` bigint(20) NOT NULL COMMENT '工作流节点ID',
+  `rule_code` varchar(30) DEFAULT NULL COMMENT '规则CODE',
+  `rule_sequence` decimal(10,0) DEFAULT NULL COMMENT '序号',
+  `recipient_sequence` decimal(10,0) DEFAULT NULL COMMENT '审批顺序',
+  `parameter_1_value` varchar(1000) DEFAULT NULL COMMENT '参数1值',
+  `parameter_1_desc` varchar(1000) DEFAULT NULL COMMENT '参数1描述',
+  `parameter_2_value` varchar(1000) DEFAULT NULL COMMENT '参数2值',
+  `parameter_2_desc` varchar(1000) DEFAULT NULL COMMENT '参数2描述',
+  `parameter_3_value` varchar(1000) DEFAULT NULL COMMENT '参数3值',
+  `parameter_3_desc` varchar(1000) DEFAULT NULL COMMENT '参数3描述',
+  `parameter_4_value` varchar(1000) DEFAULT NULL COMMENT '参数4值',
+  `parameter_4_desc` varchar(1000) DEFAULT NULL COMMENT '参数4描述',
+  `created_by` decimal(10,0) DEFAULT NULL COMMENT '创建用户ID',
+  `creation_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `last_updated_by` decimal(10,0) DEFAULT NULL COMMENT '最后更新用户ID',
+  `last_update_date` datetime DEFAULT NULL COMMENT '最后更新日期',
+  PRIMARY KEY (`recipient_set_id`),
+  KEY `bpmn_node_recipient_set_n1` (`usertask_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='工作流节点审批者定义表';

@@ -1,0 +1,22 @@
+CREATE TABLE `bpmn_approve_record` (
+  `record_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '审批记录ID',
+  `instance_id` bigint(20) NOT NULL COMMENT '工作流实例ID',
+  `usertask_id` bigint(20) NOT NULL COMMENT '工作流节点ID',
+  `action_token` varchar(45) NOT NULL COMMENT '审批动作ID',
+  `comment_text` varchar(2000) DEFAULT NULL COMMENT '审批备注',
+  `approve_count` decimal(10,0) DEFAULT '1' COMMENT '审批轮次',
+  `attachment_id` bigint(20) DEFAULT NULL COMMENT '附件ID',
+  `seq_number` decimal(10,0) DEFAULT NULL COMMENT '工作流节点序号',
+  `rcpt_record_id` bigint(20) DEFAULT NULL COMMENT '待办记录ID',
+  `disabled_flag` varchar(1) DEFAULT NULL COMMENT '失效标志',
+  `note` varchar(1000) DEFAULT NULL COMMENT '记录备注',
+  `created_by` decimal(10,0) DEFAULT NULL COMMENT '创建用户ID',
+  `creation_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `last_update_date` datetime DEFAULT NULL COMMENT '最后更新日期',
+  `last_updated_by` decimal(10,0) DEFAULT NULL COMMENT '最后更新用户ID',
+  PRIMARY KEY (`record_id`),
+  KEY `bpmn_approve_record_n1` (`instance_id`),
+  KEY `bpmn_approve_record_n2` (`approve_count`),
+  KEY `bpmn_approve_record_n3` (`rcpt_record_id`),
+  KEY `bpmn_approve_record_n4` (`created_by`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='审批记录表';

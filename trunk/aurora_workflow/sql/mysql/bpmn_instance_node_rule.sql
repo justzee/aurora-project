@@ -1,0 +1,21 @@
+CREATE TABLE `bpmn_instance_node_rule` (
+  `rule_record_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '审批规则ID',
+  `instance_id` bigint(20) NOT NULL COMMENT '工作流实例ID',
+  `usertask_id` bigint(20) NOT NULL COMMENT '工作流节点ID',
+  `recipient_type` varchar(30) DEFAULT NULL COMMENT '审批者来源类型',
+  `recipient_set_id` bigint(20) DEFAULT NULL COMMENT '审批者来源记录ID',
+  `rule_sequence` decimal(10,0) DEFAULT NULL COMMENT '序号',
+  `recipient_sequence` decimal(10,0) DEFAULT NULL COMMENT '规则顺序',
+  `parameter_1_value` varchar(1000) DEFAULT NULL COMMENT '参数1值',
+  `parameter_2_value` varchar(1000) DEFAULT NULL COMMENT '参数2值',
+  `parameter_3_value` varchar(1000) DEFAULT NULL COMMENT '参数3值',
+  `parameter_4_value` varchar(1000) DEFAULT NULL COMMENT '参数4值',
+  `rule_code` varchar(30) DEFAULT NULL COMMENT '规则CODE',
+  `rule_type` varchar(30) DEFAULT NULL COMMENT '审批者规则类型',
+  `creation_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `created_by` decimal(10,0) DEFAULT NULL COMMENT '创建用户ID',
+  `last_update_date` datetime DEFAULT NULL COMMENT '最后更新日期',
+  `last_updated_by` decimal(10,0) DEFAULT NULL COMMENT '最后更新用户ID',
+  PRIMARY KEY (`rule_record_id`),
+  KEY `bpmn_instance_node_rule_n1` (`instance_id`,`usertask_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='工作里实例节点审批规则表';
