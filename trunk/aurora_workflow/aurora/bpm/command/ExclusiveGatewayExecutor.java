@@ -6,8 +6,8 @@ import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 
-import aurora.bpm.command.sqlje.BpmnProcessToken;
-import aurora.bpm.command.sqlje.path;
+import aurora.bpm.command.beans.BpmnProcessToken;
+import aurora.bpm.command.sqlje.PathProc;
 import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
@@ -22,7 +22,7 @@ public class ExclusiveGatewayExecutor extends AbstractCommandExecutor {
 	public void executeWithSqlCallStack(ISqlCallStack callStack, Command cmd)
 			throws Exception {
 		// check and consume token
-		path p = createProc(path.class, callStack);
+		PathProc p = createProc(PathProc.class, callStack);
 		BpmnProcessToken token = p.getToken(
 				cmd.getOptions().getLong(INSTANCE_ID), cmd.getOptions()
 						.getString(SEQUENCE_FLOW_ID));

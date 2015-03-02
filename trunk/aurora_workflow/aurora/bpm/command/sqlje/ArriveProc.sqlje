@@ -1,9 +1,9 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 
-
-public class arrive {
+public class ArriveProc {
 	public void arrive(Long instance_id,Long path_id,Long node_id) throws Exception {
 		
 	}

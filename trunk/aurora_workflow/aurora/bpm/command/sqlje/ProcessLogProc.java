@@ -2,13 +2,14 @@ package aurora.bpm.command.sqlje;
 
 import aurora.sqlje.core.annotation.*;
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 import java.sql.*;
 import java.util.List;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class process_log implements aurora.sqlje.core.ISqlCallEnabled {
+public class ProcessLogProc implements aurora.sqlje.core.ISqlCallEnabled {
 	public void log(Long instance_id, Long user_id, String event_type,
 			String log_content) throws Exception {
 		ProcessLog data = new ProcessLog();
@@ -26,7 +27,7 @@ public class process_log implements aurora.sqlje.core.ISqlCallEnabled {
 		cs.free(cs.getCurrentConnection(), false);
 	}
 
-	public void set_instance_error(Long instance_id) throws Exception {
+	public void setInstanceError(Long instance_id) throws Exception {
 		String _$sqlje_sql_gen2 = "update bpmn_process_instance set status='ERROR' where instance_id=?";
 		PreparedStatement _$sqlje_ps_gen1 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen2);
@@ -55,13 +56,9 @@ public class process_log implements aurora.sqlje.core.ISqlCallEnabled {
 		public java.sql.Timestamp log_date;
 	}
 
-	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
+	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
-
-	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
-		return _$sqlje_sqlCallStack;
-	}
 
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
@@ -73,5 +70,9 @@ public class process_log implements aurora.sqlje.core.ISqlCallEnabled {
 
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
 		_$sqlje_sqlCallStack = args0;
+	}
+
+	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
+		return _$sqlje_sqlCallStack;
 	}
 }

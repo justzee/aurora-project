@@ -1,13 +1,14 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 import java.sql.*;
 import java.util.List;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class load_definition implements aurora.sqlje.core.ISqlCallEnabled {
+public class LoadDefinitionProc implements aurora.sqlje.core.ISqlCallEnabled {
 	public String loadFromDb(String code, String version) throws Exception {
 		String _$sqlje_sql_gen2 = "\n\t\t\t select * \n\t\t\t   from bpmn_process_define \n\t\t\t  where current_version_flag='Y' \n\t\t\t\tand approve_status='APPROVED' \n\t\t\t\tand valid_flag='Y' \n\t\t\t\tand process_code = ?\n\t\t\t\tand process_version = ?";
 		PreparedStatement _$sqlje_ps_gen1 = getSqlCallStack()
@@ -26,13 +27,9 @@ public class load_definition implements aurora.sqlje.core.ISqlCallEnabled {
 		return xml;
 	}
 
-	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
+	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
-
-	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
-		return _$sqlje_sqlCallStack;
-	}
 
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
@@ -44,5 +41,9 @@ public class load_definition implements aurora.sqlje.core.ISqlCallEnabled {
 
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
 		_$sqlje_sqlCallStack = args0;
+	}
+
+	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
+		return _$sqlje_sqlCallStack;
 	}
 }

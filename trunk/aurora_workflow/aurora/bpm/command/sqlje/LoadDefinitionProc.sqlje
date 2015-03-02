@@ -1,9 +1,9 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 
-
-public class load_definition {
+public class LoadDefinitionProc {
 
 	public String loadFromDb(String code,String version) throws Exception{
 		CompositeMap m = #{

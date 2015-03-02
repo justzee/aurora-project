@@ -2,8 +2,9 @@ package aurora.bpm.command.sqlje;
 
 import aurora.sqlje.core.annotation.*;
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 
-public class process_log {
+public class ProcessLogProc {
 
 	public void log(Long instance_id, Long user_id, String event_type,
 			String log_content) throws Exception {
@@ -23,7 +24,7 @@ public class process_log {
 		cs.free(cs.getCurrentConnection(), false);
 	}
 
-	public void set_instance_error(Long instance_id) throws Exception{
+	public void setInstanceError(Long instance_id) throws Exception{
 		#{update bpmn_process_instance set status='ERROR' where instance_id=${instance_id}};
 		
 		commit();

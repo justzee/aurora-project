@@ -27,7 +27,7 @@ import uncertain.composite.CompositeMap;
 import uncertain.ocm.ClassRegistry;
 import uncertain.ocm.OCManager;
 import uncertain.ocm.PackageMapping;
-import aurora.bpm.command.sqlje.load_definition;
+import aurora.bpm.command.sqlje.LoadDefinitionProc;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
 
@@ -148,7 +148,7 @@ public class DefinitionFactory {
 	 */
 	public Definitions loadDefinitionFromDb(String code, String version,
 			ISqlCallStack callStack) throws Exception {
-		load_definition xml_loader = new load_definition();
+		LoadDefinitionProc xml_loader = new LoadDefinitionProc();
 		xml_loader._$setSqlCallStack(callStack);
 		String xml = xml_loader.loadFromDb(code, version);
 		if (xml == null)

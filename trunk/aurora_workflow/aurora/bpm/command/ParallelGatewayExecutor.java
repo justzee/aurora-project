@@ -6,8 +6,8 @@ import java.util.List;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.SequenceFlow;
 
-import aurora.bpm.command.sqlje.BpmnProcessToken;
-import aurora.bpm.command.sqlje.path;
+import aurora.bpm.command.beans.BpmnProcessToken;
+import aurora.bpm.command.sqlje.PathProc;
 import aurora.bpm.exception.NodeNotFoundException;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
@@ -33,7 +33,7 @@ public class ParallelGatewayExecutor extends AbstractCommandExecutor {
 					PROCESS_VERSION));
 		}
 		List<SequenceFlow> list = pg.getIncoming();
-		path p = createProc(path.class, callStack);
+		PathProc p = createProc(PathProc.class, callStack);
 		List<BpmnProcessToken> tokens = new ArrayList<BpmnProcessToken>(
 				list.size());
 		// check each incoming sequence flow has a token

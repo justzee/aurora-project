@@ -1,9 +1,9 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 
-
-public class proceed {
+public class ProceedProc {
 	
 	public void proceed(Long instance_id,Long path_id) throws Exception {
 		$lock("bpm_path_instance","instance_id=${instance_id} and path_id=${path_id}");

@@ -3,13 +3,14 @@ package aurora.bpm.command.sqlje;
 import uncertain.composite.*;
 import java.util.List;
 import aurora.bpm.command.sqlje.*;
+import aurora.bpm.command.beans.*;
 import java.sql.*;
 import java.util.List;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class path implements aurora.sqlje.core.ISqlCallEnabled {
+public class PathProc implements aurora.sqlje.core.ISqlCallEnabled {
 	public Long create(Long instance_id, String preNode, String currentNode,
 			String node_id) throws Exception {
 		BpmnPathInstance bpi = new BpmnPathInstance();
@@ -134,13 +135,9 @@ public class path implements aurora.sqlje.core.ISqlCallEnabled {
 		getSqlCallStack().push(_$sqlje_ps_gen13);
 	}
 
-	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
+	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
-
-	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
-		return _$sqlje_sqlCallStack;
-	}
 
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
@@ -152,5 +149,9 @@ public class path implements aurora.sqlje.core.ISqlCallEnabled {
 
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
 		_$sqlje_sqlCallStack = args0;
+	}
+
+	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
+		return _$sqlje_sqlCallStack;
 	}
 }

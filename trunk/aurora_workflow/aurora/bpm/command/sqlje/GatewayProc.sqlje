@@ -1,9 +1,9 @@
 package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 
-
-public class gateway {
+public class GatewayProc {
 
 	public boolean isWaitingForStart(Long instance_id,String node_id) throws Exception{
 		try {

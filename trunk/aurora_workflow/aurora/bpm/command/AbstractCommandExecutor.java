@@ -1,6 +1,5 @@
 package aurora.bpm.command;
 
-import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
@@ -12,18 +11,14 @@ import org.json.JSONObject;
 
 import uncertain.composite.CompositeMap;
 import uncertain.composite.JSONAdaptor;
-import uncertain.util.FastStringReader;
-import aurora.bpm.command.sqlje.BpmnProcessData;
-import aurora.bpm.command.sqlje.BpmnProcessInstance;
-import aurora.bpm.command.sqlje.instance;
-import aurora.bpm.command.sqlje.path;
+import aurora.bpm.command.beans.BpmnProcessData;
+import aurora.bpm.command.beans.BpmnProcessInstance;
+import aurora.bpm.command.sqlje.InstanceProc;
+import aurora.bpm.command.sqlje.PathProc;
 import aurora.bpm.engine.ExecutorContext;
 import aurora.bpm.queue.ICommandQueue;
-import aurora.bpm.queue.MultiCommandQueue;
 import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
-import aurora.javascript.json.JsonParser;
-import aurora.service.json.JSONPrintWriter;
 import aurora.sqlje.core.ISqlCallEnabled;
 import aurora.sqlje.core.ISqlCallStack;
 import aurora.sqlje.core.SqlCallStack;
@@ -96,28 +91,21 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 			Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
 			boolean running = true;
 			if (instance_id != null) {
-				instance inst = createProc(instance.class, callStack);
+				InstanceProc inst = createProc(InstanceProc.class, callStack);
 				BpmnProcessInstance bpi = inst.query(instance_id);
 				cmd.getOptions().put(PROCESS_CODE, bpi.process_code);
 				cmd.getOptions().put(PROCESS_VERSION, bpi.process_version);
 				running = eq(bpi.status, "RUNNING");
-				if(!running)
-					System.err.println("process status:"+bpi.status+"(instance_id:"+instance_id+")");
-					
+				if (running) {
+					loadDataObject(inst, instance_id, callStack);
+				} else {
+					System.err.println("process status:" + bpi.status
+							+ "(instance_id:" + instance_id + ")");
+				}
 			}
 			if (running && canExecute(callStack, cmd)) {
 				executeWithSqlCallStack(callStack, cmd);
-				// save data_object
-				CompositeMap map = callStack.getContextData().getChild(
-						BPMScriptEngine.DATA_OBJECT);
-				if (map != null) {
-					BpmnProcessData data = new BpmnProcessData();
-					data.instance_id = cmd.getOptions().getLong(INSTANCE_ID);
-					JSONObject jsonobj = JSONAdaptor.toJSONObject(map);
-					data.data_object = jsonobj.toString();
-					instance inst = createProc(instance.class, callStack);
-					inst.saveDataObject(data);
-				}
+				saveDataObject(callStack, cmd.getOptions().getLong(INSTANCE_ID));
 			}
 			callStack.commit();
 		} catch (Exception e) {
@@ -125,6 +113,40 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 			throw e;
 		} finally {
 			releaseSqlCallStack(callStack);
+		}
+	}
+
+	protected void loadDataObject(InstanceProc ci, Long instance_id,
+			ISqlCallStack callStack) throws Exception {
+		// prepare data_object($data)
+		BpmnProcessData data = ci.getProcessData(instance_id);
+		if (data != null) {
+			CompositeMap map;
+			if (data.data_object == null || data.data_object.length() == 0)
+				map = new CompositeMap();
+			else {
+				JSONObject dataMap = new JSONObject(data.data_object);
+				map = JSONAdaptor.toMap(dataMap);
+			}
+			map.setName(BPMScriptEngine.DATA_OBJECT);
+			// put data_object to context(if it not exists)
+			callStack.getContextData().addChild(map);
+		}
+		//
+	}
+
+	private void saveDataObject(ISqlCallStack callStack, Long instance_id)
+			throws Exception {
+		// save data_object
+		CompositeMap map = callStack.getContextData().getChild(
+				BPMScriptEngine.DATA_OBJECT);
+		if (map != null) {
+			BpmnProcessData data = new BpmnProcessData();
+			data.instance_id = instance_id;
+			JSONObject jsonobj = JSONAdaptor.toJSONObject(map);
+			data.data_object = jsonobj.toString();
+			InstanceProc inst = createProc(InstanceProc.class, callStack);
+			inst.saveDataObject(data);
 		}
 	}
 
@@ -237,7 +259,7 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	 */
 	protected void createPath(ISqlCallStack callStack, SequenceFlow sf,
 			Command cmd) throws Exception {
-		path cp = createProc(path.class, callStack);
+		PathProc cp = createProc(PathProc.class, callStack);
 		Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
 		Long path_id = cp.create(instance_id, sf.getSourceRef().getId(), sf
 				.getTargetRef().getId(), sf.getId());

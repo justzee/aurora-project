@@ -3,7 +3,7 @@ package aurora.bpm.command;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.FormalExpression;
 
-import aurora.bpm.command.sqlje.gateway;
+import aurora.bpm.command.sqlje.GatewayProc;
 import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
@@ -23,7 +23,7 @@ public class ComplexGatewayExecutor extends AbstractCommandExecutor {
 		org.eclipse.bpmn2.Process process = getProcess(loadDefinitions(cmd,
 				callStack));
 
-		gateway gw = createProc(gateway.class, callStack);
+		GatewayProc gw = createProc(GatewayProc.class, callStack);
 		boolean wait_for_start = gw.isWaitingForStart(instance_id, node_id);
 		if (!wait_for_start) {
 			System.out.println("[complex gateway]" + node_id

@@ -3,8 +3,8 @@ package aurora.bpm.command;
 import org.eclipse.bpmn2.SequenceFlow;
 
 import uncertain.composite.CompositeMap;
-import aurora.bpm.command.sqlje.BpmnPathInstance;
-import aurora.bpm.command.sqlje.path;
+import aurora.bpm.command.beans.BpmnPathInstance;
+import aurora.bpm.command.sqlje.PathProc;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
 
@@ -22,7 +22,7 @@ public class ProceedCmdExecutor extends AbstractCommandExecutor {
 
 	public void executeWithSqlCallStack(ISqlCallStack callStack, Command cmd)
 			throws Exception {
-		path cp = createProc(path.class, callStack);
+		PathProc cp = createProc(PathProc.class, callStack);
 		Long instance_id = cmd.getOptions().getLong(INSTANCE_ID);
 		Long path_id = cmd.getOptions().getLong(PATH_ID);
 		BpmnPathInstance bpi = cp.query(path_id);
