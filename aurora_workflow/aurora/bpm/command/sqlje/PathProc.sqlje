@@ -3,8 +3,9 @@ package aurora.bpm.command.sqlje;
 import uncertain.composite.*;
 import java.util.List;
 import aurora.bpm.command.sqlje.*;
+import aurora.bpm.command.beans.*;
 
-public class path {
+public class PathProc {
 	public Long create(Long instance_id, String preNode, String currentNode,
 			String node_id) throws Exception {
 		BpmnPathInstance bpi = new BpmnPathInstance();

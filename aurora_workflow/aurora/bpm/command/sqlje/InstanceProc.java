@@ -2,13 +2,14 @@ package aurora.bpm.command.sqlje;
 
 import uncertain.composite.*;
 import aurora.bpm.command.sqlje.*;
+import aurora.bpm.command.beans.*;
 import java.sql.*;
 import java.util.List;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class instance implements aurora.sqlje.core.ISqlCallEnabled {
+public class InstanceProc implements aurora.sqlje.core.ISqlCallEnabled {
 	public Long create(String code, String version, Long parent_id,
 			Long instance_param) throws Exception {
 		BpmnProcessInstance bpi = new BpmnProcessInstance();
@@ -132,8 +133,8 @@ public class instance implements aurora.sqlje.core.ISqlCallEnabled {
 		getSqlCallStack().push(_$sqlje_ps_gen20);
 	}
 
-	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
+	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
 
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {

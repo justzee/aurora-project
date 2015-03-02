@@ -4,13 +4,14 @@ import uncertain.composite.*;
 import aurora.bpm.command.sqlje.*;
 import java.util.*;
 import aurora.bpm.script.*;
+import aurora.bpm.command.beans.*;
 import java.sql.*;
 import java.util.List;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
+public class UserTaskProc implements aurora.sqlje.core.ISqlCallEnabled {
 	public BpmnUsertaskNode query(String code, String version, String node_id)
 			throws Exception {
 		try {
@@ -75,7 +76,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 	/**
 	 * 创建审批规则
 	 */
-	public void create_instance_node_rule(Long instance_id, Long usertask_id,
+	public void createInstanceNodeRule(Long instance_id, Long usertask_id,
 			Long user_id) throws Exception {
 		String _$sqlje_sql_gen27 = "select * from bpmn_node_recipient_set where usertask_id=?";
 		PreparedStatement _$sqlje_ps_gen26 = getSqlCallStack()
@@ -89,7 +90,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		getSqlCallStack().push(_$sqlje_ps_gen26);
 		for (BpmnNodeRecipientSet node_recipient : new ResultSetIterator<BpmnNodeRecipientSet>(
 				_$sqlje_rs_gen3, BpmnNodeRecipientSet.class)) {
-			insert_wfl_instance_node_rule(instance_id, usertask_id, "NODE",
+			insertBpmInstanceNodeRule(instance_id, usertask_id, "NODE",
 					node_recipient.recipient_set_id, node_recipient.rule_code,
 					node_recipient.rule_sequence,
 					node_recipient.recipient_sequence,
@@ -100,11 +101,11 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		}
 	}
 
-	public Long insert_wfl_instance_node_rule(Long instance_id,
-			Long usertask_id, String recipient_type, Long recipient_set_id,
-			String rule_code, Long rule_sequence, Long recipient_sequence,
-			String param1, String param2, String param3, String param4,
-			String rule_type, Long user_id) throws Exception {
+	public Long insertBpmInstanceNodeRule(Long instance_id, Long usertask_id,
+			String recipient_type, Long recipient_set_id, String rule_code,
+			Long rule_sequence, Long recipient_sequence, String param1,
+			String param2, String param3, String param4, String rule_type,
+			Long user_id) throws Exception {
 		BpmnInstanceNodeRule rule = new BpmnInstanceNodeRule();
 		rule.instance_id = instance_id;
 		rule.usertask_id = usertask_id;
@@ -124,8 +125,8 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 	/**
 	 * 创建审批层次
 	 */
-	public void create_instance_node_hierarchy(Long instance_id,
-			Long usertask_id, Long user_id) throws Exception {
+	public void createInstanceNodeHierarchy(Long instance_id, Long usertask_id,
+			Long user_id) throws Exception {
 		String _$sqlje_sql_gen29 = "select * from bpmn_instance_node_rule \n\t\t\twhere instance_id = ? and usertask_id=?\n\t\t    \t\t\tand rule_type = 'RECIPIENT_RULE' order by rule_sequence ";
 		PreparedStatement _$sqlje_ps_gen28 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen29);
@@ -161,18 +162,23 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 							_$sqlje_rs_gen5);
 				}
 				Class<? extends ISqlCallEnabled> clazz = null;
+				int idx = proc_name.lastIndexOf('.');
+				String proc_class = proc_name.substring(0, idx);
+				String proc_method = proc_name.substring(idx + 1);
 				try {
 					clazz = (Class<? extends ISqlCallEnabled>) Class
-							.forName(proc_name);
+							.forName(proc_class);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				ISqlCallEnabled proc = getInstanceManager().createInstance(
 						clazz, this);
-				if (proc instanceof IRecipientRule) {
+				java.lang.reflect.Method m = clazz.getMethod(proc_method,
+						String.class, String.class, String.class, String.class,
+						Long.class);
+				if (proc != null && m != null) {
 					System.out.println("execute proc:" + proc_name);
-					((IRecipientRule) proc).execute(
-							recipient_rule.parameter_1_value,
+					m.invoke(proc, recipient_rule.parameter_1_value,
 							recipient_rule.parameter_2_value,
 							recipient_rule.parameter_3_value,
 							recipient_rule.parameter_4_value,
@@ -211,8 +217,8 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 	/**
 	 * 创建审批人(代办)
 	 */
-	public void create_instance_node_recipient(Long instance_id,
-			Long usertask_id, Long user_id) throws Exception {
+	public void createInstanceNodeRecipient(Long instance_id, Long usertask_id,
+			Long user_id) throws Exception {
 		String _$sqlje_sql_gen37 = "select * from bpmn_usertask_node where usertask_id = ?";
 		PreparedStatement _$sqlje_ps_gen36 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen37);
@@ -329,7 +335,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 							.getResultSet();
 					getSqlCallStack().push(_$sqlje_rs_gen14);
 					getSqlCallStack().push(_$sqlje_ps_gen48);
-					create_node_recipient(instance_id, current_node_id,
+					createNodeRecipient(instance_id, current_node_id,
 							seq_number, approver_id, hierarchy_record_id,
 							user_id);
 				}
@@ -337,7 +343,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		}
 	}
 
-	public Long create_node_recipient(Long instance_id, Long usertask_id,
+	public Long createNodeRecipient(Long instance_id, Long usertask_id,
 			Long seq_number, Long recipient_id, Long hierarchy_record_id,
 			Long user_id) throws Exception {
 		String _$sqlje_sql_gen51 = "select * from bpmn_usertask_node where usertask_id=?";
@@ -367,7 +373,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		return record_id;
 	}
 
-	public boolean auto_approve(Long instance_id, Long usertask_id, Long user_id)
+	public boolean autoApprove(Long instance_id, Long usertask_id, Long user_id)
 			throws Exception {
 		String _$sqlje_sql_gen53 = "\n\t\t\tselect r.*, n.can_auto_pass, n.is_self_re_commit\n            from bpmn_instance_node_recipient r,\n                 bpmn_usertask_node           n\n           where instance_id = ?\n             and n.usertask_id = r.usertask_id\n             and (n.can_auto_pass = 1 or n.is_self_re_commit = 1)\n\t\t";
 		PreparedStatement _$sqlje_ps_gen52 = getSqlCallStack()
@@ -410,7 +416,7 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		return false;
 	}
 
-	public boolean auto_pass(Long instance_id, Long usertask_id, Long user_id)
+	public boolean autoPass(Long instance_id, Long usertask_id, Long user_id)
 			throws Exception {
 		String _$sqlje_sql_gen57 = "\n\t\t\tselect count(1) from bpmn_instance_node_hierarchy h\n\t\t\twhere h.instance_id=?\n\t\t\tand h.usertask_id = ?\n\t\t\tand coalesce(h.disabled_flag,'N')='N'\n\t\t";
 		PreparedStatement _$sqlje_ps_gen56 = getSqlCallStack()
@@ -450,13 +456,9 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 		return o1.equals(o2);
 	}
 
-	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
+	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
-
-	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
-		return _$sqlje_sqlCallStack;
-	}
 
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
@@ -468,5 +470,9 @@ public class user_task implements aurora.sqlje.core.ISqlCallEnabled {
 
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
 		_$sqlje_sqlCallStack = args0;
+	}
+
+	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
+		return _$sqlje_sqlCallStack;
 	}
 }

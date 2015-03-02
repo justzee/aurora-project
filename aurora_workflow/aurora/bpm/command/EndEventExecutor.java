@@ -1,6 +1,6 @@
 package aurora.bpm.command;
 
-import aurora.bpm.command.sqlje.instance;
+import aurora.bpm.command.sqlje.InstanceProc;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
 
@@ -17,7 +17,7 @@ public class EndEventExecutor extends AbstractCommandExecutor {
 		System.out.println("[End Event]"+cmd.getOptions().getString("node_id")+"  reached");
 		Long instance_id = cmd.getOptions()
 				.getLong(INSTANCE_ID);
-		instance inst = createProc(instance.class, callStack);
+		InstanceProc inst = createProc(InstanceProc.class, callStack);
 		inst.finish(instance_id);
 	}
 

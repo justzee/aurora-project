@@ -4,8 +4,9 @@ import uncertain.composite.*;
 import aurora.bpm.command.sqlje.*;
 import java.util.*;
 import aurora.bpm.script.*;
+import aurora.bpm.command.beans.*;
 
-public class user_task {
+public class UserTaskProc {
 
 	public BpmnUsertaskNode query(String code,String version,String node_id) throws Exception{
 		try {
@@ -16,7 +17,6 @@ public class user_task {
 		}
 		return null;
 	}
-	
 
 	public List<BpmnNodeRecipientSet> getRecipientSet(Long usertask_id) throws Exception{
 		List<BpmnNodeRecipientSet> list = #{select * from bpmn_node_recipient_set where usertask_id = ${usertask_id} order by recipient_sequence};
@@ -35,10 +35,10 @@ public class user_task {
 	/**
 	 * 创建审批规则
 	 */
-	public void create_instance_node_rule(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+	public void createInstanceNodeRule(Long instance_id,Long usertask_id,Long user_id) throws Exception{
 		//节点级审批规则
 		for(BpmnNodeRecipientSet node_recipient:#{select * from bpmn_node_recipient_set where usertask_id=${usertask_id}}) {
-			insert_wfl_instance_node_rule(instance_id,
+			insertBpmInstanceNodeRule(instance_id,
 										  usertask_id,
 										  "NODE",
 										  node_recipient.recipient_set_id,
@@ -57,7 +57,7 @@ public class user_task {
 		//系统级审批规则
 	}
 
-	public Long insert_wfl_instance_node_rule(Long instance_id,
+	public Long insertBpmInstanceNodeRule(Long instance_id,
 			Long usertask_id, String recipient_type, Long recipient_set_id,
 			String rule_code, Long rule_sequence, Long recipient_sequence,
 			String param1, String param2, String param3, String param4,
@@ -74,7 +74,7 @@ public class user_task {
 		rule.parameter_3_value = param3;
 		rule.parameter_4_value = param4;
 		rule.rule_type = rule_type;
-		//rule.user_id = user_id;
+		// rule.user_id = user_id;
 		$sql.insert(rule);
 		return rule.rule_record_id;
 	}
@@ -82,7 +82,7 @@ public class user_task {
 	/**
 	 * 创建审批层次
 	 */
-	public void create_instance_node_hierarchy(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+	public void createInstanceNodeHierarchy(Long instance_id,Long usertask_id,Long user_id) throws Exception{
 		for(BpmnInstanceNodeRule recipient_rule:#{select * from bpmn_instance_node_rule 
 			where instance_id = ${instance_id} and usertask_id=${usertask_id}
 		    			and rule_type = 'RECIPIENT_RULE' order by rule_sequence }) {
@@ -96,15 +96,21 @@ public class user_task {
 					proc_name = #{select procedure_name from bpmn_recipient_rules where rule_code = ${recipient_rule.rule_code}};
 				}
 				Class<? extends ISqlCallEnabled> clazz=null;
+				int idx = proc_name.lastIndexOf('.');
+				String proc_class = proc_name.substring(0, idx);
+				String proc_method = proc_name.substring(idx+1);
 				try {
-					clazz = (Class<? extends ISqlCallEnabled>)Class.forName(proc_name);
+					clazz = (Class<? extends ISqlCallEnabled>)Class.forName(proc_class);
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
 				ISqlCallEnabled proc = getInstanceManager().createInstance(clazz,this);
-				if(proc instanceof IRecipientRule) {
+				java.lang.reflect.Method m = clazz.getMethod(proc_method,String.class,String.class,String.class,String.class,Long.class);
+				if(proc != null && m != null) {
 					System.out.println("execute proc:"+proc_name);
-					((IRecipientRule)proc).execute(recipient_rule.parameter_1_value,
+					
+					m.invoke(proc,
+							recipient_rule.parameter_1_value,
 							recipient_rule.parameter_2_value,
 							recipient_rule.parameter_3_value,
 							recipient_rule.parameter_4_value,
@@ -136,7 +142,7 @@ public class user_task {
 	/**
 	 * 创建审批人(代办)
 	 */
-	public void create_instance_node_recipient(Long instance_id,
+	public void createInstanceNodeRecipient(Long instance_id,
 			Long usertask_id, Long user_id) throws Exception {
 		CompositeMap current_node = #{select * from bpmn_usertask_node where usertask_id = ${usertask_id}};
 		Long current_node_id=usertask_id;
@@ -207,7 +213,7 @@ public class user_task {
 						last_update_date=current_timestamp,
 						last_updated_by=1
 						where hierarchy_record_id=${hierarchy_record_id}};
-					create_node_recipient(instance_id,
+					createNodeRecipient(instance_id,
 										current_node_id,
 										seq_number,
 										approver_id,
@@ -217,8 +223,8 @@ public class user_task {
 			}
 		}
 	}
-	
-	public Long  create_node_recipient(Long instance_id,Long usertask_id,Long seq_number,
+
+	public Long  createNodeRecipient(Long instance_id,Long usertask_id,Long seq_number,
 			Long recipient_id,Long hierarchy_record_id,Long user_id) throws Exception {
 		BpmnUsertaskNode node = #{select * from bpmn_usertask_node where usertask_id=${usertask_id}};
 		Timestamp date_limit=null;
@@ -238,9 +244,8 @@ public class user_task {
 		
 		return record_id;
 	}
-	
-	
-	public boolean auto_approve(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+
+	public boolean autoApprove(Long instance_id,Long usertask_id,Long user_id) throws Exception{
 		for(CompositeMap recipient:#{
 			select r.*, n.can_auto_pass, n.is_self_re_commit
             from bpmn_instance_node_recipient r,
@@ -269,8 +274,8 @@ public class user_task {
 		}
 		return false;
 	}
-	
-	public boolean auto_pass(Long instance_id,Long usertask_id,Long user_id) throws Exception{
+
+	public boolean autoPass(Long instance_id,Long usertask_id,Long user_id) throws Exception{
 		Long count_hirc = #{
 			select count(1) from bpmn_instance_node_hierarchy h
 			where h.instance_id=${instance_id}
@@ -295,31 +300,5 @@ public class user_task {
 			return o2 == null;
 		return o1.equals(o2);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

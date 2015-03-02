@@ -2,13 +2,14 @@ package aurora.bpm.command.sqlje;
 
 import java.util.Arrays;
 import uncertain.composite.*;
+import aurora.bpm.command.beans.*;
 import java.sql.*;
 import java.util.List;
 import aurora.sqlje.exception.*;
 import java.util.Map;
 import aurora.sqlje.core.*;
 
-public class approve implements aurora.sqlje.core.ISqlCallEnabled {
+public class ApproveProc implements aurora.sqlje.core.ISqlCallEnabled {
 	public BpmnUsertaskNode queryByRecipientRecordId(Long record_id)
 			throws Exception {
 		String _$sqlje_sql_gen10 = "\n\t\t\tselect * from bpmn_usertask_node\n\t\t\twhere usertask_id = (\n\t\t\t\t\tselect usertask_id from bpmn_instance_node_recipient\n\t\t\t\t\twhere record_id = ?)\n\t\t";
@@ -45,7 +46,7 @@ public class approve implements aurora.sqlje.core.ISqlCallEnabled {
 		} catch (NoDataFoundException e) {
 			throw new Exception("工作流审批 : 未找到代办记录:record_id:" + rcpt_record_id);
 		}
-		if (check_approve_validation(rcpt_record_id, action_code, user_id) == 0) {
+		if (checkApproveValidation(rcpt_record_id, action_code, user_id) == 0) {
 			throw new Exception("工作流审批 ：审批权限交验结果为'否', 工作流审批中止.");
 		}
 		if (!eq(rcpt.user_id, user_id)) {
@@ -82,9 +83,9 @@ public class approve implements aurora.sqlje.core.ISqlCallEnabled {
 		Long attachment_id = DataTransfer
 				.transfer1(Long.class, _$sqlje_rs_gen3);
 		Long is_required = 0L;
-		Long approve_record_id = create_approve_record(instance_id,
-				usertask_id, rcpt.seq_number, action_code, approve_content,
-				rcpt_record_id, attachment_id, user_id);
+		Long approve_record_id = createApproveRecord(instance_id, usertask_id,
+				rcpt.seq_number, action_code, approve_content, rcpt_record_id,
+				attachment_id, user_id);
 		String _$sqlje_sql_gen18 = "delete from bpmn_instance_node_recipient where record_id=?";
 		PreparedStatement _$sqlje_ps_gen17 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen18);
@@ -117,7 +118,7 @@ public class approve implements aurora.sqlje.core.ISqlCallEnabled {
 		return "";
 	}
 
-	public Long create_approve_record(Long instance_id, Long usertask_id,
+	public Long createApproveRecord(Long instance_id, Long usertask_id,
 			Long seq_number, String action_code, String approve_content,
 			Long rcpt_record_id, Long attachment_id, Long user_id)
 			throws Exception {
@@ -218,8 +219,8 @@ public class approve implements aurora.sqlje.core.ISqlCallEnabled {
 		return 1L;
 	}
 
-	public Long check_approve_validation(Long rcpt_record_id,
-			String action_code, Long user_id) throws Exception {
+	public Long checkApproveValidation(Long rcpt_record_id, String action_code,
+			Long user_id) throws Exception {
 		return 1L;
 	}
 
@@ -243,13 +244,9 @@ public class approve implements aurora.sqlje.core.ISqlCallEnabled {
 		return coalesce(obj, def);
 	}
 
-	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected aurora.sqlje.core.IInstanceManager _$sqlje_instanceManager = null;
+	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
-
-	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
-		return _$sqlje_sqlCallStack;
-	}
 
 	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
 		return _$sqlje_instanceManager;
@@ -261,5 +258,9 @@ public class approve implements aurora.sqlje.core.ISqlCallEnabled {
 
 	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
 		_$sqlje_sqlCallStack = args0;
+	}
+
+	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {
+		return _$sqlje_sqlCallStack;
 	}
 }

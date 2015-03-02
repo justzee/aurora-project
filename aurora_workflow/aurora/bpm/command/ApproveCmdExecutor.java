@@ -8,8 +8,8 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.UserTask;
 
 import uncertain.composite.CompositeMap;
-import aurora.bpm.command.sqlje.BpmnUsertaskNode;
-import aurora.bpm.command.sqlje.approve;
+import aurora.bpm.command.beans.BpmnUsertaskNode;
+import aurora.bpm.command.sqlje.ApproveProc;
 import aurora.bpm.script.BPMScriptEngine;
 import aurora.database.service.IDatabaseServiceFactory;
 import aurora.sqlje.core.ISqlCallStack;
@@ -37,7 +37,7 @@ public class ApproveCmdExecutor extends AbstractCommandExecutor {
 		String action_code = cmd.getOptions().getString("action_code");
 		Long recipient_record = cmd.getOptions().getLong("record_id");
 		String approve_content = cmd.getOptions().getString("approve_content");
-		approve appr = createProc(approve.class, callStack);
+		ApproveProc appr = createProc(ApproveProc.class, callStack);
 
 		BpmnUsertaskNode bun = appr.queryByRecipientRecordId(recipient_record);
 		String node_id = bun.node_id;
