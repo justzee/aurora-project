@@ -181,7 +181,6 @@
 		<!-- ======================================== -->
 		<!-- ============  Property Tabs ============ -->
 		<!-- ======================================== -->
-
 	 	<propertyTab
 			id="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.DescriptionPropertySection"
@@ -190,7 +189,6 @@
 			label="%propertyTab.label.General">
 		</propertyTab>
 		<!-- ============  Diagrams ============ -->
-<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.participant.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -240,9 +238,8 @@
 			type="org.eclipse.bpmn2.Choreography"
 			label="%propertyTab.label.Choreography">
 		</propertyTab>
--->
 		<!-- ============  Connections ============ -->
-	<!--	<propertyTab
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.assocation.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
@@ -275,9 +272,8 @@
 			type="org.eclipse.bpmn2.MessageFlow"
 			label="%propertyTab.label.MessageFlow">
 		</propertyTab>
-	-->	
 		<!-- ============  Activities ============ -->
-	<!--	<propertyTab
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.callActivity.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
@@ -308,9 +304,8 @@
 			type="org.eclipse.bpmn2.Transaction"
 			label="%propertyTab.label.Transaction">
 		</propertyTab>
--->
 		<!-- ============  Tasks ============ -->
-	<!--	<propertyTab
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.TaskPropertySection"
@@ -377,9 +372,7 @@
 			type="org.eclipse.bpmn2.UserTask"
 			label="%propertyTab.label.UserTask">
 		</propertyTab>
--->
 		<!-- ============  Global Tasks ============ -->
-	<!--	
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.globalBusinessRuleTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -415,9 +408,8 @@
 			type="org.eclipse.bpmn2.GlobalUserTask"
 			label="%propertyTab.label.GlobalUserTask">
 		</propertyTab>
--->
 		<!-- ============  Choreography Activities ============ -->
-		<!--<propertyTab
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.callChoreography.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
@@ -451,18 +443,15 @@
 			type="org.eclipse.bpmn2.Conversation"
 			label="%propertyTab.label.Conversation">
 		</propertyTab>
--->
 		<!-- ============  Gateways ============ -->
-		<!--<propertyTab
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.gateway.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.gateways.GatewayPropertySection"
 			type="org.eclipse.bpmn2.Gateway"
 			label="%propertyTab.label.Gateway">
 		</propertyTab>
--->
 		<!-- ============  Events ============ -->
-		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.commonEvent.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -470,9 +459,7 @@
 			type="org.eclipse.bpmn2.Event"
 			label="%propertyTab.label.Event">
 		</propertyTab>
--->
 		<!-- ============  Event Definitionss ============ -->
-<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.conditionalEvent.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -542,9 +529,7 @@
 			type="org.eclipse.bpmn2.TimerEventDefinition"
 			label="%propertyTab.label.TimerEvent">
 		</propertyTab>
-		-->
 		<!-- ============  Artifacts ============ -->
-		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.group.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -561,9 +546,8 @@
 			type="org.eclipse.bpmn2.TextAnnotation"
 			label="%propertyTab.label.TextAnnotation">
 		</propertyTab>
--->
 		<!-- ============  Root Elements ============ -->
-	<!--	<propertyTab
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.error.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
@@ -660,9 +644,7 @@
 			type="org.eclipse.bpmn2.Category"
 			label="%propertyTab.label.Category">
 		</propertyTab>
--->
 		<!-- ============  Item Aware Elements ============ -->
-		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataitems.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -750,7 +732,6 @@
 			popup="false"
 			label="%propertyTab.label.Advanced">
 		</propertyTab>
--->
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.full"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
