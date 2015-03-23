@@ -2,7 +2,6 @@ package aurora.bpmn.designer.ws;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
