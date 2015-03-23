@@ -26,7 +26,7 @@ public class SourceViewer extends StructuredTextEditor {
 	/**
 	 * @param multiPageEditor
 	 */
-	SourceViewer(BPMN2MultiPageEditor multiPageEditor) {
+	public SourceViewer(BPMN2MultiPageEditor multiPageEditor) {
 		this.multiPageEditor = multiPageEditor;
 	}
 
