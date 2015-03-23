@@ -159,11 +159,19 @@ public class ShowWebSettingFeature extends AbstractCustomFeature {
 				.getActiveEditor().getMultipageEditor();
 		// this.getDiagramBehavior().getDiagramContainer();
 		// this.getDiagramEditor();
-		
+		String host = multipageEditor.getDefine().getServiceModel().getHost();
+		String process_code = multipageEditor.getDefine().getProcess_code();
+		String process_version = multipageEditor.getDefine()
+				.getProcess_version();
 		String define_id = multipageEditor.getDefine().getDefine_id();
-		BrowserDialog dialog = new BrowserDialog(multipageEditor.getSite().getShell());
-		dialog.open("http://aurora.hand-china.com/demo/modules/fnd/FND2020/fnd_company.screen?define_id="
-				+ define_id + "&element_id=" + eGet);
+		BrowserDialog dialog = new BrowserDialog(multipageEditor.getSite()
+				.getShell());
+		// http://172.20.0.38:9090/bpm/modules/bpm/BPM1001/bpmn_usertask_node.screen?process_code=WFL_TEST3&process_version=1&node_id=UserTask_1
+
+		dialog.open(host
+				+ "modules/bpm/BPM1001/bpmn_usertask_node.screen?process_code="
+				+ process_code + "&process_version=" + process_version
+				+ "&node_id=" + eGet);
 		// DefaultWorkbenchBrowserSupport dbs = new
 		// DefaultWorkbenchBrowserSupport();
 		// try {
