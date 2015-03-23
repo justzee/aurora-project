@@ -74,6 +74,15 @@ abstract public class UWizardPage extends WizardPage {
 		this.model = model;
 	}
 
+	protected TextField createInputField(Composite parent, String label,
+			String key) {
+		TextField createTextField = WidgetFactory
+				.createTextField(parent, label);
+		createTextField.addModifyListener(new TextModifyListener(key,
+				createTextField.getText()));
+		return createTextField;
+	}
+
 	protected class TextModifyListener implements ModifyListener {
 
 		private String key;
