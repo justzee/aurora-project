@@ -2,7 +2,11 @@
 CREATE TABLE BPMN_PROCESS_CATEGORY(
 	id                             NUMBER(19,0) NOT NULL primary key,
 	parent_id                      NUMBER(19,0),
-	name                           VARCHAR2(100) NOT NULL
+	name                           VARCHAR2(100) NOT NULL,
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create UNIQUE INDEX bpmn_process_category_u1 on bpmn_process_category(name);

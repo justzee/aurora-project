@@ -15,7 +15,7 @@ public class PathProc implements aurora.sqlje.core.ISqlCallEnabled {
 			String node_id) throws Exception {
 		BpmnPathInstance bpi = new BpmnPathInstance();
 		bpi.instance_id = instance_id;
-		bpi.status = "RUNNING";
+		bpi.status = "ACTIVE";
 		bpi.prev_node = preNode;
 		bpi.current_node = currentNode;
 		bpi.node_id = node_id;
@@ -42,7 +42,7 @@ public class PathProc implements aurora.sqlje.core.ISqlCallEnabled {
 	}
 
 	public void closePath(Long instance_id, Long path_id) throws Exception {
-		String _$sqlje_sql_gen6 = "update bpmn_path_instance\n\t\t\t set status='FINISH'\n\t\t   where instance_id=? \n\t\t\t and path_id=?";
+		String _$sqlje_sql_gen6 = "update bpmn_path_instance\n\t\t\t set status='CLOSED'\n\t\t   where instance_id=? \n\t\t\t and path_id=?";
 		PreparedStatement _$sqlje_ps_gen5 = getSqlCallStack()
 				.getCurrentConnection().prepareStatement(_$sqlje_sql_gen6);
 		_$sqlje_ps_gen5.setLong(1, instance_id);
@@ -139,16 +139,16 @@ public class PathProc implements aurora.sqlje.core.ISqlCallEnabled {
 	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
 
-	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
-		return _$sqlje_instanceManager;
+	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
+		_$sqlje_sqlCallStack = args0;
 	}
 
 	public void _$setInstanceManager(aurora.sqlje.core.IInstanceManager args0) {
 		_$sqlje_instanceManager = args0;
 	}
 
-	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
-		_$sqlje_sqlCallStack = args0;
+	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
+		return _$sqlje_instanceManager;
 	}
 
 	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {

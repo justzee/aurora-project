@@ -12,13 +12,10 @@ CREATE TABLE BPMN_USERTASK_NODE(
 	date_from                      DATE,
 	date_to                        DATE,
 	object_version_number          NUMBER(10,0) default '0',
-	form_name                      VARCHAR2(200),
 	approval_type                  NUMBER(10,0),
 	recipient_proc                 VARCHAR2(300),
 	name_id                        NUMBER(19,0),
 	description_id                 NUMBER(19,0),
-	form_width                     NUMBER(10,0),
-	form_height                    NUMBER(10,0),
 	can_deliver_to                 NUMBER(10,0) default '1',
 	mail_template                  NUMBER(10,0),
 	notify_period                  NUMBER(10,0),
@@ -29,6 +26,9 @@ CREATE TABLE BPMN_USERTASK_NODE(
 	pre_node_proc                  VARCHAR2(500),
 	is_comment_access_control      NUMBER(10,0) default '0',
 	quantity                       NUMBER(10,0),
+	processing_page                NUMBER(19,0),
+	processed_page                 NUMBER(19,0),
+	notify_page                    NUMBER(19,0),
 	is_self_re_commit              NUMBER(10,0) default '0',
 	can_no_approver                NUMBER(10,0) default '1',
 	can_add_approver               NUMBER(10,0),
@@ -57,10 +57,7 @@ comment on column bpmn_usertask_node.process_date is '处理日期';
 comment on column bpmn_usertask_node.process_date_unit_id is '时间单位';
 comment on column bpmn_usertask_node.date_from is '有效日期从';
 comment on column bpmn_usertask_node.date_to is '有效日期到';
-comment on column bpmn_usertask_node.form_name is '表单名称';
 comment on column bpmn_usertask_node.approval_type is '审批类型';
-comment on column bpmn_usertask_node.form_width is '表单宽度';
-comment on column bpmn_usertask_node.form_height is '表单高度';
 comment on column bpmn_usertask_node.can_deliver_to is '是否可以转交';
 comment on column bpmn_usertask_node.mail_template is '邮件模板';
 comment on column bpmn_usertask_node.notify_period is '提醒周期';
@@ -71,6 +68,9 @@ comment on column bpmn_usertask_node.can_auto_pass is '无需重复审批';
 comment on column bpmn_usertask_node.pre_node_proc is '节点前处理过程';
 comment on column bpmn_usertask_node.is_comment_access_control is '审批意见查看限制';
 comment on column bpmn_usertask_node.quantity is '数值';
+comment on column bpmn_usertask_node.processing_page is '处理中页面';
+comment on column bpmn_usertask_node.processed_page is '已处理页面';
+comment on column bpmn_usertask_node.notify_page is '通知页面';
 comment on column bpmn_usertask_node.is_self_re_commit is '提交人是否需要审批';
 comment on column bpmn_usertask_node.can_no_approver is '节点允许无审批人';
 comment on column bpmn_usertask_node.can_add_approver is '允许添加审批人';

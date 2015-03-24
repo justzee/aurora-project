@@ -8,7 +8,11 @@ CREATE TABLE BPMN_PATH_LOG(
 	current_node                   VARCHAR2(100),
 	prev_node                      VARCHAR2(100),
 	event_type                     VARCHAR2(100),
-	log_content                    VARCHAR2(1000)
+	log_content                    VARCHAR2(1000),
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create INDEX BPMN_PATH_LOG_I1 on bpmn_path_log(instance_id);

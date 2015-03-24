@@ -29,9 +29,9 @@ public class BpmnApproveRecord
 	/**创建用户ID*/
 	public Long created_by;
 	/**创建日期*/
-	public java.sql.Timestamp creation_date;
+	public java.sql.Date creation_date;
 	/**最后更新日期*/
-	public java.sql.Timestamp last_update_date;
+	public java.sql.Date last_update_date;
 	/**最后更新用户ID*/
 	public Long last_updated_by;
 }

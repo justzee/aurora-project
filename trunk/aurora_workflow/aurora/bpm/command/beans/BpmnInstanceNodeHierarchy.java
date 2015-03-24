@@ -25,11 +25,11 @@ public class BpmnInstanceNodeHierarchy
 	/**审批规则明细ID*/
 	public Long rule_detail_id;
 	/**创建日期*/
-	public java.sql.Timestamp creation_date;
+	public java.sql.Date creation_date;
 	/**创建用户ID*/
 	public Long created_by;
 	/**最后更新日期*/
-	public java.sql.Timestamp last_update_date;
+	public java.sql.Date last_update_date;
 	/**最后更新用户ID*/
 	public Long last_updated_by;
 	/**此节点被添加的顺序，之前添加为BEFORE,之后添加为AFTER，平行添加为PARALLEL，如果不是被添加节点则该属性为空*/

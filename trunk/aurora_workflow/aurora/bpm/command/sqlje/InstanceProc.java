@@ -137,16 +137,16 @@ public class InstanceProc implements aurora.sqlje.core.ISqlCallEnabled {
 	protected aurora.sqlje.core.ISqlCallStack _$sqlje_sqlCallStack = null;
 	protected SqlFlag $sql = new SqlFlag(this);
 
-	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
-		return _$sqlje_instanceManager;
+	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
+		_$sqlje_sqlCallStack = args0;
 	}
 
 	public void _$setInstanceManager(aurora.sqlje.core.IInstanceManager args0) {
 		_$sqlje_instanceManager = args0;
 	}
 
-	public void _$setSqlCallStack(aurora.sqlje.core.ISqlCallStack args0) {
-		_$sqlje_sqlCallStack = args0;
+	public aurora.sqlje.core.IInstanceManager getInstanceManager() {
+		return _$sqlje_instanceManager;
 	}
 
 	public aurora.sqlje.core.ISqlCallStack getSqlCallStack() {

@@ -52,3 +52,6 @@ drop sequence bpmn_usertask_node_s;
 drop table bpmn_usertask_node_action;
 drop sequence bpmn_usertask_node_action_s;
 
+drop table bpmn_usertask_pages;
+drop sequence bpmn_usertask_pages_s;
+

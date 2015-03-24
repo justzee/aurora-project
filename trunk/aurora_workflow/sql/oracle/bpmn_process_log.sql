@@ -5,7 +5,11 @@ CREATE TABLE BPMN_PROCESS_LOG(
 	log_date                       DATE,
 	user_id                        VARCHAR2(45),
 	event_type                     VARCHAR2(45),
-	log_content                    VARCHAR2(1000)
+	log_content                    VARCHAR2(1000),
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create INDEX bpmn_process_log_n1 on bpmn_process_log(instance_id);

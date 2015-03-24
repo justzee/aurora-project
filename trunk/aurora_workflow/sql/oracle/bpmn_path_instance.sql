@@ -5,7 +5,11 @@ CREATE TABLE BPMN_PATH_INSTANCE(
 	status                         VARCHAR2(45) NOT NULL,
 	prev_node                      VARCHAR2(45),
 	current_node                   VARCHAR2(45),
-	node_id                        VARCHAR2(45) NOT NULL
+	node_id                        VARCHAR2(45) NOT NULL,
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create INDEX bpmn_path_instance_n1 on bpmn_path_instance(instance_id);
