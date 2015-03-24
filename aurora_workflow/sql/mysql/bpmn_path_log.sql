@@ -8,8 +8,12 @@ CREATE TABLE `bpmn_path_log` (
   `prev_node` varchar(100) DEFAULT NULL COMMENT '之前来自节点',
   `event_type` varchar(100) DEFAULT NULL COMMENT '所发生日志的的类型',
   `log_content` varchar(1000) DEFAULT NULL COMMENT '日志内容',
+  `created_by` bigint(20) DEFAULT NULL,
+  `creation_date` datetime NULL DEFAULT NULL,
+  `last_updated_by` bigint(20) DEFAULT NULL,
+  `last_update_date` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`log_id`),
   KEY `BPMN_PATH_LOG_I2` (`path_id`),
   KEY `BPMN_PATH_LOG_I3` (`log_date`),
   KEY `BPMN_PATH_LOG_I1` (`instance_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=gb2312;
+) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=gb2312;

@@ -3,6 +3,7 @@ CREATE TABLE `bpmn_usertask_node_action` (
   `usertask_id` bigint(20) DEFAULT NULL COMMENT '工作流节点ID',
   `action_code` varchar(20) DEFAULT NULL COMMENT '工作流动作代码(标准or CUSTOM)',
   `action_code_custom` varchar(45) DEFAULT NULL COMMENT '当action_code 为 CUSTOM时的自定义值',
+  `action_title_id` bigint(20) DEFAULT NULL COMMENT '动作描述(多语言字段)',
   `order_num` decimal(10,0) DEFAULT NULL COMMENT '动作排列顺序',
   `creation_date` datetime DEFAULT NULL COMMENT '创建日期',
   `created_by` decimal(10,0) DEFAULT NULL COMMENT '创建用户ID',

@@ -19,4 +19,4 @@ CREATE TABLE `bpmn_approve_record` (
   KEY `bpmn_approve_record_n2` (`approve_count`),
   KEY `bpmn_approve_record_n3` (`rcpt_record_id`),
   KEY `bpmn_approve_record_n4` (`created_by`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='审批记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COMMENT='审批记录表';

@@ -1,12 +1,15 @@
 package aurora.bpm.command;
 
 import java.sql.Connection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.emf.ecore.EObject;
 import org.json.JSONObject;
 
 import uncertain.composite.CompositeMap;
@@ -283,8 +286,12 @@ public abstract class AbstractCommandExecutor implements ICommandExecutor {
 	 * @return
 	 */
 	protected org.eclipse.bpmn2.Process getProcess(Definitions def) {
-
-		return (org.eclipse.bpmn2.Process) def.eContents().get(0);
+		List<EObject> contents = def.eContents();
+		for (EObject eo : contents) {
+			if (eo instanceof org.eclipse.bpmn2.Process)
+				return (Process) eo;
+		}
+		return null;
 
 	}
 

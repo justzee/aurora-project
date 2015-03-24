@@ -3,7 +3,11 @@ CREATE TABLE BPMN_PROCESS_TOKEN(
 	token_id                       NUMBER(10,0) NOT NULL primary key,
 	instance_id                    NUMBER(10,0) NOT NULL,
 	path_id                        NUMBER(10,0) NOT NULL,
-	node_id                        VARCHAR2(100) NOT NULL
+	node_id                        VARCHAR2(100) NOT NULL,
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create INDEX bpmn_process_token_n1 on bpmn_process_token(instance_id,node_id);

@@ -5,7 +5,7 @@ import java.util.List;
 import aurora.bpm.command.beans.*;
 
 public class DefaultRecipientRules {
-	
+
 	public BpmnDocumentReference getDocumentReference(Long instance_id) throws Exception{
 		BpmnDocumentReference doc_ref = #{select *
 			  from bpmn_document_reference
@@ -17,7 +17,7 @@ public class DefaultRecipientRules {
 		};
 		return doc_ref;
 	}
-	
+
 	/**
 	 * 取得单据ID
 	 */
@@ -43,7 +43,7 @@ public class DefaultRecipientRules {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 取申请者 岗位(position_id)
 	 */
@@ -57,7 +57,7 @@ public class DefaultRecipientRules {
 		};
 		return list;
 	}
-	
+
 	/**
 	 * 取 申请者(employee_id)
 	 */
@@ -71,7 +71,7 @@ public class DefaultRecipientRules {
 		};
 		return list;
 	}
-	
+
 	/**
 	 * 取得申请者部门(unit_id)
 	 */
@@ -85,7 +85,6 @@ public class DefaultRecipientRules {
 		};
 		return list;
 	}
-	
 
 	public Long insertBpmInstanceNodeHirc(Long instance_id, Long usertask_id,
 			Long seq_number, Long approver_id, String posted_flag,
@@ -133,7 +132,8 @@ public class DefaultRecipientRules {
 			return o2 == null;
 		return o1.equals(o2);
 	}
-	///////////////////////////////////////////////////
+
+	// /////////////////////////////////////////////////
 	public void getEmployeeGrandmanager(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception {
 		BpmnInstanceNodeRule node_rule = #{select * from bpmn_instance_node_rule where rule_record_id=${rule_record_id}};
 		Long company_id = getInstanceCompany(node_rule.instance_id);
@@ -165,7 +165,8 @@ public class DefaultRecipientRules {
 			
 		}
 	}
-	///
+
+	// /
 	public void getEmployee(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception {
 		BpmnInstanceNodeRule node_rule = #{select * from bpmn_instance_node_rule where rule_record_id = ${rule_record_id}};
 		
@@ -187,7 +188,7 @@ public class DefaultRecipientRules {
 			}
 		}
 	}
-	
+
 	/**
 	 * 取得申请者部门主管
 	 */
@@ -219,23 +220,63 @@ public class DefaultRecipientRules {
 			}
 		}
 	}
-	
+
 	/**
 	 * 取得申请者主管
 	 */
-	public void getEmployeeManager(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception {
-		
+	public void getEmployeeManager(String param1, String param2, String param3,
+			String param4, Long rule_record_id) throws Exception {
+
 	}
-	
+
 	/**
 	 * 取得申请者间接主管
 	 */
-	public void getEmployeeIndirectManager(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception {
-		
-	}
-	
-	public void getEmployeeCompanyManager(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception {
-		
+	public void getEmployeeIndirectManager(String param1, String param2,
+			String param3, String param4, Long rule_record_id) throws Exception {
+
 	}
 
+	public void getEmployeeCompanyManager(String param1, String param2,
+			String param3, String param4, Long rule_record_id) throws Exception {
+
+	}
+
+	/**
+	 * 指定人员
+	 */
+	public void getAppointedEmployee(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception{
+		BpmnInstanceNodeRule node_rule = #{select * from bpmn_instance_node_rule where rule_record_id=${rule_record_id}};
+		Long emp_id = Long.parseLong(param1);
+		for(Long approver_id:#{select user_id from wfl_users_v
+							where employee_id=${emp_id}}) {
+			insertBpmInstanceNodeHirc(node_rule.recipient_sequence,
+					approver_id,
+					"",
+					rule_record_id,
+					null,
+					1L,
+					null);
+		}
+	}
+
+	/**
+	 * 指定岗位
+	 */
+	public void getAppointedPosition(String param1,String param2,String param3,String param4,Long rule_record_id) throws Exception{
+		BpmnInstanceNodeRule node_rule = #{select * from bpmn_instance_node_rule where rule_record_id=${rule_record_id}};
+		Long pos_id = Long.parseLong(param1);
+		for(Long approver_id :#{select user_id 
+						 from wfl_employee_assigns_v a,wfl_users_v u
+						where a.position_id=${pos_id}
+						  and a.employee_id=u.employee_id}) {
+			insertBpmInstanceNodeHirc(node_rule.recipient_sequence,
+					approver_id,
+					"",
+					rule_record_id,
+					null,
+					1L,
+					null);
+		}
+	}
 }

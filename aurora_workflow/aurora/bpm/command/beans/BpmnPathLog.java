@@ -8,8 +8,8 @@ public class BpmnPathLog {
 	public Long log_id;
 	public Long instance_id;
 	public Long path_id;
-	@InsertExpression("CURRENT_TIMESTAMP")
-	public java.sql.Timestamp log_date;
+	@InsertExpression("CURRENT_Date")
+	public java.sql.Date log_date;
 	public String user_id;
 	public String current_node;
 	public String prev_node;

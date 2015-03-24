@@ -15,23 +15,23 @@ public class BpmnInstanceNodeRecipient
 	/**用户ID*/
 	public Long user_id;
 	/**审批时限*/
-	public java.sql.Timestamp date_limit;
+	public java.sql.Date date_limit;
 	/**转交人ID*/
 	public Long commision_by;
 	/**转交人*/
 	public String commision_desc;
 	/**最后通知时间*/
-	public java.sql.Timestamp last_notify_date;
+	public java.sql.Date last_notify_date;
 	/**附件ID*/
 	public Long attachment_id;
 	/**审批层次记录ID*/
 	public Long hierarchy_record_id;
 	/**创建日期*/
-	public java.sql.Timestamp creation_date;
+	public java.sql.Date creation_date;
 	/**创建用户ID*/
 	public Long created_by;
 	/**最后更新日期*/
-	public java.sql.Timestamp last_update_date;
+	public java.sql.Date last_update_date;
 	/**最后更新用户ID*/
 	public Long last_updated_by;
 }

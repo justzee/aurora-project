@@ -9,7 +9,11 @@ CREATE TABLE BPMN_PROCESS_DEFINE(
 	name                           VARCHAR2(100),
 	approve_status                 VARCHAR2(45) NOT NULL,
 	valid_flag                     VARCHAR2(1) NOT NULL,
-	category_id                    NUMBER(19,0) NOT NULL
+	category_id                    NUMBER(19,0) NOT NULL,
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create UNIQUE INDEX bpmn_process_define_u1 on bpmn_process_define(process_version,process_code);

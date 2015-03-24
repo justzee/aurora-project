@@ -1,53 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="Definitions_1" targetNamespace="http://www.activiti.org/test">
   <process id="myProcess" name="My process" isExecutable="true">
-    <scriptTask id="RunScript" activiti:autoStoreVariables="false" name="Run Script">
-      <incoming>flow2</incoming>
-      <outgoing>flow11</outgoing>
-    </scriptTask>
-    <userTask id="AddUser" name="Add User">
-      <incoming>flow8</incoming>
-      <outgoing>flow2</outgoing>
-    </userTask>
-    <sequenceFlow id="flow2" sourceRef="AddUser" targetRef="RunScript"/>
-    <userTask id="AddScript" name="Add Script">
-      <incoming>flow9</incoming>
-      <outgoing>flow5</outgoing>
-    </userTask>
-    <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway">
-      <incoming>flow5</incoming>
-      <incoming>flow6</incoming>
-      <incoming>flow14</incoming>
-      <outgoing>flow7</outgoing>
-    </inclusiveGateway>
-    <sequenceFlow id="flow5" sourceRef="AddScript" targetRef="inclusivegateway1"/>
-    <userTask id="GenerateReport" name="Generate Report">
-      <incoming>flow7</incoming>
-      <outgoing>flow12</outgoing>
-    </userTask>
-    <sequenceFlow id="flow7" sourceRef="inclusivegateway1" targetRef="GenerateReport"/>
-    <sequenceFlow id="flow11" sourceRef="RunScript" targetRef="inclusivegateway2"/>
-    <sequenceFlow id="flow12" sourceRef="GenerateReport" targetRef="inclusivegateway2"/>
-    <inclusiveGateway id="inclusivegateway2" name="Inclusive Gateway">
-      <incoming>flow11</incoming>
-      <incoming>flow12</incoming>
-      <outgoing>flow13</outgoing>
-    </inclusiveGateway>
-    <sequenceFlow id="flow13" sourceRef="inclusivegateway2" targetRef="endevent1"/>
-    <userTask id="AddFile" name="Add File">
-      <incoming>flow10</incoming>
-      <outgoing>flow6</outgoing>
-    </userTask>
-    <sequenceFlow id="flow6" sourceRef="AddFile" targetRef="inclusivegateway1"/>
-    <userTask id="AddDB" name="Add DB">
-      <incoming>flow15</incoming>
-      <outgoing>flow14</outgoing>
-    </userTask>
-    <sequenceFlow id="flow14" sourceRef="AddDB" targetRef="inclusivegateway1"/>
-    <endEvent id="endevent1" name="End">
-      <incoming>flow13</incoming>
-    </endEvent>
-    <parallelGateway id="parallelgateway1" name="Parallel Gateway">
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway" gatewayDirection="Diverging">
       <incoming>flow1</incoming>
       <outgoing>flow8</outgoing>
       <outgoing>flow9</outgoing>
@@ -62,41 +16,159 @@
       <outgoing>flow1</outgoing>
     </startEvent>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="parallelgateway1"/>
+    <userTask id="AddUser" name="Add User">
+      <incoming>flow8</incoming>
+      <outgoing>flow2</outgoing>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="AddUser" targetRef="RunScript"/>
+    <userTask id="AddDB" name="Add DB">
+      <incoming>flow15</incoming>
+      <outgoing>flow14</outgoing>
+    </userTask>
+    <sequenceFlow id="flow14" sourceRef="AddDB" targetRef="ParallelGateway_1"/>
+    <userTask id="AddScript" name="Add Script">
+      <incoming>flow9</incoming>
+      <outgoing>flow5</outgoing>
+    </userTask>
+    <sequenceFlow id="flow5" sourceRef="AddScript" targetRef="ParallelGateway_1"/>
+    <userTask id="AddFile" name="Add File">
+      <incoming>flow10</incoming>
+      <outgoing>flow6</outgoing>
+    </userTask>
+    <sequenceFlow id="flow6" sourceRef="AddFile" targetRef="ParallelGateway_1"/>
+    <endEvent id="endevent1" name="End">
+      <incoming>flow13</incoming>
+    </endEvent>
+    <userTask id="UserTask_1" name="User Task 1">
+      <incoming>SequenceFlow_1</incoming>
+      <outgoing>SequenceFlow_6</outgoing>
+    </userTask>
+    <sequenceFlow id="SequenceFlow_6" sourceRef="UserTask_1" targetRef="ComplexGateway_1"/>
+    <userTask id="UserTask_2" name="User Task 2">
+      <incoming>SequenceFlow_4</incoming>
+      <outgoing>SequenceFlow_9</outgoing>
+    </userTask>
+    <sequenceFlow id="SequenceFlow_9" sourceRef="UserTask_2" targetRef="ComplexGateway_1"/>
+    <exclusiveGateway id="ExclusiveGateway_1" name="Exclusive Gateway 1" gatewayDirection="Diverging">
+      <incoming>SequenceFlow_3</incoming>
+      <outgoing>SequenceFlow_1</outgoing>
+      <outgoing>SequenceFlow_2</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="SequenceFlow_1" name="type=&quot;USER&quot;" sourceRef="ExclusiveGateway_1" targetRef="UserTask_1">
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_1">alert(1)</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_2" name="type=&quot;SCRIPT&quot;" sourceRef="ExclusiveGateway_1" targetRef="ScriptTask_1">
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_2">alert(2)</conditionExpression>
+    </sequenceFlow>
+    <userTask id="GenerateReport" name="Generate Report">
+      <incoming>flow7</incoming>
+      <outgoing>flow12</outgoing>
+      <ioSpecification id="InputOutputSpecification_4">
+        <dataInput id="DataInput_2" name="input1"/>
+        <inputSet id="_InputSet_3" name="Input Set 3">
+          <dataInputRefs>DataInput_2</dataInputRefs>
+          <optionalInputRefs>DataInput_2</optionalInputRefs>
+        </inputSet>
+        <outputSet id="OutputSet_2" name="Output Set 2"/>
+      </ioSpecification>
+      <dataInputAssociation id="DataInputAssociation_2">
+        <targetRef>DataInput_2</targetRef>
+      </dataInputAssociation>
+    </userTask>
+    <sequenceFlow id="flow12" sourceRef="GenerateReport" targetRef="ParallelGateway_2"/>
+    <scriptTask id="RunScript" activiti:autoStoreVariables="false" name="Run Script">
+      <incoming>flow2</incoming>
+      <outgoing>flow11</outgoing>
+    </scriptTask>
+    <sequenceFlow id="flow11" sourceRef="RunScript" targetRef="ParallelGateway_2"/>
+    <parallelGateway id="ParallelGateway_2" name="Parallel Gateway 2">
+      <incoming>flow12</incoming>
+      <incoming>flow11</incoming>
+      <incoming>SequenceFlow_8</incoming>
+      <outgoing>flow13</outgoing>
+    </parallelGateway>
+    <sequenceFlow id="flow13" sourceRef="ParallelGateway_2" targetRef="endevent1"/>
+    <scriptTask id="ScriptTask_1" name="Script Task 1">
+      <incoming>SequenceFlow_2</incoming>
+      <outgoing>SequenceFlow_7</outgoing>
+    </scriptTask>
+    <sequenceFlow id="SequenceFlow_7" sourceRef="ScriptTask_1" targetRef="ComplexGateway_1"/>
+    <parallelGateway id="ParallelGateway_1" name="Parallel Gateway 1" gatewayDirection="Mixed">
+      <incoming>flow14</incoming>
+      <incoming>flow5</incoming>
+      <incoming>flow6</incoming>
+      <outgoing>flow7</outgoing>
+      <outgoing>SequenceFlow_5</outgoing>
+    </parallelGateway>
+    <sequenceFlow id="flow7" sourceRef="ParallelGateway_1" targetRef="GenerateReport"/>
+    <sequenceFlow id="SequenceFlow_5" sourceRef="ParallelGateway_1" targetRef="InclusiveGateway_1"/>
+    <sequenceFlow id="SequenceFlow_8" sourceRef="ComplexGateway_1" targetRef="ParallelGateway_2"/>
+    <inclusiveGateway id="InclusiveGateway_1" name="Inclusive Gateway 1" gatewayDirection="Diverging">
+      <incoming>SequenceFlow_5</incoming>
+      <outgoing>SequenceFlow_3</outgoing>
+      <outgoing>SequenceFlow_4</outgoing>
+    </inclusiveGateway>
+    <sequenceFlow id="SequenceFlow_3" name="x>100" sourceRef="InclusiveGateway_1" targetRef="ExclusiveGateway_1"/>
+    <sequenceFlow id="SequenceFlow_4" name="x>200" sourceRef="InclusiveGateway_1" targetRef="UserTask_2"/>
+    <complexGateway id="ComplexGateway_1" name="Complex Gateway 2">
+      <incoming>SequenceFlow_6</incoming>
+      <incoming>SequenceFlow_9</incoming>
+      <incoming>SequenceFlow_7</incoming>
+      <outgoing>SequenceFlow_8</outgoing>
+    </complexGateway>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
     <bpmndi:BPMNPlane id="BPMNPlane_myProcess" bpmnElement="myProcess">
       <bpmndi:BPMNShape id="BPMNShape_startevent1" bpmnElement="startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="41.0" y="204.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_RunScript" bpmnElement="RunScript">
-        <omgdc:Bounds height="55.0" width="105.0" x="560.0" y="96.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_AddUser" bpmnElement="AddUser">
-        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="96.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_AddScript" bpmnElement="AddScript">
-        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="250.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_inclusivegateway1" bpmnElement="inclusivegateway1">
-        <omgdc:Bounds height="40.0" width="40.0" x="450.0" y="310.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_GenerateReport" bpmnElement="GenerateReport">
-        <omgdc:Bounds height="55.0" width="105.0" x="570.0" y="303.0"/>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_parallelgateway1" bpmnElement="parallelgateway1">
         <omgdc:Bounds height="40.0" width="40.0" x="132.0" y="201.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_endevent1" bpmnElement="endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="910.0" y="203.0"/>
+        <omgdc:Bounds height="35.0" width="35.0" x="1214.0" y="302.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_inclusivegateway2" bpmnElement="inclusivegateway2">
-        <omgdc:Bounds height="40.0" width="40.0" x="750.0" y="200.0"/>
+      <bpmndi:BPMNShape id="BPMNShape_ParallelGateway_1" bpmnElement="ParallelGateway_1">
+        <omgdc:Bounds height="50.0" width="50.0" x="482.0" y="353.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_AddFile" bpmnElement="AddFile">
-        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="350.0"/>
+      <bpmndi:BPMNShape id="BPMNShape_ParallelGateway_2" bpmnElement="ParallelGateway_2">
+        <omgdc:Bounds height="50.0" width="50.0" x="1109.0" y="294.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_InclusiveGateway_1" bpmnElement="InclusiveGateway_1">
+        <omgdc:Bounds height="50.0" width="50.0" x="570.0" y="288.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_1" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
+        <omgdc:Bounds height="50.0" width="50.0" x="680.0" y="288.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_AddUser" bpmnElement="AddUser">
+        <omgdc:Bounds height="55.0" width="105.0" x="280.0" y="96.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_usertask1" bpmnElement="AddDB">
-        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="440.0"/>
+        <omgdc:Bounds height="55.0" width="105.0" x="280.0" y="440.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_AddScript" bpmnElement="AddScript">
+        <omgdc:Bounds height="55.0" width="105.0" x="280.0" y="250.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_AddFile" bpmnElement="AddFile">
+        <omgdc:Bounds height="55.0" width="105.0" x="280.0" y="351.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_1" bpmnElement="UserTask_1">
+        <omgdc:Bounds height="50.0" width="110.0" x="790.0" y="355.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_2" bpmnElement="UserTask_2">
+        <omgdc:Bounds height="50.0" width="110.0" x="790.0" y="156.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_GenerateReport" bpmnElement="GenerateReport">
+        <omgdc:Bounds height="55.0" width="105.0" x="792.0" y="494.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_RunScript" bpmnElement="RunScript">
+        <omgdc:Bounds height="55.0" width="105.0" x="530.0" y="96.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ScriptTask_1" bpmnElement="ScriptTask_1">
+        <omgdc:Bounds height="50.0" width="110.0" x="790.0" y="241.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ComplexGateway_1" bpmnElement="ComplexGateway_1">
+        <omgdc:Bounds height="50.0" width="50.0" x="1001.0" y="294.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_flow1" bpmnElement="flow1" sourceElement="BPMNShape_startevent1" targetElement="BPMNShape_parallelgateway1">
         <omgdi:waypoint xsi:type="omgdc:Point" x="76.0" y="221.0"/>
@@ -105,63 +177,112 @@
         <omgdi:waypoint xsi:type="omgdc:Point" x="132.0" y="221.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_flow2" bpmnElement="flow2" sourceElement="BPMNShape_AddUser" targetElement="BPMNShape_RunScript">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="405.0" y="123.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="560.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="385.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="450.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="450.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="530.0" y="123.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow5" bpmnElement="flow5" sourceElement="BPMNShape_AddScript" targetElement="BPMNShape_inclusivegateway1">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="405.0" y="277.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="470.0" y="277.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="470.0" y="310.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow5" bpmnElement="flow5" sourceElement="BPMNShape_AddScript" targetElement="BPMNShape_ParallelGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="385.0" y="277.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="277.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="353.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow6" bpmnElement="flow6" sourceElement="BPMNShape_AddFile" targetElement="BPMNShape_inclusivegateway1">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="405.0" y="377.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="470.0" y="377.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="470.0" y="351.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow6" bpmnElement="flow6" sourceElement="BPMNShape_AddFile" targetElement="BPMNShape_ParallelGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="385.0" y="378.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="428.0" y="378.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="428.0" y="378.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="482.0" y="378.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow7" bpmnElement="flow7" sourceElement="BPMNShape_inclusivegateway1" targetElement="BPMNShape_GenerateReport">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="490.0" y="330.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="570.0" y="330.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow7" bpmnElement="flow7" sourceElement="BPMNShape_ParallelGateway_1" targetElement="BPMNShape_GenerateReport">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="404.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="521.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="792.0" y="521.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_flow8" bpmnElement="flow8" sourceElement="BPMNShape_parallelgateway1" targetElement="BPMNShape_AddUser">
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="201.0"/>
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="123.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="300.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="280.0" y="123.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_flow9" bpmnElement="flow9" sourceElement="BPMNShape_parallelgateway1" targetElement="BPMNShape_AddScript">
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="242.0"/>
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="277.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="300.0" y="277.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="280.0" y="277.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_flow10" bpmnElement="flow10" sourceElement="BPMNShape_parallelgateway1" targetElement="BPMNShape_AddFile">
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="242.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="377.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="300.0" y="377.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="378.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="280.0" y="378.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow11" bpmnElement="flow11" sourceElement="BPMNShape_RunScript" targetElement="BPMNShape_inclusivegateway2">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="665.0" y="123.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="770.0" y="123.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="770.0" y="200.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow11" bpmnElement="flow11" sourceElement="BPMNShape_RunScript" targetElement="BPMNShape_ParallelGateway_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="635.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1134.0" y="123.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1134.0" y="294.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow12" bpmnElement="flow12" sourceElement="BPMNShape_GenerateReport" targetElement="BPMNShape_inclusivegateway2">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="675.0" y="330.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="770.0" y="330.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="770.0" y="241.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow12" bpmnElement="flow12" sourceElement="BPMNShape_GenerateReport" targetElement="BPMNShape_ParallelGateway_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="897.0" y="521.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1134.0" y="521.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1134.0" y="345.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow13" bpmnElement="flow13" sourceElement="BPMNShape_inclusivegateway2" targetElement="BPMNShape_endevent1">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="791.0" y="220.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="844.0" y="220.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="844.0" y="220.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="910.0" y="220.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow13" bpmnElement="flow13" sourceElement="BPMNShape_ParallelGateway_2" targetElement="BPMNShape_endevent1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1160.0" y="319.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1184.0" y="319.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1184.0" y="319.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1214.0" y="319.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_flow14" bpmnElement="flow14" sourceElement="BPMNShape_usertask1" targetElement="BPMNShape_inclusivegateway1">
-        <omgdi:waypoint xsi:type="omgdc:Point" x="405.0" y="467.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="470.0" y="467.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="470.0" y="351.0"/>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow14" bpmnElement="flow14" sourceElement="BPMNShape_usertask1" targetElement="BPMNShape_ParallelGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="385.0" y="467.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="467.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="404.0"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_flow15" bpmnElement="flow15" sourceElement="BPMNShape_parallelgateway1" targetElement="BPMNShape_usertask1">
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="242.0"/>
         <omgdi:waypoint xsi:type="omgdc:Point" x="152.0" y="467.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="300.0" y="467.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="280.0" y="467.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_UserTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="705.0" y="339.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="705.0" y="380.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="790.0" y="380.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_ScriptTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="705.0" y="288.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="705.0" y="266.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="790.0" y="266.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="BPMNShape_InclusiveGateway_1" targetElement="BPMNShape_ExclusiveGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="621.0" y="313.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="647.0" y="313.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="647.0" y="313.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="680.0" y="313.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="BPMNShape_InclusiveGateway_1" targetElement="BPMNShape_UserTask_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="595.0" y="288.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="595.0" y="181.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="790.0" y="181.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="BPMNShape_ParallelGateway_1" targetElement="BPMNShape_InclusiveGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="353.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="507.0" y="313.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="570.0" y="313.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_6" sourceElement="BPMNShape_UserTask_1" targetElement="BPMNShape_ComplexGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="900.0" y="380.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1026.0" y="380.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1026.0" y="345.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7" sourceElement="BPMNShape_ScriptTask_1" targetElement="BPMNShape_ComplexGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="900.0" y="266.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1026.0" y="266.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1026.0" y="294.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_8" bpmnElement="SequenceFlow_8" sourceElement="BPMNShape_ComplexGateway_1" targetElement="BPMNShape_ParallelGateway_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1052.0" y="319.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1109.0" y="319.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_9" bpmnElement="SequenceFlow_9" sourceElement="BPMNShape_UserTask_2" targetElement="BPMNShape_ComplexGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="900.0" y="181.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1026.0" y="181.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="1026.0" y="294.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

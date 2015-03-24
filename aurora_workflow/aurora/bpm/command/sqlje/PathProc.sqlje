@@ -10,7 +10,7 @@ public class PathProc {
 			String node_id) throws Exception {
 		BpmnPathInstance bpi = new BpmnPathInstance();
 		bpi.instance_id = instance_id;
-		bpi.status = "RUNNING";
+		bpi.status = "ACTIVE";
 		bpi.prev_node = preNode;
 		bpi.current_node = currentNode;
 		bpi.node_id = node_id;
@@ -41,7 +41,7 @@ public class PathProc {
 
 	public void closePath(Long instance_id, Long path_id) throws Exception {
 		#{update bpmn_path_instance
-			 set status='FINISH'
+			 set status='CLOSED'
 		   where instance_id=${instance_id} 
 			 and path_id=${path_id}};
 	}

@@ -227,7 +227,7 @@ public class UserTaskProc {
 	public Long  createNodeRecipient(Long instance_id,Long usertask_id,Long seq_number,
 			Long recipient_id,Long hierarchy_record_id,Long user_id) throws Exception {
 		BpmnUsertaskNode node = #{select * from bpmn_usertask_node where usertask_id=${usertask_id}};
-		Timestamp date_limit=null;
+		java.sql.Date date_limit=null;
 		if(eq(node.is_date_limited , 1L)) {
 			//
 		}

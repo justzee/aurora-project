@@ -6,6 +6,10 @@ CREATE TABLE `bpmn_process_instance` (
   `process_version` varchar(45) DEFAULT NULL COMMENT '所属工作流版本',
   `description` varchar(1000) DEFAULT NULL COMMENT '流程创建是的一段描述',
   `instance_param` bigint(20) DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `creation_date` datetime NULL DEFAULT NULL,
+  `last_updated_by` bigint(20) DEFAULT NULL,
+  `last_update_date` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`instance_id`),
   KEY `bpmn_process_instance_n1` (`parent_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=gb2312;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=gb2312;

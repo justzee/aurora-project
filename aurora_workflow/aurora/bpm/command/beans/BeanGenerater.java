@@ -20,7 +20,8 @@ public class BeanGenerater {
 	public static void main(String[] args) throws Exception {
 		URL url = BeanGenerater.class.getResource("BeanGenerater.class");
 		dir = new File(url.getFile()).getParentFile();
-		new BeanGenerater().gen("bpmn_approve_record");
+		//dir = new File("/Users/jessen/work/Workspaces/WEB/HAP_Blue/src/fnd");
+		new BeanGenerater().gen("bpmn_usertask_node");
 	}
 
 	void gen(String tableName) throws Exception {
@@ -46,11 +47,11 @@ public class BeanGenerater {
 		}
 		className = sb.toString();
 		
-		buff.append("package aurora.bpm.command.sqlje;\n");
+		buff.append("package ").append(BeanGenerater.class.getPackage().getName()).append(";\n");
 		buff.append("import aurora.sqlje.core.annotation.*;\n");
 		
 
-		buff.append(String.format("@Table(name=\"%s\",stdwho=false)\n",
+		buff.append(String.format("@Table(name=\"%s\",stdwho=true)\n",
 				tableName.toUpperCase()));
 		buff.append(String.format("public class %s\n{\n", className));
 	}
@@ -97,7 +98,7 @@ public class BeanGenerater {
 		type_map.put("BIGINT", "Long");
 		type_map.put("DECIMAL", "Long");
 		type_map.put("TINYINT", "Integer");
-		type_map.put("DATETIME", "java.sql.Timestamp");
+		type_map.put("DATETIME", "java.sql.Date");
 		type_map.put("DATE", "java.sql.Date");
 		type_map.put("VARCHAR", "String");
 		type_map.put("TEXT", "String");

@@ -6,7 +6,11 @@ CREATE TABLE BPMN_PROCESS_INSTANCE(
 	process_code                   VARCHAR2(45),
 	process_version                VARCHAR2(45),
 	description                    VARCHAR2(1000),
-	instance_param                 NUMBER(19,0)
+	instance_param                 NUMBER(19,0),
+	created_by                     NUMBER(19,0),
+	creation_date                  DATE,
+	last_updated_by                NUMBER(19,0),
+	last_update_date               DATE
 );
 --create Index
 create INDEX bpmn_process_instance_n1 on bpmn_process_instance(parent_id);
